@@ -133,6 +133,10 @@ QCD.components.Component = function(_element, _mainController) {
 		}
 	}
 	
+	this.setEditable = function(isEditable) {
+		this.setComponentEditable(isEditable);
+	}
+	
 	this.performScript = function() {
 		if (this.options.script) {
 			mainController.getActionEvaluator().performJsAction(this.options.script, this);

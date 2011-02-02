@@ -953,7 +953,7 @@ ul.ribbon_list li.twoB.enabled ul li a.twoB_down:hover {
 	border-color: #f29d15;
 }
 
-.ribbon_content .ribbon_description_icon {
+.ribbon_description_icon {
 	position: absolute;
 	width: 9px;
 	height: 9px;
@@ -970,7 +970,7 @@ ul.ribbon_list li.twoB.enabled ul li a.twoB_down:hover {
 .ribbon_content .enabled .ribbon_description_icon {
 	background-image: url(/css/core/images/info.icon.png);
 }
-.ribbon_content .ribbon_description_icon:hover {
+.ribbon_description_icon:hover {
 	filter:alpha(opacity=100); /* filtr dla IE*/
 	opacity: 1; /* filtr dla Opera*/
 	-moz-opacity:1; /* filtr dla Mozilla Firefox */

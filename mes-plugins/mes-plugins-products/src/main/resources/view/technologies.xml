@@ -197,9 +197,8 @@
 			</component>
 			<component type="gridLayout" name="gridsLayout" columns="3" rows="5" hasBorders="false">
 				<layoutElement column="1" row="1" height="5">
-					<component type="tree" name="technologyTree" reference="technologyTree" source="#{form}.operationComponents">
+					<component type="tree" name="technologyTree" reference="technologyTree" field="#{form}.operationComponents">
 						<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
-						<!--<option type="rootExpression" value="#number" />-->
 						<option type="correspondingView" value="products/technologyOperationComponent" />
 						<option type="correspondingComponent" value="form" />
 					</component>
@@ -219,6 +218,48 @@
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
 					</component>
+				
+					<!--<component type="form" name="operationForm" reference="operationForm" field="#{technologyTree}">
+						<component type="gridLayout" name="gridsLayout" columns="2" rows="2" hasBorders="false">
+							<layoutElement column="1" row="1" width="2">
+								<component type="lookup" name="operation" field="operation">
+									<option type="column" name="name" fields="name"
+										width="300" />
+									<option type="searchable" value="name" />
+									<option type="orderable" value="name" />
+									<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+									<option type="fieldCode" value="number" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2" width="2">
+								<component type="awesomeDynamicList" name="inProducts" reference="inProducts" 
+										field="operationProductInComponents">
+										<option type="hasBorder" value="true" />
+										<components>
+											<component type="gridLayout" name="gridLayout"
+												columns="1" rows="2" fixedRowHeight="false">
+												<layoutElement column="1" row="1">
+													<component type="lookup" name="product" field="product">
+														<option type="column" name="name" fields="name" link="true"
+															width="300" />
+														<option type="column" name="category" fields="category" />
+														<option type="searchable" value="name,category" />
+														<option type="orderable" value="name,category" />
+														<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+														<option type="fieldCode" value="number" />
+														<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkBatchNrReq"/>
+													</component>
+												</layoutElement>
+												<layoutElement column="1" row="2">
+													<component type="input" name="quantity" field="quantity" />
+												</layoutElement>
+											</component>
+										</components>
+									</component>
+							</layoutElement>
+						</component>
+					</component>-->
+				
 				</layoutElement>
 				<layoutElement column="3" row="1" height="5">
 					<component type="grid" name="outProducts" reference="outProducts" source="#{technologyTree}.operationProductOutComponents">

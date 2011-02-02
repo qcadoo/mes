@@ -71,7 +71,7 @@ public final class WorkPlanForMachineXlsService extends XlsDocumentService {
             Entity order = (Entity) component.getField("order");
             Entity technology = (Entity) order.getField("technology");
             if (technology != null) {
-                List<Entity> operationComponents = new ArrayList<Entity>(technology.getHasManyField("operationComponents"));
+                List<Entity> operationComponents = new ArrayList<Entity>(technology.getTreeField("operationComponents"));
                 Collections.sort(operationComponents, new EntityOperationNumberComparator());
                 for (Entity operationComponent : operationComponents) {
                     Entity operation = (Entity) operationComponent.getField("operation");

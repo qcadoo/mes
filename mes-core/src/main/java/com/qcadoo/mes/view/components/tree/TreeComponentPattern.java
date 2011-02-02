@@ -8,7 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
@@ -22,8 +22,6 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
 
     private static final String JS_OBJECT = "QCD.components.elements.Tree";
 
-    private FieldDefinition belongsToFieldDefinition;
-
     private String correspondingView;
 
     private String correspondingComponent;
@@ -36,12 +34,12 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new TreeComponentState(belongsToFieldDefinition, nodeLabelExpression);
+        return new TreeComponentState(getFieldDefinition(), nodeLabelExpression);
     }
 
     @Override
     protected void initializeComponent() throws JSONException {
-        getBelongsToFieldDefinition();
+        checkFieldDefinition();
 
         for (ComponentOption option : getOptions()) {
             if ("correspondingView".equals(option.getType())) {
@@ -61,9 +59,7 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         JSONObject json = new JSONObject();
         json.put("correspondingView", correspondingView);
         json.put("correspondingComponent", correspondingComponent);
-        if (belongsToFieldDefinition != null) {
-            json.put("belongsToFieldName", belongsToFieldDefinition.getName());
-        }
+        json.put("belongsToFieldName", getBelongsToFieldDefinition().getName());
 
         JSONObject translations = new JSONObject();
 
@@ -86,15 +82,23 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         return getTranslationService().translate(codes, locale);
     }
 
-    private void getBelongsToFieldDefinition() {
-        if (getScopeFieldDefinition() != null) {
-            if (HasManyType.class.isAssignableFrom(getScopeFieldDefinition().getType().getClass())) {
-                HasManyType hasManyType = (HasManyType) getScopeFieldDefinition().getType();
-                belongsToFieldDefinition = hasManyType.getDataDefinition().getField(hasManyType.getJoinFieldName());
-            } else {
-                throw new IllegalStateException("Scope field for grid be a hasMany one");
+    private void checkFieldDefinition() {
+        if (getFieldDefinition() != null) {
+            if (TreeType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
+                return;
             }
         }
+        throw new IllegalStateException("Field has to be a tree one");
+    }
+
+    private FieldDefinition getBelongsToFieldDefinition() {
+        if (getFieldDefinition() != null) {
+            if (TreeType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
+                TreeType treeType = (TreeType) getFieldDefinition().getType();
+                return treeType.getDataDefinition().getField(treeType.getJoinFieldName());
+            }
+        }
+        throw new IllegalStateException("Field has to be a tree one");
     }
 
     @Override

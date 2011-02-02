@@ -57,6 +57,8 @@ public final class GridComponentPattern extends AbstractComponentPattern {
 
     private boolean creatable = false;
 
+    private boolean multiselect = false;
+
     private boolean hasPredefinedFilters = false;
 
     private List<PredefinedFilter> predefinedFilters = new LinkedList<PredefinedFilter>();
@@ -122,6 +124,8 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         json.put("paginable", paginable);
         json.put("deletable", deletable);
         json.put("creatable", creatable);
+        json.put("multiselect", multiselect);
+
         json.put("hasPredefinedFilters", hasPredefinedFilters);
 
         JSONArray predefinedFiltersArray = new JSONArray();
@@ -316,6 +320,8 @@ public final class GridComponentPattern extends AbstractComponentPattern {
                 paginable = Boolean.parseBoolean(option.getValue());
             } else if ("creatable".equals(option.getType())) {
                 creatable = Boolean.parseBoolean(option.getValue());
+            } else if ("multiselect".equals(option.getType())) {
+                multiselect = Boolean.parseBoolean(option.getValue());
             } else if ("hasPredefinedFilters".equals(option.getType())) {
                 hasPredefinedFilters = Boolean.parseBoolean(option.getValue());
             } else if ("deletable".equals(option.getType())) {

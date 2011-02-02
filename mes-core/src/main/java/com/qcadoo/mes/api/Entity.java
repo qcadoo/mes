@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.qcadoo.mes.internal.EntityList;
+import com.qcadoo.mes.internal.EntityTree;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.validators.ErrorMessage;
 
@@ -104,6 +105,15 @@ public interface Entity {
      * @return the field's value
      */
     EntityList getHasManyField(String fieldName);
+
+    /**
+     * Return the value, casted to tree, of the field with given name.
+     * 
+     * @param fieldName
+     *            field's name
+     * @return the field's value
+     */
+    EntityTree getTreeField(String fieldName);
 
     /**
      * Set the value of the field with given name.

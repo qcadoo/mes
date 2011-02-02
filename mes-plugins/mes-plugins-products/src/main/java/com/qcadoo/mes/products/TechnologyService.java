@@ -59,31 +59,6 @@ public final class TechnologyService {
         return true;
     }
 
-    public boolean ignoreRootTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getField("parent") == null && entity.getField("technology") != null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean copyTechnologyFromParent(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getField("parent") == null) {
-            return true;
-        }
-
-        System.out.println(" $ " + ((ProductsTechnologyOperationComponent) entity.getField("parent")).getId());
-        System.out.println(" $ " + ((ProductsTechnologyOperationComponent) entity.getField("parent")).getTechnology().getId());
-        System.out.println(" $ " + ((ProductsTechnology) entity.getField("technology")).getId());
-
-        entity.setField("parent", null);
-        // entity.setField("technology", ((ProductsTechnologyOperationComponent) entity.getField("parent")).getTechnology());
-
-        System.out.println(" @3 -----------> " + entity);
-
-        return true;
-    }
-
     public boolean checkTechnologyDefault(final DataDefinition dataDefinition, final Entity entity) {
         Boolean master = (Boolean) entity.getField("master");
 

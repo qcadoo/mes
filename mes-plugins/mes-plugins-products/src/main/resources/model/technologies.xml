@@ -75,7 +75,8 @@
 		<string name="qualityControlInstruction">
 			<validatesLength max="255" />
 		</string>
-		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />
+		<!--<hasMany name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />-->
+		<tree name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />
 		<hasMany name="orders" model="order" joinField="technology" cascade="nullify"/>
 		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkTechnologyDefault" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />

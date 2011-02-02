@@ -55,6 +55,7 @@ import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.model.hooks.internal.HookFactory;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.model.types.internal.DateTimeType;
 import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.model.types.internal.DecimalType;
@@ -67,7 +68,7 @@ import com.qcadoo.mes.model.validators.internal.ValidatorFactory;
 public final class DataDefinitionParser {
 
     private static enum ModelTag {
-        PRIORITY, ONCREATE, ONUPDATE, ONSAVE, ONCOPY, VALIDATESWITH, INTEGER, STRING, TEXT, DECIMAL, DATETIME, DATE, BOOLEAN, BELONGSTO, HASMANY, ENUM, DICTIONARY, PASSWORD
+        PRIORITY, ONCREATE, ONUPDATE, ONSAVE, ONCOPY, VALIDATESWITH, INTEGER, STRING, TEXT, DECIMAL, DATETIME, DATE, BOOLEAN, BELONGSTO, HASMANY, TREE, ENUM, DICTIONARY, PASSWORD
     }
 
     private static enum FieldTag {
@@ -215,6 +216,14 @@ public final class DataDefinitionParser {
                 getStringAttribute(reader, "joinField"), cascade, getBooleanAttribute(reader, "copyable", false));
     }
 
+    private FieldType getTreeType(final XMLStreamReader reader, final String pluginIdentifier) {
+        String plugin = getStringAttribute(reader, "plugin");
+        TreeType.Cascade cascade = "delete".equals(getStringAttribute(reader, "cascade")) ? TreeType.Cascade.DELETE
+                : TreeType.Cascade.NULLIFY;
+        return fieldTypeFactory.treeType(plugin != null ? plugin : pluginIdentifier, getStringAttribute(reader, TAG_MODEL),
+                getStringAttribute(reader, "joinField"), cascade, getBooleanAttribute(reader, "copyable", false));
+    }
+
     private FieldType getBelongsToType(final XMLStreamReader reader, final String pluginIdentifier) {
         boolean lazy = getBooleanAttribute(reader, "lazy", true);
         String plugin = getStringAttribute(reader, "plugin");
@@ -322,6 +331,8 @@ public final class DataDefinitionParser {
                 return getBelongsToType(reader, pluginIdentifier);
             case HASMANY:
                 return getHasManyType(reader, pluginIdentifier);
+            case TREE:
+                return getTreeType(reader, pluginIdentifier);
             case ENUM:
                 return getEnumType(reader);
             case DICTIONARY:

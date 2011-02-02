@@ -296,7 +296,7 @@ public class AutocompleteGenealogyService {
     private void completeBatchForComponents(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
         genealogy.setField("productInComponents", new ArrayList<Entity>());
         List<String> componentsWithoutBatch = new ArrayList<String>();
-        for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
+        for (Entity operationComponent : technology.getTreeField("operationComponents")) {
             for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                 if ((Boolean) operationProductComponent.getField("batchRequired")) {
                     Entity productIn = new DefaultEntity("genealogies", "genealogyProductInComponent");
@@ -328,7 +328,7 @@ public class AutocompleteGenealogyService {
         }
         if (componentsWithoutBatch.size() > 0) {
             genealogy.addGlobalError("genealogies.message.autoGenealogy.missingBatch",
-                    (String[]) componentsWithoutBatch.toArray(new String[componentsWithoutBatch.size()]));
+                    componentsWithoutBatch.toArray(new String[componentsWithoutBatch.size()]));
         }
     }
 }
