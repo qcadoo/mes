@@ -62,6 +62,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	var translations = this.options.translations;
 	
+	var moveMode = false;
+	var treeStructureChanged = false;
+	
 	if (this.options.referenceName) {
 		mainController.registerReferenceName(this.options.referenceName, this);
 	}
@@ -81,10 +84,43 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.deleteButton, function(e) {
 				deleteClicked();
 			}, "deleteIcon16_dis.png");
+			buttons.moveUpButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
+				alert("UP");
+			}, "upIcon16_dis.png");
+			buttons.moveDownButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
+				alert("DOWN");
+			}, "downIcon16_dis.png");
+			buttons.moveLeftButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
+				alert("LEFT");
+			}, "leftIcon16_dis.png");
+			buttons.moveRightButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
+				alert("RIGHT");
+			}, "rightIcon16_dis.png");
+			buttons.moveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("MOVE OFF", function(e) {
+				if (buttons.moveButton.hasClass("headerButtonActive")) {
+					diactiveMoveMode();
+				} else {
+					activeMoveMode();
+				}
+			}, "moveIcon16_dis.png");
+			
+			buttons.moveUpButton.hide();
+			buttons.moveDownButton.hide();
+			buttons.moveLeftButton.hide();
+			buttons.moveRightButton.hide();
 			
 			header.append(buttons.newButton);
 			header.append(buttons.editButton);
 			header.append(buttons.deleteButton);
+			
+			header.append(buttons.moveUpButton);
+			header.append(buttons.moveDownButton);
+			header.append(buttons.moveLeftButton);
+			header.append(buttons.moveRightButton);
+			
+			
+			header.append(buttons.moveButton);
+			buttons.moveButton.addClass("headerButtonEnabled");
 		
 		contentElement = $("<div>").addClass('tree_content');
 		
@@ -96,7 +132,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		element.append(container);
 		element.css("padding", "10px");
 		
-		tree = contentElement.jstree({ plugins : ["json_data", "themes", "crrm", "ui", "dnd"/*"hotkeys"*/ ],
+		tree = contentElement.jstree({ plugins : ["json_data", "themes", "crrm", "ui", "dnd"  /*"hotkeys"*/ ],
 			"themes" : {
 				"theme": "classic",
 				"dots" : false,
@@ -125,14 +161,22 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			"ui": {
 				"select_limit": 1
 			},
+			"crrm" : {
+				"move" : {
+					"check_move" : function (m) {
+						if (moveMode) {
+							return true;
+						}
+						return false;
+					}
+				}
+			},
 			"dnd": {
 				"drag_finish": function (data) {
-					QCD.info("drag_finish")
-					QCD.info(data.o); // what
-					QCD.info(data.r); // where
+					treeStructureChanged = true;
 				},
 			 	"drop_target" : false,
-			 	"drag_target" : false
+			 	"drag_target" : false,
 			},
 			core : {
 				html_titles: true,
@@ -161,6 +205,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	this.getComponentValue = function() {
+		var result = new Object();
 		var openedNodesArray;
 		if (openedNodesArrayToInsert) {
 			openedNodesArray = openedNodesArrayToInsert;
@@ -171,6 +216,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				openedNodesArray.push(getEntityId(this.id));
 			});
 		}
+		result.openedNodes = openedNodesArray;
 		var selectedNode;
 		if (selectedNodeToInstert) {
 			selectedNode = selectedNodeToInstert;
@@ -178,11 +224,14 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		} else {
 			selectedNode = getSelectedEntityId();
 		}
-		return {
-			openedNodes: openedNodesArray,
-			selectedEntityId: selectedNode,
-			belongsToEntityId: belongsToEntityId
+		result.selectedEntityId = selectedNode;
+		result.belongsToEntityId = belongsToEntityId;
+		
+		if (treeStructureChanged) {
+			result.treeStructure = getTreeStructureData();
 		}
+		
+		return result;
 	}
 	
 	this.setComponentValue = function(value) {
@@ -212,6 +261,65 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		updateButtons();
 		unblock();
 	}
+	
+	function activeMoveMode() {
+		buttons.moveButton.addClass("headerButtonActive");
+		buttons.moveButton.label.html("MOVE ON");
+		
+		buttons.newButton.hide();
+		buttons.editButton.hide();
+		buttons.deleteButton.hide();
+		
+		buttons.moveUpButton.show();
+		buttons.moveUpButton.css("display", "inline-block");
+		buttons.moveDownButton.show();
+		buttons.moveDownButton.css("display", "inline-block");
+		buttons.moveLeftButton.show();
+		buttons.moveLeftButton.css("display", "inline-block");
+		buttons.moveRightButton.show();
+		buttons.moveRightButton.css("display", "inline-block");
+		
+		buttons.moveUpButton.addClass("headerButtonEnabled");
+		buttons.moveDownButton.addClass("headerButtonEnabled");
+		buttons.moveLeftButton.addClass("headerButtonEnabled");
+		buttons.moveRightButton.addClass("headerButtonEnabled");
+		
+		moveMode = true;
+	}
+	
+	function diactiveMoveMode() {
+		buttons.moveButton.removeClass("headerButtonActive");
+		buttons.moveButton.label.html("MOVE OFF");
+		
+		buttons.newButton.show();
+		buttons.editButton.show();
+		buttons.deleteButton.show();
+		buttons.moveUpButton.hide();
+		buttons.moveDownButton.hide();
+		buttons.moveLeftButton.hide();
+		buttons.moveRightButton.hide();
+		
+		moveMode = false;
+	}
+	
+	function getTreeStructureData(childrensArray) {
+		if (! childrensArray) {
+			var childrensArray = tree.jstree("get_json");
+		}
+		var resultArray = new Array();
+		
+		for (var i in childrensArray) {
+			var nodeObject = {
+				id: getEntityId(childrensArray[i].attr.id)
+			}
+			if (childrensArray[i].children) {
+				nodeObject.children = getTreeStructureData(childrensArray[i].children);
+			}
+			resultArray.push(nodeObject);
+		}
+		return resultArray;
+	}
+	
 	
 	function addNode(data, node) {
 		var nodeId = data.id ? data.id : "0";

@@ -34,8 +34,9 @@ QCD.MessagesController = function() {
 	
 	this.addMessage = function(message) { // type = [info|error|success]
 		
-		QCD.info("addMessage");
-		QCD.info(message);
+		if (message.autoClose == undefined) {
+			message.autoClose = true;
+		}
 		
 		type = message.type.toLowerCase();
 		if (type == "failure") {
