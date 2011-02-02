@@ -192,7 +192,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			if (fireSelectEvent) {
 				updateButtons();
 				if (listeners.length > 0) {
-					//onSelectChange();
+					onSelectChange();
 				}
 			}
 		});
@@ -286,6 +286,13 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		
 		moveMode = true;
 		updateButtons();
+		
+		if (listeners.length > 0) {
+			for (var i in listeners) {
+				var listener = mainController.getComponent(listeners[i]);
+				listener.setEditable(false);
+			}
+		}
 	}
 	
 	function diactiveMoveMode() {

@@ -49,6 +49,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var componentEnabled = false;
 	
+	var isEditable = true;
+	
 	var currentGridHeight;
 	
 	var linkListener;
@@ -231,7 +233,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	function linkClicked(entityId) {
-		if (!componentEnabled) {
+		if (!componentEnabled || !isEditable) {
 			return;
 		}
 		if (linkListener) {
@@ -368,7 +370,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.setComponentEnabled = function(isEnabled) {
 		componentEnabled = isEnabled;
-		headerController.setEnabled(isEnabled);
+		headerController.setEnabled(isEditable && isEnabled);
 	}
 	
 	this.setComponentLoading = function(isLoadingVisible) {
@@ -377,6 +379,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		} else {
 			unblockGrid();
 		}
+	}
+	
+	this.setComponentEditable = function(_isEditable) {
+		isEditable = _isEditable;
+		headerController.setEnabled(isEditable && isEnabled);
 	}
 
 	
