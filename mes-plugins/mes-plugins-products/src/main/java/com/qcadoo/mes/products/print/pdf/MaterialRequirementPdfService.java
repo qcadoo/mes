@@ -47,7 +47,7 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.products.print.ProductReportService;
+import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.mes.products.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.products.util.SortUtil;
@@ -64,7 +64,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     private SecurityService securityService;
 
     @Autowired
-    private ProductReportService reportDataService;
+    private ReportDataService reportDataService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
