@@ -70,37 +70,42 @@ public class ReportDataService {
 
     private static final String COMPONENT_QUANTITY_ALGORITHM = "02perTechnology";
 
-    public final Map<Entity, BigDecimal> getTechnologySeries(final Entity entity, final List<Entity> orders) {
+    public final Map<Entity, BigDecimal> getTechnologySeries(final Entity entity) {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
+        List<Entity> orders = entity.getHasManyField("orders");
+        Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             Entity technology = (Entity) order.getField("technology");
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
             if (technology != null && plannedQuantity != null && plannedQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                EntityTree operationComponents = technology.getTreeField("operationComponents");
-                if (COMPONENT_QUANTITY_ALGORITHM.equals(technology.getField("componentQuantityAlgorithm"))) {
-                    countQuntityComponentPerTechnology(products, operationComponents,
-                            (Boolean) entity.getField("onlyComponents"), plannedQuantity);
-                } else {
-                    Map<Entity, BigDecimal> orderProducts = new HashMap<Entity, BigDecimal>();
-                    EntityTreeNode rootNode = operationComponents.getRoot();
-                    if (rootNode != null) {
-                        boolean success = countQuntityComponentPerOutProducts(orderProducts, rootNode,
-                                (Boolean) entity.getField("onlyComponents"), plannedQuantity);
-                        if (success) {
-                            for (Entry<Entity, BigDecimal> entry : orderProducts.entrySet()) {
-                                if (products.containsKey(entry.getKey())) {
-                                    products.put(entry.getKey(), products.get(entry.getKey()).add(entry.getValue()));
-                                } else {
-                                    products.put(entry.getKey(), entry.getValue());
-                                }
-                            }
+                countQuantityForProductsIn(products, technology, plannedQuantity, onlyComponents);
+            }
+        }
+        return products;
+    }
+
+    public void countQuantityForProductsIn(final Map<Entity, BigDecimal> products, final Entity technology,
+            final BigDecimal plannedQuantity, final Boolean onlyComponents) {
+        EntityTree operationComponents = technology.getTreeField("operationComponents");
+        if (COMPONENT_QUANTITY_ALGORITHM.equals(technology.getField("componentQuantityAlgorithm"))) {
+            countQuntityComponentPerTechnology(products, operationComponents, onlyComponents, plannedQuantity);
+        } else {
+            Map<Entity, BigDecimal> orderProducts = new HashMap<Entity, BigDecimal>();
+            EntityTreeNode rootNode = operationComponents.getRoot();
+            if (rootNode != null) {
+                boolean success = countQuntityComponentPerOutProducts(orderProducts, rootNode, onlyComponents, plannedQuantity);
+                if (success) {
+                    for (Entry<Entity, BigDecimal> entry : orderProducts.entrySet()) {
+                        if (products.containsKey(entry.getKey())) {
+                            products.put(entry.getKey(), products.get(entry.getKey()).add(entry.getValue()));
+                        } else {
+                            products.put(entry.getKey(), entry.getValue());
                         }
                     }
                 }
             }
         }
-        return products;
     }
 
     private void countQuntityComponentPerTechnology(final Map<Entity, BigDecimal> products,
