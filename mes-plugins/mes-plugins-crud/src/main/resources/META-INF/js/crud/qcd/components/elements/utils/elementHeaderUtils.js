@@ -29,7 +29,7 @@ QCD.components.elements.utils = QCD.components.elements.utils || {};
 
 QCD.components.elements.utils.HeaderUtils = {};
 
-QCD.components.elements.utils.HeaderUtils.createHeaderButton = function(label, clickAction, icon) {
+QCD.components.elements.utils.HeaderUtils.createHeaderButton = function(label, clickAction, icon, clickActionData) {
 	var elementIcon = (icon && $.trim(icon) != "") ? $.trim(icon) : null;
 	
 	var itemElementLabel = $('<div>');
@@ -49,10 +49,17 @@ QCD.components.elements.utils.HeaderUtils.createHeaderButton = function(label, c
 		itemElementLabel.css("paddingLeft", "0px");
 		itemElementLabel.css("paddingRight", "3px");
 	}
-	itemElementButton.click(function() {
-		itemElementButton.blur();
-		clickAction.call();
-	});
+	if (clickActionData) {
+		itemElementButton.bind("click", clickActionData, function(e) {
+			itemElementButton.blur();
+			clickAction.call($(this).parent()[0], e.data);
+		});
+	} else {
+		itemElementButton.bind("click", function(e) {
+			itemElementButton.blur();
+			clickAction.call($(this).parent(), e.data);
+		});
+	}
 	
 	var itemElementButtonWrapper = $("<div>").addClass("headerActionButton").append(itemElementButton);
 	itemElementButtonWrapper.label = itemElementLabel;
