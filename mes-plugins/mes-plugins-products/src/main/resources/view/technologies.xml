@@ -208,6 +208,7 @@
 							<option type="correspondingView" value="products/technologyOperationComponent" />
 							<option type="correspondingComponent" value="form" />
 						</dataType>
+						<listener event="select" bean="com.qcadoo.mes.products.TechnologyService" method="loadProductsForReferencedTechnology"/>
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1" height="5">

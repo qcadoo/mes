@@ -32,7 +32,7 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
     //
     // private String nodeLabelExpression;
 
-    private Map<String, TreeDataType> dataTypes = new HashMap<String, TreeDataType>();
+    private final Map<String, TreeDataType> dataTypes = new HashMap<String, TreeDataType>();
 
     public TreeComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
@@ -70,8 +70,6 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
                 }
                 dataType.validate();
                 dataTypes.put(dataTypeName, dataType);
-            } else {
-                throw new IllegalStateException("Tree can only contains 'dataType' nodes");
             }
         }
         if (dataTypes.size() == 0) {
