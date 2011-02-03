@@ -31,7 +31,6 @@ import static com.google.common.base.Preconditions.checkState;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -168,16 +167,15 @@ public final class DataAccessServiceImpl implements DataAccessService {
                     continue;
                 }
 
-                List<Entity> savedEntities = new LinkedList<Entity>();
-
                 HasManyType hasManyType = (HasManyType) fieldEntry.getValue().getType();
 
-                saveInnerEntities(alreadySavedEntities, newlySavedEntities, hasManyType.getJoinFieldName(), savedEntity.getId(),
-                        entities, savedEntities, (InternalDataDefinition) hasManyType.getDataDefinition());
+                List<Entity> savedEntities = saveHasManyEntities(alreadySavedEntities, newlySavedEntities,
+                        hasManyType.getJoinFieldName(), savedEntity.getId(), entities,
+                        (InternalDataDefinition) hasManyType.getDataDefinition());
 
                 EntityList dbEntities = savedEntity.getHasManyField(fieldEntry.getKey());
 
-                // TODO removeOrphans(savedEntities, (InternalDataDefinition) hasManyType.getDataDefinition(), dbEntities);
+                removeOrphans(savedEntities, (InternalDataDefinition) hasManyType.getDataDefinition(), dbEntities);
 
                 savedEntity.setField(fieldEntry.getKey(), savedEntities);
             } else if (fieldEntry.getValue().getType() instanceof TreeType) {
@@ -188,19 +186,18 @@ public final class DataAccessServiceImpl implements DataAccessService {
                     continue;
                 }
 
-                List<Entity> savedEntities = new LinkedList<Entity>();
-
                 TreeType treeType = (TreeType) fieldEntry.getValue().getType();
 
-                saveInnerEntities(alreadySavedEntities, newlySavedEntities, treeType.getJoinFieldName(), savedEntity.getId(),
-                        entities, savedEntities, (InternalDataDefinition) treeType.getDataDefinition());
+                List<Entity> savedEntities = saveTreeEntities(alreadySavedEntities, newlySavedEntities,
+                        treeType.getJoinFieldName(), savedEntity.getId(), entities,
+                        (InternalDataDefinition) treeType.getDataDefinition(), null);
 
                 EntityTree dbEntities = savedEntity.getTreeField(fieldEntry.getKey());
 
-                // TODO removeOrphans(savedEntities, (InternalDataDefinition) treeType.getDataDefinition(), dbEntities);
+                removeOrphans(savedEntities, (InternalDataDefinition) treeType.getDataDefinition(), dbEntities);
 
-                updateEntityTreeNodeJoinField(dbEntities.getRoot().getHasManyField("children"),
-                        (InternalDataDefinition) treeType.getDataDefinition(), treeType.getJoinFieldName(), savedEntity.getId());
+                // updateEntityTreeNodeJoinField(dbEntities.getRoot().getHasManyField("children"),
+                // (InternalDataDefinition) treeType.getDataDefinition(), treeType.getJoinFieldName(), savedEntity.getId());
 
             }
         }
@@ -214,9 +211,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return savedEntity;
     }
 
-    private void saveInnerEntities(final Set<Entity> alreadySavedEntities, final Set<Entity> newlySavedEntities,
-            final String joinFieldName, final Long id, final List<Entity> entities, final List<Entity> savedEntities,
-            final InternalDataDefinition dataDefinition) {
+    private List<Entity> saveHasManyEntities(final Set<Entity> alreadySavedEntities, final Set<Entity> newlySavedEntities,
+            final String joinFieldName, final Long id, final List<Entity> entities, final InternalDataDefinition dataDefinition) {
+        List<Entity> savedEntities = new ArrayList<Entity>();
+
         for (Entity innerEntity : entities) {
             innerEntity.setField(joinFieldName, id);
             Entity savedInnerEntity = performSave(dataDefinition, innerEntity, alreadySavedEntities, newlySavedEntities);
@@ -225,6 +223,31 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             }
         }
+
+        return savedEntities;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Entity> saveTreeEntities(final Set<Entity> alreadySavedEntities, final Set<Entity> newlySavedEntities,
+            final String joinFieldName, final Long id, final List<Entity> entities, final InternalDataDefinition dataDefinition,
+            final Long parentId) {
+        List<Entity> savedEntities = new ArrayList<Entity>();
+
+        for (Entity innerEntity : entities) {
+            innerEntity.setField(joinFieldName, id);
+            innerEntity.setField("parent", parentId);
+            Entity savedInnerEntity = performSave(dataDefinition, innerEntity, alreadySavedEntities, newlySavedEntities);
+            savedEntities.add(savedInnerEntity);
+            if (!savedInnerEntity.isValid()) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            } else if (innerEntity.getField("children") != null) {
+                List<Entity> children = saveTreeEntities(alreadySavedEntities, newlySavedEntities, joinFieldName, id,
+                        (List<Entity>) innerEntity.getField("children"), dataDefinition, savedInnerEntity.getId());
+                savedInnerEntity.setField("children", children);
+            }
+        }
+
+        return savedEntities;
     }
 
     private void removeOrphans(final List<Entity> savedEntities, final InternalDataDefinition dataDefinition,
@@ -243,14 +266,14 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
     }
 
-    private void updateEntityTreeNodeJoinField(final List<Entity> list, final InternalDataDefinition dataDefinition,
-            final String joinFieldName, final Long id) {
-        for (Entity node : list) {
-            node.setField(joinFieldName, id);
-            Entity savedNode = performSave(dataDefinition, node, new HashSet<Entity>(), new HashSet<Entity>());
-            updateEntityTreeNodeJoinField(savedNode.getHasManyField("children"), dataDefinition, joinFieldName, id);
-        }
-    }
+    // private void updateEntityTreeNodeJoinField(final List<Entity> list, final InternalDataDefinition dataDefinition,
+    // final String joinFieldName, final Long id) {
+    // for (Entity node : list) {
+    // node.setField(joinFieldName, id);
+    // Entity savedNode = performSave(dataDefinition, node, new HashSet<Entity>(), new HashSet<Entity>());
+    // updateEntityTreeNodeJoinField(savedNode.getHasManyField("children"), dataDefinition, joinFieldName, id);
+    // }
+    // }
 
     @Override
     @Transactional

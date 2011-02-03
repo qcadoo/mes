@@ -39,7 +39,7 @@ public final class TreeComponentState extends FieldComponentState {
 
     private Long selectedEntityId;
 
-    private JSONObject treeStructure;
+    private JSONArray treeStructure;
 
     private final FieldDefinition belongsToFieldDefinition;
 
@@ -75,7 +75,7 @@ public final class TreeComponentState extends FieldComponentState {
         }
 
         if (json.has(JSON_TREE_STRUCTURE) && !json.isNull(JSON_TREE_STRUCTURE)) {
-            treeStructure = json.getJSONArray(JSON_TREE_STRUCTURE).getJSONObject(0);
+            treeStructure = json.getJSONArray(JSON_TREE_STRUCTURE);
         }
 
         if (belongsToEntityId == null) {
@@ -135,7 +135,14 @@ public final class TreeComponentState extends FieldComponentState {
             return null;
         }
 
-        System.out.println(" ----------> get " + treeStructure);
+        if (treeStructure.length() == 0) {
+            return new ArrayList<Entity>();
+        }
+
+        if (treeStructure.length() > 1) {
+            addMessage("core.validate.field.error.multipleRoots", MessageType.FAILURE);
+            return null;
+        }
 
         Entity entity = belongsToFieldDefinition.getDataDefinition().get(belongsToEntityId);
 
@@ -150,26 +157,15 @@ public final class TreeComponentState extends FieldComponentState {
         }
 
         try {
-            Entity parent = nodes.get(treeStructure.getLong("id"));
+            Entity parent = nodes.get(treeStructure.getJSONObject(0).getLong("id"));
 
-            if (treeStructure.has("children")) {
-                reorganize(nodes, parent, treeStructure.getJSONArray("children"));
+            if (treeStructure.getJSONObject(0).has("children")) {
+                reorganize(nodes, parent, treeStructure.getJSONObject(0).getJSONArray("children"));
             }
-
-            printNode(parent, "");
 
             return Collections.singletonList(parent);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
-        }
-    }
-
-    private void printNode(final Entity parent, final String path) {
-        System.out.println(" ----------> " + path + parent.getId());
-        if (parent.getField("children") != null) {
-            for (Entity e : (List<Entity>) parent.getField("children")) {
-                printNode(e, path + "   ");
-            }
         }
     }
 
@@ -260,7 +256,6 @@ public final class TreeComponentState extends FieldComponentState {
         }
 
         public void selectEntity(final String[] args) {
-            System.out.println(" -----> selectEntity");
             notifyEntityIdChangeListeners(parseSelectedIdForListeners(getSelectedEntityId()));
         }
 
@@ -268,6 +263,8 @@ public final class TreeComponentState extends FieldComponentState {
             getDataDefinition().delete(selectedEntityId);
             setSelectedEntityId(null);
             addMessage(translateMessage("deleteMessage"), MessageType.SUCCESS);
+            requestRender();
+            requestUpdateState();
         }
 
     }

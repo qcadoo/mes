@@ -80,7 +80,7 @@
 			<validatesPresence /> 
 		</belongsTo>
 		<belongsTo name="parent" model="technologyOperationComponent" lookupField="name" />
-		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" copyable="true" />
+		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" />
 		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="operationComponent" cascade="delete" copyable="true" />
 		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="operationComponent" cascade="delete" copyable="true" />
 	</model>
