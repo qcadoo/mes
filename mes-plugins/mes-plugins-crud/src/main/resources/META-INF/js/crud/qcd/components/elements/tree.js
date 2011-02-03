@@ -85,16 +85,16 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				deleteClicked();
 			}, "deleteIcon16_dis.png");
 			buttons.moveUpButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
-				alert("UP");
+				moveUpClicked();
 			}, "upIcon16_dis.png");
 			buttons.moveDownButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
-				alert("DOWN");
+				moveDownClicked();
 			}, "downIcon16_dis.png");
 			buttons.moveLeftButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
-				alert("LEFT");
+				moveLeftClicked();
 			}, "leftIcon16_dis.png");
 			buttons.moveRightButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
-				alert("RIGHT");
+				moveRightClicked();
 			}, "rightIcon16_dis.png");
 			buttons.moveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("MOVE OFF", function(e) {
 				if (buttons.moveButton.hasClass("headerButtonActive")) {
@@ -135,7 +135,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		tree = contentElement.jstree({ plugins : ["json_data", "themes", "crrm", "ui", "dnd"  /*"hotkeys"*/ ],
 			"themes" : {
 				"theme": "classic",
-				"dots" : false,
+				"dots" : true,
 				"icons" : false
 			},
 			"json_data" : {
@@ -263,8 +263,11 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function activeMoveMode() {
-		buttons.moveButton.addClass("headerButtonActive");
+		buttons.moveButton.removeClass("headerButtonEnabled");
+		buttons.moveButton.setInfo("Obecnie drzewo jest w trybie modyfikacji polozenia elementow. W trakcie tego trybu czesc funkcjonalnosci na stronie moz byc nieaktywna." +
+				" Aby opuscic ten tryb zapisz encje lub cofnij zmiany");
 		buttons.moveButton.label.html("MOVE ON");
+		//buttons.moveButton.hide();
 		
 		buttons.newButton.hide();
 		buttons.editButton.hide();
@@ -285,10 +288,19 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.moveRightButton.addClass("headerButtonEnabled");
 		
 		moveMode = true;
+		updateButtons();
+		
+		if (listeners.length > 0) {
+			for (var i in listeners) {
+				var listener = mainController.getComponent(listeners[i]);
+				listener.setEditable(false);
+			}
+		}
 	}
 	
 	function diactiveMoveMode() {
-		buttons.moveButton.removeClass("headerButtonActive");
+		buttons.moveButton.addClass("headerButtonEnabled");
+		buttons.moveButton.setInfo();
 		buttons.moveButton.label.html("MOVE OFF");
 		
 		buttons.newButton.show();
@@ -300,11 +312,24 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.moveRightButton.hide();
 		
 		moveMode = false;
+		updateButtons();
+		if (listeners.length > 0) {
+			for (var i in listeners) {
+				var listener = mainController.getComponent(listeners[i]);
+				listener.setEditable(true);
+			}
+		}
+	}
+	
+	this.performUpdateState = function() {
+		if (moveMode) {
+			diactiveMoveMode();			
+		}
 	}
 	
 	function getTreeStructureData(childrensArray) {
 		if (! childrensArray) {
-			var childrensArray = tree.jstree("get_json");
+			var childrensArray = tree.jstree("get_json", -1);
 		}
 		var resultArray = new Array();
 		
@@ -334,9 +359,20 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	function updateButtons() {
 		var selected = getSelectedEntityId();
 		if (!selected) {
-			buttons.newButton.removeClass("headerButtonEnabled");
+			var treeData = tree.jstree("get_json", -1);
+			if (treeData.length == 0) {
+				buttons.newButton.addClass("headerButtonEnabled");
+			} else {
+				buttons.newButton.removeClass("headerButtonEnabled");
+			}
 			buttons.editButton.removeClass("headerButtonEnabled");
 			buttons.deleteButton.removeClass("headerButtonEnabled");
+			if (moveMode) {
+				buttons.moveUpButton.removeClass("headerButtonEnabled");
+				buttons.moveDownButton.removeClass("headerButtonEnabled");
+				buttons.moveLeftButton.removeClass("headerButtonEnabled");
+				buttons.moveRightButton.removeClass("headerButtonEnabled");
+			}
 		} else {
 			buttons.newButton.addClass("headerButtonEnabled");
 			if (selected != "0") {
@@ -345,6 +381,29 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			} else {
 				buttons.editButton.removeClass("headerButtonEnabled");
 				buttons.deleteButton.removeClass("headerButtonEnabled");
+			}
+			if (moveMode) {
+				var selectedNode = tree.jstree("get_selected");
+				var parentNode = $.jstree._focused()._get_parent(selectedNode);
+				if (parentNode && parentNode != -1) {
+					buttons.moveLeftButton.addClass("headerButtonEnabled");	
+				} else {
+					buttons.moveLeftButton.removeClass("headerButtonEnabled");
+				}
+				var nextNode = $.jstree._focused()._get_next(selectedNode, true);
+				if (nextNode) {
+					buttons.moveDownButton.addClass("headerButtonEnabled");	
+				} else {
+					buttons.moveDownButton.removeClass("headerButtonEnabled");
+				}
+				var previousNode = $.jstree._focused()._get_prev(selectedNode, true);
+				if (previousNode) {
+					buttons.moveUpButton.addClass("headerButtonEnabled");	
+					buttons.moveRightButton.addClass("headerButtonEnabled");	
+				} else {
+					buttons.moveUpButton.removeClass("headerButtonEnabled");
+					buttons.moveRightButton.removeClass("headerButtonEnabled");
+				}
 			}
 		}
 	}
@@ -394,7 +453,45 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				}, null, null);
 			}
 		}
-	}	
+	}
+	
+	function moveUpClicked() {
+		if (buttons.moveUpButton.hasClass("headerButtonEnabled")) {
+			var selectedNode = tree.jstree("get_selected");
+			var previousNode = $.jstree._focused()._get_prev(selectedNode, true);
+			moveNode(selectedNode, previousNode, "before");
+		}
+	}
+	
+	function moveDownClicked() {
+		if (buttons.moveDownButton.hasClass("headerButtonEnabled")) {
+			var selectedNode = tree.jstree("get_selected");
+			var nextNode = $.jstree._focused()._get_next(selectedNode, true);
+			moveNode(selectedNode, nextNode, "after");
+		}
+	}
+
+	function moveLeftClicked() {
+		if (buttons.moveLeftButton.hasClass("headerButtonEnabled")) {
+			var selectedNode = tree.jstree("get_selected");
+			var parentNode = $.jstree._focused()._get_parent(selectedNode);
+			moveNode(selectedNode, parentNode, "after");
+		}
+	}
+
+	function moveRightClicked() {
+		if (buttons.moveRightButton.hasClass("headerButtonEnabled")) {
+			var selectedNode = tree.jstree("get_selected");
+			var previousNode = $.jstree._focused()._get_prev(selectedNode, true);
+			moveNode(selectedNode, previousNode, "last");
+		}
+	}
+	
+	function moveNode(node, targetNode, position) {
+		tree.jstree("move_node", node, targetNode, position);
+		updateButtons();
+		treeStructureChanged = true;
+	}
 	
 	function onSelectChange() {
 		if (isEnabled) {

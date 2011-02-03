@@ -1,8 +1,12 @@
 package com.qcadoo.mes.view.components.tree;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,9 +17,9 @@ import com.qcadoo.mes.internal.EntityTree;
 import com.qcadoo.mes.internal.EntityTreeNode;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.utils.ExpressionUtil;
-import com.qcadoo.mes.view.states.AbstractComponentState;
+import com.qcadoo.mes.view.components.FieldComponentState;
 
-public final class TreeComponentState extends AbstractComponentState {
+public final class TreeComponentState extends FieldComponentState {
 
     public static final String JSON_SELECTED_ENTITY_ID = "selectedEntityId";
 
@@ -25,24 +29,32 @@ public final class TreeComponentState extends AbstractComponentState {
 
     public static final String JSON_OPENED_NODES_ID = "openedNodes";
 
+    public static final String JSON_TREE_STRUCTURE = "treeStructure";
+
     private final TreeEventPerformer eventPerformer = new TreeEventPerformer();
 
     private TreeNode rootNode;
 
     private List<Long> openedNodes;
 
-    private Long selectedEntityId = 0L;
+    private Long selectedEntityId;
+
+    private JSONArray treeStructure;
 
     private final FieldDefinition belongsToFieldDefinition;
 
     private Long belongsToEntityId;
 
-    private final String nodeLabelExpression;
+    // private final String nodeLabelExpression;
 
-    public TreeComponentState(final FieldDefinition scopeField, final String nodeLabelExpression) {
+    private final Map<String, TreeDataType> dataTypes;
+
+    public TreeComponentState(final FieldDefinition scopeField, final Map<String, TreeDataType> dataTypes) {
         belongsToFieldDefinition = scopeField;
-        this.nodeLabelExpression = nodeLabelExpression;
-        registerEvent("initialize", eventPerformer, "onInitialize");
+        // this.nodeLabelExpression = nodeLabelExpression;
+        this.dataTypes = dataTypes;
+        registerEvent("initialize", eventPerformer, "initialize");
+        registerEvent("initializeAfterBack", eventPerformer, "initialize");
         registerEvent("refresh", eventPerformer, "refresh");
         registerEvent("select", eventPerformer, "selectEntity");
         registerEvent("remove", eventPerformer, "removeSelectedEntity");
@@ -50,6 +62,8 @@ public final class TreeComponentState extends AbstractComponentState {
 
     @Override
     protected void initializeContent(final JSONObject json) throws JSONException {
+        super.initializeContent(json);
+
         if (json.has(JSON_SELECTED_ENTITY_ID) && !json.isNull(JSON_SELECTED_ENTITY_ID)) {
             selectedEntityId = json.getLong(JSON_SELECTED_ENTITY_ID);
         }
@@ -63,12 +77,13 @@ public final class TreeComponentState extends AbstractComponentState {
             }
         }
 
+        if (json.has(JSON_TREE_STRUCTURE) && !json.isNull(JSON_TREE_STRUCTURE)) {
+            treeStructure = json.getJSONArray(JSON_TREE_STRUCTURE);
+        }
+
         if (belongsToEntityId == null) {
             setEnabled(false);
         }
-
-        requestRender();
-        requestUpdateState();
     }
 
     @Override
@@ -77,7 +92,7 @@ public final class TreeComponentState extends AbstractComponentState {
             reload();
         }
 
-        JSONObject json = new JSONObject();
+        JSONObject json = super.renderContent();
         json.put(JSON_SELECTED_ENTITY_ID, selectedEntityId);
         json.put(JSON_BELONGS_TO_ENTITY_ID, belongsToEntityId);
 
@@ -88,18 +103,19 @@ public final class TreeComponentState extends AbstractComponentState {
             }
             json.put(JSON_OPENED_NODES_ID, openedNodesArray);
         }
-
-        json.put(JSON_ROOT_NODE_ID, rootNode.toJson());
+        if (rootNode != null) {
+            json.put(JSON_ROOT_NODE_ID, rootNode.toJson());
+        }
         return json;
     }
 
     @Override
-    public void onScopeEntityIdChange(final Long scopeEntityId) {
-        if (belongsToEntityId != null && !belongsToEntityId.equals(scopeEntityId)) {
-            setValue(null);
+    public void onFieldEntityIdChange(final Long fieldEntityId) {
+        if (belongsToEntityId != null && !belongsToEntityId.equals(fieldEntityId)) {
+            setSelectedEntityId(null);
         }
-        this.belongsToEntityId = scopeEntityId;
-        setEnabled(scopeEntityId != null);
+        this.belongsToEntityId = fieldEntityId;
+        setEnabled(fieldEntityId != null);
     }
 
     public List<Long> getOpenedNodes() {
@@ -119,19 +135,66 @@ public final class TreeComponentState extends AbstractComponentState {
 
     @Override
     public Object getFieldValue() {
-        return getSelectedEntityId();
+        if (treeStructure == null) {
+            return null;
+        }
+
+        if (treeStructure.length() == 0) {
+            return new ArrayList<Entity>();
+        }
+
+        if (treeStructure.length() > 1) {
+            addMessage("core.validate.field.error.multipleRoots", MessageType.FAILURE);
+            return null;
+        }
+
+        Entity entity = belongsToFieldDefinition.getDataDefinition().get(belongsToEntityId);
+
+        EntityTree tree = entity.getTreeField(belongsToFieldDefinition.getName());
+
+        Map<Long, Entity> nodes = new HashMap<Long, Entity>();
+
+        for (Entity node : tree) {
+            node.setField("children", new ArrayList<Entity>());
+            node.setField("parent", null);
+            nodes.put(node.getId(), node);
+        }
+
+        try {
+            Entity parent = nodes.get(treeStructure.getJSONObject(0).getLong("id"));
+
+            if (treeStructure.getJSONObject(0).has("children")) {
+                reorganize(nodes, parent, treeStructure.getJSONObject(0).getJSONArray("children"));
+            }
+
+            return Collections.singletonList(parent);
+        } catch (JSONException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void reorganize(final Map<Long, Entity> nodes, final Entity parent, final JSONArray children) throws JSONException {
+        for (int i = 0; i < children.length(); i++) {
+            Entity entity = nodes.get(children.getJSONObject(i).getLong("id"));
+            ((List<Entity>) parent.getField("children")).add(entity);
+            if (children.getJSONObject(i).has("children")) {
+                reorganize(nodes, entity, children.getJSONObject(i).getJSONArray("children"));
+            }
+        }
     }
 
     @Override
     public void setFieldValue(final Object value) {
-        setValue((Long) value);
+        requestRender();
+        requestUpdateState();
     }
 
     public Long getSelectedEntityId() {
         return selectedEntityId;
     }
 
-    public void setValue(final Long selectedEntityId) {
+    public void setSelectedEntityId(final Long selectedEntityId) {
         this.selectedEntityId = selectedEntityId;
         notifyEntityIdChangeListeners(parseSelectedIdForListeners(selectedEntityId));
     }
@@ -164,16 +227,13 @@ public final class TreeComponentState extends AbstractComponentState {
 
             if (tree.getRoot() != null) {
                 rootNode = createNode(tree.getRoot());
-            } else {
-                rootNode = new TreeNode(0L, getTranslationService().translate(getTranslationPath() + ".emptyRoot", getLocale()));
             }
-        } else {
-            rootNode = new TreeNode(0L, getTranslationService().translate(getTranslationPath() + ".emptyRoot", getLocale()));
         }
     }
 
     private TreeNode createNode(final EntityTreeNode entityTreeNode) {
-        String nodeLabel = ExpressionUtil.getValue(entityTreeNode, nodeLabelExpression, getLocale());
+        TreeDataType entityType = dataTypes.get(entityTreeNode.getEntityType());
+        String nodeLabel = ExpressionUtil.getValue(entityTreeNode, entityType.getNodeLabelExpression(), getLocale());
         TreeNode node = new TreeNode(entityTreeNode.getId(), nodeLabel);
 
         for (EntityTreeNode childEntityTreeNode : entityTreeNode.getChildren()) {
@@ -189,8 +249,11 @@ public final class TreeComponentState extends AbstractComponentState {
             // nothing interesting here
         }
 
-        public void onInitialize(final String[] args) {
+        public void initialize(final String[] args) {
             addOpenedNode(0L);
+            setSelectedEntityId(null);
+            requestRender();
+            requestUpdateState();
         }
 
         public void selectEntity(final String[] args) {
@@ -199,8 +262,10 @@ public final class TreeComponentState extends AbstractComponentState {
 
         public void removeSelectedEntity(final String[] args) {
             getDataDefinition().delete(selectedEntityId);
-            setValue(null);
+            setSelectedEntityId(null);
             addMessage(translateMessage("deleteMessage"), MessageType.SUCCESS);
+            requestRender();
+            requestUpdateState();
         }
 
     }

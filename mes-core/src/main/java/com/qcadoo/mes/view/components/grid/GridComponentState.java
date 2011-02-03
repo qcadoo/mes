@@ -222,6 +222,11 @@ public final class GridComponentState extends AbstractComponentState {
         return json;
     }
 
+    public void setEntities(final List<Entity> entities) {
+        this.entities = entities;
+        totalEntities = entities.size();
+    }
+
     public void setSelectedEntityId(final Long selectedEntityId) {
         this.selectedEntityId = selectedEntityId;
         notifyEntityIdChangeListeners(selectedEntityId);

@@ -66,6 +66,15 @@
 		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology">
 			<validatesPresence />
 		</enum>
+		<enum name="qualityControlType" values="01forBatch,02forUnit,03forOrder,04forOperation" />
+		<decimal name="unitSamplingNr">
+			<validatesRange from="0" inclusive="false" />
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<string name="qualityControlInstruction">
+			<validatesLength max="255" />
+		</string>
 		<tree name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />
 		<hasMany name="orders" model="order" joinField="technology" cascade="nullify"/>
 		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkTechnologyDefault" />
@@ -73,16 +82,24 @@
 		<onCopy bean="com.qcadoo.mes.products.TechnologyService" method="clearMasterOnCopy" />
 	</model>
 	<model name="technologyOperationComponent">
+		<boolean name="qualityControlRequired" />
 		<belongsTo name="technology" model="technology" lookupField="name">
 			<validatesPresence /> 
 		</belongsTo>
-		<belongsTo name="operation" model="operation" lookupField="name">
-			<validatesPresence /> 
-		</belongsTo>
-		<belongsTo name="parent" model="technologyOperationComponent" lookupField="name" />
 		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" copyable="true" />
+		<belongsTo name="parent" model="technologyOperationComponent" lookupField="name" />
+		<priority name="priority" scope="parent" />
+		<enum name="entityType" values="operation,referenceTechnology">
+			<validatesPresence /> 
+		</enum>
+			<!-- operation -->
+		<belongsTo name="operation" model="operation" lookupField="name" />
 		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="operationComponent" cascade="delete" copyable="true" />
 		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="operationComponent" cascade="delete" copyable="true" />
+			<!-- technology -->
+		<belongsTo name="referenceTechnology" model="technology" lookupField="name" />
+		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="copyTechnologyFromParent" />
+		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="setQualityControlTypeForTechnology" />
 	</model>
 	<model name="operationProductInComponent">
 		<belongsTo name="operationComponent" model="technologyOperationComponent" lookupField="#operation['name']">

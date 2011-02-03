@@ -26,6 +26,7 @@ package com.qcadoo.mes.beans.products;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -45,11 +46,12 @@ public class ProductsTechnologyOperationComponent {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private ProductsTechnology technology;
+    private Boolean qualityControlRequired;
+
+    private Integer priority;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private ProductsOperation operation;
+    private ProductsTechnology technology;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductsTechnologyOperationComponent parent;
@@ -58,6 +60,12 @@ public class ProductsTechnologyOperationComponent {
     @Cascade({ CascadeType.DELETE })
     private List<ProductsTechnologyOperationComponent> children;
 
+    @Column(nullable = false)
+    private String entityType;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    private ProductsOperation operation;
+
     @OneToMany(mappedBy = "operationComponent", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
     private List<ProductsOperationProductInComponent> operationProductInComponents;
@@ -65,6 +73,9 @@ public class ProductsTechnologyOperationComponent {
     @OneToMany(mappedBy = "operationComponent", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
     private List<ProductsOperationProductOutComponent> operationProductOutComponents;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    private ProductsTechnology referenceTechnology;
 
     public Long getId() {
         return id;
@@ -120,6 +131,38 @@ public class ProductsTechnologyOperationComponent {
 
     public void setOperationProductOutComponents(final List<ProductsOperationProductOutComponent> operationProductOutComponents) {
         this.operationProductOutComponents = operationProductOutComponents;
+    }
+
+    public Boolean getQualityControlRequired() {
+        return qualityControlRequired;
+    }
+
+    public void setQualityControlRequired(final Boolean qualityControlRequired) {
+        this.qualityControlRequired = qualityControlRequired;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(final Integer priority) {
+        this.priority = priority;
+    }
+
+    public String getEntityType() {
+        return entityType;
+    }
+
+    public void setEntityType(String entityType) {
+        this.entityType = entityType;
+    }
+
+    public ProductsTechnology getReferenceTechnology() {
+        return referenceTechnology;
+    }
+
+    public void setReferenceTechnology(ProductsTechnology referenceTechnology) {
+        this.referenceTechnology = referenceTechnology;
     }
 
 }

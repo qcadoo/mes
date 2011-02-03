@@ -53,7 +53,7 @@
 		<boolean name="boolean" />
 		<belongsTo name="parent" model="person" plugin="people" lookupField="name" lazy="true" />
 		<hasMany name="children" model="person" plugin="people" joinField="child" cascade="nullify" />
-		<hasMany name="children2" model="person" joinField="child2" cascade="delete" />
+		<tree name="children2" model="person" joinField="child2" cascade="delete" />
 		<enum name="typeOfMaterial" values="03product,02intermediate,01component,04waste">
 			<validatesPresence />
 		</enum>

@@ -388,8 +388,8 @@ public final class DataDefinitionParser {
         if (scopeAttribute != null) {
             scopedField = dataDefinition.getField(scopeAttribute);
         }
-        return new FieldDefinitionImpl(dataDefinition, getStringAttribute(reader, "name")).withType(
-                fieldTypeFactory.priorityType(scopedField)).withReadOnly(true);
+        return new FieldDefinitionImpl(dataDefinition, getStringAttribute(reader, "name")).withType(fieldTypeFactory
+                .priorityType(scopedField));
     }
 
     private String getPluginIdentifier(final XMLStreamReader reader) {

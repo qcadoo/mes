@@ -110,8 +110,9 @@ public final class EntityService {
             }
         }
 
-        if (dataDefinition.isPrioritizable()) {
-            genericEntity.setField(dataDefinition.getPriorityField().getName(), null);
+        if (dataDefinition.isPrioritizable() && genericEntity.getField(dataDefinition.getPriorityField().getName()) != null) {
+            setField(databaseEntity, dataDefinition.getPriorityField(),
+                    genericEntity.getField(dataDefinition.getPriorityField().getName()));
         }
 
         return databaseEntity;

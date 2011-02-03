@@ -33,6 +33,7 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.products.ProductsTechnology;
 import com.qcadoo.mes.beans.products.ProductsTechnologyOperationComponent;
+import com.qcadoo.mes.internal.EntityTree;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
@@ -43,7 +44,9 @@ import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.components.lookup.LookupComponentState;
+import com.qcadoo.mes.view.components.tree.TreeComponentState;
 
 @Service
 public final class TechnologyService {
@@ -82,6 +85,38 @@ public final class TechnologyService {
             entity.addError(dataDefinition.getField("master"), "products.validate.global.error.default");
             return false;
         }
+    }
+
+    public void loadProductsForReferencedTechnology(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        TreeComponentState tree = (TreeComponentState) state;
+
+        if (tree.getSelectedEntityId() == null) {
+            return;
+        }
+
+        Entity operationComponent = dataDefinitionService.get("products", "technologyOperationComponent").get(
+                tree.getSelectedEntityId());
+
+        if (!"referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
+            return;
+        }
+
+        Entity technology = operationComponent.getBelongsToField("referenceTechnology");
+        EntityTree operations = technology.getTreeField("operationComponents");
+        Entity rootOperation = operations.getRoot();
+
+        GridComponentState outProducts = (GridComponentState) viewDefinitionState.getComponentByReference("outProducts");
+        GridComponentState inProducts = (GridComponentState) viewDefinitionState.getComponentByReference("inProducts");
+
+        if (rootOperation != null) {
+            outProducts.setEntities(rootOperation.getHasManyField("operationProductOutComponents"));
+        }
+
+        // TODO inProducts
+
+        outProducts.setEnabled(false);
+        inProducts.setEnabled(false);
     }
 
     public void checkAttributesReq(final ViewDefinitionState viewDefinitionState, final Locale locale) {
@@ -200,6 +235,20 @@ public final class TechnologyService {
         }
     }
 
+    public void setQualityControlTypeForTechnology(final DataDefinition dataDefinition, final Entity entity) {
+        if ((Boolean) entity.getField("qualityControlRequired")) {
+            // TODO masz why we get hibernate entities here?
+            ProductsTechnology technology = (ProductsTechnology) entity.getField("technology");
+            DataDefinition technologyInDef = dataDefinitionService.get("products", "technology");
+            Entity technologyEntity = technologyInDef.get(technology.getId());
+            if (technologyEntity.getField("qualityControlType") == null
+                    || !technologyEntity.getField("qualityControlType").equals("04forOperation")) {
+                technologyEntity.setField("qualityControlType", "04forOperation");
+                technologyInDef.save(technologyEntity);
+            }
+        }
+    }
+
     public void disableBatchRequiredForTechnology(final ViewDefinitionState state, final Locale locale) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         if (form.getFieldValue() != null) {
@@ -219,6 +268,30 @@ public final class TechnologyService {
         SearchResult searchResult = dataDefinitionService.get("products", "operationProductInComponent").find()
                 .restrictedWith(Restrictions.eq("operationComponent.technology.id", entityId))
                 .restrictedWith(Restrictions.eq("batchRequired", true)).withMaxResults(1).list();
+
+        return (searchResult.getTotalNumberOfEntities() > 0);
+
+    }
+
+    public void changeQualityControlType(final ViewDefinitionState state, final Locale locale) {
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        if (form.getFieldValue() != null) {
+            FieldComponentState qualityControlType = (FieldComponentState) state.getComponentByReference("qualityControlType");
+            if (checkOperationQualityControlRequired((Long) form.getFieldValue())) {
+                qualityControlType.setFieldValue("04forOperation");
+                qualityControlType.setEnabled(false);
+                qualityControlType.requestComponentUpdateState();
+            } else {
+                qualityControlType.setEnabled(true);
+            }
+        }
+
+    }
+
+    private boolean checkOperationQualityControlRequired(final Long entityId) {
+        SearchResult searchResult = dataDefinitionService.get("products", "technologyOperationComponent").find()
+                .restrictedWith(Restrictions.eq("technology.id", entityId))
+                .restrictedWith(Restrictions.eq("qualityControlRequired", true)).withMaxResults(1).list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
 
