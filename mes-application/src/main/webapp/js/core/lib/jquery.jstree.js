@@ -1509,7 +1509,6 @@
 				li_attr = $.isArray(li_attr) ? li_attr : [ "id", "class" ];
 				if(!is_callback && this.data.types) { li_attr.push(s.types.type_attr); }
 				a_attr = $.isArray(a_attr) ? a_attr : [ ];
-
 				obj.each(function () {
 					li = $(this);
 					tmp1 = { data : [] };
@@ -1544,9 +1543,9 @@
 							$.each(a_attr, function (k, z) {
 								tmp1.attr[z] = (t.attr(z) || "").replace(/jstree[^ ]*|$/ig,'');
 							});
-							$.each(s.languages, function (k, z) {
-								if(t.hasClass(z)) { tmp2.language = z; return true; }
-							});
+							//$.each(s.languages, function (k, z) {
+								//if(t.hasClass(z)) { tmp2.language = z; return true; }
+							//});
 							if(t.children("ins").get(0).className.replace(/jstree[^ ]*|$/ig,'').replace(/^\s+$/ig,"").length) {
 								tmp2.icon = t.children("ins").get(0).className.replace(/jstree[^ ]*|$/ig,'').replace(/^\s+$/ig,"");
 							}

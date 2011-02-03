@@ -202,11 +202,15 @@
 							<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
 							<option type="correspondingView" value="products/technologyOperationComponent" />
 							<option type="correspondingComponent" value="form" />
+							<option type="nodeIcon" value="/css/products/icons/operationIcon16.png" />
+							<option type="newIcon" value="/css/products/icons/operationIcon16.png" />
 						</dataType>
 						<dataType name="referenceTechnology">
 							<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + ' &lt;/span&gt;' + #referenceTechnology['product']['name']" />
 							<option type="correspondingView" value="products/technologyReferenceTechnologyComponent" />
 							<option type="correspondingComponent" value="form" />
+							<option type="nodeIcon" value="/css/products/icons/technologyIcon16.png" />
+							<option type="newIcon" value="/css/products/icons/newTechnologyIcon16.png" />
 						</dataType>
 						<listener event="select" bean="com.qcadoo.mes.products.TechnologyService" method="loadProductsForReferencedTechnology"/>
 					</component>

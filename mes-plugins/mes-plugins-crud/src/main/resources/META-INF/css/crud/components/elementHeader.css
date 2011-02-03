@@ -96,6 +96,7 @@ div.headerActionButton.headerButtonEnabled.headerButtonActive a span {
 }
 div.headerActionButton.headerButtonEnabled.headerButtonActive:hover {
 	background-image:url('/css/core/menu/images/lt_activ_c_hover.png');
+	background-position: 0px 0px; 
 }
 div.headerActionButton.headerButtonEnabled.headerButtonActive:hover a {
 	background-image:url('/css/core/menu/images/lt_activ_l_hover.png');
@@ -103,6 +104,7 @@ div.headerActionButton.headerButtonEnabled.headerButtonActive:hover a {
 }
 div.headerActionButton.headerButtonEnabled.headerButtonActive:hover a span {
 	background-image:url('/css/core/menu/images/lt_activ_r_hover.png');
+	background-position: right 0px;
 }
 div.headerActionButton a span {
 	display:block;
@@ -137,12 +139,14 @@ div.headerActionButton a span div.hasIcon {
 }
 div.headerActionButton.headerButtonEnabled:hover {
 	background-image:url('/css/core/menu/images/lt_hover_c.png');
+	background-position: 0px -1px;
 }
 div.headerActionButton.headerButtonEnabled:hover a {
 	background-image:url('/css/core/menu/images/lt_hover_l.png');
-	background-position: -1px 0px;
+	background-position: -1px -1px;
 }
 
 div.headerActionButton.headerButtonEnabled:hover a span {
 	background-image:url('/css/core/menu/images/lt_1Up.png');
+	background-position: right -1px;
 }

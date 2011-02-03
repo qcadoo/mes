@@ -32,6 +32,11 @@ QCD.components.elements.utils.HeaderUtils = {};
 QCD.components.elements.utils.HeaderUtils.createHeaderButton = function(label, clickAction, icon, clickActionData) {
 	var elementIcon = (icon && $.trim(icon) != "") ? $.trim(icon) : null;
 	
+	if (elementIcon.indexOf("/") == -1) {
+		QCD.info("AAA");
+		elementIcon = '/img/core/icons/'+elementIcon;
+	}
+	
 	var itemElementLabel = $('<div>');
 	itemElementLabel.html(label);
 	
@@ -41,7 +46,7 @@ QCD.components.elements.utils.HeaderUtils.createHeaderButton = function(label, c
 	
 	if (icon && $.trim(icon) != "") {
 		itemElementLabel.addClass('hasIcon');
-		itemElementSpan.append($('<div>').addClass('icon').css('backgroundImage', 'url(\'/img/core/icons/'+elementIcon+'\')'));
+		itemElementSpan.append($('<div>').addClass('icon').css('backgroundImage', 'url(\''+elementIcon+'\')'));
 	}
 
 	itemElementSpan.append(itemElementLabel);

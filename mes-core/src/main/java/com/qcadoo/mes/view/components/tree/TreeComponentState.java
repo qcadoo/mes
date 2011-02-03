@@ -45,13 +45,10 @@ public final class TreeComponentState extends FieldComponentState {
 
     private Long belongsToEntityId;
 
-    // private final String nodeLabelExpression;
-
     private final Map<String, TreeDataType> dataTypes;
 
     public TreeComponentState(final FieldDefinition scopeField, final Map<String, TreeDataType> dataTypes) {
         belongsToFieldDefinition = scopeField;
-        // this.nodeLabelExpression = nodeLabelExpression;
         this.dataTypes = dataTypes;
         registerEvent("initialize", eventPerformer, "initialize");
         registerEvent("initializeAfterBack", eventPerformer, "initialize");

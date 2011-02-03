@@ -83,15 +83,14 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			
 			dataTypesMap = _this.options.dataTypes;
 			
-			QCD.info(translations);
-			
 			for (var i in dataTypesMap) {
 				var dataType = dataTypesMap[i];
+				QCD.info(dataType);
 				var button = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(dataType) {
 					if ($(this).hasClass("headerButtonEnabled")) {
 						newClicked(dataType);
 					}
-				}, "newIcon16_dis.png", dataType);
+				}, dataType.newIcon, dataType);
 				button.attr("title",translations["newButton_"+dataType.name]);
 				newButtons.push(button);
 			}
@@ -161,7 +160,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			"themes" : {
 				"theme": "classic",
 				"dots" : true,
-				"icons" : false
+				"icons" : true
 			},
 			"json_data" : {
 				"data" : [ ]
@@ -282,7 +281,6 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			tree.jstree("select_node", $("#"+elementSearchName+"_node_"+value.selectedEntityId), false);
 			fireSelectEvent = true;
 		}
-		
 		updateButtons();
 		unblock();
 	}
@@ -378,7 +376,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	function addNode(data, node) {
 		var nodeId = data.id ? data.id : "0";
 		nodeDataTypesMap[nodeId] = data.dataType.name;
-		var newNode = tree.jstree("create", node, "last", {data: {title: data.label}, attr : { id: elementPath+"_node_"+nodeId }}, false, true);
+		var newNode = tree.jstree("create", node, "last", {data: {title: data.label, icon: data.dataType.nodeIcon}, attr : { id: elementPath+"_node_"+nodeId }}, false, true);
 		for (var i in data.children) {
 			addNode(data.children[i], newNode, false);
 		}

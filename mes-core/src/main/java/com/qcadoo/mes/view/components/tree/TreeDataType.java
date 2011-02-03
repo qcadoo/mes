@@ -13,6 +13,10 @@ public class TreeDataType {
 
     private String correspondingComponent;
 
+    private String nodeIcon;
+
+    private String newIcon;
+
     public TreeDataType(final String name) {
         this.name = name;
     }
@@ -60,12 +64,19 @@ public class TreeDataType {
             setCorrespondingView(value);
         } else if ("correspondingComponent".equals(type)) {
             setCorrespondingComponent(value);
+        } else if ("nodeIcon".equals(type)) {
+            setNodeIcon(value);
+        } else if ("newIcon".equals(type)) {
+            setNewIcon(value);
         } else {
             throw new IllegalStateException("Unknown tree 'dataType' option: " + type);
         }
     }
 
     public void validate() {
+        if (newIcon == null) {
+            newIcon = "newIcon16_dis.png";
+        }
         if (nodeLabelExpression == null) {
             throw new IllegalStateException("Node 'dataType' of tree must contain 'nodeLabelExpression' option");
         }
@@ -76,6 +87,28 @@ public class TreeDataType {
         obj.put("name", name);
         obj.put("correspondingView", correspondingView);
         obj.put("correspondingComponent", correspondingComponent);
+        if (nodeIcon != null) {
+            obj.put("nodeIcon", nodeIcon);
+        }
+        if (newIcon != null) {
+            obj.put("newIcon", newIcon);
+        }
         return obj;
+    }
+
+    public String getNodeIcon() {
+        return nodeIcon;
+    }
+
+    public void setNodeIcon(String nodeIcon) {
+        this.nodeIcon = nodeIcon;
+    }
+
+    public String getNewIcon() {
+        return newIcon;
+    }
+
+    public void setNewIcon(String newIcon) {
+        this.newIcon = newIcon;
     }
 }
