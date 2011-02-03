@@ -26,12 +26,6 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
 
     private static final String JS_OBJECT = "QCD.components.elements.Tree";
 
-    // private String correspondingView;
-    //
-    // private String correspondingComponent;
-    //
-    // private String nodeLabelExpression;
-
     private final Map<String, TreeDataType> dataTypes = new HashMap<String, TreeDataType>();
 
     public TreeComponentPattern(final ComponentDefinition componentDefinition) {
@@ -77,28 +71,9 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         }
     }
 
-    // @Override
-    // protected void initializeComponent() throws JSONException {
-    // checkFieldDefinition();
-    //
-    // for (ComponentOption option : getOptions()) {
-    // if ("correspondingView".equals(option.getType())) {
-    // correspondingView = option.getValue();
-    // } else if ("correspondingComponent".equals(option.getType())) {
-    // correspondingComponent = option.getValue();
-    // } else if ("nodeLabelExpression".equals(option.getType())) {
-    // nodeLabelExpression = option.getValue();
-    // } else {
-    // throw new IllegalStateException("Unknown option for tree: " + option.getType());
-    // }
-    // }
-    // }
-
     @Override
     protected JSONObject getJsOptions(final Locale locale) throws JSONException {
         JSONObject json = new JSONObject();
-        // json.put("correspondingView", correspondingView);
-        // json.put("correspondingComponent", correspondingComponent);
         JSONObject dataTypesObject = new JSONObject();
         for (Map.Entry<String, TreeDataType> dataTypeEntry : dataTypes.entrySet()) {
             dataTypesObject.put(dataTypeEntry.getKey(), dataTypeEntry.getValue().toJson());
@@ -108,6 +83,9 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         json.put("belongsToFieldName", getBelongsToFieldDefinition().getName());
 
         JSONObject translations = new JSONObject();
+        for (String dataTypeName : dataTypes.keySet()) {
+            translations.put("newButton_" + dataTypeName, getTranslation("newButton." + dataTypeName, locale));
+        }
 
         translations.put("newButton", getTranslation("newButton", locale));
         translations.put("editButton", getTranslation("editButton", locale));
