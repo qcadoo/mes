@@ -199,8 +199,9 @@ div.filterButton {
 	text-decoration: underline;
 }
 .componentNotEditable a.gridLink,
-.componentNotEditable a.gridLink:hover {
-	color: #555555;
+.componentNotEditable a.gridLink:hover,
+.componentNotEditable .ui-widget-content {
+	color: #999999;
 	text-decoration: none;
 	cursor: default;
 }

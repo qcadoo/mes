@@ -506,11 +506,18 @@ public final class TestDataLoader {
             return;
         }
 
-        for (int i = 0; i < RANDOM.nextInt(4) + 1; i++) {
+        int childrenNumber = RANDOM.nextInt(4) + 1;
+
+        if (depth == 3) {
+            childrenNumber = 1;
+        }
+
+        for (int i = 0; i < childrenNumber; i++) {
             ProductsTechnologyOperationComponent component = new ProductsTechnologyOperationComponent();
             component.setTechnology(technology);
             component.setParent(parent);
             component.setOperation(getRandomOperation());
+            component.setEntityType("operation");
 
             sessionFactory.getCurrentSession().save(component);
 
