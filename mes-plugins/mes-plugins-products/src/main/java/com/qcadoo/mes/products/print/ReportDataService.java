@@ -42,6 +42,8 @@ import com.qcadoo.mes.internal.EntityTree;
 import com.qcadoo.mes.internal.EntityTreeNode;
 import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
+import com.qcadoo.mes.products.util.EntityOperationInPairNumberComparator;
+import com.qcadoo.mes.products.util.SortUtil;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 
@@ -203,9 +205,20 @@ public class ReportDataService {
                     aggregateTreeDataPerTechnology(operationComponents, operations, type, order,
                             (BigDecimal) order.getField("plannedQuantity"));
                 } else {
-                    // TODO
-                    boolean success = aggregateTreeDataPerOutProducts(operationComponents.getRoot(), operations, type, order,
-                            (BigDecimal) order.getField("plannedQuantity"));
+                    Map<Entity, Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>>> orderOperations = new HashMap<Entity, Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>>>();
+                    boolean success = aggregateTreeDataPerOutProducts(operationComponents.getRoot(), orderOperations, type,
+                            order, (BigDecimal) order.getField("plannedQuantity"));
+                    if (success) {
+                        for (Entry<Entity, Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>>> entry : orderOperations.entrySet()) {
+                            if (operations.containsKey(entry.getKey())) {
+                                Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>> products = operations.get(entry.getKey());
+                                products.putAll(entry.getValue());
+                                operations.put(entry.getKey(), products);
+                            } else {
+                                operations.put(entry.getKey(), entry.getValue());
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -379,7 +392,7 @@ public class ReportDataService {
 
             Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>> operationMap = entry.getValue();
 
-            // TODO SortUtil.sortMapUsingComparator(entry.getValue(), new EntityOperationNumberComparator());
+            SortUtil.sortMapUsingComparator(operationMap, new EntityOperationInPairNumberComparator());
 
             for (Entry<Pair<Entity, Entity>, Map<Entity, BigDecimal>> entryComponent : operationMap.entrySet()) {
 
