@@ -87,14 +87,19 @@
 		<belongsTo name="technology" model="technology" lookupField="name">
 			<validatesPresence /> 
 		</belongsTo>
-		<belongsTo name="operation" model="operation" lookupField="name">
-			<validatesPresence /> 
-		</belongsTo>		
-		<belongsTo name="parent" model="technologyOperationComponent" lookupField="name" />
 		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" />
+		<belongsTo name="parent" model="technologyOperationComponent" lookupField="name" />
+		<priority name="priority" scope="parent" />
+		<enum name="entityType" values="operation,referenceTechnology">
+			<validatesPresence /> 
+		</enum>
+			<!-- operation -->
+		<belongsTo name="operation" model="operation" lookupField="name" />
 		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="operationComponent" cascade="delete" copyable="true" />
 		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="operationComponent" cascade="delete" copyable="true" />
-		<priority name="priority" scope="parent" />
+			<!-- technology -->
+		<belongsTo name="referenceTechnology" model="technology" lookupField="name" />
+		
 		<onCopy bean="com.qcadoo.mes.products.TechnologyService" method="ignoreRootTechnology" />
 		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="copyTechnologyFromParent" />
 		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="setQualityControlTypeForTechnology" />

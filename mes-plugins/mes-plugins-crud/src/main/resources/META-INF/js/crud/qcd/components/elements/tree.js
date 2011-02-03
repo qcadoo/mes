@@ -359,7 +359,12 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	function updateButtons() {
 		var selected = getSelectedEntityId();
 		if (!selected) {
-			buttons.newButton.removeClass("headerButtonEnabled");
+			var treeData = tree.jstree("get_json", -1);
+			if (treeData.length == 0) {
+				buttons.newButton.addClass("headerButtonEnabled");
+			} else {
+				buttons.newButton.removeClass("headerButtonEnabled");
+			}
 			buttons.editButton.removeClass("headerButtonEnabled");
 			buttons.deleteButton.removeClass("headerButtonEnabled");
 			if (moveMode) {

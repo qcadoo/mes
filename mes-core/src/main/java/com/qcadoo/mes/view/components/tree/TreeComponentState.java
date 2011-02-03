@@ -45,11 +45,14 @@ public final class TreeComponentState extends FieldComponentState {
 
     private Long belongsToEntityId;
 
-    private final String nodeLabelExpression;
+    // private final String nodeLabelExpression;
 
-    public TreeComponentState(final FieldDefinition scopeField, final String nodeLabelExpression) {
+    private final Map<String, TreeDataType> dataTypes;
+
+    public TreeComponentState(final FieldDefinition scopeField, final Map<String, TreeDataType> dataTypes) {
         belongsToFieldDefinition = scopeField;
-        this.nodeLabelExpression = nodeLabelExpression;
+        // this.nodeLabelExpression = nodeLabelExpression;
+        this.dataTypes = dataTypes;
         registerEvent("initialize", eventPerformer, "initialize");
         registerEvent("initializeAfterBack", eventPerformer, "initialize");
         registerEvent("refresh", eventPerformer, "refresh");
@@ -100,8 +103,9 @@ public final class TreeComponentState extends FieldComponentState {
             }
             json.put(JSON_OPENED_NODES_ID, openedNodesArray);
         }
-
-        json.put(JSON_ROOT_NODE_ID, rootNode.toJson());
+        if (rootNode != null) {
+            json.put(JSON_ROOT_NODE_ID, rootNode.toJson());
+        }
         return json;
     }
 
@@ -223,16 +227,13 @@ public final class TreeComponentState extends FieldComponentState {
 
             if (tree.getRoot() != null) {
                 rootNode = createNode(tree.getRoot());
-            } else {
-                rootNode = new TreeNode(0L, getTranslationService().translate(getTranslationPath() + ".emptyRoot", getLocale()));
             }
-        } else {
-            rootNode = new TreeNode(0L, getTranslationService().translate(getTranslationPath() + ".emptyRoot", getLocale()));
         }
     }
 
     private TreeNode createNode(final EntityTreeNode entityTreeNode) {
-        String nodeLabel = ExpressionUtil.getValue(entityTreeNode, nodeLabelExpression, getLocale());
+        TreeDataType entityType = dataTypes.get(entityTreeNode.getEntityType());
+        String nodeLabel = ExpressionUtil.getValue(entityTreeNode, entityType.getNodeLabelExpression(), getLocale());
         TreeNode node = new TreeNode(entityTreeNode.getId(), nodeLabel);
 
         for (EntityTreeNode childEntityTreeNode : entityTreeNode.getChildren()) {

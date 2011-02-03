@@ -22,6 +22,10 @@ public class EntityTreeNode implements Entity {
         return children;
     }
 
+    public String getEntityType() {
+        return getStringField("entityType");
+    }
+
     public void addChild(final EntityTreeNode entityTreeNode) {
         children.add(entityTreeNode);
     }

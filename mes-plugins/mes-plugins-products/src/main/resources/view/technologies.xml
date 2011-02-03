@@ -198,9 +198,16 @@
 			<component type="gridLayout" name="gridsLayout" columns="3" rows="5" hasBorders="false">
 				<layoutElement column="1" row="1" height="5">
 					<component type="tree" name="technologyTree" reference="technologyTree" field="#{form}.operationComponents">
-						<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
-						<option type="correspondingView" value="products/technologyOperationComponent" />
-						<option type="correspondingComponent" value="form" />
+						<dataType name="operation">
+							<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
+							<option type="correspondingView" value="products/technologyOperationComponent" />
+							<option type="correspondingComponent" value="form" />
+						</dataType>
+						<dataType name="referenceTechnology">
+							<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + ' &lt;/span&gt;' + #referenceTechnology['product']['name']" />
+							<option type="correspondingView" value="products/technologyOperationComponent" />
+							<option type="correspondingComponent" value="form" />
+						</dataType>
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1" height="5">

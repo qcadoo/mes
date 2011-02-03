@@ -26,6 +26,7 @@ package com.qcadoo.mes.beans.products;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -52,15 +53,18 @@ public class ProductsTechnologyOperationComponent {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsTechnology technology;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private ProductsOperation operation;
-
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductsTechnologyOperationComponent parent;
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
     private List<ProductsTechnologyOperationComponent> children;
+
+    @Column(nullable = false)
+    private String entityType;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    private ProductsOperation operation;
 
     @OneToMany(mappedBy = "operationComponent", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
@@ -69,6 +73,9 @@ public class ProductsTechnologyOperationComponent {
     @OneToMany(mappedBy = "operationComponent", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
     private List<ProductsOperationProductOutComponent> operationProductOutComponents;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    private ProductsTechnology referenceTechnology;
 
     public Long getId() {
         return id;
@@ -140,6 +147,22 @@ public class ProductsTechnologyOperationComponent {
 
     public void setPriority(final Integer priority) {
         this.priority = priority;
+    }
+
+    public String getEntityType() {
+        return entityType;
+    }
+
+    public void setEntityType(String entityType) {
+        this.entityType = entityType;
+    }
+
+    public ProductsTechnology getReferenceTechnology() {
+        return referenceTechnology;
+    }
+
+    public void setReferenceTechnology(ProductsTechnology referenceTechnology) {
+        this.referenceTechnology = referenceTechnology;
     }
 
 }
