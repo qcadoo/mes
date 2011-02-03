@@ -37,7 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.products.print.ProductReportService;
+import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.mes.products.util.SortUtil;
 import com.qcadoo.mes.utils.xls.XlsUtil;
@@ -46,7 +46,7 @@ import com.qcadoo.mes.utils.xls.XlsUtil;
 public final class MaterialRequirementXlsService extends XlsDocumentService {
 
     @Autowired
-    private ProductReportService reportDataService;
+    private ReportDataService reportDataService;
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {

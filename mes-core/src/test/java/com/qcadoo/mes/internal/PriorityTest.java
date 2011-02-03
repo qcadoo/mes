@@ -76,25 +76,6 @@ public class PriorityTest extends DataAccessTest {
         assertEquals(11, entity.getField("priority"));
     }
 
-    // @Test
-    // public void shouldNotChangePriorityOnUpdate() throws Exception {
-    // // given
-    // Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 1L);
-    // entity.setField("priority", 13);
-    // entity.setField("belongsTo", 2L);
-    //
-    // SampleSimpleDatabaseObject existingDatabaseObject = new SampleSimpleDatabaseObject(1L);
-    // existingDatabaseObject.setPriority(11);
-    //
-    // given(session.get(any(Class.class), Matchers.anyInt())).willReturn(existingDatabaseObject);
-    //
-    // // when
-    // entity = dataDefinition.save(entity);
-    //
-    // // then
-    // assertEquals(11, entity.getField("priority"));
-    // }
-
     @Test
     public void shouldChangeEntitiesWithPriorityGreaterThatDeleted() throws Exception {
         // given
