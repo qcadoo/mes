@@ -167,6 +167,9 @@ public final class DataAccessServiceImpl implements DataAccessService {
                     continue;
                 }
 
+                System.out.println(" -----# " + fieldEntry.getKey());
+                System.out.println(" -----# " + entities);
+
                 HasManyType hasManyType = (HasManyType) fieldEntry.getValue().getType();
 
                 List<Entity> savedEntities = saveHasManyEntities(alreadySavedEntities, newlySavedEntities,
@@ -188,17 +191,9 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
                 TreeType treeType = (TreeType) fieldEntry.getValue().getType();
 
-                System.out.println(" ---------- ");
-                System.out.println(" ---------- ");
-                System.out.println(" ---------- ");
-
                 List<Entity> savedEntities = saveTreeEntities(alreadySavedEntities, newlySavedEntities,
                         treeType.getJoinFieldName(), savedEntity.getId(), entities,
                         (InternalDataDefinition) treeType.getDataDefinition(), null);
-
-                System.out.println(" ---------- ");
-                System.out.println(" ---------- ");
-                System.out.println(" ---------- ");
 
                 savedEntity.setField(fieldEntry.getKey(), savedEntities);
             }
@@ -236,21 +231,21 @@ public final class DataAccessServiceImpl implements DataAccessService {
         List<Entity> savedEntities = new ArrayList<Entity>();
         int i = 0;
 
-        System.out.println(" -----> " + parentId);
-
         for (Entity innerEntity : entities) {
             innerEntity.setField(joinFieldName, id);
             innerEntity.setField("parent", parentId);
             innerEntity.setField("priority", ++i);
+            List<Entity> children = (List<Entity>) innerEntity.getField("children");
+            innerEntity.setField("children", null);
             Entity savedInnerEntity = performSave(dataDefinition, innerEntity, alreadySavedEntities, newlySavedEntities);
-            System.out.println(" -----> " + savedInnerEntity.getField("priority") + " = " + i);
             savedEntities.add(savedInnerEntity);
+            if (children != null) {
+                children = saveTreeEntities(alreadySavedEntities, newlySavedEntities, joinFieldName, id, children,
+                        dataDefinition, savedInnerEntity.getId());
+                savedInnerEntity.setField("children", children);
+            }
             if (!savedInnerEntity.isValid()) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            } else if (innerEntity.getField("children") != null) {
-                List<Entity> children = saveTreeEntities(alreadySavedEntities, newlySavedEntities, joinFieldName, id,
-                        (List<Entity>) innerEntity.getField("children"), dataDefinition, savedInnerEntity.getId());
-                savedInnerEntity.setField("children", children);
             }
         }
 
@@ -321,9 +316,13 @@ public final class DataAccessServiceImpl implements DataAccessService {
             final String fieldName) {
         FieldDefinition fieldDefinition = dataDefinition.getField(fieldName);
 
+        System.out.println(" @ ----> 1 ");
+
         if (!(fieldDefinition.getType() instanceof TreeType) || !((TreeType) fieldDefinition.getType()).isCopyable()) {
             return;
         }
+
+        System.out.println(" @ ----> 2 ");
 
         TreeType treeType = ((TreeType) fieldDefinition.getType());
 
@@ -331,9 +330,13 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         Entity root = sourceEntity.getTreeField(fieldName).getRoot();
 
+        System.out.println(" @ ----> 3 " + root);
+
         if (root != null) {
             root.setField(treeType.getJoinFieldName(), null);
             root = copy((InternalDataDefinition) treeType.getDataDefinition(), root);
+
+            System.out.println(" @ ----> 4 " + root);
 
             if (root != null) {
                 entities.add(root);

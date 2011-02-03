@@ -75,7 +75,6 @@
 		<string name="qualityControlInstruction">
 			<validatesLength max="255" />
 		</string>
-		<!--<hasMany name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />-->
 		<tree name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />
 		<hasMany name="orders" model="order" joinField="technology" cascade="nullify"/>
 		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkTechnologyDefault" />
@@ -91,11 +90,10 @@
 			<validatesPresence /> 
 		</belongsTo>		
 		<belongsTo name="parent" model="technologyOperationComponent" lookupField="name" />
-		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" />
+		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" copyable="true" />
 		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="operationComponent" cascade="delete" copyable="true" />
 		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="operationComponent" cascade="delete" copyable="true" />
 		<priority name="priority" scope="parent" />
-		<onCopy bean="com.qcadoo.mes.products.TechnologyService" method="ignoreRootTechnology" />
 		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="copyTechnologyFromParent" />
 		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="setQualityControlTypeForTechnology" />
 	</model>
