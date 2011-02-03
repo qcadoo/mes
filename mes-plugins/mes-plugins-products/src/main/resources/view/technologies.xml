@@ -329,7 +329,7 @@
 				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="technology" reference="technology" field="referenceTechnology">
 							<option type="column" name="name" fields="name" link="true"
@@ -339,6 +339,9 @@
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="checkbox" name="copyReferenceTechnology" field="copyReferenceTechnology" />
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>
