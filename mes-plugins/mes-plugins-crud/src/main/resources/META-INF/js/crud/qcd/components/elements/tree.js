@@ -67,6 +67,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	var nodeDataTypesMap = new Object();
 	
+	var dataTypesMap = new Object();
+	
+	var newButtons = new Array();
+	
 	if (this.options.referenceName) {
 		mainController.registerReferenceName(this.options.referenceName, this);
 	}
@@ -77,22 +81,18 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			var title = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(translations.header);
 			header.append(title);
 			
-			buttons.newTechnologyButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.newButton, function(e) {
-				if (buttons.newTechnologyButton.hasClass("headerButtonEnabled")) {
-					var params = new Object();
-					if (belongsToFieldName) {
-						params["form."+belongsToFieldName] = belongsToEntityId;
-					}
-					var entityId = getSelectedEntityId();
-					entityId = entityId=="0" ? null : entityId;
-					params["form.parent"] = entityId;
-					redirectToCorrespondingPage(params, {correspondingView: "products/technologyReferenceTechnologyComponent"});
-				}
-			}, "newIcon16_dis.png");
+			dataTypesMap = _this.options.dataTypes;
 			
-			buttons.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.newButton, function(e) {
-				newClicked();
-			}, "newIcon16_dis.png");
+			for (var i in dataTypesMap) {
+				var dataType = dataTypesMap[i];
+				var button = QCD.components.elements.utils.HeaderUtils.createHeaderButton(dataType.name, function(dataType) {
+					if ($(this).hasClass("headerButtonEnabled")) {
+						newClicked(dataType);
+					}
+				}, "newIcon16_dis.png", dataType);
+				newButtons.push(button);
+			}
+			
 			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.editButton, function(e) {
 				editClicked();
 			}, "editIcon16_dis.png");
@@ -124,8 +124,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			buttons.moveLeftButton.hide();
 			buttons.moveRightButton.hide();
 			
-			header.append(buttons.newButton);
-			header.append(buttons.newTechnologyButton);
+			for (var i in newButtons) {
+				header.append(newButtons[i]);
+			}
+			
 			header.append(buttons.editButton);
 			header.append(buttons.deleteButton);
 			
@@ -137,7 +139,6 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			
 			header.append(buttons.moveButton);
 			buttons.moveButton.addClass("headerButtonEnabled");
-			buttons.newTechnologyButton.addClass("headerButtonEnabled");
 		
 		contentElement = $("<div>").addClass('tree_content');
 		
@@ -286,7 +287,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.moveButton.label.html("MOVE ON");
 		//buttons.moveButton.hide();
 		
-		buttons.newButton.hide();
+		for (var i in newButtons) {
+			newButtons[i].hide();
+		}
 		buttons.editButton.hide();
 		buttons.deleteButton.hide();
 		
@@ -320,7 +323,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.moveButton.setInfo();
 		buttons.moveButton.label.html("MOVE OFF");
 		
-		buttons.newButton.show();
+		for (var i in newButtons) {
+			newButtons[i].show();
+		}
 		buttons.editButton.show();
 		buttons.deleteButton.show();
 		buttons.moveUpButton.hide();
@@ -365,7 +370,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	function addNode(data, node) {
 		var nodeId = data.id ? data.id : "0";
-		nodeDataTypesMap[nodeId] = data.dataType;
+		nodeDataTypesMap[nodeId] = data.dataType.name;
 		var newNode = tree.jstree("create", node, "last", {data: {title: data.label}, attr : { id: elementPath+"_node_"+nodeId }}, false, true);
 		for (var i in data.children) {
 			addNode(data.children[i], newNode, false);
@@ -379,9 +384,13 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		if (!selected) {
 			var treeData = tree.jstree("get_json", -1);
 			if (treeData.length == 0) {
-				buttons.newButton.addClass("headerButtonEnabled");
+				for (var i in newButtons) {
+					newButtons[i].addClass("headerButtonEnabled");
+				}
 			} else {
-				buttons.newButton.removeClass("headerButtonEnabled");
+				for (var i in newButtons) {
+					newButtons[i].removeClass("headerButtonEnabled");
+				}
 			}
 			buttons.editButton.removeClass("headerButtonEnabled");
 			buttons.deleteButton.removeClass("headerButtonEnabled");
@@ -392,7 +401,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				buttons.moveRightButton.removeClass("headerButtonEnabled");
 			}
 		} else {
-			buttons.newButton.addClass("headerButtonEnabled");
+			for (var i in newButtons) {
+				newButtons[i].addClass("headerButtonEnabled");
+			}
 			if (selected != "0") {
 				buttons.editButton.addClass("headerButtonEnabled");
 				buttons.deleteButton.addClass("headerButtonEnabled");
@@ -434,30 +445,31 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		} else {
 			tree.addClass("treeDisabled");
 			header.addClass("elementHeaderDisabled");
-			buttons.newButton.removeClass("headerButtonEnabled");
+			for (var i in newButtons) {
+				newButtons[i].removeClass("headerButtonEnabled");
+			}
 			buttons.editButton.removeClass("headerButtonEnabled");
 			buttons.deleteButton.removeClass("headerButtonEnabled");
 		}
 	}
 	
-	function newClicked() {
-		if (buttons.newButton.hasClass("headerButtonEnabled")) {
-			var params = new Object();
-			if (belongsToFieldName) {
-				params[correspondingComponent+"."+belongsToFieldName] = belongsToEntityId;
-			}
-			var entityId = getSelectedEntityId();
-			entityId = entityId=="0" ? null : entityId;
-			params[correspondingComponent+".parent"] = entityId;
-			redirectToCorrespondingPage(params);
+	function newClicked(dataType) {
+		var params = new Object();
+		if (belongsToFieldName) {
+			params[dataType.correspondingComponent+"."+belongsToFieldName] = belongsToEntityId;
 		}
+		params[dataType.correspondingComponent+".entityType"] = dataType.name;
+		var entityId = getSelectedEntityId();
+		entityId = entityId=="0" ? null : entityId;
+		params[dataType.correspondingComponent+".parent"] = entityId;
+		redirectToCorrespondingPage(params, dataType);
 	}
 	
 	function editClicked() {
 		if (buttons.editButton.hasClass("headerButtonEnabled")) {
 			var params = new Object();
 			var entityId = getSelectedEntityId()
-			dataType = nodeDataTypesMap[entityId];
+			dataType = dataTypesMap[nodeDataTypesMap[entityId]];
 			params[dataType.correspondingComponent+".id"] = entityId;
 			redirectToCorrespondingPage(params, dataType);
 		}
