@@ -47,6 +47,8 @@ public class ProductsTechnologyOperationComponent {
 
     private Boolean qualityControlRequired;
 
+    private Integer priority;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsTechnology technology;
 
@@ -128,8 +130,16 @@ public class ProductsTechnologyOperationComponent {
         return qualityControlRequired;
     }
 
-    public void setQualityControlRequired(Boolean qualityControlRequired) {
+    public void setQualityControlRequired(final Boolean qualityControlRequired) {
         this.qualityControlRequired = qualityControlRequired;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(final Integer priority) {
+        this.priority = priority;
     }
 
 }

@@ -197,7 +197,7 @@ public class ProductsTechnology {
         return qualityControlType;
     }
 
-    public void setQualityControlType(String qualityControlType) {
+    public void setQualityControlType(final String qualityControlType) {
         this.qualityControlType = qualityControlType;
     }
 
@@ -205,7 +205,7 @@ public class ProductsTechnology {
         return unitSamplingNr;
     }
 
-    public void setUnitSamplingNr(BigDecimal unitSamplingNr) {
+    public void setUnitSamplingNr(final BigDecimal unitSamplingNr) {
         this.unitSamplingNr = unitSamplingNr;
     }
 
@@ -213,7 +213,7 @@ public class ProductsTechnology {
         return qualityControlInstruction;
     }
 
-    public void setQualityControlInstruction(String qualityControlInstruction) {
+    public void setQualityControlInstruction(final String qualityControlInstruction) {
         this.qualityControlInstruction = qualityControlInstruction;
     }
 
