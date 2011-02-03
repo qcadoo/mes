@@ -45,6 +45,8 @@ public class ProductsTechnologyOperationComponent {
     @GeneratedValue
     private Long id;
 
+    private Boolean qualityControlRequired;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsTechnology technology;
 
@@ -120,6 +122,14 @@ public class ProductsTechnologyOperationComponent {
 
     public void setOperationProductOutComponents(final List<ProductsOperationProductOutComponent> operationProductOutComponents) {
         this.operationProductOutComponents = operationProductOutComponents;
+    }
+
+    public Boolean getQualityControlRequired() {
+        return qualityControlRequired;
+    }
+
+    public void setQualityControlRequired(Boolean qualityControlRequired) {
+        this.qualityControlRequired = qualityControlRequired;
     }
 
 }

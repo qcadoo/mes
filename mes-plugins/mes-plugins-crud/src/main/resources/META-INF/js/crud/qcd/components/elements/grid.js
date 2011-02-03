@@ -383,7 +383,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.setComponentEditable = function(_isEditable) {
 		isEditable = _isEditable;
-		headerController.setEnabled(isEditable && isEnabled);
+		if (isEditable) {
+			grid.removeClass("componentNotEditable");	
+		} else {
+			grid.addClass("componentNotEditable");
+		}
+		headerController.setEnabled(isEditable && componentEnabled);
 	}
 
 	

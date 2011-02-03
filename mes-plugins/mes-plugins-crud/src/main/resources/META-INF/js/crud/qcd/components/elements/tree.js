@@ -263,8 +263,11 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function activeMoveMode() {
-		buttons.moveButton.addClass("headerButtonActive");
+		buttons.moveButton.removeClass("headerButtonEnabled");
+		buttons.moveButton.setInfo("Obecnie drzewo jest w trybie modyfikacji polozenia elementow. W trakcie tego trybu czesc funkcjonalnosci na stronie moz byc nieaktywna." +
+				" Aby opuscic ten tryb zapisz encje lub cofnij zmiany");
 		buttons.moveButton.label.html("MOVE ON");
+		//buttons.moveButton.hide();
 		
 		buttons.newButton.hide();
 		buttons.editButton.hide();
@@ -296,7 +299,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function diactiveMoveMode() {
-		buttons.moveButton.removeClass("headerButtonActive");
+		buttons.moveButton.addClass("headerButtonEnabled");
+		buttons.moveButton.setInfo();
 		buttons.moveButton.label.html("MOVE OFF");
 		
 		buttons.newButton.show();
@@ -309,6 +313,18 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		
 		moveMode = false;
 		updateButtons();
+		if (listeners.length > 0) {
+			for (var i in listeners) {
+				var listener = mainController.getComponent(listeners[i]);
+				listener.setEditable(true);
+			}
+		}
+	}
+	
+	this.performUpdateState = function() {
+		if (moveMode) {
+			diactiveMoveMode();			
+		}
 	}
 	
 	function getTreeStructureData(childrensArray) {

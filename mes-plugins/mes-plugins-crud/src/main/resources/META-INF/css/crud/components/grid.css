@@ -198,6 +198,12 @@ div.filterButton {
 .gridContainer a.gridLink:hover {
 	text-decoration: underline;
 }
+.componentNotEditable a.gridLink,
+.componentNotEditable a.gridLink:hover {
+	color: #555555;
+	text-decoration: none;
+	cursor: default;
+}
 
 .gridContainer .lightRow {
 	background: #ffffff;
