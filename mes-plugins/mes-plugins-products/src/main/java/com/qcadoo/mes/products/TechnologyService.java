@@ -24,7 +24,12 @@
 
 package com.qcadoo.mes.products;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,12 +38,16 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.products.ProductsTechnology;
 import com.qcadoo.mes.beans.products.ProductsTechnologyOperationComponent;
+import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.internal.EntityList;
 import com.qcadoo.mes.internal.EntityTree;
+import com.qcadoo.mes.internal.EntityTreeNode;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.NumberGeneratorService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -56,6 +65,9 @@ public final class TechnologyService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private ReportDataService reportDataService;
 
     public boolean clearMasterOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("master", false);
@@ -106,17 +118,29 @@ public final class TechnologyService {
         EntityTree operations = technology.getTreeField("operationComponents");
         Entity rootOperation = operations.getRoot();
 
-        GridComponentState outProducts = (GridComponentState) viewDefinitionState.getComponentByReference("outProducts");
-        GridComponentState inProducts = (GridComponentState) viewDefinitionState.getComponentByReference("inProducts");
+        GridComponentState outProductsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("outProducts");
+        GridComponentState inProductsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("inProducts");
 
         if (rootOperation != null) {
-            outProducts.setEntities(rootOperation.getHasManyField("operationProductOutComponents"));
+            outProductsGrid.setEntities(rootOperation.getHasManyField("operationProductOutComponents"));
         }
 
-        // TODO inProducts
+        Map<Entity, BigDecimal> inProductsWithCount = new LinkedHashMap<Entity, BigDecimal>();
+        List<Entity> inProducts = new ArrayList<Entity>();
 
-        outProducts.setEnabled(false);
-        inProducts.setEnabled(false);
+        reportDataService.countQuantityForProductsIn(inProductsWithCount, technology, BigDecimal.ONE, false);
+
+        for (Map.Entry<Entity, BigDecimal> inProductWithCount : inProductsWithCount.entrySet()) {
+            Entity inProduct = new DefaultEntity("products", "operationProductInComponent");
+            inProduct.setField("operationComponent", rootOperation);
+            inProduct.setField("product", inProductWithCount.getKey());
+            inProduct.setField("quantity", inProductWithCount.getValue());
+            inProducts.add(inProduct);
+        }
+
+        inProductsGrid.setEntities(inProducts);
+        inProductsGrid.setEnabled(false);
+        outProductsGrid.setEnabled(false);
     }
 
     public void checkAttributesReq(final ViewDefinitionState viewDefinitionState, final Locale locale) {
@@ -235,8 +259,61 @@ public final class TechnologyService {
         }
     }
 
+    public void copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
+        System.out.println(" 1 ----> " + entity.getField("entityType"));
+        System.out.println(" 2 ----> " + entity.getField("copyReferenceTechnology"));
+
+        if ("referenceTechnology".equals(entity.getField("entityType")) && (Boolean) entity.getField("copyReferenceTechnology")) {
+
+            System.out.println(" 3 ----> ");
+
+            Entity technology = dataDefinitionService.get("products", "technology").get(
+                    ((ProductsTechnology) entity.getField("referenceTechnology")).getId());
+
+            EntityTreeNode root = technology.getTreeField("operationComponents").getRoot();
+
+            Entity copiedRoot = copyReferencedTechnologyOperations(root);
+
+            entity.setField("entityType", "operation");
+            entity.setField("referenceTechnology", null);
+            entity.setField("qualityControlRequired", copiedRoot.getField("qualityControlRequired"));
+            entity.setField("operation", copiedRoot.getField("operation"));
+            entity.setField("children", copiedRoot.getField("children"));
+            entity.setField("operationProductInComponents", copiedRoot.getField("operationProductInComponents"));
+            entity.setField("operationProductOutComponents", copiedRoot.getField("operationProductOutComponents"));
+        }
+    }
+
+    private Entity copyReferencedTechnologyOperations(final EntityTreeNode node) {
+        Entity copy = node.copy();
+        copy.setField("parent", null);
+        copy.setField("children", copyOperationsChildren(node.getChildren()));
+        copy.setField("operationProductInComponents", copyProductComponents(copy.getHasManyField("operationProductInComponents")));
+        copy.setField("operationProductOutComponents",
+                copyProductComponents(copy.getHasManyField("operationProductOutComponents")));
+        return copy;
+    }
+
+    private List<Entity> copyProductComponents(final EntityList entities) {
+        List<Entity> copies = new ArrayList<Entity>();
+        for (Entity entity : entities) {
+            Entity copy = entity.copy();
+            copy.setField("operationComponent", null);
+            copies.add(copy);
+        }
+        return copies;
+    }
+
+    private List<Entity> copyOperationsChildren(final List<EntityTreeNode> entities) {
+        List<Entity> copies = new ArrayList<Entity>();
+        for (EntityTreeNode entity : entities) {
+            copies.add(copyReferencedTechnologyOperations(entity));
+        }
+        return copies;
+    }
+
     public void setQualityControlTypeForTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if ((Boolean) entity.getField("qualityControlRequired")) {
+        if (entity.getField("qualityControlRequired") != null && (Boolean) entity.getField("qualityControlRequired")) {
             // TODO masz why we get hibernate entities here?
             ProductsTechnology technology = (ProductsTechnology) entity.getField("technology");
             DataDefinition technologyInDef = dataDefinitionService.get("products", "technology");

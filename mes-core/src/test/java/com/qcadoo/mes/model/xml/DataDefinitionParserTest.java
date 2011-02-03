@@ -307,9 +307,18 @@ public class DataDefinitionParserTest {
         DataDefinition dataDefinition = parseAndGetDataDefinition();
 
         // then
-        testHookDefinition(dataDefinition, "createHook", CustomEntityService.class, "onCreate");
-        testHookDefinition(dataDefinition, "updateHook", CustomEntityService.class, "onUpdate");
-        testHookDefinition(dataDefinition, "saveHook", CustomEntityService.class, "onSave");
+        testListHookDefinition(dataDefinition, "createHooks", CustomEntityService.class, "onCreate");
+        testListHookDefinition(dataDefinition, "updateHooks", CustomEntityService.class, "onUpdate");
+        testListHookDefinition(dataDefinition, "saveHooks", CustomEntityService.class, "onSave");
+    }
+
+    private void testListHookDefinition(final Object object, final String hookFieldName, final Class<?> hookBeanClass,
+            final String hookMethodName) {
+        List<HookDefinition> hook = (List<HookDefinition>) getField(object, hookFieldName);
+
+        assertEquals(1, hook.size());
+        assertThat(getField(hook.get(0), "bean"), instanceOf(hookBeanClass));
+        assertEquals(hookMethodName, getField(hook.get(0), "methodName"));
     }
 
     private void testHookDefinition(final Object object, final String hookFieldName, final Class<?> hookBeanClass,

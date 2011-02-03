@@ -58,13 +58,13 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     private final List<EntityValidator> validators = new ArrayList<EntityValidator>();
 
-    private HookDefinition createHook;
+    private final List<HookDefinition> createHooks = new ArrayList<HookDefinition>();
 
-    private HookDefinition updateHook;
+    private final List<HookDefinition> updateHooks = new ArrayList<HookDefinition>();
 
-    private HookDefinition saveHook;
+    private final List<HookDefinition> saveHooks = new ArrayList<HookDefinition>();
 
-    private HookDefinition copyHook;
+    private final List<HookDefinition> copyHooks = new ArrayList<HookDefinition>();
 
     private boolean deletable = true;
 
@@ -171,45 +171,45 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     }
 
     public void withCreateHook(final HookDefinition createHook) {
-        this.createHook = createHook;
+        createHooks.add(createHook);
     }
 
     public void withUpdateHook(final HookDefinition updateHook) {
-        this.updateHook = updateHook;
+        updateHooks.add(updateHook);
     }
 
     public void withSaveHook(final HookDefinition saveHook) {
-        this.saveHook = saveHook;
+        saveHooks.add(saveHook);
     }
 
     public void withCopyHook(final HookDefinition copyHook) {
-        this.copyHook = copyHook;
+        copyHooks.add(copyHook);
     }
 
     @Override
     public void callCreateHook(final Entity entity) {
-        if (createHook != null) {
-            createHook.callWithEntity(this, entity);
+        for (HookDefinition hook : createHooks) {
+            hook.callWithEntity(this, entity);
         }
-        if (saveHook != null) {
-            saveHook.callWithEntity(this, entity);
+        for (HookDefinition hook : saveHooks) {
+            hook.callWithEntity(this, entity);
         }
     }
 
     @Override
     public void callUpdateHook(final Entity entity) {
-        if (updateHook != null) {
-            updateHook.callWithEntity(this, entity);
+        for (HookDefinition hook : updateHooks) {
+            hook.callWithEntity(this, entity);
         }
-        if (saveHook != null) {
-            saveHook.callWithEntity(this, entity);
+        for (HookDefinition hook : saveHooks) {
+            hook.callWithEntity(this, entity);
         }
     }
 
     @Override
     public boolean callCopyHook(final Entity entity) {
-        if (copyHook != null) {
-            if (!copyHook.callWithEntityAndGetBoolean(this, entity)) {
+        for (HookDefinition hook : copyHooks) {
+            if (!hook.callWithEntityAndGetBoolean(this, entity)) {
                 return false;
             }
         }
