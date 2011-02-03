@@ -251,18 +251,18 @@ public class ReportDataService {
                     entityKey = (Entity) machine;
                 }
             }
-            Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>> operationMap = null;
-            if (operations.containsKey(entityKey)) {
-                operationMap = operations.get(entityKey);
-            } else {
-                operationMap = new HashMap<Pair<Entity, Entity>, Map<Entity, BigDecimal>>();
-            }
             Map<Entity, BigDecimal> productsMap = new HashMap<Entity, BigDecimal>();
             for (Entity operationProductInComponent : operationProductInComponents) {
                 Entity product = (Entity) operationProductInComponent.getField("product");
                 BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
                         MathContext.DECIMAL128);
                 productsMap.put(product, quantity);
+            }
+            Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>> operationMap = null;
+            if (operations.containsKey(entityKey)) {
+                operationMap = operations.get(entityKey);
+            } else {
+                operationMap = new HashMap<Pair<Entity, Entity>, Map<Entity, BigDecimal>>();
             }
             Pair<Entity, Entity> pair = Pair.of(operationComponent, order);
             operationMap.put(pair, productsMap);
@@ -299,12 +299,6 @@ public class ReportDataService {
             }
         }
         // TODO
-        Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>> operationMap = null;
-        if (operations.containsKey(entityKey)) {
-            operationMap = operations.get(entityKey);
-        } else {
-            operationMap = new HashMap<Pair<Entity, Entity>, Map<Entity, BigDecimal>>();
-        }
         Map<Entity, BigDecimal> productsMap = new HashMap<Entity, BigDecimal>();
         for (Entity operationProductInComponent : operationProductInComponents) {
             Entity product = (Entity) operationProductInComponent.getField("product");
@@ -318,6 +312,12 @@ public class ReportDataService {
                 }
             }
             productsMap.put(product, quantity);
+        }
+        Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>> operationMap = null;
+        if (operations.containsKey(entityKey)) {
+            operationMap = operations.get(entityKey);
+        } else {
+            operationMap = new HashMap<Pair<Entity, Entity>, Map<Entity, BigDecimal>>();
         }
         Pair<Entity, Entity> pair = Pair.of((Entity) node, order);
         operationMap.put(pair, productsMap);
@@ -390,9 +390,8 @@ public class ReportDataService {
 
             table.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
 
-            Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>> operationMap = entry.getValue();
-
-            SortUtil.sortMapUsingComparator(operationMap, new EntityOperationInPairNumberComparator());
+            Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>> operationMap = SortUtil.sortMapUsingComparator(entry.getValue(),
+                    new EntityOperationInPairNumberComparator());
 
             for (Entry<Pair<Entity, Entity>, Map<Entity, BigDecimal>> entryComponent : operationMap.entrySet()) {
 
@@ -418,7 +417,6 @@ public class ReportDataService {
                     + (product.getField("unit") != null ? product.getField("unit").toString() : "") + "] \n\n");
 
         }
-        // TODO
         table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
     }
 
@@ -496,8 +494,7 @@ public class ReportDataService {
     private void addOrderSeries(final PdfPTable table, final List<Entity> orders, final DecimalFormat df)
             throws DocumentException {
         Collections.sort(orders, new EntityNumberComparator());
-        for (Entity component : orders) {
-            Entity order = (Entity) component.getField("order");
+        for (Entity order : orders) {
             table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
             Entity product = (Entity) order.getField("product");
