@@ -96,11 +96,16 @@ public class ReportDataService {
             if (rootNode != null) {
                 boolean success = countQuntityComponentPerOutProducts(orderProducts, rootNode, onlyComponents, plannedQuantity);
                 if (success) {
-                    for (Entry<Entity, BigDecimal> entry : orderProducts.entrySet()) {
-                        if (products.containsKey(entry.getKey())) {
-                            products.put(entry.getKey(), products.get(entry.getKey()).add(entry.getValue()));
-                        } else {
-                            products.put(entry.getKey(), entry.getValue());
+                    if (products.size() == 0) {
+                        products.putAll(orderProducts);
+                    } else {
+                        for (Entry<Entity, BigDecimal> entry : orderProducts.entrySet()) {
+
+                            if (products.containsKey(entry.getKey())) {
+                                products.put(entry.getKey(), products.get(entry.getKey()).add(entry.getValue()));
+                            } else {
+                                products.put(entry.getKey(), entry.getValue());
+                            }
                         }
                     }
                 }
@@ -197,9 +202,9 @@ public class ReportDataService {
         return null;
     }
 
-    private Map<Entity, Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>>> getOperationSeries(final Entity entity,
-            final String type) {
-        Map<Entity, Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>>> operations = new HashMap<Entity, Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>>>();
+    private Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> getOperationSeries(
+            final Entity entity, final String type) {
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = new HashMap<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>>();
         List<Entity> orders = entity.getHasManyField("orders");
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
@@ -210,17 +215,23 @@ public class ReportDataService {
                     aggregateTreeDataPerTechnology(operationComponents, operations, type, order,
                             (BigDecimal) order.getField("plannedQuantity"));
                 } else {
-                    Map<Entity, Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>>> orderOperations = new HashMap<Entity, Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>>>();
+                    Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> orderOperations = new HashMap<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>>();
                     boolean success = aggregateTreeDataPerOutProducts(operationComponents.getRoot(), orderOperations, type,
                             order, (BigDecimal) order.getField("plannedQuantity"));
                     if (success) {
-                        for (Entry<Entity, Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>>> entry : orderOperations.entrySet()) {
-                            if (operations.containsKey(entry.getKey())) {
-                                Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>> products = operations.get(entry.getKey());
-                                products.putAll(entry.getValue());
-                                operations.put(entry.getKey(), products);
-                            } else {
-                                operations.put(entry.getKey(), entry.getValue());
+                        if (operations.size() == 0) {
+                            operations.putAll(orderOperations);
+                        } else {
+                            for (Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry : orderOperations
+                                    .entrySet()) {
+                                if (operations.containsKey(entry.getKey())) {
+                                    Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> products = operations
+                                            .get(entry.getKey());
+                                    products.putAll(entry.getValue());
+                                    operations.put(entry.getKey(), products);
+                                } else {
+                                    operations.put(entry.getKey(), entry.getValue());
+                                }
                             }
                         }
                     }
@@ -231,8 +242,8 @@ public class ReportDataService {
     }
 
     private void aggregateTreeDataPerTechnology(final List<Entity> operationComponents,
-            final Map<Entity, Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>>> operations, final String type,
-            final Entity order, final BigDecimal plannedQuantity) {
+            final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations,
+            final String type, final Entity order, final BigDecimal plannedQuantity) {
 
         Entity entityKey = null;
 
@@ -244,6 +255,7 @@ public class ReportDataService {
         for (Entity operationComponent : operationComponents) {
             Entity operation = (Entity) operationComponent.getField("operation");
             List<Entity> operationProductInComponents = operationComponent.getHasManyField("operationProductInComponents");
+            List<Entity> operationProductOutComponents = operationComponent.getHasManyField("operationProductOutComponents");
 
             if (type.equals("machine")) {
                 Object machine = operation.getField("machine");
@@ -256,31 +268,40 @@ public class ReportDataService {
                     entityKey = (Entity) machine;
                 }
             }
-            Map<Entity, BigDecimal> productsMap = new HashMap<Entity, BigDecimal>();
+            Map<Entity, BigDecimal> productsInMap = new HashMap<Entity, BigDecimal>();
             for (Entity operationProductInComponent : operationProductInComponents) {
                 Entity product = (Entity) operationProductInComponent.getField("product");
                 BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
                         MathContext.DECIMAL128);
-                productsMap.put(product, quantity);
+                productsInMap.put(product, quantity);
             }
-            Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>> operationMap = null;
+            Map<Entity, BigDecimal> productsOutMap = new HashMap<Entity, BigDecimal>();
+            for (Entity operationProductOutComponent : operationProductOutComponents) {
+                Entity product = (Entity) operationProductOutComponent.getField("product");
+                BigDecimal quantity = ((BigDecimal) operationProductOutComponent.getField("quantity")).multiply(plannedQuantity,
+                        MathContext.DECIMAL128);
+                productsOutMap.put(product, quantity);
+            }
+            Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operationMap = null;
             if (operations.containsKey(entityKey)) {
                 operationMap = operations.get(entityKey);
             } else {
-                operationMap = new HashMap<Pair<Entity, Entity>, Map<Entity, BigDecimal>>();
+                operationMap = new HashMap<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>();
             }
             Pair<Entity, Entity> pair = Pair.of(operationComponent, order);
-            operationMap.put(pair, productsMap);
+            Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>> mapPair = Pair.of(productsInMap, productsOutMap);
+            operationMap.put(pair, mapPair);
             operations.put(entityKey, operationMap);
         }
     }
 
     private boolean aggregateTreeDataPerOutProducts(final EntityTreeNode node,
-            final Map<Entity, Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>>> operations, final String type,
-            final Entity order, final BigDecimal plannedQuantity) {
+            final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations,
+            final String type, final Entity order, final BigDecimal plannedQuantity) {
         Entity entityKey = null;
         Entity operation = (Entity) node.getField("operation");
         List<Entity> operationProductInComponents = node.getHasManyField("operationProductInComponents");
+        List<Entity> operationProductOutComponents = node.getHasManyField("operationProductOutComponents");
         if (operationProductInComponents.size() == 0) {
             return false;
         }
@@ -303,8 +324,7 @@ public class ReportDataService {
                 entityKey = (Entity) machine;
             }
         }
-        // TODO
-        Map<Entity, BigDecimal> productsMap = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> productsInMap = new HashMap<Entity, BigDecimal>();
         for (Entity operationProductInComponent : operationProductInComponents) {
             Entity product = (Entity) operationProductInComponent.getField("product");
             BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
@@ -316,16 +336,27 @@ public class ReportDataService {
                     return false;
                 }
             }
-            productsMap.put(product, quantity);
+            productsInMap.put(product, quantity);
         }
-        Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>> operationMap = null;
+        Map<Entity, BigDecimal> productsOutMap = new HashMap<Entity, BigDecimal>();
+        for (Entity operationProductOutComponent : operationProductOutComponents) {
+            Entity product = (Entity) operationProductOutComponent.getField("product");
+            // TODO quantity
+            // TODO technology
+            // TODO back test
+            BigDecimal quantity = ((BigDecimal) operationProductOutComponent.getField("quantity")).multiply(plannedQuantity,
+                    MathContext.DECIMAL128);
+            productsOutMap.put(product, quantity);
+        }
+        Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operationMap = null;
         if (operations.containsKey(entityKey)) {
             operationMap = operations.get(entityKey);
         } else {
-            operationMap = new HashMap<Pair<Entity, Entity>, Map<Entity, BigDecimal>>();
+            operationMap = new HashMap<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>();
         }
         Pair<Entity, Entity> pair = Pair.of((Entity) node, order);
-        operationMap.put(pair, productsMap);
+        Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>> mapPair = Pair.of(productsInMap, productsOutMap);
+        operationMap.put(pair, mapPair);
         operations.put(entityKey, operationMap);
         return true;
     }
@@ -336,8 +367,10 @@ public class ReportDataService {
         decimalFormat.setMaximumFractionDigits(3);
         decimalFormat.setMinimumFractionDigits(3);
         boolean firstPage = true;
-        Map<Entity, Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>>> operations = getOperationSeries(entity, type);
-        for (Entry<Entity, Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>>> entry : operations.entrySet()) {
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = getOperationSeries(
+                entity, type);
+        for (Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry : operations
+                .entrySet()) {
             if (!firstPage) {
                 document.newPage();
             }
@@ -347,7 +380,7 @@ public class ReportDataService {
 
             BigDecimal totalQuantity = new BigDecimal("0");
 
-            Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>> values = entry.getValue();
+            Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> values = entry.getValue();
 
             List<Entity> orders = new ArrayList<Entity>();
 
@@ -395,18 +428,19 @@ public class ReportDataService {
 
             table.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
 
-            Map<Pair<Entity, Entity>, Map<Entity, BigDecimal>> operationMap = SortUtil.sortMapUsingComparator(entry.getValue(),
-                    new EntityOperationInPairNumberComparator());
+            Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operationMap = SortUtil
+                    .sortMapUsingComparator(entry.getValue(), new EntityOperationInPairNumberComparator());
 
-            for (Entry<Pair<Entity, Entity>, Map<Entity, BigDecimal>> entryComponent : operationMap.entrySet()) {
+            for (Entry<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> entryComponent : operationMap
+                    .entrySet()) {
 
                 Pair<Entity, Entity> entryPair = entryComponent.getKey();
                 Entity operation = (Entity) entryPair.getKey().getField("operation");
                 table.addCell(new Phrase(operation.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(operation.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(entryPair.getValue().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-                addProductSeries(table, entryComponent.getValue(), decimalFormat);
-                addProductSeries(table, entryComponent.getValue(), decimalFormat);
+                addProductSeries(table, entryComponent.getValue().getKey(), decimalFormat);
+                addProductSeries(table, entryComponent.getValue().getValue(), decimalFormat);
 
             }
             document.add(table);
@@ -416,10 +450,10 @@ public class ReportDataService {
 
     private void addProductSeries(final PdfPTable table, final Map<Entity, BigDecimal> productsQuantity, final DecimalFormat df) {
         StringBuilder products = new StringBuilder();
-        for (Entity product : productsQuantity.keySet()) {
-            products.append(product.getField("number").toString() + " " + product.getField("name").toString() + " x "
-                    + df.format(productsQuantity.get(product)) + " ["
-                    + (product.getField("unit") != null ? product.getField("unit").toString() : "") + "] \n\n");
+        for (Entry<Entity, BigDecimal> entry : productsQuantity.entrySet()) {
+            products.append(entry.getKey().getField("number").toString() + " " + entry.getKey().getField("name").toString()
+                    + " x " + df.format(entry.getValue()) + " ["
+                    + (entry.getKey().getField("unit") != null ? entry.getKey().getField("unit").toString() : "") + "] \n\n");
 
         }
         table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
