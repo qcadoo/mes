@@ -25,7 +25,6 @@
 package com.qcadoo.mes.products.print.xls;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -68,8 +67,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
-        List<Entity> orders = entity.getHasManyField("orders");
-        Map<Entity, BigDecimal> products = reportDataService.getTechnologySeries(entity, orders);
+        Map<Entity, BigDecimal> products = reportDataService.getTechnologySeries(entity);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
