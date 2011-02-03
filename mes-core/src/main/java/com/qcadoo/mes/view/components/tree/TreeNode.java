@@ -39,14 +39,12 @@ public final class TreeNode {
 
     private List<TreeNode> children;
 
-    public TreeNode() {
+    private final TreeDataType dataType;
 
-    }
-
-    public TreeNode(final Long id, final String label) {
-        this();
+    public TreeNode(final Long id, final String label, final TreeDataType dataType) {
         this.id = id;
         this.label = label;
+        this.dataType = dataType;
     }
 
     public String getLabel() {
@@ -84,6 +82,8 @@ public final class TreeNode {
         JSONObject jsonNode = new JSONObject();
         jsonNode.put("id", id);
         jsonNode.put("label", label);
+        jsonNode.put("dataType", dataType.toJson());
+
         if (children != null) {
             JSONArray childrenArray = new JSONArray();
             for (TreeNode kid : children) {

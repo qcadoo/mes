@@ -234,7 +234,7 @@ public final class TreeComponentState extends FieldComponentState {
     private TreeNode createNode(final EntityTreeNode entityTreeNode) {
         TreeDataType entityType = dataTypes.get(entityTreeNode.getEntityType());
         String nodeLabel = ExpressionUtil.getValue(entityTreeNode, entityType.getNodeLabelExpression(), getLocale());
-        TreeNode node = new TreeNode(entityTreeNode.getId(), nodeLabel);
+        TreeNode node = new TreeNode(entityTreeNode.getId(), nodeLabel, entityType);
 
         for (EntityTreeNode childEntityTreeNode : entityTreeNode.getChildren()) {
             node.addChild(createNode(childEntityTreeNode));
