@@ -83,6 +83,9 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         json.put("belongsToFieldName", getBelongsToFieldDefinition().getName());
 
         JSONObject translations = new JSONObject();
+        for (String dataTypeName : dataTypes.keySet()) {
+            translations.put("newButton_" + dataTypeName, getTranslation("newButton." + dataTypeName, locale));
+        }
 
         translations.put("newButton", getTranslation("newButton", locale));
         translations.put("editButton", getTranslation("editButton", locale));

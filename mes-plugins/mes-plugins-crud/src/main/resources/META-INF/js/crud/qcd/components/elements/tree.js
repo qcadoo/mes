@@ -83,22 +83,28 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			
 			dataTypesMap = _this.options.dataTypes;
 			
+			QCD.info(translations);
+			
 			for (var i in dataTypesMap) {
 				var dataType = dataTypesMap[i];
-				var button = QCD.components.elements.utils.HeaderUtils.createHeaderButton(dataType.name, function(dataType) {
+				var button = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(dataType) {
 					if ($(this).hasClass("headerButtonEnabled")) {
 						newClicked(dataType);
 					}
 				}, "newIcon16_dis.png", dataType);
+				button.attr("title",translations["newButton_"+dataType.name]);
 				newButtons.push(button);
 			}
 			
-			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.editButton, function(e) {
+			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				editClicked();
 			}, "editIcon16_dis.png");
-			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.deleteButton, function(e) {
+			buttons.editButton.attr("title",translations.editButton);
+			buttons.editButton.css("marginLeft", "20px");
+			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				deleteClicked();
 			}, "deleteIcon16_dis.png");
+			buttons.deleteButton.attr("title",translations.deleteButton);
 			buttons.moveUpButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				moveUpClicked();
 			}, "upIcon16_dis.png");
@@ -111,13 +117,14 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			buttons.moveRightButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				moveRightClicked();
 			}, "rightIcon16_dis.png");
-			buttons.moveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("MOVE OFF", function(e) {
+			buttons.moveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				if (buttons.moveButton.hasClass("headerButtonActive")) {
 					diactiveMoveMode();
 				} else {
 					activeMoveMode();
 				}
 			}, "moveIcon16_dis.png");
+			buttons.moveButton.attr("title","MOVE OFF");
 			
 			buttons.moveUpButton.hide();
 			buttons.moveDownButton.hide();
