@@ -36,6 +36,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	var tree;
 	
 	var header;
+	var titleElement;
 	var buttons = new Object();
 	
 	var contentElement;
@@ -78,8 +79,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	function constructor(_this) {
 		header = $("<div>").addClass('tree_header').addClass('elementHeader').addClass("elementHeaderDisabled");
 			
-			var title = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(translations.header);
-			header.append(title);
+			titleElement = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(translations.header);
+			header.append(titleElement);
 			
 			dataTypesMap = _this.options.dataTypes;
 			
@@ -115,12 +116,14 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			buttons.moveRightButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				moveRightClicked();
 			}, "rightIcon16_dis.png");
-			buttons.saveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("save", function(e) {
+			buttons.saveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				saveClicked();
-			}, "saveIcon16.png");
-			buttons.cancelButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("cancel", function(e) {
+			}, "saveIcon16.png").css("marginLeft", "20px");
+			buttons.deleteButton.attr("title",translations.save);
+			buttons.cancelButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				cancelClicked();
 			}, "cancelIcon16.png");
+			buttons.deleteButton.attr("title",translations.cancel);
 			buttons.moveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				if (buttons.moveButton.hasClass("headerButtonActive")) {
 					diactiveMoveMode();
@@ -310,11 +313,11 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function activeMoveMode() {
-		buttons.moveButton.removeClass("headerButtonEnabled");
-		buttons.moveButton.setInfo("Obecnie drzewo jest w trybie modyfikacji polozenia elementow. W trakcie tego trybu czesc funkcjonalnosci na stronie moz byc nieaktywna." +
-				" Aby opuscic ten tryb zapisz encje lub cofnij zmiany");
-		buttons.moveButton.label.html("MOVE ON");
-		//buttons.moveButton.hide();
+		//buttons.moveButton.removeClass("headerButtonEnabled");
+		//buttons.moveButton.setInfo("Obecnie drzewo jest w trybie modyfikacji polozenia elementow. W trakcie tego trybu czesc funkcjonalnosci na stronie moz byc nieaktywna." +
+		//		" Aby opuscic ten tryb zapisz encje lub cofnij zmiany");
+		//buttons.moveButton.label.html("MOVE ON");
+		buttons.moveButton.hide();
 		
 		for (var i in newButtons) {
 			newButtons[i].hide();
@@ -349,7 +352,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			}
 		}
 		
-		var layout = mainController.getComponent("window.treeBorderLayout.gridsLayout");
+		var layout = mainController.getComponent("window.treeBorderLayout");
 		layout.setBackground(QCD.components.containers.layout.Layout.COLOR_DISABLED);
 	}
 	
@@ -357,6 +360,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.moveButton.addClass("headerButtonEnabled");
 		buttons.moveButton.setInfo();
 		buttons.moveButton.label.html("MOVE OFF");
+		buttons.moveButton.show();
 		
 		for (var i in newButtons) {
 			newButtons[i].show();
@@ -383,7 +387,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			}
 		}
 		
-		var layout = mainController.getComponent("window.treeBorderLayout.gridsLayout");
+		var layout = mainController.getComponent("window.treeBorderLayout");
 		layout.setBackground(QCD.components.containers.layout.Layout.COLOR_NORMAL);
 	}
 	

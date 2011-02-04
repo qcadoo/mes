@@ -32,4 +32,4 @@ QCD.components.containers.layout.Layout = function(_element, _mainController) {
 }
 
 QCD.components.containers.layout.Layout.COLOR_DISABLED = "#dbdbdb";
-QCD.components.containers.layout.Layout.COLOR_NORMAL = "transparent";
+QCD.components.containers.layout.Layout.COLOR_NORMAL = "#FAFAFA";
