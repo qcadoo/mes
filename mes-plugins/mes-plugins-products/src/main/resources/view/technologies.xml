@@ -203,7 +203,7 @@
 							<option type="correspondingView" value="products/technologyOperationComponent" />
 							<option type="correspondingComponent" value="form" />
 							<option type="nodeIcon" value="/css/products/icons/operationIcon16.png" />
-							<option type="newIcon" value="/css/products/icons/operationIcon16.png" />
+							<option type="newIcon" value="/css/products/icons/newOperationIcon16.png" />
 						</dataType>
 						<dataType name="referenceTechnology">
 							<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + ' &lt;/span&gt;' + #referenceTechnology['product']['name']" />
@@ -211,6 +211,7 @@
 							<option type="correspondingComponent" value="form" />
 							<option type="nodeIcon" value="/css/products/icons/technologyIcon16.png" />
 							<option type="newIcon" value="/css/products/icons/newTechnologyIcon16.png" />
+							<option type="canHaveChildren" value="false" />
 						</dataType>
 						<listener event="select" bean="com.qcadoo.mes.products.TechnologyService" method="loadProductsForReferencedTechnology"/>
 					</component>
