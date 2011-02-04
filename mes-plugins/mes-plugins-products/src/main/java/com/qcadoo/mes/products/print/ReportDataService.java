@@ -341,12 +341,8 @@ public class ReportDataService {
         Map<Entity, BigDecimal> productsOutMap = new HashMap<Entity, BigDecimal>();
         for (Entity operationProductOutComponent : operationProductOutComponents) {
             Entity product = (Entity) operationProductOutComponent.getField("product");
-            // TODO quantity
             // TODO technology
-            // TODO back test
-            BigDecimal quantity = ((BigDecimal) operationProductOutComponent.getField("quantity")).multiply(plannedQuantity,
-                    MathContext.DECIMAL128);
-            productsOutMap.put(product, quantity);
+            productsOutMap.put(product, plannedQuantity);
         }
         Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operationMap = null;
         if (operations.containsKey(entityKey)) {
@@ -439,8 +435,8 @@ public class ReportDataService {
                 table.addCell(new Phrase(operation.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(operation.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(entryPair.getValue().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-                addProductSeries(table, entryComponent.getValue().getKey(), decimalFormat);
                 addProductSeries(table, entryComponent.getValue().getValue(), decimalFormat);
+                addProductSeries(table, entryComponent.getValue().getKey(), decimalFormat);
 
             }
             document.add(table);
