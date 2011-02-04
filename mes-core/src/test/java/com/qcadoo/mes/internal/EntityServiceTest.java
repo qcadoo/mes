@@ -208,15 +208,18 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldSetBelongsToField() throws Exception {
         // given
+        Entity parentEntity = new DefaultEntity("", "", 1L);
+        parentEntity.setField("name", "Mr X");
+
         SampleParentDatabaseObject parentDatabaseEntity = new SampleParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
         SampleSimpleDatabaseObject databaseEntity = new SampleSimpleDatabaseObject(2L);
 
-        given(session.get(SampleParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
+        given(session.load(SampleParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
         // when
-        entityService.setField(databaseEntity, fieldDefinitionBelongsTo, parentDatabaseEntity);
+        entityService.setField(databaseEntity, fieldDefinitionBelongsTo, parentEntity);
 
         // then
         assertNotNull(databaseEntity.getBelongsTo());
@@ -304,6 +307,7 @@ public class EntityServiceTest extends DataAccessTest {
         SampleParentDatabaseObject parentDatabaseEntity = new SampleParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
+        given(session.get(SampleParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
         given(session.load(SampleParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
         validationService.validateGenericEntity(dataDefinition, genericEntity, null);
@@ -334,6 +338,7 @@ public class EntityServiceTest extends DataAccessTest {
         SampleParentDatabaseObject parentDatabaseEntity = new SampleParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
+        given(session.get(SampleParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
         given(session.load(SampleParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
         validationService.validateGenericEntity(dataDefinition, genericEntity,
