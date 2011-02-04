@@ -110,9 +110,9 @@ public abstract class DataAccessTest {
     @Before
     public void superInit() {
         validationService = new ValidationService();
-        ReflectionTestUtils.setField(validationService, "sessionFactory", sessionFactory);
 
         entityService = new EntityService();
+        ReflectionTestUtils.setField(entityService, "sessionFactory", sessionFactory);
 
         priorityService = new PriorityService();
         ReflectionTestUtils.setField(priorityService, "entityService", entityService);

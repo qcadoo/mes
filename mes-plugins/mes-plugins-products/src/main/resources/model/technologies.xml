@@ -99,7 +99,7 @@
 			<!-- technology -->
 		<belongsTo name="referenceTechnology" model="technology" lookupField="name" />
 		<boolean name="copyReferenceTechnology" persistent="false" />
-		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="copyReferencedTechnology" />
+		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="copyReferencedTechnology" />
 		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="setQualityControlTypeForTechnology" />
 	</model>
 	<model name="operationProductInComponent">

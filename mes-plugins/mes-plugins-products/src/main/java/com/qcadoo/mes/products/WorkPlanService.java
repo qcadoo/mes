@@ -39,8 +39,6 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.beans.products.ProductsOrder;
-import com.qcadoo.mes.beans.products.ProductsWorkPlan;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
@@ -192,9 +190,8 @@ public final class WorkPlanService {
     }
 
     public boolean checkWorkPlanComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
-        // TODO masz why we get hibernate entities here?
-        ProductsOrder order = (ProductsOrder) entity.getField("order");
-        ProductsWorkPlan workPlan = (ProductsWorkPlan) entity.getField("workPlan");
+        Entity order = entity.getBelongsToField("order");
+        Entity workPlan = entity.getBelongsToField("workPlan");
 
         if (workPlan == null || order == null) {
             return false;
