@@ -115,6 +115,12 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			buttons.moveRightButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				moveRightClicked();
 			}, "rightIcon16_dis.png");
+			buttons.saveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("save", function(e) {
+				saveClicked();
+			}, "saveIcon16.png");
+			buttons.cancelButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("cancel", function(e) {
+				cancelClicked();
+			}, "cancelIcon16.png");
 			buttons.moveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				if (buttons.moveButton.hasClass("headerButtonActive")) {
 					diactiveMoveMode();
@@ -128,6 +134,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			buttons.moveDownButton.hide();
 			buttons.moveLeftButton.hide();
 			buttons.moveRightButton.hide();
+			
+			buttons.saveButton.hide();
+			buttons.cancelButton.hide();
 			
 			for (var i in newButtons) {
 				header.append(newButtons[i]);
@@ -144,6 +153,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			
 			header.append(buttons.moveButton);
 			buttons.moveButton.addClass("headerButtonEnabled");
+			header.append(buttons.saveButton);
+			buttons.saveButton.addClass("headerButtonEnabled");
+			header.append(buttons.cancelButton);
+			buttons.cancelButton.addClass("headerButtonEnabled");
 		
 		contentElement = $("<div>").addClass('tree_content');
 		
@@ -274,7 +287,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		
 		if (value.root) {
 			if (root) {
-				tree.jstree("remove", root); 
+				var childrensArray = tree.jstree("get_json", -1);
+				for (var i in childrensArray) {
+					tree.jstree("delete_node", $("#"+elementSearchName+"_node_"+getEntityId(childrensArray[i].attr.id)));
+				}
 			}
 			root = addNode(value.root, -1);
 		}
@@ -315,10 +331,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.moveRightButton.show();
 		buttons.moveRightButton.css("display", "inline-block");
 		
-		buttons.moveUpButton.addClass("headerButtonEnabled");
-		buttons.moveDownButton.addClass("headerButtonEnabled");
-		buttons.moveLeftButton.addClass("headerButtonEnabled");
-		buttons.moveRightButton.addClass("headerButtonEnabled");
+		buttons.saveButton.show();
+		buttons.saveButton.css("display", "inline-block");
+		buttons.cancelButton.show();
+		buttons.cancelButton.css("display", "inline-block");
 		
 		moveMode = true;
 		updateButtons();
@@ -332,6 +348,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				listener.setEditable(false);
 			}
 		}
+		
+		var layout = mainController.getComponent("window.treeBorderLayout.gridsLayout");
+		layout.setBackground(QCD.components.containers.layout.Layout.COLOR_DISABLED);
 	}
 	
 	function diactiveMoveMode() {
@@ -349,6 +368,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.moveLeftButton.hide();
 		buttons.moveRightButton.hide();
 		
+		buttons.saveButton.hide();
+		buttons.cancelButton.hide();
+		
 		moveMode = false;
 		updateButtons();
 		if (listeners.length > 0) {
@@ -360,6 +382,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				listener.setEditable(true);
 			}
 		}
+		
+		var layout = mainController.getComponent("window.treeBorderLayout.gridsLayout");
+		layout.setBackground(QCD.components.containers.layout.Layout.COLOR_NORMAL);
 	}
 	
 	this.performUpdateState = function() {
@@ -549,6 +574,20 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			var selectedNode = tree.jstree("get_selected");
 			var previousNode = $.jstree._focused()._get_prev(selectedNode, true);
 			moveNode(selectedNode, previousNode, "last");
+		}
+	}
+	
+	function saveClicked() {
+		if (buttons.saveButton.hasClass("headerButtonEnabled")) {
+			block();
+			mainController.callEvent("save", elementPath, null);
+		}
+	}
+	
+	function cancelClicked() {
+		if (buttons.cancelButton.hasClass("headerButtonEnabled")) {
+			block();
+			mainController.callEvent("clear", elementPath, null);
 		}
 	}
 	
