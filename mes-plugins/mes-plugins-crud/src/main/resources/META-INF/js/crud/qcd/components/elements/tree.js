@@ -85,7 +85,6 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			
 			for (var i in dataTypesMap) {
 				var dataType = dataTypesMap[i];
-				QCD.info(dataType);
 				var button = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(dataType) {
 					if ($(this).hasClass("headerButtonEnabled")) {
 						newClicked(dataType);
@@ -189,7 +188,16 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				"move" : {
 					"check_move" : function (m) {
 						if (moveMode) {
-							return true;
+							var targetId = m.r.attr("id");
+							if (!targetId || m.p != "inside") {
+								return true;
+							}
+							var dataType = dataTypesMap[nodeDataTypesMap[getEntityId(targetId)]];
+							if (dataType.canHaveChildren) {
+								return true;
+							} else {
+								return false;
+							}
 						}
 						return false;
 					}
@@ -318,6 +326,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		if (listeners.length > 0) {
 			for (var i in listeners) {
 				var listener = mainController.getComponent(listeners[i]);
+				if (listener.elementPath == elementPath) {
+					continue;
+				}
 				listener.setEditable(false);
 			}
 		}
@@ -343,6 +354,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		if (listeners.length > 0) {
 			for (var i in listeners) {
 				var listener = mainController.getComponent(listeners[i]);
+				if (listener.elementPath == elementPath) {
+					continue;
+				}
 				listener.setEditable(true);
 			}
 		}
@@ -406,8 +420,17 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				buttons.moveRightButton.removeClass("headerButtonEnabled");
 			}
 		} else {
-			for (var i in newButtons) {
-				newButtons[i].addClass("headerButtonEnabled");
+			var dataType = dataTypesMap[nodeDataTypesMap[selected]];
+			if (dataType.canHaveChildren) {
+				for (var i in newButtons) {
+					newButtons[i].addClass("headerButtonEnabled");
+					//newButtons[i].setInfo();
+				}
+			} else {
+				for (var i in newButtons) {
+					newButtons[i].removeClass("headerButtonEnabled");
+					//newButtons[i].setInfo("zaznaczony element nie moze miec dzieci");
+				}
 			}
 			if (selected != "0") {
 				buttons.editButton.addClass("headerButtonEnabled");
@@ -432,8 +455,13 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				}
 				var previousNode = $.jstree._focused()._get_prev(selectedNode, true);
 				if (previousNode) {
-					buttons.moveUpButton.addClass("headerButtonEnabled");	
-					buttons.moveRightButton.addClass("headerButtonEnabled");	
+					buttons.moveUpButton.addClass("headerButtonEnabled");
+					var previousNodeType = dataTypesMap[nodeDataTypesMap[getEntityId(previousNode.attr("id"))]];
+					if (previousNodeType.canHaveChildren) {
+						buttons.moveRightButton.addClass("headerButtonEnabled");
+					} else {
+						buttons.moveRightButton.removeClass("headerButtonEnabled");
+					}
 				} else {
 					buttons.moveUpButton.removeClass("headerButtonEnabled");
 					buttons.moveRightButton.removeClass("headerButtonEnabled");

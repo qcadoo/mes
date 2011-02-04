@@ -17,6 +17,8 @@ public class TreeDataType {
 
     private String newIcon;
 
+    private boolean canHaveChildren = true;
+
     public TreeDataType(final String name) {
         this.name = name;
     }
@@ -68,6 +70,8 @@ public class TreeDataType {
             setNodeIcon(value);
         } else if ("newIcon".equals(type)) {
             setNewIcon(value);
+        } else if ("canHaveChildren".equals(type)) {
+            setCanHaveChildren(Boolean.parseBoolean(value));
         } else {
             throw new IllegalStateException("Unknown tree 'dataType' option: " + type);
         }
@@ -87,6 +91,7 @@ public class TreeDataType {
         obj.put("name", name);
         obj.put("correspondingView", correspondingView);
         obj.put("correspondingComponent", correspondingComponent);
+        obj.put("canHaveChildren", canHaveChildren);
         if (nodeIcon != null) {
             obj.put("nodeIcon", nodeIcon);
         }
@@ -110,5 +115,13 @@ public class TreeDataType {
 
     public void setNewIcon(String newIcon) {
         this.newIcon = newIcon;
+    }
+
+    public boolean isCanHaveChildren() {
+        return canHaveChildren;
+    }
+
+    public void setCanHaveChildren(boolean canHaveChildren) {
+        this.canHaveChildren = canHaveChildren;
     }
 }
