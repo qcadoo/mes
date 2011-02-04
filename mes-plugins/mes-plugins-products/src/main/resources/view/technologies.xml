@@ -195,101 +195,104 @@
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
 			</component>
-			<component type="gridLayout" name="gridsLayout" columns="3" rows="5" hasBorders="false">
-				<layoutElement column="1" row="1" height="5">
-					<component type="tree" name="technologyTree" reference="technologyTree" field="#{form}.operationComponents">
-						<dataType name="operation">
-							<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
-							<option type="correspondingView" value="products/technologyOperationComponent" />
-							<option type="correspondingComponent" value="form" />
-							<option type="nodeIcon" value="/css/products/icons/operationIcon16.png" />
-							<option type="newIcon" value="/css/products/icons/newOperationIcon16.png" />
-						</dataType>
-						<dataType name="referenceTechnology">
-							<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + ' &lt;/span&gt;' + #referenceTechnology['product']['name']" />
-							<option type="correspondingView" value="products/technologyReferenceTechnologyComponent" />
-							<option type="correspondingComponent" value="form" />
-							<option type="nodeIcon" value="/css/products/icons/technologyIcon16.png" />
-							<option type="newIcon" value="/css/products/icons/newTechnologyIcon16.png" />
-							<option type="canHaveChildren" value="false" />
-						</dataType>
-						<listener event="select" bean="com.qcadoo.mes.products.TechnologyService" method="loadProductsForReferencedTechnology"/>
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1" height="5">
-					<component type="grid" name="inProducts" reference="inProducts" source="#{technologyTree}.operationProductInComponents">
-						<option type="column" name="number" fields="product"
-							expression="#product['number']" link="true" />
-						<option type="column" name="name" fields="product"
-							expression="#product['name']" link="true" />
-						<option type="column" name="quantity" fields="quantity" />
-						<option type="order" column="number" direction="desc"/>
-						<option type="correspondingView" value="products/operationProductInComponent" />
-						<option type="correspondingComponent" value="form" />
-						<option type="paginable" value="false" />
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-					</component>
-				
-					<!--<component type="form" name="operationForm" reference="operationForm" field="#{technologyTree}">
-						<component type="gridLayout" name="gridsLayout" columns="2" rows="2" hasBorders="false">
-							<layoutElement column="1" row="1" width="2">
-								<component type="lookup" name="operation" field="operation">
-									<option type="column" name="name" fields="name"
-										width="300" />
-									<option type="searchable" value="name" />
-									<option type="orderable" value="name" />
-									<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-									<option type="fieldCode" value="number" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" width="2">
-								<component type="awesomeDynamicList" name="inProducts" reference="inProducts" 
-										field="operationProductInComponents">
-										<option type="hasBorder" value="true" />
-										<components>
-											<component type="gridLayout" name="gridLayout"
-												columns="1" rows="2" fixedRowHeight="false">
-												<layoutElement column="1" row="1">
-													<component type="lookup" name="product" field="product">
-														<option type="column" name="name" fields="name" link="true"
-															width="300" />
-														<option type="column" name="category" fields="category" />
-														<option type="searchable" value="name,category" />
-														<option type="orderable" value="name,category" />
-														<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-														<option type="fieldCode" value="number" />
-														<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkBatchNrReq"/>
-													</component>
-												</layoutElement>
-												<layoutElement column="1" row="2">
-													<component type="input" name="quantity" field="quantity" />
-												</layoutElement>
-											</component>
-										</components>
-									</component>
-							</layoutElement>
+			<component type="borderLayout" name="treeBorderLayout">
+				<option type="label" value="treeLayoutLabel" />
+				<component type="gridLayout" name="gridsLayout" columns="3" rows="5" hasBorders="false">
+					<layoutElement column="1" row="1" height="5">
+						<component type="tree" name="technologyTree" reference="technologyTree" field="#{form}.operationComponents">
+							<dataType name="operation">
+								<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
+								<option type="correspondingView" value="products/technologyOperationComponent" />
+								<option type="correspondingComponent" value="form" />
+								<option type="nodeIcon" value="/css/products/icons/operationIcon16.png" />
+								<option type="newIcon" value="/css/products/icons/newOperationIcon16.png" />
+							</dataType>
+							<dataType name="referenceTechnology">
+								<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + ' &lt;/span&gt;' + #referenceTechnology['product']['name']" />
+								<option type="correspondingView" value="products/technologyReferenceTechnologyComponent" />
+								<option type="correspondingComponent" value="form" />
+								<option type="nodeIcon" value="/css/products/icons/technologyIcon16.png" />
+								<option type="newIcon" value="/css/products/icons/newTechnologyIcon16.png" />
+								<option type="canHaveChildren" value="false" />
+							</dataType>
+							<listener event="select" bean="com.qcadoo.mes.products.TechnologyService" method="loadProductsForReferencedTechnology"/>
 						</component>
-					</component>-->
-				
-				</layoutElement>
-				<layoutElement column="3" row="1" height="5">
-					<component type="grid" name="outProducts" reference="outProducts" source="#{technologyTree}.operationProductOutComponents">
-						<option type="column" name="number" fields="product"
-							expression="#product['number']" link="true" />
-						<option type="column" name="name" fields="product"
-							expression="#product['name']" link="true" />
-						<option type="column" name="quantity" fields="quantity" />
-						<option type="order" column="number" direction="desc"/>
-						<option type="correspondingView" value="products/operationProductOutComponent" />
-						<option type="correspondingComponent" value="form" />
-						<option type="paginable" value="false" />
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-					</component>
-				</layoutElement>
+					</layoutElement>
+					<layoutElement column="2" row="1" height="5">
+						<component type="grid" name="inProducts" reference="inProducts" source="#{technologyTree}.operationProductInComponents">
+							<option type="column" name="number" fields="product"
+								expression="#product['number']" link="true" />
+							<option type="column" name="name" fields="product"
+								expression="#product['name']" link="true" />
+							<option type="column" name="quantity" fields="quantity" />
+							<option type="order" column="number" direction="desc"/>
+							<option type="correspondingView" value="products/operationProductInComponent" />
+							<option type="correspondingComponent" value="form" />
+							<option type="paginable" value="false" />
+							<option type="creatable" value="true" />
+							<option type="deletable" value="true" />
+							<option type="fullscreen" value="true" />
+						</component>
+					
+						<!--<component type="form" name="operationForm" reference="operationForm" field="#{technologyTree}">
+							<component type="gridLayout" name="gridsLayout" columns="2" rows="2" hasBorders="false">
+								<layoutElement column="1" row="1" width="2">
+									<component type="lookup" name="operation" field="operation">
+										<option type="column" name="name" fields="name"
+											width="300" />
+										<option type="searchable" value="name" />
+										<option type="orderable" value="name" />
+										<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+										<option type="fieldCode" value="number" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2" width="2">
+									<component type="awesomeDynamicList" name="inProducts" reference="inProducts" 
+											field="operationProductInComponents">
+											<option type="hasBorder" value="true" />
+											<components>
+												<component type="gridLayout" name="gridLayout"
+													columns="1" rows="2" fixedRowHeight="false">
+													<layoutElement column="1" row="1">
+														<component type="lookup" name="product" field="product">
+															<option type="column" name="name" fields="name" link="true"
+																width="300" />
+															<option type="column" name="category" fields="category" />
+															<option type="searchable" value="name,category" />
+															<option type="orderable" value="name,category" />
+															<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+															<option type="fieldCode" value="number" />
+															<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkBatchNrReq"/>
+														</component>
+													</layoutElement>
+													<layoutElement column="1" row="2">
+														<component type="input" name="quantity" field="quantity" />
+													</layoutElement>
+												</component>
+											</components>
+										</component>
+								</layoutElement>
+							</component>
+						</component>-->
+					
+					</layoutElement>
+					<layoutElement column="3" row="1" height="5">
+						<component type="grid" name="outProducts" reference="outProducts" source="#{technologyTree}.operationProductOutComponents">
+							<option type="column" name="number" fields="product"
+								expression="#product['number']" link="true" />
+							<option type="column" name="name" fields="product"
+								expression="#product['name']" link="true" />
+							<option type="column" name="quantity" fields="quantity" />
+							<option type="order" column="number" direction="desc"/>
+							<option type="correspondingView" value="products/operationProductOutComponent" />
+							<option type="correspondingComponent" value="form" />
+							<option type="paginable" value="false" />
+							<option type="creatable" value="true" />
+							<option type="deletable" value="true" />
+							<option type="fullscreen" value="true" />
+						</component>
+					</layoutElement>
+				</component>
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="checkAttributesReq" />
