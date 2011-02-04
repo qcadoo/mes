@@ -25,6 +25,7 @@
 package com.qcadoo.mes.products.print.xls;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -73,7 +74,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(entry.getKey().getField("number").toString());
             row.createCell(1).setCellValue(entry.getKey().getField("name").toString());
-            row.createCell(2).setCellValue(entry.getValue().doubleValue());
+            row.createCell(2).setCellValue(entry.getValue().setScale(3, RoundingMode.HALF_EVEN).doubleValue());
             Object unit = entry.getKey().getField("unit");
             if (unit != null) {
                 row.createCell(3).setCellValue(unit.toString());
