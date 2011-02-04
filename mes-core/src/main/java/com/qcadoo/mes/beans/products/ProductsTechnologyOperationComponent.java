@@ -48,7 +48,8 @@ public class ProductsTechnologyOperationComponent {
 
     private Boolean qualityControlRequired;
 
-    private Integer priority;
+    @Column(nullable = false)
+    private int priority;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsTechnology technology;
@@ -141,11 +142,11 @@ public class ProductsTechnologyOperationComponent {
         this.qualityControlRequired = qualityControlRequired;
     }
 
-    public Integer getPriority() {
+    public int getPriority() {
         return priority;
     }
 
-    public void setPriority(final Integer priority) {
+    public void setPriority(final int priority) {
         this.priority = priority;
     }
 
@@ -153,7 +154,7 @@ public class ProductsTechnologyOperationComponent {
         return entityType;
     }
 
-    public void setEntityType(String entityType) {
+    public void setEntityType(final String entityType) {
         this.entityType = entityType;
     }
 
@@ -161,7 +162,7 @@ public class ProductsTechnologyOperationComponent {
         return referenceTechnology;
     }
 
-    public void setReferenceTechnology(ProductsTechnology referenceTechnology) {
+    public void setReferenceTechnology(final ProductsTechnology referenceTechnology) {
         this.referenceTechnology = referenceTechnology;
     }
 

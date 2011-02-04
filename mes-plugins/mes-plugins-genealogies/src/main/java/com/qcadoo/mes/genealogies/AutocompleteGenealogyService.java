@@ -18,9 +18,6 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.beans.genealogies.GenealogiesGenealogyProductInComponent;
-import com.qcadoo.mes.beans.products.ProductsOrder;
-import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
@@ -81,9 +78,8 @@ public class AutocompleteGenealogyService {
 
     public void fillLastUsedBatchForProduct(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
-        // TODO masz why we get hibernate entities here?
-        ProductsProduct product = ((GenealogiesGenealogyProductInComponent) entity.getField("productInComponent"))
-                .getProductInComponent().getProduct();
+        Entity product = entity.getBelongsToField("productInComponent").getBelongsToField("productInComponent")
+                .getBelongsToField("product");
         DataDefinition productInDef = dataDefinitionService.get("products", "product");
         Entity productEntity = productInDef.get(product.getId());
         productEntity.setField("lastUsedBatch", entity.getField("batch"));
@@ -92,8 +88,7 @@ public class AutocompleteGenealogyService {
 
     public void fillLastUsedBatchForGenealogy(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
-        // TODO masz why we get hibernate entities here?
-        ProductsProduct product = ((ProductsOrder) entity.getField("order")).getProduct();
+        Entity product = entity.getBelongsToField("order").getBelongsToField("product");
         DataDefinition productInDef = dataDefinitionService.get("products", "product");
         Entity productEntity = productInDef.get(product.getId());
         productEntity.setField("lastUsedBatch", entity.getField("batch"));

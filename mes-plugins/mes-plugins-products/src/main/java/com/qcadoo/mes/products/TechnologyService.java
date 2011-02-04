@@ -36,8 +36,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.beans.products.ProductsTechnology;
-import com.qcadoo.mes.beans.products.ProductsTechnologyOperationComponent;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.EntityList;
 import com.qcadoo.mes.internal.EntityTree;
@@ -247,9 +245,7 @@ public final class TechnologyService {
 
     public void fillBatchRequiredForTechnology(final DataDefinition dataDefinition, final Entity entity) {
         if ((Boolean) entity.getField("batchRequired")) {
-            // TODO masz why we get hibernate entities here?
-            ProductsTechnology technology = ((ProductsTechnologyOperationComponent) entity.getField("operationComponent"))
-                    .getTechnology();
+            Entity technology = entity.getBelongsToField("operationComponent").getBelongsToField("technology");
             DataDefinition technologyInDef = dataDefinitionService.get("products", "technology");
             Entity technologyEntity = technologyInDef.get(technology.getId());
             if (!(Boolean) technologyEntity.getField("batchRequired")) {
@@ -259,20 +255,13 @@ public final class TechnologyService {
         }
     }
 
-    public void copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        System.out.println(" 1 ----> " + entity.getField("entityType"));
-        System.out.println(" 2 ----> " + entity.getField("copyReferenceTechnology"));
-
+    public boolean copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
         if ("referenceTechnology".equals(entity.getField("entityType")) && (Boolean) entity.getField("copyReferenceTechnology")) {
-
-            System.out.println(" 3 ----> ");
-
-            Entity technology = dataDefinitionService.get("products", "technology").get(
-                    ((ProductsTechnology) entity.getField("referenceTechnology")).getId());
+            Entity technology = entity.getBelongsToField("referenceTechnology");
 
             EntityTreeNode root = technology.getTreeField("operationComponents").getRoot();
 
-            Entity copiedRoot = copyReferencedTechnologyOperations(root);
+            Entity copiedRoot = copyReferencedTechnologyOperations(root, entity.getBelongsToField("technology"));
 
             entity.setField("entityType", "operation");
             entity.setField("referenceTechnology", null);
@@ -282,12 +271,16 @@ public final class TechnologyService {
             entity.setField("operationProductInComponents", copiedRoot.getField("operationProductInComponents"));
             entity.setField("operationProductOutComponents", copiedRoot.getField("operationProductOutComponents"));
         }
+
+        return true;
     }
 
-    private Entity copyReferencedTechnologyOperations(final EntityTreeNode node) {
+    private Entity copyReferencedTechnologyOperations(final EntityTreeNode node, final Entity technology) {
         Entity copy = node.copy();
+        copy.setId(null);
         copy.setField("parent", null);
-        copy.setField("children", copyOperationsChildren(node.getChildren()));
+        copy.setField("technology", technology);
+        copy.setField("children", copyOperationsChildren(node.getChildren(), technology));
         copy.setField("operationProductInComponents", copyProductComponents(copy.getHasManyField("operationProductInComponents")));
         copy.setField("operationProductOutComponents",
                 copyProductComponents(copy.getHasManyField("operationProductOutComponents")));
@@ -298,24 +291,24 @@ public final class TechnologyService {
         List<Entity> copies = new ArrayList<Entity>();
         for (Entity entity : entities) {
             Entity copy = entity.copy();
+            copy.setId(null);
             copy.setField("operationComponent", null);
             copies.add(copy);
         }
         return copies;
     }
 
-    private List<Entity> copyOperationsChildren(final List<EntityTreeNode> entities) {
+    private List<Entity> copyOperationsChildren(final List<EntityTreeNode> entities, final Entity technology) {
         List<Entity> copies = new ArrayList<Entity>();
         for (EntityTreeNode entity : entities) {
-            copies.add(copyReferencedTechnologyOperations(entity));
+            copies.add(copyReferencedTechnologyOperations(entity, technology));
         }
         return copies;
     }
 
     public void setQualityControlTypeForTechnology(final DataDefinition dataDefinition, final Entity entity) {
         if (entity.getField("qualityControlRequired") != null && (Boolean) entity.getField("qualityControlRequired")) {
-            // TODO masz why we get hibernate entities here?
-            ProductsTechnology technology = (ProductsTechnology) entity.getField("technology");
+            Entity technology = entity.getBelongsToField("technology");
             DataDefinition technologyInDef = dataDefinitionService.get("products", "technology");
             Entity technologyEntity = technologyInDef.get(technology.getId());
             if (technologyEntity.getField("qualityControlType") == null

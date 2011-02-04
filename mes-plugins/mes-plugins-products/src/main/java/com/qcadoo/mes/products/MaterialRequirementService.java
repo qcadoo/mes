@@ -40,8 +40,6 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
-import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
@@ -88,9 +86,8 @@ public final class MaterialRequirementService {
     }
 
     public boolean checkMaterialRequirementComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
-        // TODO masz why we get hibernate entities here?
-        ProductsOrder order = (ProductsOrder) entity.getField("order");
-        ProductsMaterialRequirement materialRequirement = (ProductsMaterialRequirement) entity.getField("materialRequirement");
+        Entity order = entity.getBelongsToField("order");
+        Entity materialRequirement = entity.getBelongsToField("materialRequirement");
 
         if (materialRequirement == null || order == null) {
             return false;
