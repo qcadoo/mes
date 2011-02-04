@@ -35,8 +35,6 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.beans.products.ProductsOrder;
-import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
@@ -243,7 +241,7 @@ public final class OrderService {
     }
 
     public boolean checkOrderPlannedQuantity(final DataDefinition dataDefinition, final Entity entity) {
-        ProductsProduct product = (ProductsProduct) entity.getField("product");
+        Entity product = entity.getBelongsToField("product");
         if (product == null) {
             return true;
         }
@@ -257,7 +255,7 @@ public final class OrderService {
     }
 
     public boolean checkOrderTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        ProductsProduct product = (ProductsProduct) entity.getField("product");
+        Entity product = entity.getBelongsToField("product");
         if (product == null) {
             return true;
         }
@@ -284,14 +282,13 @@ public final class OrderService {
     }
 
     public boolean checkIfOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        // TODO masz why we get hibernate entities here?
-        ProductsOrder order = (ProductsOrder) entity.getField("order");
+        Entity order = entity.getBelongsToField("order");
 
         if (order == null) {
             return true;
         }
 
-        if (order.getTechnology() == null) {
+        if (order.getField("technology") == null) {
             entity.addError(dataDefinition.getField("order"), "products.validate.global.error.orderMustHaveTechnology");
             return false;
         } else {
@@ -300,14 +297,13 @@ public final class OrderService {
     }
 
     public boolean checkIfOrderTechnologyHasOperations(final DataDefinition dataDefinition, final Entity entity) {
-        // TODO masz why we get hibernate entities here?
-        ProductsOrder order = (ProductsOrder) entity.getField("order");
+        Entity order = entity.getBelongsToField("order");
 
-        if (order == null || order.getTechnology() == null) {
+        if (order == null || order.getField("technology") == null) {
             return true;
         }
 
-        if (order.getTechnology().getOperationComponents().isEmpty()) {
+        if (order.getBelongsToField("technology").getTreeField("operationComponents").isEmpty()) {
             entity.addError(dataDefinition.getField("order"), "products.validate.global.error.orderTechnologyMustHaveOperation");
             return false;
         } else {

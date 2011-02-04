@@ -114,6 +114,12 @@ public final class DataAccessServiceImpl implements DataAccessService {
             return genericEntity;
         }
 
+        // if ("technologyOperationComponent".equals(genericEntity.getName())) {
+        // System.out.println(" $$$$$$$$ 1 " + genericEntity.getField("children"));
+        // System.out.println(" $$$$$$$$ 2 " + genericEntity.getField("operationProductInComponents"));
+        // System.out.println(" $$$$$$$$ 3 " + genericEntity.getField("operationProductOutComponents"));
+        // }
+
         Entity genericEntityToSave = genericEntity.copy();
 
         Object existingDatabaseEntity = getExistingDatabaseEntity(dataDefinition, genericEntity);
@@ -125,6 +131,12 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
 
         validationService.validateGenericEntity(dataDefinition, genericEntity, existingGenericEntity);
+
+        // if ("technologyOperationComponent".equals(genericEntity.getName())) {
+        // System.out.println(" $$$$$$$$ 4 " + genericEntity.getField("children"));
+        // System.out.println(" $$$$$$$$ 5 " + genericEntity.getField("operationProductInComponents"));
+        // System.out.println(" $$$$$$$$ 6 " + genericEntity.getField("operationProductOutComponents"));
+        // }
 
         if (!genericEntity.isValid()) {
             copyValidationErrors(dataDefinition, genericEntityToSave, genericEntity);
@@ -160,14 +172,13 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         for (Entry<String, FieldDefinition> fieldEntry : dataDefinition.getFields().entrySet()) {
             if (fieldEntry.getValue().getType() instanceof HasManyType) {
-                List<Entity> entities = (List<Entity>) genericEntityToSave.getField(fieldEntry.getKey());
+                List<Entity> entities = (List<Entity>) genericEntity.getField(fieldEntry.getKey());
+                HasManyType hasManyType = (HasManyType) fieldEntry.getValue().getType();
 
                 if (entities == null || entities instanceof EntityList) {
                     savedEntity.setField(fieldEntry.getKey(), entities);
                     continue;
                 }
-
-                HasManyType hasManyType = (HasManyType) fieldEntry.getValue().getType();
 
                 List<Entity> savedEntities = saveHasManyEntities(alreadySavedEntities, newlySavedEntities,
                         hasManyType.getJoinFieldName(), savedEntity.getId(), entities,
@@ -179,7 +190,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
                 savedEntity.setField(fieldEntry.getKey(), savedEntities);
             } else if (fieldEntry.getValue().getType() instanceof TreeType) {
-                List<Entity> entities = (List<Entity>) genericEntityToSave.getField(fieldEntry.getKey());
+                List<Entity> entities = (List<Entity>) genericEntity.getField(fieldEntry.getKey());
 
                 if (entities == null || entities instanceof EntityTree) {
                     savedEntity.setField(fieldEntry.getKey(), entities);

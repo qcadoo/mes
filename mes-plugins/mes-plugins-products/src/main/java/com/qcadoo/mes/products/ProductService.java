@@ -31,9 +31,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.beans.products.ProductsProduct;
-import com.qcadoo.mes.beans.products.ProductsSubstitute;
-import com.qcadoo.mes.beans.products.ProductsTechnology;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchResult;
@@ -54,7 +51,7 @@ public final class ProductService {
     }
 
     public boolean checkIfSubstituteIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
-        ProductsSubstitute substitute = (ProductsSubstitute) entity.getField("substitute");
+        Entity substitute = entity.getBelongsToField("substitute");
 
         if (substitute == null || substitute.getId() == null) {
             return true;
@@ -72,9 +69,8 @@ public final class ProductService {
     }
 
     public boolean checkSubstituteComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
-        // TODO masz why we get hibernate entities here?
-        ProductsProduct product = (ProductsProduct) entity.getField("product");
-        ProductsSubstitute substitute = (ProductsSubstitute) entity.getField("substitute");
+        Entity product = entity.getBelongsToField("product");
+        Entity substitute = entity.getBelongsToField("substitute");
 
         if (substitute == null || product == null) {
             return false;
@@ -93,7 +89,7 @@ public final class ProductService {
     }
 
     public boolean checkIfProductIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
-        ProductsProduct product = (ProductsProduct) entity.getField("product");
+        Entity product = entity.getBelongsToField("product");
 
         if (product == null || product.getId() == null) {
             return true;
@@ -111,7 +107,7 @@ public final class ProductService {
     }
 
     public boolean checkIfTechnologyIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
-        ProductsTechnology technology = (ProductsTechnology) entity.getField("technology");
+        Entity technology = entity.getBelongsToField("technology");
 
         if (technology == null || technology.getId() == null) {
             return true;

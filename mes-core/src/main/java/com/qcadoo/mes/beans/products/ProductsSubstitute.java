@@ -49,7 +49,8 @@ public class ProductsSubstitute {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsProduct product;
 
-    private Integer priority;
+    @Column(nullable = false)
+    private int priority;
 
     @Column(nullable = false, length = 40)
     private String number;
@@ -69,11 +70,11 @@ public class ProductsSubstitute {
         this.id = id;
     }
 
-    public Integer getPriority() {
+    public int getPriority() {
         return priority;
     }
 
-    public void setPriority(final Integer priority) {
+    public void setPriority(final int priority) {
         this.priority = priority;
     }
 
