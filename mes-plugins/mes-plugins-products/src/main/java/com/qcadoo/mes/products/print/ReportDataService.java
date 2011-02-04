@@ -42,7 +42,7 @@ import com.qcadoo.mes.internal.EntityTree;
 import com.qcadoo.mes.internal.EntityTreeNode;
 import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
-import com.qcadoo.mes.products.util.EntityOperationNumberComparator;
+import com.qcadoo.mes.products.util.EntityOperationInPairNumberComparator;
 import com.qcadoo.mes.products.util.SortUtil;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
@@ -71,6 +71,18 @@ public class ReportDataService {
     private static final String COMPONENT_QUANTITY_ALGORITHM = "02perTechnology";
 
     private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
+
+    public void addOperationsFromSubtechnologies(final EntityTree entityTree, final List<Entity> operationComponents) {
+        for (Entity operationComponent : entityTree) {
+            if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
+                operationComponents.add(operationComponent);
+            } else {
+                addOperationsFromSubtechnologies(
+                        operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents"),
+                        operationComponents);
+            }
+        }
+    }
 
     public final Map<Entity, BigDecimal> getTechnologySeries(final Entity entity) {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
@@ -471,7 +483,7 @@ public class ReportDataService {
             table.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
 
             Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operationMap = SortUtil
-                    .sortMapUsingComparator(entry.getValue(), new EntityOperationNumberComparator());
+                    .sortMapUsingComparator(entry.getValue(), new EntityOperationInPairNumberComparator());
 
             for (Entry<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> entryComponent : operationMap
                     .entrySet()) {
