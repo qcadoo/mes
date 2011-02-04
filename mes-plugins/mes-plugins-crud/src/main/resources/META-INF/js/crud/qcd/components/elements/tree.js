@@ -36,6 +36,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	var tree;
 	
 	var header;
+	var titleElement;
 	var buttons = new Object();
 	
 	var contentElement;
@@ -78,8 +79,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	function constructor(_this) {
 		header = $("<div>").addClass('tree_header').addClass('elementHeader').addClass("elementHeaderDisabled");
 			
-			var title = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(translations.header);
-			header.append(title);
+			titleElement = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(translations.header);
+			header.append(titleElement);
 			
 			dataTypesMap = _this.options.dataTypes;
 			
@@ -115,6 +116,14 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			buttons.moveRightButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				moveRightClicked();
 			}, "rightIcon16_dis.png");
+			buttons.saveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
+				saveClicked();
+			}, "saveIcon16.png").css("marginLeft", "20px");
+			buttons.deleteButton.attr("title",translations.save);
+			buttons.cancelButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
+				cancelClicked();
+			}, "cancelIcon16.png");
+			buttons.deleteButton.attr("title",translations.cancel);
 			buttons.moveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				if (buttons.moveButton.hasClass("headerButtonActive")) {
 					diactiveMoveMode();
@@ -128,6 +137,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			buttons.moveDownButton.hide();
 			buttons.moveLeftButton.hide();
 			buttons.moveRightButton.hide();
+			
+			buttons.saveButton.hide();
+			buttons.cancelButton.hide();
 			
 			for (var i in newButtons) {
 				header.append(newButtons[i]);
@@ -144,6 +156,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			
 			header.append(buttons.moveButton);
 			buttons.moveButton.addClass("headerButtonEnabled");
+			header.append(buttons.saveButton);
+			buttons.saveButton.addClass("headerButtonEnabled");
+			header.append(buttons.cancelButton);
+			buttons.cancelButton.addClass("headerButtonEnabled");
 		
 		contentElement = $("<div>").addClass('tree_content');
 		
@@ -274,7 +290,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		
 		if (value.root) {
 			if (root) {
-				tree.jstree("remove", root); 
+				var childrensArray = tree.jstree("get_json", -1);
+				for (var i in childrensArray) {
+					tree.jstree("delete_node", $("#"+elementSearchName+"_node_"+getEntityId(childrensArray[i].attr.id)));
+				}
 			}
 			root = addNode(value.root, -1);
 		}
@@ -294,11 +313,11 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function activeMoveMode() {
-		buttons.moveButton.removeClass("headerButtonEnabled");
-		buttons.moveButton.setInfo("Obecnie drzewo jest w trybie modyfikacji polozenia elementow. W trakcie tego trybu czesc funkcjonalnosci na stronie moz byc nieaktywna." +
-				" Aby opuscic ten tryb zapisz encje lub cofnij zmiany");
-		buttons.moveButton.label.html("MOVE ON");
-		//buttons.moveButton.hide();
+		//buttons.moveButton.removeClass("headerButtonEnabled");
+		//buttons.moveButton.setInfo("Obecnie drzewo jest w trybie modyfikacji polozenia elementow. W trakcie tego trybu czesc funkcjonalnosci na stronie moz byc nieaktywna." +
+		//		" Aby opuscic ten tryb zapisz encje lub cofnij zmiany");
+		//buttons.moveButton.label.html("MOVE ON");
+		buttons.moveButton.hide();
 		
 		for (var i in newButtons) {
 			newButtons[i].hide();
@@ -315,10 +334,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.moveRightButton.show();
 		buttons.moveRightButton.css("display", "inline-block");
 		
-		buttons.moveUpButton.addClass("headerButtonEnabled");
-		buttons.moveDownButton.addClass("headerButtonEnabled");
-		buttons.moveLeftButton.addClass("headerButtonEnabled");
-		buttons.moveRightButton.addClass("headerButtonEnabled");
+		buttons.saveButton.show();
+		buttons.saveButton.css("display", "inline-block");
+		buttons.cancelButton.show();
+		buttons.cancelButton.css("display", "inline-block");
 		
 		moveMode = true;
 		updateButtons();
@@ -332,12 +351,16 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				listener.setEditable(false);
 			}
 		}
+		
+		var layout = mainController.getComponent("window.treeBorderLayout");
+		layout.setBackground(QCD.components.containers.layout.Layout.COLOR_DISABLED);
 	}
 	
 	function diactiveMoveMode() {
 		buttons.moveButton.addClass("headerButtonEnabled");
 		buttons.moveButton.setInfo();
 		buttons.moveButton.label.html("MOVE OFF");
+		buttons.moveButton.show();
 		
 		for (var i in newButtons) {
 			newButtons[i].show();
@@ -348,6 +371,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.moveDownButton.hide();
 		buttons.moveLeftButton.hide();
 		buttons.moveRightButton.hide();
+		
+		buttons.saveButton.hide();
+		buttons.cancelButton.hide();
 		
 		moveMode = false;
 		updateButtons();
@@ -360,6 +386,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				listener.setEditable(true);
 			}
 		}
+		
+		var layout = mainController.getComponent("window.treeBorderLayout");
+		layout.setBackground(QCD.components.containers.layout.Layout.COLOR_NORMAL);
 	}
 	
 	this.performUpdateState = function() {
@@ -549,6 +578,20 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			var selectedNode = tree.jstree("get_selected");
 			var previousNode = $.jstree._focused()._get_prev(selectedNode, true);
 			moveNode(selectedNode, previousNode, "last");
+		}
+	}
+	
+	function saveClicked() {
+		if (buttons.saveButton.hasClass("headerButtonEnabled")) {
+			block();
+			mainController.callEvent("save", elementPath, null);
+		}
+	}
+	
+	function cancelClicked() {
+		if (buttons.cancelButton.hasClass("headerButtonEnabled")) {
+			block();
+			mainController.callEvent("clear", elementPath, null);
 		}
 	}
 	

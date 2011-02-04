@@ -26,6 +26,7 @@ package com.qcadoo.mes.products.print.xls;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Locale;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -45,6 +46,9 @@ public abstract class XlsDocumentService extends DocumentService {
 
     @Override
     public final void generateDocument(final Entity entity, final Locale locale) throws IOException {
+        decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
+        decimalFormat.setMaximumFractionDigits(3);
+        decimalFormat.setMinimumFractionDigits(3);
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet(getReportTitle(locale));
         addHeader(sheet, locale);

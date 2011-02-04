@@ -1,6 +1,7 @@
 package com.qcadoo.mes.products.print;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 
 public abstract class DocumentService {
+
+    protected DecimalFormat decimalFormat;
 
     @Autowired
     private TranslationService translationService;
@@ -23,5 +26,9 @@ public abstract class DocumentService {
     }
 
     protected abstract String getReportTitle(final Locale locale);
+
+    public final DecimalFormat getDecimalFormat() {
+        return decimalFormat;
+    }
 
 }

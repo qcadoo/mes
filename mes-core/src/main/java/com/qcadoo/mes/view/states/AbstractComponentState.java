@@ -88,7 +88,7 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         if (MessageType.FAILURE.equals(type)) {
             hasError = true;
         }
-        requestRender();
+        // requestRender();
     }
 
     @Override
@@ -143,11 +143,15 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         JSONObject json = new JSONObject();
         json.put(JSON_ENABLED, isEnabled());
         json.put(JSON_VISIBLE, isVisible());
+        if (messageHolder != null) {
+            json.put(JSON_MESSAGES, messageHolder.renderMessages());
+        }
 
         if (requestRender) {
             json.put(JSON_CONTENT, renderContent());
-            json.put(JSON_MESSAGES, messageHolder.renderMessages());
             json.put(JSON_UPDATE_STATE, requestUpdateState);
+        } else {
+            json.put(JSON_UPDATE_STATE, false);
         }
 
         return json;
