@@ -321,7 +321,7 @@
 			<component type="form" name="form" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
 					<layoutElement column="1" row="1">
-						<component type="lookup" name="operation" field="operation">
+						<component type="lookup" name="operation" field="operation" reference="operation">
 							<option type="column" name="name" fields="name"
 								width="300" />
 							<option type="searchable" value="name" />
@@ -338,6 +338,7 @@
 				<option type="expression" value="#operation['name']" />
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="setTechnologyReferenceOperationComponentViewRequiredFields" />
 	</view>
 	<view name="technologyReferenceTechnologyComponent" model="technologyOperationComponent">
 		<component type="window" name="window">
@@ -358,13 +359,14 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="select" name="referenceMode" field="referenceMode" />
+						<component type="select" name="referenceMode" field="referenceMode" reference="referenceMode"/>
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>
 				<option type="expression" value="#technology['name']" />
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="setTechnologyReferenceTechnologyComponentViewRequiredFields" />
 	</view>
 	<view name="operationProductInComponent" model="operationProductInComponent">
 		<component type="window" name="window">

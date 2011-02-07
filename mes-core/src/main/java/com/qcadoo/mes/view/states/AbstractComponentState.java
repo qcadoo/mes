@@ -203,7 +203,7 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
     }
 
     @Override
-    public void setEnabled(final boolean enabled) {
+    public final void setEnabled(final boolean enabled) {
         this.enabled = enabled;
     }
 

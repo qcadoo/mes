@@ -344,6 +344,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         if (getFieldDefinition() != null) {
             return getFieldDefinition().isRequired();
         }
+
         return false;
     }
 
