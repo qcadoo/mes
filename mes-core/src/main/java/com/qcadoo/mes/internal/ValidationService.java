@@ -35,8 +35,8 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
-import com.qcadoo.mes.model.types.internal.BelongsToEntityType;
-import com.qcadoo.mes.model.types.internal.HasManyEntitiesType;
+import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.model.types.internal.PasswordType;
 import com.qcadoo.mes.model.validators.EntityValidator;
 import com.qcadoo.mes.model.validators.FieldValidator;
@@ -161,12 +161,19 @@ public final class ValidationService {
         return value;
     }
 
+    private Object parseAndValidateTreeField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+            final Object value, final Entity validatedEntity) {
+        return value;
+    }
+
     private Object parseAndValidateField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final Object value, final Entity validatedEntity) {
-        if (fieldDefinition.getType() instanceof BelongsToEntityType) {
+        if (fieldDefinition.getType() instanceof BelongsToType) {
             return parseAndValidateBelongsToField(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validatedEntity);
-        } else if (fieldDefinition.getType() instanceof HasManyEntitiesType) {
+        } else if (fieldDefinition.getType() instanceof HasManyType) {
             return parseAndValidateHasManyField(dataDefinition, fieldDefinition, value, validatedEntity);
+        } else if (fieldDefinition.getType() instanceof TreeType) {
+            return parseAndValidateTreeField(dataDefinition, fieldDefinition, value, validatedEntity);
         } else {
             return parseAndValidateValue(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validatedEntity);
         }

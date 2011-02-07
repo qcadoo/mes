@@ -70,6 +70,10 @@ public final class EntityService {
             Object belongsToValue = getBelongsToFieldValue(
                     (InternalDataDefinition) ((BelongsToType) fieldDefinition.getType()).getDataDefinition(), value);
             setField(databaseEntity, fieldDefinition.getName(), belongsToValue);
+        } else if (fieldDefinition.getType() instanceof HasManyType) {
+            setField(databaseEntity, fieldDefinition.getName(), null);
+        } else if (fieldDefinition.getType() instanceof TreeType) {
+            setField(databaseEntity, fieldDefinition.getName(), null);
         } else {
             setField(databaseEntity, fieldDefinition.getName(), value);
         }
