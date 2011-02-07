@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.internal.EntityTree;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
@@ -20,6 +21,8 @@ import com.qcadoo.mes.view.components.grid.GridComponentState;
 
 @Service
 public final class GenealogyService {
+
+    private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -114,7 +117,9 @@ public final class GenealogyService {
             if (technology != null) {
                 List<Entity> targetProductInComponents = new ArrayList<Entity>();
 
-                for (Entity operationComponent : technology.getTreeField("operationComponents")) {
+                List<Entity> operationComponents = new ArrayList<Entity>();
+                addOperationsFromSubtechnologies(technology.getTreeField("operationComponents"), operationComponents);
+                for (Entity operationComponent : operationComponents) {
                     for (Entity operationProductInComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                         if ((Boolean) operationProductInComponent.getField("batchRequired")) {
                             targetProductInComponents.add(createGenealogyProductInComponent(genealogy,
@@ -146,6 +151,18 @@ public final class GenealogyService {
         genealogyProductInComponent.setField("productInComponent", operationProductInComponent);
         genealogyProductInComponent.setField("batch", new ArrayList<Entity>());
         return genealogyProductInComponent;
+    }
+
+    public void addOperationsFromSubtechnologies(final EntityTree entityTree, final List<Entity> operationComponents) {
+        for (Entity operationComponent : entityTree) {
+            if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
+                operationComponents.add(operationComponent);
+            } else {
+                addOperationsFromSubtechnologies(
+                        operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents"),
+                        operationComponents);
+            }
+        }
     }
 
 }
