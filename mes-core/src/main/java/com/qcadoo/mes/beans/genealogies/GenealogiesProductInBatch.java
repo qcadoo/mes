@@ -1,9 +1,7 @@
 package com.qcadoo.mes.beans.genealogies;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -26,9 +24,6 @@ public class GenealogiesProductInBatch {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private GenealogiesGenealogyProductInComponent productInComponent;
 
-    @Column(scale = 3, precision = 10)
-    private BigDecimal quantity;
-
     @Temporal(TemporalType.DATE)
     private Date date;
 
@@ -48,14 +43,6 @@ public class GenealogiesProductInBatch {
 
     public void setBatch(final String batch) {
         this.batch = batch;
-    }
-
-    public BigDecimal getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(final BigDecimal quantity) {
-        this.quantity = quantity;
     }
 
     public Date getDate() {
