@@ -316,7 +316,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formSaveAndRemoveActions"/>
+				<group template="formSaveAndBackAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
@@ -343,7 +343,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formSaveAndRemoveActions"/>
+				<group template="formSaveAndBackAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
@@ -358,7 +358,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="checkbox" name="copyReferenceTechnology" field="copyReferenceTechnology" />
+						<component type="select" name="referenceMode" field="referenceMode" />
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>
