@@ -27,9 +27,9 @@ public class ProductsQualityForBatch {
 
     private String number;
 
-    private BigDecimal batchNr;
+    private String batchNr;
 
-    private BigDecimal producedQuantity;
+    private BigDecimal controlledQuantity;
 
     private BigDecimal rejectedQuantity;
 
@@ -93,12 +93,12 @@ public class ProductsQualityForBatch {
         this.date = date;
     }
 
-    public BigDecimal getProducedQuantity() {
-        return producedQuantity;
+    public BigDecimal getControlledQuantity() {
+        return controlledQuantity;
     }
 
-    public void setProducedQuantity(BigDecimal producedQuantity) {
-        this.producedQuantity = producedQuantity;
+    public void setControlledQuantity(BigDecimal controlledQuantity) {
+        this.controlledQuantity = controlledQuantity;
     }
 
     public BigDecimal getRejectedQuantity() {
@@ -117,11 +117,11 @@ public class ProductsQualityForBatch {
         this.acceptedDefectsQuantity = acceptedDefectsQuantity;
     }
 
-    public BigDecimal getBatchNr() {
+    public String getBatchNr() {
         return batchNr;
     }
 
-    public void setBatchNr(BigDecimal batchNr) {
+    public void setBatchNr(String batchNr) {
         this.batchNr = batchNr;
     }
 

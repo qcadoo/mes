@@ -33,6 +33,25 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 	
 	var input = this.input;
 	
+	var elementPath = this.elementPath;
+	
+	var hasListeners = (this.options.listeners.length > 0) ? true : false;
+	
+	function constructor(_this) {
+		QCD.info("constructor");
+		input.change(function() {
+			inputDataChanged();
+		});
+	}
+	6
+	function inputDataChanged() {
+		QCD.info("data changed");
+		if (hasListeners) {
+			QCD.info("has listeners");
+			mainController.callEvent("onInputChange", elementPath, null, null, null);
+		}
+	}
+	
 	if (this.options.referenceName) {
 		_mainController.registerReferenceName(this.options.referenceName, this);
 	}
@@ -70,4 +89,6 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 		this.input.parent().parent().parent().height(height);
 		this.input.parent().parent().height(height);
 	}
+	
+	constructor(this);
 }

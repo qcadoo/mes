@@ -68,10 +68,12 @@
 						<component type="input" name="number" field="number"/>
 					</layoutElement>
 					<layoutElement column="1" row="3" height="1">
-						<component type="select" name="controlResult" field="controlResult" />
+						<component type="select" name="controlResult" field="controlResult" reference="controlResult">
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkQualityControlResult"/>
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4" height="2">
-						<component type="textarea" name="comment" field="comment" />
+						<component type="textarea" name="comment" field="comment" reference="comment" />
 					</layoutElement>
 					<layoutElement column="1" row="6" height="3">
 						<component type="textarea" name="controlInstruction" field="controlInstruction" />
@@ -91,6 +93,7 @@
 				<option type="expression" value="#name" />
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentIsRequiredBasedOnResult"/>
 	</view>
 	<view name="qualityControlsForUnit" model="qualityForUnit" menuAccessible="true">
 		<component type="window" name="window">
@@ -99,11 +102,12 @@
 			</ribbon>
 			<component type="grid" name="qualityControlsForUnit" reference="grid">
 				<option type="column" name="number" fields="number" link="true"/>
-				<option type="order" column="number" direction="desc"/>
+				<option type="column" name="controlledQuantity" fields="controlledQuantity" link="true"/>
+				<option type="order" column="number,controlledQuantity" direction="desc"/>
 				<option type="correspondingView" value="products/qualityControlForUnit"/>
 				<option type="correspondingComponent" value="form" />
-				<option type="searchable" value="number"/>
-				<option type="orderable" value="number"/>
+				<option type="searchable" value="number,controlledQuantity"/>
+				<option type="orderable" value="number,controlledQuantity"/>
 				<option type="fullscreen" value="true" />
 			</component>
 			<option type="fixedHeight" value="true" />
@@ -134,16 +138,18 @@
 						<component type="input" name="number" field="number"/>
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="input" name="producedQuantity" field="producedQuantity" />
+						<component type="input" name="controlledQuantity" field="controlledQuantity" />
 					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="input" name="rejectedQuantity" field="rejectedQuantity" />
 					</layoutElement>
 					<layoutElement column="1" row="5">
-						<component type="input" name="acceptedDefectsQuantity" field="acceptedDefectsQuantity" />
+						<component type="input" name="acceptedDefectsQuantity" field="acceptedDefectsQuantity" reference="acceptedDefectsQuantity">
+							<listener event="onInputChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkAcceptedDefectsQuantity"/>
+						</component>
 					</layoutElement>										
 					<layoutElement column="1" row="6" height="2">
-						<component type="textarea" name="comment" field="comment" />
+						<component type="textarea" name="comment" field="comment" reference="comment" />
 					</layoutElement>
 					<layoutElement column="1" row="8">
 						<component type="input" name="staff" field="staff" defaultEnabled="false">
@@ -163,6 +169,7 @@
 				<option type="expression" value="#name" />
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
 	</view>	
 	<view name="qualityControlsForBatch" model="qualityForBatch" menuAccessible="true">
 		<component type="window" name="window">
@@ -210,16 +217,18 @@
 						<component type="input" name="batchNr" field="batchNr"/>
 					</layoutElement>					
 					<layoutElement column="1" row="4">
-						<component type="input" name="producedQuantity" field="producedQuantity" />
+						<component type="input" name="controlledQuantity" field="controlledQuantity" />
 					</layoutElement>
 					<layoutElement column="1" row="5">
 						<component type="input" name="rejectedQuantity" field="rejectedQuantity" />
 					</layoutElement>
 					<layoutElement column="1" row="6">
-						<component type="input" name="acceptedDefectsQuantity" field="acceptedDefectsQuantity" />
+						<component type="input" name="acceptedDefectsQuantity" field="acceptedDefectsQuantity" reference="acceptedDefectsQuantity">
+							<listener event="onInputChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkAcceptedDefectsQuantity"/>
+						</component>
 					</layoutElement>										
 					<layoutElement column="1" row="7" height="2">
-						<component type="textarea" name="comment" field="comment" />
+						<component type="textarea" name="comment" field="comment" reference="comment" />
 					</layoutElement>
 					<layoutElement column="1" row="9">
 						<component type="input" name="staff" field="staff" defaultEnabled="false">
@@ -239,6 +248,7 @@
 				<option type="expression" value="#name" />
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
 	</view>	
 	<view name="qualityControlsForOperation" model="qualityForOperation" menuAccessible="true">
 		<component type="window" name="window">
@@ -271,13 +281,11 @@
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="order" reference="order"
 							field="order">
-							<option type="column" name="number" fields="number" link="true"
-								width="300" />
 							<option type="column" name="name" fields="name" link="true" />
-							<option type="searchable" value="number,name" />
-							<option type="orderable" value="number,name" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-							<option type="fieldCode" value="number" />
+							<option type="fieldCode" value="name" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
@@ -285,21 +293,21 @@
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="lookup" name="operation" reference="operation"
-							field="order">
-							<option type="column" name="number" fields="number" link="true"
-								width="300" />
+							field="operation">
 							<option type="column" name="name" fields="name" link="true" />
-							<option type="searchable" value="number,name" />
-							<option type="orderable" value="number,name" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-							<option type="fieldCode" value="number" />
+							<option type="fieldCode" value="name" />
 						</component>
 					</layoutElement>					
 					<layoutElement column="1" row="4" >
-						<component type="select" name="controlResult" field="controlResult" />
+						<component type="select" name="controlResult" field="controlResult" reference="controlResult">
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkQualityControlResult"/>
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5" height="2">
-						<component type="textarea" name="comment" field="comment" />
+						<component type="textarea" name="comment" field="comment" reference="comment" />
 					</layoutElement>
 
 				</component>
@@ -307,5 +315,6 @@
 				<option type="expression" value="#name" />
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentIsRequiredBasedOnResult"/>
 	</view>		
 </qcd:views>

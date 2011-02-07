@@ -39,6 +39,7 @@
 		<string name="controlInstruction" />
 		<belongsTo name="staff" plugin="basic" model="staff" lookupField="name" lazy="false" />
 		<date name="date" />
+		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentForResultIsReq" />
 	</model>
 	<model name="qualityForUnit">
 		<belongsTo name="order" model="order" lookupField="name" >
@@ -48,13 +49,14 @@
 			<validatesUniqueness/>
 			<validatesPresence/>			
 		</string>	
-		<decimal name="producedQuantity" />
+		<decimal name="controlledQuantity" />
 		<decimal name="rejectedQuantity" />
 		<decimal name="acceptedDefectsQuantity" />
 		<string name="comment" />
 		<belongsTo name="staff" plugin="basic" model="staff" lookupField="name" lazy="false" />
 		<date name="date" />		
 		<string name="controlInstruction" />
+		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentForQuantityIsReq" />
 	</model>
 	<model name="qualityForBatch">
 		<belongsTo name="order" model="order" lookupField="name" >
@@ -64,14 +66,15 @@
 			<validatesUniqueness/>
 			<validatesPresence/>			
 		</string>	
-		<decimal name="batchNr" />
-		<decimal name="producedQuantity" />
+		<string name="batchNr" />
+		<decimal name="controlledQuantity" />
 		<decimal name="rejectedQuantity" />
 		<decimal name="acceptedDefectsQuantity" />
 		<string name="comment" />
 		<belongsTo name="staff" plugin="basic" model="staff" lookupField="name" lazy="false" />
 		<date name="date" />		
 		<string name="controlInstruction" />
+		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentForQuantityIsReq" />
 	</model>
 	<model name="qualityForOperation">
 		<belongsTo name="order" model="order" lookupField="name" >
@@ -86,5 +89,6 @@
 		</belongsTo>
 		<enum name="controlResult" values="01correct,02incorrect,03objection"/>
 		<string name="comment" />
+		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentForResultIsReq" />
 	</model>
 </qcd:models>

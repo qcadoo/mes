@@ -27,7 +27,7 @@ public class ProductsQualityForUnit {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsOrder order;
 
-    private BigDecimal producedQuantity;
+    private BigDecimal controlledQuantity;
 
     private BigDecimal rejectedQuantity;
 
@@ -91,12 +91,12 @@ public class ProductsQualityForUnit {
         this.date = date;
     }
 
-    public BigDecimal getProducedQuantity() {
-        return producedQuantity;
+    public BigDecimal getControlledQuantity() {
+        return controlledQuantity;
     }
 
-    public void setProducedQuantity(BigDecimal producedQuantity) {
-        this.producedQuantity = producedQuantity;
+    public void setControlledQuantity(BigDecimal producedQuantity) {
+        this.controlledQuantity = producedQuantity;
     }
 
     public BigDecimal getRejectedQuantity() {
