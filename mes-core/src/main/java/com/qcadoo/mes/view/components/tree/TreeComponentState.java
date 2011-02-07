@@ -117,6 +117,16 @@ public final class TreeComponentState extends FieldComponentState {
         setEnabled(fieldEntityId != null);
     }
 
+    @Override
+    public void setEnabled(final boolean enabled) {
+        super.setEnabled(enabled);
+        System.out.println("-----------setEnabled");
+        System.out.println(enabled);
+        for (StackTraceElement el : Thread.currentThread().getStackTrace()) {
+            System.out.println(el);
+        }
+    }
+
     public List<Long> getOpenedNodes() {
         return openedNodes;
     }
