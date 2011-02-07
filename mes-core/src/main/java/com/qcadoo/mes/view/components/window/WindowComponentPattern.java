@@ -202,6 +202,8 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
                 return createFormSaveCopyAndRemoveActionsTemplate(parser);
             } else if ("formSaveAndRemoveActions".equals(template)) {
                 return createFormSaveAndRemoveActionsTemplate(parser);
+            } else if ("formSaveAndBackAndRemoveActions".equals(template)) {
+                return createFormSaveAndBackAndRemoveActionsTemplate(parser);
             } else if ("formSaveAction".equals(template)) {
                 return createFormSaveActionTemplate(parser);
             } else {
@@ -418,6 +420,15 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("actions");
         ribbonGroup.addItem(createFormSaveAction(parser));
+        ribbonGroup.addItem(createFormSaveAndBackAction(parser));
+        ribbonGroup.addItem(createFormCancelAction(parser));
+        ribbonGroup.addItem(createFormDeleteAction(parser));
+        return ribbonGroup;
+    }
+
+    private RibbonGroup createFormSaveAndBackAndRemoveActionsTemplate(final ViewDefinitionParser parser) {
+        RibbonGroup ribbonGroup = new RibbonGroup();
+        ribbonGroup.setName("actions");
         ribbonGroup.addItem(createFormSaveAndBackAction(parser));
         ribbonGroup.addItem(createFormCancelAction(parser));
         ribbonGroup.addItem(createFormDeleteAction(parser));
