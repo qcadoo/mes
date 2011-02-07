@@ -55,6 +55,8 @@ public final class TreeComponentState extends FieldComponentState {
         registerEvent("refresh", eventPerformer, "refresh");
         registerEvent("select", eventPerformer, "selectEntity");
         registerEvent("remove", eventPerformer, "removeSelectedEntity");
+        registerEvent("save", eventPerformer, "save");
+        registerEvent("clear", eventPerformer, "clear");
     }
 
     @Override
@@ -247,7 +249,9 @@ public final class TreeComponentState extends FieldComponentState {
         }
 
         public void initialize(final String[] args) {
-            addOpenedNode(0L);
+            if (rootNode != null) {
+                addOpenedNode(rootNode.getId());
+            }
             setSelectedEntityId(null);
             requestRender();
             requestUpdateState();
@@ -261,6 +265,30 @@ public final class TreeComponentState extends FieldComponentState {
             getDataDefinition().delete(selectedEntityId);
             setSelectedEntityId(null);
             addMessage(translateMessage("deleteMessage"), MessageType.SUCCESS);
+            requestRender();
+            requestUpdateState();
+        }
+
+        public void save(final String[] args) {
+            Entity entity = belongsToFieldDefinition.getDataDefinition().get(belongsToEntityId);
+
+            Object tree = getFieldValue();
+
+            if (tree == null) {
+                return;
+            }
+
+            entity.setField(belongsToFieldDefinition.getName(), tree);
+            Entity afterSaveEntity = belongsToFieldDefinition.getDataDefinition().save(entity);
+
+            if (afterSaveEntity.isValid()) {
+                requestRender();
+                requestUpdateState();
+            }
+        }
+
+        public void clear(final String[] args) {
+            rootNode = null;
             requestRender();
             requestUpdateState();
         }

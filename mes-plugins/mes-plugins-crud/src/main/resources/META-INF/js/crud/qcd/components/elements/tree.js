@@ -36,6 +36,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	var tree;
 	
 	var header;
+	var titleElement;
 	var buttons = new Object();
 	
 	var contentElement;
@@ -43,9 +44,6 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	var belongsToEntityId;
 	var belongsToFieldName = this.options.belongsToFieldName;
 	
-	//var correspondingView = this.options.correspondingView;
-	//var correspondingComponent = this.options.correspondingComponent;
-
 	var elementPath = this.elementPath;
 	var elementSearchName = this.elementSearchName;
 
@@ -63,6 +61,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	var translations = this.options.translations;
 	
 	var moveMode = false;
+	var moveModeIconElement;
 	var treeStructureChanged = false;
 	
 	var nodeDataTypesMap = new Object();
@@ -75,17 +74,32 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		mainController.registerReferenceName(this.options.referenceName, this);
 	}
 	
+	var fireOnChangeListeners = this.fireOnChangeListeners;
+	
 	function constructor(_this) {
 		header = $("<div>").addClass('tree_header').addClass('elementHeader').addClass("elementHeaderDisabled");
 			
-			var title = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(translations.header);
-			header.append(title);
+			moveModeIconElement = $("<div>").addClass('moveModeIconElement').hide();
+			var tooltipMessageElement = $("<div>").addClass("description_message").css("display", "none");
+			var tooltipMessageElementHeader = $("<span>").html(translations.moveModeInfoHeader);
+			var tooltipMessageElementContent = $("<p>").html(translations.moveModeInfoContent);
+			tooltipMessageElement.append(tooltipMessageElementHeader);
+			tooltipMessageElement.append(tooltipMessageElementContent);
+			moveModeIconElement.append(tooltipMessageElement);
+			moveModeIconElement.hover(function() {
+				tooltipMessageElement.show();
+			}, function() {
+				tooltipMessageElement.hide();
+			});
+			header.append(moveModeIconElement);
+		
+			titleElement = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(translations.header);
+			header.append(titleElement);
 			
 			dataTypesMap = _this.options.dataTypes;
 			
 			for (var i in dataTypesMap) {
 				var dataType = dataTypesMap[i];
-				QCD.info(dataType);
 				var button = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(dataType) {
 					if ($(this).hasClass("headerButtonEnabled")) {
 						newClicked(dataType);
@@ -106,7 +120,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			buttons.deleteButton.attr("title",translations.deleteButton);
 			buttons.moveUpButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				moveUpClicked();
-			}, "upIcon16_dis.png");
+			}, "upIcon16_dis.png").css("marginLeft", "20px");
 			buttons.moveDownButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				moveDownClicked();
 			}, "downIcon16_dis.png");
@@ -116,19 +130,30 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			buttons.moveRightButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				moveRightClicked();
 			}, "rightIcon16_dis.png");
+			buttons.saveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
+				saveClicked();
+			}, "saveIcon16.png").attr("title", translations.moveModeSaveButton);
+			buttons.cancelButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
+				cancelClicked();
+			}, "cancelIcon16.png").attr("title", translations.moveModeCancelButton);
 			buttons.moveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
+				if (! $(this).hasClass("headerButtonEnabled")) {
+					return;
+				}
 				if (buttons.moveButton.hasClass("headerButtonActive")) {
 					diactiveMoveMode();
 				} else {
 					activeMoveMode();
 				}
-			}, "moveIcon16_dis.png");
-			buttons.moveButton.attr("title","MOVE OFF");
+			}, "moveIcon16_dis.png").css("marginLeft", "20px").attr("title", translations.moveModeButton);
 			
 			buttons.moveUpButton.hide();
 			buttons.moveDownButton.hide();
 			buttons.moveLeftButton.hide();
 			buttons.moveRightButton.hide();
+			
+			buttons.saveButton.hide();
+			buttons.cancelButton.hide();
 			
 			for (var i in newButtons) {
 				header.append(newButtons[i]);
@@ -137,14 +162,17 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			header.append(buttons.editButton);
 			header.append(buttons.deleteButton);
 			
+			header.append(buttons.moveButton);
+			buttons.moveButton.addClass("headerButtonEnabled");
+			header.append(buttons.saveButton);
+			buttons.saveButton.addClass("headerButtonEnabled");
+			header.append(buttons.cancelButton);
+			buttons.cancelButton.addClass("headerButtonEnabled");
+			
 			header.append(buttons.moveUpButton);
 			header.append(buttons.moveDownButton);
 			header.append(buttons.moveLeftButton);
 			header.append(buttons.moveRightButton);
-			
-			
-			header.append(buttons.moveButton);
-			buttons.moveButton.addClass("headerButtonEnabled");
 		
 		contentElement = $("<div>").addClass('tree_content');
 		
@@ -189,7 +217,16 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				"move" : {
 					"check_move" : function (m) {
 						if (moveMode) {
-							return true;
+							var targetId = m.r.attr("id");
+							if (!targetId || m.p != "inside") {
+								return true;
+							}
+							var dataType = dataTypesMap[nodeDataTypesMap[getEntityId(targetId)]];
+							if (dataType.canHaveChildren) {
+								return true;
+							} else {
+								return false;
+							}
 						}
 						return false;
 					}
@@ -266,7 +303,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		
 		if (value.root) {
 			if (root) {
-				tree.jstree("remove", root); 
+				var childrensArray = tree.jstree("get_json", -1);
+				for (var i in childrensArray) {
+					tree.jstree("delete_node", $("#"+elementSearchName+"_node_"+getEntityId(childrensArray[i].attr.id)));
+				}
 			}
 			root = addNode(value.root, -1);
 		}
@@ -286,17 +326,16 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function activeMoveMode() {
-		buttons.moveButton.removeClass("headerButtonEnabled");
-		buttons.moveButton.setInfo("Obecnie drzewo jest w trybie modyfikacji polozenia elementow. W trakcie tego trybu czesc funkcjonalnosci na stronie moz byc nieaktywna." +
-				" Aby opuscic ten tryb zapisz encje lub cofnij zmiany");
-		buttons.moveButton.label.html("MOVE ON");
-		//buttons.moveButton.hide();
+		buttons.moveButton.hide();
 		
 		for (var i in newButtons) {
 			newButtons[i].hide();
 		}
 		buttons.editButton.hide();
 		buttons.deleteButton.hide();
+		
+		moveModeIconElement.show();
+		moveModeIconElement.css("display", "inline-block");
 		
 		buttons.moveUpButton.show();
 		buttons.moveUpButton.css("display", "inline-block");
@@ -307,10 +346,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.moveRightButton.show();
 		buttons.moveRightButton.css("display", "inline-block");
 		
-		buttons.moveUpButton.addClass("headerButtonEnabled");
-		buttons.moveDownButton.addClass("headerButtonEnabled");
-		buttons.moveLeftButton.addClass("headerButtonEnabled");
-		buttons.moveRightButton.addClass("headerButtonEnabled");
+		buttons.saveButton.show();
+		buttons.saveButton.css("display", "inline-block");
+		buttons.cancelButton.show();
+		buttons.cancelButton.css("display", "inline-block");
 		
 		moveMode = true;
 		updateButtons();
@@ -318,19 +357,27 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		if (listeners.length > 0) {
 			for (var i in listeners) {
 				var listener = mainController.getComponent(listeners[i]);
+				if (listener.elementPath == elementPath) {
+					continue;
+				}
 				listener.setEditable(false);
 			}
 		}
+		fireOnChangeListeners("onMoveModeChange", [true]);
 	}
 	
 	function diactiveMoveMode() {
 		buttons.moveButton.addClass("headerButtonEnabled");
 		buttons.moveButton.setInfo();
-		buttons.moveButton.label.html("MOVE OFF");
+		buttons.moveButton.label.html("");
+		buttons.moveButton.show();
 		
 		for (var i in newButtons) {
 			newButtons[i].show();
 		}
+		
+		moveModeIconElement.hide();
+		
 		buttons.editButton.show();
 		buttons.deleteButton.show();
 		buttons.moveUpButton.hide();
@@ -338,14 +385,21 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.moveLeftButton.hide();
 		buttons.moveRightButton.hide();
 		
+		buttons.saveButton.hide();
+		buttons.cancelButton.hide();
+		
 		moveMode = false;
 		updateButtons();
 		if (listeners.length > 0) {
 			for (var i in listeners) {
 				var listener = mainController.getComponent(listeners[i]);
+				if (listener.elementPath == elementPath) {
+					continue;
+				}
 				listener.setEditable(true);
 			}
 		}
+		fireOnChangeListeners("onMoveModeChange", [false]);
 	}
 	
 	this.performUpdateState = function() {
@@ -386,9 +440,14 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	function updateButtons() {
 		var selected = getSelectedEntityId();
+		if (isEnabled) {
+			buttons.moveButton.addClass("headerButtonEnabled");
+		} else {
+			buttons.moveButton.removeClass("headerButtonEnabled");
+		}
 		if (!selected) {
 			var treeData = tree.jstree("get_json", -1);
-			if (treeData.length == 0) {
+			if (treeData.length == 0 && isEnabled) {
 				for (var i in newButtons) {
 					newButtons[i].addClass("headerButtonEnabled");
 				}
@@ -406,8 +465,17 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				buttons.moveRightButton.removeClass("headerButtonEnabled");
 			}
 		} else {
-			for (var i in newButtons) {
-				newButtons[i].addClass("headerButtonEnabled");
+			var dataType = dataTypesMap[nodeDataTypesMap[selected]];
+			if (dataType.canHaveChildren) {
+				for (var i in newButtons) {
+					newButtons[i].addClass("headerButtonEnabled");
+					//newButtons[i].setInfo();
+				}
+			} else {
+				for (var i in newButtons) {
+					newButtons[i].removeClass("headerButtonEnabled");
+					//newButtons[i].setInfo("zaznaczony element nie moze miec dzieci");
+				}
 			}
 			if (selected != "0") {
 				buttons.editButton.addClass("headerButtonEnabled");
@@ -432,8 +500,13 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				}
 				var previousNode = $.jstree._focused()._get_prev(selectedNode, true);
 				if (previousNode) {
-					buttons.moveUpButton.addClass("headerButtonEnabled");	
-					buttons.moveRightButton.addClass("headerButtonEnabled");	
+					buttons.moveUpButton.addClass("headerButtonEnabled");
+					var previousNodeType = dataTypesMap[nodeDataTypesMap[getEntityId(previousNode.attr("id"))]];
+					if (previousNodeType.canHaveChildren) {
+						buttons.moveRightButton.addClass("headerButtonEnabled");
+					} else {
+						buttons.moveRightButton.removeClass("headerButtonEnabled");
+					}
 				} else {
 					buttons.moveUpButton.removeClass("headerButtonEnabled");
 					buttons.moveRightButton.removeClass("headerButtonEnabled");
@@ -450,12 +523,13 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		} else {
 			tree.addClass("treeDisabled");
 			header.addClass("elementHeaderDisabled");
-			for (var i in newButtons) {
-				newButtons[i].removeClass("headerButtonEnabled");
-			}
-			buttons.editButton.removeClass("headerButtonEnabled");
-			buttons.deleteButton.removeClass("headerButtonEnabled");
+//			for (var i in newButtons) {
+//				newButtons[i].removeClass("headerButtonEnabled");
+//			}
+//			buttons.editButton.removeClass("headerButtonEnabled");
+//			buttons.deleteButton.removeClass("headerButtonEnabled");
 		}
+		updateButtons();
 	}
 	
 	function newClicked(dataType) {
@@ -524,6 +598,20 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		}
 	}
 	
+	function saveClicked() {
+		if (buttons.saveButton.hasClass("headerButtonEnabled")) {
+			block();
+			mainController.callEvent("save", elementPath, null);
+		}
+	}
+	
+	function cancelClicked() {
+		if (buttons.cancelButton.hasClass("headerButtonEnabled")) {
+			block();
+			mainController.callEvent("clear", elementPath, null);
+		}
+	}
+	
 	function moveNode(node, targetNode, position) {
 		tree.jstree("move_node", node, targetNode, position);
 		updateButtons();
@@ -558,6 +646,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		}
 	}
 	
+	this.isComponentChanged = function() {
+		return moveMode;
+	}
+	
 	this.setComponentLoading = function(isLoadingVisible) {
 		if (isLoadingVisible) {
 			block();
@@ -573,8 +665,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		if (! _height) {
 			_height = 300;
 		}
-		//element.css("height",_height+"px")
 		contentElement.height(_height - 52);
+		contentElement.width(_width - 40);
 	}
 	
 	function block() {

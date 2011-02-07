@@ -27,8 +27,6 @@ package com.qcadoo.mes.internal;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -37,16 +35,14 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
-import com.qcadoo.mes.model.types.internal.BelongsToEntityType;
+import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.model.types.internal.PasswordType;
 import com.qcadoo.mes.model.validators.EntityValidator;
 import com.qcadoo.mes.model.validators.FieldValidator;
 
 @Service
 public final class ValidationService {
-
-    @Autowired
-    private SessionFactory sessionFactory;
 
     public void validateGenericEntity(final InternalDataDefinition dataDefinition, final Entity genericEntity,
             final Entity existingGenericEntity) {
@@ -126,7 +122,7 @@ public final class ValidationService {
 
     private Object parseAndValidateBelongsToField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final Object value, final Entity validatedEntity) {
-        Object referencedEntity;
+        Entity referencedEntity;
 
         if (value != null) {
             Long referencedEntityId = null;
@@ -151,9 +147,7 @@ public final class ValidationService {
                 referencedEntity = null;
             } else {
                 BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
-                InternalDataDefinition referencedDataDefinition = (InternalDataDefinition) belongsToFieldType.getDataDefinition();
-                Class<?> referencedClass = referencedDataDefinition.getClassForEntity();
-                referencedEntity = sessionFactory.getCurrentSession().load(referencedClass, referencedEntityId);
+                referencedEntity = belongsToFieldType.getDataDefinition().get(referencedEntityId);
             }
         } else {
             referencedEntity = null;
@@ -162,10 +156,24 @@ public final class ValidationService {
         return parseAndValidateValue(dataDefinition, fieldDefinition, referencedEntity, validatedEntity);
     }
 
+    private Object parseAndValidateHasManyField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+            final Object value, final Entity validatedEntity) {
+        return value;
+    }
+
+    private Object parseAndValidateTreeField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+            final Object value, final Entity validatedEntity) {
+        return value;
+    }
+
     private Object parseAndValidateField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final Object value, final Entity validatedEntity) {
-        if (fieldDefinition.getType() instanceof BelongsToEntityType) {
+        if (fieldDefinition.getType() instanceof BelongsToType) {
             return parseAndValidateBelongsToField(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validatedEntity);
+        } else if (fieldDefinition.getType() instanceof HasManyType) {
+            return parseAndValidateHasManyField(dataDefinition, fieldDefinition, value, validatedEntity);
+        } else if (fieldDefinition.getType() instanceof TreeType) {
+            return parseAndValidateTreeField(dataDefinition, fieldDefinition, value, validatedEntity);
         } else {
             return parseAndValidateValue(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validatedEntity);
         }

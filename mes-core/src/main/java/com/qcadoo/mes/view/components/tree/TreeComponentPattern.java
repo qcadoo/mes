@@ -92,7 +92,14 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         translations.put("deleteButton", getTranslation("deleteButton", locale));
         translations.put("confirmDeleteMessage", getTranslation("confirmDeleteMessage", locale));
 
+        translations.put("moveModeButton", getTranslation("moveModeButton", locale));
+        translations.put("moveModeSaveButton", getTranslation("moveModeSaveButton", locale));
+        translations.put("moveModeCancelButton", getTranslation("moveModeCancelButton", locale));
+
         translations.put("header", getTranslationService().translate(getTranslationPath() + ".header", locale));
+
+        translations.put("moveModeInfoHeader", getTranslation("moveModeInfoHeader", locale));
+        translations.put("moveModeInfoContent", getTranslation("moveModeInfoContent", locale));
 
         translations.put("loading", getTranslationService().translate("commons.loading", locale));
 
@@ -104,15 +111,6 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
     private String getTranslation(final String key, final Locale locale) throws JSONException {
         List<String> codes = Arrays.asList(new String[] { getTranslationPath() + "." + key, "core.tree." + key });
         return getTranslationService().translate(codes, locale);
-    }
-
-    private void checkFieldDefinition() {
-        if (getFieldDefinition() != null) {
-            if (TreeType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
-                return;
-            }
-        }
-        throw new IllegalStateException("Field has to be a tree one");
     }
 
     private FieldDefinition getBelongsToFieldDefinition() {

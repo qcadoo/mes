@@ -32,14 +32,19 @@ import java.util.Locale;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityOperationNumberComparator;
 import com.qcadoo.mes.utils.xls.XlsUtil;
 
 @Service
 public final class WorkPlanForProductXlsService extends XlsDocumentService {
+
+    @Autowired
+    private ReportDataService productReportService;
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -71,34 +76,38 @@ public final class WorkPlanForProductXlsService extends XlsDocumentService {
             Entity order = (Entity) component.getField("order");
             Entity technology = (Entity) order.getField("technology");
             if (technology != null) {
-                List<Entity> operationComponents = new ArrayList<Entity>(technology.getTreeField("operationComponents"));
+                List<Entity> operationComponents = new ArrayList<Entity>();
+                productReportService.addOperationsFromSubtechnologies(technology.getTreeField("operationComponents"),
+                        operationComponents);
                 Collections.sort(operationComponents, new EntityOperationNumberComparator());
 
                 for (Entity operationComponent : operationComponents) {
-                    Entity operation = (Entity) operationComponent.getField("operation");
-                    Entity product = (Entity) order.getField("product");
-                    HSSFRow row = sheet.createRow(rowNum++);
-                    row.createCell(0).setCellValue((String) product.getField("name"));
-                    row.createCell(1).setCellValue(operation.getField("number").toString());
-                    row.createCell(2).setCellValue(operation.getField("name").toString());
-                    List<Entity> operationProductInComponents = operationComponent
-                            .getHasManyField("operationProductInComponents");
-                    List<Entity> operationProductOutComponents = operationComponent
-                            .getHasManyField("operationProductOutComponents");
-                    StringBuilder productsOut = new StringBuilder();
-                    StringBuilder productsIn = new StringBuilder();
-                    for (Entity operationProductComponent : operationProductInComponents) {
-                        Entity productIn = (Entity) operationProductComponent.getField("product");
-                        productsIn.append(productIn.getField("number").toString() + " ");
-                        productsIn.append(productIn.getField("name").toString() + ", ");
+                    if ("operation".equals(operationComponent.getField("entityType"))) {
+                        Entity operation = (Entity) operationComponent.getField("operation");
+                        Entity product = (Entity) order.getField("product");
+                        HSSFRow row = sheet.createRow(rowNum++);
+                        row.createCell(0).setCellValue((String) product.getField("name"));
+                        row.createCell(1).setCellValue(operation.getField("number").toString());
+                        row.createCell(2).setCellValue(operation.getField("name").toString());
+                        List<Entity> operationProductInComponents = operationComponent
+                                .getHasManyField("operationProductInComponents");
+                        List<Entity> operationProductOutComponents = operationComponent
+                                .getHasManyField("operationProductOutComponents");
+                        StringBuilder productsOut = new StringBuilder();
+                        StringBuilder productsIn = new StringBuilder();
+                        for (Entity operationProductComponent : operationProductInComponents) {
+                            Entity productIn = (Entity) operationProductComponent.getField("product");
+                            productsIn.append(productIn.getField("number").toString() + " ");
+                            productsIn.append(productIn.getField("name").toString() + ", ");
+                        }
+                        for (Entity operationProductComponent : operationProductOutComponents) {
+                            Entity productOut = (Entity) operationProductComponent.getField("product");
+                            productsOut.append(productOut.getField("number").toString() + " ");
+                            productsOut.append(productOut.getField("name").toString() + ", ");
+                        }
+                        row.createCell(3).setCellValue(productsOut.toString());
+                        row.createCell(4).setCellValue(productsIn.toString());
                     }
-                    for (Entity operationProductComponent : operationProductOutComponents) {
-                        Entity productOut = (Entity) operationProductComponent.getField("product");
-                        productsOut.append(productOut.getField("number").toString() + " ");
-                        productsOut.append(productOut.getField("name").toString() + ", ");
-                    }
-                    row.createCell(3).setCellValue(productsOut.toString());
-                    row.createCell(4).setCellValue(productsIn.toString());
                 }
             }
         }

@@ -160,14 +160,13 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         for (Entry<String, FieldDefinition> fieldEntry : dataDefinition.getFields().entrySet()) {
             if (fieldEntry.getValue().getType() instanceof HasManyType) {
-                List<Entity> entities = (List<Entity>) genericEntityToSave.getField(fieldEntry.getKey());
+                List<Entity> entities = (List<Entity>) genericEntity.getField(fieldEntry.getKey());
+                HasManyType hasManyType = (HasManyType) fieldEntry.getValue().getType();
 
                 if (entities == null || entities instanceof EntityList) {
                     savedEntity.setField(fieldEntry.getKey(), entities);
                     continue;
                 }
-
-                HasManyType hasManyType = (HasManyType) fieldEntry.getValue().getType();
 
                 List<Entity> savedEntities = saveHasManyEntities(alreadySavedEntities, newlySavedEntities,
                         hasManyType.getJoinFieldName(), savedEntity.getId(), entities,
@@ -179,7 +178,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
                 savedEntity.setField(fieldEntry.getKey(), savedEntities);
             } else if (fieldEntry.getValue().getType() instanceof TreeType) {
-                List<Entity> entities = (List<Entity>) genericEntityToSave.getField(fieldEntry.getKey());
+                List<Entity> entities = (List<Entity>) genericEntity.getField(fieldEntry.getKey());
 
                 if (entities == null || entities instanceof EntityTree) {
                     savedEntity.setField(fieldEntry.getKey(), entities);

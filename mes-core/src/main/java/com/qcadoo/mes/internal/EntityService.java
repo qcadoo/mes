@@ -28,9 +28,11 @@ import java.util.Locale;
 import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.SessionFactory;
 import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
@@ -47,6 +49,9 @@ public final class EntityService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EntityService.class);
 
+    @Autowired
+    private SessionFactory sessionFactory;
+
     public static final String FIELD_ID = "id";
 
     public Long getId(final Object databaseEntity) {
@@ -58,9 +63,36 @@ public final class EntityService {
     }
 
     public void setField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
-        if (!(fieldDefinition.getType() instanceof PasswordType && value == null)) {
+        if (fieldDefinition.getType() instanceof PasswordType && value == null) {
+            return;
+        }
+        if (fieldDefinition.getType() instanceof BelongsToType && value != null) {
+            Object belongsToValue = getBelongsToFieldValue(
+                    (InternalDataDefinition) ((BelongsToType) fieldDefinition.getType()).getDataDefinition(), value);
+            setField(databaseEntity, fieldDefinition.getName(), belongsToValue);
+        } else if (fieldDefinition.getType() instanceof HasManyType) {
+            setField(databaseEntity, fieldDefinition.getName(), null);
+        } else if (fieldDefinition.getType() instanceof TreeType) {
+            setField(databaseEntity, fieldDefinition.getName(), null);
+        } else {
             setField(databaseEntity, fieldDefinition.getName(), value);
         }
+    }
+
+    private Object getBelongsToFieldValue(final InternalDataDefinition dataDefinition, final Object value) {
+        Long id = null;
+
+        if (value instanceof Long) {
+            id = (Long) value;
+        } else if (value instanceof Entity) {
+            id = ((Entity) value).getId();
+        } else {
+            id = Long.parseLong(value.toString());
+        }
+
+        Class<?> referencedClass = dataDefinition.getClassForEntity();
+        Object o = sessionFactory.getCurrentSession().load(referencedClass, id);
+        return o;
     }
 
     public Object getField(final Object databaseEntity, final FieldDefinition fieldDefinition) {

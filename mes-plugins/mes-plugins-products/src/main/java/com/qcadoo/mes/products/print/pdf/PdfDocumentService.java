@@ -46,8 +46,6 @@ public abstract class PdfDocumentService extends DocumentService {
 
     private static final Logger LOG = LoggerFactory.getLogger(PdfDocumentService.class);
 
-    private DecimalFormat decimalFormat;
-
     @Value("${windowsFonts}")
     private String windowsFontsPath;
 
@@ -91,9 +89,5 @@ public abstract class PdfDocumentService extends DocumentService {
 
     protected abstract void buildPdfContent(final Document document, final Entity entity, final Locale locale)
             throws DocumentException;
-
-    public final DecimalFormat getDecimalFormat() {
-        return decimalFormat;
-    }
 
 }

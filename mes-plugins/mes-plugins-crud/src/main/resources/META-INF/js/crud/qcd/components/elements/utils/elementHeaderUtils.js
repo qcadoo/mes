@@ -33,7 +33,6 @@ QCD.components.elements.utils.HeaderUtils.createHeaderButton = function(label, c
 	var elementIcon = (icon && $.trim(icon) != "") ? $.trim(icon) : null;
 	
 	if (elementIcon.indexOf("/") == -1) {
-		QCD.info("AAA");
 		elementIcon = '/img/core/icons/'+elementIcon;
 	}
 	

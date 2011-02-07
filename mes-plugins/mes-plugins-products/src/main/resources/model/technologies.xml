@@ -95,8 +95,9 @@
 		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="operationComponent" cascade="delete" copyable="true" />
 			<!-- technology -->
 		<belongsTo name="referenceTechnology" model="technology" lookupField="name" />
-		<boolean name="copyReferenceTechnology" persistent="false" />
-		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="copyReferencedTechnology" />
+		<enum name="referenceMode" values="01reference,02copy" default="01reference" persistent="false" />
+		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="validateTechnologyOperationComponent" />
+		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="copyReferencedTechnology" />
 		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="setQualityControlTypeForTechnology" />
 	</model>
 	<model name="operationProductInComponent">
