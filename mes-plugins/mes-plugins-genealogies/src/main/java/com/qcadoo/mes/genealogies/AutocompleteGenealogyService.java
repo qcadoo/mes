@@ -40,6 +40,9 @@ public class AutocompleteGenealogyService {
     @Autowired
     private SecurityService securityService;
 
+    @Autowired
+    private GenealogyService genealogyService;
+
     @Transactional(propagation = REQUIRES_NEW)
     public void generateGenalogyOnChangeOrderStatusForDone(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
@@ -291,7 +294,9 @@ public class AutocompleteGenealogyService {
     private void completeBatchForComponents(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
         genealogy.setField("productInComponents", new ArrayList<Entity>());
         List<String> componentsWithoutBatch = new ArrayList<String>();
-        for (Entity operationComponent : technology.getTreeField("operationComponents")) {
+        List<Entity> operationComponents = new ArrayList<Entity>();
+        genealogyService.addOperationsFromSubtechnologies(technology.getTreeField("operationComponents"), operationComponents);
+        for (Entity operationComponent : operationComponents) {
             for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                 if ((Boolean) operationProductComponent.getField("batchRequired")) {
                     Entity productIn = new DefaultEntity("genealogies", "genealogyProductInComponent");
