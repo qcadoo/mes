@@ -277,7 +277,7 @@ public final class TechnologyService {
             entity.setField("children", copiedRoot.getField("children"));
             entity.setField("operationProductInComponents", copiedRoot.getField("operationProductInComponents"));
             entity.setField("operationProductOutComponents", copiedRoot.getField("operationProductOutComponents"));
-        } else {
+        } else if (entity.getField("referenceTechnology") != null) {
             Entity technology = entity.getBelongsToField("technology");
             Entity referencedTechnology = entity.getBelongsToField("referenceTechnology");
 

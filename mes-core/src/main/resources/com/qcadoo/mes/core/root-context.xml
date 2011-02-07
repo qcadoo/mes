@@ -77,6 +77,9 @@
 				<prop key="hibernate.dialect">${hibernateDialect}</prop>
 				<prop key="hibernate.show_sql">${hibernateShowSql}</prop>
 				<prop key="hibernate.hbm2ddl.auto">${hibernateHbm2ddlAuto}</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+            	<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
 			</props>
 		</property>
 	</bean>
