@@ -260,7 +260,8 @@ public final class TechnologyService {
     }
 
     public boolean copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if ("referenceTechnology".equals(entity.getField("entityType")) && (Boolean) entity.getField("copyReferenceTechnology")) {
+        if ("referenceTechnology".equals(entity.getField("entityType")) && entity.getField("copyReferenceTechnology") != null
+                && (Boolean) entity.getField("copyReferenceTechnology")) {
             Entity technology = entity.getBelongsToField("referenceTechnology");
 
             EntityTreeNode root = technology.getTreeField("operationComponents").getRoot();
