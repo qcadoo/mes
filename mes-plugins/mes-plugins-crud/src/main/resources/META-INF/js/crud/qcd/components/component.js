@@ -56,10 +56,6 @@ QCD.components.Component = function(_element, _mainController) {
 		optionsElement.remove();
 		isVisible = _this.options.defaultVisible;
 		isEnabled = _this.options.defaultEnabled;
-		
-//		if (_this.options.referenceName) {
-//			mainController.registerReferenceName(_this.options.referenceName, _this);
-//		}
 	}
 	
 	this.getValue = function() {
