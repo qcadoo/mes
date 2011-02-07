@@ -166,7 +166,7 @@ public class ReportDataService {
             }
             for (Entity operationProductInComponent : operationProductInComponents) {
                 Entity product = (Entity) operationProductInComponent.getField("product");
-                if (!(Boolean) onlyComponents || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
+                if (!onlyComponents || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
                     BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(
                             plannedQuantity, MathContext.DECIMAL128).divide(
                             (BigDecimal) productOutComponent.getField("quantity"), MathContext.DECIMAL128);
@@ -229,11 +229,13 @@ public class ReportDataService {
                     operationProductOutComponents = rootNode.getHasManyField("operationProductOutComponents");
                 }
             }
-            for (Entity operationProductOutComponent : operationProductOutComponents) {
-                Entity productOut = (Entity) operationProductOutComponent.getField("product");
-                if (!MATERIAL_WASTE.equals(productOut.getField("typeOfMaterial"))
-                        && productOut.getField("number").equals(product.getField("number"))) {
-                    return operationComponent;
+            if (operationProductOutComponents != null) {
+                for (Entity operationProductOutComponent : operationProductOutComponents) {
+                    Entity productOut = (Entity) operationProductOutComponent.getField("product");
+                    if (!MATERIAL_WASTE.equals(productOut.getField("typeOfMaterial"))
+                            && productOut.getField("number").equals(product.getField("number"))) {
+                        return operationComponent;
+                    }
                 }
             }
         }

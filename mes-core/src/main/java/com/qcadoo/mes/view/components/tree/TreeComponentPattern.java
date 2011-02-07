@@ -106,15 +106,6 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         return getTranslationService().translate(codes, locale);
     }
 
-    private void checkFieldDefinition() {
-        if (getFieldDefinition() != null) {
-            if (TreeType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
-                return;
-            }
-        }
-        throw new IllegalStateException("Field has to be a tree one");
-    }
-
     private FieldDefinition getBelongsToFieldDefinition() {
         if (getFieldDefinition() != null) {
             if (TreeType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {

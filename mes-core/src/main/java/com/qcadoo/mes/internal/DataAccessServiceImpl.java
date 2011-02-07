@@ -114,12 +114,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
             return genericEntity;
         }
 
-        // if ("technologyOperationComponent".equals(genericEntity.getName())) {
-        // System.out.println(" $$$$$$$$ 1 " + genericEntity.getField("children"));
-        // System.out.println(" $$$$$$$$ 2 " + genericEntity.getField("operationProductInComponents"));
-        // System.out.println(" $$$$$$$$ 3 " + genericEntity.getField("operationProductOutComponents"));
-        // }
-
         Entity genericEntityToSave = genericEntity.copy();
 
         Object existingDatabaseEntity = getExistingDatabaseEntity(dataDefinition, genericEntity);
@@ -131,12 +125,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
 
         validationService.validateGenericEntity(dataDefinition, genericEntity, existingGenericEntity);
-
-        // if ("technologyOperationComponent".equals(genericEntity.getName())) {
-        // System.out.println(" $$$$$$$$ 4 " + genericEntity.getField("children"));
-        // System.out.println(" $$$$$$$$ 5 " + genericEntity.getField("operationProductInComponents"));
-        // System.out.println(" $$$$$$$$ 6 " + genericEntity.getField("operationProductOutComponents"));
-        // }
 
         if (!genericEntity.isValid()) {
             copyValidationErrors(dataDefinition, genericEntityToSave, genericEntity);

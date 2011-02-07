@@ -99,6 +99,10 @@ public final class TechnologyService {
 
     public void loadProductsForReferencedTechnology(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
+        if (!(state instanceof TreeComponentState)) {
+            return;
+        }
+
         TreeComponentState tree = (TreeComponentState) state;
 
         if (tree.getSelectedEntityId() == null) {

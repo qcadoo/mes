@@ -150,6 +150,7 @@ public final class DefaultEntity implements Entity {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public DefaultEntity copy() {
         DefaultEntity entity = new DefaultEntity(pluginIdentifier, name, id);
         for (Map.Entry<String, Object> field : fields.entrySet()) {
