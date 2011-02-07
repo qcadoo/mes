@@ -219,7 +219,7 @@ public class ReportDataService {
 
     private EntityTreeNode findPreviousOperation(final EntityTreeNode node, final Entity product) {
         for (EntityTreeNode operationComponent : node.getChildren()) {
-            List<Entity> operationProductOutComponents = null;
+            List<Entity> operationProductOutComponents = new ArrayList<Entity>();
             if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
                 operationProductOutComponents = operationComponent.getHasManyField("operationProductOutComponents");
             } else {
