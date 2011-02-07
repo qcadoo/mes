@@ -351,25 +351,25 @@ public final class TechnologyService {
     }
 
     public boolean validateTechnologyOperationComponent(final DataDefinition dataDefinition, final Entity entity) {
-        boolean isError = false;
+        boolean isValid = true;
         if ("operation".equals(entity.getStringField("entityType"))) {
             if (entity.getField("operation") == null) {
                 entity.addError(dataDefinition.getField("operation"), "core.validate.field.error.missing");
-                isError = true;
+                isValid = false;
             }
         } else if ("referenceTechnology".equals(entity.getStringField("entityType"))) {
             if (entity.getField("referenceTechnology") == null) {
                 entity.addError(dataDefinition.getField("referenceTechnology"), "core.validate.field.error.missing");
-                isError = true;
+                isValid = false;
             }
             if (entity.getField("referenceMode") == null) {
                 entity.addError(dataDefinition.getField("referenceMode"), "core.validate.field.error.missing");
-                isError = true;
+                isValid = false;
             }
         } else {
             throw new IllegalStateException("unknown entityType");
         }
-        return isError;
+        return isValid;
     }
 
     public void setTechnologyReferenceOperationComponentViewRequiredFields(final ViewDefinitionState state, final Locale locale) {
