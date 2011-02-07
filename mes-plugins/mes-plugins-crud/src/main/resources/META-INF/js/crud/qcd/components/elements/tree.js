@@ -44,9 +44,6 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	var belongsToEntityId;
 	var belongsToFieldName = this.options.belongsToFieldName;
 	
-	//var correspondingView = this.options.correspondingView;
-	//var correspondingComponent = this.options.correspondingComponent;
-
 	var elementPath = this.elementPath;
 	var elementSearchName = this.elementSearchName;
 
@@ -64,6 +61,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	var translations = this.options.translations;
 	
 	var moveMode = false;
+	var moveModeIconElement;
 	var treeStructureChanged = false;
 	
 	var nodeDataTypesMap = new Object();
@@ -76,9 +74,25 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		mainController.registerReferenceName(this.options.referenceName, this);
 	}
 	
+	var fireOnChangeListeners = this.fireOnChangeListeners;
+	
 	function constructor(_this) {
 		header = $("<div>").addClass('tree_header').addClass('elementHeader').addClass("elementHeaderDisabled");
 			
+			moveModeIconElement = $("<div>").addClass('moveModeIconElement').hide();
+			var tooltipMessageElement = $("<div>").addClass("description_message").css("display", "none");
+			var tooltipMessageElementHeader = $("<span>").html("Move mode");
+			var tooltipMessageElementContent = $("<p>").html("Tree is in move mode. Elements related to this tree are inactive. Save or cancel to exit.");
+			tooltipMessageElement.append(tooltipMessageElementHeader);
+			tooltipMessageElement.append(tooltipMessageElementContent);
+			moveModeIconElement.append(tooltipMessageElement);
+			moveModeIconElement.hover(function() {
+				tooltipMessageElement.show();
+			}, function() {
+				tooltipMessageElement.hide();
+			});
+			header.append(moveModeIconElement);
+		
 			titleElement = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(translations.header);
 			header.append(titleElement);
 			
@@ -106,7 +120,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			buttons.deleteButton.attr("title",translations.deleteButton);
 			buttons.moveUpButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				moveUpClicked();
-			}, "upIcon16_dis.png");
+			}, "upIcon16_dis.png").css("marginLeft", "20px");
 			buttons.moveDownButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				moveDownClicked();
 			}, "downIcon16_dis.png");
@@ -118,7 +132,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			}, "rightIcon16_dis.png");
 			buttons.saveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				saveClicked();
-			}, "saveIcon16.png").css("marginLeft", "20px");
+			}, "saveIcon16.png");
 			buttons.deleteButton.attr("title",translations.save);
 			buttons.cancelButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				cancelClicked();
@@ -130,8 +144,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				} else {
 					activeMoveMode();
 				}
-			}, "moveIcon16_dis.png");
-			buttons.moveButton.attr("title","MOVE OFF");
+			}, "moveIcon16_dis.png").css("marginLeft", "20px");
+			buttons.moveButton.attr("title","Move mode");
 			
 			buttons.moveUpButton.hide();
 			buttons.moveDownButton.hide();
@@ -148,18 +162,17 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			header.append(buttons.editButton);
 			header.append(buttons.deleteButton);
 			
-			header.append(buttons.moveUpButton);
-			header.append(buttons.moveDownButton);
-			header.append(buttons.moveLeftButton);
-			header.append(buttons.moveRightButton);
-			
-			
 			header.append(buttons.moveButton);
 			buttons.moveButton.addClass("headerButtonEnabled");
 			header.append(buttons.saveButton);
 			buttons.saveButton.addClass("headerButtonEnabled");
 			header.append(buttons.cancelButton);
 			buttons.cancelButton.addClass("headerButtonEnabled");
+			
+			header.append(buttons.moveUpButton);
+			header.append(buttons.moveDownButton);
+			header.append(buttons.moveLeftButton);
+			header.append(buttons.moveRightButton);
 		
 		contentElement = $("<div>").addClass('tree_content');
 		
@@ -325,6 +338,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.editButton.hide();
 		buttons.deleteButton.hide();
 		
+		moveModeIconElement.show();
+		moveModeIconElement.css("display", "inline-block");
+		
 		buttons.moveUpButton.show();
 		buttons.moveUpButton.css("display", "inline-block");
 		buttons.moveDownButton.show();
@@ -351,20 +367,21 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				listener.setEditable(false);
 			}
 		}
-		
-		var layout = mainController.getComponent("window.treeBorderLayout");
-		layout.setBackground(QCD.components.containers.layout.Layout.COLOR_DISABLED);
+		fireOnChangeListeners("onMoveModeChange", [true]);
 	}
 	
 	function diactiveMoveMode() {
 		buttons.moveButton.addClass("headerButtonEnabled");
 		buttons.moveButton.setInfo();
-		buttons.moveButton.label.html("MOVE OFF");
+		buttons.moveButton.label.html("");
 		buttons.moveButton.show();
 		
 		for (var i in newButtons) {
 			newButtons[i].show();
 		}
+		
+		moveModeIconElement.hide();
+		
 		buttons.editButton.show();
 		buttons.deleteButton.show();
 		buttons.moveUpButton.hide();
@@ -386,9 +403,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				listener.setEditable(true);
 			}
 		}
-		
-		var layout = mainController.getComponent("window.treeBorderLayout");
-		layout.setBackground(QCD.components.containers.layout.Layout.COLOR_NORMAL);
+		fireOnChangeListeners("onMoveModeChange", [false]);
 	}
 	
 	this.performUpdateState = function() {
@@ -644,8 +659,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		if (! _height) {
 			_height = 300;
 		}
-		//element.css("height",_height+"px")
 		contentElement.height(_height - 52);
+		contentElement.width(_width);
 	}
 	
 	function block() {

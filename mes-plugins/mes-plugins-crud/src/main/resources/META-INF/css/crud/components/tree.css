@@ -23,14 +23,31 @@
  */
 
 .tree_wrapper {
-	//margin: 10px;
-	//margin-top: 12px;
 	border: solid #9b9b9b 1px;
 	text-align: left;
 }
 
+.tree_wrapper .tree_header .moveModeIconElement {
+	display: inline-block;
+	position: relative;
+	vertical-align: middle;
+	background-image: url('/img/core/icons/moveIcon16_dis.png');
+	width: 16px;
+	height: 16px;
+	margin-left: 10px;
+}
+.tree_wrapper .tree_header .ribbon_description_icon {
+	top: -5px;
+	left: 12px;
+	background-image: url("/css/core/images/info.icon.png");
+}
+
+.tree_wrapper .tree_header .description_message {
+}
+
 .tree_wrapper .tree_header .tree_title {
 	display: inline-block;
+	position: relative;
 	margin-left: 10px;
 	margin-right: 10px;
 }

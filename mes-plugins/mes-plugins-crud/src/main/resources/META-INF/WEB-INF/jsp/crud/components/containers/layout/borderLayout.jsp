@@ -11,7 +11,11 @@
 <div id="${component['path']}_layoutComponents" class="borderLayout">
 
 	<c:if test="${component['jspOptions']['label'] != ''}">
-		<span class="borderLayoutLabel">${component['jspOptions']['label']}</span>
+		<span class="borderLayoutLabel">
+			<span class="borderLayoutLabelSideBorder"></span>
+			<span class="borderLayoutLabelContent">${component['jspOptions']['label']}</span>
+			<span class="borderLayoutLabelSideBorder"></span>
+		</span>
 	</c:if>
 	
 	<c:forEach items="${component['children']}" var="component">

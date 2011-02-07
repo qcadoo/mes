@@ -15,17 +15,27 @@
 }
 
 .borderLayoutLabel {
-	background: white;
+	background: #FAFAFA;
 	display: inline-block;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	font-weight: bold;
 	left: 5px;
 	line-height: 20px;
-	padding: 0px 7px;
+	border-top: solid transparent 1px;
 	position: absolute;
 	text-align: left;
 	top: -11px;
+}
+.borderLayoutLabel .borderLayoutLabelSideBorder {
+	display: inline-block;
+	vertical-align: top;
+	width: 1px;
+	height: 10px;
+	background: transparent;
+}
+.borderLayoutLabel .borderLayoutLabelContent {
+	padding: 0px 7px;
 }
 
 .gridLayoutTable {
