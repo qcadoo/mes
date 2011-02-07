@@ -350,6 +350,37 @@ public final class TechnologyService {
 
     }
 
+    public boolean validateTechnologyOperationComponent(final DataDefinition dataDefinition, final Entity entity) {
+        boolean isError = false;
+        if ("operation".equals(entity.getStringField("entityType"))) {
+            if (entity.getField("operation") == null) {
+                entity.addError(dataDefinition.getField("operation"), "core.validate.field.error.missing");
+                isError = true;
+            }
+        } else if ("referenceTechnology".equals(entity.getStringField("entityType"))) {
+            if (entity.getField("referenceTechnology") == null) {
+                entity.addError(dataDefinition.getField("referenceTechnology"), "core.validate.field.error.missing");
+                isError = true;
+            }
+            if (entity.getField("referenceMode") == null) {
+                entity.addError(dataDefinition.getField("referenceMode"), "core.validate.field.error.missing");
+                isError = true;
+            }
+        } else {
+            throw new IllegalStateException("unknown entityType");
+        }
+        return isError;
+    }
+
+    public void setTechnologyReferenceOperationComponentViewRequiredFields(final ViewDefinitionState state, final Locale locale) {
+        ((FieldComponentState) state.getComponentByReference("operation")).setRequired(true);
+    }
+
+    public void setTechnologyReferenceTechnologyComponentViewRequiredFields(final ViewDefinitionState state, final Locale locale) {
+        ((FieldComponentState) state.getComponentByReference("technology")).setRequired(true);
+        ((FieldComponentState) state.getComponentByReference("referenceMode")).setRequired(true);
+    }
+
     private boolean checkProductInComponentsBatchRequired(final Long entityId) {
         SearchResult searchResult = dataDefinitionService.get("products", "operationProductInComponent").find()
                 .restrictedWith(Restrictions.eq("operationComponent.technology.id", entityId))
