@@ -260,7 +260,10 @@ public final class TechnologyService {
     }
 
     public boolean copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if ("referenceTechnology".equals(entity.getField("entityType")) && (Boolean) entity.getField("copyReferenceTechnology")) {
+        if (!"referenceTechnology".equals(entity.getField("entityType"))) {
+            return true;
+        }
+        if ("02copy".equals(entity.getField("referenceMode"))) {
             Entity technology = entity.getBelongsToField("referenceTechnology");
 
             EntityTreeNode root = technology.getTreeField("operationComponents").getRoot();
@@ -274,6 +277,15 @@ public final class TechnologyService {
             entity.setField("children", copiedRoot.getField("children"));
             entity.setField("operationProductInComponents", copiedRoot.getField("operationProductInComponents"));
             entity.setField("operationProductOutComponents", copiedRoot.getField("operationProductOutComponents"));
+        } else {
+            Entity technology = entity.getBelongsToField("technology");
+            Entity referencedTechnology = entity.getBelongsToField("referenceTechnology");
+
+            if (technology.getId().equals(referencedTechnology.getId())) {
+                entity.addError(dataDefinition.getField("referenceTechnology"),
+                        "products.technologyReferenceTechnologyComponent.error.cyclicDependency");
+                return false;
+            }
         }
 
         return true;
