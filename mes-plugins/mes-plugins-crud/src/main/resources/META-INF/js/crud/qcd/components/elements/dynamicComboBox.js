@@ -32,9 +32,9 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	var element = _element;
 	var mainController = _mainController;
 	var elementPath = this.elementPath;
-	var stateSelectedValue = null;
 	
 	var input = this.input;
+	var values = new Array();
 	
 	if (this.options.referenceName) {
 		mainController.registerReferenceName(this.options.referenceName, this);
@@ -60,7 +60,8 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	this.getComponentData = function() {
 		var selected = this.input.val();
 		return {
-			value: selected
+			value: selected,
+			values: values
 		}
 	}
 	
@@ -69,33 +70,15 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	}
 	
 	function setData(data) {
-		if (data == null) {
-			return;
+		if (data.values) {
+			values = data.values;
+			input.children().remove();
+			for (var i in data.values) {
+				var value = data.values[i];
+				input.append("<option value='"+value.key+"'>"+value.value+"</option>");
+			}
 		}
-		if (data.value && ! data.values) { // is setState
-			stateSelectedValue = data.value;
-			return;
-		}
-		//var previousSelected = input.val();
-		input.children().remove();
-		for (var i in data.values) {
-			var value = data.values[i];
-			input.append("<option value='"+value.key+"'>"+value.value+"</option>");
-		}
-		
-		if (stateSelectedValue) {
-			selected = stateSelectedValue;
-		} else {
-			selected = data.value;
-		}
-		
-		if (selected == undefined) {
-			//input.val(previousSelected);
-			input.val("");
-		} else {
-			input.val(selected);
-		}
-		
+		input.val(data.value);
 		setTitle();
 	}
 	

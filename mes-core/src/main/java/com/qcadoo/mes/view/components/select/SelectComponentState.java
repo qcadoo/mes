@@ -14,12 +14,6 @@ public final class SelectComponentState extends FieldComponentState {
     }
 
     @Override
-    protected void initializeContent(final JSONObject json) throws JSONException {
-        super.initializeContent(json);
-        requestRender();
-    }
-
-    @Override
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = super.renderContent();
         json.put("values", selectComponentPattern.getValuesJson(getLocale()));

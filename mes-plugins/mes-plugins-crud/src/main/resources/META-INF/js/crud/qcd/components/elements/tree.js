@@ -81,8 +81,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			
 			moveModeIconElement = $("<div>").addClass('moveModeIconElement').hide();
 			var tooltipMessageElement = $("<div>").addClass("description_message").css("display", "none");
-			var tooltipMessageElementHeader = $("<span>").html("Move mode");
-			var tooltipMessageElementContent = $("<p>").html("Tree is in move mode. Elements related to this tree are inactive. Save or cancel to exit.");
+			var tooltipMessageElementHeader = $("<span>").html(translations.moveModeInfoHeader);
+			var tooltipMessageElementContent = $("<p>").html(translations.moveModeInfoContent);
 			tooltipMessageElement.append(tooltipMessageElementHeader);
 			tooltipMessageElement.append(tooltipMessageElementContent);
 			moveModeIconElement.append(tooltipMessageElement);
@@ -132,20 +132,17 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			}, "rightIcon16_dis.png");
 			buttons.saveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				saveClicked();
-			}, "saveIcon16.png");
-			buttons.deleteButton.attr("title",translations.save);
+			}, "saveIcon16.png").attr("title", translations.moveModeSaveButton);
 			buttons.cancelButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				cancelClicked();
-			}, "cancelIcon16.png");
-			buttons.deleteButton.attr("title",translations.cancel);
+			}, "cancelIcon16.png").attr("title", translations.moveModeCancelButton);
 			buttons.moveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
 				if (buttons.moveButton.hasClass("headerButtonActive")) {
 					diactiveMoveMode();
 				} else {
 					activeMoveMode();
 				}
-			}, "moveIcon16_dis.png").css("marginLeft", "20px");
-			buttons.moveButton.attr("title","Move mode");
+			}, "moveIcon16_dis.png").css("marginLeft", "20px").attr("title", translations.moveModeButton);
 			
 			buttons.moveUpButton.hide();
 			buttons.moveDownButton.hide();
@@ -326,10 +323,6 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function activeMoveMode() {
-		//buttons.moveButton.removeClass("headerButtonEnabled");
-		//buttons.moveButton.setInfo("Obecnie drzewo jest w trybie modyfikacji polozenia elementow. W trakcie tego trybu czesc funkcjonalnosci na stronie moz byc nieaktywna." +
-		//		" Aby opuscic ten tryb zapisz encje lub cofnij zmiany");
-		//buttons.moveButton.label.html("MOVE ON");
 		buttons.moveButton.hide();
 		
 		for (var i in newButtons) {
