@@ -137,6 +137,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				cancelClicked();
 			}, "cancelIcon16.png").attr("title", translations.moveModeCancelButton);
 			buttons.moveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
+				if (! $(this).hasClass("headerButtonEnabled")) {
+					return;
+				}
 				if (buttons.moveButton.hasClass("headerButtonActive")) {
 					diactiveMoveMode();
 				} else {
@@ -437,9 +440,14 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	function updateButtons() {
 		var selected = getSelectedEntityId();
+		if (isEnabled) {
+			buttons.moveButton.addClass("headerButtonEnabled");
+		} else {
+			buttons.moveButton.removeClass("headerButtonEnabled");
+		}
 		if (!selected) {
 			var treeData = tree.jstree("get_json", -1);
-			if (treeData.length == 0) {
+			if (treeData.length == 0 && isEnabled) {
 				for (var i in newButtons) {
 					newButtons[i].addClass("headerButtonEnabled");
 				}
@@ -515,12 +523,13 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		} else {
 			tree.addClass("treeDisabled");
 			header.addClass("elementHeaderDisabled");
-			for (var i in newButtons) {
-				newButtons[i].removeClass("headerButtonEnabled");
-			}
-			buttons.editButton.removeClass("headerButtonEnabled");
-			buttons.deleteButton.removeClass("headerButtonEnabled");
+//			for (var i in newButtons) {
+//				newButtons[i].removeClass("headerButtonEnabled");
+//			}
+//			buttons.editButton.removeClass("headerButtonEnabled");
+//			buttons.deleteButton.removeClass("headerButtonEnabled");
 		}
+		updateButtons();
 	}
 	
 	function newClicked(dataType) {
@@ -637,6 +646,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		}
 	}
 	
+	this.isComponentChanged = function() {
+		return moveMode;
+	}
+	
 	this.setComponentLoading = function(isLoadingVisible) {
 		if (isLoadingVisible) {
 			block();
@@ -653,7 +666,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			_height = 300;
 		}
 		contentElement.height(_height - 52);
-		contentElement.width(_width);
+		contentElement.width(_width - 40);
 	}
 	
 	function block() {
