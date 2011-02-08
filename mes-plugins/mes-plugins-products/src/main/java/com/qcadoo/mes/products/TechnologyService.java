@@ -26,10 +26,12 @@ package com.qcadoo.mes.products;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -226,7 +228,7 @@ public final class TechnologyService {
         }
     }
 
-    private boolean isNumber(String value) {
+    private boolean isNumber(final String value) {
         try {
             new BigDecimal(value);
         } catch (NumberFormatException e) {
@@ -367,13 +369,28 @@ public final class TechnologyService {
     }
 
     public boolean copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if (!"referenceTechnology".equals(entity.getField("entityType"))) {
+        if (!"referenceTechnology".equals(entity.getField("entityType")) && entity.getField("referenceTechnology") == null) {
             return true;
         }
-        if ("02copy".equals(entity.getField("referenceMode"))) {
-            Entity technology = entity.getBelongsToField("referenceTechnology");
 
-            EntityTreeNode root = technology.getTreeField("operationComponents").getRoot();
+        boolean copy = "02copy".equals(entity.getField("referenceMode"));
+
+        Entity technology = entity.getBelongsToField("technology");
+        Entity referencedTechnology = entity.getBelongsToField("referenceTechnology");
+
+        Set<Long> technologies = new HashSet<Long>();
+        technologies.add(technology.getId());
+
+        boolean cyclic = checkForCyclicReferences(technologies, referencedTechnology, copy);
+
+        if (cyclic) {
+            entity.addError(dataDefinition.getField("referenceTechnology"),
+                    "products.technologyReferenceTechnologyComponent.error.cyclicDependency");
+            return false;
+        }
+
+        if (copy) {
+            EntityTreeNode root = referencedTechnology.getTreeField("operationComponents").getRoot();
 
             Entity copiedRoot = copyReferencedTechnologyOperations(root, entity.getBelongsToField("technology"));
 
@@ -384,18 +401,32 @@ public final class TechnologyService {
             entity.setField("children", copiedRoot.getField("children"));
             entity.setField("operationProductInComponents", copiedRoot.getField("operationProductInComponents"));
             entity.setField("operationProductOutComponents", copiedRoot.getField("operationProductOutComponents"));
-        } else {
-            Entity technology = entity.getBelongsToField("technology");
-            Entity referencedTechnology = entity.getBelongsToField("referenceTechnology");
-
-            if (technology.getId().equals(referencedTechnology.getId())) {
-                entity.addError(dataDefinition.getField("referenceTechnology"),
-                        "products.technologyReferenceTechnologyComponent.error.cyclicDependency");
-                return false;
-            }
         }
 
         return true;
+    }
+
+    private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology, final boolean copy) {
+        if (!copy) {
+            if (technologies.contains(referencedTechnology.getId())) {
+                return true;
+            }
+        }
+
+        technologies.add(referencedTechnology.getId());
+
+        for (Entity operationComponent : referencedTechnology.getTreeField("operationComponents")) {
+            if ("referenceTechnology".equals(operationComponent.getField("entityType"))) {
+                boolean cyclic = checkForCyclicReferences(technologies,
+                        operationComponent.getBelongsToField("referenceTechnology"), false);
+
+                if (cyclic) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private Entity copyReferencedTechnologyOperations(final EntityTreeNode node, final Entity technology) {

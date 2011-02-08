@@ -116,14 +116,9 @@
 		class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
 		<property name="paramName" value="lang" />
 	</bean>
-
-	<bean id="localeResolver"
-		class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
-		<property name="cookieName" value="clientLanguage"/>
-		<property name="defaultLocale" value="en" />
-		<property name="cookieMaxAge" value="100000" />
-	</bean>
 	
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
+
 	<bean id="exceptionResolver"  
 		class="com.qcadoo.mes.application.TranslatedMessageExceptionResolver">  
   		<property name="defaultErrorView" value="500" />
