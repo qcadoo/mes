@@ -5,16 +5,30 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.json.JSONException;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.view.ComponentDefinition;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
 public abstract class FieldComponentPattern extends AbstractComponentPattern {
 
+    private int labelWidth = 30;
+
     public FieldComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
 
+    }
+
+    @Override
+    protected void initializeComponent() throws JSONException {
+        for (ComponentOption option : getOptions()) {
+            if ("labelWidth".equals(option.getType())) {
+                labelWidth = Integer.parseInt(option.getValue());
+            }
+        }
     }
 
     @Override
@@ -46,6 +60,7 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
         }
 
         options.put("translations", translations);
+        options.put("labelWidth", labelWidth);
 
         return options;
     }

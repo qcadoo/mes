@@ -36,6 +36,7 @@
 <tiles:insertTemplate template="formComponent.jsp">
 	<tiles:putAttribute name="component" value="${component}" />
 	<tiles:putAttribute name="componentType" value="checkbox" />
+	<tiles:putAttribute name="componentAlign" value="${component['jspOptions']['align']}" />
 	<tiles:putAttribute name="componentBody">
 		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
 			<c:set var="displayHiddenIfTextRepresentationOnDisabled" value="display: none" />
@@ -44,6 +45,6 @@
 		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
 			<span id="${component['path']}_text" class="component_container_form_textRepresentation">&nbsp;</span>
 		</c:if>
-		<span id="${component['path']}_textHeight" style="display: inline-block; height: 100%; vertical-align: middle;">&nbsp;</span>
+		<span id="${component['path']}_textHeight" style="display: inline-block; height: 100%; vertical-align: middle; width: 1px; margin-left: -1px;">&nbsp;</span>
 	</tiles:putAttribute>
 </tiles:insertTemplate>
