@@ -238,13 +238,6 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				},
 			 	"drop_target" : false,
 			 	"drag_target" : false,
-			 	".start_drag" : function() {
-					QCD.info("aa");
-				},
-				".dnd_prepare" : function() {
-					QCD.info("bb");
-				},
-				drag_check		: function (data) { return { after : false, before : false, inside : false }; }
 			},
 			core : {
 				html_titles: true,
@@ -270,8 +263,6 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		openedNodesArrayToInsert = state.openedNodes;
 		selectedNodeToInstert = state.selectedEntityId;
 		belongsToEntityId = state.belongsToEntityId;
-		QCD.info("setComponentState");
-		QCD.info(selectedNodeToInstert);
 	}
 	
 	this.getComponentValue = function() {
@@ -288,14 +279,12 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		}
 		result.openedNodes = openedNodesArray;
 		var selectedNode;
-		QCD.info("getComponentValue");
 		if (selectedNodeToInstert) {
 			selectedNode = selectedNodeToInstert;
 			selectedNodeToInstert = null;
 		} else {
 			selectedNode = getSelectedEntityId();
 		}
-		QCD.info(selectedNode);
 		result.selectedEntityId = selectedNode;
 		result.belongsToEntityId = belongsToEntityId;
 		
@@ -326,8 +315,6 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		for (var i in value.openedNodes) {
 			tree.jstree("open_node", $("#"+elementSearchName+"_node_"+value.openedNodes[i]), false, true);
 		}
-		QCD.info("setComponentValue");
-		QCD.info(value);
 		
 		if (value.selectedEntityId != null) {
 			fireSelectEvent = false;

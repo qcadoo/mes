@@ -110,10 +110,8 @@ public final class TreeComponentState extends FieldComponentState {
 
     @Override
     public void onFieldEntityIdChange(final Long fieldEntityId) {
-        System.out.println("-------- onFieldEntityIdChange " + fieldEntityId);
         if (belongsToEntityId != null && !belongsToEntityId.equals(fieldEntityId)) {
             setSelectedEntityId(null);
-            System.out.println("NULL");
         }
         this.belongsToEntityId = fieldEntityId;
         setEnabled(fieldEntityId != null);
@@ -196,7 +194,6 @@ public final class TreeComponentState extends FieldComponentState {
     }
 
     public void setSelectedEntityId(final Long selectedEntityId) {
-        System.out.println("------- setSelectedEntityId " + selectedEntityId);
         this.selectedEntityId = selectedEntityId;
         notifyEntityIdChangeListeners(parseSelectedIdForListeners(selectedEntityId));
     }

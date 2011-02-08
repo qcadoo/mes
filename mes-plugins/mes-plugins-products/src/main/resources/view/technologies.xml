@@ -212,6 +212,7 @@
 								<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + '&lt;/span&gt; ' + #referenceTechnology['name']" />
 								<option type="correspondingView" value="products/technologyReferenceTechnologyComponent" />
 								<option type="correspondingComponent" value="form" />
+								<option type="correspondingViewInModal" value="true" />
 								<option type="nodeIcon" value="/css/products/icons/technologyIcon16.png" />
 								<option type="newIcon" value="/css/products/icons/newTechnologyIcon16.png" />
 								<option type="canHaveChildren" value="false" />
@@ -242,6 +243,7 @@
 							<option type="order" column="number" direction="desc"/>
 							<option type="correspondingView" value="products/operationProductInComponent" />
 							<option type="correspondingComponent" value="form" />
+							<option type="correspondingViewInModal" value="true" />
 							<option type="paginable" value="false" />
 							<option type="creatable" value="true" />
 							<option type="deletable" value="true" />
@@ -300,6 +302,7 @@
 							<option type="order" column="number" direction="desc"/>
 							<option type="correspondingView" value="products/operationProductOutComponent" />
 							<option type="correspondingComponent" value="form" />
+							<option type="correspondingViewInModal" value="true" />
 							<option type="paginable" value="false" />
 							<option type="creatable" value="true" />
 							<option type="deletable" value="true" />
@@ -348,7 +351,7 @@
 				<group template="formSaveAndBackAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
+				<component type="gridLayout" name="gridLayout" columns="1" rows="2">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="technology" reference="technology" field="referenceTechnology">
 							<option type="column" name="name" fields="name" link="true"
@@ -376,7 +379,7 @@
 				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
+				<component type="gridLayout" name="gridLayout" columns="1" rows="3">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" field="product">
 							<option type="column" name="name" fields="name" link="true"
@@ -393,7 +396,9 @@
 						<component type="input" name="quantity" field="quantity" />
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="checkbox" name="batchRequired" reference="batchRequired" field="batchRequired" />
+						<component type="checkbox" name="batchRequired" reference="batchRequired" field="batchRequired" >
+							<option type="labelWidth" value="35" />
+						</component>
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>
@@ -408,7 +413,7 @@
 				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
+				<component type="gridLayout" name="gridLayout" columns="1" rows="2">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" field="product">
 							<option type="column" name="name" fields="name" link="true"
