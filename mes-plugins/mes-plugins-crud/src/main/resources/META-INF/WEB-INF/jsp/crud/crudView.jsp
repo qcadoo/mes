@@ -71,6 +71,7 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/connector.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/options.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/pageConstructor.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/modal.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/core/messagesController.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/core/pageController.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/core/actionEvaluator.js"></script>
@@ -145,7 +146,7 @@
 			if (context && context != "") {
 				controller.setContext(context);
 			}
-			if (popup) {
+			if (popup && window.opener) {
 				window.opener.onPopupInit();
 			}
 
