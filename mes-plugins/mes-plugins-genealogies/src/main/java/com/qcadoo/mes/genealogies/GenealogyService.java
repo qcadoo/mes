@@ -118,7 +118,7 @@ public final class GenealogyService {
                 List<Entity> targetProductInComponents = new ArrayList<Entity>();
 
                 List<Entity> operationComponents = new ArrayList<Entity>();
-                addOperationsFromSubtechnologies(technology.getTreeField("operationComponents"), operationComponents);
+                addOperationsFromSubtechnologiesToList(technology.getTreeField("operationComponents"), operationComponents);
                 for (Entity operationComponent : operationComponents) {
                     for (Entity operationProductInComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                         if ((Boolean) operationProductInComponent.getField("batchRequired")) {
@@ -153,12 +153,12 @@ public final class GenealogyService {
         return genealogyProductInComponent;
     }
 
-    public void addOperationsFromSubtechnologies(final EntityTree entityTree, final List<Entity> operationComponents) {
+    public void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {
         for (Entity operationComponent : entityTree) {
             if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
                 operationComponents.add(operationComponent);
             } else {
-                addOperationsFromSubtechnologies(
+                addOperationsFromSubtechnologiesToList(
                         operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents"),
                         operationComponents);
             }

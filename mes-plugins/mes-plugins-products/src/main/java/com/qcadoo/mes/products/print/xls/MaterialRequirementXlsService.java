@@ -68,7 +68,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
-        Map<Entity, BigDecimal> products = reportDataService.getTechnologySeries(entity);
+        Map<Entity, BigDecimal> products = reportDataService.prepareTechnologySeries(entity);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
