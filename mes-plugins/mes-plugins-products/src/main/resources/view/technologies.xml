@@ -204,6 +204,7 @@
 								<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
 								<option type="correspondingView" value="products/technologyOperationComponent" />
 								<option type="correspondingComponent" value="form" />
+								<option type="correspondingViewInModal" value="true" />
 								<option type="nodeIcon" value="/css/products/icons/operationIcon16.png" />
 								<option type="newIcon" value="/css/products/icons/newOperationIcon16.png" />
 							</dataType>
@@ -319,7 +320,7 @@
 				<group template="formSaveAndBackAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
+				<component type="gridLayout" name="gridLayout" columns="1" rows="2">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="operation" field="operation" reference="operation">
 							<option type="column" name="name" fields="name"
@@ -330,7 +331,7 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="1">
+					<layoutElement column="1" row="2">
 						<component type="checkbox" name="qualityControlRequired" reference="qualityControlRequired" field="qualityControlRequired" />
 					</layoutElement>
 				</component>

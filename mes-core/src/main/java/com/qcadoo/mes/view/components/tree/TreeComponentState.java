@@ -51,7 +51,7 @@ public final class TreeComponentState extends FieldComponentState {
         belongsToFieldDefinition = scopeField;
         this.dataTypes = dataTypes;
         registerEvent("initialize", eventPerformer, "initialize");
-        registerEvent("initializeAfterBack", eventPerformer, "initialize");
+        registerEvent("initializeAfterBack", eventPerformer, "initializeAfterBack");
         registerEvent("refresh", eventPerformer, "refresh");
         registerEvent("select", eventPerformer, "selectEntity");
         registerEvent("remove", eventPerformer, "removeSelectedEntity");
@@ -110,8 +110,10 @@ public final class TreeComponentState extends FieldComponentState {
 
     @Override
     public void onFieldEntityIdChange(final Long fieldEntityId) {
+        System.out.println("-------- onFieldEntityIdChange " + fieldEntityId);
         if (belongsToEntityId != null && !belongsToEntityId.equals(fieldEntityId)) {
             setSelectedEntityId(null);
+            System.out.println("NULL");
         }
         this.belongsToEntityId = fieldEntityId;
         setEnabled(fieldEntityId != null);
@@ -194,6 +196,7 @@ public final class TreeComponentState extends FieldComponentState {
     }
 
     public void setSelectedEntityId(final Long selectedEntityId) {
+        System.out.println("------- setSelectedEntityId " + selectedEntityId);
         this.selectedEntityId = selectedEntityId;
         notifyEntityIdChangeListeners(parseSelectedIdForListeners(selectedEntityId));
     }
@@ -226,6 +229,9 @@ public final class TreeComponentState extends FieldComponentState {
 
             if (tree.getRoot() != null) {
                 rootNode = createNode(tree.getRoot());
+                if (openedNodes == null) {
+                    addOpenedNode(rootNode.getId());
+                }
             }
         }
     }
@@ -253,6 +259,14 @@ public final class TreeComponentState extends FieldComponentState {
                 addOpenedNode(rootNode.getId());
             }
             setSelectedEntityId(null);
+            requestRender();
+            requestUpdateState();
+        }
+
+        public void initializeAfterBack(final String[] args) {
+            if (rootNode != null) {
+                addOpenedNode(rootNode.getId());
+            }
             requestRender();
             requestUpdateState();
         }
