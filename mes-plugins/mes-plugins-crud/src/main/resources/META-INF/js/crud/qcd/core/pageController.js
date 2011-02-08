@@ -24,7 +24,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	var tabController = new QCD.TabController()
 	
 	function constructor(_this) {
-		
 		QCDConnector.windowName = "/page/"+pluginIdentifier+"/"+viewName;
 		QCDConnector.mainController = _this;
 		
@@ -51,7 +50,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	}
 	
 	this.init = function(serializationObject) {
-		
+		QCD.components.elements.utils.LoadingIndicator.blockElement($("body"));
 		for (var i in pageComponents) {
 			pageComponents[i].performScript();
 		}
@@ -299,6 +298,13 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 		//}
 	}
 	var goToPage = this.goToPage;
+	
+	this.openModal = function(id, url) {
+		var serializationObject = {
+			components: getValueData()
+		}
+		window.parent.openModal(id, url, serializationObject);
+	}
 	
 	this.goBack = function() {
 		if(canClose()) {

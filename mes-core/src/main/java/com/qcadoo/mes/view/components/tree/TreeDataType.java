@@ -13,6 +13,8 @@ public class TreeDataType {
 
     private String correspondingComponent;
 
+    private boolean correspondingViewInModal = false;
+
     private String nodeIcon;
 
     private String newIcon;
@@ -21,14 +23,6 @@ public class TreeDataType {
 
     public TreeDataType(final String name) {
         this.name = name;
-    }
-
-    public TreeDataType(final String name, final String nodeLabelExpression, final String correspondingView,
-            final String correspondingComponent) {
-        this(name);
-        this.nodeLabelExpression = nodeLabelExpression;
-        this.correspondingView = correspondingView;
-        this.correspondingComponent = correspondingComponent;
     }
 
     public String getName() {
@@ -66,6 +60,8 @@ public class TreeDataType {
             setCorrespondingView(value);
         } else if ("correspondingComponent".equals(type)) {
             setCorrespondingComponent(value);
+        } else if ("correspondingViewInModal".equals(type)) {
+            setCorrespondingViewInModal(Boolean.parseBoolean(value));
         } else if ("nodeIcon".equals(type)) {
             setNodeIcon(value);
         } else if ("newIcon".equals(type)) {
@@ -91,6 +87,7 @@ public class TreeDataType {
         obj.put("name", name);
         obj.put("correspondingView", correspondingView);
         obj.put("correspondingComponent", correspondingComponent);
+        obj.put("correspondingViewInModal", correspondingViewInModal);
         obj.put("canHaveChildren", canHaveChildren);
         if (nodeIcon != null) {
             obj.put("nodeIcon", nodeIcon);
@@ -123,5 +120,13 @@ public class TreeDataType {
 
     public void setCanHaveChildren(boolean canHaveChildren) {
         this.canHaveChildren = canHaveChildren;
+    }
+
+    public boolean isCorrespondingViewInModal() {
+        return correspondingViewInModal;
+    }
+
+    public void setCorrespondingViewInModal(boolean correspondingViewInModal) {
+        this.correspondingViewInModal = correspondingViewInModal;
     }
 }

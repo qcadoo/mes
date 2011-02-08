@@ -86,7 +86,6 @@ QCD.components.Component = function(_element, _mainController) {
 		if (value.components) {
 			this.setComponentsValue(value);
 		}
-		
 		if (value.content != null) {
 			this.setComponentValue(value.content);
 		}
