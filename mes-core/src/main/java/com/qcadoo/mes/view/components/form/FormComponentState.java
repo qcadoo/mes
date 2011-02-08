@@ -219,6 +219,10 @@ public final class FormComponentState extends AbstractContainerState {
     private void copyFieldsToEntity(final Entity entity) {
         for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
             entity.setField(field.getKey(), convertFieldFromString(field.getValue().getFieldValue(), field.getKey()));
+
+            if (field.getValue().isHasError()) {
+                entity.setNotValid();
+            }
         }
     }
 
@@ -319,9 +323,13 @@ public final class FormComponentState extends AbstractContainerState {
                 throw new IllegalStateException("Entity cannot be found");
             }
 
-            Entity entity = getDataDefinition().save(getEntity());
+            Entity entity = getEntity();
 
-            setEntity(entity);
+            if (entity.isValid()) {
+                entity = getDataDefinition().save(entity);
+
+                setEntity(entity);
+            }
 
             if (entity.isValid()) {
                 setFieldValue(entity.getId());

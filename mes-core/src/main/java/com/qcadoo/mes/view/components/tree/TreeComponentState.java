@@ -143,7 +143,8 @@ public final class TreeComponentState extends FieldComponentState {
         }
 
         if (treeStructure.length() > 1) {
-            addMessage("core.validate.field.error.multipleRoots", MessageType.FAILURE);
+            addMessage(getTranslationService().translate("core.validate.field.error.multipleRoots", getLocale()),
+                    MessageType.FAILURE);
             return null;
         }
 
