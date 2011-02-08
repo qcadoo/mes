@@ -52,6 +52,8 @@ public final class TranslationServiceImpl implements TranslationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TranslationServiceImpl.class);
 
+    private static final Logger TRANSLATION_LOG = LoggerFactory.getLogger("TRANSLATION");
+
     private static final Set<String> COMMONS_MESSAGES = new HashSet<String>();
 
     private static final Set<String> SECURITY_MESSAGES = new HashSet<String>();
@@ -76,7 +78,7 @@ public final class TranslationServiceImpl implements TranslationService {
             return message.trim();
         }
 
-        LOG.warn("Missing translation " + messageCode + " for locale " + locale);
+        TRANSLATION_LOG.warn("Missing translation " + messageCode + " for locale " + locale);
 
         if (ignoreMissingTranslations) {
             return DEFAULT_MISSING_MESSAGE;
@@ -94,7 +96,7 @@ public final class TranslationServiceImpl implements TranslationService {
             }
         }
 
-        LOG.warn("Missing translation " + messageCodes + " for locale " + locale);
+        TRANSLATION_LOG.warn("Missing translation " + messageCodes + " for locale " + locale);
 
         if (ignoreMissingTranslations) {
             return DEFAULT_MISSING_MESSAGE;

@@ -20,6 +20,8 @@ public final class CheckBoxComponentPattern extends FieldComponentPattern {
 
     private boolean textRepresentationOnDisabled;
 
+    private String align = "left";
+
     public CheckBoxComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
     }
@@ -31,10 +33,13 @@ public final class CheckBoxComponentPattern extends FieldComponentPattern {
 
     @Override
     protected void initializeComponent() throws JSONException {
+        super.initializeComponent();
         for (ComponentOption option : getOptions()) {
             if ("textRepresentationOnDisabled".equals(option.getType())) {
                 textRepresentationOnDisabled = Boolean.parseBoolean(option.getValue());
-            } else {
+            } else if ("align".equals(option.getType())) {
+                align = option.getValue();
+            } else if (!"labelWidth".equals(option.getType())) {
                 throw new IllegalStateException("Unknown option for checkbox: " + option.getType());
             }
         }
@@ -44,6 +49,7 @@ public final class CheckBoxComponentPattern extends FieldComponentPattern {
     protected Map<String, Object> getJspOptions(final Locale locale) {
         Map<String, Object> options = super.getJspOptions(locale);
         options.put("textRepresentationOnDisabled", textRepresentationOnDisabled);
+        options.put("align", align);
         return options;
     }
 
