@@ -38,7 +38,6 @@
 /** labels **/
 
 .component_form_element .labelbox {
-	width: 85px;
 	height: 100%;
 	display: inline-block;
 	vertical-align: middle;
@@ -99,9 +98,10 @@
 	vertical-align: middle;
 	display: inline-block;
 	position: absolute;
-	left: 100px;
+	padding-left: 20px;
 	right: 10px;
 	height: 100%;
+	white-space: nowrap;
 }
 .component_container_form_w.noLabel {
 	left: 25px;

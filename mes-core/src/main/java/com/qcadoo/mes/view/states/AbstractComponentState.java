@@ -88,7 +88,6 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         if (MessageType.FAILURE.equals(type)) {
             hasError = true;
         }
-        // requestRender();
     }
 
     @Override
