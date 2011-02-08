@@ -84,7 +84,7 @@ public final class TestDataLoader {
 
     private static final long MILLIS_IN_DAY = 86400000;
 
-    private static final String[] TYPE_OF_MATERIALS = new String[] { "03product", "01component", "02intermediate", "04waste" };
+    private static final String[] TYPE_OF_MATERIALS = new String[] { "03product", "01component", "02intermediate" };
 
     private static final List<String> UNITS = new ArrayList<String>();
 
@@ -496,7 +496,187 @@ public final class TestDataLoader {
 
             sessionFactory.getCurrentSession().save(technology);
 
-            addTechnologyOperationComponents(technology, null, 3);
+            if ("108n/0601".equals(values.get("product_nr"))) {
+                if ("63".equals(values.get("bom_id"))) {
+                    addTechnologyOperationComponentsForTable(technology);
+                } else if ("64".equals(values.get("bom_id"))) {
+                    addTechnologyOperationComponentsForTableAdvanced(technology);
+                }
+            } else if ("108n/1608".equals(values.get("product_nr"))) {
+                if ("65".equals(values.get("bom_id"))) {
+                    addTechnologyOperationComponentsForTabouret(technology);
+                } else if ("66".equals(values.get("bom_id"))) {
+                    addTechnologyOperationComponentsForTabouretAdvanced(technology);
+                }
+            } else if ("108n/0617".equals(values.get("product_nr"))) {
+                if ("67".equals(values.get("bom_id"))) {
+                    addTechnologyOperationComponentsForStool(technology);
+                } else if ("68".equals(values.get("bom_id"))) {
+                    addTechnologyOperationComponentsForStoolAdvanced(technology);
+                }
+            } else {
+                addTechnologyOperationComponents(technology, null, 3);
+            }
+        }
+    }
+
+    private void addTechnologyOperationComponentsForTable(final ProductsTechnology technology) {
+        ProductsTechnologyOperationComponent parent = addOperationComponent(technology, null, getOperationByNumber("5"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0606"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0605"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0604"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0602"));
+        addProductOutComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0601"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0602"));
+        addProductOutComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0607"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
+        addProductInComponent(parent, new BigDecimal("0.25"), getProductByNumber("108n/0608"));
+        addProductOutComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0607"));
+    }
+
+    private void addTechnologyOperationComponentsForTableAdvanced(final ProductsTechnology technology) {
+        ProductsTechnologyOperationComponent parent = addOperationComponent(technology, null, getOperationByNumber("5"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0606"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0605"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0604"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0602"));
+        addProductOutComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0601"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0602"));
+        addProductOutComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0607"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0608"));
+        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0607"));
+    }
+
+    private void addTechnologyOperationComponentsForStool(final ProductsTechnology technology) {
+        ProductsTechnologyOperationComponent parent = addOperationComponent(technology, null, getOperationByNumber("5"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0619"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0618"));
+        addProductOutComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0617"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("6"));
+        addProductInComponent(parent, new BigDecimal("8"), getProductByNumber("108n/0612"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0622"));
+        addProductInComponent(parent, new BigDecimal("16"), getProductByNumber("108n/0621"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0620"));
+        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0618"));
+        ProductsTechnologyOperationComponent parent1 = addOperationComponent(technology, parent, getOperationByNumber("4"));
+        addProductInComponent(parent1, new BigDecimal("16"), getProductByNumber("108n/0625"));
+        addProductOutComponent(parent1, new BigDecimal("16"), getProductByNumber("108n/0621"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0623"));
+        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0620"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
+        addProductInComponent(parent, new BigDecimal("0.125"), getProductByNumber("108n/0624"));
+        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0623"));
+    }
+
+    private void addTechnologyOperationComponentsForStoolAdvanced(final ProductsTechnology technology) {
+        ProductsTechnologyOperationComponent parent = addOperationComponent(technology, null, getOperationByNumber("5"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0619"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0618"));
+        addProductOutComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0617"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("6"));
+        addProductInComponent(parent, new BigDecimal("8"), getProductByNumber("108n/0612"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0622"));
+        addProductInComponent(parent, new BigDecimal("16"), getProductByNumber("108n/0621"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0620"));
+        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0618"));
+        ProductsTechnologyOperationComponent parent1 = addOperationComponent(technology, parent, getOperationByNumber("4"));
+        addProductInComponent(parent1, new BigDecimal("1"), getProductByNumber("108n/0625"));
+        addProductOutComponent(parent1, new BigDecimal("1"), getProductByNumber("108n/0621"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0623"));
+        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0620"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0624"));
+        addProductOutComponent(parent, new BigDecimal("32"), getProductByNumber("108n/0623"));
+    }
+
+    private void addTechnologyOperationComponentsForTabouret(final ProductsTechnology technology) {
+        ProductsTechnologyOperationComponent parent = addOperationComponent(technology, null, getOperationByNumber("5"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0609"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0610"));
+        addProductOutComponent(parent, new BigDecimal("1"), getProductByNumber("108n/1608"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("6"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0612"));
+        addProductInComponent(parent, new BigDecimal("16"), getProductByNumber("108n/0611"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0613"));
+        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0610"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0614"));
+        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0613"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
+        addProductInComponent(parent, new BigDecimal("0.125"), getProductByNumber("108n/0615"));
+        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0614"));
+    }
+
+    private void addTechnologyOperationComponentsForTabouretAdvanced(final ProductsTechnology technology) {
+        ProductsTechnologyOperationComponent parent = addOperationComponent(technology, null, getOperationByNumber("5"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0609"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0610"));
+        addProductOutComponent(parent, new BigDecimal("1"), getProductByNumber("108n/1608"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("6"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0612"));
+        addProductInComponent(parent, new BigDecimal("16"), getProductByNumber("108n/0611"));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0613"));
+        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber("108n/0610"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0614"));
+        addProductOutComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0613"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
+        addProductInComponent(parent, new BigDecimal("1"), getProductByNumber("108n/0615"));
+        addProductOutComponent(parent, new BigDecimal("32"), getProductByNumber("108n/0614"));
+    }
+
+    private ProductsTechnologyOperationComponent addOperationComponent(final ProductsTechnology technology,
+            final ProductsTechnologyOperationComponent parent, final ProductsOperation operation) {
+        ProductsTechnologyOperationComponent component = new ProductsTechnologyOperationComponent();
+        component.setTechnology(technology);
+        component.setParent(parent);
+        component.setOperation(operation);
+        component.setEntityType("operation");
+
+        sessionFactory.getCurrentSession().save(component);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test operation component {technology=" + component.getTechnology().getNumber() + ", parent="
+                    + (parent != null ? parent.getId() : 0) + ", operation=" + component.getOperation().getNumber() + "}");
+        }
+        return component;
+    }
+
+    private void addProductInComponent(final ProductsTechnologyOperationComponent component, final BigDecimal quantity,
+            final ProductsProduct product) {
+        ProductsOperationProductInComponent productComponent = new ProductsOperationProductInComponent();
+        productComponent.setOperationComponent(component);
+        productComponent.setQuantity(quantity);
+        productComponent.setProduct(product);
+        productComponent.setBatchRequired(true);
+
+        sessionFactory.getCurrentSession().save(productComponent);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test product component {product=" + productComponent.getProduct().getNumber() + ", operation="
+                    + productComponent.getOperationComponent().getOperation().getNumber() + ", quantity="
+                    + productComponent.getQuantity() + "}");
+        }
+    }
+
+    private void addProductOutComponent(final ProductsTechnologyOperationComponent component, final BigDecimal quantity,
+            final ProductsProduct product) {
+        ProductsOperationProductOutComponent productComponent = new ProductsOperationProductOutComponent();
+        productComponent.setOperationComponent(component);
+        productComponent.setQuantity(quantity);
+        productComponent.setProduct(product);
+
+        sessionFactory.getCurrentSession().save(productComponent);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test product component {product=" + productComponent.getProduct().getNumber() + ", operation="
+                    + productComponent.getOperationComponent().getOperation().getNumber() + ", quantity="
+                    + productComponent.getQuantity() + "}");
         }
     }
 
@@ -677,6 +857,11 @@ public final class TestDataLoader {
     private UsersGroup getGroupByRole(final String role) {
         return (UsersGroup) sessionFactory.getCurrentSession().createCriteria(UsersGroup.class)
                 .add(Restrictions.eq("role", role)).setMaxResults(1).uniqueResult();
+    }
+
+    private ProductsOperation getOperationByNumber(final String number) {
+        return (ProductsOperation) sessionFactory.getCurrentSession().createCriteria(ProductsOperation.class)
+                .add(Restrictions.eq("number", number)).setMaxResults(1).uniqueResult();
     }
 
     private String getRandomDictionaryItem(final String dictionaryName) {

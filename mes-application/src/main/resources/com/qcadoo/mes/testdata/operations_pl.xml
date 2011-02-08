@@ -31,4 +31,6 @@
 	<row NAME="Piłowanie" NUMBER="2" />
 	<row NAME="Szlifowanie" NUMBER="3" />
 	<row NAME="Frezowanie" NUMBER="4" />
+	<row NAME="Pakowanie" NUMBER="5" />
+	<row NAME="Skręcanie" NUMBER="6" />
 </operations>
