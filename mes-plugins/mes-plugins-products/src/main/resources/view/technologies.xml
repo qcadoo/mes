@@ -178,9 +178,9 @@
 							<option type="label" value="qualityLayoutLabel" />
 							<component type="gridLayout" name="gridsLayout" columns="1" rows="4">
 								<layoutElement column="1" row="1">
-									<component type="select" name="qualityControlType" reference="qualityControlType" field="qualityControlType" ><!--
-										<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkBatchNrReq"/>									
-									--></component>
+									<component type="select" name="qualityControlType" reference="qualityControlType" field="qualityControlType" >
+										<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkQualityControlType"/>									
+									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">	
 									<component type="input" name="unitSamplingNr" reference="unitSamplingNr" field="unitSamplingNr" />
@@ -308,9 +308,9 @@
 				</component>
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="changeQualityControlType"/>	
 		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="checkAttributesReq" />
 		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="disableBatchRequiredForTechnology"/>
-		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="changeQualityControlType"/>	
 	</view>
 	<view name="technologyOperationComponent" model="technologyOperationComponent">
 		<component type="window" name="window">

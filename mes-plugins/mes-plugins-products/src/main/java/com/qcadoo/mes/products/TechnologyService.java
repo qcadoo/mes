@@ -53,6 +53,7 @@ import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.components.lookup.LookupComponentState;
+import com.qcadoo.mes.view.components.select.SelectComponentState;
 import com.qcadoo.mes.view.components.tree.TreeComponentState;
 
 @Service
@@ -205,6 +206,112 @@ public final class TechnologyService {
         }
     }
 
+    public void checkAcceptedDefectsQuantity(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (!(state instanceof FieldComponentState)) {
+            throw new IllegalStateException("component is not input");
+        }
+
+        FieldComponentState acceptedDefectsQuantity = (FieldComponentState) state;
+
+        FieldComponentState comment = (FieldComponentState) viewDefinitionState.getComponentByReference("comment");
+
+        if (acceptedDefectsQuantity.getFieldValue() != null) {
+            if (isNumber(acceptedDefectsQuantity.getFieldValue().toString())
+                    && (new BigDecimal(acceptedDefectsQuantity.getFieldValue().toString())).compareTo(new BigDecimal("0")) > 0) {
+                comment.setRequired(true);
+            } else {
+                comment.setRequired(false);
+            }
+        }
+    }
+
+    private boolean isNumber(String value) {
+        try {
+            new BigDecimal(value);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean checkIfCommentForQuantityIsReq(final DataDefinition dataDefinition, final Entity entity) {
+        BigDecimal acceptedDefectsQuantity = (BigDecimal) entity.getField("acceptedDefectsQuantity");
+
+        if (acceptedDefectsQuantity != null) {
+            String comment = (String) entity.getField("comment");
+
+            if ((comment == null || comment.isEmpty()) && acceptedDefectsQuantity.compareTo(new BigDecimal("0")) > 0) {
+                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addError(dataDefinition.getField("comment"), "products.quality.control.validate.global.error.comment");
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    public void checkQualityControlType(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (!(state instanceof SelectComponentState)) {
+            throw new IllegalStateException("component is not select");
+        }
+
+        SelectComponentState qualityControlType = (SelectComponentState) state;
+
+        FieldComponentState unitSamplingNr = (FieldComponentState) viewDefinitionState.getComponentByReference("unitSamplingNr");
+
+        if (qualityControlType.getFieldValue() != null) {
+            if (qualityControlType.getFieldValue().equals("02forUnit")) {
+                unitSamplingNr.setRequired(true);
+                unitSamplingNr.setVisible(true);
+            } else {
+                unitSamplingNr.setRequired(false);
+                unitSamplingNr.setVisible(false);
+            }
+        }
+    }
+
+    public void checkQualityControlResult(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (!(state instanceof SelectComponentState)) {
+            throw new IllegalStateException("component is not select");
+        }
+
+        SelectComponentState resultType = (SelectComponentState) state;
+
+        FieldComponentState comment = (FieldComponentState) viewDefinitionState.getComponentByReference("comment");
+
+        if (resultType.getFieldValue() != null) {
+            if (resultType.getFieldValue().equals("03objection")) {
+                comment.setRequired(true);
+            } else {
+                comment.setRequired(false);
+            }
+        }
+    }
+
+    public boolean checkIfCommentForResultIsReq(final DataDefinition dataDefinition, final Entity entity) {
+        String resultType = (String) entity.getField("controlResult");
+
+        if (resultType != null && resultType.equals("03objection")) {
+
+            String comment = (String) entity.getField("comment");
+            if (comment == null || comment.isEmpty()) {
+                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addError(dataDefinition.getField("comment"), "products.quality.control.validate.global.error.comment");
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
     public void generateTechnologyNumber(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
         if (!(componentState instanceof FieldComponentState)) {
             throw new IllegalStateException("component is not FieldComponentState");
@@ -335,6 +442,42 @@ public final class TechnologyService {
         }
     }
 
+    public void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state, final Locale locale) {
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        if (form.getFieldValue() != null) {
+            FieldComponentState comment = (FieldComponentState) state.getComponentByReference("comment");
+
+            FieldComponentState controlResult = (FieldComponentState) state.getComponentByReference("controlResult");
+
+            if (controlResult != null && controlResult.getFieldValue().equals("03objection")) {
+                comment.setRequired(true);
+                comment.requestComponentUpdateState();
+            } else {
+                comment.setRequired(false);
+            }
+        }
+    }
+
+    public void checkIfCommentIsRequiredBasedOnDefects(final ViewDefinitionState state, final Locale locale) {
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        if (form.getFieldValue() != null) {
+
+            FieldComponentState comment = (FieldComponentState) state.getComponentByReference("comment");
+
+            FieldComponentState acceptedDefectsQuantity = (FieldComponentState) state
+                    .getComponentByReference("acceptedDefectsQuantity");
+
+            if (acceptedDefectsQuantity.getFieldValue() != null
+                    && (new BigDecimal(acceptedDefectsQuantity.getFieldValue().toString().replace(",", "."))
+                            .compareTo(new BigDecimal("0")) > 0)) {
+                comment.setRequired(true);
+                comment.requestComponentUpdateState();
+            } else {
+                comment.setRequired(false);
+            }
+        }
+    }
+
     public void disableBatchRequiredForTechnology(final ViewDefinitionState state, final Locale locale) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         if (form.getFieldValue() != null) {
@@ -390,10 +533,30 @@ public final class TechnologyService {
 
     }
 
+    public boolean checkIfUnitSampligNrIsReq(final DataDefinition dataDefinition, final Entity entity) {
+        String qualityControlType = (String) entity.getField("qualityControlType");
+
+        if (qualityControlType != null && qualityControlType.equals("02forUnit")) {
+
+            BigDecimal unitSamplingNr = (BigDecimal) entity.getField("unitSamplingNr");
+            if (unitSamplingNr == null || unitSamplingNr.scale() > 3 || unitSamplingNr.compareTo(new BigDecimal("0")) < 0
+                    || unitSamplingNr.precision() > 7) {
+                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addError(dataDefinition.getField("unitSamplingNr"),
+                        "products.technology.validate.global.error.unitSamplingNr");
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
     public void changeQualityControlType(final ViewDefinitionState state, final Locale locale) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        FieldComponentState qualityControlType = (FieldComponentState) state.getComponentByReference("qualityControlType");
         if (form.getFieldValue() != null) {
-            FieldComponentState qualityControlType = (FieldComponentState) state.getComponentByReference("qualityControlType");
             if (checkOperationQualityControlRequired((Long) form.getFieldValue())) {
                 qualityControlType.setFieldValue("04forOperation");
                 qualityControlType.setEnabled(false);
@@ -402,7 +565,14 @@ public final class TechnologyService {
                 qualityControlType.setEnabled(true);
             }
         }
-
+        FieldComponentState unitSamplingNr = (FieldComponentState) state.getComponentByReference("unitSamplingNr");
+        if (qualityControlType.getFieldValue() == null || !qualityControlType.getFieldValue().equals("02forUnit")) {
+            unitSamplingNr.setRequired(false);
+            unitSamplingNr.setVisible(false);
+        } else if (qualityControlType.getFieldValue().equals("02forUnit")) {
+            unitSamplingNr.setRequired(true);
+            unitSamplingNr.setVisible(true);
+        }
     }
 
     private boolean checkOperationQualityControlRequired(final Long entityId) {

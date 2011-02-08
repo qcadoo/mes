@@ -75,6 +75,9 @@
 					<bigButton name="genealogy" action="#{grid}.fireEvent(showGenealogy);" icon="genealogyIcon24.png" state="disabled" />
 					<bigButton name="newGenealogy" action="#{grid}.fireEvent(newGenealogy);" icon="genealogyIcon24.png" state="disabled" />
 				</group>
+				<group name="qualityContol">
+					<bigButton name="generateQualityControl" action="#{grid}.fireEvent(generateQualityControl);" icon="genealogyIcon24.png" state="disabled" />
+				</group>
 			</ribbon>
 			<component type="grid" name="orders" reference="grid">
 				<script>
@@ -179,6 +182,7 @@
 				<listener event="activateOrder" bean="com.qcadoo.mes.products.OrderService" method="activateOrder"/>
 				<listener event="showGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
 				<listener event="newGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
+				<listener event="generateQualityControl" bean="com.qcadoo.mes.products.OrderService" method="generateQualityControl" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
@@ -221,6 +225,9 @@
 					<bigButton name="genealogy" action="#{form}.fireEvent(showGenealogy);" icon="genealogyIcon24.png" state="disabled" />
 					<bigButton name="newGenealogy" action="#{form}.fireEvent(newGenealogy);" icon="genealogyIcon24.png" state="disabled" />
 				</group>
+				<group name="qualityContol">
+					<bigButton name="generateQualityControl" action="#{form}.fireEvent(generateQualityControl);" icon="genealogyIcon24.png" state="disabled" />
+				</group>
 			</ribbon>
 			<component type="form" name="order" reference="form">
 				<script>
@@ -234,6 +241,7 @@
 						var newGenealogy = #{window}.getRibbonItem("genealogy.newGenealogy");
 						var activateOrder = #{window}.getRibbonItem("status.activateOrder");
 						var finishOrder = #{window}.getRibbonItem("status.finishOrder");
+						var genQualityControl = #{window}.getRibbonItem("qualityContol.generateQualityControl");
 						
 						this.addOnChangeListener({
 							onSetValue: function(value) {
@@ -246,12 +254,15 @@
 									del.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
 									activateOrder.disable();
 									finishOrder.disable();
+									genQualityControl.disable();
 								} else if (state && state == "02inProgress") { 
 									activateOrder.disable();
 									finishOrder.enable();
+									genQualityControl.disable();
 								} else if (state && state == "01pending") {
 									activateOrder.enable();
 									finishOrder.disable();
+									genQualityControl.enable();
 								} else {
 									save.enable();
 									saveBack.enable();
@@ -352,6 +363,7 @@
 				<listener event="activateOrder" bean="com.qcadoo.mes.products.OrderService" method="activateOrder"/>
 				<listener event="showGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
 				<listener event="newGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
+				<listener event="generateQualityControl" bean="com.qcadoo.mes.products.OrderService" method="generateQualityControl" />
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="generateOrderNumber" />		
