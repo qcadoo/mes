@@ -44,10 +44,13 @@
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/menuTopLevel.css" type="text/css" />
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/menu/style.css" type="text/css" />
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/notification.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/jqModal.css" type="text/css" />
 		
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/_jquery-1.4.2.min.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/jquery.pnotify.min.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/jqModal.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/logger.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/modal.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/menu/model.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/menu/menuController.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/core/windowController.js"></script>
@@ -80,6 +83,10 @@
 
 		window.goToPage = function(url, serializationObject, isPage) {
 			windowController.goToPage(url, serializationObject, isPage);
+		}
+
+		window.openModal = function(id, url, serializationObject) {
+			windowController.openModal(id, url, serializationObject);
 		}
 
 		window.goBack = function() {

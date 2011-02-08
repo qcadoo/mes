@@ -51,6 +51,8 @@ public final class GridComponentPattern extends AbstractComponentPattern {
 
     private String correspondingComponent;
 
+    private boolean correspondingViewInModal = false;
+
     private boolean paginable = true;
 
     private boolean deletable = false;
@@ -141,6 +143,7 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         json.put("lookup", lookup);
         json.put("correspondingView", correspondingView);
         json.put("correspondingComponent", correspondingComponent);
+        json.put("correspondingViewInModal", correspondingViewInModal);
         json.put("prioritizable", getDataDefinition().isPrioritizable());
         json.put("searchableColumns", new JSONArray(searchableColumns));
         json.put("orderableColumns", new JSONArray(orderableColumns));
@@ -316,6 +319,8 @@ public final class GridComponentPattern extends AbstractComponentPattern {
                 correspondingView = option.getValue();
             } else if ("correspondingComponent".equals(option.getType())) {
                 correspondingComponent = option.getValue();
+            } else if ("correspondingViewInModal".equals(option.getType())) {
+                correspondingViewInModal = Boolean.parseBoolean(option.getValue());
             } else if ("paginable".equals(option.getType())) {
                 paginable = Boolean.parseBoolean(option.getValue());
             } else if ("creatable".equals(option.getType())) {

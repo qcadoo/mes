@@ -51,7 +51,7 @@ public final class TreeComponentState extends FieldComponentState {
         belongsToFieldDefinition = scopeField;
         this.dataTypes = dataTypes;
         registerEvent("initialize", eventPerformer, "initialize");
-        registerEvent("initializeAfterBack", eventPerformer, "initialize");
+        registerEvent("initializeAfterBack", eventPerformer, "initializeAfterBack");
         registerEvent("refresh", eventPerformer, "refresh");
         registerEvent("select", eventPerformer, "selectEntity");
         registerEvent("remove", eventPerformer, "removeSelectedEntity");
@@ -227,6 +227,9 @@ public final class TreeComponentState extends FieldComponentState {
 
             if (tree.getRoot() != null) {
                 rootNode = createNode(tree.getRoot());
+                if (openedNodes == null) {
+                    addOpenedNode(rootNode.getId());
+                }
             }
         }
     }
@@ -254,6 +257,14 @@ public final class TreeComponentState extends FieldComponentState {
                 addOpenedNode(rootNode.getId());
             }
             setSelectedEntityId(null);
+            requestRender();
+            requestUpdateState();
+        }
+
+        public void initializeAfterBack(final String[] args) {
+            if (rootNode != null) {
+                addOpenedNode(rootNode.getId());
+            }
             requestRender();
             requestUpdateState();
         }
