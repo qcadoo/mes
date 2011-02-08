@@ -296,19 +296,19 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
-		
 		if (value.belongsToEntityId) {
 			belongsToEntityId = value.belongsToEntityId;
 		}
-		
-		if (value.root) {
-			if (root) {
-				var childrensArray = tree.jstree("get_json", -1);
-				for (var i in childrensArray) {
-					tree.jstree("delete_node", $("#"+elementSearchName+"_node_"+getEntityId(childrensArray[i].attr.id)));
-				}
+		if (root) {
+			var childrensArray = tree.jstree("get_json", -1);
+			for (var i in childrensArray) {
+				tree.jstree("delete_node", $("#"+elementSearchName+"_node_"+getEntityId(childrensArray[i].attr.id)));
 			}
+		}
+		if (value.root) {
 			root = addNode(value.root, -1);
+		} else {
+			root = null;
 		}
 		
 		tree.jstree("close_all", root, true);
@@ -326,6 +326,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function activeMoveMode() {
+		$.jstree._focused()._get_settings().dnd.dnd_enabled = true;
+
 		buttons.moveButton.hide();
 		
 		for (var i in newButtons) {
@@ -367,6 +369,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function diactiveMoveMode() {
+		$.jstree._focused()._get_settings().dnd.dnd_enabled = false;
+		
 		buttons.moveButton.addClass("headerButtonEnabled");
 		buttons.moveButton.setInfo();
 		buttons.moveButton.label.html("");
@@ -642,7 +646,11 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			if (params) {
 				url += "?context="+JSON.stringify(params);
 			}
-			mainController.goToPage(url);
+			if (dataType.correspondingViewInModal) {
+				mainController.openModal(elementPath+"_editWindow", url);
+			} else {
+				mainController.goToPage(url);
+			}
 		}
 	}
 	

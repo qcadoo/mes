@@ -2070,7 +2070,8 @@
 			drop_finish		: $.noop,
 			drag_target		: ".jstree-draggable",
 			drag_finish		: $.noop,
-			drag_check		: function (data) { return { after : false, before : false, inside : true }; }
+			drag_check		: function (data) { return { after : false, before : false, inside : true }; },
+			dnd_enabled: false // mina
 		},
 		_fn : {
 			dnd_prepare : function () {
@@ -2183,6 +2184,9 @@
 				}
 			},
 			start_drag : function (obj, e) {
+				if (! this._get_settings().dnd.dnd_enabled) { // mina
+					return;
+				}
 				o = this._get_node(obj);
 				if(this.data.ui && this.is_selected(o)) { o = this._get_node(null, true); }
 				$.vakata.dnd.drag_start(e, { jstree : true, obj : o }, "<ins class='jstree-icon'></ins>" + (o.length > 1 ? "Multiple selection" : this.get_text(o)) );

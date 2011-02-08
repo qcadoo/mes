@@ -34,16 +34,24 @@
 
 <tiles:useAttribute name="component" />
 <tiles:useAttribute name="componentType" />
-<tiles:useAttribute name="componentBody"/>
+<tiles:useAttribute name="componentBody" />
+<tiles:useAttribute name="componentAlign" ignore="true" />
 
 <div class="component_element component_form_element component_element_${componentType}">
 
+	<c:set var="labelWidth" value="${component['jspOptions']['labelWidth']}" />
+	
 	<c:set var="isInputBox" value="${'textarea' == componentType || 'input' == componentType || 'password' == componentType || 'calendar' == componentType || 'lookup' == componentType}"/>
 
 	<c:if test="${! component['hasLabel']}">
 		<c:set var="labelboxClass" value="noLabel"/>
 	</c:if>
-	<div class="labelbox ${labelboxClass}"><div class="label_h"></div><div class="label" ><c:if test="${component['hasLabel']}"><span style="display: inline" id="${component['path']}_labelDiv">${component['jspOptions']['translations']['label']}</span></c:if><c:if test="${component['hasDescription']}"><div class="description_box">
+	
+	<c:if test="${componentAlign != 'right'}">
+		<c:set var="componentAlign" value="left"/>
+	</c:if>
+	
+	<div class="labelbox ${labelboxClass}" style="width: ${labelWidth}%"><div class="label_h"></div><div class="label" ><c:if test="${component['hasLabel']}"><span style="display: inline" id="${component['path']}_labelDiv">${component['jspOptions']['translations']['label']}</span></c:if><c:if test="${component['hasDescription']}"><div class="description_box">
 				<div id="${component['path']}_description_icon" class="description_icon"></div>
 				<div id="${component['path']}_description_message" class="description_message" style="display: none"><span>${component['jspOptions']['translations']['descriptionHeader']}</span><p>${component['jspOptions']['translations']['description']}</p></div></div></c:if><div class="error_box">
 				<div id="${component['path']}_error_icon" class="error_icon"></div>
@@ -51,7 +59,7 @@
 	
 	<c:choose>
 		<c:when test="${isInputBox && !component['jspOptions']['textRepresentationOnDisabled']}">
-			<div class="component_container_form_w ${labelboxClass}"><div class="component_container_form_inner_h"></div><div class="component_container_form_inner">
+			<div class="component_container_form_w ${labelboxClass}" style="left: ${labelWidth}%; text-align: ${componentAlign}"><div class="component_container_form_inner_h"></div><div class="component_container_form_inner">
 					${componentBody}
 					<div class="component_container_form_x"></div>
 					<div class="component_container_form_y"></div>
@@ -59,7 +67,7 @@
 			</div>
 		</c:when>
 		<c:otherwise>
-			<div class="component_container_form_w ${labelboxClass}">
+			<div class="component_container_form_w ${labelboxClass}" style="left: ${labelWidth}%; text-align: ${componentAlign}">
 				${componentBody}
 			</div>			
 		</c:otherwise>

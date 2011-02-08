@@ -79,6 +79,7 @@ public final class LookupComponentPattern extends FieldComponentPattern {
 
     @Override
     protected void initializeComponent() throws JSONException {
+        super.initializeComponent();
 
         for (ComponentOption option : getOptions()) {
             if ("expression".equals(option.getType())) {
@@ -114,6 +115,8 @@ public final class LookupComponentPattern extends FieldComponentPattern {
             } else if ("fieldCode".equals(option.getType())) {
                 continue;
             } else if ("textRepresentationOnDisabled".equals(option.getType())) {
+                continue;
+            } else if ("labelWidth".equals(option.getType())) {
                 continue;
             } else if ("orderable".equals(option.getType())) {
                 Map<String, String> newAttributes = new HashMap<String, String>();

@@ -32,6 +32,10 @@ QCD.WindowController = function(_menuStructure) {
 	
 	var statesStack = new Array();
 	
+	var modalsStack = new Array();
+	
+	var modalObjects = new Object();
+	
 	var serializationObjectToInsert = null;
 	
 	var currentPage = null;
@@ -78,11 +82,45 @@ QCD.WindowController = function(_menuStructure) {
 		performGoToPage(currentPage);
 	}
 	
+	window.openModal = function(id, url, serializationObject) {
+		var stateObject = {
+			serializationObject: serializationObject
+		};
+		statesStack.push(stateObject);
+		
+		if (! modalObjects.id) {
+			modalObjects.id = QCD.utils.Modal.createModal();
+		}
+			modalObjects.id.iframe.load(function() {
+				if (this.src != "" && this.contentWindow.init) {
+					this.contentWindow.init(serializationObjectToInsert);
+					serializationObjectToInsert = null;
+				}
+			});
+		
+		modalsStack.push(modalObjects.id);
+		
+		if (url.indexOf("?") != -1) {
+			url+="&";
+		} else {
+			url+="?";
+		}
+		url+="popup=true";
+		
+		modalObjects.id.show("page/"+url);
+	}
+	
 	this.goBack = function() {
 		var stateObject = statesStack.pop();
 		serializationObjectToInsert = stateObject.serializationObject;
-		currentPage = stateObject.url;
-		performGoToPage(currentPage);
+		if (modalsStack.length == 0) {
+			currentPage = stateObject.url;
+			performGoToPage(currentPage);
+		} else {
+			modal = modalsStack.pop();
+			modal.hide();
+			onIframeLoad();
+		}
 	}
 	
 	this.goToLastPage = function() {

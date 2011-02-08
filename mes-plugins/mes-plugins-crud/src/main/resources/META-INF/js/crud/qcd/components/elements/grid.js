@@ -182,6 +182,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		gridParameters.correspondingViewName = options.correspondingView;
 		gridParameters.correspondingComponent = options.correspondingComponent;
+		gridParameters.correspondingViewInModal = options.correspondingViewInModal;
 		
 		for (var opName in defaultOptions) {
 			if (gridParameters[opName] == undefined) {
@@ -248,7 +249,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	function redirectToCorrespondingPage(params) {
 		if (gridParameters.correspondingViewName && gridParameters.correspondingViewName != '') {
 			params[gridParameters.correspondingComponent+"."+belongsToFieldName] = currentState.belongsToEntityId;
-			mainController.goToPage(gridParameters.correspondingViewName + ".html?context="+JSON.stringify(params));
+			var url = gridParameters.correspondingViewName + ".html?context="+JSON.stringify(params);
+			if (gridParameters.correspondingViewInModal) {
+				mainController.openModal(elementPath+"_editWindow", url);
+			} else {			
+				mainController.goToPage(url);
+			}
 		}
 	}
 	

@@ -25,10 +25,11 @@ public final class TextInputComponentPattern extends FieldComponentPattern {
 
     @Override
     protected void initializeComponent() throws JSONException {
+        super.initializeComponent();
         for (ComponentOption option : getOptions()) {
             if ("textRepresentationOnDisabled".equals(option.getType())) {
                 textRepresentationOnDisabled = Boolean.parseBoolean(option.getValue());
-            } else {
+            } else if (!"labelWidth".equals(option.getType())) {
                 throw new IllegalStateException("Unknown option for input: " + option.getType());
             }
         }
