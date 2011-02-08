@@ -295,7 +295,7 @@ public class AutocompleteGenealogyService {
         genealogy.setField("productInComponents", new ArrayList<Entity>());
         List<String> componentsWithoutBatch = new ArrayList<String>();
         List<Entity> operationComponents = new ArrayList<Entity>();
-        genealogyService.addOperationsFromSubtechnologies(technology.getTreeField("operationComponents"), operationComponents);
+        genealogyService.addOperationsFromSubtechnologiesToList(technology.getTreeField("operationComponents"), operationComponents);
         for (Entity operationComponent : operationComponents) {
             for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                 if ((Boolean) operationProductComponent.getField("batchRequired")) {

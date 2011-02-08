@@ -77,7 +77,7 @@ public final class WorkPlanForMachineXlsService extends XlsDocumentService {
             Entity technology = (Entity) order.getField("technology");
             if (technology != null) {
                 List<Entity> operationComponents = new ArrayList<Entity>();
-                productReportService.addOperationsFromSubtechnologies(technology.getTreeField("operationComponents"),
+                productReportService.addOperationsFromSubtechnologiesToList(technology.getTreeField("operationComponents"),
                         operationComponents);
                 Collections.sort(operationComponents, new EntityOperationNumberComparator());
                 for (Entity operationComponent : operationComponents) {
