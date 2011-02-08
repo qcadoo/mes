@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
-	<appender name="console-log" class="org.apache.log4j.ConsoleAppender">
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
-		</layout>
-	</appender>
 	<appender name="root-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/root.log" />
 		<param name="MaxFileSize" value="100MB" />
@@ -39,17 +34,9 @@
 			<param name="ConversionPattern" value="%d %m%n" />
 		</layout>
 	</appender>
-	<appender name="sql-log" class="org.apache.log4j.RollingFileAppender">
-		<param name="file" value="${QCADOO_LOG}/sql.log" />
-		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d %m%n" />
-		</layout>
-	</appender>
 	
 	<logger name="com.qcadoo.mes">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	<logger name="com.qcadoo.mes.utils">
 		<level value="info" />
@@ -70,11 +57,6 @@
 		<level value="info" />
 	</logger>
 	
-	<logger name="org.hibernate.SQL" additivity="false">
-		<level value="debug" />
-		<appender-ref ref="sql-log" />	
-	</logger>
-	
 	<logger name="PERFORMANCE" additivity="false">
 		<level value="warn" />
 		<appender-ref ref="performance-log" />
@@ -87,7 +69,6 @@
 
 	<root>	
 		<level value="debug" />
-		<appender-ref ref="console-log" />
 		<appender-ref ref="root-log" />
 		<appender-ref ref="warn-log" />
 	</root>

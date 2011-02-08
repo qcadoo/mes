@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 @Component
 public final class MonitorableAdvice {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MonitorableAdvice.class);
+    private static final Logger PERFORMANCE_LOG = LoggerFactory.getLogger("PERFORMANCE");
 
     @Around("@annotation(monitorable)")
     public Object doBasicProfiling(final ProceedingJoinPoint pjp, final Monitorable monitorable) throws Throwable {
@@ -50,10 +50,10 @@ public final class MonitorableAdvice {
             long difference = end - start;
 
             if (difference > monitorable.threshold()) {
-                LOG.warn("Call " + pjp.getSignature().toShortString() + " with " + Arrays.toString(pjp.getArgs()) + " took "
+                PERFORMANCE_LOG.warn("Call " + pjp.getSignature().toShortString() + " with " + Arrays.toString(pjp.getArgs()) + " took "
                         + difference + " ms ");
-            } else if (LOG.isDebugEnabled()) {
-                LOG.debug("Call " + pjp.getSignature().toShortString() + " with " + Arrays.toString(pjp.getArgs()) + " took "
+            } else if (PERFORMANCE_LOG.isDebugEnabled()) {
+                PERFORMANCE_LOG.debug("Call " + pjp.getSignature().toShortString() + " with " + Arrays.toString(pjp.getArgs()) + " took "
                         + difference + " ms ");
             }
 

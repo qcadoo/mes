@@ -53,7 +53,7 @@ public class BasicMachine {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -61,7 +61,7 @@ public class BasicMachine {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -69,7 +69,7 @@ public class BasicMachine {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -77,7 +77,7 @@ public class BasicMachine {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -85,7 +85,7 @@ public class BasicMachine {
         return productionLine;
     }
 
-    public void setProductionLine(boolean productionLine) {
+    public void setProductionLine(final boolean productionLine) {
         this.productionLine = productionLine;
     }
 

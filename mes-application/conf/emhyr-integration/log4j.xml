@@ -1,19 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
-	<appender name="console" class="org.apache.log4j.ConsoleAppender">
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
-		</layout>
-	</appender>
-	<appender name="file" class="org.apache.log4j.RollingFileAppender">
-		<param name="file" value="${QCADOO_LOG}/qcadoo.log" />
+	<appender name="root-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/root.log" />
 		<param name="MaxFileSize" value="100MB" />
 		<param name="MaxBackupIndex" value="5" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
 	</appender>
+	<appender name="warn-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/warn.log" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<param name="Threshold" value="warn"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
+		</layout>
+	</appender>
+	<appender name="translation-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/translation.log" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %m%n" />
+		</layout>
+	</appender>
+	<appender name="performance-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/performance.log" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %m%n" />
+		</layout>
+	</appender>
+	<appender name="sql-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/sql.log" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %m%n" />
+		</layout>
+	</appender>
+	
 	<logger name="com.qcadoo.mes">
 		<level value="debug" />
 	</logger>
@@ -32,9 +61,29 @@
 	<logger name="org.apache">
 		<level value="info" />
 	</logger>
-	<root>
-		<priority value="debug" />
-		<appender-ref ref="console" />
-		<appender-ref ref="file" />
+	<logger name="net.sf.ehcache">
+		<level value="info" />
+	</logger>
+	
+	<logger name="org.hibernate.SQL" additivity="false">
+		<level value="debug" />
+		<appender-ref ref="sql-log" />	
+	</logger>
+	
+	<logger name="PERFORMANCE" additivity="false">
+		<level value="warn" />
+		<appender-ref ref="performance-log" />
+	</logger>
+	
+	<logger name="TRANSLATION" additivity="false">
+		<level value="warn" />
+		<appender-ref ref="translation-log" />
+	</logger>
+
+	<root>	
+		<level value="debug" />
+		<appender-ref ref="root-log" />
+		<appender-ref ref="warn-log" />
 	</root>
+	
 </log4j:configuration>

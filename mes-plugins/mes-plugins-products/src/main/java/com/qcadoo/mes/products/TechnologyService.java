@@ -226,7 +226,7 @@ public final class TechnologyService {
         }
     }
 
-    private boolean isNumber(String value) {
+    private boolean isNumber(final String value) {
         try {
             new BigDecimal(value);
         } catch (NumberFormatException e) {
