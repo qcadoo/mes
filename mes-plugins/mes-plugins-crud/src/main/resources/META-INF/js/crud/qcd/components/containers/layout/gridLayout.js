@@ -23,6 +23,7 @@ QCD.components.containers.layout.GridLayout = function(_element, _mainController
 	}
 	
 	this.updateSize = function(_width, _height) {
+		QCD.info(this.elementPath + " - " + _height + ' ' + fixedRowHeight);
 		var baseWidth = _width/colsNumber;
 		var baseHeight = 50;
 		
