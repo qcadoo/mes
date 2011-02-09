@@ -20,10 +20,19 @@ QCD.utils.Modal.createModal = function() {
 	return {
 		dialog: dialog,
 		iframe: iframe,
-		show: function(src) {
+		
+		show: function(src, onLoadFunction) {
+			this.iframe.hide();
 			this.dialog.jqmShow();
+			QCD.components.elements.utils.LoadingIndicator.blockElement(this.dialog);
+			this.iframe.load(function() {
+				onLoadFunction.call(this);
+				QCD.components.elements.utils.LoadingIndicator.unblockElement(dialog);
+				iframe.show();
+			});
 			this.iframe.attr("src", src);
 		},
+		
 		hide: function() {
 			this.iframe.unbind("load");
 			this.dialog.jqmHide();

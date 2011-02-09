@@ -48,6 +48,19 @@ public abstract class AbstractContainerState extends AbstractComponentState impl
     }
 
     @Override
+    public boolean isHasError() {
+        if (super.isHasError()) {
+            return true;
+        }
+        for (ComponentState child : children.values()) {
+            if (child.isHasError()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public final Map<String, ComponentState> getChildren() {
         return children;
     }

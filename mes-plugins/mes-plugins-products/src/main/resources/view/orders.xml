@@ -95,6 +95,7 @@
 						var newGenealogy = #{window}.getRibbonItem("genealogy.newGenealogy");
 						var activateOrder = #{window}.getRibbonItem("status.activateOrder");
 						var finishOrder = #{window}.getRibbonItem("status.finishOrder");
+						var genQualityControl = #{window}.getRibbonItem("qualityContol.generateQualityControl");
 						var listener = {
 							onChange: function(selectedRecord) {
 								if (!selectedRecord) {
@@ -111,6 +112,7 @@
 									newGenealogy.disable();
 									activateOrder.disable();
 									finishOrder.disable();
+									genQualityControl.disable();
 								} else {
 									print.enable();
 									pdfMaterialReq.enable();
@@ -125,12 +127,15 @@
 									newGenealogy.enable();
 									if(selectedRecord.fields.state == '01pending') {
 										activateOrder.enable();
+										genQualityControl.enable();
 										finishOrder.disable();
 									} else if(selectedRecord.fields.state == '02inProgress') {							
 										activateOrder.disable();
+										genQualityControl.enable();
 										finishOrder.enable();
 									} else {
 										activateOrder.disable();
+										genQualityControl.disable();
 										finishOrder.disable();									
 									}
 								}
@@ -182,7 +187,7 @@
 				<listener event="activateOrder" bean="com.qcadoo.mes.products.OrderService" method="activateOrder"/>
 				<listener event="showGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
 				<listener event="newGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
-				<listener event="generateQualityControl" bean="com.qcadoo.mes.products.OrderService" method="generateQualityControl" />
+				<listener event="generateQualityControl" bean="com.qcadoo.mes.products.QualityControlService" method="generateQualityControl" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
@@ -258,7 +263,7 @@
 								} else if (state && state == "02inProgress") { 
 									activateOrder.disable();
 									finishOrder.enable();
-									genQualityControl.disable();
+									genQualityControl.enable();
 								} else if (state && state == "01pending") {
 									activateOrder.enable();
 									finishOrder.disable();
@@ -361,9 +366,10 @@
 				<option type="expression" value="#name + ' - ' + #number" />
 				<listener event="activateOrder" bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone"/>
 				<listener event="activateOrder" bean="com.qcadoo.mes.products.OrderService" method="activateOrder"/>
+				<listener event="activateOrder" bean="com.qcadoo.mes.products.QualityControlService" method="autoGenerateQualityControl"/>
 				<listener event="showGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
 				<listener event="newGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
-				<listener event="generateQualityControl" bean="com.qcadoo.mes.products.OrderService" method="generateQualityControl" />
+				<listener event="generateQualityControl" bean="com.qcadoo.mes.products.QualityControlService" method="generateQualityControl" />
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="generateOrderNumber" />		

@@ -91,12 +91,12 @@ QCD.WindowController = function(_menuStructure) {
 		if (! modalObjects.id) {
 			modalObjects.id = QCD.utils.Modal.createModal();
 		}
-			modalObjects.id.iframe.load(function() {
-				if (this.src != "" && this.contentWindow.init) {
-					this.contentWindow.init(serializationObjectToInsert);
-					serializationObjectToInsert = null;
-				}
-			});
+//			modalObjects.id.iframe.load(function() {
+//				if (this.src != "" && this.contentWindow.init) {
+//					this.contentWindow.init(serializationObjectToInsert);
+//					serializationObjectToInsert = null;
+//				}
+//			});
 		
 		modalsStack.push(modalObjects.id);
 		
@@ -107,7 +107,13 @@ QCD.WindowController = function(_menuStructure) {
 		}
 		url+="popup=true";
 		
-		modalObjects.id.show("page/"+url);
+		modalObjects.id.show("page/"+url, function() {
+			QCD.info("loaded");
+			if (this.src != "" && this.contentWindow.init) {
+				this.contentWindow.init(serializationObjectToInsert);
+				serializationObjectToInsert = null;
+			}
+		});
 	}
 	
 	this.goBack = function() {
