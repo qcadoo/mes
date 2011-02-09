@@ -41,6 +41,7 @@
 		<hasMany name="postFeatures" model="postFeature" joinField="genealogy" cascade="delete" copyable="true" />
 		<hasMany name="productInComponents" model="genealogyProductInComponent" joinField="genealogy" cascade="delete" copyable="true" />
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedBatchForGenealogy" />
+		<onSave bean="com.qcadoo.mes.products.QualityControlService" method="generateOnSaveQualityControl" />
 	</model>
 	<model name="genealogyProductInComponent">
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
