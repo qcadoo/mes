@@ -40,6 +40,7 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/qcadoo.min.js"></script>
 		</c:when>
 		<c:otherwise>
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/qcd.css" type="text/css" />
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/mainPage.css" type="text/css" />
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/menuTopLevel.css" type="text/css" />
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/menu/style.css" type="text/css" />
@@ -48,6 +49,7 @@
 		
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/_jquery-1.4.2.min.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/jquery.pnotify.min.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/jquery.blockUI.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/jqModal.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/logger.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/modal.js"></script>
@@ -55,6 +57,7 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/menu/menuController.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/core/windowController.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/core/messagesController.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/utils/loadingIndicator.js"></script>
 			
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/snow.js"></script>
 		</c:otherwise>
