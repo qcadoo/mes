@@ -37,7 +37,7 @@
 		<enum name="controlResult" values="01correct,02incorrect,03objection"/>
 		<string name="comment" />
 		<string name="controlInstruction" />
-		<belongsTo name="staff" plugin="basic" model="staff" lookupField="name" lazy="false" />
+		<string name="staff" />
 		<date name="date" />
 		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentForResultIsReq" />
 	</model>
@@ -53,7 +53,7 @@
 		<decimal name="rejectedQuantity" />
 		<decimal name="acceptedDefectsQuantity" />
 		<string name="comment" />
-		<belongsTo name="staff" plugin="basic" model="staff" lookupField="name" lazy="false" />
+		<string name="staff" />
 		<date name="date" />		
 		<string name="controlInstruction" />
 		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentForQuantityIsReq" />
@@ -71,7 +71,7 @@
 		<decimal name="rejectedQuantity" />
 		<decimal name="acceptedDefectsQuantity" />
 		<string name="comment" />
-		<belongsTo name="staff" plugin="basic" model="staff" lookupField="name" lazy="false" />
+		<string name="staff" />
 		<date name="date" />		
 		<string name="controlInstruction" />
 		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentForQuantityIsReq" />

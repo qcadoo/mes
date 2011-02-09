@@ -26,31 +26,27 @@ package com.qcadoo.mes.beans.sample;
 
 import java.util.List;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
 
-public class SampleParentDatabaseObject implements HibernateProxy {
+public class SampleTreeDatabaseObject implements HibernateProxy {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -3703171948011903671L;
 
     private Long id;
 
     private String name;
 
-    private List<SampleSimpleDatabaseObject> entities;
+    private List<SampleTreeDatabaseObject> children;
 
-    private List<SampleTreeDatabaseObject> tree;
+    private SampleTreeDatabaseObject parent;
 
-    public SampleParentDatabaseObject() {
+    private SampleParentDatabaseObject owner;
+
+    public SampleTreeDatabaseObject() {
     }
 
-    public SampleParentDatabaseObject(final Long id) {
+    public SampleTreeDatabaseObject(final Long id) {
         this.id = id;
     }
 
@@ -70,35 +66,28 @@ public class SampleParentDatabaseObject implements HibernateProxy {
         this.name = name;
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+    public List<SampleTreeDatabaseObject> getChildren() {
+        return children;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public void setChildren(final List<SampleTreeDatabaseObject> children) {
+        this.children = children;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+    public SampleTreeDatabaseObject getParent() {
+        return parent;
     }
 
-    public List<SampleSimpleDatabaseObject> getEntities() {
-        return entities;
+    public void setParent(final SampleTreeDatabaseObject parent) {
+        this.parent = parent;
     }
 
-    public void setEntities(final List<SampleSimpleDatabaseObject> entities) {
-        this.entities = entities;
+    public SampleParentDatabaseObject getOwner() {
+        return owner;
     }
 
-    public List<SampleTreeDatabaseObject> getTree() {
-        return tree;
-    }
-
-    public void setTree(final List<SampleTreeDatabaseObject> tree) {
-        this.tree = tree;
+    public void setOwner(final SampleParentDatabaseObject owner) {
+        this.owner = owner;
     }
 
     @Override

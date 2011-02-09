@@ -44,6 +44,22 @@ public class NumberGeneratorService {
         return true;
     }
 
+    public String generateNumber(final String entityName) {
+
+        SearchResult results = dataDefinitionService.get("products", entityName).find().withMaxResults(1).orderDescBy("id")
+                .list();
+
+        long longValue = 0;
+
+        if (results.getEntities().isEmpty()) {
+            longValue++;
+        } else {
+            longValue = results.getEntities().get(0).getId() + 1;
+        }
+
+        return String.format("%06d", longValue);
+    }
+
     public String generateNumber(final ViewDefinitionState state, final String entityName) {
 
         SearchResult results = dataDefinitionService.get("products", entityName).find().withMaxResults(1).orderDescBy("id")

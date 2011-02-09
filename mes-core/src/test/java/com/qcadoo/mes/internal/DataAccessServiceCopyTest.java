@@ -139,4 +139,12 @@ public final class DataAccessServiceCopyTest extends DataAccessTest {
         verify(session, never()).get(Mockito.eq(SampleSimpleDatabaseObject.class), anyInt());
     }
 
+    // @Test
+    // public void shouldCopyEntityWithTreeField() throws Exception {
+    // // given
+    // // when
+    // // then
+    // Assert.fail();
+    // }
+
 }

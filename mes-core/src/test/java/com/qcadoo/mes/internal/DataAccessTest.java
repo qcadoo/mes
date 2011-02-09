@@ -44,10 +44,12 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.DictionaryService;
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
+import com.qcadoo.mes.beans.sample.SampleTreeDatabaseObject;
 import com.qcadoo.mes.model.hooks.internal.HookFactory;
 import com.qcadoo.mes.model.internal.DataDefinitionImpl;
 import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.model.types.internal.FieldTypeFactory;
 import com.qcadoo.mes.model.types.internal.FieldTypeFactoryImpl;
 import com.qcadoo.mes.model.validators.internal.ValidatorFactory;
@@ -85,6 +87,8 @@ public abstract class DataAccessTest {
 
     protected DataDefinitionImpl parentDataDefinition = null;
 
+    protected DataDefinitionImpl treeDataDefinition = null;
+
     protected DataDefinitionImpl dataDefinition = null;
 
     protected FieldDefinitionImpl fieldDefinitionPriority = null;
@@ -106,6 +110,16 @@ public abstract class DataAccessTest {
     protected FieldDefinitionImpl parentFieldDefinitionName = null;
 
     protected FieldDefinitionImpl parentFieldDefinitionHasMany = null;
+
+    protected FieldDefinitionImpl parentFieldDefinitionTree = null;
+
+    protected FieldDefinitionImpl treeFieldDefinitionName = null;
+
+    protected FieldDefinitionImpl treeFieldDefinitionChildren = null;
+
+    protected FieldDefinitionImpl treeFieldDefinitionParent = null;
+
+    protected FieldDefinitionImpl treeFieldDefinitionOwner = null;
 
     @Before
     public void superInit() {
@@ -133,6 +147,9 @@ public abstract class DataAccessTest {
 
         fieldValidatorFactory = new ValidatorFactoryImpl();
 
+        treeDataDefinition = new DataDefinitionImpl("tree", "tree.entity", dataAccessService);
+        given(dataDefinitionService.get("tree", "entity")).willReturn(treeDataDefinition);
+
         parentDataDefinition = new DataDefinitionImpl("parent", "parent.entity", dataAccessService);
         given(dataDefinitionService.get("parent", "entity")).willReturn(parentDataDefinition);
 
@@ -146,9 +163,32 @@ public abstract class DataAccessTest {
         parentFieldDefinitionHasMany.withType(fieldTypeFactory.hasManyType("simple", "entity", "belongsTo",
                 HasManyType.Cascade.DELETE, false));
 
+        parentFieldDefinitionTree = new FieldDefinitionImpl(null, "tree");
+        parentFieldDefinitionTree.withType(fieldTypeFactory.treeType("tree", "entity", "owner", TreeType.Cascade.DELETE, false));
+
         parentDataDefinition.withField(parentFieldDefinitionName);
         parentDataDefinition.withField(parentFieldDefinitionHasMany);
+        parentDataDefinition.withField(parentFieldDefinitionTree);
         parentDataDefinition.setFullyQualifiedClassName(SampleParentDatabaseObject.class.getCanonicalName());
+
+        treeFieldDefinitionName = new FieldDefinitionImpl(null, "name");
+        treeFieldDefinitionName.withType(fieldTypeFactory.stringType());
+
+        treeFieldDefinitionChildren = new FieldDefinitionImpl(null, "children");
+        treeFieldDefinitionChildren.withType(fieldTypeFactory.hasManyType("tree", "entity", "parent", HasManyType.Cascade.DELETE,
+                false));
+
+        treeFieldDefinitionParent = new FieldDefinitionImpl(null, "parent");
+        treeFieldDefinitionParent.withType(fieldTypeFactory.eagerBelongsToType("tree", "entity", "name"));
+
+        treeFieldDefinitionOwner = new FieldDefinitionImpl(null, "owner");
+        treeFieldDefinitionOwner.withType(fieldTypeFactory.eagerBelongsToType("parent", "entity", "name"));
+
+        treeDataDefinition.withField(treeFieldDefinitionName);
+        treeDataDefinition.withField(treeFieldDefinitionChildren);
+        treeDataDefinition.withField(treeFieldDefinitionParent);
+        treeDataDefinition.withField(treeFieldDefinitionOwner);
+        treeDataDefinition.setFullyQualifiedClassName(SampleTreeDatabaseObject.class.getCanonicalName());
 
         fieldDefinitionBelongsTo = new FieldDefinitionImpl(null, "belongsTo");
         fieldDefinitionBelongsTo.withType(fieldTypeFactory.eagerBelongsToType("parent", "entity", "name"));
