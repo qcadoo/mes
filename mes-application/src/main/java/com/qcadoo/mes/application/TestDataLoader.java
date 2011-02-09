@@ -98,7 +98,8 @@ public final class TestDataLoader {
             "quantity_completed", "started_date", "finished_date", "name", "order_nr", "quantity_scheduled", "machine_nr",
             "bom_name", "product_nr" };
 
-    private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr" };
+    private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr",
+            "algorithm" };
 
     private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number" };
 
@@ -486,7 +487,9 @@ public final class TestDataLoader {
             technology.setPostFeatureRequired(false);
             technology.setOtherFeatureRequired(false);
             technology.setShiftFeatureRequired(false);
-            technology.setComponentQuantityAlgorithm("02perTechnology");
+            if (!values.get("algorithm").isEmpty()) {
+                technology.setComponentQuantityAlgorithm(values.get("algorithm"));
+            }
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getName() + ", number="
