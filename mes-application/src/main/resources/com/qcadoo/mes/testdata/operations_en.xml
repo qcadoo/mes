@@ -32,4 +32,5 @@
 	<row NAME="Grind" NUMBER="3" />
 	<row NAME="Mill" NUMBER="4" />
 	<row NAME="Packing" NUMBER="5" />
+	<row NAME="Torsion" NUMBER="6" />
 </operations>

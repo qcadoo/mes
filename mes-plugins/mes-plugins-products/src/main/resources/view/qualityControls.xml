@@ -79,7 +79,7 @@
 						<component type="textarea" name="controlInstruction" field="controlInstruction" />
 					</layoutElement>
 					<layoutElement column="1" row="9">
-						<component type="input" name="staff" field="staff" defaultEnabled="false">
+						<component type="input" name="staff" field="staff" reference="staff" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
@@ -152,7 +152,7 @@
 						<component type="textarea" name="comment" field="comment" reference="comment" />
 					</layoutElement>
 					<layoutElement column="1" row="8">
-						<component type="input" name="staff" field="staff" defaultEnabled="false">
+						<component type="input" name="staff" field="staff" reference="staff" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
@@ -231,7 +231,7 @@
 						<component type="textarea" name="comment" field="comment" reference="comment" />
 					</layoutElement>
 					<layoutElement column="1" row="9">
-						<component type="input" name="staff" field="staff" defaultEnabled="false">
+						<component type="input" name="staff" field="staff" reference="staff" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
