@@ -118,4 +118,20 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
         assertTrue(entity.isValid());
     }
 
+    // @Test
+    // public void shouldSaveHasManyField() throws Exception {
+    // // given
+    // // when
+    // // then
+    // Assert.fail();
+    // }
+    //
+    // @Test
+    // public void shouldSaveTreeField() throws Exception {
+    // // given
+    // // when
+    // // then
+    // Assert.fail();
+    // }
+
 }
