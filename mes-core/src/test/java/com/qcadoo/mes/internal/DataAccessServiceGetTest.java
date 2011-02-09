@@ -26,14 +26,20 @@ package com.qcadoo.mes.internal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.springframework.test.util.ReflectionTestUtils.getField;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.mockito.Matchers;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
 
 public final class DataAccessServiceGetTest extends DataAccessTest {
 
@@ -98,6 +104,54 @@ public final class DataAccessServiceGetTest extends DataAccessTest {
 
         // then
         assertNull(entity);
+    }
+
+    @Test
+    public void shouldGetTreeField() throws Exception {
+        // given
+        SampleParentDatabaseObject parentDatabaseObject = new SampleParentDatabaseObject();
+        parentDatabaseObject.setId(1L);
+        parentDatabaseObject.setName("Mr T");
+
+        given(session.get(any(Class.class), Matchers.anyInt())).willReturn(parentDatabaseObject);
+
+        // when
+        Entity entity = parentDataDefinition.get(1L);
+
+        // then
+        assertEquals(1L, entity.getId().longValue());
+        assertEquals("Mr T", entity.getField("name"));
+        assertThat(entity.getField("tree"), CoreMatchers.instanceOf(EntityTree.class));
+
+        EntityTree tree = entity.getTreeField("tree");
+
+        assertEquals(1L, getField(tree, "belongsToId"));
+        assertEquals("owner", ((FieldDefinition) getField(tree, "joinFieldDefinition")).getName());
+        assertEquals("tree.entity", ((DataDefinition) getField(tree, "dataDefinition")).getName());
+    }
+
+    @Test
+    public void shouldGetHasManyField() throws Exception {
+        // given
+        SampleParentDatabaseObject parentDatabaseObject = new SampleParentDatabaseObject();
+        parentDatabaseObject.setId(1L);
+        parentDatabaseObject.setName("Mr T");
+
+        given(session.get(any(Class.class), Matchers.anyInt())).willReturn(parentDatabaseObject);
+
+        // when
+        Entity entity = parentDataDefinition.get(1L);
+
+        // then
+        assertEquals(1L, entity.getId().longValue());
+        assertEquals("Mr T", entity.getField("name"));
+        assertThat(entity.getField("entities"), CoreMatchers.instanceOf(EntityList.class));
+
+        EntityList entities = entity.getHasManyField("entities");
+
+        assertEquals(1L, getField(entities, "parentId"));
+        assertEquals("belongsTo", ((FieldDefinition) getField(entities, "joinFieldDefinition")).getName());
+        assertEquals("simple.entity", ((DataDefinition) getField(entities, "dataDefinition")).getName());
     }
 
 }

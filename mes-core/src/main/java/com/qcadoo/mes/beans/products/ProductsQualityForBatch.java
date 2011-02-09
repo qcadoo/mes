@@ -12,8 +12,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.qcadoo.mes.beans.basic.BasicStaff;
-
 @Entity
 @Table(name = "products_quality_batch")
 public class ProductsQualityForBatch {
@@ -39,8 +37,7 @@ public class ProductsQualityForBatch {
 
     private String controlInstruction;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private BasicStaff staff;
+    private String staff;
 
     @Temporal(TemporalType.DATE)
     private Date date;
@@ -77,11 +74,11 @@ public class ProductsQualityForBatch {
         this.controlInstruction = controlInstruction;
     }
 
-    public BasicStaff getStaff() {
+    public String getStaff() {
         return staff;
     }
 
-    public void setStaff(BasicStaff staff) {
+    public void setStaff(String staff) {
         this.staff = staff;
     }
 
