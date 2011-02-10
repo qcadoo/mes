@@ -107,6 +107,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Monitorable
     private Entity performSave(final InternalDataDefinition dataDefinition, final Entity genericEntity,
             final Set<Entity> alreadySavedEntities, final Set<Entity> newlySavedEntities) {
+
         checkNotNull(dataDefinition, "DataDefinition must be given");
         checkNotNull(genericEntity, "Entity must be given");
 
