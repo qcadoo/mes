@@ -191,21 +191,21 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
         if (template != null) {
             if ("navigation".equals(template)) {
-                return createNavigationTemplate(parser);
+                return createNavigationTemplate();
             } else if ("gridNewAndRemoveAction".equals(template)) {
-                return createGridNewAndRemoveActionsTemplate(parser);
+                return createGridNewAndRemoveActionsTemplate();
             } else if ("gridNewCopyAndRemoveAction".equals(template)) {
-                return createGridNewCopyAndRemoveActionTemplate(parser);
+                return createGridNewCopyAndRemoveActionTemplate();
             } else if ("gridNewAndCopyAction".equals(template)) {
-                return createGridNewAndCopyActionTemplate(parser);
+                return createGridNewAndCopyActionTemplate();
             } else if ("formSaveCopyAndRemoveActions".equals(template)) {
-                return createFormSaveCopyAndRemoveActionsTemplate(parser);
+                return createFormSaveCopyAndRemoveActionsTemplate();
             } else if ("formSaveAndRemoveActions".equals(template)) {
-                return createFormSaveAndRemoveActionsTemplate(parser);
+                return createFormSaveAndRemoveActionsTemplate();
             } else if ("formSaveAndBackAndRemoveActions".equals(template)) {
-                return createFormSaveAndBackAndRemoveActionsTemplate(parser);
+                return createFormSaveAndBackAndRemoveActionsTemplate();
             } else if ("formSaveAction".equals(template)) {
-                return createFormSaveActionTemplate(parser);
+                return createFormSaveActionTemplate();
             } else {
                 throw new IllegalStateException("Unsupported ribbon template : " + template);
             }
@@ -328,7 +328,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return translateAction;
     }
 
-    private RibbonGroup createNavigationTemplate(final ViewDefinitionParser parser) {
+    private RibbonGroup createNavigationTemplate() {
         RibbonActionItem ribbonBackAction = new RibbonActionItem();
         ribbonBackAction.setAction(translateRibbonAction("#{window}.performBack"));
         ribbonBackAction.setIcon("backIcon24.png");
@@ -343,32 +343,32 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonGroup;
     }
 
-    private RibbonGroup createGridNewAndRemoveActionsTemplate(final ViewDefinitionParser parser) {
+    private RibbonGroup createGridNewAndRemoveActionsTemplate() {
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("actions");
-        ribbonGroup.addItem(createGridNewAction(parser));
-        ribbonGroup.addItem(createGridDeleteAction(parser));
+        ribbonGroup.addItem(createGridNewAction());
+        ribbonGroup.addItem(createGridDeleteAction());
         return ribbonGroup;
     }
 
-    private RibbonGroup createGridNewAndCopyActionTemplate(final ViewDefinitionParser parser) {
+    private RibbonGroup createGridNewAndCopyActionTemplate() {
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("actions");
-        ribbonGroup.addItem(createGridNewAction(parser));
-        ribbonGroup.addItem(createGridCopyAction(parser));
+        ribbonGroup.addItem(createGridNewAction());
+        ribbonGroup.addItem(createGridCopyAction());
         return ribbonGroup;
     }
 
-    private RibbonGroup createGridNewCopyAndRemoveActionTemplate(final ViewDefinitionParser parser) {
+    private RibbonGroup createGridNewCopyAndRemoveActionTemplate() {
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("actions");
-        ribbonGroup.addItem(createGridNewAction(parser));
-        ribbonGroup.addItem(createGridCopyAction(parser));
-        ribbonGroup.addItem(createGridDeleteAction(parser));
+        ribbonGroup.addItem(createGridNewAction());
+        ribbonGroup.addItem(createGridCopyAction());
+        ribbonGroup.addItem(createGridDeleteAction());
         return ribbonGroup;
     }
 
-    private RibbonActionItem createGridDeleteAction(final ViewDefinitionParser parser) {
+    private RibbonActionItem createGridDeleteAction() {
         RibbonActionItem ribbonDeleteAction = new RibbonActionItem();
         ribbonDeleteAction.setAction(translateRibbonAction("#{grid}.performDelete;"));
         ribbonDeleteAction.setIcon("deleteIcon16.png");
@@ -381,7 +381,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonDeleteAction;
     }
 
-    private RibbonActionItem createGridCopyAction(final ViewDefinitionParser parser) {
+    private RibbonActionItem createGridCopyAction() {
         RibbonActionItem ribbonCopyAction = new RibbonActionItem();
         ribbonCopyAction.setAction(translateRibbonAction("#{grid}.performCopy;"));
         ribbonCopyAction.setIcon("copyIcon16.png");
@@ -394,7 +394,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonCopyAction;
     }
 
-    private RibbonActionItem createGridNewAction(final ViewDefinitionParser parser) {
+    private RibbonActionItem createGridNewAction() {
         RibbonActionItem ribbonNewAction = new RibbonActionItem();
         ribbonNewAction.setAction(translateRibbonAction("#{grid}.performNew;"));
         ribbonNewAction.setIcon("newIcon24.png");
@@ -404,38 +404,38 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonNewAction;
     }
 
-    private RibbonGroup createFormSaveCopyAndRemoveActionsTemplate(final ViewDefinitionParser parser) {
+    private RibbonGroup createFormSaveCopyAndRemoveActionsTemplate() {
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("actions");
-        ribbonGroup.addItem(createFormSaveAction(parser));
-        ribbonGroup.addItem(createFormSaveAndBackAction(parser));
-        ribbonGroup.addItem(createFormSaveAndNewAction(parser));
-        ribbonGroup.addItem(createFormCopyAction(parser));
-        ribbonGroup.addItem(createFormCancelAction(parser));
-        ribbonGroup.addItem(createFormDeleteAction(parser));
+        ribbonGroup.addItem(createFormSaveAction());
+        ribbonGroup.addItem(createFormSaveAndBackAction());
+        ribbonGroup.addItem(createFormSaveAndNewAction());
+        ribbonGroup.addItem(createFormCopyAction());
+        ribbonGroup.addItem(createFormCancelAction());
+        ribbonGroup.addItem(createFormDeleteAction());
         return ribbonGroup;
     }
 
-    private RibbonGroup createFormSaveAndRemoveActionsTemplate(final ViewDefinitionParser parser) {
+    private RibbonGroup createFormSaveAndRemoveActionsTemplate() {
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("actions");
-        ribbonGroup.addItem(createFormSaveAction(parser));
-        ribbonGroup.addItem(createFormSaveAndBackAction(parser));
-        ribbonGroup.addItem(createFormCancelAction(parser));
-        ribbonGroup.addItem(createFormDeleteAction(parser));
+        ribbonGroup.addItem(createFormSaveAction());
+        ribbonGroup.addItem(createFormSaveAndBackAction());
+        ribbonGroup.addItem(createFormCancelAction());
+        ribbonGroup.addItem(createFormDeleteAction());
         return ribbonGroup;
     }
 
-    private RibbonGroup createFormSaveAndBackAndRemoveActionsTemplate(final ViewDefinitionParser parser) {
+    private RibbonGroup createFormSaveAndBackAndRemoveActionsTemplate() {
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("actions");
-        ribbonGroup.addItem(createFormSaveAndBackAction(parser));
-        ribbonGroup.addItem(createFormCancelAction(parser));
-        ribbonGroup.addItem(createFormDeleteAction(parser));
+        ribbonGroup.addItem(createFormSaveAndBackAction());
+        ribbonGroup.addItem(createFormCancelAction());
+        ribbonGroup.addItem(createFormDeleteAction());
         return ribbonGroup;
     }
 
-    private RibbonGroup createFormSaveActionTemplate(final ViewDefinitionParser parser) {
+    private RibbonGroup createFormSaveActionTemplate() {
         RibbonActionItem ribbonSaveAction = new RibbonActionItem();
         ribbonSaveAction.setAction(translateRibbonAction("#{form}.performSave; #{window}.performBack"));
         ribbonSaveAction.setIcon("saveBackIcon24.png");
@@ -449,7 +449,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonGroup;
     }
 
-    private RibbonActionItem createFormDeleteAction(final ViewDefinitionParser parser) {
+    private RibbonActionItem createFormDeleteAction() {
         RibbonActionItem ribbonDeleteAction = new RibbonActionItem();
         ribbonDeleteAction.setAction(translateRibbonAction("#{form}.performDelete; #{window}.performBack"));
         ribbonDeleteAction.setIcon("deleteIcon16.png");
@@ -463,7 +463,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonDeleteAction;
     }
 
-    private RibbonActionItem createFormCancelAction(final ViewDefinitionParser parser) {
+    private RibbonActionItem createFormCancelAction() {
         RibbonActionItem ribbonCancelAction = new RibbonActionItem();
         ribbonCancelAction.setAction(translateRibbonAction("#{form}.performCancel;"));
         ribbonCancelAction.setIcon("cancelIcon16.png");
@@ -473,7 +473,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonCancelAction;
     }
 
-    private RibbonActionItem createFormCopyAction(final ViewDefinitionParser parser) {
+    private RibbonActionItem createFormCopyAction() {
         RibbonActionItem ribbonCopyAction = new RibbonActionItem();
         ribbonCopyAction.setAction(translateRibbonAction("#{form}.performCopy;"));
         ribbonCopyAction.setIcon("copyIcon24.png");
@@ -487,7 +487,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonCopyAction;
     }
 
-    private RibbonActionItem createFormSaveAndBackAction(final ViewDefinitionParser parser) {
+    private RibbonActionItem createFormSaveAndBackAction() {
         RibbonActionItem ribbonSaveBackAction = new RibbonActionItem();
         ribbonSaveBackAction.setAction(translateRibbonAction("#{form}.performSave; #{window}.performBack;"));
         ribbonSaveBackAction.setIcon("saveBackIcon24.png");
@@ -497,7 +497,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonSaveBackAction;
     }
 
-    private RibbonActionItem createFormSaveAndNewAction(final ViewDefinitionParser parser) {
+    private RibbonActionItem createFormSaveAndNewAction() {
         RibbonActionItem ribbonSaveNewAction = new RibbonActionItem();
         ribbonSaveNewAction.setAction(translateRibbonAction("#{form}.performSaveAndClear;"));
         ribbonSaveNewAction.setIcon("saveNewIcon24.png");
@@ -507,7 +507,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonSaveNewAction;
     }
 
-    private RibbonActionItem createFormSaveAction(final ViewDefinitionParser parser) {
+    private RibbonActionItem createFormSaveAction() {
         RibbonActionItem ribbonSaveAction = new RibbonActionItem();
         ribbonSaveAction.setAction(translateRibbonAction("#{form}.performSave;"));
         ribbonSaveAction.setIcon("saveIcon24.png");

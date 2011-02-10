@@ -30,8 +30,6 @@ import java.util.Map.Entry;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.SessionFactory;
 import org.hibernate.proxy.HibernateProxy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,8 +44,6 @@ import com.qcadoo.mes.utils.ExpressionUtil;
 
 @Service
 public final class EntityService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(EntityService.class);
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -91,8 +87,7 @@ public final class EntityService {
         }
 
         Class<?> referencedClass = dataDefinition.getClassForEntity();
-        Object o = sessionFactory.getCurrentSession().load(referencedClass, id);
-        return o;
+        return sessionFactory.getCurrentSession().load(referencedClass, id);
     }
 
     public Object getField(final Object databaseEntity, final FieldDefinition fieldDefinition) {

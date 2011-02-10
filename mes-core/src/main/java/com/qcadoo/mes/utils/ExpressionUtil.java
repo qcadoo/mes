@@ -193,8 +193,9 @@ public final class ExpressionUtil {
                 FieldType type = dataDefinition.getField(entry.getKey()).getType();
 
                 if (type instanceof BelongsToType) {
+                    level--;
                     Entity belongsToEntity = getBelongsToEntity(entry.getValue(), (BelongsToType) type);
-                    values.put(entry.getKey(), getValuesForEntity(belongsToEntity, locale, --level));
+                    values.put(entry.getKey(), getValuesForEntity(belongsToEntity, locale, level));
                 } else {
                     String value = entry.getValue() != null ? type.toString(entry.getValue(), locale) : null;
                     values.put(entry.getKey(), value);

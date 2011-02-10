@@ -69,6 +69,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	var dataTypesMap = new Object();
 	
 	var newButtons = new Array();
+	var newButtonClickedBefore = false;
+	var addedEntityId;
 	
 	if (this.options.referenceName) {
 		mainController.registerReferenceName(this.options.referenceName, this);
@@ -263,6 +265,18 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		openedNodesArrayToInsert = state.openedNodes;
 		selectedNodeToInstert = state.selectedEntityId;
 		belongsToEntityId = state.belongsToEntityId;
+		if (state.newButtonClickedBefore) {
+			var lastPageController = mainController.getLastPageController();
+			if (lastPageController) {
+				for (var dataTypeName in dataTypesMap) {
+					if (dataTypesMap[dataTypeName].correspondingView == lastPageController.getViewName()) {
+						var lastCorrespondingComponent = lastPageController.getComponentByReferenceName(dataTypesMap[dataTypeName].correspondingComponent);
+						addedEntityId = lastCorrespondingComponent.getComponentValue().entityId;
+						break;
+					}
+				}
+			}
+		}
 	}
 	
 	this.getComponentValue = function() {
@@ -291,6 +305,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		if (treeStructureChanged) {
 			result.treeStructure = getTreeStructureData();
 		}
+		
+		result.newButtonClickedBefore = newButtonClickedBefore;
 		
 		return result;
 	}
@@ -321,6 +337,15 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			tree.jstree("select_node", $("#"+elementSearchName+"_node_"+value.selectedEntityId), false);
 			fireSelectEvent = true;
 		}
+		
+		if (addedEntityId) {
+			lastAddedNode = $("#"+elementSearchName+"_node_"+addedEntityId);
+			lastAddedNode.addClass("lastAdded");
+			var lastAddedParentNode = $.jstree._focused()._get_parent(lastAddedNode);
+			tree.jstree("open_node", lastAddedParentNode, false, true);
+			tree.animate({ scrollTop: lastAddedNode.offset().top }, { duration: 'slow', easing: 'swing'});
+		}
+		
 		updateButtons();
 		unblock();
 	}
@@ -537,6 +562,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function newClicked(dataType) {
+		newButtonClickedBefore = true;
 		var params = new Object();
 		if (belongsToFieldName) {
 			params[dataType.correspondingComponent+"."+belongsToFieldName] = belongsToEntityId;
@@ -550,6 +576,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	function editClicked() {
 		if (buttons.editButton.hasClass("headerButtonEnabled")) {
+			newButtonClickedBefore = false;
 			var params = new Object();
 			var entityId = getSelectedEntityId()
 			dataType = dataTypesMap[nodeDataTypesMap[entityId]];
@@ -563,6 +590,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		if (buttons.deleteButton.hasClass("headerButtonEnabled")) {
 			if (window.confirm(confirmDeleteMessage)) {
 				block();
+				newButtonClickedBefore = false;
 				mainController.callEvent("remove", elementPath, function() {
 					unblock();
 				}, null, null);

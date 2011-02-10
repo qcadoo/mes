@@ -57,7 +57,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var currentState = {
 		selectedEntityId: null,
-		filtersEnabled: false
+		filtersEnabled: false,
+		newButtonClickedBefore: false
 	}
 	
 	var RESIZE_COLUMNS_ON_UPDATE_SIZE = true;
@@ -82,6 +83,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	var filterRefreshTimeout = null;
 	
 	var fireOnChangeListeners = this.fireOnChangeListeners;
+	
+	var addedEntityId;
 	
 	if (this.options.referenceName) {
 		mainController.registerReferenceName(this.options.referenceName, this);
@@ -296,6 +299,14 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (state.order) {
 			setSortColumnAndDirection(state.order);
 		}
+		
+		if (state.newButtonClickedBefore) {
+			var lastPageController = mainController.getLastPageController();
+			if (lastPageController && lastPageController.getViewName() == gridParameters.correspondingViewName) {
+				var lastCorrespondingComponent = lastPageController.getComponentByReferenceName(gridParameters.correspondingComponent);
+				addedEntityId = lastCorrespondingComponent.getComponentValue().entityId;
+			}
+		}
 	}
 	
 	this.setComponentValue = function(value) {
@@ -367,8 +378,15 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		headerController.onRowClicked(rowIndex);
 		
-		if (value.order) {			
+		if (value.order) {
 			setSortColumnAndDirection(value.order);			
+		}
+		
+		if (addedEntityId) {
+			var row = $("#"+elementSearchName+" #"+addedEntityId);
+			if (row) {
+				row.addClass("lastAdded");
+			}
 		}
 		
 		unblockGrid();
@@ -460,7 +478,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		noRecordsDiv = $("<div>").html(translations.noResults).addClass("noRecordsBox");
 		noRecordsDiv.hide();
 		$("#"+gridParameters.element).parent().append(noRecordsDiv);
-		
 	}
 	
 	this.onPagingParametersChange = function() {
@@ -743,6 +760,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.performNew = function(actionsPerformer) {
+		currentState.newButtonClickedBefore = true;
 		redirectToCorrespondingPage({});	
 		if (actionsPerformer) {
 			actionsPerformer.performNext();

@@ -234,7 +234,7 @@ public final class PdfUtil {
         try {
             table.setWidths(columnWidths);
         } catch (DocumentException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
         return setTableProperties(header, lastColumnAligmentToLeft, table);
     }
@@ -245,7 +245,8 @@ public final class PdfUtil {
         return setTableProperties(header, lastColumnAligmentToLeft, table);
     }
 
-    private static PdfPTable setTableProperties(final List<String> header, final boolean lastColumnAligmentToLeft, PdfPTable table) {
+    private static PdfPTable setTableProperties(final List<String> header, final boolean lastColumnAligmentToLeft,
+            final PdfPTable table) {
         table.setWidthPercentage(100f);
         table.setHorizontalAlignment(Element.ALIGN_LEFT);
         table.setSpacingBefore(7.0f);

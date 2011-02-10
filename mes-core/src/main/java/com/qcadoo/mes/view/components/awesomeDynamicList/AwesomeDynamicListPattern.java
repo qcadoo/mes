@@ -146,8 +146,7 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
 
     @Override
     protected ComponentState getComponentStateInstance() {
-        ComponentState listState = new AwesomeDynamicListState(innerFormPattern, headerFormPattern);
-        return listState;
+        return new AwesomeDynamicListState(innerFormPattern, headerFormPattern);
     }
 
 }

@@ -59,9 +59,9 @@ public abstract class PdfDocumentService extends DocumentService {
     public void generateDocument(final Entity entity, final Locale locale) throws IOException, DocumentException {
         Document document = new Document(PageSize.A4);
         try {
-            decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
-            decimalFormat.setMaximumFractionDigits(3);
-            decimalFormat.setMinimumFractionDigits(3);
+            setDecimalFormat((DecimalFormat) DecimalFormat.getInstance(locale));
+            getDecimalFormat().setMaximumFractionDigits(3);
+            getDecimalFormat().setMinimumFractionDigits(3);
             FileOutputStream fileOutputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix()
                     + PdfUtil.PDF_EXTENSION);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);

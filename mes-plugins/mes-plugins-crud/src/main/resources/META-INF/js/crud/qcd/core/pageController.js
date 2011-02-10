@@ -194,6 +194,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 		}
 	}
 	
+	this.getViewName = function() {
+		return pluginIdentifier+"/"+viewName;
+	}
+	
 	function setValueData(data) {
 		QCD.debug(data);
 		if (data.messages) {
@@ -291,27 +295,30 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 			isPage = true;
 		}
 		//if(canClose()) {
-			var serializationObject = {
-				components: getValueData()
-			}
-			window.parent.goToPage(url, serializationObject, isPage);
+			window.parent.goToPage(url, getSerializationObject(), isPage);
 		//}
 	}
 	var goToPage = this.goToPage;
 	
 	this.openModal = function(id, url) {
-		var serializationObject = {
-			components: getValueData()
-		}
-		window.parent.openModal(id, url, serializationObject);
+		window.parent.openModal(id, url, getSerializationObject());
 	}
 	
 	this.goBack = function() {
 		if(canClose()) {
-			window.parent.goBack();
+			window.parent.goBack(this);
 		}
 	}
-	this.canClose = canClose;
+	
+	function getSerializationObject() {
+		return {
+			components: getValueData()
+		}
+	}
+	
+	this.getLastPageController = function() {
+		return window.parent.getLastPageController();
+	}
 	
 	function canClose() {
 		changed = false;
@@ -326,16 +333,14 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 			return true;
 		}
 	}
+	this.canClose = canClose;
 	
 	this.closeWindow = function() {
 		window.close();
 	}
 	
 	this.onSessionExpired = function() {
-		var serializationObject = {
-			components: getValueData()
-		}
-		window.parent.onSessionExpired(serializationObject);
+		window.parent.onSessionExpired(getSerializationObject());
 	}
 	
 	function updateSize() {
