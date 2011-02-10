@@ -83,7 +83,7 @@ public final class OrderService {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
             } else {
-                viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), true);
+                viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), true, false);
             }
 
         } else {

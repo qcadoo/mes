@@ -171,7 +171,7 @@ public final class WorkPlanService {
                                 state.getLocale()), MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo("/products/workPlan" + args[1] + "." + args[0] + "?id=" + state.getFieldValue(),
-                        false);
+                        false, false);
             }
         } else {
             if (state instanceof FormComponentState) {
@@ -240,7 +240,7 @@ public final class WorkPlanService {
                     generateWorkPlanDocuments(state, workPlan);
 
                     viewDefinitionState.redirectTo("/products/workPlan" + args[1] + "." + args[0] + "?id=" + workPlan.getId(),
-                            false);
+                            false, false);
                 } catch (IOException e) {
                     throw new IllegalStateException(e.getMessage(), e);
                 } catch (DocumentException e) {

@@ -27,8 +27,8 @@ public class ReportService {
         GridComponentState batchState = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
         if (state instanceof FormComponentState) {
             if (batchState != null && batchState.getFieldValue() != null) {
-                viewDefinitionState
-                        .redirectTo("/genealogies/genealogyForComponent.pdf?value=" + batchState.getFieldValue(), true);
+                viewDefinitionState.redirectTo("/genealogies/genealogyForComponent.pdf?value=" + batchState.getFieldValue(),
+                        true, false);
             } else {
                 state.addMessage(
                         translationService.translate("genealogies.genealogyForComponent.report.noBatch", state.getLocale()),
@@ -86,7 +86,8 @@ public class ReportService {
         GridComponentState batchState = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
         if (state instanceof FormComponentState) {
             if (batchState != null && batchState.getFieldValue() != null) {
-                viewDefinitionState.redirectTo("/genealogies/genealogyForProduct.pdf?value=" + batchState.getFieldValue(), true);
+                viewDefinitionState.redirectTo("/genealogies/genealogyForProduct.pdf?value=" + batchState.getFieldValue(), true,
+                        false);
             } else {
                 state.addMessage(
                         translationService.translate("genealogies.genealogyForProduct.report.noBatch", state.getLocale()),
