@@ -136,7 +136,6 @@
 					<![CDATA[
 						var saveRibbonItem = #{window}.getRibbonItem("actions.save");
 						var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
-						var generateRibbonItem = #{window}.getRibbonItem("actions.generate");
 						var pdfWorker = #{window}.getRibbonItem("exportWorker.pdfWorker");
 						var xlsWorker = #{window}.getRibbonItem("exportWorker.xlsWorker");
 						var pdfMachine = #{window}.getRibbonItem("exportMachine.pdfMachine");
@@ -183,7 +182,6 @@
 									pdfProduct.enable();
 									xlsProduct.enable();
 									saveRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
-									generateRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
 								} else {
 									pdfWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
 									xlsWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
@@ -192,11 +190,6 @@
 									pdfProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
 									xlsProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
 									saveRibbonItem.enable();
-									if (containsAtLeastOneOrder) {
-										generateRibbonItem.enable();
-									} else {
-										generateRibbonItem.disable("#{translate(products.ribbon.message.noOrders)}");
-									}
 								}
 							} else {
 								copyRibbonItem.disable("#{translate(recordNotCreated)}");
@@ -207,7 +200,6 @@
 								pdfProduct.disable("#{translate(recordNotCreated)}");
 								xlsProduct.disable("#{translate(recordNotCreated)}");
 								saveRibbonItem.enable();
-								generateRibbonItem.disable("#{translate(recordNotCreated)}");
 							}
 						}
 					]]>
@@ -253,6 +245,7 @@
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.WorkPlanService" method="disableFormForExistingWorkPlan" />
+		<preRenderHook bean="com.qcadoo.mes.products.WorkPlanService" method="setGenerateButtonState" />
 	</view>	
 	<view name="workPlanComponent" model="workPlanComponent">
 		<component type="window" name="window">
