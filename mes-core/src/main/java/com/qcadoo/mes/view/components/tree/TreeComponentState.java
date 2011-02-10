@@ -296,6 +296,7 @@ public final class TreeComponentState extends FieldComponentState {
             if (afterSaveEntity.isValid()) {
                 requestRender();
                 requestUpdateState();
+                addMessage(getTranslationService().translate("core.message.saveMessage", getLocale()), MessageType.SUCCESS);
             }
         }
 

@@ -535,8 +535,7 @@ public final class TechnologyService {
                 isValid = false;
             }
             if (entity.getField("referenceMode") == null) {
-                entity.addError(dataDefinition.getField("referenceMode"), "core.validate.field.error.missing");
-                isValid = false;
+                entity.setField("referenceMode", "01reference");
             }
         } else {
             throw new IllegalStateException("unknown entityType");
