@@ -42,6 +42,9 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
+import com.qcadoo.mes.beans.sample.SampleTreeDatabaseObject;
+import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.model.validators.internal.UniqueValidator;
 
 public final class DataAccessServiceCopyTest extends DataAccessTest {
@@ -142,6 +145,9 @@ public final class DataAccessServiceCopyTest extends DataAccessTest {
     @Test
     public void shouldCopyEntityWithHasManyField() throws Exception {
         // given
+        parentFieldDefinitionHasMany.withType(fieldTypeFactory.hasManyType("simple", "entity", "belongsTo",
+                HasManyType.Cascade.DELETE, true));
+
         SampleSimpleDatabaseObject simpleDatabaseObject = new SampleSimpleDatabaseObject();
         simpleDatabaseObject.setId(12L);
         simpleDatabaseObject.setName("Mr T");
@@ -162,16 +168,62 @@ public final class DataAccessServiceCopyTest extends DataAccessTest {
         // then
         Assert.assertEquals("Mr T", entity.getField("name"));
         assertTrue(entity.isValid());
+        verify(session, times(2)).save(Mockito.any());
+        verify(session, never()).get(Mockito.eq(SampleSimpleDatabaseObject.class), anyInt());
+    }
+
+    @Test
+    public void shouldCopyEntityWithoutTreeField() throws Exception {
+        // given
+        SampleTreeDatabaseObject treeDatabaseObject = new SampleTreeDatabaseObject();
+        treeDatabaseObject.setId(12L);
+        treeDatabaseObject.setName("Mr T");
+
+        SampleParentDatabaseObject parentDatabaseObject = new SampleParentDatabaseObject();
+        parentDatabaseObject.setId(13L);
+        parentDatabaseObject.setName("Mr T");
+
+        given(criteria.setProjection(Projections.rowCount()).uniqueResult()).willReturn(1, 0);
+        given(session.get(Mockito.eq(SampleSimpleDatabaseObject.class), Mockito.eq(12L))).willReturn(treeDatabaseObject);
+        given(session.get(Mockito.eq(SampleParentDatabaseObject.class), Mockito.eq(13L))).willReturn(parentDatabaseObject);
+        given(criteria.list()).willReturn(Lists.newArrayList(treeDatabaseObject));
+
+        // when
+        Entity entity = parentDataDefinition.copy(13L);
+
+        // then
+        Assert.assertEquals("Mr T", entity.getField("name"));
+        assertTrue(entity.isValid());
         verify(session, times(1)).save(Mockito.any());
         verify(session, never()).get(Mockito.eq(SampleSimpleDatabaseObject.class), anyInt());
     }
 
-    // @Test
-    // public void shouldCopyEntityWithTreeField() throws Exception {
-    // // given
-    // // when
-    // // then
-    // Assert.fail();
-    // }
+    @Test
+    public void shouldCopyEntityWithTreeField() throws Exception {
+        // given
+        parentFieldDefinitionTree.withType(fieldTypeFactory.treeType("tree", "entity", "owner", TreeType.Cascade.DELETE, true));
+
+        SampleTreeDatabaseObject treeDatabaseObject = new SampleTreeDatabaseObject();
+        treeDatabaseObject.setId(12L);
+        treeDatabaseObject.setName("Mr T");
+
+        SampleParentDatabaseObject parentDatabaseObject = new SampleParentDatabaseObject();
+        parentDatabaseObject.setId(13L);
+        parentDatabaseObject.setName("Mr T");
+
+        given(criteria.setProjection(Projections.rowCount()).uniqueResult()).willReturn(1, 0);
+        given(session.get(Mockito.eq(SampleSimpleDatabaseObject.class), Mockito.eq(12L))).willReturn(treeDatabaseObject);
+        given(session.get(Mockito.eq(SampleParentDatabaseObject.class), Mockito.eq(13L))).willReturn(parentDatabaseObject);
+        given(criteria.list()).willReturn(Lists.newArrayList(treeDatabaseObject));
+
+        // when
+        Entity entity = parentDataDefinition.copy(13L);
+
+        // then
+        Assert.assertEquals("Mr T", entity.getField("name"));
+        assertTrue(entity.isValid());
+        verify(session, times(2)).save(Mockito.any());
+        verify(session, never()).get(Mockito.eq(SampleSimpleDatabaseObject.class), anyInt());
+    }
 
 }
