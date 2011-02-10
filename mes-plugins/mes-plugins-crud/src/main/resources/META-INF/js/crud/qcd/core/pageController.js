@@ -23,6 +23,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	
 	var tabController = new QCD.TabController()
 	
+	var windowUrl = window.location.href;
+	
 	function constructor(_this) {
 		QCDConnector.windowName = "/page/"+pluginIdentifier+"/"+viewName;
 		QCDConnector.mainController = _this;
@@ -126,7 +128,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 				if (response.redirect.openInNewWindow) {
 					window.open(response.redirect.url);
 				} else {
-					goToPage(response.redirect.url, false);
+					goToPage(response.redirect.url, false, response.redirect.shouldSerializeWindow);
 					return;
 				}
 			} else {
@@ -290,13 +292,15 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 		return isPopup;
 	}
 	
-	this.goToPage = function(url, isPage) {
+	this.goToPage = function(url, isPage, serialize) {
 		if (isPage == undefined || isPage == null) {
 			isPage = true;
 		}
-		//if(canClose()) {
-			window.parent.goToPage(url, getSerializationObject(), isPage);
-		//}
+		var serializationObject = null;
+		if (serialize == true || serialize == undefined || serialize == null) {
+			serializationObject = getSerializationObject();
+		}
+		window.parent.goToPage(url, serializationObject, isPage);
 	}
 	var goToPage = this.goToPage;
 	
@@ -312,6 +316,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	
 	function getSerializationObject() {
 		return {
+			url: windowUrl,
 			components: getValueData()
 		}
 	}
