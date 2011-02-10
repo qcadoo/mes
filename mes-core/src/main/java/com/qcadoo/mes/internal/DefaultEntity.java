@@ -130,7 +130,16 @@ public final class DefaultEntity implements Entity {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(23, 41).append(id).append(name).append(pluginIdentifier).toHashCode();
+        HashCodeBuilder hcb = new HashCodeBuilder(23, 41).append(id).append(name).append(pluginIdentifier);
+
+        for (Map.Entry<String, Object> field : fields.entrySet()) {
+            if (field.getValue() instanceof Collection) {
+                continue;
+            }
+            hcb.append(field.getKey()).append(field.getValue());
+        }
+
+        return hcb.toHashCode();
     }
 
     @Override
@@ -145,12 +154,21 @@ public final class DefaultEntity implements Entity {
             return false;
         }
         DefaultEntity other = (DefaultEntity) obj;
-        return new EqualsBuilder().append(id, other.id).append(name, other.name).append(pluginIdentifier, other.pluginIdentifier)
-                .isEquals();
+        EqualsBuilder eb = new EqualsBuilder().append(id, other.id).append(name, other.name)
+                .append(pluginIdentifier, other.pluginIdentifier);
+
+        for (Map.Entry<String, Object> field : fields.entrySet()) {
+            if (field.getValue() instanceof Collection) {
+                continue;
+            }
+            eb.append(field.getValue(), other.fields.get(field.getKey()));
+        }
+
+        return eb.isEquals();
+
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public DefaultEntity copy() {
         DefaultEntity entity = new DefaultEntity(pluginIdentifier, name, id);
         for (Map.Entry<String, Object> field : fields.entrySet()) {

@@ -26,15 +26,26 @@ package com.qcadoo.mes.internal;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import java.util.List;
 
 import org.junit.Test;
 import org.mockito.Matchers;
+import org.mockito.Mockito;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
+import com.qcadoo.mes.beans.sample.SampleTreeDatabaseObject;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 public final class DataAccessServiceSaveTest extends DataAccessTest {
 
@@ -118,20 +129,141 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
         assertTrue(entity.isValid());
     }
 
-    // @Test
-    // public void shouldSaveHasManyField() throws Exception {
-    // // given
-    // // when
-    // // then
-    // Assert.fail();
-    // }
-    //
-    // @Test
-    // public void shouldSaveTreeField() throws Exception {
-    // // given
-    // // when
-    // // then
-    // Assert.fail();
-    // }
+    @Test
+    public void shouldSaveHasManyField() throws Exception {
+        // given
+        Entity child1 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 2L);
+        child1.setField("name", "Mr T");
+        child1.setField("age", "66");
+
+        Entity child2 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        child2.setField("name", "Mr X");
+        child2.setField("age", "67");
+
+        List<Entity> children = Arrays.asList(new Entity[] { child1, child2 });
+
+        Entity parent = new DefaultEntity(parentDataDefinition.getPluginIdentifier(), parentDataDefinition.getName(), 1L);
+        parent.setField("entities", children);
+
+        SampleParentDatabaseObject existingParent = new SampleParentDatabaseObject(1L);
+        SampleSimpleDatabaseObject existingChild = new SampleSimpleDatabaseObject(2L);
+        SampleSimpleDatabaseObject existingChildToDelete = new SampleSimpleDatabaseObject(13L);
+
+        given(session.get(any(Class.class), Matchers.eq(1L))).willReturn(existingParent);
+        given(session.get(any(Class.class), Matchers.eq(2L))).willReturn(existingChild);
+        given(session.get(any(Class.class), Matchers.eq(13L))).willReturn(existingChildToDelete);
+        given(session.load(any(Class.class), Matchers.eq(1L))).willReturn(existingParent);
+        given(criteria.uniqueResult()).willReturn(1L);
+        given(criteria.list()).willReturn(
+                Arrays.asList(new SampleSimpleDatabaseObject[] { existingChild, existingChildToDelete }));
+
+        // when
+        Entity entity = parentDataDefinition.save(parent);
+
+        // then
+        assertTrue(entity.isValid());
+
+        List<Entity> entities = (List<Entity>) entity.getField("entities");
+
+        assertEquals(2, entities.size());
+        assertEquals(Long.valueOf(1L), entities.get(0).getBelongsToField("belongsTo").getId());
+        assertEquals(Long.valueOf(1L), entities.get(1).getBelongsToField("belongsTo").getId());
+
+        verify(session, times(3)).save(Mockito.any());
+        verify(session, times(1)).delete(existingChildToDelete);
+    }
+
+    @Test
+    public void shouldNotSaveEntityListField() throws Exception {
+        // given
+        EntityList entities = new EntityList(dataDefinition, "", 1L);
+
+        Entity parent = new DefaultEntity(parentDataDefinition.getPluginIdentifier(), parentDataDefinition.getName(), 1L);
+        parent.setField("entities", entities);
+
+        SampleParentDatabaseObject existingParent = new SampleParentDatabaseObject(1L);
+
+        given(session.get(any(Class.class), Matchers.anyInt())).willReturn(existingParent);
+        given(session.load(any(Class.class), Matchers.eq(1L))).willReturn(existingParent);
+        given(criteria.uniqueResult()).willReturn(1L);
+
+        // when
+        Entity entity = parentDataDefinition.save(parent);
+
+        // then
+        assertTrue(entity.isValid());
+
+        assertEquals(entities, entity.getField("entities"));
+
+        verify(session, times(1)).save(Mockito.any());
+    }
+
+    @Test
+    public void shouldSaveTreeField() throws Exception {
+        // given
+        Entity child1 = new DefaultEntity(treeDataDefinition.getPluginIdentifier(), treeDataDefinition.getName());
+        child1.setField("name", "Mr T");
+
+        Entity root = new DefaultEntity(treeDataDefinition.getPluginIdentifier(), treeDataDefinition.getName(), 2L);
+        root.setField("name", "Mr X");
+        root.setField("children", Collections.singletonList(child1));
+
+        Entity parent = new DefaultEntity(parentDataDefinition.getPluginIdentifier(), parentDataDefinition.getName(), 1L);
+        parent.setField("tree", Collections.singletonList(root));
+
+        SampleParentDatabaseObject existingParent = new SampleParentDatabaseObject(1L);
+        SampleTreeDatabaseObject existingChild = new SampleTreeDatabaseObject(2L);
+
+        given(session.get(any(Class.class), Matchers.eq(1L))).willReturn(existingParent);
+        given(session.get(any(Class.class), Matchers.eq(2L))).willReturn(existingChild);
+        given(session.load(any(Class.class), Matchers.eq(1L))).willReturn(existingParent);
+        given(session.load(any(Class.class), Matchers.eq(2L))).willReturn(existingChild);
+        given(criteria.uniqueResult()).willReturn(1L);
+
+        // when
+        Entity entity = parentDataDefinition.save(parent);
+
+        // then
+        assertTrue(entity.isValid());
+
+        List<Entity> rootEntities = (List<Entity>) entity.getField("tree");
+
+        assertEquals(1, rootEntities.size());
+        assertEquals(Long.valueOf(1L), rootEntities.get(0).getBelongsToField("owner").getId());
+        assertNull(rootEntities.get(0).getBelongsToField("parent"));
+
+        List<Entity> childEntities = (List<Entity>) rootEntities.get(0).getField("children");
+
+        assertEquals(1, childEntities.size());
+        assertEquals(Long.valueOf(1L), childEntities.get(0).getBelongsToField("owner").getId());
+        assertEquals(Long.valueOf(2L), childEntities.get(0).getBelongsToField("parent").getId());
+
+        verify(session, times(3)).save(Mockito.any());
+    }
+
+    @Test
+    public void shouldNotSaveEntityTreeField() throws Exception {
+        // given
+        EntityTree tree = new EntityTree(dataDefinition, "", 1L);
+
+        Entity parent = new DefaultEntity(parentDataDefinition.getPluginIdentifier(), parentDataDefinition.getName(), 1L);
+        parent.setField("tree", tree);
+
+        SampleParentDatabaseObject existingParent = new SampleParentDatabaseObject(1L);
+
+        given(session.get(any(Class.class), Matchers.anyInt())).willReturn(existingParent);
+        given(session.load(any(Class.class), Matchers.eq(1L))).willReturn(existingParent);
+        given(criteria.uniqueResult()).willReturn(1L);
+
+        // when
+        Entity entity = parentDataDefinition.save(parent);
+
+        // then
+        assertTrue(entity.isValid());
+
+        assertEquals(tree, entity.getField("tree"));
+
+        verify(session, times(1)).save(Mockito.any());
+    }
 
 }
