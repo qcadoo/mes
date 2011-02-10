@@ -26,7 +26,7 @@ import com.qcadoo.mes.products.print.ReportDataService;
 
 public class ReportDataServiceTest {
 
-    private ReportDataService reportDataService = mock(ReportDataService.class);
+    private ReportDataService reportDataService = null;
 
     private DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
 
@@ -36,40 +36,86 @@ public class ReportDataServiceTest {
 
     private EntityTree entityTree = new EntityTree(dataDefinition, "technology", new Long(1));
 
+    private List<Entity> products1 = new ArrayList<Entity>();
+
+    private List<Entity> products2 = new ArrayList<Entity>();
+
+    private List<Entity> products3 = new ArrayList<Entity>();
+
+    private Entity product3 = new DefaultEntity("products", "product");
+
+    private Entity product2 = new DefaultEntity("products", "product");
+
+    private Entity product1 = new DefaultEntity("products", "product");
+
+    private Entity technologyForQuantityPerTechnologyAlghorithm = new DefaultEntity("products", "technology");
+
+    private Entity technologyForQuantityPerOutProductsAlghorithm = new DefaultEntity("products", "technology");
+
     @Before
     public void init() {
+        reportDataService = new ReportDataService();
         EntityTree entityTreeSubTechnology = new EntityTree(dataDefinition, "technology", new Long(2));
         EntityList componentsList1 = new EntityList(dataDefinition, "operationProductInComponent", new Long(1));
         EntityList componentsList2 = new EntityList(dataDefinition, "operationProductInComponent", new Long(2));
         EntityList componentsList3 = new EntityList(dataDefinition, "operationProductInComponent", new Long(3));
-        Entity operationRoot = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        EntityList componentsOutList1 = new EntityList(dataDefinition, "operationProductOutComponent", new Long(1));
+        EntityList componentsOutList2 = new EntityList(dataDefinition, "operationProductOutComponent", new Long(2));
+        EntityList componentsOutList3 = new EntityList(dataDefinition, "operationProductOutComponent", new Long(3));
+        Entity operationRoot = new DefaultEntity("products", "technologyOperationComponent");
         operationRoot.setField("entityType", "operation");
         operationRoot.setField("parent", null);
         operationRoot.setId(new Long(1));
         operationRoot.setField("operationProductInComponents", componentsList1);
-        Entity operation2 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        operationRoot.setField("operationProductOutComponents", componentsOutList1);
+        Entity operation2 = new DefaultEntity("products", "technologyOperationComponent");
         operation2.setField("entityType", "operation");
         operation2.setField("parent", operationRoot);
         operation2.setId(new Long(2));
         operation2.setField("operationProductInComponents", componentsList2);
-        Entity operation3 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        operation2.setField("operationProductOutComponents", componentsOutList2);
+        Entity operation3 = new DefaultEntity("products", "technologyOperationComponent");
         operation3.setField("entityType", "operation");
         operation3.setField("parent", operationRoot);
         operation3.setId(new Long(3));
         operation3.setField("operationProductInComponents", componentsList3);
+        operation3.setField("operationProductOutComponents", componentsOutList3);
         entityTreeList.add(operationRoot);
         entityTreeList.add(operation2);
         entityTreeList.add(operation3);
-        Entity technology = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        Entity technology = new DefaultEntity("products", "technology");
         technology.setField("operationComponents", entityTreeSubTechnology);
         technology.setField("componentQuantityAlgorithm", "02perTechnology");
-        Entity operationTechnology = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        Entity operationTechnology = new DefaultEntity("products", "technologyOperationComponent");
         operationTechnology.setField("entityType", "technology");
         operationTechnology.setField("parent", operationRoot);
         operationTechnology.setId(new Long(4));
         operationTechnology.setField("referenceTechnology", technology);
         entityTreeListWithoutTechnology.addAll(entityTreeList);
         entityTreeList.add(operationTechnology);
+        technologyForQuantityPerTechnologyAlghorithm.setField("operationComponents", entityTree);
+        technologyForQuantityPerTechnologyAlghorithm.setField("componentQuantityAlgorithm", "02perTechnology");
+        product1.setField("typeOfMaterial", "02intermediate");
+        product1.setId(new Long(1));
+        Entity productInComponent1 = new DefaultEntity("products", "operationProductInComponent");
+        productInComponent1.setField("product", product1);
+        productInComponent1.setField("quantity", BigDecimal.ONE);
+        product2.setField("typeOfMaterial", "01component");
+        product2.setId(new Long(2));
+        Entity productInComponent2 = new DefaultEntity("products", "operationProductInComponent");
+        productInComponent2.setField("product", product2);
+        productInComponent2.setField("quantity", BigDecimal.ONE);
+        product3.setField("typeOfMaterial", "02intermediate");
+        product3.setId(new Long(3));
+        Entity productInComponent3 = new DefaultEntity("products", "operationProductInComponent");
+        productInComponent3.setField("product", product3);
+        productInComponent3.setField("quantity", BigDecimal.ONE);
+        products1.add(productInComponent1);
+        products2.add(productInComponent2);
+        products2.add(productInComponent3);
+
+        technologyForQuantityPerOutProductsAlghorithm.setField("operationComponents", entityTree);
+        technologyForQuantityPerOutProductsAlghorithm.setField("componentQuantityAlgorithm", "01perProductOut");
     }
 
     @Test
@@ -119,7 +165,8 @@ public class ReportDataServiceTest {
         Entity materialRequirement = new DefaultEntity("products", "materialRequirement");
         Entity materialRequirementComponent = new DefaultEntity("products", "materialRequirementComponent");
         Entity order = new DefaultEntity("products", "order");
-        order.setField("quantity", null);
+        order.setField("technology", new DefaultEntity("products", "technology"));
+        order.setField("plannedQuantity", null);
         materialRequirementComponent.setField("order", order);
         EntityList componentsList = new EntityList(dataDefinition, "materialRequirement", new Long(1));
         materialRequirement.setField("orders", componentsList);
@@ -141,7 +188,8 @@ public class ReportDataServiceTest {
         Entity materialRequirement = new DefaultEntity("products", "materialRequirement");
         Entity materialRequirementComponent = new DefaultEntity("products", "materialRequirementComponent");
         Entity order = new DefaultEntity("products", "order");
-        order.setField("quantity", new BigDecimal(0));
+        order.setField("technology", new DefaultEntity("products", "technology"));
+        order.setField("plannedQuantity", BigDecimal.ZERO);
         materialRequirementComponent.setField("order", order);
         EntityList componentsList = new EntityList(dataDefinition, "materialRequirement", new Long(1));
         materialRequirement.setField("orders", componentsList);
@@ -158,36 +206,24 @@ public class ReportDataServiceTest {
     }
 
     @Test
-    public void shouldReturnValidMapPerTechnologyAlgorithm() {
+    public void shouldReturnEmptyListIfQuantityIsMoreThenZero() {
         // given
-        Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
-        Entity technology = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        technology.setField("operationComponents", entityTree);
-        technology.setField("componentQuantityAlgorithm", "02perTechnology");
-        Entity product1 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        product1.setField("typeOfMaterial", "02intermediate");
-        product1.setId(new Long(1));
-        Entity productInComponent1 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        productInComponent1.setField("product", product1);
-        productInComponent1.setField("quantity", BigDecimal.ONE);
-        Entity product2 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        product2.setField("typeOfMaterial", "01component");
-        product2.setId(new Long(2));
-        Entity productInComponent2 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        productInComponent2.setField("product", product2);
-        productInComponent2.setField("quantity", BigDecimal.ONE);
-        Entity product3 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        product3.setField("typeOfMaterial", "02intermediate");
-        product3.setId(new Long(3));
-        Entity productInComponent3 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        productInComponent3.setField("product", product3);
-        productInComponent3.setField("quantity", BigDecimal.ONE);
-        List<Entity> products1 = new ArrayList<Entity>();
-        products1.add(productInComponent1);
-        List<Entity> products2 = new ArrayList<Entity>();
-        products2.add(productInComponent2);
-        products2.add(productInComponent3);
-        List<Entity> products3 = new ArrayList<Entity>();
+        Entity materialRequirement = new DefaultEntity("products", "materialRequirement");
+        materialRequirement.setField("onlyComponents", false);
+        materialRequirement.setId(new Long(15));
+        Entity materialRequirementComponent = new DefaultEntity("products", "materialRequirementComponent");
+        Entity order = new DefaultEntity("products", "order");
+        order.setField("technology", technologyForQuantityPerTechnologyAlghorithm);
+        order.setField("plannedQuantity", BigDecimal.ONE);
+        materialRequirementComponent.setField("order", order);
+        EntityList componentsList = new EntityList(dataDefinition, "materialRequirement", new Long(15));
+        materialRequirement.setField("orders", componentsList);
+        List<Entity> components = new ArrayList<Entity>();
+        components.add(materialRequirementComponent);
+
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("orders"), new Long(15)))
+                        .list().getEntities()).willReturn(components);
 
         given(
                 dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
@@ -216,7 +252,46 @@ public class ReportDataServiceTest {
                         .list().getEntities()).willReturn(products3);
 
         // when
-        reportDataService.countQuantityForProductsIn(products, technology, new BigDecimal(2), false);
+        Map<Entity, BigDecimal> products = reportDataService.prepareTechnologySeries(materialRequirement);
+
+        // then
+        assertEquals(products.size(), 3);
+    }
+
+    @Test
+    public void shouldReturnValidMapPerTechnologyAlgorithm() {
+        // given
+        Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
+
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products1);
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(2)))
+                        .list().getEntities()).willReturn(products2);
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(3)))
+                        .list().getEntities()).willReturn(products3);
+
+        // when
+        reportDataService.countQuantityForProductsIn(products, technologyForQuantityPerTechnologyAlghorithm, new BigDecimal(2),
+                false);
 
         // then
         assertEquals(products.size(), 3);
@@ -229,33 +304,6 @@ public class ReportDataServiceTest {
     public void shouldReturnValidMapPerTechnologyAlgorithmForComponentsOnly() {
         // given
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
-        Entity technology = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        technology.setField("operationComponents", entityTree);
-        technology.setField("componentQuantityAlgorithm", "02perTechnology");
-        Entity product1 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        product1.setField("typeOfMaterial", "02intermediate");
-        product1.setId(new Long(1));
-        Entity productInComponent1 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        productInComponent1.setField("product", product1);
-        productInComponent1.setField("quantity", BigDecimal.ONE);
-        Entity product2 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        product2.setField("typeOfMaterial", "01component");
-        product2.setId(new Long(2));
-        Entity productInComponent2 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        productInComponent2.setField("product", product2);
-        productInComponent2.setField("quantity", BigDecimal.ONE);
-        Entity product3 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        product3.setField("typeOfMaterial", "02intermediate");
-        product3.setId(new Long(3));
-        Entity productInComponent3 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
-        productInComponent3.setField("product", product3);
-        productInComponent3.setField("quantity", BigDecimal.ONE);
-        List<Entity> products1 = new ArrayList<Entity>();
-        products1.add(productInComponent1);
-        List<Entity> products2 = new ArrayList<Entity>();
-        products2.add(productInComponent2);
-        products2.add(productInComponent3);
-        List<Entity> products3 = new ArrayList<Entity>();
 
         given(
                 dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
@@ -284,12 +332,109 @@ public class ReportDataServiceTest {
                         .list().getEntities()).willReturn(products3);
 
         // when
-        reportDataService.countQuantityForProductsIn(products, technology, new BigDecimal(2), true);
+        reportDataService.countQuantityForProductsIn(products, technologyForQuantityPerTechnologyAlghorithm, new BigDecimal(2),
+                true);
 
         // then
         assertEquals(products.size(), 1);
         assertEquals(products.get(product2), new BigDecimal("4"));
 
+    }
+
+    @Test
+    public void shouldReturnInvalidMapPerOutProductsAlgorithmCauseEmptyRoot() {
+        // given
+        Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(new ArrayList<Entity>());
+
+        // when
+        reportDataService.countQuantityForProductsIn(products, technologyForQuantityPerOutProductsAlghorithm, new BigDecimal(2),
+                false);
+
+        // then
+        assertEquals(products.size(), 0);
+    }
+
+    @Test
+    public void shouldReturnInvalidMapPerOutProductsAlgorithmCauseEmptyProductsIn() {
+        // given
+        Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(new ArrayList<Entity>());
+
+        // when
+        reportDataService.countQuantityForProductsIn(products, technologyForQuantityPerOutProductsAlghorithm, new BigDecimal(2),
+                false);
+
+        // then
+        assertEquals(products.size(), 0);
+    }
+
+    @Test
+    public void shouldReturnInvalidMapPerOutProductsAlgorithmCauseEmptyProductsOut() {
+        // given
+        Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products1);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(2)))
+                        .list().getEntities()).willReturn(products2);
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(3)))
+                        .list().getEntities()).willReturn(products3);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products3);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(2)))
+                        .list().getEntities()).willReturn(products3);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(3)))
+                        .list().getEntities()).willReturn(products3);
+
+        // when
+        reportDataService.countQuantityForProductsIn(products, technologyForQuantityPerOutProductsAlghorithm, new BigDecimal(2),
+                false);
+
+        // then
+        assertEquals(products.size(), 0);
     }
 
 }
