@@ -525,7 +525,7 @@ public class ReportDataService {
 
     private BigDecimal createUniqueOrdersList(final List<Entity> orders,
             final Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry) {
-        BigDecimal totalQuantity = new BigDecimal("0");
+        BigDecimal totalQuantity = BigDecimal.ZERO;
 
         for (Pair<Entity, Entity> pair : entry.getValue().keySet()) {
             if (!orders.contains(pair.getValue())) {
