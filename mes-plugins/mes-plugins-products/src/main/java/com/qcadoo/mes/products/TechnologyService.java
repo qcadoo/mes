@@ -407,10 +407,8 @@ public final class TechnologyService {
     }
 
     private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology, final boolean copy) {
-        if (!copy) {
-            if (technologies.contains(referencedTechnology.getId())) {
-                return true;
-            }
+        if (!copy && technologies.contains(referencedTechnology.getId())) {
+            return true;
         }
 
         technologies.add(referencedTechnology.getId());
@@ -537,8 +535,7 @@ public final class TechnologyService {
                 isValid = false;
             }
             if (entity.getField("referenceMode") == null) {
-                entity.addError(dataDefinition.getField("referenceMode"), "core.validate.field.error.missing");
-                isValid = false;
+                entity.setField("referenceMode", "01reference");
             }
         } else {
             throw new IllegalStateException("unknown entityType");

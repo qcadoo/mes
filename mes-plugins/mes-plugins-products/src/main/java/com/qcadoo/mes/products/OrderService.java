@@ -259,11 +259,9 @@ public final class OrderService {
         if (product == null) {
             return true;
         }
-        if (entity.getField("technology") == null) {
-            if (hasAnyTechnologies(product.getId())) {
-                entity.addError(dataDefinition.getField("technology"), "products.validate.global.error.technologyError");
-                return false;
-            }
+        if (entity.getField("technology") == null && hasAnyTechnologies(product.getId())) {
+            entity.addError(dataDefinition.getField("technology"), "products.validate.global.error.technologyError");
+            return false;
         }
         return true;
     }
@@ -380,10 +378,8 @@ public final class OrderService {
                 }
             }
             for (Entity genealogy : order.getHasManyField("genealogies")) {
-                if ((Boolean) technology.getField("batchRequired")) {
-                    if (genealogy.getField("batch") == null) {
-                        return false;
-                    }
+                if ((Boolean) technology.getField("batchRequired") && genealogy.getField("batch") == null) {
+                    return false;
                 }
                 if ((Boolean) technology.getField("shiftFeatureRequired")) {
                     List<Entity> entityList = genealogy.getHasManyField("shiftFeatures");

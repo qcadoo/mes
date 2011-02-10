@@ -12,7 +12,7 @@ import com.qcadoo.mes.api.TranslationService;
 
 public abstract class DocumentService {
 
-    protected DecimalFormat decimalFormat;
+    private DecimalFormat decimalFormat;
 
     @Autowired
     private TranslationService translationService;
@@ -29,6 +29,10 @@ public abstract class DocumentService {
 
     public final DecimalFormat getDecimalFormat() {
         return decimalFormat;
+    }
+
+    protected void setDecimalFormat(final DecimalFormat decimalFormat) {
+        this.decimalFormat = decimalFormat;
     }
 
 }

@@ -7,9 +7,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class SortUtil {
+public final class SortUtil {
 
-    public static <T, V> Map<T, V> sortMapUsingComparator(Map<T, V> operationMap, Comparator<T> comparator) {
+    private SortUtil() {
+        // empty
+    }
+
+    public static <T, V> Map<T, V> sortMapUsingComparator(final Map<T, V> operationMap, final Comparator<T> comparator) {
         List<T> operationList = new LinkedList<T>(operationMap.keySet());
 
         Collections.sort(operationList, comparator);

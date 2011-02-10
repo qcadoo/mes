@@ -114,11 +114,9 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
     }
 
     private FieldDefinition getBelongsToFieldDefinition() {
-        if (getFieldDefinition() != null) {
-            if (TreeType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
-                TreeType treeType = (TreeType) getFieldDefinition().getType();
-                return treeType.getDataDefinition().getField(treeType.getJoinFieldName());
-            }
+        if (getFieldDefinition() != null && TreeType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
+            TreeType treeType = (TreeType) getFieldDefinition().getType();
+            return treeType.getDataDefinition().getField(treeType.getJoinFieldName());
         }
         throw new IllegalStateException("Field has to be a tree one");
     }

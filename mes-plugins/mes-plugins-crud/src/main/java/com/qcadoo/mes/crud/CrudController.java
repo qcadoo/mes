@@ -41,10 +41,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.view.ViewDefinition;
 
 @Controller
-public final class CrudController {
+public class CrudController {
 
     private static final String VIEW_NAME_VARIABLE = "viewName";
 
@@ -55,6 +56,7 @@ public final class CrudController {
     @Autowired
     private ViewDefinitionService viewDefinitionService;
 
+    @Monitorable(threshold = 500)
     @RequestMapping(value = CONTROLLER_PATH, method = RequestMethod.GET)
     public ModelAndView prepareView(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
             @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
@@ -92,6 +94,7 @@ public final class CrudController {
         return modelAndView;
     }
 
+    @Monitorable(threshold = 500)
     @RequestMapping(value = { CONTROLLER_PATH }, method = RequestMethod.POST)
     @ResponseBody
     public Object performEvent(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,

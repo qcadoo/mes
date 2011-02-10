@@ -76,7 +76,6 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
         ModelAndView mv = super.doResolveException(request, response, handler, exception);
 
         if (mv != null) {
-
             String codeStr = mv.getViewName();
             int code = Integer.parseInt(codeStr);
 

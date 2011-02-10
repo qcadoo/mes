@@ -38,6 +38,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.springframework.security.core.AuthenticationException;
+
 public final class SessionExpirationFilter implements Filter {
 
     private final Pattern logoutPattern = Pattern.compile("login\\.html\\?logout=true$");
@@ -57,7 +59,12 @@ public final class SessionExpirationFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         RedirectResponseWrapper redirectResponseWrapper = new RedirectResponseWrapper(httpResponse);
 
-        chain.doFilter(request, redirectResponseWrapper);
+        try {
+            chain.doFilter(request, redirectResponseWrapper);
+        } catch (AuthenticationException e) {
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+            redirectToLoginPage(httpRequest, httpResponse);
+        }
 
         if (redirectResponseWrapper.getRedirect() != null) {
             Matcher logoutMatcher = logoutPattern.matcher(redirectResponseWrapper.getRedirect());

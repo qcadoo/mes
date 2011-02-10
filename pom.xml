@@ -117,9 +117,9 @@
 				<version>${hibernate.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-ehcache</artifactId>
-				<version>${hibernate.version}</version>
+				<groupId>net.sf.ehcache</groupId>
+				<artifactId>ehcache-core</artifactId>
+				<version>2.3.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tiles</groupId>
@@ -335,6 +335,8 @@
 					<instrumentation>
 						<excludes>
 							<exclude>com/qcadoo/mes/beans/**/*.class</exclude>
+							<exclude>com/qcadoo/mes/application/TestDataLoader.class</exclude>
+							<exclude>com/qcadoo/mes/application/DatabasePreparationService.class</exclude>
 						</excludes>
 					</instrumentation>
 				</configuration>
