@@ -180,7 +180,7 @@
 						<component type="grid" name="materialRequirementComponents" reference="materialRequirementComponents" source="#{form}.orders">
 							<option type="column" name="number" fields="order" expression="#order['number']"/>
 							<option type="column" name="name" fields="order" expression="#order['name']"/>
-							<option type="column" name="state" fields="order" expression="#order['state']"/>
+							<!--<option type="column" name="state" fields="order" expression="#order['state']"/>-->
 							<option type="order" column="number" direction="desc"/>
 							<option type="correspondingView" value="products/materialRequirementComponent" />
 							<option type="correspondingComponent" value="form" />

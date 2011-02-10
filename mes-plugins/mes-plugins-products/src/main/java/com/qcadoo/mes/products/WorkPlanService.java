@@ -51,6 +51,7 @@ import com.qcadoo.mes.products.print.pdf.WorkPlanForWorkerPdfService;
 import com.qcadoo.mes.products.print.xls.WorkPlanForMachineXlsService;
 import com.qcadoo.mes.products.print.xls.WorkPlanForProductXlsService;
 import com.qcadoo.mes.products.print.xls.WorkPlanForWorkerXlsService;
+import com.qcadoo.mes.products.util.RibbonUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -89,6 +90,9 @@ public final class WorkPlanService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private RibbonUtil ribbonUtil;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
@@ -148,6 +152,10 @@ public final class WorkPlanService {
                 throw new IllegalStateException(e.getMessage(), e);
             }
         }
+    }
+
+    public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale) {
+        ribbonUtil.setGenerateButtonState(state, locale, "workPlan");
     }
 
     public void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {

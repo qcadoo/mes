@@ -27,7 +27,6 @@ package com.qcadoo.mes.products;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,13 +47,12 @@ import com.qcadoo.mes.model.types.internal.DateTimeType;
 import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
+import com.qcadoo.mes.products.util.RibbonUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
-import com.qcadoo.mes.view.components.window.WindowComponentState;
-import com.qcadoo.mes.view.ribbon.RibbonActionItem;
 
 @Service
 public final class MaterialRequirementService {
@@ -70,6 +68,9 @@ public final class MaterialRequirementService {
 
     @Autowired
     private MaterialRequirementXlsService materialRequirementXlsService;
+
+    @Autowired
+    private RibbonUtil ribbonUtil;
 
     @Value("${reportPath}")
     private String path;
@@ -124,54 +125,58 @@ public final class MaterialRequirementService {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale) {
-        WindowComponentState window = (WindowComponentState) state.getComponentByReference("window");
-        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
-        RibbonActionItem generateButton = window.getRibbon().getGroupByName("actions").getItemByName("generate");
-
-        if (form.getEntityId() == null) {
-            generateButton.setMessage("recordNotCreated");
-            generateButton.setEnabled(false);
-        } else {
-
-            Entity materialRequirementEntity = dataDefinitionService.get("products", "materialRequirement").get(
-                    form.getEntityId());
-
-            if ((Boolean) materialRequirementEntity.getField("generated")) {
-                generateButton.setMessage("products.ribbon.message.recordAlreadyGenerated");
-                generateButton.setEnabled(false);
-            } else {
-
-                List<Entity> orderComponents = (List<Entity>) materialRequirementEntity.getField("orders");
-
-                if (orderComponents.size() == 0) {
-                    generateButton.setMessage("products.ribbon.message.noOrders");
-                    generateButton.setEnabled(false);
-                } else {
-                    boolean isAnyOrderClosed = false;
-                    for (Entity orderComponent : orderComponents) {
-                        Entity order = orderComponent.getBelongsToField("order");
-                        if (order.getField("state").equals("03done")) {
-                            isAnyOrderClosed = true;
-                            break;
-                        }
-                    }
-                    if (isAnyOrderClosed) {
-                        generateButton.setMessage("products.ribbon.message.existClosedOrder");
-                        generateButton.setEnabled(false);
-
-                    } else {
-                        generateButton.setMessage(null);
-                        generateButton.setEnabled(true);
-                    }
-                }
-
-            }
-        }
-        generateButton.setShouldBeUpdated(true);
-        window.requestRibbonRender();
+        ribbonUtil.setGenerateButtonState(state, locale, "materialRequirement");
     }
+
+    // @SuppressWarnings("unchecked")
+    // public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale) {
+    // WindowComponentState window = (WindowComponentState) state.getComponentByReference("window");
+    // FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+    // RibbonActionItem generateButton = window.getRibbon().getGroupByName("actions").getItemByName("generate");
+    //
+    // if (form.getEntityId() == null) {
+    // generateButton.setMessage("recordNotCreated");
+    // generateButton.setEnabled(false);
+    // } else {
+    //
+    // Entity materialRequirementEntity = dataDefinitionService.get("products", "materialRequirement").get(
+    // form.getEntityId());
+    //
+    // if ((Boolean) materialRequirementEntity.getField("generated")) {
+    // generateButton.setMessage("products.ribbon.message.recordAlreadyGenerated");
+    // generateButton.setEnabled(false);
+    // } else {
+    //
+    // List<Entity> orderComponents = (List<Entity>) materialRequirementEntity.getField("orders");
+    //
+    // if (orderComponents.size() == 0) {
+    // generateButton.setMessage("products.ribbon.message.noOrders");
+    // generateButton.setEnabled(false);
+    // } else {
+    // boolean isAnyOrderClosed = false;
+    // for (Entity orderComponent : orderComponents) {
+    // Entity order = orderComponent.getBelongsToField("order");
+    // if (order.getField("state").equals("03done")) {
+    // isAnyOrderClosed = true;
+    // break;
+    // }
+    // }
+    // if (isAnyOrderClosed) {
+    // generateButton.setMessage("products.ribbon.message.existClosedOrder");
+    // generateButton.setEnabled(false);
+    //
+    // } else {
+    // generateButton.setMessage(null);
+    // generateButton.setEnabled(true);
+    // }
+    // }
+    //
+    // }
+    // }
+    // generateButton.setShouldBeUpdated(true);
+    // window.requestRibbonRender();
+    // }
 
     public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
