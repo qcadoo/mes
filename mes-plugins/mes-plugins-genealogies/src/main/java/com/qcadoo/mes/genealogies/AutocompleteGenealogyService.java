@@ -295,7 +295,8 @@ public class AutocompleteGenealogyService {
         genealogy.setField("productInComponents", new ArrayList<Entity>());
         List<String> componentsWithoutBatch = new ArrayList<String>();
         List<Entity> operationComponents = new ArrayList<Entity>();
-        genealogyService.addOperationsFromSubtechnologiesToList(technology.getTreeField("operationComponents"), operationComponents);
+        genealogyService.addOperationsFromSubtechnologiesToList(technology.getTreeField("operationComponents"),
+                operationComponents);
         for (Entity operationComponent : operationComponents) {
             for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                 if ((Boolean) operationProductComponent.getField("batchRequired")) {
@@ -318,8 +319,9 @@ public class AutocompleteGenealogyService {
                         productIn.setField("batch", Collections.singletonList(productBatch));
                     } else {
                         String value = product.getField("number") + "-" + product.getField("name") + "; ";
-                        if (!componentsWithoutBatch.contains(value))
+                        if (!componentsWithoutBatch.contains(value)) {
                             componentsWithoutBatch.add(value);
+                        }
                     }
 
                     ((List<Entity>) genealogy.getField("productInComponents")).add(productIn);

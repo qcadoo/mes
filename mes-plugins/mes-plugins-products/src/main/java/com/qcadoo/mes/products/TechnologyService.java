@@ -220,7 +220,7 @@ public final class TechnologyService {
 
         if (acceptedDefectsQuantity.getFieldValue() != null) {
             if (isNumber(acceptedDefectsQuantity.getFieldValue().toString())
-                    && (new BigDecimal(acceptedDefectsQuantity.getFieldValue().toString())).compareTo(new BigDecimal("0")) > 0) {
+                    && (new BigDecimal(acceptedDefectsQuantity.getFieldValue().toString())).compareTo(BigDecimal.ZERO) > 0) {
                 comment.setRequired(true);
             } else {
                 comment.setRequired(false);
@@ -244,7 +244,7 @@ public final class TechnologyService {
         if (acceptedDefectsQuantity != null) {
             String comment = (String) entity.getField("comment");
 
-            if ((comment == null || comment.isEmpty()) && acceptedDefectsQuantity.compareTo(new BigDecimal("0")) > 0) {
+            if ((comment == null || comment.isEmpty()) && acceptedDefectsQuantity.compareTo(BigDecimal.ZERO) > 0) {
                 entity.addGlobalError("core.validate.global.error.custom");
                 entity.addError(dataDefinition.getField("comment"), "products.quality.control.validate.global.error.comment");
                 return false;
@@ -500,7 +500,7 @@ public final class TechnologyService {
 
             if (acceptedDefectsQuantity.getFieldValue() != null
                     && (new BigDecimal(acceptedDefectsQuantity.getFieldValue().toString().replace(",", "."))
-                            .compareTo(new BigDecimal("0")) > 0)) {
+                            .compareTo(BigDecimal.ZERO) > 0)) {
                 comment.setRequired(true);
                 comment.requestComponentUpdateState();
             } else {
@@ -570,7 +570,7 @@ public final class TechnologyService {
         if (qualityControlType != null && qualityControlType.equals("02forUnit")) {
 
             BigDecimal unitSamplingNr = (BigDecimal) entity.getField("unitSamplingNr");
-            if (unitSamplingNr == null || unitSamplingNr.scale() > 3 || unitSamplingNr.compareTo(new BigDecimal("0")) < 0
+            if (unitSamplingNr == null || unitSamplingNr.scale() > 3 || unitSamplingNr.compareTo(BigDecimal.ZERO) < 0
                     || unitSamplingNr.precision() > 7) {
                 entity.addGlobalError("core.validate.global.error.custom");
                 entity.addError(dataDefinition.getField("unitSamplingNr"),
