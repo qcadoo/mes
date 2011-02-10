@@ -92,8 +92,12 @@
 			windowController.openModal(id, url, serializationObject);
 		}
 
-		window.goBack = function() {
-			windowController.goBack();
+		window.goBack = function(pageController) {
+			windowController.goBack(pageController);
+		}
+
+		window.getLastPageController = function() {
+			return windowController.getLastPageController();
 		}
 
 		window.goToLastPage = function() {
