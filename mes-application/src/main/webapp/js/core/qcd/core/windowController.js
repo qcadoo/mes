@@ -45,6 +45,8 @@ QCD.WindowController = function(_menuStructure) {
 	var menuStructure = _menuStructure;
 	var menuController
 	
+	var lastPageController;
+	
 	function constructor(_this) {
 		iframe = $("#mainPageIframe");
 		loadingIndicator = $("#loadingIndicator");
@@ -64,7 +66,6 @@ QCD.WindowController = function(_menuStructure) {
 	}
 	
 	this.performLogout = function() {
-		QCD.info("logout");
 		window.location = "j_spring_security_logout";
 	}
 	
@@ -91,12 +92,6 @@ QCD.WindowController = function(_menuStructure) {
 		if (! modalObjects.id) {
 			modalObjects.id = QCD.utils.Modal.createModal();
 		}
-//			modalObjects.id.iframe.load(function() {
-//				if (this.src != "" && this.contentWindow.init) {
-//					this.contentWindow.init(serializationObjectToInsert);
-//					serializationObjectToInsert = null;
-//				}
-//			});
 		
 		modalsStack.push(modalObjects.id);
 		
@@ -108,7 +103,6 @@ QCD.WindowController = function(_menuStructure) {
 		url+="popup=true";
 		
 		modalObjects.id.show("page/"+url, function() {
-			QCD.info("loaded");
 			if (this.src != "" && this.contentWindow.init) {
 				this.contentWindow.init(serializationObjectToInsert);
 				serializationObjectToInsert = null;
@@ -116,7 +110,8 @@ QCD.WindowController = function(_menuStructure) {
 		});
 	}
 	
-	this.goBack = function() {
+	this.goBack = function(pageController) {
+		lastPageController = pageController;
 		var stateObject = statesStack.pop();
 		serializationObjectToInsert = stateObject.serializationObject;
 		if (modalsStack.length == 0) {
@@ -127,6 +122,10 @@ QCD.WindowController = function(_menuStructure) {
 			modal.hide();
 			onIframeLoad();
 		}
+	}
+	
+	this.getLastPageController = function() {
+		return lastPageController;
 	}
 	
 	this.goToLastPage = function() {
