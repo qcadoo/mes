@@ -5,8 +5,9 @@ import java.util.Comparator;
 
 import com.qcadoo.mes.api.Entity;
 
-@SuppressWarnings("serial")
 public class EntityOperationNumberComparator implements Comparator<Entity>, Serializable {
+
+    private static final long serialVersionUID = -5494591766317495429L;
 
     @Override
     public int compare(final Entity o1, final Entity o2) {

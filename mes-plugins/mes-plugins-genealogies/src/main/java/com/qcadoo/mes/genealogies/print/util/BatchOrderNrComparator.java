@@ -6,8 +6,9 @@ import java.util.Comparator;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.utils.Pair;
 
-@SuppressWarnings("serial")
 public class BatchOrderNrComparator implements Comparator<Pair<String, Entity>>, Serializable {
+
+    private static final long serialVersionUID = 8036890401555908533L;
 
     @Override
     public int compare(final Pair<String, Entity> o1, final Pair<String, Entity> o2) {
