@@ -407,10 +407,8 @@ public final class TechnologyService {
     }
 
     private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology, final boolean copy) {
-        if (!copy) {
-            if (technologies.contains(referencedTechnology.getId())) {
-                return true;
-            }
+        if (!copy && technologies.contains(referencedTechnology.getId())) {
+            return true;
         }
 
         technologies.add(referencedTechnology.getId());

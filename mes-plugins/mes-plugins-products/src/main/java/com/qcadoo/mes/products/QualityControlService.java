@@ -41,10 +41,8 @@ public class QualityControlService {
     public void autoGenerateQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         boolean inProgressState = Boolean.parseBoolean(args[0]);
-        if (inProgressState) {
-            if (isQualityControlAutoGenEnabled()) {
-                generateQualityControl(viewDefinitionState, state, args);
-            }
+        if (inProgressState && isQualityControlAutoGenEnabled()) {
+            generateQualityControl(viewDefinitionState, state, args);
         }
     }
 
@@ -96,7 +94,7 @@ public class QualityControlService {
         }
     }
 
-    private void generateQualityControlForGivenType(String qualityControlType, final Entity technology, final Entity order) {
+    private void generateQualityControlForGivenType(final String qualityControlType, final Entity technology, final Entity order) {
         if (qualityControlType.equals("01forBatch")) {
             List<Entity> genealogies = getGenealogiesForOrder(order.getId());
 
@@ -144,7 +142,7 @@ public class QualityControlService {
 
     }
 
-    private void createAndSaveControlForOperation(final Entity order, Entity entity) {
+    private void createAndSaveControlForOperation(final Entity order, final Entity entity) {
         DataDefinition qualityForOperationDataDefinition = dataDefinitionService.get("products", "qualityForOperation");
 
         Entity forOperation = new DefaultEntity("products", "qualityForOperation");
@@ -167,7 +165,7 @@ public class QualityControlService {
         qualityForOrderDataDefinition.save(forOrder);
     }
 
-    private void createAndSaveControlForSingleBatch(final Entity order, Entity genealogy) {
+    private void createAndSaveControlForSingleBatch(final Entity order, final Entity genealogy) {
         DataDefinition qualityForBatchDataDefinition = dataDefinitionService.get("products", "qualityForBatch");
 
         Entity forBatch = new DefaultEntity("products", "qualityForBatch");

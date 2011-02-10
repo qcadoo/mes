@@ -156,24 +156,14 @@ public final class ValidationService {
         return parseAndValidateValue(dataDefinition, fieldDefinition, referencedEntity, validatedEntity);
     }
 
-    private Object parseAndValidateHasManyField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
-            final Object value, final Entity validatedEntity) {
-        return value;
-    }
-
-    private Object parseAndValidateTreeField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
-            final Object value, final Entity validatedEntity) {
-        return value;
-    }
-
     private Object parseAndValidateField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final Object value, final Entity validatedEntity) {
         if (fieldDefinition.getType() instanceof BelongsToType) {
             return parseAndValidateBelongsToField(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validatedEntity);
         } else if (fieldDefinition.getType() instanceof HasManyType) {
-            return parseAndValidateHasManyField(dataDefinition, fieldDefinition, value, validatedEntity);
+            return value;
         } else if (fieldDefinition.getType() instanceof TreeType) {
-            return parseAndValidateTreeField(dataDefinition, fieldDefinition, value, validatedEntity);
+            return value;
         } else {
             return parseAndValidateValue(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validatedEntity);
         }

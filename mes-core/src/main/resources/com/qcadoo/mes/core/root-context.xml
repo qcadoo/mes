@@ -77,11 +77,10 @@
 				<prop key="hibernate.dialect">${hibernateDialect}</prop>
 				<prop key="hibernate.show_sql">${hibernateShowSql}</prop>
 				<prop key="hibernate.hbm2ddl.auto">${hibernateHbm2ddlAuto}</prop>
-				<prop key="hibernate.cache.use_query_cache">false</prop>
-				<prop key="hibernate.cache.use_second_level_cache">false</prop>
-				<prop key="hibernate.cache.region.factory_class">net.sf.ehcache.hibernate.EhCacheRegionFactory</prop>
+				<!-- prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.region.factory_class">net.sf.ehcache.hibernate.EhCacheRegionFactory</prop -->
             	<prop key="hibernate.bytecode.use_reflection_optimizer">true</prop>
-            	<prop key="hibernate.transaction.manager_lookup_class">org.springframework.orm.hibernate3.LocalTransactionManagerLookup</prop>
 			</props>
 		</property>
 	</bean>

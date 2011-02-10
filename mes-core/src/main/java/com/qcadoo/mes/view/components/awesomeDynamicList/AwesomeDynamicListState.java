@@ -25,17 +25,17 @@ public class AwesomeDynamicListState extends FieldComponentState implements Cont
 
     private final FormComponentPattern innerFormPattern;
 
-    private final ComponentPattern headerPattern;
+    // private final ComponentPattern headerPattern;
 
     private List<FormComponentState> forms;
 
-    public AwesomeDynamicListState(final FormComponentPattern innerFormPattern, ComponentPattern headerPattern) {
+    public AwesomeDynamicListState(final FormComponentPattern innerFormPattern, final ComponentPattern headerPattern) {
         this.innerFormPattern = innerFormPattern;
-        this.headerPattern = headerPattern;
+        // this.headerPattern = headerPattern;
     }
 
     @Override
-    protected void initializeContent(JSONObject json) throws JSONException {
+    protected void initializeContent(final JSONObject json) throws JSONException {
         if (json.has(JSON_FORM_VALUES)) {
             forms = new LinkedList<FormComponentState>();
             JSONArray formValues = json.getJSONArray(JSON_FORM_VALUES);
@@ -125,7 +125,7 @@ public class AwesomeDynamicListState extends FieldComponentState implements Cont
     }
 
     @Override
-    public ComponentState getChild(String name) {
+    public ComponentState getChild(final String name) {
         for (FormComponentState form : forms) {
             if (name.equals(form.getName())) {
                 return form;
@@ -135,6 +135,6 @@ public class AwesomeDynamicListState extends FieldComponentState implements Cont
     }
 
     @Override
-    public void addChild(ComponentState state) {
+    public void addChild(final ComponentState state) {
     }
 }
