@@ -110,10 +110,8 @@ public class ReportDataService {
             if (rootNode != null) {
                 boolean success = countQuntityComponentPerOutProducts(orderProducts, rootNode, onlyComponents, plannedQuantity);
                 if (success) {
-                    if (products.size() == 0) {
-                        products.putAll(orderProducts);
-                    } else {
-                        for (Entry<Entity, BigDecimal> entry : orderProducts.entrySet()) {
+                    for (Entry<Entity, BigDecimal> entry : orderProducts.entrySet()) {
+                        if (!onlyComponents || MATERIAL_COMPONENT.equals(entry.getKey().getField("typeOfMaterial"))) {
                             if (products.containsKey(entry.getKey())) {
                                 products.put(entry.getKey(), products.get(entry.getKey()).add(entry.getValue()));
                             } else {
@@ -194,22 +192,20 @@ public class ReportDataService {
             }
             for (Entity operationProductInComponent : operationProductInComponents) {
                 Entity product = (Entity) operationProductInComponent.getField("product");
-                if (!onlyComponents || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
-                    BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(
-                            plannedQuantity, MathContext.DECIMAL128).divide(
-                            (BigDecimal) productOutComponent.getField("quantity"), MathContext.DECIMAL128);
-                    EntityTreeNode prevOperation = findPreviousOperation(node, product);
-                    if (prevOperation != null) {
-                        boolean success = countQuntityComponentPerOutProducts(products, prevOperation, onlyComponents, quantity);
-                        if (!success) {
-                            return false;
-                        }
+                BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
+                        MathContext.DECIMAL128).divide((BigDecimal) productOutComponent.getField("quantity"),
+                        MathContext.DECIMAL128);
+                EntityTreeNode prevOperation = findPreviousOperation(node, product);
+                if (prevOperation != null) {
+                    boolean success = countQuntityComponentPerOutProducts(products, prevOperation, onlyComponents, quantity);
+                    if (!success) {
+                        return false;
                     }
-                    if (products.containsKey(product)) {
-                        products.put(product, products.get(product).add(quantity));
-                    } else {
-                        products.put(product, quantity);
-                    }
+                }
+                if (products.containsKey(product)) {
+                    products.put(product, products.get(product).add(quantity));
+                } else {
+                    products.put(product, quantity);
                 }
             }
         } else {
@@ -414,11 +410,15 @@ public class ReportDataService {
                 Object machine = operation.getField("machine");
                 if (machine != null) {
                     entityKey = (Entity) machine;
+                } else {
+                    entityKey = null;
                 }
             } else if (type.equals("worker")) {
                 Object worker = operation.getField("staff");
                 if (worker != null) {
                     entityKey = (Entity) worker;
+                } else {
+                    entityKey = null;
                 }
             }
             Map<Entity, BigDecimal> productsInMap = new HashMap<Entity, BigDecimal>();

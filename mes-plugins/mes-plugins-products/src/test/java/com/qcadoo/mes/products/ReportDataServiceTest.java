@@ -186,14 +186,14 @@ public class ReportDataServiceTest {
         product2.setId(new Long(2));
         Entity productInComponent2 = new DefaultEntity("products", "operationProductInComponent");
         productInComponent2.setField("product", product2);
-        productInComponent2.setField("quantity", BigDecimal.ONE);
+        productInComponent2.setField("quantity", new BigDecimal("2"));
 
         product3.setField("typeOfMaterial", "02intermediate");
         product3.setField("number", "3");
         product3.setId(new Long(3));
         Entity productInComponent3 = new DefaultEntity("products", "operationProductInComponent");
         productInComponent3.setField("product", product3);
-        productInComponent3.setField("quantity", BigDecimal.ONE);
+        productInComponent3.setField("quantity", new BigDecimal("3"));
 
         products1.add(productInComponent1);
         products2.add(productInComponent2);
@@ -207,7 +207,7 @@ public class ReportDataServiceTest {
         product4.setId(new Long(4));
         Entity productInComponent4 = new DefaultEntity("products", "operationProductOutComponent");
         productInComponent4.setField("product", product4);
-        productInComponent4.setField("quantity", BigDecimal.ONE);
+        productInComponent4.setField("quantity", new BigDecimal("5"));
         products4.add(productInComponent4);
 
         product5.setField("typeOfMaterial", "02intermediate");
@@ -215,7 +215,7 @@ public class ReportDataServiceTest {
         product5.setId(new Long(5));
         Entity productInComponent5 = new DefaultEntity("products", "operationProductOutComponent");
         productInComponent5.setField("product", product5);
-        productInComponent5.setField("quantity", BigDecimal.ONE);
+        productInComponent5.setField("quantity", new BigDecimal("3"));
         products5.add(productInComponent5);
 
         product6.setField("typeOfMaterial", "02intermediate");
@@ -223,14 +223,14 @@ public class ReportDataServiceTest {
         product6.setId(new Long(6));
         Entity productInComponent6 = new DefaultEntity("products", "operationProductOutComponent");
         productInComponent6.setField("product", product6);
-        productInComponent6.setField("quantity", BigDecimal.ONE);
+        productInComponent6.setField("quantity", new BigDecimal("2"));
 
         product7.setField("typeOfMaterial", "04waste");
         product7.setField("number", "7");
         product7.setId(new Long(7));
         Entity productInComponent7 = new DefaultEntity("products", "operationProductOutComponent");
         productInComponent7.setField("product", product7);
-        productInComponent7.setField("quantity", BigDecimal.ONE);
+        productInComponent7.setField("quantity", new BigDecimal("2"));
 
         products6.add(productInComponent6);
         products7.add(productInComponent2);
@@ -439,8 +439,8 @@ public class ReportDataServiceTest {
         // then
         assertEquals(products.size(), 3);
         assertEquals(products.get(product1), new BigDecimal("4"));
-        assertEquals(products.get(product2), new BigDecimal("4"));
-        assertEquals(products.get(product3), new BigDecimal("4"));
+        assertEquals(products.get(product2), new BigDecimal("8"));
+        assertEquals(products.get(product3), new BigDecimal("12"));
     }
 
     @Test
@@ -480,7 +480,7 @@ public class ReportDataServiceTest {
 
         // then
         assertEquals(products.size(), 1);
-        assertEquals(products.get(product2), new BigDecimal("4"));
+        assertEquals(products.get(product2), new BigDecimal("8"));
 
     }
 
@@ -625,7 +625,7 @@ public class ReportDataServiceTest {
 
         // then
         assertEquals(products.size(), 1);
-        assertEquals(products.get(product1), new BigDecimal("5"));
+        assertEquals(products.get(product1), new BigDecimal("1"));
 
     }
 
@@ -685,10 +685,10 @@ public class ReportDataServiceTest {
 
         // then
         assertEquals(products.size(), 4);
-        assertEquals(products.get(product2), new BigDecimal("5"));
-        assertEquals(products.get(product3), new BigDecimal("5"));
-        assertEquals(products.get(product5), new BigDecimal("5"));
-        assertEquals(products.get(product6), new BigDecimal("5"));
+        assertEquals(products.get(product2), new BigDecimal("2"));
+        assertEquals(products.get(product3), new BigDecimal("3"));
+        assertEquals(products.get(product5), new BigDecimal("3"));
+        assertEquals(products.get(product6), new BigDecimal("2"));
     }
 
     @Test
@@ -747,10 +747,10 @@ public class ReportDataServiceTest {
 
         // then
         assertEquals(products.size(), 4);
-        assertEquals(products.get(product2), new BigDecimal("10"));
-        assertEquals(products.get(product3), new BigDecimal("5"));
-        assertEquals(products.get(product5), new BigDecimal("5"));
-        assertEquals(products.get(product7), new BigDecimal("5"));
+        assertEquals(products.get(product2), new BigDecimal("4"));
+        assertEquals(products.get(product3), new BigDecimal("3"));
+        assertEquals(products.get(product5), new BigDecimal("3"));
+        assertEquals(products.get(product7), new BigDecimal("2"));
     }
 
     @Test
@@ -813,10 +813,10 @@ public class ReportDataServiceTest {
         // then
         assertEquals(products.size(), 5);
         assertEquals(products.get(product1), new BigDecimal("6"));
-        assertEquals(products.get(product2), new BigDecimal("12"));
-        assertEquals(products.get(product3), new BigDecimal("7"));
-        assertEquals(products.get(product5), new BigDecimal("5"));
-        assertEquals(products.get(product6), new BigDecimal("5"));
+        assertEquals(products.get(product2), new BigDecimal("9"));
+        assertEquals(products.get(product3), new BigDecimal("5"));
+        assertEquals(products.get(product5), new BigDecimal("3"));
+        assertEquals(products.get(product6), new BigDecimal("2"));
     }
 
     @Test
@@ -879,11 +879,11 @@ public class ReportDataServiceTest {
 
         // then
         assertEquals(products.size(), 5);
-        assertEquals(products.get(product2), BigDecimal.TEN);
-        assertEquals(products.get(product3), BigDecimal.TEN);
+        assertEquals(products.get(product2), new BigDecimal("4"));
+        assertEquals(products.get(product3), new BigDecimal("6"));
         assertEquals(products.get(product4), BigDecimal.TEN);
-        assertEquals(products.get(product5), BigDecimal.TEN);
-        assertEquals(products.get(product6), BigDecimal.TEN);
+        assertEquals(products.get(product5), new BigDecimal("6"));
+        assertEquals(products.get(product6), new BigDecimal("4"));
     }
 
     @Test
@@ -946,11 +946,11 @@ public class ReportDataServiceTest {
 
         // then
         assertEquals(products.size(), 5);
-        assertEquals(products.get(product2), new BigDecimal("5"));
-        assertEquals(products.get(product3), new BigDecimal("5"));
+        assertEquals(products.get(product2), new BigDecimal("2"));
+        assertEquals(products.get(product3), new BigDecimal("3"));
         assertEquals(products.get(product4), new BigDecimal("5"));
-        assertEquals(products.get(product5), new BigDecimal("5"));
-        assertEquals(products.get(product6), new BigDecimal("5"));
+        assertEquals(products.get(product5), new BigDecimal("3"));
+        assertEquals(products.get(product6), new BigDecimal("2"));
     }
 
     @Test
@@ -1165,16 +1165,16 @@ public class ReportDataServiceTest {
             Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
             Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
             if (entry.getKey().getKey().getId().equals(new Long(1))) {
-                assertEquals(productsIn.get(product2), new BigDecimal("5"));
-                assertEquals(productsIn.get(product3), new BigDecimal("5"));
-                assertEquals(productsIn.get(product4), new BigDecimal("5"));
-                assertEquals(productsOut.get(product4), new BigDecimal("5"));
+                assertEquals(productsIn.get(product2), new BigDecimal("10"));
+                assertEquals(productsIn.get(product3), new BigDecimal("15"));
+                assertEquals(productsIn.get(product4), new BigDecimal("25"));
+                assertEquals(productsOut.get(product4), new BigDecimal("25"));
             } else if (entry.getKey().getKey().getId().equals(new Long(2))) {
-                assertEquals(productsIn.get(product5), new BigDecimal("5"));
-                assertEquals(productsOut.get(product2), new BigDecimal("5"));
+                assertEquals(productsIn.get(product5), new BigDecimal("15"));
+                assertEquals(productsOut.get(product2), new BigDecimal("10"));
             } else if (entry.getKey().getKey().getId().equals(new Long(3))) {
-                assertEquals(productsIn.get(product6), new BigDecimal("5"));
-                assertEquals(productsOut.get(product3), new BigDecimal("5"));
+                assertEquals(productsIn.get(product6), new BigDecimal("10"));
+                assertEquals(productsOut.get(product3), new BigDecimal("15"));
             }
         }
     }
@@ -1247,16 +1247,16 @@ public class ReportDataServiceTest {
                 Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
                 Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
                 if (entry.getKey().getKey().getId().equals(new Long(1)) && operation.getKey().getId().equals(new Long(1))) {
-                    assertEquals(productsIn.get(product2), new BigDecimal("5"));
-                    assertEquals(productsIn.get(product3), new BigDecimal("5"));
-                    assertEquals(productsIn.get(product4), new BigDecimal("5"));
-                    assertEquals(productsOut.get(product4), new BigDecimal("5"));
+                    assertEquals(productsIn.get(product2), new BigDecimal("10"));
+                    assertEquals(productsIn.get(product3), new BigDecimal("15"));
+                    assertEquals(productsIn.get(product4), new BigDecimal("25"));
+                    assertEquals(productsOut.get(product4), new BigDecimal("25"));
                 } else if (entry.getKey().getKey().getId().equals(new Long(2)) && operation.getKey().getId().equals(new Long(2))) {
-                    assertEquals(productsIn.get(product5), new BigDecimal("5"));
-                    assertEquals(productsOut.get(product2), new BigDecimal("5"));
+                    assertEquals(productsIn.get(product5), new BigDecimal("15"));
+                    assertEquals(productsOut.get(product2), new BigDecimal("10"));
                 } else if (entry.getKey().getKey().getId().equals(new Long(3)) && operation.getKey() == null) {
-                    assertEquals(productsIn.get(product6), new BigDecimal("5"));
-                    assertEquals(productsOut.get(product3), new BigDecimal("5"));
+                    assertEquals(productsIn.get(product6), new BigDecimal("10"));
+                    assertEquals(productsOut.get(product3), new BigDecimal("15"));
                 }
             }
         }
@@ -1330,16 +1330,16 @@ public class ReportDataServiceTest {
                 Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
                 Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
                 if (entry.getKey().getKey().getId().equals(new Long(1)) && operation.getKey() == null) {
-                    assertEquals(productsIn.get(product2), new BigDecimal("5"));
-                    assertEquals(productsIn.get(product3), new BigDecimal("5"));
-                    assertEquals(productsIn.get(product4), new BigDecimal("5"));
-                    assertEquals(productsOut.get(product4), new BigDecimal("5"));
+                    assertEquals(productsIn.get(product2), new BigDecimal("10"));
+                    assertEquals(productsIn.get(product3), new BigDecimal("15"));
+                    assertEquals(productsIn.get(product4), new BigDecimal("25"));
+                    assertEquals(productsOut.get(product4), new BigDecimal("25"));
                 } else if (entry.getKey().getKey().getId().equals(new Long(2)) && operation.getKey().getId().equals(new Long(2))) {
-                    assertEquals(productsIn.get(product5), new BigDecimal("5"));
-                    assertEquals(productsOut.get(product2), new BigDecimal("5"));
+                    assertEquals(productsIn.get(product5), new BigDecimal("15"));
+                    assertEquals(productsOut.get(product2), new BigDecimal("10"));
                 } else if (entry.getKey().getKey().getId().equals(new Long(3)) && operation.getKey().getId().equals(new Long(1))) {
-                    assertEquals(productsIn.get(product6), new BigDecimal("5"));
-                    assertEquals(productsOut.get(product3), new BigDecimal("5"));
+                    assertEquals(productsIn.get(product6), new BigDecimal("10"));
+                    assertEquals(productsOut.get(product3), new BigDecimal("15"));
                 }
             }
         }
@@ -1413,16 +1413,16 @@ public class ReportDataServiceTest {
             Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
             Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
             if (entry.getKey().getKey().getId().equals(new Long(1))) {
-                assertEquals(productsIn.get(product2), new BigDecimal("5"));
-                assertEquals(productsIn.get(product3), new BigDecimal("5"));
+                assertEquals(productsIn.get(product2), new BigDecimal("2"));
+                assertEquals(productsIn.get(product3), new BigDecimal("3"));
                 assertEquals(productsIn.get(product4), new BigDecimal("5"));
                 assertEquals(productsOut.get(product4), new BigDecimal("5"));
             } else if (entry.getKey().getKey().getId().equals(new Long(2))) {
-                assertEquals(productsIn.get(product5), new BigDecimal("5"));
-                assertEquals(productsOut.get(product2), new BigDecimal("5"));
+                assertEquals(productsIn.get(product5), new BigDecimal("3"));
+                assertEquals(productsOut.get(product2), new BigDecimal("2"));
             } else if (entry.getKey().getKey().getId().equals(new Long(3))) {
-                assertEquals(productsIn.get(product6), new BigDecimal("5"));
-                assertEquals(productsOut.get(product3), new BigDecimal("5"));
+                assertEquals(productsIn.get(product6), new BigDecimal("2"));
+                assertEquals(productsOut.get(product3), new BigDecimal("3"));
             }
         }
     }
@@ -1495,16 +1495,16 @@ public class ReportDataServiceTest {
                 Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
                 Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
                 if (entry.getKey().getKey().getId().equals(new Long(1)) && operation.getKey().getId().equals(new Long(1))) {
-                    assertEquals(productsIn.get(product2), new BigDecimal("5"));
-                    assertEquals(productsIn.get(product3), new BigDecimal("5"));
+                    assertEquals(productsIn.get(product2), new BigDecimal("2"));
+                    assertEquals(productsIn.get(product3), new BigDecimal("3"));
                     assertEquals(productsIn.get(product4), new BigDecimal("5"));
                     assertEquals(productsOut.get(product4), new BigDecimal("5"));
                 } else if (entry.getKey().getKey().getId().equals(new Long(2)) && operation.getKey().getId().equals(new Long(2))) {
-                    assertEquals(productsIn.get(product5), new BigDecimal("5"));
-                    assertEquals(productsOut.get(product2), new BigDecimal("5"));
+                    assertEquals(productsIn.get(product5), new BigDecimal("3"));
+                    assertEquals(productsOut.get(product2), new BigDecimal("2"));
                 } else if (entry.getKey().getKey().getId().equals(new Long(3)) && operation.getKey() == null) {
-                    assertEquals(productsIn.get(product6), new BigDecimal("5"));
-                    assertEquals(productsOut.get(product3), new BigDecimal("5"));
+                    assertEquals(productsIn.get(product6), new BigDecimal("2"));
+                    assertEquals(productsOut.get(product3), new BigDecimal("3"));
                 }
             }
         }
@@ -1578,16 +1578,16 @@ public class ReportDataServiceTest {
                 Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
                 Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
                 if (entry.getKey().getKey().getId().equals(new Long(1)) && operation.getKey() == null) {
-                    assertEquals(productsIn.get(product2), new BigDecimal("5"));
-                    assertEquals(productsIn.get(product3), new BigDecimal("5"));
+                    assertEquals(productsIn.get(product2), new BigDecimal("2"));
+                    assertEquals(productsIn.get(product3), new BigDecimal("3"));
                     assertEquals(productsIn.get(product4), new BigDecimal("5"));
                     assertEquals(productsOut.get(product4), new BigDecimal("5"));
                 } else if (entry.getKey().getKey().getId().equals(new Long(2)) && operation.getKey().getId().equals(new Long(2))) {
-                    assertEquals(productsIn.get(product5), new BigDecimal("5"));
-                    assertEquals(productsOut.get(product2), new BigDecimal("5"));
+                    assertEquals(productsIn.get(product5), new BigDecimal("3"));
+                    assertEquals(productsOut.get(product2), new BigDecimal("2"));
                 } else if (entry.getKey().getKey().getId().equals(new Long(3)) && operation.getKey().getId().equals(new Long(1))) {
-                    assertEquals(productsIn.get(product6), new BigDecimal("5"));
-                    assertEquals(productsOut.get(product3), new BigDecimal("5"));
+                    assertEquals(productsIn.get(product6), new BigDecimal("2"));
+                    assertEquals(productsOut.get(product3), new BigDecimal("3"));
                 }
             }
         }
@@ -1661,16 +1661,16 @@ public class ReportDataServiceTest {
             Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
             Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
             if (entry.getKey().getKey().getId().equals(new Long(1))) {
-                assertEquals(productsIn.get(product2), new BigDecimal("5"));
-                assertEquals(productsIn.get(product3), new BigDecimal("5"));
+                assertEquals(productsIn.get(product2), new BigDecimal("2"));
+                assertEquals(productsIn.get(product3), new BigDecimal("3"));
                 assertEquals(productsIn.get(product4), new BigDecimal("5"));
                 assertEquals(productsOut.get(product4), new BigDecimal("5"));
             } else if (entry.getKey().getKey().getId().equals(new Long(2))) {
-                assertEquals(productsIn.get(product5), new BigDecimal("5"));
-                assertEquals(productsOut.get(product2), new BigDecimal("5"));
+                assertEquals(productsIn.get(product5), new BigDecimal("3"));
+                assertEquals(productsOut.get(product2), new BigDecimal("2"));
             } else if (entry.getKey().getKey().getId().equals(new Long(3))) {
-                assertEquals(productsIn.get(product6), new BigDecimal("5"));
-                assertEquals(productsOut.get(product3), new BigDecimal("5"));
+                assertEquals(productsIn.get(product6), new BigDecimal("2"));
+                assertEquals(productsOut.get(product3), new BigDecimal("3"));
             }
         }
     }
