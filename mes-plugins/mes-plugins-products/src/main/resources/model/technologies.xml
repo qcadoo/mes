@@ -63,7 +63,7 @@
 		<boolean name="postFeatureRequired" />
 		<boolean name="otherFeatureRequired" />
 		<boolean name="componentQuantityAlgorithm" />
-		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology">
+		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology" default="01perProductOut">
 			<validatesPresence />
 		</enum>
 		<enum name="qualityControlType" values="01forBatch,02forUnit,03forOrder,04forOperation" />

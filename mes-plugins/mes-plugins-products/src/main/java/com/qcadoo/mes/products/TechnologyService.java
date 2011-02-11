@@ -543,14 +543,16 @@ public final class TechnologyService {
         return isValid;
     }
 
-    public void setTechnologyReferenceOperationComponentViewRequiredFields(final ViewDefinitionState state, final Locale locale) {
-        ((FieldComponentState) state.getComponentByReference("operation")).setRequired(true);
-    }
-
-    public void setTechnologyReferenceTechnologyComponentViewRequiredFields(final ViewDefinitionState state, final Locale locale) {
-        ((FieldComponentState) state.getComponentByReference("technology")).setRequired(true);
-        ((FieldComponentState) state.getComponentByReference("referenceMode")).setRequired(true);
-    }
+    // public void setTechnologyReferenceOperationComponentViewRequiredFields(final ViewDefinitionState state, final Locale
+    // locale) {
+    // ((FieldComponentState) state.getComponentByReference("operation")).setRequired(true);
+    // }
+    //
+    // public void setTechnologyReferenceTechnologyComponentViewRequiredFields(final ViewDefinitionState state, final Locale
+    // locale) {
+    // ((FieldComponentState) state.getComponentByReference("technology")).setRequired(true);
+    // ((FieldComponentState) state.getComponentByReference("referenceMode")).setRequired(true);
+    // }
 
     private boolean checkProductInComponentsBatchRequired(final Long entityId) {
         SearchResult searchResult = dataDefinitionService.get("products", "operationProductInComponent").find()

@@ -56,7 +56,9 @@ public final class LookupComponentState extends FieldComponentState {
 
     private int autocompleteEntitiesNumber;
 
-    public LookupComponentState(final FieldDefinition scopeField, final String fieldCode, final String expression) {
+    public LookupComponentState(final FieldDefinition scopeField, final String fieldCode, final String expression,
+            final LookupComponentPattern pattern) {
+        super(pattern);
         this.belongsToFieldDefinition = scopeField;
         this.fieldCode = fieldCode;
         this.expression = expression;

@@ -28,7 +28,7 @@ public final class CheckBoxComponentPattern extends FieldComponentPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new FieldComponentState();
+        return new FieldComponentState(this);
     }
 
     @Override

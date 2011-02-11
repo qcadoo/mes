@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.products.print.ReportDataService;
+import com.qcadoo.mes.utils.Pair;
 
 public class ReportDataServiceTest {
 
@@ -74,9 +76,20 @@ public class ReportDataServiceTest {
 
     private Entity product6 = new DefaultEntity("products", "product");
 
+    private Entity product7 = new DefaultEntity("products", "product");
+
+    private Entity workPlan = new DefaultEntity("products", "workPlan");
+
+    private List<Entity> components = new ArrayList<Entity>();
+
+    private List<Entity> componentsOutProducts = new ArrayList<Entity>();
+
+    private List<Entity> componentsOutProducts2 = new ArrayList<Entity>();
+
     @Before
     public void init() {
         reportDataService = new ReportDataService();
+
         EntityTree entityTreeSubTechnology = new EntityTree(dataDefinition, "technology", new Long(2));
         EntityList componentsList1 = new EntityList(dataDefinition, "operationProductInComponent", new Long(1));
         EntityList componentsList2 = new EntityList(dataDefinition, "operationProductInComponent", new Long(2));
@@ -84,38 +97,65 @@ public class ReportDataServiceTest {
         EntityList componentsOutList1 = new EntityList(dataDefinition, "operationProductOutComponent", new Long(11));
         EntityList componentsOutList2 = new EntityList(dataDefinition, "operationProductOutComponent", new Long(12));
         EntityList componentsOutList3 = new EntityList(dataDefinition, "operationProductOutComponent", new Long(13));
-        Entity operationRoot = new DefaultEntity("products", "technologyOperationComponent");
-        operationRoot.setField("entityType", "operation");
-        operationRoot.setField("parent", null);
-        operationRoot.setId(new Long(1));
-        operationRoot.setField("operationProductInComponents", componentsList1);
-        operationRoot.setField("operationProductOutComponents", componentsOutList1);
-        Entity operation2 = new DefaultEntity("products", "technologyOperationComponent");
-        operation2.setField("entityType", "operation");
-        operation2.setField("parent", operationRoot);
-        operation2.setId(new Long(2));
-        operation2.setField("operationProductInComponents", componentsList2);
-        operation2.setField("operationProductOutComponents", componentsOutList2);
-        Entity operation3 = new DefaultEntity("products", "technologyOperationComponent");
-        operation3.setField("entityType", "operation");
-        operation3.setField("parent", operationRoot);
-        operation3.setId(new Long(3));
-        operation3.setField("operationProductInComponents", componentsList3);
-        operation3.setField("operationProductOutComponents", componentsOutList3);
-        entityTreeList.add(operationRoot);
-        entityTreeList.add(operation2);
-        entityTreeList.add(operation3);
+
+        Entity machine1 = new DefaultEntity("basic", "machine");
+        machine1.setId(new Long(1));
+        Entity machine2 = new DefaultEntity("basic", "machine");
+        machine2.setId(new Long(2));
+
+        Entity worker1 = new DefaultEntity("basic", "worker");
+        worker1.setId(new Long(1));
+        Entity worker2 = new DefaultEntity("basic", "worker");
+        worker2.setId(new Long(2));
+
+        Entity operation1 = new DefaultEntity("products", "operation");
+        operation1.setField("machine", machine1);
+        operation1.setField("staff", null);
+        Entity operationComponentRoot = new DefaultEntity("products", "technologyOperationComponent");
+        operationComponentRoot.setField("entityType", "operation");
+        operationComponentRoot.setField("parent", null);
+        operationComponentRoot.setId(new Long(1));
+        operationComponentRoot.setField("operation", operation1);
+        operationComponentRoot.setField("operationProductInComponents", componentsList1);
+        operationComponentRoot.setField("operationProductOutComponents", componentsOutList1);
+
+        Entity operation2 = new DefaultEntity("products", "operation");
+        operation2.setField("machine", machine2);
+        operation2.setField("staff", worker2);
+        Entity operationComponent2 = new DefaultEntity("products", "technologyOperationComponent");
+        operationComponent2.setField("entityType", "operation");
+        operationComponent2.setField("parent", operationComponentRoot);
+        operationComponent2.setId(new Long(2));
+        operationComponent2.setField("operation", operation2);
+        operationComponent2.setField("operationProductInComponents", componentsList2);
+        operationComponent2.setField("operationProductOutComponents", componentsOutList2);
+
+        Entity operation3 = new DefaultEntity("products", "operation");
+        operation3.setField("machine", null);
+        operation3.setField("staff", worker1);
+        Entity operationComponent3 = new DefaultEntity("products", "technologyOperationComponent");
+        operationComponent3.setField("entityType", "operation");
+        operationComponent3.setField("parent", operationComponentRoot);
+        operationComponent3.setId(new Long(3));
+        operationComponent3.setField("operation", operation3);
+        operationComponent3.setField("operationProductInComponents", componentsList3);
+        operationComponent3.setField("operationProductOutComponents", componentsOutList3);
+        entityTreeList.add(operationComponentRoot);
+        entityTreeList.add(operationComponent2);
+        entityTreeList.add(operationComponent3);
+
         Entity technology = new DefaultEntity("products", "technology");
         technology.setField("operationComponents", entityTreeSubTechnology);
         technology.setField("componentQuantityAlgorithm", "02perTechnology");
         Entity operationTechnology = new DefaultEntity("products", "technologyOperationComponent");
         operationTechnology.setField("entityType", "technology");
-        operationTechnology.setField("parent", operationRoot);
+        operationTechnology.setField("parent", operationComponentRoot);
         operationTechnology.setId(new Long(4));
         operationTechnology.setField("referenceTechnology", technology);
+
         Entity operationTechnology2 = new DefaultEntity("products", "technologyOperationComponent");
         operationTechnology2.setField("entityType", "technology");
-        operationTechnology2.setField("parent", operationRoot);
+        operationTechnology2.setField("parent", operationComponentRoot);
         operationTechnology2.setId(new Long(5));
         operationTechnology2.setField("referenceTechnology", technology);
 
@@ -130,57 +170,95 @@ public class ReportDataServiceTest {
         entityTreeListSubTechnologyWithoutRoot.add(operationTechnology2);
         entityTreeList.add(operationTechnology);
         entityTreeListTechnologyWithoutRoot.add(operationTechnology3);
+
         technologyForQuantityPerTechnologyAlghorithm.setField("operationComponents", entityTree);
         technologyForQuantityPerTechnologyAlghorithm.setField("componentQuantityAlgorithm", "02perTechnology");
+
         product1.setField("typeOfMaterial", "02intermediate");
         product1.setField("number", "1");
         product1.setId(new Long(1));
         Entity productInComponent1 = new DefaultEntity("products", "operationProductInComponent");
         productInComponent1.setField("product", product1);
         productInComponent1.setField("quantity", BigDecimal.ONE);
+
         product2.setField("typeOfMaterial", "01component");
         product2.setField("number", "2");
         product2.setId(new Long(2));
         Entity productInComponent2 = new DefaultEntity("products", "operationProductInComponent");
         productInComponent2.setField("product", product2);
-        productInComponent2.setField("quantity", BigDecimal.ONE);
+        productInComponent2.setField("quantity", new BigDecimal("2"));
+
         product3.setField("typeOfMaterial", "02intermediate");
         product3.setField("number", "3");
         product3.setId(new Long(3));
         Entity productInComponent3 = new DefaultEntity("products", "operationProductInComponent");
         productInComponent3.setField("product", product3);
-        productInComponent3.setField("quantity", BigDecimal.ONE);
+        productInComponent3.setField("quantity", new BigDecimal("3"));
+
         products1.add(productInComponent1);
         products2.add(productInComponent2);
         products2.add(productInComponent3);
+
         technologyForQuantityPerOutProductsAlghorithm.setField("operationComponents", entityTree);
         technologyForQuantityPerOutProductsAlghorithm.setField("componentQuantityAlgorithm", "01perProductOut");
+
         product4.setField("typeOfMaterial", "02intermediate");
         product4.setField("number", "4");
         product4.setId(new Long(4));
         Entity productInComponent4 = new DefaultEntity("products", "operationProductOutComponent");
         productInComponent4.setField("product", product4);
-        productInComponent4.setField("quantity", BigDecimal.ONE);
+        productInComponent4.setField("quantity", new BigDecimal("5"));
         products4.add(productInComponent4);
+
         product5.setField("typeOfMaterial", "02intermediate");
         product5.setField("number", "5");
         product5.setId(new Long(5));
         Entity productInComponent5 = new DefaultEntity("products", "operationProductOutComponent");
         productInComponent5.setField("product", product5);
-        productInComponent5.setField("quantity", BigDecimal.ONE);
+        productInComponent5.setField("quantity", new BigDecimal("3"));
         products5.add(productInComponent5);
+
         product6.setField("typeOfMaterial", "02intermediate");
         product6.setField("number", "6");
         product6.setId(new Long(6));
         Entity productInComponent6 = new DefaultEntity("products", "operationProductOutComponent");
         productInComponent6.setField("product", product6);
-        productInComponent6.setField("quantity", BigDecimal.ONE);
+        productInComponent6.setField("quantity", new BigDecimal("2"));
+
+        product7.setField("typeOfMaterial", "04waste");
+        product7.setField("number", "7");
+        product7.setId(new Long(7));
+        Entity productInComponent7 = new DefaultEntity("products", "operationProductOutComponent");
+        productInComponent7.setField("product", product7);
+        productInComponent7.setField("quantity", new BigDecimal("2"));
+
         products6.add(productInComponent6);
         products7.add(productInComponent2);
+        products7.add(productInComponent7);
         products8.add(productInComponent3);
         products9.add(productInComponent2);
         products9.add(productInComponent3);
         products9.add(productInComponent4);
+
+        workPlan.setId(new Long(15));
+        Entity workPlanComponent = new DefaultEntity("products", "workPlanComponent");
+        Entity order = new DefaultEntity("products", "order");
+        order.setField("technology", technologyForQuantityPerTechnologyAlghorithm);
+        order.setField("plannedQuantity", new BigDecimal("5"));
+        workPlanComponent.setField("order", order);
+        EntityList componentsList = new EntityList(dataDefinition, "workPlan", new Long(15));
+        workPlan.setField("orders", componentsList);
+        components.add(workPlanComponent);
+
+        Entity workPlanComponent2 = new DefaultEntity("products", "workPlanComponent");
+        Entity order2 = new DefaultEntity("products", "order");
+        order2.setField("technology", technologyForQuantityPerOutProductsAlghorithm);
+        order2.setField("plannedQuantity", new BigDecimal("5"));
+        workPlanComponent2.setField("order", order2);
+        componentsOutProducts.add(workPlanComponent2);
+
+        componentsOutProducts2.add(workPlanComponent2);
+        componentsOutProducts2.add(workPlanComponent2);
     }
 
     @Test
@@ -203,7 +281,7 @@ public class ReportDataServiceTest {
     }
 
     @Test
-    public void shouldReturnEmptyListIfTechnologyIsEmpty() {
+    public void shouldReturnEmptyMapIfTechnologyIsEmpty() {
         // given
         Entity materialRequirement = new DefaultEntity("products", "materialRequirement");
         Entity materialRequirementComponent = new DefaultEntity("products", "materialRequirementComponent");
@@ -225,7 +303,7 @@ public class ReportDataServiceTest {
     }
 
     @Test
-    public void shouldReturnEmptyListIfQuantityIsEmpty() {
+    public void shouldReturnEmptyMapIfQuantityIsEmpty() {
         // given
         Entity materialRequirement = new DefaultEntity("products", "materialRequirement");
         Entity materialRequirementComponent = new DefaultEntity("products", "materialRequirementComponent");
@@ -248,7 +326,7 @@ public class ReportDataServiceTest {
     }
 
     @Test
-    public void shouldReturnEmptyListIfQuantityIsLessThenOne() {
+    public void shouldReturnEmptyMapIfQuantityIsLessThenOne() {
         // given
         Entity materialRequirement = new DefaultEntity("products", "materialRequirement");
         Entity materialRequirementComponent = new DefaultEntity("products", "materialRequirementComponent");
@@ -271,7 +349,7 @@ public class ReportDataServiceTest {
     }
 
     @Test
-    public void shouldReturnEmptyListIfQuantityIsMoreThenZero() {
+    public void shouldReturnNotEmptyMapIfQuantityIsMoreThenZero() {
         // given
         Entity materialRequirement = new DefaultEntity("products", "materialRequirement");
         materialRequirement.setField("onlyComponents", false);
@@ -361,8 +439,8 @@ public class ReportDataServiceTest {
         // then
         assertEquals(products.size(), 3);
         assertEquals(products.get(product1), new BigDecimal("4"));
-        assertEquals(products.get(product2), new BigDecimal("4"));
-        assertEquals(products.get(product3), new BigDecimal("4"));
+        assertEquals(products.get(product2), new BigDecimal("8"));
+        assertEquals(products.get(product3), new BigDecimal("12"));
     }
 
     @Test
@@ -402,7 +480,7 @@ public class ReportDataServiceTest {
 
         // then
         assertEquals(products.size(), 1);
-        assertEquals(products.get(product2), new BigDecimal("4"));
+        assertEquals(products.get(product2), new BigDecimal("8"));
 
     }
 
@@ -547,7 +625,7 @@ public class ReportDataServiceTest {
 
         // then
         assertEquals(products.size(), 1);
-        assertEquals(products.get(product1), new BigDecimal("5"));
+        assertEquals(products.get(product1), new BigDecimal("1"));
 
     }
 
@@ -607,10 +685,10 @@ public class ReportDataServiceTest {
 
         // then
         assertEquals(products.size(), 4);
-        assertEquals(products.get(product2), new BigDecimal("5"));
-        assertEquals(products.get(product3), new BigDecimal("5"));
-        assertEquals(products.get(product5), new BigDecimal("5"));
-        assertEquals(products.get(product6), new BigDecimal("5"));
+        assertEquals(products.get(product2), new BigDecimal("2"));
+        assertEquals(products.get(product3), new BigDecimal("3"));
+        assertEquals(products.get(product5), new BigDecimal("3"));
+        assertEquals(products.get(product6), new BigDecimal("2"));
     }
 
     @Test
@@ -668,10 +746,11 @@ public class ReportDataServiceTest {
                 false);
 
         // then
-        assertEquals(products.size(), 3);
-        assertEquals(products.get(product2), new BigDecimal("10"));
-        assertEquals(products.get(product3), new BigDecimal("5"));
-        assertEquals(products.get(product5), new BigDecimal("5"));
+        assertEquals(products.size(), 4);
+        assertEquals(products.get(product2), new BigDecimal("4"));
+        assertEquals(products.get(product3), new BigDecimal("3"));
+        assertEquals(products.get(product5), new BigDecimal("3"));
+        assertEquals(products.get(product7), new BigDecimal("2"));
     }
 
     @Test
@@ -734,10 +813,10 @@ public class ReportDataServiceTest {
         // then
         assertEquals(products.size(), 5);
         assertEquals(products.get(product1), new BigDecimal("6"));
-        assertEquals(products.get(product2), new BigDecimal("12"));
-        assertEquals(products.get(product3), new BigDecimal("7"));
-        assertEquals(products.get(product5), new BigDecimal("5"));
-        assertEquals(products.get(product6), new BigDecimal("5"));
+        assertEquals(products.get(product2), new BigDecimal("9"));
+        assertEquals(products.get(product3), new BigDecimal("5"));
+        assertEquals(products.get(product5), new BigDecimal("3"));
+        assertEquals(products.get(product6), new BigDecimal("2"));
     }
 
     @Test
@@ -800,11 +879,11 @@ public class ReportDataServiceTest {
 
         // then
         assertEquals(products.size(), 5);
-        assertEquals(products.get(product2), BigDecimal.TEN);
-        assertEquals(products.get(product3), BigDecimal.TEN);
+        assertEquals(products.get(product2), new BigDecimal("4"));
+        assertEquals(products.get(product3), new BigDecimal("6"));
         assertEquals(products.get(product4), BigDecimal.TEN);
-        assertEquals(products.get(product5), BigDecimal.TEN);
-        assertEquals(products.get(product6), BigDecimal.TEN);
+        assertEquals(products.get(product5), new BigDecimal("6"));
+        assertEquals(products.get(product6), new BigDecimal("4"));
     }
 
     @Test
@@ -867,11 +946,11 @@ public class ReportDataServiceTest {
 
         // then
         assertEquals(products.size(), 5);
-        assertEquals(products.get(product2), new BigDecimal("5"));
-        assertEquals(products.get(product3), new BigDecimal("5"));
+        assertEquals(products.get(product2), new BigDecimal("2"));
+        assertEquals(products.get(product3), new BigDecimal("3"));
         assertEquals(products.get(product4), new BigDecimal("5"));
-        assertEquals(products.get(product5), new BigDecimal("5"));
-        assertEquals(products.get(product6), new BigDecimal("5"));
+        assertEquals(products.get(product5), new BigDecimal("3"));
+        assertEquals(products.get(product6), new BigDecimal("2"));
     }
 
     @Test
@@ -894,5 +973,871 @@ public class ReportDataServiceTest {
         // then
         assertEquals(products.size(), 0);
 
+    }
+
+    @Test
+    public void shouldReturnValidMapPerOutProductsAlgorithmWithPreviousOperationWithoutProductsIn() {
+        // given
+        Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products2);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(2)))
+                        .list().getEntities()).willReturn(products5);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(3)))
+                        .list().getEntities()).willReturn(new ArrayList<Entity>());
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(11)))
+                        .list().getEntities()).willReturn(products4);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(12)))
+                        .list().getEntities()).willReturn(products7);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(13)))
+                        .list().getEntities()).willReturn(products8);
+
+        // when
+        reportDataService.countQuantityForProductsIn(products, technologyForQuantityPerOutProductsAlghorithm, new BigDecimal(5),
+                false);
+
+        // then
+        assertEquals(products.size(), 0);
+    }
+
+    @Test
+    public void shouldReturnEmptyMapIfTechnologyIsEmptyForWorkPlan() {
+        // given
+        Entity workPlan = new DefaultEntity("products", "workPlan");
+        Entity workPlanComponent = new DefaultEntity("products", "workPlanComponent");
+        Entity order = new DefaultEntity("products", "order");
+        order.setField("technology", null);
+        workPlanComponent.setField("order", order);
+        EntityList componentsList = new EntityList(dataDefinition, "workPlan", new Long(1));
+        workPlan.setField("orders", componentsList);
+        List<Entity> components = new ArrayList<Entity>();
+        components.add(workPlanComponent);
+
+        given(dataDefinition.find().restrictedWith(any(Restriction.class)).list().getEntities()).willReturn(components);
+
+        // when
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = reportDataService
+                .prepareOperationSeries(workPlan, "product");
+
+        // then
+        assertEquals(operations.size(), 0);
+    }
+
+    @Test
+    public void shouldReturnNotEmptyMapIfTechnologyIsNotEmptyForWorkPlan() {
+        // given
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("orders"), new Long(15)))
+                        .list().getEntities()).willReturn(components);
+
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products1);
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(2)))
+                        .list().getEntities()).willReturn(products2);
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(3)))
+                        .list().getEntities()).willReturn(products3);
+
+        // when
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = reportDataService
+                .prepareOperationSeries(workPlan, "product");
+
+        // then
+        assertEquals(operations.size(), 1);
+    }
+
+    @Test
+    public void shouldReturnValidMapPerTechnologyAlgorithmForWorkPlanPerProduct() {
+        // given
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("orders"), new Long(15)))
+                        .list().getEntities()).willReturn(components);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products9);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(2)))
+                        .list().getEntities()).willReturn(products5);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(3)))
+                        .list().getEntities()).willReturn(products6);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(11)))
+                        .list().getEntities()).willReturn(products4);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(12)))
+                        .list().getEntities()).willReturn(products7);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(13)))
+                        .list().getEntities()).willReturn(products8);
+
+        // when
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = reportDataService
+                .prepareOperationSeries(workPlan, "product");
+
+        // then
+        assertEquals(operations.size(), 1);
+        Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operComponents = operations.get(null);
+        assertEquals(operComponents.size(), 3);
+        for (Entry<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> entry : operComponents
+                .entrySet()) {
+            Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
+            Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
+            if (entry.getKey().getKey().getId().equals(new Long(1))) {
+                assertEquals(productsIn.get(product2), new BigDecimal("10"));
+                assertEquals(productsIn.get(product3), new BigDecimal("15"));
+                assertEquals(productsIn.get(product4), new BigDecimal("25"));
+                assertEquals(productsOut.get(product4), new BigDecimal("25"));
+            } else if (entry.getKey().getKey().getId().equals(new Long(2))) {
+                assertEquals(productsIn.get(product5), new BigDecimal("15"));
+                assertEquals(productsOut.get(product2), new BigDecimal("10"));
+            } else if (entry.getKey().getKey().getId().equals(new Long(3))) {
+                assertEquals(productsIn.get(product6), new BigDecimal("10"));
+                assertEquals(productsOut.get(product3), new BigDecimal("15"));
+            }
+        }
+    }
+
+    @Test
+    public void shouldReturnValidMapPerTechnologyAlgorithmForWorkPlanPerMachine() {
+        // given
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("orders"), new Long(15)))
+                        .list().getEntities()).willReturn(components);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products9);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(2)))
+                        .list().getEntities()).willReturn(products5);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(3)))
+                        .list().getEntities()).willReturn(products6);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(11)))
+                        .list().getEntities()).willReturn(products4);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(12)))
+                        .list().getEntities()).willReturn(products7);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(13)))
+                        .list().getEntities()).willReturn(products8);
+
+        // when
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = reportDataService
+                .prepareOperationSeries(workPlan, "machine");
+
+        // then
+        assertEquals(operations.size(), 3);
+        for (Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operation : operations
+                .entrySet()) {
+            for (Entry<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> entry : operation.getValue()
+                    .entrySet()) {
+                Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
+                Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
+                if (entry.getKey().getKey().getId().equals(new Long(1)) && operation.getKey().getId().equals(new Long(1))) {
+                    assertEquals(productsIn.get(product2), new BigDecimal("10"));
+                    assertEquals(productsIn.get(product3), new BigDecimal("15"));
+                    assertEquals(productsIn.get(product4), new BigDecimal("25"));
+                    assertEquals(productsOut.get(product4), new BigDecimal("25"));
+                } else if (entry.getKey().getKey().getId().equals(new Long(2)) && operation.getKey().getId().equals(new Long(2))) {
+                    assertEquals(productsIn.get(product5), new BigDecimal("15"));
+                    assertEquals(productsOut.get(product2), new BigDecimal("10"));
+                } else if (entry.getKey().getKey().getId().equals(new Long(3)) && operation.getKey() == null) {
+                    assertEquals(productsIn.get(product6), new BigDecimal("10"));
+                    assertEquals(productsOut.get(product3), new BigDecimal("15"));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void shouldReturnValidMapPerTechnologyAlgorithmForWorkPlanPerWorker() {
+        // given
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("orders"), new Long(15)))
+                        .list().getEntities()).willReturn(components);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products9);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(2)))
+                        .list().getEntities()).willReturn(products5);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(3)))
+                        .list().getEntities()).willReturn(products6);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(11)))
+                        .list().getEntities()).willReturn(products4);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(12)))
+                        .list().getEntities()).willReturn(products7);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(13)))
+                        .list().getEntities()).willReturn(products8);
+
+        // when
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = reportDataService
+                .prepareOperationSeries(workPlan, "worker");
+
+        // then
+        assertEquals(operations.size(), 3);
+        for (Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operation : operations
+                .entrySet()) {
+            for (Entry<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> entry : operation.getValue()
+                    .entrySet()) {
+                Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
+                Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
+                if (entry.getKey().getKey().getId().equals(new Long(1)) && operation.getKey() == null) {
+                    assertEquals(productsIn.get(product2), new BigDecimal("10"));
+                    assertEquals(productsIn.get(product3), new BigDecimal("15"));
+                    assertEquals(productsIn.get(product4), new BigDecimal("25"));
+                    assertEquals(productsOut.get(product4), new BigDecimal("25"));
+                } else if (entry.getKey().getKey().getId().equals(new Long(2)) && operation.getKey().getId().equals(new Long(2))) {
+                    assertEquals(productsIn.get(product5), new BigDecimal("15"));
+                    assertEquals(productsOut.get(product2), new BigDecimal("10"));
+                } else if (entry.getKey().getKey().getId().equals(new Long(3)) && operation.getKey().getId().equals(new Long(1))) {
+                    assertEquals(productsIn.get(product6), new BigDecimal("10"));
+                    assertEquals(productsOut.get(product3), new BigDecimal("15"));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void shouldReturnValidMapPerOutProductsAlgorithmForWorkPlanPerProduct() {
+        // given
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("orders"), new Long(15)))
+                        .list().getEntities()).willReturn(componentsOutProducts);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products9);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(2)))
+                        .list().getEntities()).willReturn(products5);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(3)))
+                        .list().getEntities()).willReturn(products6);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(11)))
+                        .list().getEntities()).willReturn(products4);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(12)))
+                        .list().getEntities()).willReturn(products7);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(13)))
+                        .list().getEntities()).willReturn(products8);
+
+        // when
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = reportDataService
+                .prepareOperationSeries(workPlan, "product");
+
+        // then
+        assertEquals(operations.size(), 1);
+        Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operComponents = operations.get(null);
+        assertEquals(operComponents.size(), 6);
+        for (Entry<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> entry : operComponents
+                .entrySet()) {
+            Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
+            Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
+            if (entry.getKey().getKey().getId().equals(new Long(1))) {
+                assertEquals(productsIn.get(product2), new BigDecimal("2"));
+                assertEquals(productsIn.get(product3), new BigDecimal("3"));
+                assertEquals(productsIn.get(product4), new BigDecimal("5"));
+                assertEquals(productsOut.get(product4), new BigDecimal("5"));
+            } else if (entry.getKey().getKey().getId().equals(new Long(2))) {
+                assertEquals(productsIn.get(product5), new BigDecimal("3"));
+                assertEquals(productsOut.get(product2), new BigDecimal("2"));
+            } else if (entry.getKey().getKey().getId().equals(new Long(3))) {
+                assertEquals(productsIn.get(product6), new BigDecimal("2"));
+                assertEquals(productsOut.get(product3), new BigDecimal("3"));
+            }
+        }
+    }
+
+    @Test
+    public void shouldReturnValidMapPerOutProductsAlgorithmForWorkPlanPerMachine() {
+        // given
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("orders"), new Long(15)))
+                        .list().getEntities()).willReturn(componentsOutProducts);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products9);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(2)))
+                        .list().getEntities()).willReturn(products5);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(3)))
+                        .list().getEntities()).willReturn(products6);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(11)))
+                        .list().getEntities()).willReturn(products4);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(12)))
+                        .list().getEntities()).willReturn(products7);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(13)))
+                        .list().getEntities()).willReturn(products8);
+
+        // when
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = reportDataService
+                .prepareOperationSeries(workPlan, "machine");
+
+        // then
+        assertEquals(operations.size(), 3);
+        for (Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operation : operations
+                .entrySet()) {
+            for (Entry<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> entry : operation.getValue()
+                    .entrySet()) {
+                Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
+                Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
+                if (entry.getKey().getKey().getId().equals(new Long(1)) && operation.getKey().getId().equals(new Long(1))) {
+                    assertEquals(productsIn.get(product2), new BigDecimal("2"));
+                    assertEquals(productsIn.get(product3), new BigDecimal("3"));
+                    assertEquals(productsIn.get(product4), new BigDecimal("5"));
+                    assertEquals(productsOut.get(product4), new BigDecimal("5"));
+                } else if (entry.getKey().getKey().getId().equals(new Long(2)) && operation.getKey().getId().equals(new Long(2))) {
+                    assertEquals(productsIn.get(product5), new BigDecimal("3"));
+                    assertEquals(productsOut.get(product2), new BigDecimal("2"));
+                } else if (entry.getKey().getKey().getId().equals(new Long(3)) && operation.getKey() == null) {
+                    assertEquals(productsIn.get(product6), new BigDecimal("2"));
+                    assertEquals(productsOut.get(product3), new BigDecimal("3"));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void shouldReturnValidMapPerOutProductsAlgorithmForWorkPlanPerWorker() {
+        // given
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("orders"), new Long(15)))
+                        .list().getEntities()).willReturn(componentsOutProducts);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products9);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(2)))
+                        .list().getEntities()).willReturn(products5);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(3)))
+                        .list().getEntities()).willReturn(products6);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(11)))
+                        .list().getEntities()).willReturn(products4);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(12)))
+                        .list().getEntities()).willReturn(products7);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(13)))
+                        .list().getEntities()).willReturn(products8);
+
+        // when
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = reportDataService
+                .prepareOperationSeries(workPlan, "worker");
+
+        // then
+        assertEquals(operations.size(), 3);
+        for (Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operation : operations
+                .entrySet()) {
+            for (Entry<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> entry : operation.getValue()
+                    .entrySet()) {
+                Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
+                Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
+                if (entry.getKey().getKey().getId().equals(new Long(1)) && operation.getKey() == null) {
+                    assertEquals(productsIn.get(product2), new BigDecimal("2"));
+                    assertEquals(productsIn.get(product3), new BigDecimal("3"));
+                    assertEquals(productsIn.get(product4), new BigDecimal("5"));
+                    assertEquals(productsOut.get(product4), new BigDecimal("5"));
+                } else if (entry.getKey().getKey().getId().equals(new Long(2)) && operation.getKey().getId().equals(new Long(2))) {
+                    assertEquals(productsIn.get(product5), new BigDecimal("3"));
+                    assertEquals(productsOut.get(product2), new BigDecimal("2"));
+                } else if (entry.getKey().getKey().getId().equals(new Long(3)) && operation.getKey().getId().equals(new Long(1))) {
+                    assertEquals(productsIn.get(product6), new BigDecimal("2"));
+                    assertEquals(productsOut.get(product3), new BigDecimal("3"));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void shouldReturnValidMapPerOutProductsAlgorithmForWorkPlanPerProductWithAddResults() {
+        // given
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("orders"), new Long(15)))
+                        .list().getEntities()).willReturn(componentsOutProducts2);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products9);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(2)))
+                        .list().getEntities()).willReturn(products5);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(3)))
+                        .list().getEntities()).willReturn(products6);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(11)))
+                        .list().getEntities()).willReturn(products4);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(12)))
+                        .list().getEntities()).willReturn(products7);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(13)))
+                        .list().getEntities()).willReturn(products8);
+
+        // when
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = reportDataService
+                .prepareOperationSeries(workPlan, "product");
+
+        // then
+        assertEquals(operations.size(), 1);
+        Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operComponents = operations.get(null);
+        assertEquals(operComponents.size(), 6);
+        for (Entry<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> entry : operComponents
+                .entrySet()) {
+            Map<Entity, BigDecimal> productsIn = entry.getValue().getKey();
+            Map<Entity, BigDecimal> productsOut = entry.getValue().getValue();
+            if (entry.getKey().getKey().getId().equals(new Long(1))) {
+                assertEquals(productsIn.get(product2), new BigDecimal("2"));
+                assertEquals(productsIn.get(product3), new BigDecimal("3"));
+                assertEquals(productsIn.get(product4), new BigDecimal("5"));
+                assertEquals(productsOut.get(product4), new BigDecimal("5"));
+            } else if (entry.getKey().getKey().getId().equals(new Long(2))) {
+                assertEquals(productsIn.get(product5), new BigDecimal("3"));
+                assertEquals(productsOut.get(product2), new BigDecimal("2"));
+            } else if (entry.getKey().getKey().getId().equals(new Long(3))) {
+                assertEquals(productsIn.get(product6), new BigDecimal("2"));
+                assertEquals(productsOut.get(product3), new BigDecimal("3"));
+            }
+        }
+    }
+
+    @Test
+    public void shouldReturnInvalidMapPerOutProductsAlgorithmForWorkPlanCauseEmptyProductsIn() {
+        // given
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("orders"), new Long(15)))
+                        .list().getEntities()).willReturn(componentsOutProducts);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(new ArrayList<Entity>());
+
+        // when
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = reportDataService
+                .prepareOperationSeries(workPlan, "product");
+
+        // then
+        assertEquals(operations.size(), 0);
+    }
+
+    @Test
+    public void shouldReturnInvalidMapPerOutProductsAlgorithmForWorkPlanCauseTooManyProductsOut() {
+        // given
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("orders"), new Long(15)))
+                        .list().getEntities()).willReturn(componentsOutProducts);
+
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products1);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(11)))
+                        .list().getEntities()).willReturn(products2);
+
+        // when
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = reportDataService
+                .prepareOperationSeries(workPlan, "product");
+
+        // then
+        assertEquals(operations.size(), 0);
+    }
+
+    @Test
+    public void shouldReturnValidMapPerOutProductsAlgorithmForWorkPlanWithoutPreviousOperation() {
+        // given
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("orders"), new Long(15)))
+                        .list().getEntities()).willReturn(componentsOutProducts);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products1);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(11)))
+                        .list().getEntities()).willReturn(products4);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(12)))
+                        .list().getEntities()).willReturn(products4);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(13)))
+                        .list().getEntities()).willReturn(products4);
+
+        // when
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = reportDataService
+                .prepareOperationSeries(workPlan, "product");
+
+        // then
+        assertEquals(operations.size(), 1);
+        Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operComponents = operations.get(null);
+        assertEquals(operComponents.size(), 1);
+    }
+
+    @Test
+    public void shouldReturnInvalidMapPerOutProductsAlgorithmForWorkPlanWithPreviousOperationWithoutProductsIn() {
+        // given
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("orders"), new Long(15)))
+                        .list().getEntities()).willReturn(componentsOutProducts);
+        given(
+                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListSubTechnologyWithoutRoot);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(1)))
+                        .list().getEntities()).willReturn(products9);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(2)))
+                        .list().getEntities()).willReturn(products5);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductInComponents"), new Long(3)))
+                        .list().getEntities()).willReturn(new ArrayList<Entity>());
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(11)))
+                        .list().getEntities()).willReturn(products4);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(12)))
+                        .list().getEntities()).willReturn(products7);
+
+        given(
+                dataDefinition
+                        .find()
+                        .restrictedWith(
+                                Restrictions.belongsTo(dataDefinition.getField("operationProductOutComponents"), new Long(13)))
+                        .list().getEntities()).willReturn(products8);
+
+        // when
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = reportDataService
+                .prepareOperationSeries(workPlan, "product");
+
+        // then
+        assertEquals(operations.size(), 0);
     }
 }
