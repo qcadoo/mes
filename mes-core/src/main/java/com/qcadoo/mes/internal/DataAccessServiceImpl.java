@@ -584,7 +584,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 TreeType treeFieldType = (TreeType) fieldDefinition.getType();
                 EntityTree children = (EntityTree) entityService.getField(databaseEntity, fieldDefinition);
                 InternalDataDefinition childDataDefinition = (InternalDataDefinition) treeFieldType.getDataDefinition();
-                if (HasManyType.Cascade.NULLIFY.equals(treeFieldType.getCascade())) {
+                if (TreeType.Cascade.NULLIFY.equals(treeFieldType.getCascade())) {
                     for (Object child : children) {
                         DefaultEntity defaultEntity = (DefaultEntity) child;
                         defaultEntity.setField(treeFieldType.getJoinFieldName(), null);
