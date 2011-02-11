@@ -59,7 +59,7 @@ public class GenealogyServiceTest {
 
         // then
         verify(viewDefinitionState).redirectTo("../page/genealogies/orderGenealogies.html?context={\"order.id\":\"13\"}", false,
-                false);
+                true);
         verify(triggerState).getFieldValue();
         verifyNoMoreInteractions(triggerState);
         verifyNoMoreInteractions(viewDefinitionState);
@@ -95,7 +95,7 @@ public class GenealogyServiceTest {
 
         // then
         verify(viewDefinitionState).redirectTo("../page/genealogies/orderGenealogy.html?context={\"form.order\":\"13\"}", false,
-                false);
+                true);
         verify(triggerState).getFieldValue();
         verifyNoMoreInteractions(triggerState);
         verifyNoMoreInteractions(viewDefinitionState);
