@@ -17,7 +17,6 @@ import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.awesomeDynamicList.AwesomeDynamicListState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
-import com.qcadoo.mes.view.components.grid.GridComponentState;
 
 @Service
 public final class GenealogyService {
@@ -27,9 +26,10 @@ public final class GenealogyService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void newBatch(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String[] args) {
-        ((GridComponentState) viewDefinitionState.getComponentByReference("grid")).setSelectedEntityId(null);
-    }
+    // public void newBatch(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String[] args)
+    // {
+    // ((GridComponentState) viewDefinitionState.getComponentByReference("grid")).setSelectedEntityId(null);
+    // }
 
     public void showGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
@@ -128,10 +128,10 @@ public final class GenealogyService {
                     }
                 }
 
-                productInComponentsList.setFieldValue(targetProductInComponents);
-
                 if (targetProductInComponents.isEmpty()) {
                     productGridLayout.setVisible(false);
+                } else {
+                    productInComponentsList.setFieldValue(targetProductInComponents);
                 }
             } else {
                 productGridLayout.setVisible(false);
@@ -153,7 +153,7 @@ public final class GenealogyService {
         return genealogyProductInComponent;
     }
 
-    public void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {
+    void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {
         for (Entity operationComponent : entityTree) {
             if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
                 operationComponents.add(operationComponent);

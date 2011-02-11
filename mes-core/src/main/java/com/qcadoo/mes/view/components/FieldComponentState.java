@@ -46,7 +46,7 @@ public class FieldComponentState extends AbstractComponentState {
         return required;
     }
 
-    public final void setRequired(final boolean required) {
+    public void setRequired(final boolean required) {
         this.required = required;
         requestRender();
     }

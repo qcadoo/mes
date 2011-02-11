@@ -21,7 +21,7 @@ import com.qcadoo.mes.view.ScopeEntityIdChangeListener;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.states.AbstractContainerState;
 
-public final class FormComponentState extends AbstractContainerState {
+public class FormComponentState extends AbstractContainerState {
 
     public static final String JSON_ENTITY_ID = "entityId";
 
