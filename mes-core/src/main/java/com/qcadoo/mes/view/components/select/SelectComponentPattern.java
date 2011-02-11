@@ -38,8 +38,10 @@ public final class SelectComponentPattern extends FieldComponentPattern {
     public Map<String, String> getValuesMap(final Locale locale) {
         Map<String, String> values = new LinkedHashMap<String, String>();
 
-        List<String> blankCodes = Lists.newArrayList(getTranslationPath() + ".blankValue", "core.form.blankComboBoxValue");
-        values.put("", getTranslationService().translate(blankCodes, locale));
+        if (!isRequired() || getFieldDefinition().getDefaultValue() == null) {
+            List<String> blankCodes = Lists.newArrayList(getTranslationPath() + ".blankValue", "core.form.blankComboBoxValue");
+            values.put("", getTranslationService().translate(blankCodes, locale));
+        }
 
         if (EnumType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
             List<String> vals = ((EnumeratedType) getFieldDefinition().getType()).values();

@@ -11,7 +11,13 @@ public class FieldComponentState extends AbstractComponentState {
 
     private String value;
 
+    private boolean defaultRequired;
+
     private boolean required;
+
+    public FieldComponentState(final FieldComponentPattern pattern) {
+        defaultRequired = pattern.isRequired();
+    }
 
     @Override
     protected void initializeContent(final JSONObject json) throws JSONException {
@@ -27,7 +33,7 @@ public class FieldComponentState extends AbstractComponentState {
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = new JSONObject();
         json.put(JSON_VALUE, value);
-        json.put(JSON_REQUIRED, required);
+        json.put(JSON_REQUIRED, isRequired());
         return json;
     }
 
@@ -43,7 +49,7 @@ public class FieldComponentState extends AbstractComponentState {
     }
 
     public final boolean isRequired() {
-        return required;
+        return required || defaultRequired;
     }
 
     public final void setRequired(final boolean required) {
