@@ -155,14 +155,14 @@ public final class PluginManagementController {
 
     public void onPluginDownloadClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
-        viewDefinitionState.redirectTo("../pluginPages/downloadPage.html", false);
+        viewDefinitionState.redirectTo("../pluginPages/downloadPage.html", false, true);
     }
 
     public void onPluginUpdateClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
         Long pluginId = getPluginId(triggerState);
         if (pluginId != null) {
-            viewDefinitionState.redirectTo("../pluginPages/downloadPage.html?entityId=" + pluginId, false);
+            viewDefinitionState.redirectTo("../pluginPages/downloadPage.html?entityId=" + pluginId, false, true);
         }
     }
 
@@ -209,7 +209,7 @@ public final class PluginManagementController {
 
         if (operationStatus.isRestartRequired()) {
             String message = translationService.translate("plugins.messages.success.restartSucces", triggerState.getLocale());
-            viewDefinitionState.redirectTo("../pluginPages/restart.html?message=" + message, false);
+            viewDefinitionState.redirectTo("../pluginPages/restart.html?message=" + message, false, false);
             return;
         }
 

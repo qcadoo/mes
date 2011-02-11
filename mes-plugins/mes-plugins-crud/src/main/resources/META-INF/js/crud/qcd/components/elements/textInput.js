@@ -38,16 +38,13 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 	var hasListeners = (this.options.listeners.length > 0) ? true : false;
 	
 	function constructor(_this) {
-		QCD.info("constructor");
 		input.change(function() {
 			inputDataChanged();
 		});
 	}
-	6
+	
 	function inputDataChanged() {
-		QCD.info("data changed");
 		if (hasListeners) {
-			QCD.info("has listeners");
 			mainController.callEvent("onInputChange", elementPath, null, null, null);
 		}
 	}

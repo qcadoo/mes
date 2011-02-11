@@ -37,7 +37,7 @@ public final class GenealogyService {
 
         if (orderId != null) {
             String url = "../page/genealogies/orderGenealogies.html?context={\"order.id\":\"" + orderId + "\"}";
-            viewDefinitionState.redirectTo(url, false);
+            viewDefinitionState.redirectTo(url, false, true);
         }
     }
 
@@ -46,7 +46,7 @@ public final class GenealogyService {
 
         if (orderId != null) {
             String url = "../page/genealogies/orderGenealogy.html?context={\"form.order\":\"" + orderId + "\"}";
-            viewDefinitionState.redirectTo(url, false);
+            viewDefinitionState.redirectTo(url, false, true);
         }
     }
 

@@ -71,12 +71,22 @@
 	font-family:Arial, Helvetica, sans-serif;
 	font-size: 12px;
 }
-
+.tree_content.jstree .lastAdded a {
+	background: #BFF589;
+	border-color: #8BD73E;
+}
 .tree_content.jstree a.jstree-hovered {
 	background: #cccccc;
 	border-color: #cccccc;
 }
-.tree_content.jstree a.jstree-clicked {
+.tree_content.jstree .lastAdded a.jstree-hovered {
+	background: #91E735;
+	border-color: #8BD73E;
+}
+.tree_content.jstree a.jstree-clicked,
+.tree_content.jstree .lastAdded a.jstree-clicked,
+.tree_content.jstree a.jstree-clicked.jstree-hovered
+.tree_content.jstree .lastAdded a.jstree-clicked.jstree-hovered {
 	background: #ffdb67;
 	border-color: #dba700;
 	color: black;

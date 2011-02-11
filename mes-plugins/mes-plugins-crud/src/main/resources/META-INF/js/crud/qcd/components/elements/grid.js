@@ -305,8 +305,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			if (lastPageController && lastPageController.getViewName() == gridParameters.correspondingViewName) {
 				var lastCorrespondingComponent = lastPageController.getComponentByReferenceName(gridParameters.correspondingComponent);
 				addedEntityId = lastCorrespondingComponent.getComponentValue().entityId;
-				QCD.info("addedEntityId");
-				QCD.info(addedEntityId);
 			}
 		}
 	}
@@ -386,7 +384,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		if (addedEntityId) {
 			var row = $("#"+elementSearchName+" #"+addedEntityId);
-			row.addClass("lastAdded");
+			if (row) {
+				row.addClass("lastAdded");
+			}
 		}
 		
 		unblockGrid();

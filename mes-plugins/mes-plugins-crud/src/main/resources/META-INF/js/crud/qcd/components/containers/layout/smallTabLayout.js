@@ -79,12 +79,9 @@ QCD.components.containers.layout.SmallTabLayout = function(_element, _mainContro
 	this.updateSize = function(_width, _height) {
 		this.element.height(_height);
 		for (var tabName in tabs) {
-			QCD.info(tabName);
 			tabs[tabName].content.height(_height - 34);
 		}
 		for (var i in this.components) {
-			QCD.info(i);
-			QCD.info(this.components[i]);
 			this.components[i].updateSize(_width-20, _height-32);
 		}
 	}

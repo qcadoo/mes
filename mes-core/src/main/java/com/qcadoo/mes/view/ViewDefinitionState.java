@@ -6,7 +6,7 @@ public interface ViewDefinitionState extends ContainerState {
 
     ComponentState getComponentByReference(String reference);
 
-    void redirectTo(String redirectToUrl, boolean openInNewWindow);
+    void redirectTo(String redirectToUrl, boolean openInNewWindow, boolean shouldSerialize);
 
     void registerComponent(String reference, String path, ComponentState state);
 

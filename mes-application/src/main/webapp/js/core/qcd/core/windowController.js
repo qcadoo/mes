@@ -70,11 +70,9 @@ QCD.WindowController = function(_menuStructure) {
 	}
 	
 	this.goToPage = function(url, serializationObject, isPage) {
-		var stateObject = {
-			url: iframe.attr('src'),
-			serializationObject: serializationObject
-		};
-		statesStack.push(stateObject);
+		if (serializationObject) {
+			statesStack.push(serializationObject);
+		}
 		if (isPage) {
 			currentPage = "page/"+url;	
 		} else {
@@ -84,10 +82,7 @@ QCD.WindowController = function(_menuStructure) {
 	}
 	
 	window.openModal = function(id, url, serializationObject) {
-		var stateObject = {
-			serializationObject: serializationObject
-		};
-		statesStack.push(stateObject);
+		statesStack.push(serializationObject);
 		
 		if (! modalObjects.id) {
 			modalObjects.id = QCD.utils.Modal.createModal();
@@ -113,7 +108,7 @@ QCD.WindowController = function(_menuStructure) {
 	this.goBack = function(pageController) {
 		lastPageController = pageController;
 		var stateObject = statesStack.pop();
-		serializationObjectToInsert = stateObject.serializationObject;
+		serializationObjectToInsert = stateObject;
 		if (modalsStack.length == 0) {
 			currentPage = stateObject.url;
 			performGoToPage(currentPage);
