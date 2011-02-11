@@ -17,6 +17,8 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
 
     private int labelWidth = 30;
 
+    private boolean defaultRequired = false;
+
     public FieldComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
 
@@ -27,6 +29,8 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
         for (ComponentOption option : getOptions()) {
             if ("labelWidth".equals(option.getType())) {
                 labelWidth = Integer.parseInt(option.getValue());
+            } else if ("required".equals(option.getType())) {
+                defaultRequired = Boolean.parseBoolean(option.getValue());
             }
         }
     }
@@ -63,5 +67,9 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
         options.put("labelWidth", labelWidth);
 
         return options;
+    }
+
+    public boolean isRequired() {
+        return getFieldDefinition().isRequired() || defaultRequired;
     }
 }

@@ -56,9 +56,9 @@ public final class LookupComponentPattern extends FieldComponentPattern {
         if (getScopeFieldDefinition() != null) {
             String joinFieldName = ((HasManyType) getScopeFieldDefinition().getType()).getJoinFieldName();
             FieldDefinition fieldDefinition = getDataDefinition().getField(joinFieldName);
-            return new LookupComponentState(fieldDefinition, fieldCode, expression);
+            return new LookupComponentState(fieldDefinition, fieldCode, expression, this);
         } else {
-            return new LookupComponentState(null, fieldCode, expression);
+            return new LookupComponentState(null, fieldCode, expression, this);
         }
     }
 

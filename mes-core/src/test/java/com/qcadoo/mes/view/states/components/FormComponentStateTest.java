@@ -30,6 +30,7 @@ import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerState;
 import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.components.FieldComponentPattern;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.states.AbstractComponentState;
@@ -72,7 +73,9 @@ public class FormComponentStateTest extends AbstractStateTest {
         given(dataDefinition.getName()).willReturn("name");
         given(dataDefinition.getField("name")).willReturn(fieldDefinition);
 
-        name = new FieldComponentState();
+        FieldComponentPattern namePattern = mock(FieldComponentPattern.class);
+        given(namePattern.isRequired()).willReturn(false);
+        name = new FieldComponentState(namePattern);
         ((AbstractComponentState) name).setTranslationService(translationService);
         name.setName("name");
         name.initialize(new JSONObject(), Locale.ENGLISH);

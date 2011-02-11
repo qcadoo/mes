@@ -357,8 +357,6 @@ public final class GridComponentPattern extends AbstractComponentPattern {
                 }
             } else if ("column".equals(option.getType())) {
                 parseColumnOption(option);
-            } else {
-                throwIllegalStateException("Unknown option for grid: " + option.getType());
             }
         }
         if (defaultOrderColumn == null) {

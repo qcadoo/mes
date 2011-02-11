@@ -29,7 +29,9 @@ public class AwesomeDynamicListState extends FieldComponentState implements Cont
 
     private List<FormComponentState> forms;
 
-    public AwesomeDynamicListState(final FormComponentPattern innerFormPattern, final ComponentPattern headerPattern) {
+    public AwesomeDynamicListState(final AwesomeDynamicListPattern pattern, final FormComponentPattern innerFormPattern,
+            final ComponentPattern headerPattern) {
+        super(pattern);
         this.innerFormPattern = innerFormPattern;
         // this.headerPattern = headerPattern;
     }
