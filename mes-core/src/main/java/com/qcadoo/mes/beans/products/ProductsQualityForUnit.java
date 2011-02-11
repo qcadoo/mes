@@ -37,6 +37,8 @@ public class ProductsQualityForUnit {
 
     private String staff;
 
+    private boolean closed = false;
+
     @Temporal(TemporalType.DATE)
     private Date date;
 
@@ -118,6 +120,14 @@ public class ProductsQualityForUnit {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 
 }

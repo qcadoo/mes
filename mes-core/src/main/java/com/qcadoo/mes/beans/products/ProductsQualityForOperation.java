@@ -27,6 +27,8 @@ public class ProductsQualityForOperation {
 
     private String comment;
 
+    private boolean closed = false;
+
     public Long getId() {
         return id;
     }
@@ -73,6 +75,14 @@ public class ProductsQualityForOperation {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 
 }

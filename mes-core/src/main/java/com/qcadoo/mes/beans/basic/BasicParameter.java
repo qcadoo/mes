@@ -41,6 +41,8 @@ public class BasicParameter {
 
     private String batchForDoneOrder;
 
+    private Boolean autoGenerateQualityControl;
+
     public Long getId() {
         return id;
     }
@@ -63,5 +65,13 @@ public class BasicParameter {
 
     public void setBatchForDoneOrder(final String batchForDoneOrder) {
         this.batchForDoneOrder = batchForDoneOrder;
+    }
+
+    public Boolean getAutoGenerateQualityControl() {
+        return autoGenerateQualityControl;
+    }
+
+    public void setAutoGenerateQualityControl(Boolean autoGenerateQualityControl) {
+        this.autoGenerateQualityControl = autoGenerateQualityControl;
     }
 }

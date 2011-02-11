@@ -35,6 +35,8 @@ public class ProductsQualityForOrder {
     @Temporal(TemporalType.DATE)
     private Date date;
 
+    private boolean closed = false;
+
     public Long getId() {
         return id;
     }
@@ -97,6 +99,14 @@ public class ProductsQualityForOrder {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 
 }

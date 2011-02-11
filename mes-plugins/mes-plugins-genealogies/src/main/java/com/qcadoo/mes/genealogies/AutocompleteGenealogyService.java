@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
+import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.view.ComponentState;
@@ -30,6 +33,8 @@ import com.qcadoo.mes.view.components.form.FormComponentState;
 
 @Service
 public class AutocompleteGenealogyService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AutocompleteGenealogyService.class);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -52,6 +57,11 @@ public class AutocompleteGenealogyService {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
             } else {
+
+                if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
+                    return;
+                }
+
                 boolean inProgressState = Boolean.parseBoolean(args[0]);
                 if (!inProgressState) {
                     SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list();
@@ -76,6 +86,47 @@ public class AutocompleteGenealogyService {
                 state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
                         MessageType.FAILURE);
             }
+        }
+    }
+
+    private boolean checkIfAllQualityControlsAreClosed(Entity order) {
+
+        String controlType = order.getBelongsToField("technology").getField("qualityControlType").toString();
+
+        DataDefinition qualityControlDD = null;
+
+        if (controlType.equals("01forBatch")) {
+            qualityControlDD = dataDefinitionService.get("products", "qualityForBatch");
+        } else if (controlType.equals("02forUnit")) {
+            qualityControlDD = dataDefinitionService.get("products", "qualityForUnit");
+        } else if (controlType.equals("03forOrder")) {
+            qualityControlDD = dataDefinitionService.get("products", "qualityForOrder");
+        } else if (controlType.equals("04forOperation")) {
+            qualityControlDD = dataDefinitionService.get("products", "qualityForOperation");
+        }
+
+        SearchCriteriaBuilder searchCriteria = qualityControlDD.find().restrictedWith(
+                Restrictions.belongsTo(qualityControlDD.getField("order"), order.getId()));
+
+        SearchResult searchResult = searchCriteria.list();
+
+        return (searchResult.getTotalNumberOfEntities() <= 0);
+    }
+
+    private boolean isQualityControlAutoCheckEnabled() {
+
+        SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list();
+
+        Entity parameter = null;
+        if (searchResult.getEntities().size() > 0) {
+            parameter = searchResult.getEntities().get(0);
+        }
+
+        if (parameter != null) {
+            LOG.info("\n THE PARAMETER IS SET TO: " + (Boolean) parameter.getField("checkDoneOrderForQuality"));
+            return (Boolean) parameter.getField("checkDoneOrderForQuality");
+        } else {
+            return false;
         }
     }
 
@@ -107,6 +158,11 @@ public class AutocompleteGenealogyService {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
             } else {
+
+                if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
+                    return;
+                }
+
                 createGenealogy(state, order, Boolean.parseBoolean(args[0]));
             }
         } else {
