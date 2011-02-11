@@ -29,8 +29,6 @@ public class GenealogyController {
         JSONObject json = new JSONObject(ImmutableMap.of("window.currentAttribute.id", genealogyService.getGenealogyAttributeId()
                 .toString()));
 
-        System.out.println(json.toString());
-
         Map<String, String> arguments = ImmutableMap.of("context", json.toString());
         return crudController.prepareView("genealogies", "currentAttribute", arguments, locale);
     }
