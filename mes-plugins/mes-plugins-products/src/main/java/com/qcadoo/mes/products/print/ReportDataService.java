@@ -333,11 +333,15 @@ public class ReportDataService {
                     Object machine = operation.getField("machine");
                     if (machine != null) {
                         entityKey = (Entity) machine;
+                    } else {
+                        entityKey = null;
                     }
                 } else if (type.equals("worker")) {
                     Object worker = operation.getField("staff");
                     if (worker != null) {
                         entityKey = (Entity) worker;
+                    } else {
+                        entityKey = null;
                     }
                 }
                 Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operationMap = null;
