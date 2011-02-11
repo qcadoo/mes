@@ -16,13 +16,13 @@ import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.ViewComponent;
+import com.qcadoo.mes.view.components.FieldComponentPattern;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.components.layout.FlowLayoutPattern;
-import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
 @ViewComponent("awesomeDynamicList")
-public class AwesomeDynamicListPattern extends AbstractComponentPattern {
+public class AwesomeDynamicListPattern extends FieldComponentPattern {
 
     private static final String JS_OBJECT = "QCD.components.elements.AwesomeDynamicList";
 
@@ -146,7 +146,7 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
 
     @Override
     protected ComponentState getComponentStateInstance() {
-        return new AwesomeDynamicListState(innerFormPattern, headerFormPattern);
+        return new AwesomeDynamicListState(this, innerFormPattern, headerFormPattern);
     }
 
 }
