@@ -10,6 +10,7 @@ public final class SelectComponentState extends FieldComponentState {
     private final SelectComponentPattern selectComponentPattern;
 
     public SelectComponentState(final SelectComponentPattern selectComponentPattern) {
+        super(selectComponentPattern);
         this.selectComponentPattern = selectComponentPattern;
     }
 

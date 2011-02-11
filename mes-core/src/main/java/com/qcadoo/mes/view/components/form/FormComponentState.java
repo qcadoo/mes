@@ -21,7 +21,7 @@ import com.qcadoo.mes.view.ScopeEntityIdChangeListener;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.states.AbstractContainerState;
 
-public final class FormComponentState extends AbstractContainerState {
+public class FormComponentState extends AbstractContainerState {
 
     public static final String JSON_ENTITY_ID = "entityId";
 
@@ -238,9 +238,9 @@ public final class FormComponentState extends AbstractContainerState {
         for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
             FieldDefinition fieldDefinition = getDataDefinition().getField(field.getKey());
 
-            if (fieldDefinition.isRequired() || (entityId == null && fieldDefinition.isRequiredOnCreate())) {
-                field.getValue().setRequired(true);
-            }
+            // if (fieldDefinition.isRequired() || (entityId == null && fieldDefinition.isRequiredOnCreate())) {
+            // field.getValue().setRequired(true);
+            // }
 
             if (fieldDefinition.isReadOnly() || (entityId != null && fieldDefinition.isReadOnlyOnUpdate())) {
                 field.getValue().setEnabled(false);

@@ -16,11 +16,11 @@ import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
-import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
+import com.qcadoo.mes.view.components.FieldComponentPattern;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
 @ViewComponent("tree")
-public final class TreeComponentPattern extends AbstractComponentPattern {
+public final class TreeComponentPattern extends FieldComponentPattern {
 
     private static final String JSP_PATH = "elements/tree.jsp";
 
@@ -34,7 +34,7 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new TreeComponentState(getFieldDefinition(), dataTypes);
+        return new TreeComponentState(getFieldDefinition(), dataTypes, this);
     }
 
     @Override

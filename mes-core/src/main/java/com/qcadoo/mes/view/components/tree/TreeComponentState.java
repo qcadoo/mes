@@ -47,7 +47,9 @@ public final class TreeComponentState extends FieldComponentState {
 
     private final Map<String, TreeDataType> dataTypes;
 
-    public TreeComponentState(final FieldDefinition scopeField, final Map<String, TreeDataType> dataTypes) {
+    public TreeComponentState(final FieldDefinition scopeField, final Map<String, TreeDataType> dataTypes,
+            final TreeComponentPattern pattern) {
+        super(pattern);
         belongsToFieldDefinition = scopeField;
         this.dataTypes = dataTypes;
         registerEvent("initialize", eventPerformer, "initialize");

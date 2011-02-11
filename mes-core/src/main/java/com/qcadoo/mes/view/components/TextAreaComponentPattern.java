@@ -44,7 +44,7 @@ public final class TextAreaComponentPattern extends FieldComponentPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new FieldComponentState();
+        return new FieldComponentState(this);
     }
 
     @Override
