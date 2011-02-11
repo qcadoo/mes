@@ -580,7 +580,18 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 }
             }
 
-            // TODO delete tree fields
+            if (fieldDefinition.getType() instanceof TreeType) {
+                TreeType treeFieldType = (TreeType) fieldDefinition.getType();
+                EntityTree children = (EntityTree) entityService.getField(databaseEntity, fieldDefinition);
+                InternalDataDefinition childDataDefinition = (InternalDataDefinition) treeFieldType.getDataDefinition();
+                if (TreeType.Cascade.NULLIFY.equals(treeFieldType.getCascade())) {
+                    for (Object child : children) {
+                        DefaultEntity defaultEntity = (DefaultEntity) child;
+                        defaultEntity.setField(treeFieldType.getJoinFieldName(), null);
+                        save(childDataDefinition, defaultEntity);
+                    }
+                }
+            }
         }
 
         getCurrentSession().delete(databaseEntity);
