@@ -5,9 +5,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,7 +62,7 @@ public final class GridComponentState extends AbstractComponentState {
 
     private final FieldDefinition belongsToFieldDefinition;
 
-    private Long selectedEntityId;
+    private Set<Long> selectedEntityId;
 
     private Long belongsToEntityId;
 
@@ -112,7 +114,13 @@ public final class GridComponentState extends AbstractComponentState {
     @SuppressWarnings("unchecked")
     protected void initializeContent(final JSONObject json) throws JSONException {
         if (json.has(JSON_SELECTED_ENTITY_ID) && !json.isNull(JSON_SELECTED_ENTITY_ID)) {
-            selectedEntityId = json.getLong(JSON_SELECTED_ENTITY_ID);
+            selectedEntityId = new HashSet<Long>();
+            JSONObject selectedEntitiesObject = json.getJSONObject(JSON_SELECTED_ENTITY_ID);
+            Iterator<String> it = selectedEntitiesObject.keys();
+            while (it.hasNext()) {
+                String s = it.next();
+                System.out.println("-------" + s);
+            }
         }
         if (json.has(JSON_BELONGS_TO_ENTITY_ID) && !json.isNull(JSON_BELONGS_TO_ENTITY_ID)) {
             belongsToEntityId = json.getLong(JSON_BELONGS_TO_ENTITY_ID);

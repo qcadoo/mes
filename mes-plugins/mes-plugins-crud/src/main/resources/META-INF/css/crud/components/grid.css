@@ -109,6 +109,7 @@ div.filterButton {
 	width: 30px;
 	margin-top: 0;
 	background: white;
+	padding-left: 0px;
 }
 .grid_paging input[type='text'] {
 	border-spacing: 0;

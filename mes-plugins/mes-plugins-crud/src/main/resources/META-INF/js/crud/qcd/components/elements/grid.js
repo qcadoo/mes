@@ -195,14 +195,32 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 	};
 	function rowClicked(rowId) {
+		
+		var rowIndex = grid.jqGrid('getInd', rowId);
+		if (rowIndex == false) {
+			rowIndex = null;
+		}
+		headerController.onRowClicked(rowIndex);
+		
+		var selectedEntity = null;
+		if (rowIndex) {
+			selectedEntity = currentEntities[rowId];
+		}
+		
 		if (!gridParameters.allowMultiselect) {
-			if (currentState.selectedEntityId == rowId) {
-				currentState.selectedEntityId = null;
-			} else {
-				if (currentState.selectedEntityId) {
-					grid.setSelection(currentState.selectedEntityId, false);
+			var isDiselect = false;
+			for (var i in currentState.selectedEntityId) {
+				if (currentState.selectedEntityId[i] != null) {
+					if (i == rowId) {
+						isDiselect = true;
+					} else {
+						grid.setSelection(i, false);	
+					}
 				}
-				currentState.selectedEntityId = rowId;
+			}
+			currentState.selectedEntityId = new Object();
+			if (! isDiselect) {
+				currentState.selectedEntityId[rowId] = selectedEntity;
 			}
 		} else {
 			if (! currentState.selectedEntityId) {
@@ -211,21 +229,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			if (currentState.selectedEntityId[rowId]) {
 				currentState.selectedEntityId[rowId] = null;
 			} else {
-				currentState.selectedEntityId[rowId] = true;
+				currentState.selectedEntityId[rowId] = selectedEntity;
 			}
 		}
-		
-		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
-		if (rowIndex == false) {
-			rowIndex = null;
-		}
-		headerController.onRowClicked(rowIndex);
 
-		var selectedEntity = null;
-		if (rowIndex) {
-			selectedEntity = currentEntities[rowId];
-		}
-		fireOnChangeListeners("onChange", [selectedEntity]);
+		fireOnChangeListeners("onChange", [selectedEntity, currentState.selectedEntityId]); // TODO mina R U sure ???
 		
 		if (gridParameters.listeners.length > 0) {
 			onSelectChange();
@@ -366,7 +374,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		headerController.updatePagingParameters(currentState.firstEntity, currentState.maxEntities, value.totalEntities);
 		
-		grid.setSelection(currentState.selectedEntityId, false);
+		grid.setSelection(currentState.selectedEntityId, false);  // TODO mina CHANGE
 		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
 		
 		if (rowIndex == false) {
@@ -770,28 +778,20 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	
 	this.performDelete = function(actionsPerformer) {
-		if (currentState.selectedEntityId) {
-			if (window.confirm(translations.confirmDeleteMessage)) {
-				blockGrid();
-				mainController.callEvent("remove", elementPath, function() {
-					unblockGrid();
-				}, null, actionsPerformer);
-			}
-		} else {
-			mainController.showMessage({type: "error", content: translations.noRowSelectedError});
-		}	
+		if (window.confirm(translations.confirmDeleteMessage)) {
+			blockGrid();
+			mainController.callEvent("remove", elementPath, function() {
+				unblockGrid();
+			}, null, actionsPerformer);
+		}
 	}
 	var performDelete = this.performDelete;
 
 	this.performCopy = function(actionsPerformer) {
-		if (currentState.selectedEntityId) {
-			blockGrid();
-			mainController.callEvent("copy", elementPath, function() {
-				unblockGrid();
-			}, null, actionsPerformer);
-		} else {
-			mainController.showMessage({type: "error", content: translations.noRowSelectedError});
-		}	
+		blockGrid();
+		mainController.callEvent("copy", elementPath, function() {
+			unblockGrid();
+		}, null, actionsPerformer);
 	}
 	var performCopy = this.performCopy;
 	
@@ -806,7 +806,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}, args, actionsPerformer);
 	}
 	
-	this.performLinkClicked = function(actionsPerformer) {
+	this.performLinkClicked = function(actionsPerformer) { // TODO mina CHANGE
 		if (currentState.selectedEntityId) {
 			
 			linkClicked(currentState.selectedEntityId);
