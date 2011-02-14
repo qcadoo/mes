@@ -282,10 +282,8 @@ public final class OrderService {
             Entity entity = dataDefinitionService.get("products", "order").get(order.getEntityId());
 
             if (entity != null && "03done".equals(entity.getStringField("state")) && order.isValid()) {
-                System.out.println("2");
                 disabled = true;
             }
-            System.out.println("3");
         }
 
         order.setEnabledWithChildren(!disabled);
