@@ -329,7 +329,6 @@ public final class OrderService {
         if ("03done".equals(entity.getField("state")) && entity.getField("effectiveDateTo") == null) {
             entity.setField("effectiveDateTo", new Date());
             entity.setField("endWorker", securityService.getCurrentUserName());
-
         }
     }
 
