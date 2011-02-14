@@ -1,6 +1,8 @@
 package com.qcadoo.mes.genealogies;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,6 +22,11 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.internal.EntityList;
+import com.qcadoo.mes.internal.EntityTree;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
@@ -36,13 +43,17 @@ public class AutoGenealogyServiceTest {
 
     private TranslationService translationService;
 
+    private GenealogyService genealogyService;
+
     @Before
     public void init() {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         translationService = mock(TranslationService.class);
+        genealogyService = new GenealogyService();
         autoGenealogyService = new AutoGenealogyService();
         setField(autoGenealogyService, "dataDefinitionService", dataDefinitionService);
         setField(autoGenealogyService, "translationService", translationService);
+        setField(autoGenealogyService, "genealogyService", genealogyService);
     }
 
     @Test
@@ -210,29 +221,86 @@ public class AutoGenealogyServiceTest {
     }
 
     @Test
-    public void shouldAutoCreateGenealogyWitAttributes() {
+    public void shouldAutoCreateGenealogyWithoutAttributes() {
         // given
-     /*   ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        /*
+         * ComponentState state = mock(ComponentState.class); given(state.getFieldValue()).willReturn(13L);
+         * given(state.getLocale()).willReturn(Locale.ENGLISH); ViewDefinitionState viewDefinitionState =
+         * mock(ViewDefinitionState.class); Entity order = mock(Entity.class); Entity product = mock(Entity.class); Entity
+         * technology = mock(Entity.class); given(order.getBelongsToField("product")).willReturn(product);
+         * given(order.getBelongsToField("technology")).willReturn(technology);
+         * given(product.getField("batch")).willReturn("test"); given(dataDefinitionService.get("products",
+         * "order").get(13L)).willReturn(order); // List<Entity> list = new ArrayList<Entity>(); //
+         * given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities()) //
+         * .willReturn(list); given(technology.getField("shiftFeatureRequired")).willReturn(false);
+         * given(technology.getField("postFeatureRequired")).willReturn(false);
+         * given(technology.getField("otherFeatureRequired")).willReturn(false); EntityTree operationProductInComponents =
+         * prepareOperationProductInComponents();
+         * given(technology.getTreeField("operationComponents")).willReturn(operationProductInComponents);
+         * given(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", Locale.ENGLISH)).willReturn(
+         * "genealogies.message.autoGenealogy.genealogyExist.pl"); // when
+         * autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" }); // then verify(state,
+         * times(2)).getFieldValue(); verify(state).addMessage("genealogies.message.autoGenealogy.genealogyExist.pl test",
+         * MessageType.INFO);
+         */
+    }
 
-        Entity order = mock(Entity.class);
-        Entity product = mock(Entity.class);
-        Entity technology = mock(Entity.class);
-        given(order.getBelongsToField("product")).willReturn(product);
-        given(order.getBelongsToField("technology")).willReturn(technology);
-        given(product.getField("batch")).willReturn("test");
+    @SuppressWarnings("unchecked")
+    private EntityTree prepareOperationProductInComponents() {
+        List<Entity> entities = new ArrayList<Entity>();
+        List<Entity> subEntities = new ArrayList<Entity>();
+        List<Entity> productsEntities1 = new ArrayList<Entity>();
+        List<Entity> productsEntities3 = new ArrayList<Entity>();
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        productsEntities1.add(craeteOperationProductInComponent(101L, true));
+        productsEntities3.add(craeteOperationProductInComponent(103L, true));
+        productsEntities3.add(craeteOperationProductInComponent(104L, false));
 
-        given(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.genealogyExist.pl");
-        // when
-        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
+        DataDefinition treeDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        given(treeDataDefinition.find().restrictedWith(any(Restriction.class)).orderAscBy(eq("priority")).list().getEntities())
+                .willReturn(entities, subEntities);
 
-        // then
-        verify(state, times(2)).getFieldValue();
-        verify(state).addMessage("genealogies.message.autoGenealogy.genealogyExist.pl test", MessageType.INFO);*/
+        DataDefinition listDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        given(listDataDefinition.find().restrictedWith(any(Restriction.class)).list().getEntities()).willReturn(
+                productsEntities1, productsEntities3);
+
+        EntityTree subOperationComponents = new EntityTree(treeDataDefinition, "joinField", 13L);
+
+        EntityList operationProductInComponents1 = new EntityList(listDataDefinition, "joinField", 1L);
+        EntityList operationProductInComponents3 = new EntityList(listDataDefinition, "joinField", 3L);
+
+        Entity operationComponent1 = mock(Entity.class);
+        given(operationComponent1.getId()).willReturn(1L);
+        given(operationComponent1.getField("entityType")).willReturn("operation");
+        given(operationComponent1.getHasManyField("operationProductInComponents")).willReturn(operationProductInComponents1);
+        given(operationComponent1.getBelongsToField("parent")).willReturn(null);
+
+        Entity referenceTechnology = mock(Entity.class);
+        given(referenceTechnology.getTreeField("operationComponents")).willReturn(subOperationComponents);
+
+        Entity operationComponent2 = mock(Entity.class);
+        given(operationComponent2.getId()).willReturn(2L);
+        given(operationComponent2.getField("entityType")).willReturn("referenceTechnology");
+        given(operationComponent2.getBelongsToField("referenceTechnology")).willReturn(referenceTechnology);
+        given(operationComponent2.getBelongsToField("parent")).willReturn(operationComponent1);
+
+        Entity operationComponent3 = mock(Entity.class);
+        given(operationComponent3.getId()).willReturn(3L);
+        given(operationComponent3.getField("entityType")).willReturn("operation");
+        given(operationComponent3.getHasManyField("operationProductInComponents")).willReturn(operationProductInComponents3);
+        given(operationComponent3.getBelongsToField("parent")).willReturn(null);
+
+        entities.add(operationComponent1);
+        entities.add(operationComponent2);
+        subEntities.add(operationComponent3);
+
+        EntityTree operationComponents = new EntityTree(treeDataDefinition, "joinField", 13L);
+        return operationComponents;
+    }
+
+    private Entity craeteOperationProductInComponent(final Long id, final boolean batchRequired) {
+        Entity operationProductInComponent = new DefaultEntity("genealogies", "genealogyProductInComponent", id);
+        operationProductInComponent.setField("batchRequired", batchRequired);
+        return operationProductInComponent;
     }
 }
