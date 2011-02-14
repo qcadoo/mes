@@ -118,4 +118,57 @@ public class AutoGenealogyServiceTest {
         verify(state, times(2)).getFieldValue();
         verify(state).addMessage("genealogies.message.autoGenealogy.failure.product.pl", MessageType.INFO);
     }
+
+    @Test
+    public void shouldFailAutoCreateGenealogyIfTechnologyIsNull() {
+        // given
+        ComponentState state = mock(ComponentState.class);
+        given(state.getFieldValue()).willReturn(13L);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+
+        Entity order = mock(Entity.class);
+        Entity product = mock(Entity.class);
+        given(order.getBelongsToField("product")).willReturn(product);
+        given(order.getBelongsToField("technology")).willReturn(null);
+
+        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+
+        given(translationService.translate("genealogies.message.autoGenealogy.failure.product", Locale.ENGLISH)).willReturn(
+                "genealogies.message.autoGenealogy.failure.product.pl");
+        // when
+        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
+
+        // then
+        verify(state, times(2)).getFieldValue();
+        verify(state).addMessage("genealogies.message.autoGenealogy.failure.product.pl", MessageType.INFO);
+    }
+
+    @Test
+    public void shouldFailAutoCreateGenealogyIfMainBatchIsNull() {
+        // given
+        ComponentState state = mock(ComponentState.class);
+        given(state.getFieldValue()).willReturn(13L);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+
+        Entity order = mock(Entity.class);
+        Entity product = mock(Entity.class);
+        Entity technology = mock(Entity.class);
+        given(order.getBelongsToField("product")).willReturn(product);
+        given(order.getBelongsToField("technology")).willReturn(technology);
+        given(product.getField("number")).willReturn("test");
+        given(product.getField("name")).willReturn("test");
+
+        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+
+        given(translationService.translate("genealogies.message.autoGenealogy.missingMainBatch", Locale.ENGLISH)).willReturn(
+                "genealogies.message.autoGenealogy.missingMainBatch.pl");
+        // when
+        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
+
+        // then
+        verify(state, times(2)).getFieldValue();
+        verify(state).addMessage("genealogies.message.autoGenealogy.missingMainBatch.pltest-test", MessageType.INFO, false);
+    }
 }

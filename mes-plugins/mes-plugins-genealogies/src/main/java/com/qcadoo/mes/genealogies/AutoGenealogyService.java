@@ -163,8 +163,8 @@ public class AutoGenealogyService {
     }
 
     private void createGenealogy(final ComponentState state, final Entity order, final boolean lastUsedMode) {
-        Entity mainProduct = (Entity) order.getField("product");
-        Entity technology = (Entity) order.getField("technology");
+        Entity mainProduct = order.getBelongsToField("product");
+        Entity technology = order.getBelongsToField("technology");
         if (mainProduct == null || technology == null) {
             state.addMessage(
                     translationService.translate("genealogies.message.autoGenealogy.failure.product", state.getLocale()),
