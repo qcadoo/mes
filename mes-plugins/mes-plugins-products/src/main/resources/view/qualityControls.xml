@@ -100,6 +100,11 @@
 			<component type="form" name="qualityControlForOrder" reference="form">
 				<script>
 					<![CDATA[
+						var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
+						var cancel = #{window}.getRibbonItem("actions.cancel");
+						var del = #{window}.getRibbonItem("actions.delete");
 						var qualityControlStatus = #{window}.getRibbonItem("controlStatus.closeControl");
 
 						this.addOnChangeListener({
@@ -107,8 +112,18 @@
 								var closed = #{closed}.getValue().content.value;
 								if (closed && closed == false) {
 									qualityControlStatus.enable();
+									save.enable();
+									saveBack.enable();
+									saveNew.enable();
+									cancel.enable();
+									del.enable();
 								} else {
 									qualityControlStatus.disable();
+									save.disable();
+									saveBack.disable();
+									saveNew.disable();
+									cancel.disable();
+									del.disable();									
 								}
 							}
 						});
@@ -135,7 +150,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="4" height="1">
 						<component type="select" name="controlResult" field="controlResult" reference="controlResult">
-							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkQualityControlResult"/>
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.QualityControlService" method="checkQualityControlResult"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5" height="2">
@@ -150,7 +165,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="11">
-						<component type="input" name="date" field="date" defaultEnabled="false">
+						<component type="input" name="date" field="date" reference="date" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
@@ -160,7 +175,7 @@
 				<option type="expression" value="#name" />
 			</component>
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentIsRequiredBasedOnResult"/>
+		<preRenderHook bean="com.qcadoo.mes.products.QualityControlService" method="checkIfCommentIsRequiredBasedOnResult"/>
 	</view>
 	<view name="qualityControlsForUnit" model="qualityForUnit" menuAccessible="true">
 		<component type="window" name="window" reference="window">
@@ -236,6 +251,11 @@
 			<component type="form" name="qualityControlForUnit" reference="form">
 				<script>
 					<![CDATA[
+						var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
+						var cancel = #{window}.getRibbonItem("actions.cancel");
+						var del = #{window}.getRibbonItem("actions.delete");
 						var qualityControlStatus = #{window}.getRibbonItem("controlStatus.closeControl");
 
 						this.addOnChangeListener({
@@ -243,8 +263,18 @@
 								var closed = #{closed}.getValue().content.value;
 								if (closed && closed == false) {
 									qualityControlStatus.enable();
+									save.enable();
+									saveBack.enable();
+									saveNew.enable();
+									cancel.enable();
+									del.enable();
 								} else {
 									qualityControlStatus.disable();
+									save.disable();
+									saveBack.disable();
+									saveNew.disable();
+									cancel.disable();
+									del.disable();									
 								}
 							}
 						});
@@ -277,7 +307,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="6">
 						<component type="input" name="acceptedDefectsQuantity" field="acceptedDefectsQuantity" reference="acceptedDefectsQuantity">
-							<listener event="onInputChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkAcceptedDefectsQuantity"/>
+							<listener event="onInputChange" bean="com.qcadoo.mes.products.QualityControlService" method="checkAcceptedDefectsQuantity"/>
 						</component>
 					</layoutElement>										
 					<layoutElement column="1" row="7" height="2">
@@ -289,7 +319,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="10">
-						<component type="input" name="date" field="date" defaultEnabled="false">
+						<component type="input" name="date" field="date" reference="date" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
@@ -302,7 +332,7 @@
 				<option type="expression" value="#name" />
 			</component>
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
+		<preRenderHook bean="com.qcadoo.mes.products.QualityControlService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
 	</view>	
 	<view name="qualityControlsForBatch" model="qualityForBatch" menuAccessible="true">
 		<component type="window" name="window" reference="window">
@@ -379,6 +409,11 @@
 			<component type="form" name="qualityControlForBatch" reference="form">
 				<script>
 					<![CDATA[
+						var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
+						var cancel = #{window}.getRibbonItem("actions.cancel");
+						var del = #{window}.getRibbonItem("actions.delete");
 						var qualityControlStatus = #{window}.getRibbonItem("controlStatus.closeControl");
 
 						this.addOnChangeListener({
@@ -386,8 +421,18 @@
 								var closed = #{closed}.getValue().content.value;
 								if (closed && closed == false) {
 									qualityControlStatus.enable();
+									save.enable();
+									saveBack.enable();
+									saveNew.enable();
+									cancel.enable();
+									del.enable();
 								} else {
 									qualityControlStatus.disable();
+									save.disable();
+									saveBack.disable();
+									saveNew.disable();
+									cancel.disable();
+									del.disable();									
 								}
 							}
 						});
@@ -423,7 +468,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="7">
 						<component type="input" name="acceptedDefectsQuantity" field="acceptedDefectsQuantity" reference="acceptedDefectsQuantity">
-							<listener event="onInputChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkAcceptedDefectsQuantity"/>
+							<listener event="onInputChange" bean="com.qcadoo.mes.products.QualityControlService" method="checkAcceptedDefectsQuantity"/>
 						</component>
 					</layoutElement>										
 					<layoutElement column="1" row="8" height="2">
@@ -435,7 +480,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="11">
-						<component type="input" name="date" field="date" defaultEnabled="false">
+						<component type="input" name="date" reference="date" field="date" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
@@ -448,7 +493,7 @@
 				<option type="expression" value="#name" />
 			</component>
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
+		<preRenderHook bean="com.qcadoo.mes.products.QualityControlService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
 	</view>	
 	<view name="qualityControlsForOperation" model="qualityForOperation" menuAccessible="true">
 		<component type="window" name="window" reference="window">
@@ -526,6 +571,11 @@
 			<component type="form" name="qualityControlForOperation" reference="form">
 				<script>
 					<![CDATA[
+						var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
+						var cancel = #{window}.getRibbonItem("actions.cancel");
+						var del = #{window}.getRibbonItem("actions.delete");
 						var qualityControlStatus = #{window}.getRibbonItem("controlStatus.closeControl");
 
 						this.addOnChangeListener({
@@ -533,8 +583,18 @@
 								var closed = #{closed}.getValue().content.value;
 								if (closed && closed == false) {
 									qualityControlStatus.enable();
+									save.enable();
+									saveBack.enable();
+									saveNew.enable();
+									cancel.enable();
+									del.enable();
 								} else {
 									qualityControlStatus.disable();
+									save.disable();
+									saveBack.disable();
+									saveNew.disable();
+									cancel.disable();
+									del.disable();									
 								}
 							}
 						});
@@ -569,7 +629,7 @@
 					</layoutElement>					
 					<layoutElement column="1" row="5" >
 						<component type="select" name="controlResult" field="controlResult" reference="controlResult">
-							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkQualityControlResult"/>
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.QualityControlService" method="checkQualityControlResult"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="6" height="2">
@@ -581,6 +641,6 @@
 				<option type="expression" value="#name" />
 			</component>
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentIsRequiredBasedOnResult"/>
+		<preRenderHook bean="com.qcadoo.mes.products.QualityControlService" method="checkIfCommentIsRequiredBasedOnResult"/>
 	</view>		
 </qcd:views>
