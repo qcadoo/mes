@@ -66,8 +66,6 @@ public final class OrderService {
 
     public boolean clearOrderDatesAndWorkersOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("state", "01pending");
-        entity.setField("effectiveDateFrom", new Date());
-        entity.setField("startWorker", securityService.getCurrentUserName());
         entity.setField("effectiveDateTo", null);
         entity.setField("endWorker", null);
         entity.setField("effectiveDateFrom", null);
@@ -193,7 +191,7 @@ public final class OrderService {
         }
     }
 
-    private boolean checkIfAllQualityControlsAreClosed(Entity order) {
+    private boolean checkIfAllQualityControlsAreClosed(final Entity order) {
 
         String controlType = order.getBelongsToField("technology").getField("qualityControlType").toString();
 
