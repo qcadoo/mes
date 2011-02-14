@@ -149,6 +149,12 @@ public final class OrderService {
                         return;
                     }
 
+                    if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
+                        state.addMessage(translationService.translate("products.qualityControl.not.closed", state.getLocale()),
+                                MessageType.FAILURE);
+                        return;
+                    }
+
                     orderState.setFieldValue("03done");
                 }
 
@@ -160,6 +166,12 @@ public final class OrderService {
                     if (!checkRequiredBatch(order)) {
                         state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
                                 MessageType.INFO);
+                        return;
+                    }
+
+                    if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
+                        state.addMessage(translationService.translate("products.qualityControl.not.closed", state.getLocale()),
+                                MessageType.FAILURE);
                         return;
                     }
 
@@ -178,6 +190,46 @@ public final class OrderService {
                 state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
                         MessageType.FAILURE);
             }
+        }
+    }
+
+    private boolean checkIfAllQualityControlsAreClosed(Entity order) {
+
+        String controlType = order.getBelongsToField("technology").getField("qualityControlType").toString();
+
+        DataDefinition qualityControlDD = null;
+
+        if (controlType.equals("01forBatch")) {
+            qualityControlDD = dataDefinitionService.get("products", "qualityForBatch");
+        } else if (controlType.equals("02forUnit")) {
+            qualityControlDD = dataDefinitionService.get("products", "qualityForUnit");
+        } else if (controlType.equals("03forOrder")) {
+            qualityControlDD = dataDefinitionService.get("products", "qualityForOrder");
+        } else if (controlType.equals("04forOperation")) {
+            qualityControlDD = dataDefinitionService.get("products", "qualityForOperation");
+        }
+
+        SearchCriteriaBuilder searchCriteria = qualityControlDD.find()
+                .restrictedWith(Restrictions.belongsTo(qualityControlDD.getField("order"), order.getId()))
+                .restrictedWith(Restrictions.eq("closed", false));
+
+        SearchResult searchResult = searchCriteria.list();
+
+        return (searchResult.getTotalNumberOfEntities() <= 0);
+    }
+
+    private boolean isQualityControlAutoCheckEnabled() {
+        SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list();
+
+        Entity parameter = null;
+        if (searchResult.getEntities().size() > 0) {
+            parameter = searchResult.getEntities().get(0);
+        }
+
+        if (parameter != null) {
+            return (Boolean) parameter.getField("checkDoneOrderForQuality");
+        } else {
+            return false;
         }
     }
 
@@ -369,7 +421,7 @@ public final class OrderService {
                 if ((Boolean) technology.getField("otherFeatureRequired")) {
                     return false;
                 }
-                for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
+                for (Entity operationComponent : technology.getTreeField("operationComponents")) {
                     for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                         if ((Boolean) operationProductComponent.getField("batchRequired")) {
                             return false;

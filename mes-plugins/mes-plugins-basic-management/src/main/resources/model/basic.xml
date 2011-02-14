@@ -61,6 +61,9 @@
 		<boolean name="checkDoneOrderForQuality">
 			<validatesPresence />
 		</boolean>
+		<boolean name="autoGenerateQualityControl">
+			<validatesPresence />
+		</boolean>
 		<enum name="batchForDoneOrder" values="01active,02lastUsed">
 			<validatesPresence />
 		</enum>

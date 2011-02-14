@@ -21,7 +21,9 @@ import com.qcadoo.mes.products.util.NumberGeneratorService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.mes.view.components.grid.GridComponentState;
 
 @Service
 public class QualityControlService {
@@ -37,6 +39,39 @@ public class QualityControlService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    public void closeQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (state.getFieldValue() != null) {
+
+            String controlType = args[0];
+
+            DataDefinition qualityControlDD = dataDefinitionService.get("products", controlType);
+            Entity qualityControl = qualityControlDD.get((Long) state.getFieldValue());
+            if (state instanceof FormComponentState) {
+                FieldComponentState closed = (FieldComponentState) viewDefinitionState.getComponentByReference("closed");
+
+                closed.setFieldValue(true);
+
+                ((FormComponentState) state).performEvent(viewDefinitionState, "save", new String[0]);
+            } else if (state instanceof GridComponentState) {
+                qualityControl.setField("closed", true);
+                qualityControlDD.save(qualityControl);
+
+                ((GridComponentState) state).performEvent(viewDefinitionState, "refresh", new String[0]);
+            }
+
+            state.addMessage(translationService.translate("products.quality.control.closed.success", state.getLocale()),
+                    MessageType.SUCCESS);
+        } else {
+            if (state instanceof FormComponentState) {
+                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                        MessageType.FAILURE);
+            }
+        }
+    }
 
     public void autoGenerateQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -55,7 +90,7 @@ public class QualityControlService {
         }
 
         if (parameter != null) {
-            return (Boolean) parameter.getField("checkDoneOrderForQuality");
+            return (Boolean) parameter.getField("autoGenerateQualityControl");
         } else {
             return false;
         }
@@ -82,6 +117,11 @@ public class QualityControlService {
             String qualityControlType = technology.getField("qualityControlType").toString();
 
             generateQualityControlForGivenType(qualityControlType, technology, order);
+
+            state.addMessage(translationService.translate("products.qualityControl.generated.success", state.getLocale()),
+                    MessageType.SUCCESS);
+
+            state.performEvent(viewDefinitionState, "refresh", new String[0]);
 
         } else {
             if (state instanceof FormComponentState) {
@@ -115,6 +155,7 @@ public class QualityControlService {
                 Entity forUnit = new DefaultEntity("products", "qualityForUnit");
                 forUnit.setField("order", order);
                 forUnit.setField("number", numberGeneratorService.generateNumber("qualityForUnit"));
+                forUnit.setField("closed", false);
 
                 if (i < numberOfControls.intValue()) {
                     forUnit.setField("controlledQuantity", sampling);
@@ -122,6 +163,10 @@ public class QualityControlService {
                     BigDecimal numberOfRemainders = doneQuantity != null ? doneQuantity.divideAndRemainder(sampling)[1]
                             : plannedQuantity.divideAndRemainder(sampling)[1];
                     forUnit.setField("controlledQuantity", numberOfRemainders);
+
+                    if (numberOfRemainders.compareTo(new BigDecimal("0")) < 1) {
+                        return;
+                    }
                 }
                 forUnit.setField("staff", securityService.getCurrentUserName());
                 forUnit.setField("date", new Date());
@@ -149,6 +194,7 @@ public class QualityControlService {
         forOperation.setField("order", order);
         forOperation.setField("number", numberGeneratorService.generateNumber("qualityForOperation"));
         forOperation.setField("operation", entity.getBelongsToField("operation"));
+        forOperation.setField("closed", false);
 
         qualityForOperationDataDefinition.save(forOperation);
     }
@@ -161,6 +207,7 @@ public class QualityControlService {
         forOrder.setField("number", numberGeneratorService.generateNumber("qualityForOrder"));
         forOrder.setField("staff", securityService.getCurrentUserName());
         forOrder.setField("date", new Date());
+        forOrder.setField("closed", false);
 
         qualityForOrderDataDefinition.save(forOrder);
     }
@@ -172,6 +219,7 @@ public class QualityControlService {
         forBatch.setField("order", order);
         forBatch.setField("number", numberGeneratorService.generateNumber("qualityForBatch"));
         forBatch.setField("batchNr", genealogy.getField("batch"));
+        forBatch.setField("closed", false);
 
         BigDecimal doneQuantity = (BigDecimal) order.getField("doneQuantity");
         BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
