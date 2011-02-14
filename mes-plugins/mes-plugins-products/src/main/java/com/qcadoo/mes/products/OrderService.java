@@ -209,13 +209,17 @@ public final class OrderService {
             qualityControlDD = dataDefinitionService.get("products", "qualityForOperation");
         }
 
-        SearchCriteriaBuilder searchCriteria = qualityControlDD.find()
-                .restrictedWith(Restrictions.belongsTo(qualityControlDD.getField("order"), order.getId()))
-                .restrictedWith(Restrictions.eq("closed", false));
+        if (qualityControlDD != null) {
+            SearchCriteriaBuilder searchCriteria = qualityControlDD.find()
+                    .restrictedWith(Restrictions.belongsTo(qualityControlDD.getField("order"), order.getId()))
+                    .restrictedWith(Restrictions.eq("closed", false));
 
-        SearchResult searchResult = searchCriteria.list();
+            SearchResult searchResult = searchCriteria.list();
 
-        return (searchResult.getTotalNumberOfEntities() <= 0);
+            return (searchResult.getTotalNumberOfEntities() <= 0);
+        } else {
+            return false;
+        }
     }
 
     private boolean isQualityControlAutoCheckEnabled() {
