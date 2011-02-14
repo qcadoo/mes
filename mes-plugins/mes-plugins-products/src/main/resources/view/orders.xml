@@ -282,7 +282,9 @@
 									}
 								}
 								if (value && value.content && ! value.content.entityId) {
+									activateOrder.disable();
 									genealogy.disable();
+									genQualityControl.disable();
 								} else {
 									genealogy.enable();
 									newGenealogy.enable();
