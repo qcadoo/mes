@@ -1,5 +1,6 @@
 package com.qcadoo.mes.products;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
@@ -131,5 +132,29 @@ public class QualityControlServiceTest {
 
         // then
         assertNotNull(entity.getErrors());
+    }
+
+    @Test
+    @Ignore
+    public void shouldCloseQualityControl() {
+        // given
+        FormComponentState form = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        ViewDefinitionState state = mock(ViewDefinitionState.class, Mockito.RETURNS_DEEP_STUBS);
+
+        FieldComponentState controlResult = mock(FieldComponentState.class);
+        FieldComponentState closed = mock(FieldComponentState.class);
+        FieldComponentState staff = mock(FieldComponentState.class);
+        FieldComponentState date = mock(FieldComponentState.class);
+
+        given(form.getFieldValue()).willReturn(7L);
+        given(state.getComponentByReference("controlResult")).willReturn(controlResult);
+        given(state.getComponentByReference("closed")).willReturn(closed);
+        given(controlResult.getFieldValue()).willReturn("03objection");
+
+        // when
+        qualityControlService.closeQualityControl(state, form, new String[] { "qualityForOrder" });
+
+        // then
+        assertEquals(true, closed.getFieldValue());
     }
 }

@@ -128,12 +128,10 @@ public class QualityControlService {
 
         FieldComponentState comment = (FieldComponentState) viewDefinitionState.getComponentByReference("comment");
 
-        if (resultType.getFieldValue() != null) {
-            if (resultType.getFieldValue().equals("03objection")) {
-                comment.setRequired(true);
-            } else {
-                comment.setRequired(false);
-            }
+        if (resultType.getFieldValue() != null && resultType.getFieldValue().equals("03objection")) {
+            comment.setRequired(true);
+        } else {
+            comment.setRequired(false);
         }
     }
 
