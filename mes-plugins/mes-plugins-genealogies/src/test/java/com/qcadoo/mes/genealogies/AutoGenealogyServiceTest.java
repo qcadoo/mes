@@ -7,6 +7,8 @@ import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.Before;
@@ -18,6 +20,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -170,5 +173,66 @@ public class AutoGenealogyServiceTest {
         // then
         verify(state, times(2)).getFieldValue();
         verify(state).addMessage("genealogies.message.autoGenealogy.missingMainBatch.pltest-test", MessageType.INFO, false);
+    }
+
+    @Test
+    public void shouldFailAutoCreateGenealogyIfExistingGenealogyWithBatch() {
+        // given
+        ComponentState state = mock(ComponentState.class);
+        given(state.getFieldValue()).willReturn(13L);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+
+        Entity order = mock(Entity.class);
+        Entity product = mock(Entity.class);
+        Entity technology = mock(Entity.class);
+        given(order.getBelongsToField("product")).willReturn(product);
+        given(order.getBelongsToField("technology")).willReturn(technology);
+        given(product.getField("batch")).willReturn("test");
+
+        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+
+        List<Entity> list = new ArrayList<Entity>();
+        list.add(mock(Entity.class));
+        given(
+                dataDefinitionService.get("genealogies", "genealogy").find().restrictedWith(Restrictions.eq("batch", "test"))
+                        .restrictedWith(Restrictions.eq("order.id", order.getId())).withMaxResults(1).list().getEntities())
+                .willReturn(list);
+
+        given(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", Locale.ENGLISH)).willReturn(
+                "genealogies.message.autoGenealogy.genealogyExist.pl");
+        // when
+        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
+
+        // then
+        verify(state, times(2)).getFieldValue();
+        verify(state).addMessage("genealogies.message.autoGenealogy.genealogyExist.pl test", MessageType.INFO);
+    }
+
+    @Test
+    public void shouldAutoCreateGenealogyWitAttributes() {
+        // given
+        ComponentState state = mock(ComponentState.class);
+        given(state.getFieldValue()).willReturn(13L);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+
+        Entity order = mock(Entity.class);
+        Entity product = mock(Entity.class);
+        Entity technology = mock(Entity.class);
+        given(order.getBelongsToField("product")).willReturn(product);
+        given(order.getBelongsToField("technology")).willReturn(technology);
+        given(product.getField("batch")).willReturn("test");
+
+        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+
+        given(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", Locale.ENGLISH)).willReturn(
+                "genealogies.message.autoGenealogy.genealogyExist.pl");
+        // when
+        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
+
+        // then
+        verify(state, times(2)).getFieldValue();
+        verify(state).addMessage("genealogies.message.autoGenealogy.genealogyExist.pl test", MessageType.INFO);
     }
 }
