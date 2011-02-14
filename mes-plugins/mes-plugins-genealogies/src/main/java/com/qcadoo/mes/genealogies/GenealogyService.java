@@ -26,11 +26,6 @@ public final class GenealogyService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    // public void newBatch(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String[] args)
-    // {
-    // ((GridComponentState) viewDefinitionState.getComponentByReference("grid")).setSelectedEntityId(null);
-    // }
-
     public void showGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
         Long orderId = (Long) triggerState.getFieldValue();
