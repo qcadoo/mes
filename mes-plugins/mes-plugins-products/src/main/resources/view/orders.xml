@@ -76,7 +76,7 @@
 					<bigButton name="newGenealogy" action="#{grid}.fireEvent(newGenealogy);" icon="genealogyIcon24.png" state="disabled" />
 				</group>
 				<group name="qualityContol">
-					<bigButton name="generateQualityControl" action="#{grid}.fireEvent(generateQualityControl);" icon="genealogyIcon24.png" state="disabled" />
+					<bigButton name="generateQualityControl" action="#{grid}.fireEvent(generateQualityControl);" icon="qualityControlIcon24.png" state="disabled" />
 				</group>
 			</ribbon>
 			<component type="grid" name="orders" reference="grid">
@@ -231,7 +231,7 @@
 					<bigButton name="newGenealogy" action="#{form}.fireEvent(newGenealogy);" icon="genealogyIcon24.png" state="disabled" />
 				</group>
 				<group name="qualityContol">
-					<bigButton name="generateQualityControl" action="#{form}.fireEvent(generateQualityControl);" icon="genealogyIcon24.png" state="disabled" />
+					<bigButton name="generateQualityControl" action="#{form}.fireEvent(generateQualityControl);" icon="qualityControlIcon24.png" state="disabled" />
 				</group>
 			</ribbon>
 			<component type="form" name="order" reference="form">

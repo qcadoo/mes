@@ -1,8 +1,10 @@
 package com.qcadoo.mes.products;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.util.NumberGeneratorService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
@@ -24,6 +27,7 @@ import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
+import com.qcadoo.mes.view.components.select.SelectComponentState;
 
 @Service
 public class QualityControlService {
@@ -47,13 +51,27 @@ public class QualityControlService {
 
             DataDefinition qualityControlDD = dataDefinitionService.get("products", controlType);
             Entity qualityControl = qualityControlDD.get((Long) state.getFieldValue());
+
             if (state instanceof FormComponentState) {
                 FieldComponentState closed = (FieldComponentState) viewDefinitionState.getComponentByReference("closed");
+
+                FieldComponentState staff = (FieldComponentState) viewDefinitionState.getComponentByReference("staff");
+                FieldComponentState date = (FieldComponentState) viewDefinitionState.getComponentByReference("date");
+
+                if (staff != null) {
+                    staff.setFieldValue(securityService.getCurrentUserName());
+                }
+
+                if (date != null) {
+                    date.setFieldValue(new SimpleDateFormat(DateType.DATE_FORMAT).format(new Date()));
+                }
 
                 closed.setFieldValue(true);
 
                 ((FormComponentState) state).performEvent(viewDefinitionState, "save", new String[0]);
             } else if (state instanceof GridComponentState) {
+                qualityControl.setField("staff", securityService.getCurrentUserName());
+                qualityControl.setField("date", new Date());
                 qualityControl.setField("closed", true);
                 qualityControlDD.save(qualityControl);
 
@@ -78,21 +96,6 @@ public class QualityControlService {
         boolean inProgressState = Boolean.parseBoolean(args[0]);
         if (inProgressState && isQualityControlAutoGenEnabled()) {
             generateQualityControl(viewDefinitionState, state, args);
-        }
-    }
-
-    private boolean isQualityControlAutoGenEnabled() {
-        SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list();
-
-        Entity parameter = null;
-        if (searchResult.getEntities().size() > 0) {
-            parameter = searchResult.getEntities().get(0);
-        }
-
-        if (parameter != null) {
-            return (Boolean) parameter.getField("autoGenerateQualityControl");
-        } else {
-            return false;
         }
     }
 
@@ -134,6 +137,142 @@ public class QualityControlService {
         }
     }
 
+    public void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state, final Locale locale) {
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        if (form.getFieldValue() != null) {
+            FieldComponentState comment = (FieldComponentState) state.getComponentByReference("comment");
+
+            FieldComponentState controlResult = (FieldComponentState) state.getComponentByReference("controlResult");
+
+            if (controlResult != null && controlResult.getFieldValue().equals("03objection")) {
+                comment.setRequired(true);
+                comment.requestComponentUpdateState();
+            } else {
+                comment.setRequired(false);
+            }
+        }
+    }
+
+    public void checkIfCommentIsRequiredBasedOnDefects(final ViewDefinitionState state, final Locale locale) {
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        if (form.getFieldValue() != null) {
+
+            FieldComponentState comment = (FieldComponentState) state.getComponentByReference("comment");
+
+            FieldComponentState acceptedDefectsQuantity = (FieldComponentState) state
+                    .getComponentByReference("acceptedDefectsQuantity");
+
+            if (acceptedDefectsQuantity.getFieldValue() != null
+                    && (new BigDecimal(acceptedDefectsQuantity.getFieldValue().toString().replace(",", "."))
+                            .compareTo(BigDecimal.ZERO) > 0)) {
+                comment.setRequired(true);
+                comment.requestComponentUpdateState();
+            } else {
+                comment.setRequired(false);
+            }
+        }
+    }
+
+    public void checkQualityControlResult(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (!(state instanceof SelectComponentState)) {
+            throw new IllegalStateException("component is not select");
+        }
+
+        SelectComponentState resultType = (SelectComponentState) state;
+
+        FieldComponentState comment = (FieldComponentState) viewDefinitionState.getComponentByReference("comment");
+
+        if (resultType.getFieldValue() != null) {
+            if (resultType.getFieldValue().equals("03objection")) {
+                comment.setRequired(true);
+            } else {
+                comment.setRequired(false);
+            }
+        }
+    }
+
+    public boolean checkIfCommentForResultIsReq(final DataDefinition dataDefinition, final Entity entity) {
+        String resultType = (String) entity.getField("controlResult");
+
+        if (resultType != null && resultType.equals("03objection")) {
+
+            String comment = (String) entity.getField("comment");
+            if (comment == null || comment.isEmpty()) {
+                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addError(dataDefinition.getField("comment"), "products.quality.control.validate.global.error.comment");
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkIfCommentForQuantityIsReq(final DataDefinition dataDefinition, final Entity entity) {
+        BigDecimal acceptedDefectsQuantity = (BigDecimal) entity.getField("acceptedDefectsQuantity");
+
+        if (acceptedDefectsQuantity != null) {
+            String comment = (String) entity.getField("comment");
+
+            if ((comment == null || comment.isEmpty()) && acceptedDefectsQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addError(dataDefinition.getField("comment"), "products.quality.control.validate.global.error.comment");
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    public void checkAcceptedDefectsQuantity(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (!(state instanceof FieldComponentState)) {
+            throw new IllegalStateException("component is not input");
+        }
+
+        FieldComponentState acceptedDefectsQuantity = (FieldComponentState) state;
+
+        FieldComponentState comment = (FieldComponentState) viewDefinitionState.getComponentByReference("comment");
+
+        if (acceptedDefectsQuantity.getFieldValue() != null) {
+            if (isNumber(acceptedDefectsQuantity.getFieldValue().toString())
+                    && (new BigDecimal(acceptedDefectsQuantity.getFieldValue().toString())).compareTo(BigDecimal.ZERO) > 0) {
+                comment.setRequired(true);
+            } else {
+                comment.setRequired(false);
+            }
+        }
+    }
+
+    private boolean isNumber(final String value) {
+        try {
+            new BigDecimal(value);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isQualityControlAutoGenEnabled() {
+        SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list();
+
+        Entity parameter = null;
+        if (searchResult.getEntities().size() > 0) {
+            parameter = searchResult.getEntities().get(0);
+        }
+
+        if (parameter != null) {
+            return (Boolean) parameter.getField("autoGenerateQualityControl");
+        } else {
+            return false;
+        }
+    }
+
     private void generateQualityControlForGivenType(final String qualityControlType, final Entity technology, final Entity order) {
         if (qualityControlType.equals("01forBatch")) {
             List<Entity> genealogies = getGenealogiesForOrder(order.getId());
@@ -168,8 +307,6 @@ public class QualityControlService {
                         return;
                     }
                 }
-                forUnit.setField("staff", securityService.getCurrentUserName());
-                forUnit.setField("date", new Date());
 
                 qualityForUnitDataDefinition.save(forUnit);
             }
@@ -205,8 +342,6 @@ public class QualityControlService {
         Entity forOrder = new DefaultEntity("products", "qualityForOrder");
         forOrder.setField("order", order);
         forOrder.setField("number", numberGeneratorService.generateNumber("qualityForOrder"));
-        forOrder.setField("staff", securityService.getCurrentUserName());
-        forOrder.setField("date", new Date());
         forOrder.setField("closed", false);
 
         qualityForOrderDataDefinition.save(forOrder);
@@ -229,9 +364,6 @@ public class QualityControlService {
         } else if (plannedQuantity != null) {
             forBatch.setField("controlledQuantity", plannedQuantity);
         }
-
-        forBatch.setField("staff", securityService.getCurrentUserName());
-        forBatch.setField("date", new Date());
 
         qualityForBatchDataDefinition.save(forBatch);
     }
