@@ -36,7 +36,7 @@
 							<![CDATA[
 								this.addOnChangeListener({
 									onClick: function() {
-										if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
+										if (window.confirm("#{translate(products.qualityControl.window.ribbon.status.closeControl.confirm)}")) {
 											#{grid}.performEvent('closeQualityControl', ['qualityForOrder']);
 										};
 									}
@@ -63,12 +63,14 @@
 					]]>
 				</script>
 				<option type="column" name="number" fields="number" link="true"/>
+				<option type="column" name="order" fields="order"
+					expression="#order['number']" link="true"/>
 				<option type="column" name="closed" fields="closed" link="false" width="100"/>
-				<option type="order" column="closed,number" direction="desc"/>
+				<option type="order" column="number,order,closed" direction="desc"/>
 				<option type="correspondingView" value="products/qualityControlForOrder"/>
 				<option type="correspondingComponent" value="form" />
-				<option type="searchable" value="closed,number"/>
-				<option type="orderable" value="closed,number"/>
+				<option type="searchable" value="number,order,closed"/>
+				<option type="orderable" value="number,order,closed"/>
 				<option type="fullscreen" value="true" />
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.products.QualityControlService" method="closeQualityControl"/>
 			</component>
@@ -87,7 +89,7 @@
 							<![CDATA[
 								this.addOnChangeListener({
 									onClick: function() {
-										if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
+										if (window.confirm("#{translate(products.qualityControl.window.ribbon.status.closeControl.confirm)}")) {
 											#{form}.performEvent('closeQualityControl', ['qualityForOrder']);
 										};
 									}
@@ -125,13 +127,17 @@
 									cancel.disable();
 									del.disable();									
 								}
+								
+								if (value && value.content && !value.content.entityId) {
+									qualityControlStatus.disable();
+								}
 							}
 						});
 					]]>
 				</script>
 				<component type="gridLayout" name="gridsLayout" columns="3" rows="11">
 					<layoutElement column="1" row="1">
-						<component type="checkbox" name="closed" field="closed" reference="closed" defaultEnabled="false"/>
+						<component type="input" name="number" field="number"/>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="lookup" name="order" reference="order"
@@ -143,21 +149,22 @@
 							<option type="orderable" value="number,name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.QualityControlService" method="setQualityControlInstruction"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="input" name="number" field="number"/>
-					</layoutElement>
-					<layoutElement column="1" row="4" height="1">
 						<component type="select" name="controlResult" field="controlResult" reference="controlResult">
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.QualityControlService" method="checkQualityControlResult"/>
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="5" height="2">
+					<layoutElement column="1" row="4" height="2">
 						<component type="textarea" name="comment" field="comment" reference="comment" />
 					</layoutElement>
+					<layoutElement column="1" row="6">
+						<component type="checkbox" name="closed" field="closed" reference="closed" defaultEnabled="false"/>
+					</layoutElement>
 					<layoutElement column="1" row="7" height="3">
-						<component type="textarea" name="controlInstruction" field="controlInstruction" />
+						<component type="textarea" name="controlInstruction" field="controlInstruction" reference="controlInstruction" defaultEnabled="false"/>
 					</layoutElement>
 					<layoutElement column="1" row="10">
 						<component type="input" name="staff" field="staff" reference="staff" defaultEnabled="false">
@@ -187,7 +194,7 @@
 							<![CDATA[
 								this.addOnChangeListener({
 									onClick: function() {
-										if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
+										if (window.confirm("#{translate(products.qualityControl.window.ribbon.status.closeControl.confirm)}")) {
 											#{grid}.performEvent('closeQualityControl', ['qualityForUnit']);
 										};
 									}
@@ -214,13 +221,15 @@
 					]]>
 				</script>							
 				<option type="column" name="number" fields="number" link="true"/>
+				<option type="column" name="order" fields="order"
+					expression="#order['number']" link="true"/>
 				<option type="column" name="controlledQuantity" fields="controlledQuantity" link="true"/>
 				<option type="column" name="closed" fields="closed" link="false" width="100"/>
-				<option type="order" column="number,controlledQuantity,closed" direction="desc"/>
+				<option type="order" column="number,order,controlledQuantity,closed" direction="desc"/>
 				<option type="correspondingView" value="products/qualityControlForUnit"/>
 				<option type="correspondingComponent" value="form" />
-				<option type="searchable" value="number,controlledQuantity,closed"/>
-				<option type="orderable" value="number,controlledQuantity,closed"/>
+				<option type="searchable" value="number,order,controlledQuantity,closed"/>
+				<option type="orderable" value="number,order,controlledQuantity,closed"/>
 				<option type="fullscreen" value="true" />
 			</component>
 			<option type="fixedHeight" value="true" />
@@ -238,7 +247,7 @@
 							<![CDATA[
 								this.addOnChangeListener({
 									onClick: function() {
-										if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
+										if (window.confirm("#{translate(products.qualityControl.window.ribbon.status.closeControl.confirm)}")) {
 											#{form}.performEvent('closeQualityControl', ['qualityForOrder']);
 										};
 									}
@@ -276,14 +285,18 @@
 									cancel.disable();
 									del.disable();									
 								}
+								
+								if (value && value.content && !value.content.entityId) {
+									qualityControlStatus.disable();
+								}
 							}
 						});
 					]]>				
 				</script>			
 				<component type="gridLayout" name="gridsLayout" columns="3" rows="13">
 					<layoutElement column="1" row="1">
-						<component type="checkbox" name="closed" field="closed" reference="closed" defaultEnabled="false"/>
-					</layoutElement>				
+						<component type="input" name="number" field="number"/>
+					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="lookup" name="order" reference="order"
 							field="order">
@@ -294,25 +307,26 @@
 							<option type="orderable" value="number,name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.QualityControlService" method="setQualityControlInstruction"/>
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="3">
-						<component type="input" name="number" field="number"/>
-					</layoutElement>
-					<layoutElement column="1" row="4">
-						<component type="input" name="controlledQuantity" field="controlledQuantity" />
+					<layoutElement column="1" row="3" height="2">
+						<component type="textarea" name="comment" field="comment" reference="comment" />
 					</layoutElement>
 					<layoutElement column="1" row="5">
+						<component type="checkbox" name="closed" field="closed" reference="closed" defaultEnabled="false"/>
+					</layoutElement>				
+					<layoutElement column="1" row="6">
+						<component type="input" name="controlledQuantity" field="controlledQuantity" />
+					</layoutElement>
+					<layoutElement column="1" row="7">
 						<component type="input" name="rejectedQuantity" field="rejectedQuantity" />
 					</layoutElement>
-					<layoutElement column="1" row="6">
+					<layoutElement column="1" row="8">
 						<component type="input" name="acceptedDefectsQuantity" field="acceptedDefectsQuantity" reference="acceptedDefectsQuantity">
 							<listener event="onInputChange" bean="com.qcadoo.mes.products.QualityControlService" method="checkAcceptedDefectsQuantity"/>
 						</component>
 					</layoutElement>										
-					<layoutElement column="1" row="7" height="2">
-						<component type="textarea" name="comment" field="comment" reference="comment" />
-					</layoutElement>
 					<layoutElement column="1" row="9">
 						<component type="input" name="staff" field="staff" reference="staff" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
@@ -324,7 +338,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="11" height="3">
-						<component type="textarea" name="controlInstruction" field="controlInstruction" />
+						<component type="textarea" name="controlInstruction" reference="controlInstruction" field="controlInstruction" defaultEnabled="false"/>
 					</layoutElement>
 				</component>
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.products.QualityControlService" method="closeQualityControl"/>
@@ -344,7 +358,7 @@
 							<![CDATA[
 								this.addOnChangeListener({
 									onClick: function() {
-										if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
+										if (window.confirm("#{translate(products.qualityControl.window.ribbon.status.closeControl.confirm)}")) {
 											#{grid}.performEvent('closeQualityControl', ['qualityForBatch']);
 										};
 									}
@@ -371,13 +385,15 @@
 					]]>
 				</script>			
 				<option type="column" name="number" fields="number" link="true"/>
+				<option type="column" name="order" fields="order"
+					expression="#order['number']" link="true"/>
 				<option type="column" name="batchNr" fields="batchNr" link="true"/>
 				<option type="column" name="closed" fields="closed" link="false" width="100"/>
-				<option type="order" column="number,batchNr,closed" direction="desc"/>
+				<option type="order" column="number,order,batchNr,closed" direction="desc"/>
 				<option type="correspondingView" value="products/qualityControlForBatch"/>
 				<option type="correspondingComponent" value="form" />
-				<option type="searchable" value="number,batchNr,closed"/>
-				<option type="orderable" value="number,batchNr,closed"/>
+				<option type="searchable" value="number,order,batchNr,closed"/>
+				<option type="orderable" value="number,order,batchNr,closed"/>
 				<option type="fullscreen" value="true" />
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.products.QualityControlService" method="closeQualityControl"/>
 			</component>
@@ -396,7 +412,7 @@
 							<![CDATA[
 								this.addOnChangeListener({
 									onClick: function() {
-										if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
+										if (window.confirm("#{translate(products.qualityControl.window.ribbon.status.closeControl.confirm)}")) {
 											#{form}.performEvent('closeQualityControl', ['qualityForOrder']);
 										};
 									}
@@ -434,13 +450,16 @@
 									cancel.disable();
 									del.disable();									
 								}
+								if (value && value.content && !value.content.entityId) {
+									qualityControlStatus.disable();
+								}								
 							}
 						});
 					]]>
 				</script>			
 				<component type="gridLayout" name="gridsLayout" columns="3" rows="14">
 					<layoutElement column="1" row="1">
-						<component type="checkbox" name="closed" field="closed" reference="closed" defaultEnabled="false"/>
+						<component type="input" name="number" field="number"/>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="lookup" name="order" reference="order"
@@ -452,28 +471,29 @@
 							<option type="orderable" value="number,name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.QualityControlService" method="setQualityControlInstruction"/>
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="3">
-						<component type="input" name="number" field="number"/>
+					<layoutElement column="1" row="3" height="2">
+						<component type="textarea" name="comment" field="comment" reference="comment" />
 					</layoutElement>
-					<layoutElement column="1" row="4">
-						<component type="input" name="batchNr" field="batchNr"/>
-					</layoutElement>					
 					<layoutElement column="1" row="5">
-						<component type="input" name="controlledQuantity" field="controlledQuantity" />
+						<component type="checkbox" name="closed" field="closed" reference="closed" defaultEnabled="false"/>
 					</layoutElement>
 					<layoutElement column="1" row="6">
+						<component type="input" name="batchNr" field="batchNr"/>
+					</layoutElement>					
+					<layoutElement column="1" row="7">
+						<component type="input" name="controlledQuantity" field="controlledQuantity" />
+					</layoutElement>
+					<layoutElement column="1" row="8">
 						<component type="input" name="rejectedQuantity" field="rejectedQuantity" />
 					</layoutElement>
-					<layoutElement column="1" row="7">
+					<layoutElement column="1" row="9">
 						<component type="input" name="acceptedDefectsQuantity" field="acceptedDefectsQuantity" reference="acceptedDefectsQuantity">
 							<listener event="onInputChange" bean="com.qcadoo.mes.products.QualityControlService" method="checkAcceptedDefectsQuantity"/>
 						</component>
 					</layoutElement>										
-					<layoutElement column="1" row="8" height="2">
-						<component type="textarea" name="comment" field="comment" reference="comment" />
-					</layoutElement>
 					<layoutElement column="1" row="10">
 						<component type="input" name="staff" field="staff" reference="staff" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
@@ -485,7 +505,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="12" height="3">
-						<component type="textarea" name="controlInstruction" field="controlInstruction" />
+						<component type="textarea" name="controlInstruction" reference="controlInstruction" field="controlInstruction" defaultEnabled="false"/>
 					</layoutElement>
 				</component>
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.products.QualityControlService" method="closeQualityControl"/>
@@ -505,7 +525,7 @@
 							<![CDATA[
 								this.addOnChangeListener({
 									onClick: function() {
-										if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
+										if (window.confirm("#{translate(products.qualityControl.window.ribbon.status.closeControl.confirm)}")) {
 											#{grid}.performEvent('closeQualityControl', ['qualityForOperation']);
 										};
 									}
@@ -532,14 +552,16 @@
 					]]>
 				</script>			
 				<option type="column" name="number" fields="number" link="true"/>
+				<option type="column" name="order" fields="order"
+					expression="#order['number']" link="true"/>
 				<option type="column" name="operationNumber" fields="operation" link="true" expression="#operation['number']"/>
 				<option type="column" name="operationName" fields="operation" link="true" expression="#operation['name']"/>
 				<option type="column" name="closed" fields="closed" link="false" width="100"/>
-				<option type="order" column="number,operationNumber,operationName,closed" direction="desc"/>
+				<option type="order" column="number,order,operationNumber,operationName,closed" direction="desc"/>
 				<option type="correspondingView" value="products/qualityControlForOperation"/>
 				<option type="correspondingComponent" value="form" />
-				<option type="searchable" value="number,operationNumber,operationName,closed"/>
-				<option type="orderable" value="number,operationNumber,operationName,closed"/>
+				<option type="searchable" value="number,order,operationNumber,operationName,closed"/>
+				<option type="orderable" value="number,order,operationNumber,operationName,closed"/>
 				<option type="fullscreen" value="true" />
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.products.QualityControlService" method="closeQualityControl"/>
 			</component>
@@ -558,7 +580,7 @@
 							<![CDATA[
 								this.addOnChangeListener({
 									onClick: function() {
-										if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
+										if (window.confirm("#{translate(products.qualityControl.window.ribbon.status.closeControl.confirm)}")) {
 											#{form}.performEvent('closeQualityControl', ['qualityForOrder']);
 										};
 									}
@@ -596,13 +618,16 @@
 									cancel.disable();
 									del.disable();									
 								}
+								if (value && value.content && !value.content.entityId) {
+									qualityControlStatus.disable();
+								}								
 							}
 						});
 					]]>
 				</script>			
 				<component type="gridLayout" name="gridsLayout" columns="3" rows="7">
 					<layoutElement column="1" row="1">
-						<component type="checkbox" name="closed" field="closed" reference="closed" defaultEnabled="false"/>
+						<component type="input" name="number" field="number"/>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="lookup" name="order" reference="order"
@@ -612,12 +637,10 @@
 							<option type="orderable" value="name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="name" />
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.QualityControlService" method="setQualityControlInstruction"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="input" name="number" field="number"/>
-					</layoutElement>
-					<layoutElement column="1" row="4">
 						<component type="lookup" name="operation" reference="operation"
 							field="operation">
 							<option type="column" name="name" fields="name" link="true" />
@@ -627,13 +650,16 @@
 							<option type="fieldCode" value="name" />
 						</component>
 					</layoutElement>					
-					<layoutElement column="1" row="5" >
+					<layoutElement column="1" row="4" >
 						<component type="select" name="controlResult" field="controlResult" reference="controlResult">
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.QualityControlService" method="checkQualityControlResult"/>
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="6" height="2">
+					<layoutElement column="1" row="5" height="2">
 						<component type="textarea" name="comment" field="comment" reference="comment" />
+					</layoutElement>
+					<layoutElement column="1" row="7">
+						<component type="checkbox" name="closed" field="closed" reference="closed" defaultEnabled="false"/>
 					</layoutElement>
 				</component>
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.products.QualityControlService" method="closeQualityControl"/>
