@@ -1,6 +1,7 @@
 package com.qcadoo.mes.products;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -146,7 +147,14 @@ public class QualityControlService {
             FieldComponentState controlResult = (FieldComponentState) viewDefinitionState
                     .getComponentByReference("controlResult");
 
-            if (controlResult == null || controlResult.getFieldValue() != null) {
+            if (controlResult != null
+                    && (controlResult.getFieldValue() == null || ((String) controlResult.getFieldValue()).isEmpty())) {
+                state.addMessage(translationService.translate("products.quality.control.result.missing", state.getLocale()),
+                        MessageType.FAILURE);
+                return;
+            } else if (controlResult == null
+                    || (controlResult != null && (controlResult.getFieldValue() != null) || !((String) controlResult
+                            .getFieldValue()).isEmpty())) {
 
                 if (state instanceof FormComponentState) {
                     FieldComponentState closed = (FieldComponentState) viewDefinitionState.getComponentByReference("closed");
@@ -172,12 +180,9 @@ public class QualityControlService {
 
                     ((GridComponentState) state).performEvent(viewDefinitionState, "refresh", new String[0]);
                 }
-
                 state.addMessage(translationService.translate("products.quality.control.closed.success", state.getLocale()),
                         MessageType.SUCCESS);
-            } else if (controlResult.getFieldValue() == null) {
-                state.addMessage(translationService.translate("products.quality.control.result.missing", state.getLocale()),
-                        MessageType.FAILURE);
+
             }
         } else {
             if (state instanceof FormComponentState) {
@@ -331,7 +336,8 @@ public class QualityControlService {
 
             BigDecimal doneQuantity = (BigDecimal) order.getField("doneQuantity");
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-            BigDecimal numberOfControls = doneQuantity != null ? doneQuantity.divide(sampling) : plannedQuantity.divide(sampling);
+            BigDecimal numberOfControls = doneQuantity != null ? doneQuantity.divide(sampling, RoundingMode.HALF_UP)
+                    : plannedQuantity.divide(sampling, RoundingMode.HALF_UP);
 
             for (int i = 0; i <= numberOfControls.intValue(); i++) {
                 DataDefinition qualityForUnitDataDefinition = dataDefinitionService.get("products", "qualityForUnit");

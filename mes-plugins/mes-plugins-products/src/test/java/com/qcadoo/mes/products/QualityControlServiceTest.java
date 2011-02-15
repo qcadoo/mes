@@ -1,44 +1,67 @@
 package com.qcadoo.mes.products;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.SecurityService;
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.search.Restrictions;
+import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.products.util.NumberGeneratorService;
+import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.components.select.SelectComponentState;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ FormComponentState.class, SelectComponentState.class, GridComponentState.class })
 public class QualityControlServiceTest {
+
+    private SecurityService securityService = null;
 
     private QualityControlService qualityControlService;
 
     private DataDefinitionService dataDefinitionService;
 
+    private TranslationService translationService;
+
+    private NumberGeneratorService numberGeneratorService;
+
     @Before
     public void init() {
+        securityService = mock(SecurityService.class);
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         qualityControlService = new QualityControlService();
+        translationService = mock(TranslationService.class);
+        numberGeneratorService = mock(NumberGeneratorService.class);
         setField(qualityControlService, "dataDefinitionService", dataDefinitionService);
+        setField(qualityControlService, "securityService", securityService);
+        setField(qualityControlService, "translationService", translationService);
+        setField(qualityControlService, "numberGeneratorService", numberGeneratorService);
     }
 
     @Test
@@ -88,7 +111,6 @@ public class QualityControlServiceTest {
     }
 
     @Test
-    @Ignore
     public void shouldSetRequiredOnCommentAfterSelectChange() {
         // given
         SelectComponentState resultType = mock(SelectComponentState.class);
@@ -96,6 +118,7 @@ public class QualityControlServiceTest {
 
         ViewDefinitionState state = mock(ViewDefinitionState.class);
         given(resultType.getFieldValue()).willReturn("03objection");
+        given(state.getComponentByReference("comment")).willReturn(comment);
 
         // when
         qualityControlService.checkQualityControlResult(state, resultType, new String[] {});
@@ -107,39 +130,42 @@ public class QualityControlServiceTest {
     @Test
     public void shouldSetErrorOnCommentFieldForResultType() {
         // given
-        Entity entity = new DefaultEntity("plugins", "qualityForOrder");
+        Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        entity.setField("controlResult", "03objection");
-        entity.setField("comment", null);
+
+        given(entity.getField("controlResult")).willReturn("03objection");
+        given(entity.getField("comment")).willReturn(null);
 
         // when
         qualityControlService.checkIfCommentForResultIsReq(dataDefinition, entity);
 
         // then
-        assertNotNull(entity.getErrors());
+        verify(entity).addGlobalError("core.validate.global.error.custom");
+        verify(entity).addError(dataDefinition.getField("comment"), "products.quality.control.validate.global.error.comment");
     }
 
     @Test
     public void shouldSetErrorOnCommentFieldForAcceptedDefectsQuantity() {
         // given
-        Entity entity = new DefaultEntity("plugins", "qualityForOrder");
+        Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        entity.setField("acceptedDefectsQuantity", new BigDecimal("0"));
-        entity.setField("comment", null);
+
+        given(entity.getField("acceptedDefectsQuantity")).willReturn(new BigDecimal("1"));
+        given(entity.getField("comment")).willReturn(null);
 
         // when
-        qualityControlService.checkIfCommentForResultIsReq(dataDefinition, entity);
+        qualityControlService.checkIfCommentForQuantityIsReq(dataDefinition, entity);
 
         // then
-        assertNotNull(entity.getErrors());
+        verify(entity).addGlobalError("core.validate.global.error.custom");
+        verify(entity).addError(dataDefinition.getField("comment"), "products.quality.control.validate.global.error.comment");
     }
 
     @Test
-    @Ignore
-    public void shouldCloseQualityControl() {
+    public void shouldCloseQualityControlForFormComponentState() {
         // given
         FormComponentState form = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
-        ViewDefinitionState state = mock(ViewDefinitionState.class, Mockito.RETURNS_DEEP_STUBS);
+        ViewDefinitionState state = mock(ViewDefinitionState.class);
 
         FieldComponentState controlResult = mock(FieldComponentState.class);
         FieldComponentState closed = mock(FieldComponentState.class);
@@ -147,14 +173,175 @@ public class QualityControlServiceTest {
         FieldComponentState date = mock(FieldComponentState.class);
 
         given(form.getFieldValue()).willReturn(7L);
+        given(form.getLocale()).willReturn(Locale.ENGLISH);
         given(state.getComponentByReference("controlResult")).willReturn(controlResult);
         given(state.getComponentByReference("closed")).willReturn(closed);
+        given(state.getComponentByReference("staff")).willReturn(staff);
+        given(state.getComponentByReference("date")).willReturn(date);
         given(controlResult.getFieldValue()).willReturn("03objection");
+        given(securityService.getCurrentUserName()).willReturn("admin");
+        given(translationService.translate("products.quality.control.closed.success", Locale.ENGLISH)).willReturn(
+                "products.quality.control.closed.success.pl");
 
         // when
         qualityControlService.closeQualityControl(state, form, new String[] { "qualityForOrder" });
 
         // then
-        assertEquals(true, closed.getFieldValue());
+        verify(closed).setFieldValue(true);
+    }
+
+    @Test
+    public void shouldCloseQualityControlForGridComponentState() {
+        // given
+        GridComponentState state = mock(GridComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        Entity qualityControl = mock(Entity.class);
+        DataDefinition qualityControlDD = mock(DataDefinition.class);
+
+        given(dataDefinitionService.get("products", "qualityForOrder")).willReturn(qualityControlDD);
+        given(state.getFieldValue()).willReturn(7L);
+        given(qualityControlDD.get(7L)).willReturn(qualityControl);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(securityService.getCurrentUserName()).willReturn("admin");
+        given(translationService.translate("products.quality.control.closed.success", Locale.ENGLISH)).willReturn(
+                "products.quality.control.closed.success.pl");
+
+        // when
+        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityForOrder" });
+
+        // then
+        verify(qualityControl).setField("staff", "admin");
+        verify(qualityControl).setField("closed", true);
+        verify(state).addMessage("products.quality.control.closed.success.pl", MessageType.SUCCESS);
+    }
+
+    @Test
+    public void shouldAddFailureMessageOnEmptyControlResultType() {
+        // given
+        GridComponentState state = mock(GridComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        FieldComponentState controlResult = mock(FieldComponentState.class);
+
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(state.getFieldValue()).willReturn(7L);
+        given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
+        given(translationService.translate("products.quality.control.result.missing", Locale.ENGLISH)).willReturn(
+                "products.quality.control.result.missing.pl");
+
+        // when
+        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityForOrder" });
+
+        // then
+        verify(state).addMessage("products.quality.control.result.missing.pl", MessageType.FAILURE);
+    }
+
+    @Test
+    public void shouldAddFailureMessageOnNoValueForFormComponent() {
+        // given
+        FormComponentState state = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+
+        given(state.getFieldValue()).willReturn(null);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(translationService.translate("core.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
+                "core.form.entityWithoutIdentifier.pl");
+
+        // when
+        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityForOrder" });
+
+        // then
+        verify(state).addMessage("core.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
+    }
+
+    @Test
+    public void shouldAddFailureMessageOnNoValueForNonFormComponent() {
+        // given
+        GridComponentState state = mock(GridComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+
+        given(state.getFieldValue()).willReturn(null);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(translationService.translate("core.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
+                "core.grid.noRowSelectedError.pl");
+
+        // when
+        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityForOrder" });
+
+        // then
+        verify(state).addMessage("core.grid.noRowSelectedError.pl", MessageType.FAILURE);
+    }
+
+    @Test
+    public void shouldGenerateQualityControlForBatch() {
+        // given
+        List<Entity> genealogies = new ArrayList<Entity>();
+        Entity genealogy = new DefaultEntity("genealogies", "genealogy");
+        genealogy.setField("batch", "1");
+        genealogies.add(genealogy);
+
+        GridComponentState state = mock(GridComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+
+        DataDefinition orderDataDefinition = mock(DataDefinition.class);
+        DataDefinition genealogyDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+
+        Entity order = mock(Entity.class);
+        Entity technology = mock(Entity.class);
+
+        SearchCriteriaBuilder searchCriteria = mock(SearchCriteriaBuilder.class, RETURNS_DEEP_STUBS);
+
+        given(dataDefinitionService.get("products", "order")).willReturn(orderDataDefinition);
+        given(orderDataDefinition.get(7L)).willReturn(order);
+        given(order.getField("technology")).willReturn(technology);
+        given(technology.getField("qualityControlType")).willReturn("01forBatch");
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(state.getFieldValue()).willReturn(7L);
+        given(dataDefinitionService.get("genealogies", "genealogy")).willReturn(genealogyDataDefinition);
+        given(genealogyDataDefinition.find().restrictedWith(Restrictions.eq("order.id", 7L))).willReturn(searchCriteria);
+        given(searchCriteria.list().getEntities()).willReturn(genealogies);
+        given(numberGeneratorService.generateNumber("qualityForBatch")).willReturn("1");
+        given(order.getField("plannedQuantity")).willReturn(new BigDecimal("1"));
+        given(order.getBelongsToField("technology")).willReturn(technology);
+        given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
+        given(translationService.translate("products.qualityControl.generated.success", Locale.ENGLISH)).willReturn(
+                "products.qualityControl.generated.success.pl");
+
+        // when
+        qualityControlService.generateQualityControl(viewDefinitionState, state, new String[] { "qualityForBatch" });
+
+        // then
+        verify(state).addMessage("products.qualityControl.generated.success.pl", MessageType.SUCCESS);
+    }
+
+    @Test
+    public void shouldGenerateQualityControlForUnit() {
+        // given
+        GridComponentState state = mock(GridComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+
+        DataDefinition orderDataDefinition = mock(DataDefinition.class);
+        Entity order = mock(Entity.class);
+
+        Entity technology = mock(Entity.class);
+
+        given(dataDefinitionService.get("products", "order")).willReturn(orderDataDefinition);
+        given(orderDataDefinition.get(7L)).willReturn(order);
+        given(order.getField("technology")).willReturn(technology);
+        given(technology.getField("qualityControlType")).willReturn("02forUnit");
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(state.getFieldValue()).willReturn(7L);
+        given(translationService.translate("products.qualityControl.generated.success", Locale.ENGLISH)).willReturn(
+                "products.qualityControl.generated.success.pl");
+        given(technology.getField("unitSamplingNr")).willReturn(new BigDecimal("2"));
+        given(order.getField("plannedQuantity")).willReturn(new BigDecimal("5"));
+        given(numberGeneratorService.generateNumber("qualityForUnit")).willReturn("1");
+        given(order.getBelongsToField("technology")).willReturn(technology);
+        given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
+
+        // when
+        qualityControlService.generateQualityControl(viewDefinitionState, state, new String[] { "qualityForUnit" });
+
+        // then
+        verify(state).addMessage("products.qualityControl.generated.success.pl", MessageType.SUCCESS);
     }
 }
