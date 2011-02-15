@@ -66,8 +66,6 @@ public final class OrderService {
 
     public boolean clearOrderDatesAndWorkersOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("state", "01pending");
-        entity.setField("effectiveDateFrom", new Date());
-        entity.setField("startWorker", securityService.getCurrentUserName());
         entity.setField("effectiveDateTo", null);
         entity.setField("endWorker", null);
         entity.setField("effectiveDateFrom", null);
@@ -193,7 +191,7 @@ public final class OrderService {
         }
     }
 
-    private boolean checkIfAllQualityControlsAreClosed(Entity order) {
+    private boolean checkIfAllQualityControlsAreClosed(final Entity order) {
 
         String controlType = order.getBelongsToField("technology").getField("qualityControlType").toString();
 
@@ -209,13 +207,17 @@ public final class OrderService {
             qualityControlDD = dataDefinitionService.get("products", "qualityForOperation");
         }
 
-        SearchCriteriaBuilder searchCriteria = qualityControlDD.find()
-                .restrictedWith(Restrictions.belongsTo(qualityControlDD.getField("order"), order.getId()))
-                .restrictedWith(Restrictions.eq("closed", false));
+        if (qualityControlDD != null) {
+            SearchCriteriaBuilder searchCriteria = qualityControlDD.find()
+                    .restrictedWith(Restrictions.belongsTo(qualityControlDD.getField("order"), order.getId()))
+                    .restrictedWith(Restrictions.eq("closed", false));
 
-        SearchResult searchResult = searchCriteria.list();
+            SearchResult searchResult = searchCriteria.list();
 
-        return (searchResult.getTotalNumberOfEntities() <= 0);
+            return (searchResult.getTotalNumberOfEntities() <= 0);
+        } else {
+            return false;
+        }
     }
 
     private boolean isQualityControlAutoCheckEnabled() {
@@ -327,7 +329,6 @@ public final class OrderService {
         if ("03done".equals(entity.getField("state")) && entity.getField("effectiveDateTo") == null) {
             entity.setField("effectiveDateTo", new Date());
             entity.setField("endWorker", securityService.getCurrentUserName());
-
         }
     }
 

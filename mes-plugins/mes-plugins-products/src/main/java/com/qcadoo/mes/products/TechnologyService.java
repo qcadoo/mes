@@ -208,54 +208,6 @@ public final class TechnologyService {
         }
     }
 
-    public void checkAcceptedDefectsQuantity(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        if (!(state instanceof FieldComponentState)) {
-            throw new IllegalStateException("component is not input");
-        }
-
-        FieldComponentState acceptedDefectsQuantity = (FieldComponentState) state;
-
-        FieldComponentState comment = (FieldComponentState) viewDefinitionState.getComponentByReference("comment");
-
-        if (acceptedDefectsQuantity.getFieldValue() != null) {
-            if (isNumber(acceptedDefectsQuantity.getFieldValue().toString())
-                    && (new BigDecimal(acceptedDefectsQuantity.getFieldValue().toString())).compareTo(BigDecimal.ZERO) > 0) {
-                comment.setRequired(true);
-            } else {
-                comment.setRequired(false);
-            }
-        }
-    }
-
-    private boolean isNumber(final String value) {
-        try {
-            new BigDecimal(value);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean checkIfCommentForQuantityIsReq(final DataDefinition dataDefinition, final Entity entity) {
-        BigDecimal acceptedDefectsQuantity = (BigDecimal) entity.getField("acceptedDefectsQuantity");
-
-        if (acceptedDefectsQuantity != null) {
-            String comment = (String) entity.getField("comment");
-
-            if ((comment == null || comment.isEmpty()) && acceptedDefectsQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                entity.addGlobalError("core.validate.global.error.custom");
-                entity.addError(dataDefinition.getField("comment"), "products.quality.control.validate.global.error.comment");
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return true;
-        }
-    }
-
     public void checkQualityControlType(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (!(state instanceof SelectComponentState)) {
@@ -274,43 +226,6 @@ public final class TechnologyService {
                 unitSamplingNr.setRequired(false);
                 unitSamplingNr.setVisible(false);
             }
-        }
-    }
-
-    public void checkQualityControlResult(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        if (!(state instanceof SelectComponentState)) {
-            throw new IllegalStateException("component is not select");
-        }
-
-        SelectComponentState resultType = (SelectComponentState) state;
-
-        FieldComponentState comment = (FieldComponentState) viewDefinitionState.getComponentByReference("comment");
-
-        if (resultType.getFieldValue() != null) {
-            if (resultType.getFieldValue().equals("03objection")) {
-                comment.setRequired(true);
-            } else {
-                comment.setRequired(false);
-            }
-        }
-    }
-
-    public boolean checkIfCommentForResultIsReq(final DataDefinition dataDefinition, final Entity entity) {
-        String resultType = (String) entity.getField("controlResult");
-
-        if (resultType != null && resultType.equals("03objection")) {
-
-            String comment = (String) entity.getField("comment");
-            if (comment == null || comment.isEmpty()) {
-                entity.addGlobalError("core.validate.global.error.custom");
-                entity.addError(dataDefinition.getField("comment"), "products.quality.control.validate.global.error.comment");
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return true;
         }
     }
 
@@ -467,42 +382,6 @@ public final class TechnologyService {
                     || !technologyEntity.getField("qualityControlType").equals("04forOperation")) {
                 technologyEntity.setField("qualityControlType", "04forOperation");
                 technologyInDef.save(technologyEntity);
-            }
-        }
-    }
-
-    public void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state, final Locale locale) {
-        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
-        if (form.getFieldValue() != null) {
-            FieldComponentState comment = (FieldComponentState) state.getComponentByReference("comment");
-
-            FieldComponentState controlResult = (FieldComponentState) state.getComponentByReference("controlResult");
-
-            if (controlResult != null && controlResult.getFieldValue().equals("03objection")) {
-                comment.setRequired(true);
-                comment.requestComponentUpdateState();
-            } else {
-                comment.setRequired(false);
-            }
-        }
-    }
-
-    public void checkIfCommentIsRequiredBasedOnDefects(final ViewDefinitionState state, final Locale locale) {
-        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
-        if (form.getFieldValue() != null) {
-
-            FieldComponentState comment = (FieldComponentState) state.getComponentByReference("comment");
-
-            FieldComponentState acceptedDefectsQuantity = (FieldComponentState) state
-                    .getComponentByReference("acceptedDefectsQuantity");
-
-            if (acceptedDefectsQuantity.getFieldValue() != null
-                    && (new BigDecimal(acceptedDefectsQuantity.getFieldValue().toString().replace(",", "."))
-                            .compareTo(BigDecimal.ZERO) > 0)) {
-                comment.setRequired(true);
-                comment.requestComponentUpdateState();
-            } else {
-                comment.setRequired(false);
             }
         }
     }

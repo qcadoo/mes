@@ -39,7 +39,7 @@
 		<string name="controlInstruction" />
 		<string name="staff" />
 		<date name="date" />
-		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentForResultIsReq" />
+		<validatesWith bean="com.qcadoo.mes.products.QualityControlService" method="checkIfCommentForResultIsReq" />
 		<boolean name="closed"/>
 	</model>
 	<model name="qualityForUnit">
@@ -57,7 +57,7 @@
 		<string name="staff" />
 		<date name="date" />		
 		<string name="controlInstruction" />
-		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentForQuantityIsReq" />
+		<validatesWith bean="com.qcadoo.mes.products.QualityControlService" method="checkIfCommentForQuantityIsReq" />
 		<boolean name="closed"/>
 	</model>
 	<model name="qualityForBatch">
@@ -76,7 +76,7 @@
 		<string name="staff" />
 		<date name="date" />		
 		<string name="controlInstruction" />
-		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentForQuantityIsReq" />
+		<validatesWith bean="com.qcadoo.mes.products.QualityControlService" method="checkIfCommentForQuantityIsReq" />
 		<boolean name="closed"/>
 	</model>
 	<model name="qualityForOperation">
@@ -92,7 +92,7 @@
 		</belongsTo>
 		<enum name="controlResult" values="01correct,02incorrect,03objection"/>
 		<string name="comment" />
-		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkIfCommentForResultIsReq" />
+		<validatesWith bean="com.qcadoo.mes.products.QualityControlService" method="checkIfCommentForResultIsReq" />
 		<boolean name="closed"/>
 	</model>
 </qcd:models>
