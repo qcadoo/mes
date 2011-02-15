@@ -8,6 +8,7 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
@@ -601,10 +602,56 @@ public class AutoGenealogyServiceTest {
     }
 
     @Test
+    public void shouldFailAutoCreateGenealogyOnChangeOrderStatusIfHasNotGoodStatus() {
+        // given
+        ComponentState state = mock(ComponentState.class);
+        given(state.getFieldValue()).willReturn(13L);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+
+        Entity order = mock(Entity.class);
+
+        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+
+        // when
+        autoGenealogyService.generateGenalogyOnChangeOrderStatusForDone(viewDefinitionState, state, new String[] { "true" });
+
+        // then
+        verify(state, times(2)).getFieldValue();
+
+        verify(state, never()).addMessage("genealogies.message.autoGenealogy.success.pl", MessageType.SUCCESS);
+
+    }
+
+    @Test
+    public void shouldFailAutoCreateGenealogyOnChangeOrderStatusIfParameterIsNull() {
+        // given
+        ComponentState state = mock(ComponentState.class);
+        given(state.getFieldValue()).willReturn(13L);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+
+        Entity order = mock(Entity.class);
+
+        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+
+        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+                new ArrayList<Entity>());
+
+        // when
+        autoGenealogyService.generateGenalogyOnChangeOrderStatusForDone(viewDefinitionState, state, new String[] { "false" });
+
+        // then
+        verify(state, times(2)).getFieldValue();
+
+        verify(state, never()).addMessage("genealogies.message.autoGenealogy.success.pl", MessageType.SUCCESS);
+
+    }
+
+    @Test
     public void shouldFillLastUsedShiftFeature() {
         // given
         Entity entity = new DefaultEntity("test", "entity");
-        entity.setField("value", "newTest");
 
         DataDefinition dataDefinition = mock(DataDefinition.class);
         Entity feature = mock(Entity.class);
@@ -626,10 +673,26 @@ public class AutoGenealogyServiceTest {
     }
 
     @Test
+    public void shouldFailFillLastUsedShiftFeature() {
+        // given
+        Entity entity = new DefaultEntity("test", "entity");
+
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+                .willReturn(new ArrayList<Entity>());
+        given(securityService.getCurrentUserName()).willReturn("newTest");
+
+        // when
+        autoGenealogyService.fillLastUsedShiftFeature(dataDefinition, entity);
+        // then
+        verify(dataDefinitionService.get("genealogies", "currentAttribute"), never()).save(any(Entity.class));
+    }
+
+    @Test
     public void shouldFillLastUsedOtherFeature() {
         // given
         Entity entity = new DefaultEntity("test", "entity");
-        entity.setField("value", "newTest");
 
         DataDefinition dataDefinition = mock(DataDefinition.class);
         Entity feature = mock(Entity.class);
@@ -651,10 +714,26 @@ public class AutoGenealogyServiceTest {
     }
 
     @Test
+    public void shouldFailFillLastUsedOtherFeature() {
+        // given
+        Entity entity = new DefaultEntity("test", "entity");
+
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+                .willReturn(new ArrayList<Entity>());
+        given(securityService.getCurrentUserName()).willReturn("newTest");
+
+        // when
+        autoGenealogyService.fillLastUsedOtherFeature(dataDefinition, entity);
+        // then
+        verify(dataDefinitionService.get("genealogies", "currentAttribute"), never()).save(any(Entity.class));
+    }
+
+    @Test
     public void shouldFillLastUsedPostFeature() {
         // given
         Entity entity = new DefaultEntity("test", "entity");
-        entity.setField("value", "newTest");
 
         DataDefinition dataDefinition = mock(DataDefinition.class);
         Entity feature = mock(Entity.class);
@@ -673,6 +752,23 @@ public class AutoGenealogyServiceTest {
         verify(dataDefinitionService.get("genealogies", "currentAttribute")).save(any(Entity.class));
         assertNotNull(entity.getField("date"));
         assertNotNull(entity.getField("worker"));
+    }
+
+    @Test
+    public void shouldFailFillLastUsedPostFeature() {
+        // given
+        Entity entity = new DefaultEntity("test", "entity");
+
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+                .willReturn(new ArrayList<Entity>());
+        given(securityService.getCurrentUserName()).willReturn("newTest");
+
+        // when
+        autoGenealogyService.fillLastUsedPostFeature(dataDefinition, entity);
+        // then
+        verify(dataDefinitionService.get("genealogies", "currentAttribute"), never()).save(any(Entity.class));
     }
 
     @Test
@@ -696,11 +792,9 @@ public class AutoGenealogyServiceTest {
     }
 
     @Test
-    public void shouldFillLastUsedBatchForGenealogy() {
+    public void shouldFillLastUsedBatchForGenealogyWithoutFillUserAndDate() {
         // given
         Entity entity = mock(Entity.class, RETURNS_DEEP_STUBS);
-        given(entity.getField("date")).willReturn(null);
-        given(entity.getField("worker")).willReturn(null);
 
         DataDefinition dataDefinition = mock(DataDefinition.class);
 
@@ -710,7 +804,6 @@ public class AutoGenealogyServiceTest {
         autoGenealogyService.fillLastUsedBatchForGenealogy(dataDefinition, entity);
 
         // then
-        verify(entity, times(2)).setField(anyString(), any());
         verify(dataDefinitionService.get("products", "product").get(anyLong())).setField(anyString(), anyString());
         verify(dataDefinitionService.get("products", "product")).save(any(Entity.class));
     }
