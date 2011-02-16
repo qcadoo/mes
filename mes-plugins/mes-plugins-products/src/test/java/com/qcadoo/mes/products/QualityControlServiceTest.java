@@ -164,27 +164,27 @@ public class QualityControlServiceTest {
     @Test
     public void shouldCloseQualityControlForFormComponentState() {
         // given
-        FormComponentState form = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
-        ViewDefinitionState state = mock(ViewDefinitionState.class);
+        FormComponentState state = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
         FieldComponentState controlResult = mock(FieldComponentState.class);
         FieldComponentState closed = mock(FieldComponentState.class);
         FieldComponentState staff = mock(FieldComponentState.class);
         FieldComponentState date = mock(FieldComponentState.class);
 
-        given(form.getFieldValue()).willReturn(7L);
-        given(form.getLocale()).willReturn(Locale.ENGLISH);
-        given(state.getComponentByReference("controlResult")).willReturn(controlResult);
-        given(state.getComponentByReference("closed")).willReturn(closed);
-        given(state.getComponentByReference("staff")).willReturn(staff);
-        given(state.getComponentByReference("date")).willReturn(date);
+        given(state.getFieldValue()).willReturn(7L);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
+        given(viewDefinitionState.getComponentByReference("closed")).willReturn(closed);
+        given(viewDefinitionState.getComponentByReference("staff")).willReturn(staff);
+        given(viewDefinitionState.getComponentByReference("date")).willReturn(date);
         given(controlResult.getFieldValue()).willReturn("03objection");
         given(securityService.getCurrentUserName()).willReturn("admin");
         given(translationService.translate("products.quality.control.closed.success", Locale.ENGLISH)).willReturn(
                 "products.quality.control.closed.success.pl");
 
         // when
-        qualityControlService.closeQualityControl(state, form, new String[] { "qualityForOrder" });
+        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityForOrder" });
 
         // then
         verify(closed).setFieldValue(true);
@@ -197,10 +197,13 @@ public class QualityControlServiceTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         Entity qualityControl = mock(Entity.class);
         DataDefinition qualityControlDD = mock(DataDefinition.class);
+        FieldComponentState controlResult = mock(FieldComponentState.class);
 
         given(dataDefinitionService.get("products", "qualityForOrder")).willReturn(qualityControlDD);
-        given(state.getFieldValue()).willReturn(7L);
         given(qualityControlDD.get(7L)).willReturn(qualityControl);
+        given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
+        given(controlResult.getFieldValue()).willReturn("01correct");
+        given(state.getFieldValue()).willReturn(7L);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(securityService.getCurrentUserName()).willReturn("admin");
         given(translationService.translate("products.quality.control.closed.success", Locale.ENGLISH)).willReturn(
@@ -318,7 +321,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldGenerateQualityControlForUnit() {
         // given
-        GridComponentState state = mock(GridComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        GridComponentState state = mock(GridComponentState.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
         DataDefinition orderDataDefinition = mock(DataDefinition.class);
