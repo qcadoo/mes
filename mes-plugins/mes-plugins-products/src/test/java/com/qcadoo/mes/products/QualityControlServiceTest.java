@@ -284,6 +284,7 @@ public class QualityControlServiceTest {
 
         DataDefinition orderDataDefinition = mock(DataDefinition.class);
         DataDefinition genealogyDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        DataDefinition qualityForBatchDataDefinition = mock(DataDefinition.class);
 
         Entity order = mock(Entity.class);
         Entity technology = mock(Entity.class);
@@ -291,6 +292,7 @@ public class QualityControlServiceTest {
         SearchCriteriaBuilder searchCriteria = mock(SearchCriteriaBuilder.class, RETURNS_DEEP_STUBS);
 
         given(dataDefinitionService.get("products", "order")).willReturn(orderDataDefinition);
+        given(dataDefinitionService.get("products", "qualityForBatch")).willReturn(qualityForBatchDataDefinition);
         given(orderDataDefinition.get(7L)).willReturn(order);
         given(order.getField("technology")).willReturn(technology);
         given(technology.getField("qualityControlType")).willReturn("01forBatch");
