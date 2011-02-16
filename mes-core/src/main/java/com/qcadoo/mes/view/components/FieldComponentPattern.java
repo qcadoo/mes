@@ -70,6 +70,10 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
     }
 
     public boolean isRequired() {
-        return getFieldDefinition().isRequired() || defaultRequired;
+        if (getFieldDefinition() != null) {
+            return getFieldDefinition().isRequired() || defaultRequired;
+        } else {
+            return defaultRequired;
+        }
     }
 }

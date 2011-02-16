@@ -146,7 +146,6 @@ public final class OrderService {
                                 MessageType.FAILURE);
                         return;
                     }
-
                     if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
                         state.addMessage(translationService.translate("products.qualityControl.not.closed", state.getLocale()),
                                 MessageType.FAILURE);
@@ -406,7 +405,7 @@ public final class OrderService {
         }
     }
 
-    private boolean checkRequiredBatch(final Entity order) {
+    public boolean checkRequiredBatch(final Entity order) {
         Entity technology = (Entity) order.getField("technology");
         if (technology != null) {
             if (order.getHasManyField("genealogies").size() == 0) {
@@ -453,7 +452,7 @@ public final class OrderService {
                     }
                 }
                 for (Entity genealogyProductIn : genealogy.getHasManyField("productInComponents")) {
-                    if ((Boolean) ((Entity) genealogyProductIn.getField("productInComponent")).getField("batchRequired")) {
+                    if ((Boolean) (genealogyProductIn.getBelongsToField("productInComponent").getField("batchRequired"))) {
                         List<Entity> entityList = genealogyProductIn.getHasManyField("batch");
                         if (entityList.size() == 0) {
                             return false;
