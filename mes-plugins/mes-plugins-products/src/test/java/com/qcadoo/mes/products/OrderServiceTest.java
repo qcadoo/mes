@@ -1379,32 +1379,36 @@ public class OrderServiceTest {
         assertFalse(results);
     }
 
-    // @Test
-    // @SuppressWarnings("unchecked")
-    // public void shouldFailCheckingRequiredBatchForOperationComponentBatchRequired() throws Exception {
-    // // given
-    // Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
-    // Iterator<Entity> iterator = mock(Iterator.class);
-    // Iterator<Entity> iterator2 = mock(Iterator.class);
-    // Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
-    // given(order.getField("technology")).willReturn(technology);
-    // given(order.getHasManyField("genealogies").size()).willReturn(0);
-    // given(technology.getField("batchRequired")).willReturn(false);
-    // given(technology.getField("shiftFeatureRequired")).willReturn(false);
-    // given(technology.getField("postFeatureRequired")).willReturn(false);
-    // given(technology.getField("otherFeatureRequired")).willReturn(false);
-    // given(technology.getTreeField("operationComponents").iterator()).willReturn(iterator);
-    // given(iterator.hasNext()).willReturn(true, false);
-    // given(iterator.next().getHasManyField("operationProductInComponents").iterator()).willReturn(iterator2);
-    // given(iterator2.hasNext()).willReturn(true, false);
-    // given(iterator2.next().getField("batchRequired")).willReturn(true);
-    //
-    // // when
-    // boolean results = callCheckRequiredBatch(order);
-    //
-    // // then
-    // assertFalse(results);
-    // }
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFailCheckingRequiredBatchForOperationComponentBatchRequired() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity operationComponent = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity operationProductInComponents = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Iterator<Entity> iterator = mock(Iterator.class);
+        Iterator<Entity> iterator2 = mock(Iterator.class);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(0);
+        given(technology.getField("batchRequired")).willReturn(false);
+        given(technology.getField("shiftFeatureRequired")).willReturn(false);
+        given(technology.getField("postFeatureRequired")).willReturn(false);
+        given(technology.getField("otherFeatureRequired")).willReturn(false);
+        given(technology.getTreeField("operationComponents").iterator()).willReturn(iterator);
+        given(iterator.hasNext()).willReturn(true, false);
+        given(iterator.next()).willReturn(operationComponent);
+        given(operationComponent.getHasManyField("operationProductInComponents").iterator()).willReturn(iterator2);
+        given(iterator2.hasNext()).willReturn(true, false);
+        given(iterator2.next()).willReturn(operationProductInComponents);
+        given(operationProductInComponents.getField("batchRequired")).willReturn(true);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertFalse(results);
+    }
 
     @Test
     @SuppressWarnings("unchecked")
@@ -1506,97 +1510,103 @@ public class OrderServiceTest {
         assertFalse(results);
     }
 
-    // @Test
-    // @SuppressWarnings("unchecked")
-    // public void shouldFailCheckingRequiredBatchForGenealogyComponentsBatchRequired() throws Exception {
-    // // given
-    // Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
-    // Iterator<Entity> iterator = mock(Iterator.class);
-    // Iterator<Entity> iterator2 = mock(Iterator.class);
-    // Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
-    // Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
-    // given(order.getField("technology")).willReturn(technology);
-    // given(order.getHasManyField("genealogies").size()).willReturn(1);
-    // given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
-    // given(iterator.hasNext()).willReturn(true, false);
-    // given(iterator.next()).willReturn(genealogy);
-    // given(technology.getField("batchRequired")).willReturn(false);
-    // given(technology.getField("shiftFeatureRequired")).willReturn(false);
-    // given(technology.getField("postFeatureRequired")).willReturn(false);
-    // given(technology.getField("otherFeatureRequired")).willReturn(true);
-    // given(genealogy.getHasManyField("otherFeatures").size()).willReturn(1);
-    // given(genealogy.getHasManyField("productInComponents").iterator()).willReturn(iterator2);
-    // given(iterator2.hasNext()).willReturn(true, false);
-    // given(iterator2.next().getBelongsToField("productInComponent").getField("batchRequired")).willReturn(true);
-    // given(iterator2.next().getHasManyField("batch").size()).willReturn(0);
-    //
-    // // when
-    // boolean results = callCheckRequiredBatch(order);
-    //
-    // // then
-    // assertFalse(results);
-    // }
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFailCheckingRequiredBatchForGenealogyComponentsBatchRequired() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity productInComponent = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Iterator<Entity> iterator = mock(Iterator.class);
+        Iterator<Entity> iterator2 = mock(Iterator.class);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
+        given(iterator.hasNext()).willReturn(true, false);
+        given(iterator.next()).willReturn(genealogy);
+        given(technology.getField("batchRequired")).willReturn(false);
+        given(technology.getField("shiftFeatureRequired")).willReturn(false);
+        given(technology.getField("postFeatureRequired")).willReturn(false);
+        given(technology.getField("otherFeatureRequired")).willReturn(true);
+        given(genealogy.getHasManyField("otherFeatures").size()).willReturn(1);
+        given(genealogy.getHasManyField("productInComponents").iterator()).willReturn(iterator2);
+        given(iterator2.hasNext()).willReturn(true, false);
+        given(iterator2.next()).willReturn(productInComponent);
+        given(productInComponent.getBelongsToField("productInComponent").getField("batchRequired")).willReturn(true);
+        given(productInComponent.getHasManyField("batch").size()).willReturn(0);
 
-    // @Test
-    // @SuppressWarnings("unchecked")
-    // public void shouldFailCheckingRequiredBatchForGenealogyComponentsBatchRequired2() throws Exception {
-    // // given
-    // Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
-    // Iterator<Entity> iterator = mock(Iterator.class);
-    // Iterator<Entity> iterator2 = mock(Iterator.class);
-    // Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
-    // Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
-    // given(order.getField("technology")).willReturn(technology);
-    // given(order.getHasManyField("genealogies").size()).willReturn(1);
-    // given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
-    // given(iterator.hasNext()).willReturn(true, false);
-    // given(iterator.next()).willReturn(genealogy);
-    // given(technology.getField("batchRequired")).willReturn(false);
-    // given(technology.getField("shiftFeatureRequired")).willReturn(false);
-    // given(technology.getField("postFeatureRequired")).willReturn(false);
-    // given(technology.getField("otherFeatureRequired")).willReturn(true);
-    // given(genealogy.getHasManyField("otherFeatures").size()).willReturn(1);
-    // given(genealogy.getHasManyField("productInComponents").iterator()).willReturn(iterator2);
-    // given(iterator2.hasNext()).willReturn(true, false);
-    // given(iterator2.next().getBelongsToField("productInComponent").getField("batchRequired")).willReturn(true);
-    // given(iterator2.next().getHasManyField("batch").size()).willReturn(1);
-    //
-    // // when
-    // boolean results = callCheckRequiredBatch(order);
-    //
-    // // then
-    // assertTrue(results);
-    // }
+        // when
+        boolean results = callCheckRequiredBatch(order);
 
-    // @Test
-    // @SuppressWarnings("unchecked")
-    // public void shouldFailCheckingRequiredBatchForGenealogyComponentsBatchRequired3() throws Exception {
-    // // given
-    // Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
-    // Iterator<Entity> iterator = mock(Iterator.class);
-    // Iterator<Entity> iterator2 = mock(Iterator.class);
-    // Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
-    // Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
-    // given(order.getField("technology")).willReturn(technology);
-    // given(order.getHasManyField("genealogies").size()).willReturn(1);
-    // given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
-    // given(iterator.hasNext()).willReturn(true, false);
-    // given(iterator.next()).willReturn(genealogy);
-    // given(technology.getField("batchRequired")).willReturn(false);
-    // given(technology.getField("shiftFeatureRequired")).willReturn(false);
-    // given(technology.getField("postFeatureRequired")).willReturn(false);
-    // given(technology.getField("otherFeatureRequired")).willReturn(true);
-    // given(genealogy.getHasManyField("otherFeatures").size()).willReturn(1);
-    // given(genealogy.getHasManyField("productInComponents").iterator()).willReturn(iterator2);
-    // given(iterator2.hasNext()).willReturn(true, false);
-    // given(iterator2.next().getBelongsToField("productInComponent").getField("batchRequired")).willReturn(false);
-    //
-    // // when
-    // boolean results = callCheckRequiredBatch(order);
-    //
-    // // then
-    // assertTrue(results);
-    // }
+        // then
+        assertFalse(results);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFailCheckingRequiredBatchForGenealogyComponentsBatchRequired2() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity productInComponent = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Iterator<Entity> iterator = mock(Iterator.class);
+        Iterator<Entity> iterator2 = mock(Iterator.class);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
+        given(iterator.hasNext()).willReturn(true, false);
+        given(iterator.next()).willReturn(genealogy);
+        given(technology.getField("batchRequired")).willReturn(false);
+        given(technology.getField("shiftFeatureRequired")).willReturn(false);
+        given(technology.getField("postFeatureRequired")).willReturn(false);
+        given(technology.getField("otherFeatureRequired")).willReturn(true);
+        given(genealogy.getHasManyField("otherFeatures").size()).willReturn(1);
+        given(genealogy.getHasManyField("productInComponents").iterator()).willReturn(iterator2);
+        given(iterator2.hasNext()).willReturn(true, false);
+        given(iterator2.next()).willReturn(productInComponent);
+        given(productInComponent.getBelongsToField("productInComponent").getField("batchRequired")).willReturn(true);
+        given(productInComponent.getHasManyField("batch").size()).willReturn(1);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertTrue(results);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFailCheckingRequiredBatchForGenealogyComponentsBatchRequired3() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity productInComponent = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Iterator<Entity> iterator = mock(Iterator.class);
+        Iterator<Entity> iterator2 = mock(Iterator.class);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
+        given(iterator.hasNext()).willReturn(true, false);
+        given(iterator.next()).willReturn(genealogy);
+        given(technology.getField("batchRequired")).willReturn(false);
+        given(technology.getField("shiftFeatureRequired")).willReturn(false);
+        given(technology.getField("postFeatureRequired")).willReturn(false);
+        given(technology.getField("otherFeatureRequired")).willReturn(true);
+        given(genealogy.getHasManyField("otherFeatures").size()).willReturn(1);
+        given(genealogy.getHasManyField("productInComponents").iterator()).willReturn(iterator2);
+        given(iterator2.hasNext()).willReturn(true, false);
+        given(iterator2.next()).willReturn(productInComponent);
+        given(productInComponent.getBelongsToField("productInComponent").getField("batchRequired")).willReturn(false);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertTrue(results);
+    }
 
     @Test
     public void shouldSuccessCheckingRequiredBatch() throws Exception {
