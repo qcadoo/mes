@@ -192,28 +192,35 @@ public final class OrderService {
 
     private boolean checkIfAllQualityControlsAreClosed(final Entity order) {
 
-        String controlType = order.getBelongsToField("technology").getField("qualityControlType").toString();
+        Object controlTypeField = order.getBelongsToField("technology").getField("qualityControlType");
 
-        DataDefinition qualityControlDD = null;
+        if (controlTypeField != null) {
 
-        if (controlType.equals("01forBatch")) {
-            qualityControlDD = dataDefinitionService.get("products", "qualityForBatch");
-        } else if (controlType.equals("02forUnit")) {
-            qualityControlDD = dataDefinitionService.get("products", "qualityForUnit");
-        } else if (controlType.equals("03forOrder")) {
-            qualityControlDD = dataDefinitionService.get("products", "qualityForOrder");
-        } else if (controlType.equals("04forOperation")) {
-            qualityControlDD = dataDefinitionService.get("products", "qualityForOperation");
-        }
+            String controlType = controlTypeField.toString();
 
-        if (qualityControlDD != null) {
-            SearchCriteriaBuilder searchCriteria = qualityControlDD.find()
-                    .restrictedWith(Restrictions.belongsTo(qualityControlDD.getField("order"), order.getId()))
-                    .restrictedWith(Restrictions.eq("closed", false));
+            DataDefinition qualityControlDD = null;
 
-            SearchResult searchResult = searchCriteria.list();
+            if (controlType.equals("01forBatch")) {
+                qualityControlDD = dataDefinitionService.get("products", "qualityForBatch");
+            } else if (controlType.equals("02forUnit")) {
+                qualityControlDD = dataDefinitionService.get("products", "qualityForUnit");
+            } else if (controlType.equals("03forOrder")) {
+                qualityControlDD = dataDefinitionService.get("products", "qualityForOrder");
+            } else if (controlType.equals("04forOperation")) {
+                qualityControlDD = dataDefinitionService.get("products", "qualityForOperation");
+            }
 
-            return (searchResult.getTotalNumberOfEntities() <= 0);
+            if (qualityControlDD != null) {
+                SearchCriteriaBuilder searchCriteria = qualityControlDD.find()
+                        .restrictedWith(Restrictions.belongsTo(qualityControlDD.getField("order"), order.getId()))
+                        .restrictedWith(Restrictions.eq("closed", false));
+
+                SearchResult searchResult = searchCriteria.list();
+
+                return (searchResult.getTotalNumberOfEntities() <= 0);
+            } else {
+                return false;
+            }
         } else {
             return false;
         }

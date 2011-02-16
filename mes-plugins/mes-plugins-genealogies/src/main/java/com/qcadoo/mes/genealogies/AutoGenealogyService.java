@@ -5,9 +5,7 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -201,17 +199,12 @@ public class AutoGenealogyService {
 
         if (!genealogy.isValid()) {
             if (!genealogy.getGlobalErrors().isEmpty()) {
-                Set<String> errors = new HashSet<String>();
                 for (ErrorMessage error : genealogy.getGlobalErrors()) {
-                    if (!errors.contains(error.getMessage())) {
-                        StringBuilder message = new StringBuilder(translationService.translate(error.getMessage(),
-                                state.getLocale()));
-                        for (String var : error.getVars()) {
-                            message.append("\n" + var);
-                        }
-                        state.addMessage(message.toString(), MessageType.INFO, false);
-                        errors.add(error.getMessage());
+                    StringBuilder message = new StringBuilder(translationService.translate(error.getMessage(), state.getLocale()));
+                    for (String var : error.getVars()) {
+                        message.append("\n" + var);
                     }
+                    state.addMessage(message.toString(), MessageType.INFO, false);
                 }
             } else {
                 state.addMessage(translationService.translate("genealogies.message.autoGenealogy.failure", state.getLocale()),
