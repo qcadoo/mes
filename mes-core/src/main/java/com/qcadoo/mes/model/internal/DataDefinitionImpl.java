@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DataAccessService;
@@ -91,8 +92,18 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     }
 
     @Override
+    public Set<Long> copy(final Set<Long> id) {
+        return dataAccessService.copy(this, id);
+    }
+
+    @Override
     public void delete(final Long id) {
         dataAccessService.delete(this, id);
+    }
+
+    @Override
+    public void delete(final Set<Long> id) {
+        dataAccessService.delete(this, id.toArray(new Long[id.size()]));
     }
 
     @Override

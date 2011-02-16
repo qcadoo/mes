@@ -45,6 +45,7 @@
 				<option type="correspondingView" value="products/materialRequirement" />
 				<option type="correspondingComponent" value="form" />
 				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
 				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.MaterialRequirementService" method="printMaterialRequirement"/>
 				<script>
 					<![CDATA[
@@ -52,11 +53,11 @@
 						var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
 						
 						var listener = {
-							onChange: function(selectedRecord) {
-								if (!selectedRecord) {
+							onChange: function(selectedEntitiesArray) {
+								if (!selectedEntitiesArray || selectedEntitiesArray.length != 1) {
 									xlsRibbonItem.disable();
 									pdfRibbonItem.disable();	
-								} else if (selectedRecord.fields.generated == '0') {
+								} else if (selectedEntitiesArray[0].fields.generated == '0') {
 									xlsRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
 									pdfRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");								
 								} else {

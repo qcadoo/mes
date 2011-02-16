@@ -287,6 +287,17 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return targetEntity;
     }
 
+    @Override
+    @Transactional
+    @Monitorable
+    public Set<Long> copy(InternalDataDefinition dataDefinition, Set<Long> entityIds) {
+        Set<Long> copiedIds = new HashSet<Long>();
+        for (Long entityId : entityIds) {
+            copiedIds.add(copy(dataDefinition, entityId).getId());
+        }
+        return copiedIds;
+    }
+
     public Entity copy(final InternalDataDefinition dataDefinition, final Entity sourceEntity) {
         Entity targetEntity = new DefaultEntity(sourceEntity.getPluginIdentifier(), sourceEntity.getName());
 

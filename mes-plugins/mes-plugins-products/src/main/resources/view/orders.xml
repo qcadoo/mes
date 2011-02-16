@@ -97,8 +97,8 @@
 						var finishOrder = #{window}.getRibbonItem("status.finishOrder");
 						var genQualityControl = #{window}.getRibbonItem("qualityContol.generateQualityControl");
 						var listener = {
-							onChange: function(selectedRecord) {
-								if (!selectedRecord) {
+							onChange: function(selectedEntitiesArray) {
+								if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 									print.disable();
 									pdfMaterialReq.disable();
 									xlsMaterialReq.disable();
@@ -114,7 +114,13 @@
 									finishOrder.disable();
 									genQualityControl.disable();
 								} else {
-									print.enable();
+									if (selectedEntitiesArray.length == 1) {
+										print.enable();
+										genealogy.enable();
+									} else {
+										print.disable();
+										genealogy.disable();
+									}
 									pdfMaterialReq.enable();
 									xlsMaterialReq.enable();
 									pdfWorker.enable();
@@ -123,20 +129,30 @@
 									xlsMachine.enable();
 									pdfProduct.enable();
 									xlsProduct.enable();
-									genealogy.enable();
 									newGenealogy.enable();
-									if(selectedRecord.fields.state == '01pending') {
+									var isPending = false;
+									var isInProgress = false;
+									for (var i in selectedEntitiesArray) {
+										if(selectedEntitiesArray[i].fields.state == '01pending') {
+											isPending = true;
+										} else if(selectedEntitiesArray[i].fields.state == '02inProgress') {
+											isInProgress = true;
+										}
+									}
+									if (isPending) {
 										activateOrder.enable();
-										genQualityControl.enable();
-										finishOrder.disable();
-									} else if(selectedRecord.fields.state == '02inProgress') {							
-										activateOrder.disable();
-										genQualityControl.enable();
-										finishOrder.enable();
 									} else {
 										activateOrder.disable();
+									}
+									if (isInProgress) {
+										finishOrder.enable();
+									} else {
+										finishOrder.disable();
+									}
+									if (isPending || isInProgress) {
+										genQualityControl.enable();
+									} else {
 										genQualityControl.disable();
-										finishOrder.disable();									
 									}
 								}
 							}
@@ -155,6 +171,7 @@
 				<option type="searchable" value="name,number,state,dateFrom,dateTo" />
 				<option type="orderable" value="name,number,state,dateFrom,dateTo" />
 				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
 				<option type="hasPredefinedFilters" value="true" />
 				<predefinedFilters>
 					<predefinedFilter name="all">

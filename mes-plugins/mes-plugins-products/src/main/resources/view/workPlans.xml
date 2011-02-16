@@ -59,6 +59,7 @@
 				<option type="searchable" value="name,generated,worker" />
 				<option type="orderable" value="name,generated,worker" />
 				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
 				<listener event="printWorkPlan" bean="com.qcadoo.mes.products.WorkPlanService" method="printWorkPlan"/>
 				<script>
 					<![CDATA[
@@ -69,15 +70,15 @@
 						var pdfProduct = #{window}.getRibbonItem("exportProduct.pdfProduct");
 						var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
 						var listener = {
-							onChange: function(selectedRecord) {
-								if (!selectedRecord) {
+							onChange: function(selectedEntitiesArray) {
+								if (!selectedEntitiesArray || selectedEntitiesArray.length != 1) {
 									pdfWorker.disable();
 									xlsWorker.disable();
 									pdfMachine.disable();
 									xlsMachine.disable();
 									pdfProduct.disable();
 									xlsProduct.disable();	
-								} else if (selectedRecord.fields.generated == '0') {
+								} else if (selectedEntitiesArray[0].fields.generated == '0') {
 									pdfWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
 									xlsWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
 									pdfMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");

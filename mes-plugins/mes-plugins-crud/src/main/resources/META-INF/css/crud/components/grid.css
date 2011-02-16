@@ -235,11 +235,27 @@ div.filterButton {
 	background: #ffdb67;
 	border-color: #dba700;
 }
+.multiselectMode .gridContainer .lightRow.ui-state-highlight,
+.multiselectMode .gridContainer .darkRow.ui-state-highlight,
+.multiselectMode .gridContainer .lightRow.lastAdded.ui-state-highlight,
+.multiselectMode .gridContainer .darkRow.lastAdded.ui-state-highlight {
+	//background: #ffe799;
+	//border-color: #ffc200;
+	background: #FDEDA2;
+	border-color: #E2D59A;
+}
 .gridContainer .lightRow.ui-state-highlight.ui-state-hover,
 .gridContainer .darkRow.ui-state-highlight.ui-state-hover,
 .gridContainer .lightRow.lastAdded.ui-state-highlight.ui-state-hover,
 .gridContainer .darkRow.lastAdded.ui-state-highlight.ui-state-hover {
 	background: #F8C426;
+}
+.multiselectMode .gridContainer .lightRow.ui-state-highlight.ui-state-hover,
+.multiselectMode .gridContainer .darkRow.ui-state-highlight.ui-state-hover,
+.multiselectMode .gridContainer .lightRow.lastAdded.ui-state-highlight.ui-state-hover,
+.multiselectMode .gridContainer .darkRow.lastAdded.ui-state-highlight.ui-state-hover {
+	//background: #FAD66C;
+	background: #EBD77D;
 }
 
 .gridContainer .ui-grid-ico-sort {

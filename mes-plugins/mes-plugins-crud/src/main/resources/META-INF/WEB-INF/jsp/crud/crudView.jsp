@@ -86,6 +86,8 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/formComponent.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/grid.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/grid/gridHeader.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/grid/gridModel.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/grid/gridFilters.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/textInput.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/textArea.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/passwordInput.js"></script>

@@ -26,7 +26,6 @@ package com.qcadoo.mes.internal;
 
 import com.qcadoo.mes.api.PluginManagementOperationStatus;
 
-
 public final class PluginManagementOperationStatusImpl implements PluginManagementOperationStatus {
 
     private boolean restartRequired = false;
