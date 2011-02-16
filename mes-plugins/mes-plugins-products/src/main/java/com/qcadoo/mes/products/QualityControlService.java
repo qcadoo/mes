@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,8 +35,6 @@ import com.qcadoo.mes.view.components.select.SelectComponentState;
 
 @Service
 public class QualityControlService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(QualityControlService.class);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -155,9 +151,8 @@ public class QualityControlService {
                     state.addMessage(translationService.translate("products.quality.control.result.missing", state.getLocale()),
                             MessageType.FAILURE);
                     return;
-                } else if (controlResult == null
-                        || (controlResult != null && ((controlResult.getFieldValue() != null) || !((String) controlResult
-                                .getFieldValue()).isEmpty()))) {
+                } else if (controlResult != null
+                        && ((controlResult.getFieldValue() != null) || !((String) controlResult.getFieldValue()).isEmpty())) {
 
                     FieldComponentState closed = (FieldComponentState) viewDefinitionState.getComponentByReference("closed");
                     FieldComponentState staff = (FieldComponentState) viewDefinitionState.getComponentByReference("staff");
@@ -183,10 +178,6 @@ public class QualityControlService {
                 FieldDefinition controlResultField = qualityControlDD.getField("controlResult");
 
                 Object controlResult = qualityControl.getField("controlResult");
-
-                LOG.info("\n\n CONTROL RESULT FIELD: " + controlResultField);
-
-                LOG.info("\n\n CONTROL RESULT: " + controlResult);
 
                 if (controlResultField != null && (controlResult == null || controlResult.toString().isEmpty())) {
                     state.addMessage(translationService.translate("products.quality.control.result.missing", state.getLocale()),
