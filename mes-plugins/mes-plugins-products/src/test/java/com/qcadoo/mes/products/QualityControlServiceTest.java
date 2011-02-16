@@ -27,6 +27,7 @@ import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.products.util.NumberGeneratorService;
@@ -198,10 +199,10 @@ public class QualityControlServiceTest {
         Entity qualityControl = mock(Entity.class);
         DataDefinition qualityControlDD = mock(DataDefinition.class);
         FieldComponentState controlResult = mock(FieldComponentState.class);
-
         given(dataDefinitionService.get("products", "qualityForOrder")).willReturn(qualityControlDD);
         given(qualityControlDD.get(7L)).willReturn(qualityControl);
         given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
+        given(qualityControl.getField("controlResult")).willReturn("01correct");
         given(controlResult.getFieldValue()).willReturn("01correct");
         given(state.getFieldValue()).willReturn(7L);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
@@ -224,9 +225,16 @@ public class QualityControlServiceTest {
         GridComponentState state = mock(GridComponentState.class, Mockito.RETURNS_DEEP_STUBS);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         FieldComponentState controlResult = mock(FieldComponentState.class);
+        Entity qualityControl = mock(Entity.class);
+        DataDefinition qualityControlDD = mock(DataDefinition.class);
+        FieldDefinition controlResultField = mock(FieldDefinition.class);
 
         given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(qualityControlDD.getField("controlResult")).willReturn(controlResultField);
         given(state.getFieldValue()).willReturn(7L);
+        given(qualityControl.getField("controlResult")).willReturn("");
+        given(dataDefinitionService.get("products", "qualityForOrder")).willReturn(qualityControlDD);
+        given(qualityControlDD.get(7L)).willReturn(qualityControl);
         given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
         given(translationService.translate("products.quality.control.result.missing", Locale.ENGLISH)).willReturn(
                 "products.quality.control.result.missing.pl");
