@@ -141,9 +141,6 @@ public class QualityControlService {
 
             String controlType = args[0];
 
-            DataDefinition qualityControlDD = dataDefinitionService.get("products", controlType);
-            Entity qualityControl = qualityControlDD.get((Long) state.getFieldValue());
-
             FieldComponentState controlResult = (FieldComponentState) viewDefinitionState
                     .getComponentByReference("controlResult");
 
@@ -152,9 +149,8 @@ public class QualityControlService {
                 state.addMessage(translationService.translate("products.quality.control.result.missing", state.getLocale()),
                         MessageType.FAILURE);
                 return;
-            } else if (controlResult == null
-                    || (controlResult != null && (controlResult.getFieldValue() != null) || !((String) controlResult
-                            .getFieldValue()).isEmpty())) {
+            } else if (controlResult != null
+                    && ((controlResult.getFieldValue() != null) || !((String) controlResult.getFieldValue()).isEmpty())) {
 
                 if (state instanceof FormComponentState) {
                     FieldComponentState closed = (FieldComponentState) viewDefinitionState.getComponentByReference("closed");
@@ -173,6 +169,9 @@ public class QualityControlService {
 
                     ((FormComponentState) state).performEvent(viewDefinitionState, "save", new String[0]);
                 } else if (state instanceof GridComponentState) {
+                    DataDefinition qualityControlDD = dataDefinitionService.get("products", controlType);
+                    Entity qualityControl = qualityControlDD.get((Long) state.getFieldValue());
+
                     qualityControl.setField("staff", securityService.getCurrentUserName());
                     qualityControl.setField("date", new Date());
                     qualityControl.setField("closed", true);
@@ -282,13 +281,14 @@ public class QualityControlService {
         FieldComponentState controlInstruction = (FieldComponentState) viewDefinitionState
                 .getComponentByReference("controlInstruction");
 
-        controlInstruction.setFieldValue("");
+        if (controlInstruction != null) {
+            controlInstruction.setFieldValue("");
+        }
 
         if (order.getFieldValue() != null) {
             String qualityControlInstruction = getInstructionForOrder(order.getFieldValue());
             if (qualityControlInstruction != null) {
                 controlInstruction.setFieldValue(qualityControlInstruction);
-                // state.performEvent(viewDefinitionState, "refresh", new String[0]);
             }
         }
     }
@@ -322,7 +322,8 @@ public class QualityControlService {
         }
 
         if (parameter != null) {
-            return (Boolean) parameter.getField("autoGenerateQualityControl");
+            return parameter.getField("autoGenerateQualityControl") == null ? false : (Boolean) parameter
+                    .getField("autoGenerateQualityControl");
         } else {
             return false;
         }
