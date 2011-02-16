@@ -151,7 +151,7 @@
 										<component type="lookup" name="productInComponent"
 											field="productInComponent" hasLabel="false">
 											<option type="expression"
-												value="#operationComponent['operation'].getField('name') + ': &lt;b&gt;' + #product['number'] + '&lt;/b&gt; - ' + #product['name']" />
+												value="#operationComponent['operation']['name'] + ': &lt;b&gt;' + #product['number'] + '&lt;/b&gt; - ' + #product['name']" />
 											<option type="fieldCode" value="product" />
 											<option type="textRepresentationOnDisabled" value="true" />
 										</component>

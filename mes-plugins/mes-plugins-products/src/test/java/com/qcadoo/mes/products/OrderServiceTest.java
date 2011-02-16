@@ -14,9 +14,14 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.Before;
@@ -29,6 +34,8 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.internal.EntityList;
+import com.qcadoo.mes.internal.EntityTree;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.Restriction;
@@ -41,10 +48,12 @@ import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ FormComponentState.class, LookupComponentState.class, FieldComponentState.class })
+@PrepareForTest({ FormComponentState.class, LookupComponentState.class, FieldComponentState.class, EntityTree.class,
+        EntityList.class, GridComponentState.class })
 public class OrderServiceTest {
 
     private OrderService orderService;
@@ -834,6 +843,805 @@ public class OrderServiceTest {
         verify(entity, never()).setField("startWorker", "user");
         verify(entity, never()).setField(eq("effectiveDateTo"), any(Date.class));
         verify(entity, never()).setField("endWorker", "admin");
+    }
+
+    @Test
+    public void shouldReturnTrueForTechnologyValidationIfThereIsNoOrder() throws Exception {
+        // given
+        Entity entity = mock(Entity.class);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+
+        // when
+        boolean results = orderService.checkIfOrderHasTechnology(dataDefinition, entity);
+
+        // then
+        assertTrue(results);
+    }
+
+    @Test
+    public void shouldReturnTrueForTechnologyValidationIfOrderHasTechnology() throws Exception {
+        // given
+        Entity entity = mock(Entity.class);
+        Entity order = mock(Entity.class);
+        Entity technology = mock(Entity.class);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        given(entity.getBelongsToField("order")).willReturn(order);
+        given(order.getField("technology")).willReturn(technology);
+
+        // when
+        boolean results = orderService.checkIfOrderHasTechnology(dataDefinition, entity);
+
+        // then
+        assertTrue(results);
+    }
+
+    @Test
+    public void shouldReturnFalseForTechnologyValidationIfOrderDoesNotHaveTechnology() throws Exception {
+        // given
+        Entity entity = mock(Entity.class);
+        Entity order = mock(Entity.class);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        FieldDefinition orderField = mock(FieldDefinition.class);
+        given(entity.getBelongsToField("order")).willReturn(order);
+        given(dataDefinition.getField("order")).willReturn(orderField);
+
+        // when
+        boolean results = orderService.checkIfOrderHasTechnology(dataDefinition, entity);
+
+        // then
+        assertFalse(results);
+        verify(entity).addError(orderField, "products.validate.global.error.orderMustHaveTechnology");
+    }
+
+    @Test
+    public void shouldReturnTrueForOperationValidationIfThereIsNoOrder() throws Exception {
+        // given
+        Entity entity = mock(Entity.class);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+
+        // when
+        boolean results = orderService.checkIfOrderTechnologyHasOperations(dataDefinition, entity);
+
+        // then
+        assertTrue(results);
+    }
+
+    @Test
+    public void shouldReturnTrueForOperationValidationIfOrderDoesNotHaveTechnology() throws Exception {
+        // given
+        Entity entity = mock(Entity.class);
+        Entity order = mock(Entity.class);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        given(entity.getBelongsToField("order")).willReturn(order);
+
+        // when
+        boolean results = orderService.checkIfOrderTechnologyHasOperations(dataDefinition, entity);
+
+        // then
+        assertTrue(results);
+    }
+
+    @Test
+    public void shouldReturnTrueForOperationValidationIfTechnologyHasOperations() throws Exception {
+        // given
+        Entity entity = mock(Entity.class);
+        Entity order = mock(Entity.class);
+        Entity technology = mock(Entity.class);
+        EntityTree operations = mock(EntityTree.class);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        given(entity.getBelongsToField("order")).willReturn(order);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getBelongsToField("technology")).willReturn(technology);
+        given(technology.getTreeField("operationComponents")).willReturn(operations);
+        given(operations.isEmpty()).willReturn(false);
+
+        // when
+        boolean results = orderService.checkIfOrderTechnologyHasOperations(dataDefinition, entity);
+
+        // then
+        assertTrue(results);
+    }
+
+    @Test
+    public void shouldReturnTrueForOperationValidationIfTechnologyDoesNotHaveOperations() throws Exception {
+        // given
+        Entity entity = mock(Entity.class);
+        Entity order = mock(Entity.class);
+        Entity technology = mock(Entity.class);
+        EntityTree operations = mock(EntityTree.class);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        given(entity.getBelongsToField("order")).willReturn(order);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getBelongsToField("technology")).willReturn(technology);
+        given(technology.getTreeField("operationComponents")).willReturn(operations);
+        given(operations.isEmpty()).willReturn(true);
+        FieldDefinition orderField = mock(FieldDefinition.class);
+        given(dataDefinition.getField("order")).willReturn(orderField);
+
+        // when
+        boolean results = orderService.checkIfOrderTechnologyHasOperations(dataDefinition, entity);
+
+        // then
+        assertFalse(results);
+        verify(entity).addError(orderField, "products.validate.global.error.orderTechnologyMustHaveOperation");
+    }
+
+    @Test
+    public void shouldFailActivationOrderIfGridHasNoSelectedEntity() throws Exception {
+        // given
+        ComponentState state = mock(ComponentState.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(translationService.translate("core.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
+                "core.grid.noRowSelectedError.pl");
+
+        // when
+        orderService.activateOrder(viewDefinitionState, state, new String[0]);
+
+        // then
+        verify(state).addMessage("core.grid.noRowSelectedError.pl", MessageType.FAILURE);
+    }
+
+    @Test
+    public void shouldFailActivationOrderIfFormHasNoIdentifier() throws Exception {
+        // given
+        FormComponentState state = mock(FormComponentState.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(translationService.translate("core.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
+                "core.form.entityWithoutIdentifier.pl");
+
+        // when
+        orderService.activateOrder(viewDefinitionState, state, new String[0]);
+
+        // then
+        verify(state).addMessage("core.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
+    }
+
+    @Test
+    public void shouldSetStateAsInProgressForFormOrderActivation() throws Exception {
+        // given
+        FormComponentState state = mock(FormComponentState.class);
+        FieldComponentState orderState = mock(FieldComponentState.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getFieldValue()).willReturn(117L);
+        given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
+
+        // when
+        orderService.activateOrder(viewDefinitionState, state, new String[] { "true" });
+
+        // then
+        verify(state).performEvent(viewDefinitionState, "save", new String[0]);
+        verify(orderState).setFieldValue("02inProgress");
+    }
+
+    @Test
+    public void shouldSetStateAsInProgressForGridOrderActivation() throws Exception {
+        // given
+        Entity order = mock(Entity.class);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        GridComponentState state = mock(GridComponentState.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getFieldValue()).willReturn(117L);
+        given(dataDefinitionService.get("products", "order")).willReturn(dataDefinition);
+        given(dataDefinition.get(117L)).willReturn(order);
+
+        // when
+        orderService.activateOrder(viewDefinitionState, state, new String[] { "true" });
+
+        // then
+        verify(order).setField("state", "02inProgress");
+        verify(dataDefinition).save(order);
+        verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
+    }
+
+    @Test
+    public void shouldFailFormOrderActivationIfCheckRequiredFailed() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        FormComponentState state = mock(FormComponentState.class);
+        FieldComponentState orderState = mock(FieldComponentState.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getFieldValue()).willReturn(117L);
+        given(dataDefinitionService.get("products", "order")).willReturn(dataDefinition);
+        given(dataDefinition.get(117L)).willReturn(order);
+        given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
+        prepareCheckRequiredBatch(order, false);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(translationService.translate("genealogies.message.batchNotFound", Locale.ENGLISH)).willReturn(
+                "genealogies.message.batchNotFound.pl");
+
+        // when
+        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+
+        // then
+        verify(state).addMessage("genealogies.message.batchNotFound.pl", MessageType.FAILURE);
+    }
+
+    @Test
+    public void shouldFailGridOrderActivationIfCheckRequiredFailed() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        GridComponentState state = mock(GridComponentState.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getFieldValue()).willReturn(117L);
+        given(dataDefinitionService.get("products", "order")).willReturn(dataDefinition);
+        given(dataDefinition.get(117L)).willReturn(order);
+        prepareCheckRequiredBatch(order, false);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(translationService.translate("genealogies.message.batchNotFound", Locale.ENGLISH)).willReturn(
+                "genealogies.message.batchNotFound.pl");
+
+        // when
+        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+
+        // then
+        verify(state).addMessage("genealogies.message.batchNotFound.pl", MessageType.INFO);
+    }
+
+    @Test
+    public void shouldFailFormOrderActivationIfIsQualityControlAutoCheckEnabledAndNotCheckIfAllQualityControlsAreClosed()
+            throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        FormComponentState state = mock(FormComponentState.class);
+        FieldComponentState orderState = mock(FieldComponentState.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getFieldValue()).willReturn(117L);
+        given(dataDefinitionService.get("products", "order")).willReturn(dataDefinition);
+        given(dataDefinition.get(117L)).willReturn(order);
+        given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
+        prepareCheckRequiredBatch(order, true);
+        prepareIsQualityControlAutoCheckEnabled(true);
+        prepareCheckIfAllQualityControlsAreClosed(order, false);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(translationService.translate("products.qualityControl.not.closed", Locale.ENGLISH)).willReturn(
+                "products.qualityControl.not.closed.pl");
+
+        // when
+        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+
+        // then
+        verify(state).addMessage("products.qualityControl.not.closed.pl", MessageType.FAILURE);
+    }
+
+    @Test
+    public void shouldFailGridOrderActivationIfIsQualityControlAutoCheckEnabledAndNotCheckIfAllQualityControlsAreClosed()
+            throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        GridComponentState state = mock(GridComponentState.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getFieldValue()).willReturn(117L);
+        given(dataDefinitionService.get("products", "order")).willReturn(dataDefinition);
+        given(dataDefinition.get(117L)).willReturn(order);
+        prepareCheckRequiredBatch(order, true);
+        prepareIsQualityControlAutoCheckEnabled(true);
+        prepareCheckIfAllQualityControlsAreClosed(order, false);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(translationService.translate("products.qualityControl.not.closed", Locale.ENGLISH)).willReturn(
+                "products.qualityControl.not.closed.pl");
+
+        // when
+        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+
+        // then
+        verify(state).addMessage("products.qualityControl.not.closed.pl", MessageType.FAILURE);
+    }
+
+    @Test
+    public void shouldSetStateAsDoneForFormOrderActivation() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        FormComponentState state = mock(FormComponentState.class);
+        FieldComponentState orderState = mock(FieldComponentState.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getFieldValue()).willReturn(117L);
+        given(dataDefinitionService.get("products", "order")).willReturn(dataDefinition);
+        given(dataDefinition.get(117L)).willReturn(order);
+        given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
+        prepareCheckRequiredBatch(order, true);
+        prepareIsQualityControlAutoCheckEnabled(false);
+        prepareCheckIfAllQualityControlsAreClosed(order, false);
+
+        // when
+        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+
+        // then
+        verify(state).performEvent(viewDefinitionState, "save", new String[0]);
+        verify(orderState).setFieldValue("03done");
+    }
+
+    @Test
+    public void shouldSetStateAsDoneForFormOrderActivation2() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        FormComponentState state = mock(FormComponentState.class);
+        FieldComponentState orderState = mock(FieldComponentState.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getFieldValue()).willReturn(117L);
+        given(dataDefinitionService.get("products", "order")).willReturn(dataDefinition);
+        given(dataDefinition.get(117L)).willReturn(order);
+        given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
+        prepareCheckRequiredBatch(order, true);
+        prepareIsQualityControlAutoCheckEnabled(true);
+        prepareCheckIfAllQualityControlsAreClosed(order, true);
+
+        // when
+        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+
+        // then
+        verify(state).performEvent(viewDefinitionState, "save", new String[0]);
+        verify(orderState).setFieldValue("03done");
+    }
+
+    @Test
+    public void shouldSetStateAsDoneForGridOrderActivation() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        GridComponentState state = mock(GridComponentState.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getFieldValue()).willReturn(117L);
+        given(dataDefinitionService.get("products", "order")).willReturn(dataDefinition);
+        given(dataDefinition.get(117L)).willReturn(order);
+        prepareCheckRequiredBatch(order, true);
+        prepareIsQualityControlAutoCheckEnabled(false);
+        prepareCheckIfAllQualityControlsAreClosed(order, false);
+
+        // when
+        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+
+        // then
+        verify(order).setField("state", "03done");
+        verify(dataDefinition).save(order);
+        verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
+    }
+
+    @Test
+    public void shouldSetStateAsDoneForGridOrderActivation2() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        GridComponentState state = mock(GridComponentState.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getFieldValue()).willReturn(117L);
+        given(dataDefinitionService.get("products", "order")).willReturn(dataDefinition);
+        given(dataDefinition.get(117L)).willReturn(order);
+        prepareCheckRequiredBatch(order, true);
+        prepareIsQualityControlAutoCheckEnabled(true);
+        prepareCheckIfAllQualityControlsAreClosed(order, true);
+
+        // when
+        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+
+        // then
+        verify(order).setField("state", "03done");
+        verify(dataDefinition).save(order);
+        verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
+    }
+
+    private void prepareCheckIfAllQualityControlsAreClosed(final Entity order, final boolean expected) {
+        if (expected) {
+            DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+            given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("01forBatch");
+            given(dataDefinitionService.get("products", "qualityForBatch")).willReturn(dataDefinition);
+            given(
+                    dataDefinition.find().restrictedWith(any(Restriction.class)).restrictedWith(any(Restriction.class)).list()
+                            .getTotalNumberOfEntities()).willReturn(0);
+        } else {
+            given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("");
+        }
+    }
+
+    private void prepareIsQualityControlAutoCheckEnabled(final boolean expected) {
+        if (expected) {
+            Entity entity = mock(Entity.class);
+            List<Entity> entities = new ArrayList<Entity>();
+            entities.add(entity);
+            given(entity.getField("checkDoneOrderForQuality")).willReturn(true);
+            given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+                    entities);
+        } else {
+            given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities().size())
+                    .willReturn(0);
+        }
+    }
+
+    private void prepareCheckRequiredBatch(final Entity order, final boolean expected) {
+        if (expected) {
+            given(order.getField("technology")).willReturn(null);
+        } else {
+            Entity technology = mock(Entity.class);
+            given(order.getField("technology")).willReturn(technology);
+            given(order.getHasManyField("genealogies").size()).willReturn(0);
+            given(technology.getField("batchRequired")).willReturn(false);
+            given(technology.getField("shiftFeatureRequired")).willReturn(true);
+        }
+    }
+
+    @Test
+    public void shouldReturnTrueIfThereIsNoOpenQualityForUnit() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("02forUnit");
+        given(dataDefinitionService.get("products", "qualityForUnit")).willReturn(dataDefinition);
+        given(
+                dataDefinition.find().restrictedWith(any(Restriction.class)).restrictedWith(any(Restriction.class)).list()
+                        .getTotalNumberOfEntities()).willReturn(0);
+
+        // when
+        boolean results = callCheckIfAllQualityControlsAreClosed(order);
+
+        // then
+        assertTrue(results);
+    }
+
+    private boolean callCheckIfAllQualityControlsAreClosed(final Entity order) throws NoSuchMethodException,
+            IllegalAccessException, InvocationTargetException {
+        Method method = OrderService.class.getDeclaredMethod("checkIfAllQualityControlsAreClosed", Entity.class);
+        method.setAccessible(true);
+        boolean results = (Boolean) method.invoke(orderService, order);
+        return results;
+    }
+
+    @Test
+    public void shouldReturnTrueIfThereIsNoOpenQualityForOrder() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("03forOrder");
+        given(dataDefinitionService.get("products", "qualityForUnit")).willReturn(dataDefinition);
+        given(
+                dataDefinition.find().restrictedWith(any(Restriction.class)).restrictedWith(any(Restriction.class)).list()
+                        .getTotalNumberOfEntities()).willReturn(0);
+
+        boolean results = callCheckIfAllQualityControlsAreClosed(order);
+
+        // then
+        assertTrue(results);
+    }
+
+    @Test
+    public void shouldReturnFalseIfThereIsOpenQualityForOperation() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("04forOperation");
+        given(dataDefinitionService.get("products", "qualityForOperation")).willReturn(dataDefinition);
+        given(
+                dataDefinition.find().restrictedWith(any(Restriction.class)).restrictedWith(any(Restriction.class)).list()
+                        .getTotalNumberOfEntities()).willReturn(1);
+
+        boolean results = callCheckIfAllQualityControlsAreClosed(order);
+
+        // then
+        assertFalse(results);
+    }
+
+    @Test
+    public void shouldFailCheckingRequiredBatchForBatchRequired() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getHasManyField("genealogies").size()).willReturn(0);
+        given(order.getField("technology")).willReturn(technology);
+        given(technology.getField("batchRequired")).willReturn(true);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertFalse(results);
+    }
+
+    @Test
+    public void shouldFailCheckingRequiredBatchForPostBatchRequired() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(0);
+        given(technology.getField("batchRequired")).willReturn(false);
+        given(technology.getField("shiftFeatureRequired")).willReturn(false);
+        given(technology.getField("postFeatureRequired")).willReturn(true);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertFalse(results);
+    }
+
+    @Test
+    public void shouldFailCheckingRequiredBatchForOtherBatchRequired() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(0);
+        given(technology.getField("batchRequired")).willReturn(false);
+        given(technology.getField("shiftFeatureRequired")).willReturn(false);
+        given(technology.getField("postFeatureRequired")).willReturn(false);
+        given(technology.getField("otherFeatureRequired")).willReturn(true);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertFalse(results);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFailCheckingRequiredBatchForOperationComponentBatchRequired() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity operationComponent = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity operationProductInComponents = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Iterator<Entity> iterator = mock(Iterator.class);
+        Iterator<Entity> iterator2 = mock(Iterator.class);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(0);
+        given(technology.getField("batchRequired")).willReturn(false);
+        given(technology.getField("shiftFeatureRequired")).willReturn(false);
+        given(technology.getField("postFeatureRequired")).willReturn(false);
+        given(technology.getField("otherFeatureRequired")).willReturn(false);
+        given(technology.getTreeField("operationComponents").iterator()).willReturn(iterator);
+        given(iterator.hasNext()).willReturn(true, false);
+        given(iterator.next()).willReturn(operationComponent);
+        given(operationComponent.getHasManyField("operationProductInComponents").iterator()).willReturn(iterator2);
+        given(iterator2.hasNext()).willReturn(true, false);
+        given(iterator2.next()).willReturn(operationProductInComponents);
+        given(operationProductInComponents.getField("batchRequired")).willReturn(true);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertFalse(results);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFailCheckingRequiredBatchForGenealogyBatchRequired() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Iterator<Entity> iterator = mock(Iterator.class);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
+        given(iterator.hasNext()).willReturn(true, false);
+        given(iterator.next()).willReturn(genealogy);
+        given(technology.getField("batchRequired")).willReturn(true);
+        given(genealogy.getField("batch")).willReturn(null);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertFalse(results);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFailCheckingRequiredBatchForGenealogyShiftBatchRequired() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Iterator<Entity> iterator = mock(Iterator.class);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
+        given(iterator.hasNext()).willReturn(true, false);
+        given(iterator.next()).willReturn(genealogy);
+        given(technology.getField("batchRequired")).willReturn(true);
+        given(technology.getField("shiftFeatureRequired")).willReturn(true);
+        given(genealogy.getHasManyField("shiftFeatures").size()).willReturn(0);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertFalse(results);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFailCheckingRequiredBatchForGenealogyPostBatchRequired() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Iterator<Entity> iterator = mock(Iterator.class);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
+        given(iterator.hasNext()).willReturn(true, false);
+        given(iterator.next()).willReturn(genealogy);
+        given(technology.getField("batchRequired")).willReturn(false);
+        given(technology.getField("shiftFeatureRequired")).willReturn(true);
+        given(genealogy.getHasManyField("shiftFeatures").size()).willReturn(1);
+        given(technology.getField("postFeatureRequired")).willReturn(true);
+        given(genealogy.getHasManyField("postFeatures").size()).willReturn(0);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertFalse(results);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFailCheckingRequiredBatchForGenealogyOtherBatchRequired() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Iterator<Entity> iterator = mock(Iterator.class);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
+        given(iterator.hasNext()).willReturn(true, false);
+        given(iterator.next()).willReturn(genealogy);
+        given(technology.getField("batchRequired")).willReturn(false);
+        given(technology.getField("shiftFeatureRequired")).willReturn(false);
+        given(technology.getField("postFeatureRequired")).willReturn(true);
+        given(genealogy.getHasManyField("postFeatures").size()).willReturn(1);
+        given(technology.getField("otherFeatureRequired")).willReturn(true);
+        given(genealogy.getHasManyField("otherFeatures").size()).willReturn(0);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertFalse(results);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFailCheckingRequiredBatchForGenealogyComponentsBatchRequired() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity productInComponent = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Iterator<Entity> iterator = mock(Iterator.class);
+        Iterator<Entity> iterator2 = mock(Iterator.class);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
+        given(iterator.hasNext()).willReturn(true, false);
+        given(iterator.next()).willReturn(genealogy);
+        given(technology.getField("batchRequired")).willReturn(false);
+        given(technology.getField("shiftFeatureRequired")).willReturn(false);
+        given(technology.getField("postFeatureRequired")).willReturn(false);
+        given(technology.getField("otherFeatureRequired")).willReturn(true);
+        given(genealogy.getHasManyField("otherFeatures").size()).willReturn(1);
+        given(genealogy.getHasManyField("productInComponents").iterator()).willReturn(iterator2);
+        given(iterator2.hasNext()).willReturn(true, false);
+        given(iterator2.next()).willReturn(productInComponent);
+        given(productInComponent.getBelongsToField("productInComponent").getField("batchRequired")).willReturn(true);
+        given(productInComponent.getHasManyField("batch").size()).willReturn(0);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertFalse(results);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFailCheckingRequiredBatchForGenealogyComponentsBatchRequired2() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity productInComponent = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Iterator<Entity> iterator = mock(Iterator.class);
+        Iterator<Entity> iterator2 = mock(Iterator.class);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
+        given(iterator.hasNext()).willReturn(true, false);
+        given(iterator.next()).willReturn(genealogy);
+        given(technology.getField("batchRequired")).willReturn(false);
+        given(technology.getField("shiftFeatureRequired")).willReturn(false);
+        given(technology.getField("postFeatureRequired")).willReturn(false);
+        given(technology.getField("otherFeatureRequired")).willReturn(true);
+        given(genealogy.getHasManyField("otherFeatures").size()).willReturn(1);
+        given(genealogy.getHasManyField("productInComponents").iterator()).willReturn(iterator2);
+        given(iterator2.hasNext()).willReturn(true, false);
+        given(iterator2.next()).willReturn(productInComponent);
+        given(productInComponent.getBelongsToField("productInComponent").getField("batchRequired")).willReturn(true);
+        given(productInComponent.getHasManyField("batch").size()).willReturn(1);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertTrue(results);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFailCheckingRequiredBatchForGenealogyComponentsBatchRequired3() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity productInComponent = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Iterator<Entity> iterator = mock(Iterator.class);
+        Iterator<Entity> iterator2 = mock(Iterator.class);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
+        given(iterator.hasNext()).willReturn(true, false);
+        given(iterator.next()).willReturn(genealogy);
+        given(technology.getField("batchRequired")).willReturn(false);
+        given(technology.getField("shiftFeatureRequired")).willReturn(false);
+        given(technology.getField("postFeatureRequired")).willReturn(false);
+        given(technology.getField("otherFeatureRequired")).willReturn(true);
+        given(genealogy.getHasManyField("otherFeatures").size()).willReturn(1);
+        given(genealogy.getHasManyField("productInComponents").iterator()).willReturn(iterator2);
+        given(iterator2.hasNext()).willReturn(true, false);
+        given(iterator2.next()).willReturn(productInComponent);
+        given(productInComponent.getBelongsToField("productInComponent").getField("batchRequired")).willReturn(false);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertTrue(results);
+    }
+
+    @Test
+    public void shouldSuccessCheckingRequiredBatch() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(technology);
+        given(order.getHasManyField("genealogies").size()).willReturn(1);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertTrue(results);
+    }
+
+    @Test
+    public void shouldSuccessCheckingRequiredBatchIfThereIsNoTechnology() throws Exception {
+        // given
+        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+        given(order.getField("technology")).willReturn(null);
+
+        // when
+        boolean results = callCheckRequiredBatch(order);
+
+        // then
+        assertTrue(results);
+    }
+
+    private boolean callCheckRequiredBatch(final Entity order) throws NoSuchMethodException, IllegalAccessException,
+            InvocationTargetException {
+        Method method = OrderService.class.getDeclaredMethod("checkRequiredBatch", Entity.class);
+        method.setAccessible(true);
+        boolean results = (Boolean) method.invoke(orderService, order);
+        return results;
     }
 
 }

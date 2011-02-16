@@ -39,7 +39,8 @@
 
 <div class="component_element component_form_element component_element_${componentType}">
 
-	<c:set var="labelWidth" value="${component['jspOptions']['labelWidth']}" />
+	<c:set var="hasLabel" value="${component['hasLabel'] && component['jspOptions']['translations']['label'] != ''}" />
+	<c:set var="labelWidth" value="${hasLabel ? component['jspOptions']['labelWidth'] : 0}" />
 	
 	<c:set var="isInputBox" value="${'textarea' == componentType || 'input' == componentType || 'password' == componentType || 'calendar' == componentType || 'lookup' == componentType}"/>
 
@@ -51,7 +52,7 @@
 		<c:set var="componentAlign" value="left"/>
 	</c:if>
 	
-	<div class="labelbox ${labelboxClass}" style="width: ${labelWidth}%"><div class="label_h"></div><div class="label" ><c:if test="${component['hasLabel']}"><span style="display: inline" id="${component['path']}_labelDiv">${component['jspOptions']['translations']['label']}</span></c:if><c:if test="${component['hasDescription']}"><div class="description_box">
+	<div class="labelbox ${labelboxClass}" style="width: ${labelWidth}%"><div class="label_h"></div><div class="label" ><c:if test="${hasLabel}"><span style="display: inline" id="${component['path']}_labelDiv">${component['jspOptions']['translations']['label']}</span></c:if><c:if test="${component['hasDescription']}"><div class="description_box">
 				<div id="${component['path']}_description_icon" class="description_icon"></div>
 				<div id="${component['path']}_description_message" class="description_message" style="display: none"><span>${component['jspOptions']['translations']['descriptionHeader']}</span><p>${component['jspOptions']['translations']['description']}</p></div></div></c:if><div class="error_box">
 				<div id="${component['path']}_error_icon" class="error_icon"></div>

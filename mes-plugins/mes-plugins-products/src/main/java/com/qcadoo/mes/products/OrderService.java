@@ -146,7 +146,6 @@ public final class OrderService {
                                 MessageType.FAILURE);
                         return;
                     }
-
                     if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
                         state.addMessage(translationService.translate("products.qualityControl.not.closed", state.getLocale()),
                                 MessageType.FAILURE);
@@ -193,28 +192,35 @@ public final class OrderService {
 
     private boolean checkIfAllQualityControlsAreClosed(final Entity order) {
 
-        String controlType = order.getBelongsToField("technology").getField("qualityControlType").toString();
+        Object controlTypeField = order.getBelongsToField("technology").getField("qualityControlType");
 
-        DataDefinition qualityControlDD = null;
+        if (controlTypeField != null) {
 
-        if (controlType.equals("01forBatch")) {
-            qualityControlDD = dataDefinitionService.get("products", "qualityForBatch");
-        } else if (controlType.equals("02forUnit")) {
-            qualityControlDD = dataDefinitionService.get("products", "qualityForUnit");
-        } else if (controlType.equals("03forOrder")) {
-            qualityControlDD = dataDefinitionService.get("products", "qualityForOrder");
-        } else if (controlType.equals("04forOperation")) {
-            qualityControlDD = dataDefinitionService.get("products", "qualityForOperation");
-        }
+            String controlType = controlTypeField.toString();
 
-        if (qualityControlDD != null) {
-            SearchCriteriaBuilder searchCriteria = qualityControlDD.find()
-                    .restrictedWith(Restrictions.belongsTo(qualityControlDD.getField("order"), order.getId()))
-                    .restrictedWith(Restrictions.eq("closed", false));
+            DataDefinition qualityControlDD = null;
 
-            SearchResult searchResult = searchCriteria.list();
+            if (controlType.equals("01forBatch")) {
+                qualityControlDD = dataDefinitionService.get("products", "qualityForBatch");
+            } else if (controlType.equals("02forUnit")) {
+                qualityControlDD = dataDefinitionService.get("products", "qualityForUnit");
+            } else if (controlType.equals("03forOrder")) {
+                qualityControlDD = dataDefinitionService.get("products", "qualityForOrder");
+            } else if (controlType.equals("04forOperation")) {
+                qualityControlDD = dataDefinitionService.get("products", "qualityForOperation");
+            }
 
-            return (searchResult.getTotalNumberOfEntities() <= 0);
+            if (qualityControlDD != null) {
+                SearchCriteriaBuilder searchCriteria = qualityControlDD.find()
+                        .restrictedWith(Restrictions.belongsTo(qualityControlDD.getField("order"), order.getId()))
+                        .restrictedWith(Restrictions.eq("closed", false));
+
+                SearchResult searchResult = searchCriteria.list();
+
+                return (searchResult.getTotalNumberOfEntities() <= 0);
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -406,7 +412,7 @@ public final class OrderService {
         }
     }
 
-    private boolean checkRequiredBatch(final Entity order) {
+    public boolean checkRequiredBatch(final Entity order) {
         Entity technology = (Entity) order.getField("technology");
         if (technology != null) {
             if (order.getHasManyField("genealogies").size() == 0) {
@@ -453,7 +459,7 @@ public final class OrderService {
                     }
                 }
                 for (Entity genealogyProductIn : genealogy.getHasManyField("productInComponents")) {
-                    if ((Boolean) ((Entity) genealogyProductIn.getField("productInComponent")).getField("batchRequired")) {
+                    if ((Boolean) (genealogyProductIn.getBelongsToField("productInComponent").getField("batchRequired"))) {
                         List<Entity> entityList = genealogyProductIn.getHasManyField("batch");
                         if (entityList.size() == 0) {
                             return false;

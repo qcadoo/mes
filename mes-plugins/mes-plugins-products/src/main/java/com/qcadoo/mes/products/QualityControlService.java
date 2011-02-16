@@ -1,6 +1,7 @@
 package com.qcadoo.mes.products;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,7 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.EntityTree;
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
@@ -140,15 +142,18 @@ public class QualityControlService {
 
             String controlType = args[0];
 
-            DataDefinition qualityControlDD = dataDefinitionService.get("products", controlType);
-            Entity qualityControl = qualityControlDD.get((Long) state.getFieldValue());
+            if (state instanceof FormComponentState) {
+                FieldComponentState controlResult = (FieldComponentState) viewDefinitionState
+                        .getComponentByReference("controlResult");
 
-            FieldComponentState controlResult = (FieldComponentState) viewDefinitionState
-                    .getComponentByReference("controlResult");
+                if (controlResult != null
+                        && (controlResult.getFieldValue() == null || ((String) controlResult.getFieldValue()).isEmpty())) {
+                    state.addMessage(translationService.translate("products.quality.control.result.missing", state.getLocale()),
+                            MessageType.FAILURE);
+                    return;
+                } else if (controlResult != null
+                        && ((controlResult.getFieldValue() != null) || !((String) controlResult.getFieldValue()).isEmpty())) {
 
-            if (controlResult == null || controlResult.getFieldValue() != null) {
-
-                if (state instanceof FormComponentState) {
                     FieldComponentState closed = (FieldComponentState) viewDefinitionState.getComponentByReference("closed");
                     FieldComponentState staff = (FieldComponentState) viewDefinitionState.getComponentByReference("staff");
                     FieldComponentState date = (FieldComponentState) viewDefinitionState.getComponentByReference("date");
@@ -164,7 +169,22 @@ public class QualityControlService {
                     closed.setFieldValue(true);
 
                     ((FormComponentState) state).performEvent(viewDefinitionState, "save", new String[0]);
-                } else if (state instanceof GridComponentState) {
+                }
+
+            } else if (state instanceof GridComponentState) {
+                DataDefinition qualityControlDD = dataDefinitionService.get("products", controlType);
+                Entity qualityControl = qualityControlDD.get((Long) state.getFieldValue());
+
+                FieldDefinition controlResultField = qualityControlDD.getField("controlResult");
+
+                Object controlResult = qualityControl.getField("controlResult");
+
+                if (controlResultField != null && (controlResult == null || controlResult.toString().isEmpty())) {
+                    state.addMessage(translationService.translate("products.quality.control.result.missing", state.getLocale()),
+                            MessageType.FAILURE);
+                    return;
+                } else if (controlResultField == null || (controlResult != null && !controlResult.toString().isEmpty())) {
+
                     qualityControl.setField("staff", securityService.getCurrentUserName());
                     qualityControl.setField("date", new Date());
                     qualityControl.setField("closed", true);
@@ -172,13 +192,9 @@ public class QualityControlService {
 
                     ((GridComponentState) state).performEvent(viewDefinitionState, "refresh", new String[0]);
                 }
-
-                state.addMessage(translationService.translate("products.quality.control.closed.success", state.getLocale()),
-                        MessageType.SUCCESS);
-            } else if (controlResult.getFieldValue() == null) {
-                state.addMessage(translationService.translate("products.quality.control.result.missing", state.getLocale()),
-                        MessageType.FAILURE);
             }
+            state.addMessage(translationService.translate("products.quality.control.closed.success", state.getLocale()),
+                    MessageType.SUCCESS);
         } else {
             if (state instanceof FormComponentState) {
                 state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
@@ -201,10 +217,15 @@ public class QualityControlService {
     public void generateOnSaveQualityControl(final DataDefinition dataDefinition, final Entity entity) {
         Entity order = entity.getBelongsToField("order");
         Entity technology = order.getBelongsToField("technology");
-        boolean qualityControlType = technology.getField("qualityControlType").toString().equals("01forBatch");
 
-        if (isQualityControlAutoGenEnabled() || qualityControlType) {
-            createAndSaveControlForSingleBatch(order, entity);
+        Object qualityControl = technology.getField("qualityControlType");
+
+        if (qualityControl != null) {
+            boolean qualityControlType = technology.getField("qualityControlType").toString().equals("01forBatch");
+
+            if (isQualityControlAutoGenEnabled() || qualityControlType) {
+                createAndSaveControlForSingleBatch(order, entity);
+            }
         }
     }
 
@@ -272,13 +293,16 @@ public class QualityControlService {
         FieldComponentState controlInstruction = (FieldComponentState) viewDefinitionState
                 .getComponentByReference("controlInstruction");
 
-        controlInstruction.setFieldValue("");
+        if (controlInstruction != null) {
+            controlInstruction.setFieldValue("");
+        } else {
+            return;
+        }
 
         if (order.getFieldValue() != null) {
             String qualityControlInstruction = getInstructionForOrder(order.getFieldValue());
             if (qualityControlInstruction != null) {
                 controlInstruction.setFieldValue(qualityControlInstruction);
-                // state.performEvent(viewDefinitionState, "refresh", new String[0]);
             }
         }
     }
@@ -312,7 +336,8 @@ public class QualityControlService {
         }
 
         if (parameter != null) {
-            return (Boolean) parameter.getField("autoGenerateQualityControl");
+            return parameter.getField("autoGenerateQualityControl") == null ? false : (Boolean) parameter
+                    .getField("autoGenerateQualityControl");
         } else {
             return false;
         }
@@ -331,7 +356,8 @@ public class QualityControlService {
 
             BigDecimal doneQuantity = (BigDecimal) order.getField("doneQuantity");
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-            BigDecimal numberOfControls = doneQuantity != null ? doneQuantity.divide(sampling) : plannedQuantity.divide(sampling);
+            BigDecimal numberOfControls = doneQuantity != null ? doneQuantity.divide(sampling, RoundingMode.HALF_UP)
+                    : plannedQuantity.divide(sampling, RoundingMode.HALF_UP);
 
             for (int i = 0; i <= numberOfControls.intValue(); i++) {
                 DataDefinition qualityForUnitDataDefinition = dataDefinitionService.get("products", "qualityForUnit");
