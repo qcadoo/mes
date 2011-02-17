@@ -57,6 +57,9 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     @Value("${loadTestData}")
     private boolean addTestData;
 
+    @Value("${showSystemInfo}")
+    private boolean showSystemInfo;
+
     private UsersGroup adminGroup;
 
     private UsersGroup supervisorsGroup;
@@ -119,8 +122,11 @@ public final class DatabasePreparationService implements ApplicationListener<Con
 
         addMenuViewDefinitionItem("home", "core.menu.home", menuCategoryHome, getMenuViewDefinition("homePage"), 1);
         addMenuViewDefinitionItem("profile", "core.menu.profile", menuCategoryHome, getMenuViewDefinition("profile"), 2);
-        addMenuViewDefinitionItem("systemInfo", "core.menu.systemInfo", menuCategoryHome,
-                getMenuViewDefinition("systemInfoView"), 3);
+
+        if (showSystemInfo) {
+            addMenuViewDefinitionItem("systemInfo", "core.menu.systemInfo", menuCategoryHome,
+                    getMenuViewDefinition("systemInfoView"), 3);
+        }
 
         addMenuViewDefinitionItem("technologies", "products.menu.products.technologies", menuCategoryTechnology,
                 technologyGridView, 2);
@@ -214,7 +220,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         LOG.info("Adding parameters");
         BasicParameter parameter = new BasicParameter();
         parameter.setCheckDoneOrderForQuality(false);
-        parameter.setBatchForDoneOrder("01active");
+        parameter.setBatchForDoneOrder("01none");
         sessionFactory.getCurrentSession().save(parameter);
     }
 

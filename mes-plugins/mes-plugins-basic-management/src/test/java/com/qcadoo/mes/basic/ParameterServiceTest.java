@@ -43,7 +43,7 @@ public class ParameterServiceTest {
         // given
         Entity newEntity = new DefaultEntity("basic", "parameter");
         newEntity.setField("checkDoneOrderForQuality", false);
-        newEntity.setField("batchForDoneOrder", "01active");
+        newEntity.setField("batchForDoneOrder", "01none");
 
         Entity savedEntity = new DefaultEntity("basic", "parameter", 15L);
 

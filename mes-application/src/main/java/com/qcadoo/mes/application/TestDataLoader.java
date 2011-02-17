@@ -202,7 +202,6 @@ public final class TestDataLoader {
                 + " description " + values.get("description"));
         machine.setNumber(values.get("id"));
         machine.setName(values.get("name"));
-        machine.setProductionLine(Boolean.getBoolean(values.get("prod_line")));
         machine.setDescription(values.get("description"));
 
         if (LOG.isDebugEnabled()) {

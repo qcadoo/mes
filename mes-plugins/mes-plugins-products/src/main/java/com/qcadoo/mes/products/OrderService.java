@@ -30,6 +30,7 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
@@ -95,6 +96,31 @@ public final class OrderService {
         }
     }
 
+    public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        FieldComponentState dateFrom = (FieldComponentState) state;
+        FieldComponentState dateTo = (FieldComponentState) viewDefinitionState.getComponentByReference("dateTo");
+
+        if (!StringUtils.hasText((String) dateTo.getFieldValue()) && StringUtils.hasText((String) dateFrom.getFieldValue())) {
+            dateTo.setFieldValue(dateFrom.getFieldValue());
+        }
+    }
+
+    public void setDefaultNameUsingProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (!(state instanceof LookupComponentState)) {
+            return;
+        }
+
+        LookupComponentState product = (LookupComponentState) state;
+        FieldComponentState name = (FieldComponentState) viewDefinitionState.getComponentByReference("name");
+
+        if (!StringUtils.hasText((String) name.getFieldValue())) {
+            Entity entity = dataDefinitionService.get("products", "product").get(product.getFieldValue());
+            name.setFieldValue(translationService.translate("products.order.name.default", state.getLocale(),
+                    entity.getStringField("number")));
+        }
+    }
+
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof LookupComponentState)) {
             return;
@@ -141,7 +167,7 @@ public final class OrderService {
                 if (Boolean.parseBoolean(args[0])) {
                     orderState.setFieldValue("02inProgress");
                 } else {
-                    if (!checkRequiredBatch(order)) {
+                    if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
                         state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
                                 MessageType.FAILURE);
                         return;
@@ -160,7 +186,7 @@ public final class OrderService {
                 if (Boolean.parseBoolean(args[0])) {
                     order.setField("state", "02inProgress");
                 } else {
-                    if (!checkRequiredBatch(order)) {
+                    if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
                         state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
                                 MessageType.INFO);
                         return;
@@ -409,6 +435,19 @@ public final class OrderService {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public boolean checkAutogenealogyRequired() {
+        SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list();
+        Entity parameter = null;
+        if (searchResult.getEntities().size() > 0) {
+            parameter = searchResult.getEntities().get(0);
+        }
+        if (parameter != null) {
+            return !(parameter.getField("batchForDoneOrder").toString().equals("01none"));
+        } else {
+            return false;
         }
     }
 
