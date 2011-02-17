@@ -55,6 +55,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var linkListener;
 	
+	var selectAllCheckBox;
+	
 	var currentState = {
 		selectedEntityId: null,
 		selectedEntities: new Object(),
@@ -266,6 +268,20 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			element.addClass("multiselectMode");
 		} else {
 			element.removeClass("multiselectMode");
+		}
+		
+		// UPDATE SELECT ALL BUTTON
+		var isAllSelected = true;
+		for (var i in currentEntities) {
+			if (currentState.selectedEntities[i] != true) {
+				isAllSelected = false;
+				break;
+			}
+		}
+		if (isAllSelected) {
+			selectAllCheckBox.attr('checked', true);
+		} else {
+			selectAllCheckBox.attr('checked', false);
 		}
 		
 		// UPDATE HEADER
@@ -531,7 +547,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
 		
 		$("#cb_"+gridParameters.element).hide(); // hide 'select add' checkbox
-		$("#jqgh_cb").hide();
+		selectAllCheckBox = $("<input type='checkbox'>");
+		$("#"+elementSearchName+" #jqgh_cb").append(selectAllCheckBox);
+		selectAllCheckBox.change(function(){
+			onSelectAllClicked();
+		});
 		
 		for (var i in gridParameters.sortColumns) {
 			$("#"+gridParameters.modifiedPath+"_grid_"+gridParameters.sortColumns[i]).addClass("sortableColumn");
@@ -592,6 +612,28 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 		}
 		currentOrder = { column: order.column, direction: order.direction };
+	}
+	
+	function onSelectAllClicked() {
+		if (selectAllCheckBox.is(':checked')) {
+			for (var i in currentEntities) {
+				if (currentState.selectedEntities[i] != true) {
+					grid.setSelection(i, false);
+					currentState.selectedEntities[i] = true;
+				}
+			}
+		} else {
+			for (var i in currentState.selectedEntities) {
+				if (currentState.selectedEntities[i]) {
+					grid.setSelection(i, false);
+					currentState.selectedEntities[i] = null;
+				}
+			}
+		}
+		aferSelectionUpdate();
+		if (gridParameters.listeners.length > 0) {
+			onSelectChange();
+		}
 	}
 	
 	function onSortColumnChange(index,iCol,sortorder) {		
