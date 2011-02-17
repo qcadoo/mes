@@ -262,6 +262,9 @@
 						
 						this.addOnChangeListener({
 							onSetValue: function(value) {
+								if (! value.content || ! value.content.entityId) {
+									return;
+								}
 								var state = #{state}.getValue().content.value;
 								if (state && state == "03done") {
 									save.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
