@@ -40,11 +40,15 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 	var datepicker;
 	var datepickerElement;
 	
+	var elementPath = this.elementPath;
+	
 	var opened = false;
 	
 	var skipButtonClick = false;
 	
 	var isTriggerBootonHovered = false;
+	
+	var hasListeners = (this.options.listeners.length > 0) ? true : false;
 	
 	if (this.options.referenceName) {
 		_mainController.registerReferenceName(this.options.referenceName, this);
@@ -72,6 +76,7 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 		options.onSelect = function(dateText, inst) {
 			datepickerElement.slideUp(ANIMATION_LENGTH);
 			opened = false;
+			inputDataChanged();
 		}
 		
 		datepickerElement = $("<div>").css("position", "absolute").css("zIndex", 100).css("right", "15px");
@@ -145,6 +150,16 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 		}).blur(function() {
 			calendar.removeClass("lightHover");
 		});
+		
+		input.change(function() {
+			inputDataChanged();
+		});
+	}
+	
+	function inputDataChanged() {
+		if (hasListeners) {
+			mainController.callEvent("onChange", elementPath, null, null, null);
+		}
 	}
 	
 	this.setFormComponentEnabled = function(isEnabled) {

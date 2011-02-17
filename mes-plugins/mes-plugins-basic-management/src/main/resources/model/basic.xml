@@ -36,7 +36,6 @@
 			<validatesUniqueness />
 			<validatesLength max="255"/>
 		</string>
-		<boolean name="productionLine"/>
 		<string name="description">
 			<validatesLength max="2048"/>
 		</string>
@@ -64,7 +63,7 @@
 		<boolean name="autoGenerateQualityControl">
 			<validatesPresence />
 		</boolean>
-		<enum name="batchForDoneOrder" values="01active,02lastUsed">
+		<enum name="batchForDoneOrder" values="01none,02active,03lastUsed" default="01none">
 			<validatesPresence />
 		</enum>
 	</model>

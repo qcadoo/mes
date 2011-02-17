@@ -58,9 +58,9 @@ public class AutoGenealogyService {
                         parameter = searchResult.getEntities().get(0);
                     }
                     if (parameter != null) {
-                        if (parameter.getField("batchForDoneOrder").toString().equals("01active")) {
+                        if (parameter.getField("batchForDoneOrder").toString().equals("02active")) {
                             createGenealogy(state, order, false);
-                        } else {
+                        } else if (parameter.getField("batchForDoneOrder").toString().equals("03lastUsed")) {
                             createGenealogy(state, order, true);
                         }
                     }

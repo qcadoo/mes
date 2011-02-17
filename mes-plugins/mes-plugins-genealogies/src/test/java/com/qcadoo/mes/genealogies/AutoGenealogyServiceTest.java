@@ -506,7 +506,7 @@ public class AutoGenealogyServiceTest {
         given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
 
         given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
-                getParameter("01active"));
+                getParameter("02active"));
 
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
@@ -560,7 +560,7 @@ public class AutoGenealogyServiceTest {
         given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
 
         given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
-                getParameter("02lastUsed"));
+                getParameter("03lastUsed"));
 
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);

@@ -1051,6 +1051,11 @@ public class OrderServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(translationService.translate("genealogies.message.batchNotFound", Locale.ENGLISH)).willReturn(
                 "genealogies.message.batchNotFound.pl");
+        Entity parameter = mock(Entity.class);
+        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+                Collections.singletonList(parameter));
+        given(parameter.getField("batchForDoneOrder")).willReturn("02");
+        given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
         orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
@@ -1073,6 +1078,11 @@ public class OrderServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(translationService.translate("genealogies.message.batchNotFound", Locale.ENGLISH)).willReturn(
                 "genealogies.message.batchNotFound.pl");
+        Entity parameter = mock(Entity.class);
+        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+                Collections.singletonList(parameter));
+        given(parameter.getField("batchForDoneOrder")).willReturn("02");
+        given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
         orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
@@ -1100,6 +1110,11 @@ public class OrderServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(translationService.translate("products.qualityControl.not.closed", Locale.ENGLISH)).willReturn(
                 "products.qualityControl.not.closed.pl");
+        Entity parameter = mock(Entity.class);
+        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+                Collections.singletonList(parameter));
+        given(parameter.getField("batchForDoneOrder")).willReturn("02");
+        given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
         orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
@@ -1125,6 +1140,11 @@ public class OrderServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(translationService.translate("products.qualityControl.not.closed", Locale.ENGLISH)).willReturn(
                 "products.qualityControl.not.closed.pl");
+        Entity parameter = mock(Entity.class);
+        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+                Collections.singletonList(parameter));
+        given(parameter.getField("batchForDoneOrder")).willReturn("02");
+        given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
         orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
@@ -1172,6 +1192,11 @@ public class OrderServiceTest {
         prepareCheckRequiredBatch(order, true);
         prepareIsQualityControlAutoCheckEnabled(true);
         prepareCheckIfAllQualityControlsAreClosed(order, true);
+        Entity parameter = mock(Entity.class);
+        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+                Collections.singletonList(parameter));
+        given(parameter.getField("batchForDoneOrder")).willReturn("02");
+        given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
         orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
@@ -1217,6 +1242,11 @@ public class OrderServiceTest {
         prepareCheckRequiredBatch(order, true);
         prepareIsQualityControlAutoCheckEnabled(true);
         prepareCheckIfAllQualityControlsAreClosed(order, true);
+        Entity parameter = mock(Entity.class);
+        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+                Collections.singletonList(parameter));
+        given(parameter.getField("batchForDoneOrder")).willReturn("02");
+        given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
         orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
