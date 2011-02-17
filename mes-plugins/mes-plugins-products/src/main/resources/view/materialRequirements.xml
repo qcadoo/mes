@@ -54,9 +54,12 @@
 						
 						var listener = {
 							onChange: function(selectedEntitiesArray) {
-								if (!selectedEntitiesArray || selectedEntitiesArray.length != 1) {
+								if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 									xlsRibbonItem.disable();
-									pdfRibbonItem.disable();	
+									pdfRibbonItem.disable();
+								} else if (selectedEntitiesArray.length > 1) {
+									xlsRibbonItem.disable("#{translate(moreThanOneRecordSelected)}");
+									pdfRibbonItem.disable("#{translate(moreThanOneRecordSelected)}");	
 								} else if (selectedEntitiesArray[0].fields.generated == '0') {
 									xlsRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
 									pdfRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");								

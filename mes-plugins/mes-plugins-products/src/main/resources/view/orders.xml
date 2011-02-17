@@ -117,9 +117,28 @@
 									if (selectedEntitiesArray.length == 1) {
 										print.enable();
 										genealogy.enable();
+										newGenealogy.enable();
+										var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
+										if (selectedEntityStatus == '01pending') {
+											activateOrder.enable();
+											finishOrder.disable();
+											genQualityControl.enable();
+										} else if (selectedEntityStatus == '02inProgress') {
+											activateOrder.disable();
+											finishOrder.enable();
+											genQualityControl.enable();
+										} else {
+											activateOrder.disable();
+											finishOrder.disable();
+											genQualityControl.disable();
+										}
 									} else {
-										print.disable();
-										genealogy.disable();
+										print.disable("#{translate(moreThanOneRecordSelected)}");
+										genealogy.disable("#{translate(moreThanOneRecordSelected)}");
+										newGenealogy.disable("#{translate(moreThanOneRecordSelected)}");
+										activateOrder.disable("#{translate(moreThanOneRecordSelected)}");
+										finishOrder.disable("#{translate(moreThanOneRecordSelected)}");
+										genQualityControl.disable("#{translate(moreThanOneRecordSelected)}");
 									}
 									pdfMaterialReq.enable();
 									xlsMaterialReq.enable();
@@ -129,31 +148,6 @@
 									xlsMachine.enable();
 									pdfProduct.enable();
 									xlsProduct.enable();
-									newGenealogy.enable();
-									var isPending = false;
-									var isInProgress = false;
-									for (var i in selectedEntitiesArray) {
-										if(selectedEntitiesArray[i].fields.state == '01pending') {
-											isPending = true;
-										} else if(selectedEntitiesArray[i].fields.state == '02inProgress') {
-											isInProgress = true;
-										}
-									}
-									if (isPending) {
-										activateOrder.enable();
-									} else {
-										activateOrder.disable();
-									}
-									if (isInProgress) {
-										finishOrder.enable();
-									} else {
-										finishOrder.disable();
-									}
-									if (isPending || isInProgress) {
-										genQualityControl.enable();
-									} else {
-										genQualityControl.disable();
-									}
 								}
 							}
 						}

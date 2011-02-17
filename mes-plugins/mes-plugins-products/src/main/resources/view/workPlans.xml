@@ -71,13 +71,20 @@
 						var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
 						var listener = {
 							onChange: function(selectedEntitiesArray) {
-								if (!selectedEntitiesArray || selectedEntitiesArray.length != 1) {
+								if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 									pdfWorker.disable();
 									xlsWorker.disable();
 									pdfMachine.disable();
 									xlsMachine.disable();
 									pdfProduct.disable();
-									xlsProduct.disable();	
+									xlsProduct.disable();
+								} else if (selectedEntitiesArray.length > 1) {
+									pdfWorker.disable("#{translate(moreThanOneRecordSelected)}");
+									xlsWorker.disable("#{translate(moreThanOneRecordSelected)}");
+									pdfMachine.disable("#{translate(moreThanOneRecordSelected)}");
+									xlsMachine.disable("#{translate(moreThanOneRecordSelected)}");
+									pdfProduct.disable("#{translate(moreThanOneRecordSelected)}");
+									xlsProduct.disable("#{translate(moreThanOneRecordSelected)}");	
 								} else if (selectedEntitiesArray[0].fields.generated == '0') {
 									pdfWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
 									xlsWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");

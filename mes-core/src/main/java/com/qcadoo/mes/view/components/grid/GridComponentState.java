@@ -270,6 +270,10 @@ public final class GridComponentState extends AbstractComponentState {
         return json;
     }
 
+    public Set<Long> getSelectedEntitiesId() {
+        return selectedEntities;
+    }
+
     public void setEntities(final List<Entity> entities) {
         this.entities = entities;
         totalEntities = entities.size();

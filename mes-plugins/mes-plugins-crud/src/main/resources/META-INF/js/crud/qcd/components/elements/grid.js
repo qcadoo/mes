@@ -88,8 +88,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var addedEntityId;
 	
-	var filtersManager;
-	
 	if (this.options.referenceName) {
 		mainController.registerReferenceName(this.options.referenceName, this);
 	}
@@ -236,53 +234,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (gridParameters.listeners.length > 0) {
 			onSelectChange();
 		}
-		
-		
-//		if (col == 0 && gridParameters.allowMultiselect) {
-//			currentState.multiselectMode = true;
-//			currentState.selectedEntityId = null;
-//			if (currentState.selectedEntities[rowId]) {
-//				grid.setSelection(rowId, false);
-//			}
-//		} else {
-//			currentState.selectedEntities = new Object();
-//			currentState.multiselectMode = false;
-//		}
-//		if (!gridParameters.allowMultiselect) {
-//			if (currentState.selectedEntityId == rowId) {
-//				currentState.selectedEntityId = null;
-//			} else {
-//				if (currentState.selectedEntityId) {
-//					grid.setSelection(currentState.selectedEntityId, false);
-//				}
-//				currentState.selectedEntityId = rowId;
-//			}
-//		} else {
-//			if (! currentState.selectedEntityId) {
-//				currentState.selectedEntityId = new Object();
-//			}
-//			if (currentState.selectedEntityId[rowId]) {
-//				currentState.selectedEntityId[rowId] = null;
-//			} else {
-//				currentState.selectedEntityId[rowId] = true;
-//			}
-//		}
-//		
-//		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
-//		if (rowIndex == false) {
-//			rowIndex = null;
-//		}
-//		headerController.onRowClicked(rowIndex);
-//
-//		var selectedEntity = null;
-//		if (rowIndex) {
-//			selectedEntity = currentEntities[rowId];
-//		}
-//		fireOnChangeListeners("onChange", [selectedEntity]);
-//		
-//		if (gridParameters.listeners.length > 0) {
-//			onSelectChange();
-//		}
 	}
 	
 	function aferSelectionUpdate() {
@@ -603,8 +554,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		noRecordsDiv = $("<div>").html(translations.noResults).addClass("noRecordsBox");
 		noRecordsDiv.hide();
 		$("#"+gridParameters.element).parent().append(noRecordsDiv);
-		
-		filtersManager = new QCD.components.elements.grid.GridFilters(grid[0], gridParameters);
 	}
 	
 	this.onPagingParametersChange = function() {

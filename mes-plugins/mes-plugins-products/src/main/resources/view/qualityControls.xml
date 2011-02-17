@@ -51,11 +51,15 @@
 					<![CDATA[
 						var qualityControlStatus = #{window}.getRibbonItem("controlStatus.closeControl");
 						var listener = {
-							onChange: function(selectedRecord) {
-								if (selectedRecord && selectedRecord.fields.closed == false) {
-									qualityControlStatus.enable();
-								} else {
+							onChange: function(selectedEntitiesArray) {
+								if (! selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 									qualityControlStatus.disable();
+								} else if (selectedEntitiesArray.length > 1) {
+									qualityControlStatus.disable("#{translate(moreThanOneRecordSelected)}");
+								} else if (selectedEntitiesArray[0].fields.closed != false) {
+									qualityControlStatus.disable("#{translate(products.qualityControl.ribbon.alreadyClosed)}");
+								} else {
+									qualityControlStatus.enable();
 								}
 							}
 						}
@@ -72,6 +76,7 @@
 				<option type="searchable" value="number,order,closed"/>
 				<option type="orderable" value="number,order,closed"/>
 				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.products.QualityControlService" method="closeQualityControl"/>
 			</component>
 			<option type="fixedHeight" value="true" />
@@ -209,11 +214,15 @@
 					<![CDATA[
 						var qualityControlStatus = #{window}.getRibbonItem("controlStatus.closeControl");
 						var listener = {
-							onChange: function(selectedRecord) {
-								if (selectedRecord && selectedRecord.fields.closed == false) {
-									qualityControlStatus.enable();
-								} else {
+							onChange: function(selectedEntitiesArray) {
+								if (! selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 									qualityControlStatus.disable();
+								} else if (selectedEntitiesArray.length > 1) {
+									qualityControlStatus.disable("#{translate(moreThanOneRecordSelected)}");
+								} else if (selectedEntitiesArray[0].fields.closed != false) {
+									qualityControlStatus.disable("#{translate(products.qualityControl.ribbon.alreadyClosed)}");
+								} else {
+									qualityControlStatus.enable();
 								}
 							}
 						}
@@ -231,6 +240,7 @@
 				<option type="searchable" value="number,order,controlledQuantity,closed"/>
 				<option type="orderable" value="number,order,controlledQuantity,closed"/>
 				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />			
@@ -373,11 +383,15 @@
 					<![CDATA[
 						var qualityControlStatus = #{window}.getRibbonItem("controlStatus.closeControl");
 						var listener = {
-							onChange: function(selectedRecord) {
-								if (selectedRecord && selectedRecord.fields.closed == false) {
-									qualityControlStatus.enable();
-								} else {
+							onChange: function(selectedEntitiesArray) {
+								if (! selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 									qualityControlStatus.disable();
+								} else if (selectedEntitiesArray.length > 1) {
+									qualityControlStatus.disable("#{translate(moreThanOneRecordSelected)}");
+								} else if (selectedEntitiesArray[0].fields.closed != false) {
+									qualityControlStatus.disable("#{translate(products.qualityControl.ribbon.alreadyClosed)}");
+								} else {
+									qualityControlStatus.enable();
 								}
 							}
 						}
@@ -395,6 +409,7 @@
 				<option type="searchable" value="number,order,batchNr,closed"/>
 				<option type="orderable" value="number,order,batchNr,closed"/>
 				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.products.QualityControlService" method="closeQualityControl"/>
 			</component>
 			<option type="fixedHeight" value="true" />
@@ -540,11 +555,15 @@
 					<![CDATA[
 						var qualityControlStatus = #{window}.getRibbonItem("controlStatus.closeControl");
 						var listener = {
-							onChange: function(selectedRecord) {
-								if (selectedRecord && selectedRecord.fields.closed == false) {
-									qualityControlStatus.enable();
-								} else {
+							onChange: function(selectedEntitiesArray) {
+								if (! selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 									qualityControlStatus.disable();
+								} else if (selectedEntitiesArray.length > 1) {
+									qualityControlStatus.disable("#{translate(moreThanOneRecordSelected)}");
+								} else if (selectedEntitiesArray[0].fields.closed != false) {
+									qualityControlStatus.disable("#{translate(products.qualityControl.ribbon.alreadyClosed)}");
+								} else {
+									qualityControlStatus.enable();
 								}
 							}
 						}
@@ -563,6 +582,7 @@
 				<option type="searchable" value="number,order,operationNumber,operationName,closed"/>
 				<option type="orderable" value="number,order,operationNumber,operationName,closed"/>
 				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.products.QualityControlService" method="closeQualityControl"/>
 			</component>
 			<option type="fixedHeight" value="true" />
