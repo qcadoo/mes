@@ -55,21 +55,17 @@
 			<component type="form" reference="form" name="dictionary">
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
-			</component>	
-			<component type="gridLayout" name="gridLayout" columns="3" rows="8">
-				<layoutElement column="1" row="1" height="8">
-					<component type="grid" name="dictionaryItems" reference="grid" source="#{form}.dictionaryItems">
-						<option type="column" name="name" fields="name" link="true"/>
-						<option type="column" name="description" fields="description" />
-						<option type="order" column="name" direction="asc"/>
-						<option type="paginable" value="false" />
-						<option type="height" value="250" />
-						<option type="correspondingView" value="dictionaries/dictionaryItem" />
-						<option type="correspondingComponent" value="form" />
-						<option type="deletable" value="false" />
-						<option type="creatable" value="false" />
-					</component>
-				</layoutElement>
+			</component>
+			<component type="grid" name="dictionaryItems" reference="grid" source="#{form}.dictionaryItems">
+				<option type="column" name="name" fields="name" link="true"/>
+				<option type="column" name="description" fields="description" />
+				<option type="order" column="name" direction="asc"/>
+				<option type="paginable" value="false" />
+				<option type="height" value="250" />
+				<option type="correspondingView" value="dictionaries/dictionaryItem" />
+				<option type="correspondingComponent" value="form" />
+				<option type="deletable" value="false" />
+				<option type="creatable" value="false" />
 			</component>
 		</component>
 	</view>

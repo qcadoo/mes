@@ -54,17 +54,14 @@
 				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>	
 			<component type="form" name="machine" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"/>
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
 						<component type="textarea" name="name" field="name" />
 					</layoutElement>
-					<layoutElement column="1" row="4">
-						<component type="checkbox" name="productionLine" field="productionLine"/>
-					</layoutElement>
-					<layoutElement column="1" row="5" height="2">
+					<layoutElement column="1" row="4" height="2">
 						<component type="textarea" name="description" field="description" />
 					</layoutElement>
 				</component>

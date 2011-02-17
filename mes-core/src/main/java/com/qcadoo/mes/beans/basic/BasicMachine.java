@@ -47,8 +47,6 @@ public class BasicMachine {
     @Column(length = 2048)
     private String description;
 
-    private boolean productionLine = false;
-
     public Long getId() {
         return id;
     }
@@ -79,14 +77,6 @@ public class BasicMachine {
 
     public void setDescription(final String description) {
         this.description = description;
-    }
-
-    public boolean isProductionLine() {
-        return productionLine;
-    }
-
-    public void setProductionLine(final boolean productionLine) {
-        this.productionLine = productionLine;
     }
 
 }

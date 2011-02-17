@@ -29,7 +29,7 @@ public class ParameterService {
             Entity newParameter = new DefaultEntity("basic", "parameter");
 
             newParameter.setField("checkDoneOrderForQuality", false);
-            newParameter.setField("batchForDoneOrder", "01active");
+            newParameter.setField("batchForDoneOrder", "01none");
 
             Entity savedParameter = dataDefinition.save(newParameter);
 

@@ -75,6 +75,17 @@ public final class TechnologyService {
         return true;
     }
 
+    public void setFirstTechnologyAsDefault(final DataDefinition dataDefinition, final Entity entity) {
+        if (!(Boolean) entity.getField("master")) {
+            SearchCriteriaBuilder searchCriteria = dataDefinition.find().withMaxResults(1)
+                    .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("product"), entity.getField("product")));
+
+            if (searchCriteria.list().getTotalNumberOfEntities() == 0) {
+                entity.setField("master", Boolean.TRUE);
+            }
+        }
+    }
+
     public boolean checkTechnologyDefault(final DataDefinition dataDefinition, final Entity entity) {
         Boolean master = (Boolean) entity.getField("master");
 

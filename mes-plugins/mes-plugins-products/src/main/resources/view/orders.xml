@@ -301,13 +301,15 @@
 							field="number" />
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
-						<component type="textarea" name="name" field="name" />
+						<component type="textarea" name="name" field="name" reference="name" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="1" row="4">
-						<component type="calendar" name="dateFrom" field="dateFrom" />
+						<component type="calendar" name="dateFrom" field="dateFrom">
+							<listener event="onChange" bean="com.qcadoo.mes.products.OrderService" method="changeDateFrom"/>
+						</component>						
 					</layoutElement>
 					<layoutElement column="1" row="5">
-						<component type="calendar" name="dateTo" field="dateTo" />
+						<component type="calendar" name="dateTo" field="dateTo" reference="dateTo" />
 					</layoutElement>
 					<layoutElement column="1" row="6">
 						<component type="select" name="state" field="state" reference="state" defaultEnabled="false" />
@@ -323,6 +325,7 @@
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.OrderService" method="changeOrderProduct"/>
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.OrderService" method="setDefaultNameUsingProduct"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">

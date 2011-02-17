@@ -77,6 +77,7 @@
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkIfUnitSampligNrIsReq" />
 		<onCopy bean="com.qcadoo.mes.products.TechnologyService" method="clearMasterOnCopy" />
+		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="setFirstTechnologyAsDefault" />
 	</model>
 	<model name="technologyOperationComponent">
 		<boolean name="qualityControlRequired" />

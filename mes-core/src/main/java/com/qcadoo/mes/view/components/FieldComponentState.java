@@ -11,7 +11,7 @@ public class FieldComponentState extends AbstractComponentState {
 
     private String value;
 
-    private boolean defaultRequired;
+    private final boolean defaultRequired;
 
     private boolean required;
 
