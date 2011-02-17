@@ -40,6 +40,7 @@
 				<option type="searchable" value="number, name"/>
 				<option type="orderable" value="number, name"/>
 				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />			
@@ -106,6 +107,7 @@
 				<option type="searchable" value="name,number,product" />
 				<option type="orderable" value="name,number,product" />
 				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />

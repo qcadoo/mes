@@ -55,10 +55,14 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var linkListener;
 	
+	var selectAllCheckBox;
+	
 	var currentState = {
 		selectedEntityId: null,
+		selectedEntities: new Object(),
 		filtersEnabled: false,
-		newButtonClickedBefore: false
+		newButtonClickedBefore: false,
+		multiselectMode: true
 	}
 	
 	var RESIZE_COLUMNS_ON_UPDATE_SIZE = true;
@@ -194,42 +198,108 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		
 	};
-	function rowClicked(rowId) {
-		if (!gridParameters.allowMultiselect) {
-			if (currentState.selectedEntityId == rowId) {
-				currentState.selectedEntityId = null;
-			} else {
-				if (currentState.selectedEntityId) {
-					grid.setSelection(currentState.selectedEntityId, false);
+	function rowClicked(rowId, col) { // TODO mina CHANGE
+		
+		if (currentState.selectedEntities[rowId]) {
+			if (col == 0 && currentState.multiselectMode) {
+				currentState.selectedEntities[rowId] = null;	
+			} else if (currentState.multiselectMode) {
+				// diselect all but this
+				for (var i in currentState.selectedEntities) {
+					if (currentState.selectedEntities[i]) {
+						grid.setSelection(i, false);
+						currentState.selectedEntities[i] = null;
+					}
 				}
-				currentState.selectedEntityId = rowId;
+				currentState.selectedEntities[rowId] = true;
+			} else {
+				currentState.selectedEntities[rowId] = null;
 			}
 		} else {
-			if (! currentState.selectedEntityId) {
-				currentState.selectedEntityId = new Object();
-			}
-			if (currentState.selectedEntityId[rowId]) {
-				currentState.selectedEntityId[rowId] = null;
+			if (col == 0 && gridParameters.allowMultiselect) {
+				// do nothing
 			} else {
-				currentState.selectedEntityId[rowId] = true;
+				// diselect all
+				for (var i in currentState.selectedEntities) {
+					if (currentState.selectedEntities[i]) {
+						grid.setSelection(i, false);
+						currentState.selectedEntities[i] = null;
+					}
+				}
 			}
+			currentState.selectedEntities[rowId] = true;
 		}
 		
-		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
-		if (rowIndex == false) {
-			rowIndex = null;
-		}
-		headerController.onRowClicked(rowIndex);
-
-		var selectedEntity = null;
-		if (rowIndex) {
-			selectedEntity = currentEntities[rowId];
-		}
-		fireOnChangeListeners("onChange", [selectedEntity]);
+		aferSelectionUpdate();
 		
+		// FIRE JAVA LISTENERS
 		if (gridParameters.listeners.length > 0) {
 			onSelectChange();
 		}
+	}
+	
+	function aferSelectionUpdate() {
+		var selectionCounter = 0;
+		var lastSelectedRow = null;
+		var selectedArray = new Array();
+		var selectedEntitiesArray = new Array();
+		for (var i in currentState.selectedEntities) {
+			if (currentState.selectedEntities[i]) {
+				selectionCounter++;
+				lastSelectedRow = i;
+				selectedArray.push(i);
+				selectedEntitiesArray.push(currentEntities[i]);
+			}
+		}
+		
+		if (selectionCounter == 0) {
+			currentState.multiselectMode = false;
+			currentState.selectedEntityId = null;
+		} else if (selectionCounter == 1) {
+			currentState.multiselectMode = false;
+			currentState.selectedEntityId = lastSelectedRow;
+		} else {
+			currentState.multiselectMode = true;
+			currentState.selectedEntityId = null;
+		}
+		
+		// UPDATE SELECTION COLOR
+		if (currentState.multiselectMode) {
+			element.addClass("multiselectMode");
+		} else {
+			element.removeClass("multiselectMode");
+		}
+		
+		// UPDATE SELECT ALL BUTTON
+		var isAllSelected = true;
+		for (var i in currentEntities) {
+			if (currentState.selectedEntities[i] != true) {
+				isAllSelected = false;
+				break;
+			}
+		}
+		if (isAllSelected) {
+			selectAllCheckBox.attr('checked', true);
+		} else {
+			selectAllCheckBox.attr('checked', false);
+		}
+		
+		// UPDATE HEADER
+		if (currentState.multiselectMode) {
+			headerController.onSelectionChange(true);
+		} else {
+			var rowIndex = null;
+			if (currentState.selectedEntityId) {
+				rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
+				if (rowIndex == false) {
+					rowIndex = null;
+				}
+			}
+			headerController.onSelectionChange(false, rowIndex);
+		} 
+		
+		// FIRE ON CHANGE LISTENERS
+		fireOnChangeListeners("onChange", [selectedEntitiesArray]);
 	}
 	
 	this.setLinkListener = function(_linkListener) {
@@ -267,6 +337,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.setComponentState = function(state) {
 		currentState.selectedEntityId = state.selectedEntityId;
+		currentState.selectedEntities = state.selectedEntities;
+		currentState.multiselectMode = state.multiselectMode;
 		
 		if (state.belongsToEntityId) {
 			currentState.belongsToEntityId = state.belongsToEntityId;
@@ -366,26 +438,44 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		headerController.updatePagingParameters(currentState.firstEntity, currentState.maxEntities, value.totalEntities);
 		
-		grid.setSelection(currentState.selectedEntityId, false);
-		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
+//		grid.setSelection(currentState.selectedEntityId, false);
+//		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
+//		
+//		if (rowIndex == false) {
+//			currentState.selectedEntityId = null;
+//			rowIndex = null;
+//			fireOnChangeListeners("onChange", [null]);
+//		} else {
+//			fireOnChangeListeners("onChange", [currentEntities[currentState.selectedEntityId]]);
+//		}
+//		headerController.onRowClicked(rowIndex);
 		
-		if (rowIndex == false) {
-			currentState.selectedEntityId = null;
-			rowIndex = null;
-			fireOnChangeListeners("onChange", [null]);
-		} else {
-			fireOnChangeListeners("onChange", [currentEntities[currentState.selectedEntityId]]);
+		currentState.selectedEntities = value.selectedEntities;
+		for (var i in currentState.selectedEntities) {
+			if (currentState.selectedEntities[i]) {
+				grid.setSelection(i, false);
+			}
 		}
-		headerController.onRowClicked(rowIndex);
+		aferSelectionUpdate();
 		
 		if (value.order) {
 			setSortColumnAndDirection(value.order);			
+		}
+		
+		if (value.entitiesToMarkAsNew) {
+			for (var i in value.entitiesToMarkAsNew) {
+				var row = $("#"+elementSearchName+" #"+i);
+				if (row) {
+					row.addClass("lastAdded");
+				}
+			}
 		}
 		
 		if (addedEntityId) {
 			var row = $("#"+elementSearchName+" #"+addedEntityId);
 			if (row) {
 				row.addClass("lastAdded");
+				addedEntityId = null;
 			}
 		}
 		
@@ -444,9 +534,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		currentState.firstEntity = headerController.getPagingParameters()[0];
 		currentState.maxEntities = headerController.getPagingParameters()[1];
 
-		gridParameters.onSelectRow = function(id){
-			rowClicked(id);
+		gridParameters.onCellSelect = function(rowId, iCol, cellcontent, e) {
+			rowClicked(rowId, iCol);
         }
+		
+		
 		gridParameters.ondblClickRow = function(id){
 			linkClicked(id);
         }
@@ -455,7 +547,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
 		
 		$("#cb_"+gridParameters.element).hide(); // hide 'select add' checkbox
-		$("#jqgh_cb").hide();
+		selectAllCheckBox = $("<input type='checkbox'>");
+		$("#"+elementSearchName+" #jqgh_cb").append(selectAllCheckBox);
+		selectAllCheckBox.change(function(){
+			onSelectAllClicked();
+		});
 		
 		for (var i in gridParameters.sortColumns) {
 			$("#"+gridParameters.modifiedPath+"_grid_"+gridParameters.sortColumns[i]).addClass("sortableColumn");
@@ -516,6 +612,28 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 		}
 		currentOrder = { column: order.column, direction: order.direction };
+	}
+	
+	function onSelectAllClicked() {
+		if (selectAllCheckBox.is(':checked')) {
+			for (var i in currentEntities) {
+				if (currentState.selectedEntities[i] != true) {
+					grid.setSelection(i, false);
+					currentState.selectedEntities[i] = true;
+				}
+			}
+		} else {
+			for (var i in currentState.selectedEntities) {
+				if (currentState.selectedEntities[i]) {
+					grid.setSelection(i, false);
+					currentState.selectedEntities[i] = null;
+				}
+			}
+		}
+		aferSelectionUpdate();
+		if (gridParameters.listeners.length > 0) {
+			onSelectChange();
+		}
 	}
 	
 	function onSortColumnChange(index,iCol,sortorder) {		
@@ -705,6 +823,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	function onCurrentStateChange(forceUpdate) {
+		currentState.selectedEntities = null;
+		currentState.multiselectMode = false;
+		currentState.selectedEntityId = null;
 		if (!forceUpdate) {
 			findMatchingPredefiniedFilter();
 		}
@@ -761,6 +882,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.performNew = function(actionsPerformer) {
 		currentState.newButtonClickedBefore = true;
+		currentState.selectedEntities = null;
+		currentState.multiselectMode = false;
+		currentState.selectedEntityId = null;
 		redirectToCorrespondingPage({});	
 		if (actionsPerformer) {
 			actionsPerformer.performNext();
@@ -768,9 +892,18 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	var performNew = this.performNew;
 	
+	function getSelectedRowsCount() {
+		var selectionCounter = 0;
+		for (var i in currentState.selectedEntities) {
+			if (currentState.selectedEntities[i]) {
+				selectionCounter++;
+			}
+		}
+		return selectionCounter;
+	}
 	
 	this.performDelete = function(actionsPerformer) {
-		if (currentState.selectedEntityId) {
+		if (currentState.selectedEntityId || getSelectedRowsCount() > 0) {
 			if (window.confirm(translations.confirmDeleteMessage)) {
 				blockGrid();
 				mainController.callEvent("remove", elementPath, function() {
@@ -784,7 +917,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	var performDelete = this.performDelete;
 
 	this.performCopy = function(actionsPerformer) {
-		if (currentState.selectedEntityId) {
+		if (currentState.selectedEntityId || getSelectedRowsCount() > 0) {
 			blockGrid();
 			mainController.callEvent("copy", elementPath, function() {
 				unblockGrid();

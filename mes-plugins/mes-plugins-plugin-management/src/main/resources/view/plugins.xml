@@ -69,15 +69,15 @@
 						var removeRibbonItem = #{window}.getRibbonItem("actions.remove");
 						
 						var listener = {
-							onChange: function(selectedRecord) {
-								if (!selectedRecord) {
+							onChange: function(selectedEntitiesArray) {
+								if (!selectedEntitiesArray || selectedEntitiesArray.length != 1) {
 									updateRibbonItem.disable();
 									enableRibbonItem.disable();
 									disableRibbonItem.disable();
 									removeRibbonItem.disable();
 								} else {
-									var status = selectedRecord.fields.status;
-									var isBase = (selectedRecord.fields.base == "1");
+									var status = selectedEntitiesArray[0].fields.status;
+									var isBase = (selectedEntitiesArray[0].fields.base == "1");
 									if (isBase) {
 										updateRibbonItem.disable("#{translate(plugins.ribbon.messages.base)}");
 										enableRibbonItem.disable("#{translate(plugins.ribbon.messages.alreadyEnabled)}");

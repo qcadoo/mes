@@ -24,6 +24,8 @@
 
 package com.qcadoo.mes.internal;
 
+import java.util.Set;
+
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.search.SearchCriteria;
@@ -36,6 +38,8 @@ public interface DataAccessService {
     Entity get(InternalDataDefinition dataDefinition, Long entityId);
 
     Entity copy(InternalDataDefinition dataDefinition, Long entityId);
+
+    Set<Long> copy(InternalDataDefinition dataDefinition, Set<Long> entityIds);
 
     void delete(InternalDataDefinition dataDefinition, Long... entityId);
 

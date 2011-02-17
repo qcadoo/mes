@@ -60,6 +60,7 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 	
 	var enabled = false;
 	var rowIndex = null;
+	var multiselectMode = false;
 	
 	function constructor(_this) {
 		pagingVars.first = 0;
@@ -282,8 +283,9 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 		refreshButtons();
 	}
 	
-	this.onRowClicked = function(_rowIndex) {
-		rowIndex = _rowIndex;
+	this.onSelectionChange = function(_multiselectMode, _selectedRowIndex) {
+		multiselectMode = _multiselectMode;
+		rowIndex = _selectedRowIndex;
 		refreshButtons();
 	}
 	
@@ -329,7 +331,7 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 				setEnabledButton(headerElements.newButton, true);
 			}
 			if (headerElements.deleteButton != null) {
-				if (rowIndex != null) {
+				if (multiselectMode || rowIndex != null) {
 					setEnabledButton(headerElements.deleteButton, true);
 				} else {
 					setEnabledButton(headerElements.deleteButton, false);
@@ -343,14 +345,14 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 				}
 			} 
 			if (headerElements.upButton != null) {
-				if (rowIndex == 1 || rowIndex == null) {
+				if (multiselectMode || rowIndex == 1 || rowIndex == null) {
 					setEnabledButton(headerElements.upButton, false);
 				} else {
 					setEnabledButton(headerElements.upButton, true);
 				}
 			}
 			if (headerElements.downButton != null) {
-				if (rowIndex == pagingVars.totalNumberOfEntities || rowIndex == null) {	
+				if (multiselectMode || rowIndex == pagingVars.totalNumberOfEntities || rowIndex == null) {	
 					setEnabledButton(headerElements.downButton, false);
 				} else {
 					setEnabledButton(headerElements.downButton, true);

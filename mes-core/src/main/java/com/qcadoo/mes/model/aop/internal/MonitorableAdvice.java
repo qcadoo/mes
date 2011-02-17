@@ -50,11 +50,11 @@ public final class MonitorableAdvice {
             long difference = end - start;
 
             if (difference > monitorable.threshold()) {
-                PERFORMANCE_LOG.warn("Call " + pjp.getSignature().toShortString() + " with " + Arrays.toString(pjp.getArgs()) + " took "
-                        + difference + " ms ");
+                PERFORMANCE_LOG.warn("Call " + pjp.getSignature().toShortString() + " with " + Arrays.toString(pjp.getArgs())
+                        + " took " + difference + " ms ");
             } else if (PERFORMANCE_LOG.isDebugEnabled()) {
-                PERFORMANCE_LOG.debug("Call " + pjp.getSignature().toShortString() + " with " + Arrays.toString(pjp.getArgs()) + " took "
-                        + difference + " ms ");
+                PERFORMANCE_LOG.debug("Call " + pjp.getSignature().toShortString() + " with " + Arrays.toString(pjp.getArgs())
+                        + " took " + difference + " ms ");
             }
 
         }

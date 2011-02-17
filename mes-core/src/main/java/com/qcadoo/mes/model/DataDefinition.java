@@ -26,6 +26,7 @@ package com.qcadoo.mes.model;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
@@ -73,12 +74,28 @@ public interface DataDefinition {
     Entity copy(final Long id);
 
     /**
+     * Copy set of entities related with this data definition.
+     * 
+     * @param id
+     *            set of id
+     */
+    Set<Long> copy(final Set<Long> id);
+
+    /**
      * Delete the entity related with this data definition, by its id.
      * 
      * @param id
      *            id
      */
     void delete(final Long id);
+
+    /**
+     * Delete set of entities related with this data definition, by its id.
+     * 
+     * @param id
+     *            set of id
+     */
+    void delete(final Set<Long> id);
 
     /**
      * Save the entity related with this data definition.

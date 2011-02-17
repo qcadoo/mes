@@ -5,9 +5,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +56,12 @@ public final class GridComponentState extends AbstractComponentState {
 
     public static final String JSON_ENTITIES = "entities";
 
+    public static final String JSON_MULTISELECT_MODE = "multiselectMode";
+
+    public static final String JSON_SELECTED_ENTITIES = "selectedEntities";
+
+    public static final String JSON_ENTITIES_TO_MARK_AS_NEW = "entitiesToMarkAsNew";
+
     private final GridEventPerformer eventPerformer = new GridEventPerformer();
 
     private final Map<String, GridComponentColumn> columns;
@@ -77,6 +85,12 @@ public final class GridComponentState extends AbstractComponentState {
     private String orderColumn;
 
     private String orderDirection;
+
+    private boolean multiselectMode = false;
+
+    private Set<Long> selectedEntities = new HashSet<Long>();
+
+    private Set<Long> entitiesToMarkAsNew = new HashSet<Long>();
 
     private CustomRestriction customRestriction;
 
@@ -113,6 +127,25 @@ public final class GridComponentState extends AbstractComponentState {
     protected void initializeContent(final JSONObject json) throws JSONException {
         if (json.has(JSON_SELECTED_ENTITY_ID) && !json.isNull(JSON_SELECTED_ENTITY_ID)) {
             selectedEntityId = json.getLong(JSON_SELECTED_ENTITY_ID);
+        }
+        if (json.has(JSON_MULTISELECT_MODE) && !json.isNull(JSON_MULTISELECT_MODE)) {
+            multiselectMode = json.getBoolean(JSON_MULTISELECT_MODE);
+        }
+        if (json.has(JSON_SELECTED_ENTITIES) && !json.isNull(JSON_SELECTED_ENTITIES)) {
+            JSONObject selectedEntitiesObj = json.getJSONObject(JSON_SELECTED_ENTITIES);
+            JSONArray selectedEntitiesIds = selectedEntitiesObj.names();
+            if (selectedEntitiesIds != null) {
+                for (int i = 0; i < selectedEntitiesIds.length(); i++) {
+                    String key = selectedEntitiesIds.getString(i);
+                    boolean isSelected = false;
+                    if (selectedEntitiesObj.has(key) && !selectedEntitiesObj.isNull(key)) {
+                        isSelected = selectedEntitiesObj.getBoolean(key);
+                    }
+                    if (isSelected) {
+                        selectedEntities.add(Long.parseLong(key));
+                    }
+                }
+            }
         }
         if (json.has(JSON_BELONGS_TO_ENTITY_ID) && !json.isNull(JSON_BELONGS_TO_ENTITY_ID)) {
             belongsToEntityId = json.getLong(JSON_BELONGS_TO_ENTITY_ID);
@@ -186,6 +219,21 @@ public final class GridComponentState extends AbstractComponentState {
         json.put(JSON_FILTERS_ENABLED, filtersEnabled);
         json.put(JSON_TOTAL_ENTITIES, totalEntities);
 
+        json.put(JSON_MULTISELECT_MODE, multiselectMode);
+        JSONObject selectedEntitiesJson = new JSONObject();
+        for (Long entityId : selectedEntities) {
+            selectedEntitiesJson.put(entityId.toString(), true);
+        }
+        json.put(JSON_SELECTED_ENTITIES, selectedEntitiesJson);
+
+        if (entitiesToMarkAsNew.size() > 0) {
+            JSONObject entitiesToMarkAsNewJson = new JSONObject();
+            for (Long entityId : entitiesToMarkAsNew) {
+                entitiesToMarkAsNewJson.put(entityId.toString(), true);
+            }
+            json.put(JSON_ENTITIES_TO_MARK_AS_NEW, entitiesToMarkAsNewJson);
+        }
+
         if (orderColumn != null) {
             JSONObject jsonOrder = new JSONObject();
             jsonOrder.put(JSON_ORDER_COLUMN, orderColumn);
@@ -220,6 +268,10 @@ public final class GridComponentState extends AbstractComponentState {
         json.put("fields", fields);
 
         return json;
+    }
+
+    public Set<Long> getSelectedEntitiesId() {
+        return selectedEntities;
     }
 
     public void setEntities(final List<Entity> entities) {
@@ -266,14 +318,15 @@ public final class GridComponentState extends AbstractComponentState {
         }
 
         public void removeSelectedEntity(final String[] args) {
-            Entity entity = getDataDefinition().get(selectedEntityId);
-            if (entity == null) {
-                addMessage(translateMessage("entityNotFound"), MessageType.FAILURE);
-            } else {
-                getDataDefinition().delete(selectedEntityId);
+            getDataDefinition().delete(selectedEntities);
+            if (selectedEntities.size() == 1) {
                 addMessage(translateMessage("deleteMessage"), MessageType.SUCCESS);
+            } else {
+                addMessage(selectedEntities.size() + " " + translateMessage("deleteMessages"), MessageType.SUCCESS);
             }
             setSelectedEntityId(null);
+            multiselectMode = false;
+            selectedEntities = new HashSet<Long>();
         }
 
         public void moveUpSelectedEntity(final String[] args) {
@@ -282,12 +335,11 @@ public final class GridComponentState extends AbstractComponentState {
         }
 
         public void copySelectedEntity(final String[] args) {
-            Entity copiedEntity = getDataDefinition().copy(selectedEntityId);
-            if (copiedEntity.getId() != null) {
-                setSelectedEntityId(copiedEntity.getId());
+            entitiesToMarkAsNew = getDataDefinition().copy(selectedEntities);
+            if (selectedEntities.size() == 1) {
                 addMessage(translateMessage("copyMessage"), MessageType.SUCCESS);
             } else {
-                addMessage(translateMessage("copyFailedMessage"), MessageType.FAILURE);
+                addMessage(selectedEntities.size() + " " + translateMessage("copyMessages"), MessageType.SUCCESS);
             }
         }
 

@@ -39,7 +39,6 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchResult;
@@ -51,6 +50,7 @@ import com.qcadoo.mes.products.print.pdf.WorkPlanForWorkerPdfService;
 import com.qcadoo.mes.products.print.xls.WorkPlanForMachineXlsService;
 import com.qcadoo.mes.products.print.xls.WorkPlanForProductXlsService;
 import com.qcadoo.mes.products.print.xls.WorkPlanForWorkerXlsService;
+import com.qcadoo.mes.products.util.OrderPrintUtil;
 import com.qcadoo.mes.products.util.RibbonUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
@@ -93,6 +93,9 @@ public final class WorkPlanService {
 
     @Autowired
     private RibbonUtil ribbonUtil;
+
+    @Autowired
+    private OrderPrintUtil orderPrintUtil;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
@@ -219,61 +222,20 @@ public final class WorkPlanService {
 
     public void printWorkPlanForOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-
-        if (state.getFieldValue() instanceof Long) {
-            Entity order = dataDefinitionService.get("products", "order").get((Long) state.getFieldValue());
-
-            if (order == null) {
-                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
-                        MessageType.FAILURE);
-            } else if (order.getField("technology") == null) {
-                state.addMessage(
-                        translationService.translate("products.validate.global.error.orderMustHaveTechnology", state.getLocale()),
-                        MessageType.FAILURE);
-            } else if (order.getBelongsToField("technology").getTreeField("operationComponents").isEmpty()) {
-                state.addMessage(
-                        translationService.translate("products.validate.global.error.orderTechnologyMustHaveOperation",
-                                state.getLocale()), MessageType.FAILURE);
-            } else {
-                Entity workPlan = createNewWorkPlan(order, state);
-                try {
-                    generateWorkPlanDocuments(state, workPlan);
-
-                    viewDefinitionState.redirectTo("/products/workPlan" + args[1] + "." + args[0] + "?id=" + workPlan.getId(),
-                            false, false);
-                } catch (IOException e) {
-                    throw new IllegalStateException(e.getMessage(), e);
-                } catch (DocumentException e) {
-                    throw new IllegalStateException(e.getMessage(), e);
-                }
-            }
-        } else {
-            if (state instanceof FormComponentState) {
-                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
-                        MessageType.FAILURE);
-            }
+        Entity workPlan = orderPrintUtil.printWorkPlanForOrder(state);
+        if (workPlan == null) {
+            return;
         }
+        try {
+            generateWorkPlanDocuments(state, workPlan);
 
-    }
-
-    private String generateWorkPlanNumber() {
-        SearchResult results = dataDefinitionService.get("products", "workPlan").find().withMaxResults(1).orderDescBy("id")
-                .list();
-
-        long longValue = 0;
-
-        if (results.getEntities().isEmpty()) {
-            longValue++;
-        } else {
-            longValue = results.getEntities().get(0).getId() + 1;
+            viewDefinitionState.redirectTo("/products/workPlan" + args[1] + "." + args[0] + "?id=" + workPlan.getId(), false,
+                    false);
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        } catch (DocumentException e) {
+            throw new IllegalStateException(e.getMessage(), e);
         }
-
-        String generatedNumber = String.format("%06d", longValue);
-
-        return generatedNumber;
     }
 
     private void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException,
@@ -286,31 +248,6 @@ public final class WorkPlanService {
         workPlanForWorkerXlsService.generateDocument(workPlanWithFileName, state.getLocale());
         workPlanForProductPdfService.generateDocument(workPlanWithFileName, state.getLocale());
         workPlanForProductXlsService.generateDocument(workPlanWithFileName, state.getLocale());
-    }
-
-    private Entity createNewWorkPlan(final Entity order, final ComponentState state) {
-
-        Entity workPlan = new DefaultEntity("products", "workPlan");
-        workPlan.setField("name",
-                generateWorkPlanNumber() + " " + translationService.translate("products.workPlan.forOrder", state.getLocale())
-                        + " " + order.getField("number"));
-        workPlan.setField("generated", true);
-        workPlan.setField("worker", securityService.getCurrentUserName());
-        workPlan.setField("date", new Date());
-
-        DataDefinition data = dataDefinitionService.get("products", "workPlan");
-        Entity saved = data.save(workPlan);
-
-        Entity workPlanComponent = new DefaultEntity("products", "workPlanComponent");
-        workPlanComponent.setField("order", order);
-        workPlanComponent.setField("workPlan", saved);
-
-        DataDefinition workPlanComponentDef = dataDefinitionService.get("products", "workPlanComponent");
-        workPlanComponentDef.save(workPlanComponent);
-
-        saved = data.get(saved.getId());
-
-        return saved;
     }
 
     private String getFullFileName(final Date date, final String fileName) {

@@ -337,13 +337,16 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			tree.jstree("select_node", $("#"+elementSearchName+"_node_"+value.selectedEntityId), false);
 			fireSelectEvent = true;
 		}
-		
 		if (addedEntityId) {
 			lastAddedNode = $("#"+elementSearchName+"_node_"+addedEntityId);
 			lastAddedNode.addClass("lastAdded");
-			var lastAddedParentNode = $.jstree._focused()._get_parent(lastAddedNode);
-			tree.jstree("open_node", lastAddedParentNode, false, true);
-			tree.animate({ scrollTop: lastAddedNode.offset().top }, { duration: 'slow', easing: 'swing'});
+			if (tree.jstree("get_json", -1)[0] && tree.jstree("get_json", -1)[0].children) { // has more than one node
+				var lastAddedParentNode = $.jstree._focused()._get_parent(lastAddedNode);
+				tree.jstree("open_node", lastAddedParentNode, false, true);
+				tree.animate({ scrollTop: lastAddedNode.offset().top }, { duration: 'slow', easing: 'swing'});
+			} else {
+				tree.jstree("select_node", lastAddedNode, false);
+			}
 		}
 		
 		updateButtons();

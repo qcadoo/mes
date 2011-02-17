@@ -42,6 +42,7 @@
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
@@ -88,6 +89,7 @@
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
