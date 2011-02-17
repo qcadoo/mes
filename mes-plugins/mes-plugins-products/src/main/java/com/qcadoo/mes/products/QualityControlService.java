@@ -148,6 +148,9 @@ public class QualityControlService {
 
                 if (controlResult != null
                         && (controlResult.getFieldValue() == null || ((String) controlResult.getFieldValue()).isEmpty())) {
+                    controlResult.addMessage(
+                            translationService.translate("products.quality.control.result.missing", state.getLocale()),
+                            MessageType.FAILURE);
                     state.addMessage(translationService.translate("products.quality.control.result.missing", state.getLocale()),
                             MessageType.FAILURE);
                     return;
