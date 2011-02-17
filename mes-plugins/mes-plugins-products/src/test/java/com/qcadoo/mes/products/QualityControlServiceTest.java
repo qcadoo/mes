@@ -220,7 +220,34 @@ public class QualityControlServiceTest {
     }
 
     @Test
-    public void shouldAddFailureMessageOnEmptyControlResultType() {
+    public void shouldAddFailureMessageOnEmptyControlResultTypeForFormComponent() {
+        // given
+        FormComponentState state = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        FieldComponentState controlResult = mock(FieldComponentState.class);
+        Entity qualityControl = mock(Entity.class);
+        DataDefinition qualityControlDD = mock(DataDefinition.class);
+
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        given(state.getFieldValue()).willReturn(7L);
+        given(qualityControl.getField("controlResult")).willReturn("");
+        given(dataDefinitionService.get("products", "qualityForOrder")).willReturn(qualityControlDD);
+        given(qualityControlDD.get(7L)).willReturn(qualityControl);
+        given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
+        given(controlResult.getFieldValue()).willReturn(null);
+        given(translationService.translate("products.quality.control.result.missing", Locale.ENGLISH)).willReturn(
+                "products.quality.control.result.missing.pl");
+
+        // when
+        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityForOrder" });
+
+        // then
+        verify(controlResult).addMessage("products.quality.control.result.missing.pl", MessageType.FAILURE);
+        verify(state).addMessage("products.quality.control.result.missing.pl", MessageType.FAILURE);
+    }
+
+    @Test
+    public void shouldAddFailureMessageOnEmptyControlResultTypeForGridComponent() {
         // given
         GridComponentState state = mock(GridComponentState.class, Mockito.RETURNS_DEEP_STUBS);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
@@ -236,6 +263,7 @@ public class QualityControlServiceTest {
         given(dataDefinitionService.get("products", "qualityForOrder")).willReturn(qualityControlDD);
         given(qualityControlDD.get(7L)).willReturn(qualityControl);
         given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
+        given(controlResult.getFieldValue()).willReturn(null);
         given(translationService.translate("products.quality.control.result.missing", Locale.ENGLISH)).willReturn(
                 "products.quality.control.result.missing.pl");
 
