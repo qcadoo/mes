@@ -31,36 +31,27 @@ public class RibbonUtil {
         } else {
 
             Entity materialRequirementEntity = dataDefinitionService.get("products", entityName).get(form.getEntityId());
+            List<Entity> orderComponents = (List<Entity>) materialRequirementEntity.getField("orders");
 
-            if ((Boolean) materialRequirementEntity.getField("generated")) {
-                generateButton.setMessage("products.ribbon.message.recordAlreadyGenerated");
+            if (orderComponents.size() == 0) {
+                generateButton.setMessage("products.ribbon.message.noOrders");
                 generateButton.setEnabled(false);
             } else {
-
-                List<Entity> orderComponents = (List<Entity>) materialRequirementEntity.getField("orders");
-
-                if (orderComponents.size() == 0) {
-                    generateButton.setMessage("products.ribbon.message.noOrders");
-                    generateButton.setEnabled(false);
-                } else {
-                    boolean isAnyOrderClosed = false;
-                    for (Entity orderComponent : orderComponents) {
-                        Entity order = orderComponent.getBelongsToField("order");
-                        if (order.getField("state").equals("03done")) {
-                            isAnyOrderClosed = true;
-                            break;
-                        }
-                    }
-                    if (isAnyOrderClosed) {
-                        generateButton.setMessage("products.ribbon.message.existClosedOrder");
-                        generateButton.setEnabled(false);
-
-                    } else {
-                        generateButton.setMessage(null);
-                        generateButton.setEnabled(true);
+                boolean isAnyOrderClosed = false;
+                for (Entity orderComponent : orderComponents) {
+                    Entity order = orderComponent.getBelongsToField("order");
+                    if (order.getField("state").equals("03done")) {
+                        isAnyOrderClosed = true;
+                        break;
                     }
                 }
-
+                if (isAnyOrderClosed && (Boolean) materialRequirementEntity.getField("generated")) {
+                    generateButton.setMessage("products.ribbon.message.recordAlreadyGenerated");
+                    generateButton.setEnabled(false);
+                } else {
+                    generateButton.setMessage(null);
+                    generateButton.setEnabled(true);
+                }
             }
         }
         generateButton.setShouldBeUpdated(true);
