@@ -169,6 +169,8 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         addTranslation(translations, "confirmDeleteMessage", locale);
         addTranslation(translations, "wrongSearchCharacterError", locale);
         addTranslation(translations, "header", locale);
+        addTranslation(translations, "selectAll", locale);
+        addTranslation(translations, "diselectAll", locale);
 
         addTranslation(translations, "customPredefinedFilter", locale);
         for (PredefinedFilter filter : predefinedFilters) {

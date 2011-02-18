@@ -193,6 +193,8 @@ public final class GridComponentState extends AbstractComponentState {
         if (belongsToFieldDefinition != null) {
             if (belongsToEntityId != null && !belongsToEntityId.equals(scopeEntityId)) {
                 setSelectedEntityId(null);
+                selectedEntities = new HashSet<Long>();
+                multiselectMode = false;
             }
             belongsToEntityId = scopeEntityId;
             setEnabled(scopeEntityId != null);
@@ -272,6 +274,15 @@ public final class GridComponentState extends AbstractComponentState {
 
     public Set<Long> getSelectedEntitiesId() {
         return selectedEntities;
+    }
+
+    public void setSelectedEntitiesId(final Set<Long> selectedEntities) {
+        this.selectedEntities = selectedEntities;
+        if (selectedEntities == null || selectedEntities.size() < 2) {
+            multiselectMode = false;
+        } else {
+            multiselectMode = true;
+        }
     }
 
     public void setEntities(final List<Entity> entities) {

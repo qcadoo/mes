@@ -1,5 +1,6 @@
 package com.qcadoo.mes.genealogies.print;
 
+import java.util.HashSet;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ public class ReportService {
         GridComponentState batches = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
 
         batches.setSelectedEntityId(null);
+        batches.setSelectedEntitiesId(new HashSet<Long>());
     }
 
     public void addRestrictionToGenealogyGrid(final ViewDefinitionState viewDefinitionState, final Locale locale) {
