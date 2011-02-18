@@ -290,7 +290,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Override
     @Transactional
     @Monitorable
-    public Set<Long> copy(InternalDataDefinition dataDefinition, Set<Long> entityIds) {
+    public Set<Long> copy(final InternalDataDefinition dataDefinition, final Set<Long> entityIds) {
         Set<Long> copiedIds = new HashSet<Long>();
         for (Long entityId : entityIds) {
             copiedIds.add(copy(dataDefinition, entityId).getId());

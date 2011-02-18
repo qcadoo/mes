@@ -38,7 +38,7 @@ public class UsersGroup {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String description;

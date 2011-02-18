@@ -50,7 +50,7 @@ public class ProductsTechnology {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_STORE")
     private Long id;
 
-    @Column(nullable = false, length = 40)
+    @Column(nullable = false, length = 40, unique = true)
     private String number;
 
     @Column(nullable = false)

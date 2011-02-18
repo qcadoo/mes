@@ -846,7 +846,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			var predefiniedFilter = gridParameters.predefinedFilters[i].filter;
 			isIdentical = true;
 			
+			alert("1 " + gridParameters.predefinedFilters[i]);
+			alert("2 " + gridParameters.predefinedFilters[i].orderColumn);
+			
 			if (gridParameters.predefinedFilters[i].orderColumn) {
+				alert("3 " + currentState);
+				alert("4 " + currentState.order);
+				alert("5 " + currentState.order.column);
 				if (currentState.order.column != gridParameters.predefinedFilters[i].orderColumn) {
 					isIdentical = false;
 					continue;

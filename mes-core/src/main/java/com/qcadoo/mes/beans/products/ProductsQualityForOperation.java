@@ -1,5 +1,6 @@
 package com.qcadoo.mes.beans.products;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ public class ProductsQualityForOperation {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String number;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -33,7 +35,7 @@ public class ProductsQualityForOperation {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -41,7 +43,7 @@ public class ProductsQualityForOperation {
         return order;
     }
 
-    public void setOrder(ProductsOrder order) {
+    public void setOrder(final ProductsOrder order) {
         this.order = order;
     }
 
@@ -49,7 +51,7 @@ public class ProductsQualityForOperation {
         return controlResult;
     }
 
-    public void setControlResult(String controlResult) {
+    public void setControlResult(final String controlResult) {
         this.controlResult = controlResult;
     }
 
@@ -57,7 +59,7 @@ public class ProductsQualityForOperation {
         return comment;
     }
 
-    public void setComment(String comment) {
+    public void setComment(final String comment) {
         this.comment = comment;
     }
 
@@ -65,7 +67,7 @@ public class ProductsQualityForOperation {
         return operation;
     }
 
-    public void setOperation(ProductsOperation operation) {
+    public void setOperation(final ProductsOperation operation) {
         this.operation = operation;
     }
 
@@ -73,7 +75,7 @@ public class ProductsQualityForOperation {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -81,7 +83,7 @@ public class ProductsQualityForOperation {
         return closed;
     }
 
-    public void setClosed(boolean closed) {
+    public void setClosed(final boolean closed) {
         this.closed = closed;
     }
 
