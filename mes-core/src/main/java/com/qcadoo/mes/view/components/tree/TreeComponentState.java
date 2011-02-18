@@ -284,13 +284,13 @@ public final class TreeComponentState extends FieldComponentState {
         }
 
         public void save(final String[] args) {
-            Entity entity = belongsToFieldDefinition.getDataDefinition().get(belongsToEntityId);
-
             Object tree = getFieldValue();
 
             if (tree == null) {
                 return;
             }
+
+            Entity entity = belongsToFieldDefinition.getDataDefinition().get(belongsToEntityId);
 
             entity.setField(belongsToFieldDefinition.getName(), tree);
             Entity afterSaveEntity = belongsToFieldDefinition.getDataDefinition().save(entity);

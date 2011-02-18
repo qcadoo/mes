@@ -302,7 +302,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		result.selectedEntityId = selectedNode;
 		result.belongsToEntityId = belongsToEntityId;
 		
-		if (treeStructureChanged) {
+		if (moveMode) {
 			result.treeStructure = getTreeStructureData();
 		}
 		
@@ -483,6 +483,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				for (var i in newButtons) {
 					newButtons[i].addClass("headerButtonEnabled");
 				}
+				buttons.moveButton.removeClass("headerButtonEnabled");
 			} else {
 				for (var i in newButtons) {
 					newButtons[i].removeClass("headerButtonEnabled");

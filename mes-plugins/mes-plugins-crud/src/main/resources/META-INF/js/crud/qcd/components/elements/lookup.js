@@ -156,7 +156,11 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	this.setComponentData = function(data) {
-		dataState.currentCode = data.currentCode ? data.currentCode : dataState.currentCode;
+		if (data.clearCurrentCodeCode) {
+			dataState.currentCode = "";
+		} else {
+			dataState.currentCode = data.currentCode ? data.currentCode : dataState.currentCode;	
+		}
 		dataState.selectedEntity.id = data.value ? data.value : null;
 		dataState.selectedEntity.value = data.selectedEntityValue;
 		dataState.selectedEntity.code = data.selectedEntityCode;
