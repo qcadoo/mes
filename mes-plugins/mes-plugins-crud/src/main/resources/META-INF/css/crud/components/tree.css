@@ -68,8 +68,8 @@
 .tree_content.jstree a {
 	border: solid transparent 1px;
 	padding: 2px;
-	font-family:Arial, Helvetica, sans-serif;
-	font-size: 12px;
+	font-family: "Lucida Grande", Arial, Helvetica, sans-serif;
+	font-size: 11px;
 }
 .tree_content.jstree .lastAdded a {
 	background: #BFF589;

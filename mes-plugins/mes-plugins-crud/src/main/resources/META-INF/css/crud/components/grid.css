@@ -29,7 +29,7 @@
 
 .gridContainer {
 	border: solid #9b9b9b 1px;
-	font-family:Tahoma, Arial, Helvetica, sans-serif;
+	font-family:"Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
 }
 
 .gridContainer .gridHeader {
@@ -89,7 +89,7 @@ div.filterButton {
 
 .grid_paging .onPageSpan {
 	color: #9b9b9b;
-	font-family:Tahoma, Arial, Helvetica, sans-serif;
+	font-family:"Lucida Grande",Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	margin-right: 10px;
 }
@@ -100,7 +100,7 @@ div.filterButton {
 
 .grid_paging .ofPagesSpan {
 	color: #686868;
-	font-family:Tahoma, Arial, Helvetica, sans-serif;
+	font-family:"Lucida Grande",Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	margin-left: 5px;
 	margin-right: 5px;
@@ -173,12 +173,12 @@ div.filterButton {
 
 .gridContainer .ui-jqgrid-bdiv {
 	background: #fbfbfb;
-	font-family:Tahoma, Arial, Helvetica, sans-serif;
-	font-size: 12px;
+	font-family:"Lucida Grande",Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
 }
 .gridContainer .ui-widget-content {
 	color: #555555;
-	font-family:Tahoma Bold, Tahoma, Arial, Helvetica, sans-serif;
+	font-family:"Lucida Grande",Tahoma Bold, Tahoma, Arial, Helvetica, sans-serif;
 }
 
 .gridContainer .ui-widget-content {
@@ -193,7 +193,7 @@ div.filterButton {
 .gridContainer a.gridLink {
 	color: #005ec5;
 	font-size: 11px;
-	font-family:Tahoma, Arial, Helvetica, sans-serif;
+	font-family:"Lucida Grande",Tahoma, Arial, Helvetica, sans-serif;
 	text-decoration: none;
 }
 .gridContainer a.gridLink:hover {
@@ -284,13 +284,13 @@ div.filterButton {
 }
 .gridContainer .ui-jqgrid-labels {
 	height: 30px;
-	font-family:Arial, Helvetica, sans-serif;
+	font-family:"Lucida Grande",Arial, Helvetica, sans-serif;
 }
 
 .gridContainer .ui-th-column,
 .gridContainer .ui-jqgrid-hdiv {
 	background: transparent url('/css/crud/images/grid/gradientygrid/gradient_header.png') repeat-x 0 0;
-	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-family: "Lucida Grande",Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	color: #e8e8e8;
 	font-weight: normal;
@@ -321,7 +321,7 @@ div.filterButton {
 }
 .gridContainer .ui-th-column.sortColumn {
 	background: #454545;
-	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-family: "Lucida Grande",Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	color: #ffffff;
 }

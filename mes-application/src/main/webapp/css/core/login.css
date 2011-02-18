@@ -24,7 +24,7 @@
 
 html, body {
 	background: #9B9B9B;
-	font-family:Arial, Helvetica, sans-serif;
+	font-family:"Lucida Grande",Arial, Helvetica, sans-serif;
 	margin: 0;
 	padding: 0;
 	height: 100%;
@@ -140,7 +140,7 @@ html, body {
 #loginForm #loginButtonWrapper #changeUserButton {
 	display: inline-block;
 	color: #005ec5;
-	font-family: Arial bold, Arial, Helvetica, sans-serif;
+	font-family: "Lucida Grande",Arial bold, Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	text-decoraton: none;
 	margin-left: 80px; 
@@ -165,7 +165,7 @@ html, body {
 #loginForm #loginButtonWrapper #loginButton span {
 	line-height: 37px;
 	color: white;
-	font-family: Arial bold, Arial, Helvetica, sans-serif;
+	font-family: "Lucida Grande",Arial bold, Arial, Helvetica, sans-serif;
 	font-size: 13px;
 	text-decoraton: none;
 	margin-left: 46px;
