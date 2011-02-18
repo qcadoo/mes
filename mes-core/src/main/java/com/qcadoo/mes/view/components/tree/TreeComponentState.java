@@ -188,6 +188,7 @@ public final class TreeComponentState extends FieldComponentState {
 
     @Override
     public void setFieldValue(final Object value) {
+        setSelectedEntityId(null);
         requestRender();
         requestUpdateState();
     }

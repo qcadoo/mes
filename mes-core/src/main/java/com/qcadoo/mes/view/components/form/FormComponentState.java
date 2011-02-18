@@ -338,6 +338,7 @@ public class FormComponentState extends AbstractContainerState {
                 if (entity.getGlobalErrors().size() == 0) {
                     addMessage(translateMessage("saveFailedMessage"), MessageType.FAILURE);
                 }
+                valid = false;
             }
 
             setFieldsRequiredAndDisables();
