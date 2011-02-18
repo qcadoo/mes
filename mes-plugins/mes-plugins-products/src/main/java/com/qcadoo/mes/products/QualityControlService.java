@@ -240,6 +240,10 @@ public class QualityControlService {
 
             Entity technology = (Entity) order.getField("technology");
 
+            if (technology == null) {
+                return;
+            }
+
             if (technology.getField("qualityControlType") != null) {
 
                 String qualityControlType = technology.getField("qualityControlType").toString();

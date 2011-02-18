@@ -38,7 +38,7 @@ public class BasicStaff {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 255, unique = true)
     private String number;
 
     @Column(nullable = false, length = 2048)
@@ -54,7 +54,7 @@ public class BasicStaff {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -62,7 +62,7 @@ public class BasicStaff {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -70,7 +70,7 @@ public class BasicStaff {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -78,7 +78,7 @@ public class BasicStaff {
         return surname;
     }
 
-    public void setSurname(String surname) {
+    public void setSurname(final String surname) {
         this.surname = surname;
     }
 
@@ -86,7 +86,7 @@ public class BasicStaff {
         return post;
     }
 
-    public void setPost(String post) {
+    public void setPost(final String post) {
         this.post = post;
     }
 

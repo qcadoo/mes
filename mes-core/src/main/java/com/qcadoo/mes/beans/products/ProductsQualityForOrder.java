@@ -2,6 +2,7 @@ package com.qcadoo.mes.beans.products;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,6 +20,7 @@ public class ProductsQualityForOrder {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String number;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -41,7 +43,7 @@ public class ProductsQualityForOrder {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -49,7 +51,7 @@ public class ProductsQualityForOrder {
         return order;
     }
 
-    public void setOrder(ProductsOrder order) {
+    public void setOrder(final ProductsOrder order) {
         this.order = order;
     }
 
@@ -57,7 +59,7 @@ public class ProductsQualityForOrder {
         return controlResult;
     }
 
-    public void setControlResult(String controlResult) {
+    public void setControlResult(final String controlResult) {
         this.controlResult = controlResult;
     }
 
@@ -65,7 +67,7 @@ public class ProductsQualityForOrder {
         return comment;
     }
 
-    public void setComment(String comment) {
+    public void setComment(final String comment) {
         this.comment = comment;
     }
 
@@ -73,7 +75,7 @@ public class ProductsQualityForOrder {
         return controlInstruction;
     }
 
-    public void setControlInstruction(String controlInstruction) {
+    public void setControlInstruction(final String controlInstruction) {
         this.controlInstruction = controlInstruction;
     }
 
@@ -81,7 +83,7 @@ public class ProductsQualityForOrder {
         return staff;
     }
 
-    public void setStaff(String staff) {
+    public void setStaff(final String staff) {
         this.staff = staff;
     }
 
@@ -89,7 +91,7 @@ public class ProductsQualityForOrder {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(final Date date) {
         this.date = date;
     }
 
@@ -97,7 +99,7 @@ public class ProductsQualityForOrder {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -105,7 +107,7 @@ public class ProductsQualityForOrder {
         return closed;
     }
 
-    public void setClosed(boolean closed) {
+    public void setClosed(final boolean closed) {
         this.closed = closed;
     }
 

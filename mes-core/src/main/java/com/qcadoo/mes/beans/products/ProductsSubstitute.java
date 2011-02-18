@@ -52,7 +52,7 @@ public class ProductsSubstitute {
     @Column(nullable = false)
     private int priority;
 
-    @Column(nullable = false, length = 40)
+    @Column(nullable = false, length = 40, unique = true)
     private String number;
 
     @Column(nullable = false)

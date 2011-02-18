@@ -38,7 +38,7 @@ public class BasicMachine {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 255, unique = true)
     private String number;
 
     @Column(nullable = false, length = 2048)

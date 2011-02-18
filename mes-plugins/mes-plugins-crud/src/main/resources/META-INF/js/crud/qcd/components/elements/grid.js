@@ -345,6 +345,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		if (state.belongsToEntityId) {
 			currentState.belongsToEntityId = state.belongsToEntityId;
+		} else {
+			currentState.belongsToEntityId = null;
 		}
 		if (state.firstEntity) {
 			currentState.firstEntity = state.firstEntity;
@@ -389,6 +391,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 
 		if (value.belongsToEntityId) {
 			currentState.belongsToEntityId = value.belongsToEntityId;
+		} else {
+			currentState.belongsToEntityId = null;
 		}
 		if (value.firstEntity) {
 			currentState.firstEntity = value.firstEntity;

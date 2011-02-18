@@ -22,10 +22,10 @@ public class ProductsOperation {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 255, unique = true)
     private String number;
 
-    @Column(nullable = false, length = 2048)
+    @Column(nullable = false, length = 2048, unique = true)
     private String name;
 
     @OneToMany(mappedBy = "operation", fetch = FetchType.LAZY)

@@ -40,7 +40,7 @@ public class UsersUser {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String userName;
 
     @Column(nullable = false, columnDefinition = "boolean DEFAULT TRUE")

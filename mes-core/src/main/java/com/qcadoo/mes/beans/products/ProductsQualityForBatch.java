@@ -3,6 +3,7 @@ package com.qcadoo.mes.beans.products;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -23,6 +24,7 @@ public class ProductsQualityForBatch {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsOrder order;
 
+    @Column(nullable = false, unique = true)
     private String number;
 
     private String batchNr;
@@ -48,7 +50,7 @@ public class ProductsQualityForBatch {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -56,7 +58,7 @@ public class ProductsQualityForBatch {
         return order;
     }
 
-    public void setOrder(ProductsOrder order) {
+    public void setOrder(final ProductsOrder order) {
         this.order = order;
     }
 
@@ -64,7 +66,7 @@ public class ProductsQualityForBatch {
         return comment;
     }
 
-    public void setComment(String comment) {
+    public void setComment(final String comment) {
         this.comment = comment;
     }
 
@@ -72,7 +74,7 @@ public class ProductsQualityForBatch {
         return controlInstruction;
     }
 
-    public void setControlInstruction(String controlInstruction) {
+    public void setControlInstruction(final String controlInstruction) {
         this.controlInstruction = controlInstruction;
     }
 
@@ -80,7 +82,7 @@ public class ProductsQualityForBatch {
         return staff;
     }
 
-    public void setStaff(String staff) {
+    public void setStaff(final String staff) {
         this.staff = staff;
     }
 
@@ -88,7 +90,7 @@ public class ProductsQualityForBatch {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(final Date date) {
         this.date = date;
     }
 
@@ -96,7 +98,7 @@ public class ProductsQualityForBatch {
         return controlledQuantity;
     }
 
-    public void setControlledQuantity(BigDecimal controlledQuantity) {
+    public void setControlledQuantity(final BigDecimal controlledQuantity) {
         this.controlledQuantity = controlledQuantity;
     }
 
@@ -104,7 +106,7 @@ public class ProductsQualityForBatch {
         return rejectedQuantity;
     }
 
-    public void setRejectedQuantity(BigDecimal rejectedQuantity) {
+    public void setRejectedQuantity(final BigDecimal rejectedQuantity) {
         this.rejectedQuantity = rejectedQuantity;
     }
 
@@ -112,7 +114,7 @@ public class ProductsQualityForBatch {
         return acceptedDefectsQuantity;
     }
 
-    public void setAcceptedDefectsQuantity(BigDecimal acceptedDefectsQuantity) {
+    public void setAcceptedDefectsQuantity(final BigDecimal acceptedDefectsQuantity) {
         this.acceptedDefectsQuantity = acceptedDefectsQuantity;
     }
 
@@ -120,7 +122,7 @@ public class ProductsQualityForBatch {
         return batchNr;
     }
 
-    public void setBatchNr(String batchNr) {
+    public void setBatchNr(final String batchNr) {
         this.batchNr = batchNr;
     }
 
@@ -128,7 +130,7 @@ public class ProductsQualityForBatch {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -136,7 +138,7 @@ public class ProductsQualityForBatch {
         return closed;
     }
 
-    public void setClosed(boolean closed) {
+    public void setClosed(final boolean closed) {
         this.closed = closed;
     }
 
