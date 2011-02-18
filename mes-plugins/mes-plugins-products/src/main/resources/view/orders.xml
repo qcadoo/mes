@@ -172,7 +172,11 @@
 					</predefinedFilter>
 					<predefinedFilter name="pending">
 						<filterRestriction column="state" value="01pending" />
-						<filterOrder column="dateFrom" direction="desc" />
+						<filterOrder column="dateFrom" direction="asc" />
+					</predefinedFilter>
+					<predefinedFilter name="inProgress">
+						<filterRestriction column="state" value="02inProgress" />
+						<filterOrder column="dateTo" direction="asc" />
 					</predefinedFilter>
 					<predefinedFilter name="overduePending">
 						<filterRestriction column="state" value="01pending" />
@@ -333,9 +337,8 @@
 							field="product">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
-							<option type="column" name="category" fields="category" />
-							<option type="searchable" value="name,category" />
-							<option type="orderable" value="name,category" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.OrderService" method="changeOrderProduct"/>

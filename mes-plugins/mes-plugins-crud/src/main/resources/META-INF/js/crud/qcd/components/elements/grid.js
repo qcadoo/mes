@@ -49,8 +49,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var componentEnabled = false;
 	
-	var isEditable = true;
-	
 	var currentGridHeight;
 	
 	var linkListener;
@@ -62,7 +60,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		selectedEntities: new Object(),
 		filtersEnabled: false,
 		newButtonClickedBefore: false,
-		multiselectMode: true
+		multiselectMode: true,
+		isEditable: true
 	}
 	
 	var RESIZE_COLUMNS_ON_UPDATE_SIZE = true;
@@ -311,7 +310,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	function linkClicked(entityId) {
-		if (!componentEnabled || !isEditable) {
+		if (!componentEnabled || !currentState.isEditable) {
 			return;
 		}
 		if (linkListener) {
@@ -408,7 +407,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			var entity = value.entities[entityNo];
 			currentEntities[entity.id] = entity;
 			var fields = new Object();
-			for (var fieldName in entity.fields) {
+			for (var fieldName in columnModel) {
 				if (hiddenColumnValues[fieldName]) {
 					hiddenColumnValues[fieldName][entity.id] = entity.fields[fieldName];
 				} else {
@@ -416,7 +415,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 						fields[fieldName] = "<a href=# id='"+elementPath+"_"+fieldName+"_"+entity.id+"' class='"+elementPath+"_link gridLink'>" + entity.fields[fieldName] + "</a>";
 						
 					} else {
-						fields[fieldName] = entity.fields[fieldName];
+						if (entity.fields[fieldName] && entity.fields[fieldName] != "") {
+							fields[fieldName] = entity.fields[fieldName];
+						} else {
+							fields[fieldName] = "";
+						}
 					}
 				}
 			}			
@@ -483,12 +486,16 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 		}
 		
+		if (value.isEditable != undefined && value.isEditable != null) {
+			this.setComponentEditable(value.isEditable);
+		}
+		
 		unblockGrid();
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
 		componentEnabled = isEnabled;
-		headerController.setEnabled(isEditable && isEnabled);
+		headerController.setEnabled(currentState.isEditable && isEnabled);
 	}
 	
 	this.setComponentLoading = function(isLoadingVisible) {
@@ -500,13 +507,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.setComponentEditable = function(_isEditable) {
-		isEditable = _isEditable;
-		if (isEditable) {
+		currentState.isEditable = _isEditable;
+		if (currentState.isEditable) {
 			grid.removeClass("componentNotEditable");	
 		} else {
 			grid.addClass("componentNotEditable");
 		}
-		headerController.setEnabled(isEditable && componentEnabled);
+		headerController.setEnabled(currentState.isEditable && componentEnabled);
 	}
 
 	

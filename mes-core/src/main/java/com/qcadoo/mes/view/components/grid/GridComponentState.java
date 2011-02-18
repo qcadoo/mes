@@ -56,6 +56,8 @@ public final class GridComponentState extends AbstractComponentState {
 
     public static final String JSON_ENTITIES = "entities";
 
+    public static final String JSON_EDITABLE = "isEditable";
+
     public static final String JSON_MULTISELECT_MODE = "multiselectMode";
 
     public static final String JSON_SELECTED_ENTITIES = "selectedEntities";
@@ -87,6 +89,8 @@ public final class GridComponentState extends AbstractComponentState {
     private String orderDirection;
 
     private boolean multiselectMode = false;
+
+    private Boolean isEditable = null;
 
     private Set<Long> selectedEntities = new HashSet<Long>();
 
@@ -228,6 +232,10 @@ public final class GridComponentState extends AbstractComponentState {
         }
         json.put(JSON_SELECTED_ENTITIES, selectedEntitiesJson);
 
+        if (isEditable != null) {
+            json.put(JSON_EDITABLE, isEditable);
+        }
+
         if (entitiesToMarkAsNew.size() > 0) {
             JSONObject entitiesToMarkAsNewJson = new JSONObject();
             for (Long entityId : entitiesToMarkAsNew) {
@@ -274,6 +282,10 @@ public final class GridComponentState extends AbstractComponentState {
 
     public Set<Long> getSelectedEntitiesId() {
         return selectedEntities;
+    }
+
+    public void setIsEditable(boolean isEditable) {
+        this.isEditable = isEditable;
     }
 
     public void setSelectedEntitiesId(final Set<Long> selectedEntities) {

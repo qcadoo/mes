@@ -126,16 +126,18 @@ public final class TechnologyService {
         Entity operationComponent = dataDefinitionService.get("products", "technologyOperationComponent").get(
                 tree.getSelectedEntityId());
 
+        GridComponentState outProductsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("outProducts");
+        GridComponentState inProductsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("inProducts");
+
         if (!"referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
+            inProductsGrid.setIsEditable(true);
+            outProductsGrid.setIsEditable(true);
             return;
         }
 
         Entity technology = operationComponent.getBelongsToField("referenceTechnology");
         EntityTree operations = technology.getTreeField("operationComponents");
         Entity rootOperation = operations.getRoot();
-
-        GridComponentState outProductsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("outProducts");
-        GridComponentState inProductsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("inProducts");
 
         if (rootOperation != null) {
             outProductsGrid.setEntities(rootOperation.getHasManyField("operationProductOutComponents"));
@@ -156,7 +158,9 @@ public final class TechnologyService {
 
         inProductsGrid.setEntities(inProducts);
         inProductsGrid.setEnabled(false);
+        inProductsGrid.setIsEditable(false);
         outProductsGrid.setEnabled(false);
+        outProductsGrid.setIsEditable(false);
     }
 
     public void checkAttributesReq(final ViewDefinitionState viewDefinitionState, final Locale locale) {
