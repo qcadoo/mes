@@ -26,6 +26,8 @@ public final class LookupComponentState extends FieldComponentState {
 
     public static final String JSON_CURRENT_CODE = "currentCode";
 
+    public static final String JSON_CLEAR_CURRENT_CODE = "clearCurrentCodeCode";
+
     public static final String JSON_BELONGS_TO_ENTITY_ID = "contextEntityId";
 
     public static final String JSON_AUTOCOMPLETE_MATCHES = "autocompleteMatches";
@@ -41,6 +43,8 @@ public final class LookupComponentState extends FieldComponentState {
     private Long belongsToEntityId;
 
     private String currentCode;
+
+    private boolean clearCurrentCodeCode = false;
 
     private String selectedEntityCode;
 
@@ -101,6 +105,10 @@ public final class LookupComponentState extends FieldComponentState {
         json.put(JSON_CODE, selectedEntityCode);
         json.put(JSON_BELONGS_TO_ENTITY_ID, belongsToEntityId);
 
+        if (clearCurrentCodeCode) {
+            json.put(JSON_CLEAR_CURRENT_CODE, clearCurrentCodeCode);
+        }
+
         if (autocompleteMatches != null) {
             JSONArray matches = new JSONArray();
             for (Entity entity : autocompleteMatches) {
@@ -138,6 +146,7 @@ public final class LookupComponentState extends FieldComponentState {
     @Override
     public void setFieldValue(final Object value) {
         setFieldValueWithoutRefreshing(convertToLong(value));
+        clearCurrentCodeCode = true;
         eventPerformer.refresh();
     }
 

@@ -271,17 +271,21 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		
 		// UPDATE SELECT ALL BUTTON
-		var isAllSelected = true;
-		for (var i in currentEntities) {
-			if (currentState.selectedEntities[i] != true) {
-				isAllSelected = false;
-				break;
+		if (selectAllCheckBox) {
+			var isAllSelected = true;
+			for (var i in currentEntities) {
+				if (currentState.selectedEntities[i] != true) {
+					isAllSelected = false;
+					break;
+				}
 			}
-		}
-		if (isAllSelected) {
-			selectAllCheckBox.attr('checked', true);
-		} else {
-			selectAllCheckBox.attr('checked', false);
+			if (isAllSelected) {
+				selectAllCheckBox.attr('checked', true);
+				selectAllCheckBox.attr('title', translations.diselectAll);
+			} else {
+				selectAllCheckBox.attr('checked', false);
+				selectAllCheckBox.attr('title', translations.selectAll);
+			}
 		}
 		
 		// UPDATE HEADER
@@ -547,11 +551,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
 		
 		$("#cb_"+gridParameters.element).hide(); // hide 'select add' checkbox
-		selectAllCheckBox = $("<input type='checkbox'>");
-		$("#"+elementSearchName+" #jqgh_cb").append(selectAllCheckBox);
-		selectAllCheckBox.change(function(){
-			onSelectAllClicked();
-		});
+		if (gridParameters.allowMultiselect) {
+			selectAllCheckBox = $("<input type='checkbox'>");
+			$("#"+elementSearchName+" #jqgh_cb").append(selectAllCheckBox);
+			selectAllCheckBox.change(function(){
+				onSelectAllClicked();
+			});
+		}
 		
 		for (var i in gridParameters.sortColumns) {
 			$("#"+gridParameters.modifiedPath+"_grid_"+gridParameters.sortColumns[i]).addClass("sortableColumn");

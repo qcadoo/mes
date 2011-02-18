@@ -204,6 +204,7 @@ public final class LookupComponentPattern extends FieldComponentPattern {
         gridComponentDefinition.setTranslationService(getTranslationService());
         gridComponentDefinition.setViewDefinition(lookupViewDefinition);
         gridComponentDefinition.setParent(window);
+        gridComponentDefinition.setReference("grid");
 
         if (getScopeFieldDefinition() != null) {
             gridComponentDefinition.setSourceFieldPath(getScopeFieldDefinition().getName());
@@ -253,21 +254,27 @@ public final class LookupComponentPattern extends FieldComponentPattern {
     }
 
     private Ribbon createRibbon() {
-        RibbonActionItem ribbonActionItem = new RibbonActionItem();
-        ribbonActionItem.setName("select");
-        ribbonActionItem.setIcon("acceptIcon24.png");
-        ribbonActionItem.setAction("#{window.grid}.performLinkClicked();");
-        ribbonActionItem.setType(Type.BIG_BUTTON);
+        RibbonActionItem ribbonSelectActionItem = new RibbonActionItem();
+        ribbonSelectActionItem.setName("select");
+        ribbonSelectActionItem.setIcon("acceptIcon24.png");
+        ribbonSelectActionItem.setAction("#{window.grid}.performLinkClicked();");
+        ribbonSelectActionItem.setType(Type.BIG_BUTTON);
+        ribbonSelectActionItem.setEnabled(false);
+        ribbonSelectActionItem.setMessage("#{translate(noRecordSelected)}");
+        ribbonSelectActionItem
+                .setScript("#{grid}.addOnChangeListener({onChange: function(selectedArray) {if (!selectedArray || selectedArray.length == 0) {"
+                        + "this.disable('#{translate(noRecordSelected)}');} else {this.enable();}}});");
 
         RibbonActionItem ribbonCancelActionItem = new RibbonActionItem();
         ribbonCancelActionItem.setName("cancel");
         ribbonCancelActionItem.setIcon("cancelIcon24.png");
         ribbonCancelActionItem.setAction("#{window}.performCloseWindow");
         ribbonCancelActionItem.setType(Type.BIG_BUTTON);
+        ribbonCancelActionItem.setEnabled(true);
 
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("navigation");
-        ribbonGroup.addItem(ribbonActionItem);
+        ribbonGroup.addItem(ribbonSelectActionItem);
         ribbonGroup.addItem(ribbonCancelActionItem);
 
         Ribbon ribbon = new Ribbon();

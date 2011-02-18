@@ -69,11 +69,13 @@
 						<script>
 							<![CDATA[
 								#{batches}.addOnChangeListener({
-									onChange: function(selectedRecord) {
-										if (selectedRecord) {
-											this.enable();
-										} else {
+									onChange: function(selectedEntitiesArray) {
+										if (! selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 											this.disable("#{translate(genealogies.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo)}");
+										} else if (selectedEntitiesArray.length > 1) {
+											this.disable("#{translate(moreThanOneRecordSelected)}");
+										} else {
+											this.enable();
 										}
 									}
 								});
@@ -120,11 +122,13 @@
 						<script>
 							<![CDATA[
 								#{batches}.addOnChangeListener({
-									onChange: function(selectedRecord) {
-										if (selectedRecord) {
-											this.enable();
-										} else {
+									onChange: function(selectedEntitiesArray) {
+										if (! selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 											this.disable("#{translate(genealogies.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo)}");
+										} else if (selectedEntitiesArray.length > 1) {
+											this.disable("#{translate(moreThanOneRecordSelected)}");
+										} else {
+											this.enable();
 										}
 									}
 								});

@@ -69,6 +69,9 @@
 	<logger name="net.sf.ehcache">
 		<level value="info" />
 	</logger>
+	<logger name="com.qcadoo.mes.internal">
+		<level value="error" />
+	</logger>
 	
 	<logger name="org.hibernate.SQL" additivity="false">
 		<level value="debug" />
