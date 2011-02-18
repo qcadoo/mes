@@ -365,15 +365,15 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 			grid.setGridHeight(currentGridHeight);
 		}
+		if (state.order) {
+			setSortColumnAndDirection(state.order);
+		}
 		if (state.filters) {
 			currentState.filters = state.filters;
 			for (var filterIndex in currentState.filters) {
 				$("#gs_"+filterIndex).val(currentState.filters[filterIndex]);
 			}
 			findMatchingPredefiniedFilter();
-		}
-		if (state.order) {
-			setSortColumnAndDirection(state.order);
 		}
 		
 		if (state.newButtonClickedBefore) {
