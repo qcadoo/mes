@@ -1,4 +1,4 @@
-package com.qcadoo.mes.beans.products;
+package com.qcadoo.mes.beans.qualityControl;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -7,27 +7,30 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.qcadoo.mes.beans.products.ProductsOrder;
+
 @Entity
-@Table(name = "products_quality_batch")
-public class ProductsQualityForBatch {
+@SequenceGenerator(name = "SEQ_STORE", sequenceName = "quality_control_quality_unit_sequence")
+@Table(name = "quality_control_quality_unit")
+public class QualityControlQualityForUnit {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_STORE")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private ProductsOrder order;
 
     @Column(nullable = false, unique = true)
     private String number;
 
-    private String batchNr;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private ProductsOrder order;
 
     private BigDecimal controlledQuantity;
 
@@ -41,10 +44,10 @@ public class ProductsQualityForBatch {
 
     private String staff;
 
+    private boolean closed = false;
+
     @Temporal(TemporalType.DATE)
     private Date date;
-
-    private boolean closed = false;
 
     public Long getId() {
         return id;
@@ -98,8 +101,8 @@ public class ProductsQualityForBatch {
         return controlledQuantity;
     }
 
-    public void setControlledQuantity(final BigDecimal controlledQuantity) {
-        this.controlledQuantity = controlledQuantity;
+    public void setControlledQuantity(final BigDecimal producedQuantity) {
+        this.controlledQuantity = producedQuantity;
     }
 
     public BigDecimal getRejectedQuantity() {
@@ -116,14 +119,6 @@ public class ProductsQualityForBatch {
 
     public void setAcceptedDefectsQuantity(final BigDecimal acceptedDefectsQuantity) {
         this.acceptedDefectsQuantity = acceptedDefectsQuantity;
-    }
-
-    public String getBatchNr() {
-        return batchNr;
-    }
-
-    public void setBatchNr(final String batchNr) {
-        this.batchNr = batchNr;
     }
 
     public String getNumber() {

@@ -31,10 +31,10 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.NumberGeneratorService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchResult;
-import com.qcadoo.mes.products.util.NumberGeneratorService;
 import com.qcadoo.mes.view.ViewDefinitionState;
 
 @Service

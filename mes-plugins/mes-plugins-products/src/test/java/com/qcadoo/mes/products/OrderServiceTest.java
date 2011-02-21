@@ -32,6 +32,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.NumberGeneratorService;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.EntityList;
@@ -42,7 +43,6 @@ import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.internal.BooleanType;
 import com.qcadoo.mes.model.types.internal.StringType;
-import com.qcadoo.mes.products.util.NumberGeneratorService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -1345,7 +1345,7 @@ public class OrderServiceTest {
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("04forOperation");
-        given(dataDefinitionService.get("products", "qualityForOperation")).willReturn(dataDefinition);
+        given(dataDefinitionService.get("qualityControl", "qualityForOperation")).willReturn(dataDefinition);
         given(
                 dataDefinition.find().restrictedWith(any(Restriction.class)).restrictedWith(any(Restriction.class)).list()
                         .getTotalNumberOfEntities()).willReturn(1);

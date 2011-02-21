@@ -1,32 +1,44 @@
-package com.qcadoo.mes.beans.products;
+package com.qcadoo.mes.beans.qualityControl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.qcadoo.mes.beans.products.ProductsOrder;
+
 @Entity
-@Table(name = "products_quality_order")
-public class ProductsQualityForOrder {
+@SequenceGenerator(name = "SEQ_STORE", sequenceName = "quality_control_quality_batch_sequence")
+@Table(name = "quality_control_quality_batch")
+public class QualityControlQualityForBatch {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_STORE")
     private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String number;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsOrder order;
 
-    private String controlResult;
+    @Column(nullable = false, unique = true)
+    private String number;
+
+    private String batchNr;
+
+    private BigDecimal controlledQuantity;
+
+    private BigDecimal rejectedQuantity;
+
+    private BigDecimal acceptedDefectsQuantity;
 
     private String comment;
 
@@ -53,14 +65,6 @@ public class ProductsQualityForOrder {
 
     public void setOrder(final ProductsOrder order) {
         this.order = order;
-    }
-
-    public String getControlResult() {
-        return controlResult;
-    }
-
-    public void setControlResult(final String controlResult) {
-        this.controlResult = controlResult;
     }
 
     public String getComment() {
@@ -93,6 +97,38 @@ public class ProductsQualityForOrder {
 
     public void setDate(final Date date) {
         this.date = date;
+    }
+
+    public BigDecimal getControlledQuantity() {
+        return controlledQuantity;
+    }
+
+    public void setControlledQuantity(final BigDecimal controlledQuantity) {
+        this.controlledQuantity = controlledQuantity;
+    }
+
+    public BigDecimal getRejectedQuantity() {
+        return rejectedQuantity;
+    }
+
+    public void setRejectedQuantity(final BigDecimal rejectedQuantity) {
+        this.rejectedQuantity = rejectedQuantity;
+    }
+
+    public BigDecimal getAcceptedDefectsQuantity() {
+        return acceptedDefectsQuantity;
+    }
+
+    public void setAcceptedDefectsQuantity(final BigDecimal acceptedDefectsQuantity) {
+        this.acceptedDefectsQuantity = acceptedDefectsQuantity;
+    }
+
+    public String getBatchNr() {
+        return batchNr;
+    }
+
+    public void setBatchNr(final String batchNr) {
+        this.batchNr = batchNr;
     }
 
     public String getNumber() {

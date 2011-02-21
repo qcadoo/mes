@@ -25,9 +25,9 @@
 
 -->
 
-<qcd:models plugin="products" xmlns:qcd="http://www.qcadoo.com/model">
+<qcd:models plugin="qualityControl" xmlns:qcd="http://www.qcadoo.com/model">
 	<model name="qualityForOrder">
-		<belongsTo name="order" model="order" lookupField="name" >
+		<belongsTo name="order" model="order" plugin="products" lookupField="name" >
 			<validatesPresence/>
 		</belongsTo>
 		<string name="number">
@@ -39,11 +39,11 @@
 		<string name="controlInstruction" />
 		<string name="staff" />
 		<date name="date" />
-		<validatesWith bean="com.qcadoo.mes.products.QualityControlService" method="checkIfCommentForResultIsReq" />
+		<validatesWith bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentForResultIsReq" />
 		<boolean name="closed"/>
 	</model>
 	<model name="qualityForUnit">
-		<belongsTo name="order" model="order" lookupField="name" >
+		<belongsTo name="order" model="order" plugin="products" lookupField="name" >
 			<validatesPresence/>
 		</belongsTo>
 		<string name="number">
@@ -57,11 +57,11 @@
 		<string name="staff" />
 		<date name="date" />		
 		<string name="controlInstruction" />
-		<validatesWith bean="com.qcadoo.mes.products.QualityControlService" method="checkIfCommentForQuantityIsReq" />
+		<validatesWith bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentForQuantityIsReq" />
 		<boolean name="closed"/>
 	</model>
 	<model name="qualityForBatch">
-		<belongsTo name="order" model="order" lookupField="name" >
+		<belongsTo name="order" model="order" plugin="products" lookupField="name" >
 			<validatesPresence/>
 		</belongsTo>
 		<string name="number">
@@ -76,23 +76,25 @@
 		<string name="staff" />
 		<date name="date" />		
 		<string name="controlInstruction" />
-		<validatesWith bean="com.qcadoo.mes.products.QualityControlService" method="checkIfCommentForQuantityIsReq" />
+		<validatesWith bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentForQuantityIsReq" />
 		<boolean name="closed"/>
 	</model>
 	<model name="qualityForOperation">
-		<belongsTo name="order" model="order" lookupField="name" >
+		<belongsTo name="order" model="order" plugin="products" lookupField="name" >
 			<validatesPresence/>
 		</belongsTo>
 		<string name="number">
 			<validatesUniqueness/>
 			<validatesPresence/>			
 		</string>			
-		<belongsTo name="operation" model="operation" lookupField="name" >
+		<belongsTo name="operation" model="operation" plugin="products" lookupField="name" >
 			<validatesPresence/>
 		</belongsTo>
 		<enum name="controlResult" values="01correct,02incorrect,03objection"/>
 		<string name="comment" />
-		<validatesWith bean="com.qcadoo.mes.products.QualityControlService" method="checkIfCommentForResultIsReq" />
+		<validatesWith bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentForResultIsReq" />
 		<boolean name="closed"/>
 	</model>
+	<mode name="qualityControlReport">
+	</mode>
 </qcd:models>

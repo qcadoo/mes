@@ -34,13 +34,13 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.NumberGeneratorService;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
-import com.qcadoo.mes.products.util.NumberGeneratorService;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
@@ -227,13 +227,13 @@ public final class OrderService {
             DataDefinition qualityControlDD = null;
 
             if (controlType.equals("01forBatch")) {
-                qualityControlDD = dataDefinitionService.get("products", "qualityForBatch");
+                qualityControlDD = dataDefinitionService.get("qualityControl", "qualityForBatch");
             } else if (controlType.equals("02forUnit")) {
-                qualityControlDD = dataDefinitionService.get("products", "qualityForUnit");
+                qualityControlDD = dataDefinitionService.get("qualityControl", "qualityForUnit");
             } else if (controlType.equals("03forOrder")) {
-                qualityControlDD = dataDefinitionService.get("products", "qualityForOrder");
+                qualityControlDD = dataDefinitionService.get("qualityControl", "qualityForOrder");
             } else if (controlType.equals("04forOperation")) {
-                qualityControlDD = dataDefinitionService.get("products", "qualityForOperation");
+                qualityControlDD = dataDefinitionService.get("qualityControl", "qualityForOperation");
             }
 
             if (qualityControlDD != null) {
