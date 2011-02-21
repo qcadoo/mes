@@ -26,8 +26,11 @@
 -->
 
 <qcd:models plugin="qualityControl" xmlns:qcd="http://www.qcadoo.com/model">
-	<model name="qualityForOrder">
+	<model name="qualityControl">
 		<belongsTo name="order" model="order" plugin="products" lookupField="name" >
+			<validatesPresence/>
+		</belongsTo>
+		<belongsTo name="operation" model="operation" plugin="products" lookupField="name" >
 			<validatesPresence/>
 		</belongsTo>
 		<string name="number">
@@ -35,66 +38,20 @@
 			<validatesPresence/>
 		</string>		
 		<enum name="controlResult" values="01correct,02incorrect,03objection"/>
+		<string name="batchNr" />
 		<string name="comment" />
 		<string name="controlInstruction" />
+		<decimal name="controlledQuantity" />
+		<decimal name="takenForControlQuantity" />
+		<decimal name="rejectedQuantity" />
+		<decimal name="acceptedDefectsQuantity" />		
 		<string name="staff" />
 		<date name="date" />
+		<boolean name="closed"/>
+		<enum name="qualityControlType" values="qualityForOrder,qualityForUnit,qualityForBatch,qualityForOperation"/><!--
 		<validatesWith bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentForResultIsReq" />
-		<boolean name="closed"/>
-	</model>
-	<model name="qualityForUnit">
-		<belongsTo name="order" model="order" plugin="products" lookupField="name" >
-			<validatesPresence/>
-		</belongsTo>
-		<string name="number">
-			<validatesUniqueness/>
-			<validatesPresence/>			
-		</string>	
-		<decimal name="controlledQuantity" />
-		<decimal name="rejectedQuantity" />
-		<decimal name="acceptedDefectsQuantity" />
-		<string name="comment" />
-		<string name="staff" />
-		<date name="date" />		
-		<string name="controlInstruction" />
 		<validatesWith bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentForQuantityIsReq" />
-		<boolean name="closed"/>
+		--><date name="dateFrom" persistent="false"/>
+		<date name="dateTo" persistent="false"/>
 	</model>
-	<model name="qualityForBatch">
-		<belongsTo name="order" model="order" plugin="products" lookupField="name" >
-			<validatesPresence/>
-		</belongsTo>
-		<string name="number">
-			<validatesUniqueness/>
-			<validatesPresence/>			
-		</string>	
-		<string name="batchNr" />
-		<decimal name="controlledQuantity" />
-		<decimal name="rejectedQuantity" />
-		<decimal name="acceptedDefectsQuantity" />
-		<string name="comment" />
-		<string name="staff" />
-		<date name="date" />		
-		<string name="controlInstruction" />
-		<validatesWith bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentForQuantityIsReq" />
-		<boolean name="closed"/>
-	</model>
-	<model name="qualityForOperation">
-		<belongsTo name="order" model="order" plugin="products" lookupField="name" >
-			<validatesPresence/>
-		</belongsTo>
-		<string name="number">
-			<validatesUniqueness/>
-			<validatesPresence/>			
-		</string>			
-		<belongsTo name="operation" model="operation" plugin="products" lookupField="name" >
-			<validatesPresence/>
-		</belongsTo>
-		<enum name="controlResult" values="01correct,02incorrect,03objection"/>
-		<string name="comment" />
-		<validatesWith bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentForResultIsReq" />
-		<boolean name="closed"/>
-	</model>
-	<mode name="qualityControlReport">
-	</mode>
 </qcd:models>

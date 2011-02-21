@@ -15,12 +15,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.qcadoo.mes.beans.products.ProductsOperation;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 
 @Entity
-@SequenceGenerator(name = "SEQ_STORE", sequenceName = "quality_control_quality_batch_sequence")
-@Table(name = "quality_control_quality_batch")
-public class QualityControlQualityForBatch {
+@SequenceGenerator(name = "SEQ_STORE", sequenceName = "quality_control_quality_control_sequence")
+@Table(name = "quality_control_quality_control")
+public class QualityControlQualityControl {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_STORE")
@@ -29,8 +30,13 @@ public class QualityControlQualityForBatch {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsOrder order;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private ProductsOperation operation;
+
     @Column(nullable = false, unique = true)
     private String number;
+
+    private String controlResult;
 
     private String batchNr;
 
@@ -52,6 +58,8 @@ public class QualityControlQualityForBatch {
     private Date date;
 
     private boolean closed = false;
+
+    private String qualityControlType;
 
     public Long getId() {
         return id;
@@ -155,5 +163,29 @@ public class QualityControlQualityForBatch {
 
     public void setTakenForControlQuantity(BigDecimal takenForControlQuantity) {
         this.takenForControlQuantity = takenForControlQuantity;
+    }
+
+    public ProductsOperation getOperation() {
+        return operation;
+    }
+
+    public void setOperation(ProductsOperation operation) {
+        this.operation = operation;
+    }
+
+    public String getControlResult() {
+        return controlResult;
+    }
+
+    public void setControlResult(String controlResult) {
+        this.controlResult = controlResult;
+    }
+
+    public String getQualityControlType() {
+        return qualityControlType;
+    }
+
+    public void setQualityControlType(String qualityControlType) {
+        this.qualityControlType = qualityControlType;
     }
 }

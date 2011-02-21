@@ -201,7 +201,7 @@ public class QualityControlServiceTest {
         Entity qualityControl = mock(Entity.class);
         DataDefinition qualityControlDD = mock(DataDefinition.class);
         FieldComponentState controlResult = mock(FieldComponentState.class);
-        given(dataDefinitionService.get("qualityControl", "qualityForOrder")).willReturn(qualityControlDD);
+        given(dataDefinitionService.get("qualityControl", "qualityControl")).willReturn(qualityControlDD);
         given(qualityControlDD.get(7L)).willReturn(qualityControl);
         given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
         given(qualityControl.getField("controlResult")).willReturn("01correct");
@@ -213,7 +213,7 @@ public class QualityControlServiceTest {
                 "qualityControl.quality.control.closed.success.pl");
 
         // when
-        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityForOrder" });
+        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityControl" });
 
         // then
         verify(qualityControl).setField("staff", "admin");
@@ -233,7 +233,7 @@ public class QualityControlServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(state.getFieldValue()).willReturn(7L);
         given(qualityControl.getField("controlResult")).willReturn("");
-        given(dataDefinitionService.get("qualityControl", "qualityForOrder")).willReturn(qualityControlDD);
+        given(dataDefinitionService.get("qualityControl", "qualityControl")).willReturn(qualityControlDD);
         given(qualityControlDD.get(7L)).willReturn(qualityControl);
         given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
         given(controlResult.getFieldValue()).willReturn(null);
@@ -241,7 +241,7 @@ public class QualityControlServiceTest {
                 "qualityControl.quality.control.result.missing.pl");
 
         // when
-        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityForOrder" });
+        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityControl" });
 
         // then
         verify(controlResult).addMessage("qualityControl.quality.control.result.missing.pl", MessageType.FAILURE);
@@ -262,7 +262,7 @@ public class QualityControlServiceTest {
         given(qualityControlDD.getField("controlResult")).willReturn(controlResultField);
         given(state.getFieldValue()).willReturn(7L);
         given(qualityControl.getField("controlResult")).willReturn("");
-        given(dataDefinitionService.get("qualityControl", "qualityForOrder")).willReturn(qualityControlDD);
+        given(dataDefinitionService.get("qualityControl", "qualityControl")).willReturn(qualityControlDD);
         given(qualityControlDD.get(7L)).willReturn(qualityControl);
         given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
         given(controlResult.getFieldValue()).willReturn(null);
@@ -270,7 +270,7 @@ public class QualityControlServiceTest {
                 "qualityControl.quality.control.result.missing.pl");
 
         // when
-        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityForOrder" });
+        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityControl" });
 
         // then
         verify(state).addMessage("qualityControl.quality.control.result.missing.pl", MessageType.FAILURE);
@@ -288,7 +288,7 @@ public class QualityControlServiceTest {
                 "core.form.entityWithoutIdentifier.pl");
 
         // when
-        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityForOrder" });
+        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityControl" });
 
         // then
         verify(state).addMessage("core.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
@@ -306,7 +306,7 @@ public class QualityControlServiceTest {
                 "core.grid.noRowSelectedError.pl");
 
         // when
-        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityForOrder" });
+        qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityControl" });
 
         // then
         verify(state).addMessage("core.grid.noRowSelectedError.pl", MessageType.FAILURE);
@@ -333,7 +333,7 @@ public class QualityControlServiceTest {
         SearchCriteriaBuilder searchCriteria = mock(SearchCriteriaBuilder.class, RETURNS_DEEP_STUBS);
 
         given(dataDefinitionService.get("products", "order")).willReturn(orderDataDefinition);
-        given(dataDefinitionService.get("qualityControl", "qualityForBatch")).willReturn(qualityForBatchDataDefinition);
+        given(dataDefinitionService.get("qualityControl", "qualityControl")).willReturn(qualityForBatchDataDefinition);
         given(orderDataDefinition.get(7L)).willReturn(order);
         given(order.getField("technology")).willReturn(technology);
         given(technology.getField("qualityControlType")).willReturn("01forBatch");
@@ -342,7 +342,7 @@ public class QualityControlServiceTest {
         given(dataDefinitionService.get("genealogies", "genealogy")).willReturn(genealogyDataDefinition);
         given(genealogyDataDefinition.find().restrictedWith(Restrictions.eq("order.id", 7L))).willReturn(searchCriteria);
         given(searchCriteria.list().getEntities()).willReturn(genealogies);
-        given(numberGeneratorService.generateNumber("qualityForBatch")).willReturn("1");
+        given(numberGeneratorService.generateNumber("qualityControl")).willReturn("1");
         given(order.getField("plannedQuantity")).willReturn(new BigDecimal("1"));
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
@@ -350,7 +350,7 @@ public class QualityControlServiceTest {
                 "qualityControl.qualityControl.generated.success.pl");
 
         // when
-        qualityControlService.generateQualityControl(viewDefinitionState, state, new String[] { "qualityForBatch" });
+        qualityControlService.generateQualityControl(viewDefinitionState, state, new String[] { "qualityControl" });
 
         // then
         verify(state).addMessage("qualityControl.qualityControl.generated.success.pl", MessageType.SUCCESS);
@@ -377,14 +377,52 @@ public class QualityControlServiceTest {
                 "qualityControl.qualityControl.generated.success.pl");
         given(technology.getField("unitSamplingNr")).willReturn(new BigDecimal("2"));
         given(order.getField("plannedQuantity")).willReturn(new BigDecimal("5"));
-        given(numberGeneratorService.generateNumber("qualityForUnit")).willReturn("1");
+        given(numberGeneratorService.generateNumber("qualityControl")).willReturn("1");
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
 
         // when
-        qualityControlService.generateQualityControl(viewDefinitionState, state, new String[] { "qualityForUnit" });
+        qualityControlService.generateQualityControl(viewDefinitionState, state, new String[] { "qualityControl" });
 
         // then
         verify(state).addMessage("qualityControl.qualityControl.generated.success.pl", MessageType.SUCCESS);
+    }
+
+    @Test
+    public void shouldEnableCalendarsOnPreRender() {
+        // given
+        FieldComponentState dateFrom = mock(FieldComponentState.class);
+        FieldComponentState dateTo = mock(FieldComponentState.class);
+
+        ViewDefinitionState state = mock(ViewDefinitionState.class);
+        given(state.getComponentByReference("dateFrom")).willReturn(dateFrom);
+        given(state.getComponentByReference("dateTo")).willReturn(dateTo);
+
+        // when
+        qualityControlService.enableCalendarsOnRender(state, Locale.ENGLISH);
+
+        // then
+        verify(dateFrom).setEnabled(true);
+        verify(dateTo).setEnabled(true);
+    }
+
+    @Test
+    public void shouldSetTakenForControlQuantityToOneIfEmpty() {
+        // given
+        FormComponentState form = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+
+        FieldComponentState takenForControl = mock(FieldComponentState.class);
+
+        ViewDefinitionState state = mock(ViewDefinitionState.class);
+        given(state.getComponentByReference("form")).willReturn(form);
+        given(state.getComponentByReference("takenForControl")).willReturn(takenForControl);
+        given(state.getComponentByReference("takenForControl").getFieldValue()).willReturn(null);
+
+        // when
+        qualityControlService.setTakenForControlQuantityToDefaulIfEmpty(state, Locale.ENGLISH);
+
+        // then
+        verify(takenForControl).setFieldValue(new BigDecimal(1));
+
     }
 }

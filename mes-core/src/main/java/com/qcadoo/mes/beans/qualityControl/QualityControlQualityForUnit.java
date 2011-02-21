@@ -34,6 +34,8 @@ public class QualityControlQualityForUnit {
 
     private BigDecimal controlledQuantity;
 
+    private BigDecimal takenForControlQuantity;
+
     private BigDecimal rejectedQuantity;
 
     private BigDecimal acceptedDefectsQuantity;
@@ -135,6 +137,14 @@ public class QualityControlQualityForUnit {
 
     public void setClosed(final boolean closed) {
         this.closed = closed;
+    }
+
+    public BigDecimal getTakenForControlQuantity() {
+        return takenForControlQuantity;
+    }
+
+    public void setTakenForControlQuantity(BigDecimal takenForControlQuantity) {
+        this.takenForControlQuantity = takenForControlQuantity;
     }
 
 }
