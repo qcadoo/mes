@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.NumberGeneratorService;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.EntityList;
 import com.qcadoo.mes.internal.EntityTree;
@@ -48,7 +49,6 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.products.print.ReportDataService;
-import com.qcadoo.mes.products.util.NumberGeneratorService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;

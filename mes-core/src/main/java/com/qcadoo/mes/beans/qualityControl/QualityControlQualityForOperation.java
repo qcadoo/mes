@@ -1,4 +1,4 @@
-package com.qcadoo.mes.beans.products;
+package com.qcadoo.mes.beans.qualityControl;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,9 +8,12 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.qcadoo.mes.beans.products.ProductsOperation;
+import com.qcadoo.mes.beans.products.ProductsOrder;
+
 @Entity
-@Table(name = "products_quality_operation")
-public class ProductsQualityForOperation {
+@Table(name = "quality_control_quality_operation")
+public class QualityControlQualityForOperation {
 
     @Id
     @GeneratedValue

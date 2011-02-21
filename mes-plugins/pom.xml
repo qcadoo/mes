@@ -28,6 +28,7 @@
 		<module>mes-plugins-products</module>
 		<module>mes-plugins-basic-management</module>
 		<module>mes-plugins-genealogies</module>
+		<module>mes-plugins-quality-control</module>
 	</modules>
 
 	<dependencies>

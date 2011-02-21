@@ -1,5 +1,6 @@
-package com.qcadoo.mes.beans.products;
+package com.qcadoo.mes.beans.qualityControl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -12,9 +13,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.qcadoo.mes.beans.products.ProductsOrder;
+
 @Entity
-@Table(name = "products_quality_order")
-public class ProductsQualityForOrder {
+@Table(name = "quality_control_quality_unit")
+public class QualityControlQualityForUnit {
 
     @Id
     @GeneratedValue
@@ -26,7 +29,11 @@ public class ProductsQualityForOrder {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsOrder order;
 
-    private String controlResult;
+    private BigDecimal controlledQuantity;
+
+    private BigDecimal rejectedQuantity;
+
+    private BigDecimal acceptedDefectsQuantity;
 
     private String comment;
 
@@ -34,10 +41,10 @@ public class ProductsQualityForOrder {
 
     private String staff;
 
+    private boolean closed = false;
+
     @Temporal(TemporalType.DATE)
     private Date date;
-
-    private boolean closed = false;
 
     public Long getId() {
         return id;
@@ -53,14 +60,6 @@ public class ProductsQualityForOrder {
 
     public void setOrder(final ProductsOrder order) {
         this.order = order;
-    }
-
-    public String getControlResult() {
-        return controlResult;
-    }
-
-    public void setControlResult(final String controlResult) {
-        this.controlResult = controlResult;
     }
 
     public String getComment() {
@@ -93,6 +92,30 @@ public class ProductsQualityForOrder {
 
     public void setDate(final Date date) {
         this.date = date;
+    }
+
+    public BigDecimal getControlledQuantity() {
+        return controlledQuantity;
+    }
+
+    public void setControlledQuantity(final BigDecimal producedQuantity) {
+        this.controlledQuantity = producedQuantity;
+    }
+
+    public BigDecimal getRejectedQuantity() {
+        return rejectedQuantity;
+    }
+
+    public void setRejectedQuantity(final BigDecimal rejectedQuantity) {
+        this.rejectedQuantity = rejectedQuantity;
+    }
+
+    public BigDecimal getAcceptedDefectsQuantity() {
+        return acceptedDefectsQuantity;
+    }
+
+    public void setAcceptedDefectsQuantity(final BigDecimal acceptedDefectsQuantity) {
+        this.acceptedDefectsQuantity = acceptedDefectsQuantity;
     }
 
     public String getNumber() {

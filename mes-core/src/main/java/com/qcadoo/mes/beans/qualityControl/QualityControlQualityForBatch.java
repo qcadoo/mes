@@ -1,4 +1,4 @@
-package com.qcadoo.mes.beans.products;
+package com.qcadoo.mes.beans.qualityControl;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -13,9 +13,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.qcadoo.mes.beans.products.ProductsOrder;
+
 @Entity
-@Table(name = "products_quality_batch")
-public class ProductsQualityForBatch {
+@Table(name = "quality_control_quality_batch")
+public class QualityControlQualityForBatch {
 
     @Id
     @GeneratedValue
