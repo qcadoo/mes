@@ -26,7 +26,7 @@
 -->
 
 <qcd:views plugin="qualityControl" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="qualityControlsForOrder" model="qualityForOrder" menuAccessible="true">
+	<view name="qualityControlsForOrder" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="gridNewCopyAndRemoveAction"/>
@@ -83,7 +83,7 @@
 			<option type="header" value="false" />			
 		</component>
 	</view>
-	<view name="qualityControlForOrder" model="qualityForOrder">
+	<view name="qualityControlForOrder" model="qualityControl">
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="navigation"/>
@@ -189,7 +189,7 @@
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentIsRequiredBasedOnResult"/>
 	</view>
-	<view name="qualityControlsForUnit" model="qualityForUnit" menuAccessible="true">
+	<view name="qualityControlsForUnit" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="gridNewCopyAndRemoveAction"/>
@@ -246,7 +246,7 @@
 			<option type="header" value="false" />			
 		</component>
 	</view>
-	<view name="qualityControlForUnit" model="qualityForUnit">
+	<view name="qualityControlForUnit" model="qualityControl">
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="navigation"/>
@@ -303,7 +303,7 @@
 						});
 					]]>				
 				</script>			
-				<component type="gridLayout" name="gridsLayout" columns="3" rows="13">
+				<component type="gridLayout" name="gridsLayout" columns="3" rows="14">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"/>
 					</layoutElement>
@@ -330,24 +330,27 @@
 						<component type="input" name="controlledQuantity" field="controlledQuantity" />
 					</layoutElement>
 					<layoutElement column="1" row="7">
+						<component type="input" name="takenForControlQuantity" field="takenForControlQuantity" reference="takenForControlQuantity"/>
+					</layoutElement>					
+					<layoutElement column="1" row="8">
 						<component type="input" name="rejectedQuantity" field="rejectedQuantity" />
 					</layoutElement>
-					<layoutElement column="1" row="8">
+					<layoutElement column="1" row="9">
 						<component type="input" name="acceptedDefectsQuantity" field="acceptedDefectsQuantity" reference="acceptedDefectsQuantity">
 							<listener event="onInputChange" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkAcceptedDefectsQuantity"/>
 						</component>
 					</layoutElement>										
-					<layoutElement column="1" row="9">
+					<layoutElement column="1" row="10">
 						<component type="input" name="staff" field="staff" reference="staff" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="10">
+					<layoutElement column="1" row="11">
 						<component type="input" name="date" field="date" reference="date" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="11" height="3">
+					<layoutElement column="1" row="12" height="3">
 						<component type="textarea" name="controlInstruction" reference="controlInstruction" field="controlInstruction" defaultEnabled="false"/>
 					</layoutElement>
 				</component>
@@ -357,8 +360,9 @@
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
+		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="setTakenForControlQuantityToDefaulIfEmpty"/>
 	</view>	
-	<view name="qualityControlsForBatch" model="qualityForBatch" menuAccessible="true">
+	<view name="qualityControlsForBatch" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="gridNewCopyAndRemoveAction"/>
@@ -416,7 +420,7 @@
 			<option type="header" value="false" />			
 		</component>
 	</view>
-	<view name="qualityControlForBatch" model="qualityForBatch">
+	<view name="qualityControlForBatch" model="qualityControl">
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="navigation"/>
@@ -472,7 +476,7 @@
 						});
 					]]>
 				</script>			
-				<component type="gridLayout" name="gridsLayout" columns="3" rows="14">
+				<component type="gridLayout" name="gridsLayout" columns="3" rows="15">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"/>
 					</layoutElement>
@@ -502,24 +506,27 @@
 						<component type="input" name="controlledQuantity" field="controlledQuantity" />
 					</layoutElement>
 					<layoutElement column="1" row="8">
+						<component type="input" name="takenForControlQuantity" field="takenForControlQuantity" reference="takenForControlQuantity"/>
+					</layoutElement>							
+					<layoutElement column="1" row="9">
 						<component type="input" name="rejectedQuantity" field="rejectedQuantity" />
 					</layoutElement>
-					<layoutElement column="1" row="9">
+					<layoutElement column="1" row="10">
 						<component type="input" name="acceptedDefectsQuantity" field="acceptedDefectsQuantity" reference="acceptedDefectsQuantity">
 							<listener event="onInputChange" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkAcceptedDefectsQuantity"/>
 						</component>
 					</layoutElement>										
-					<layoutElement column="1" row="10">
+					<layoutElement column="1" row="11">
 						<component type="input" name="staff" field="staff" reference="staff" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="11">
+					<layoutElement column="1" row="12">
 						<component type="input" name="date" reference="date" field="date" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="12" height="3">
+					<layoutElement column="1" row="13" height="3">
 						<component type="textarea" name="controlInstruction" reference="controlInstruction" field="controlInstruction" defaultEnabled="false"/>
 					</layoutElement>
 				</component>
@@ -529,8 +536,9 @@
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
+		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="setTakenForControlQuantityToDefaulIfEmpty"/>
 	</view>	
-	<view name="qualityControlsForOperation" model="qualityForOperation" menuAccessible="true">
+	<view name="qualityControlsForOperation" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="gridNewCopyAndRemoveAction"/>
@@ -589,7 +597,7 @@
 			<option type="header" value="false" />			
 		</component>
 	</view>
-	<view name="qualityControlForOperation" model="qualityForOperation">
+	<view name="qualityControlForOperation" model="qualityControl">
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="navigation"/>
@@ -645,7 +653,7 @@
 						});
 					]]>
 				</script>			
-				<component type="gridLayout" name="gridsLayout" columns="3" rows="7">
+				<component type="gridLayout" name="gridsLayout" columns="3" rows="9">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"/>
 					</layoutElement>
@@ -681,6 +689,16 @@
 					<layoutElement column="1" row="7">
 						<component type="checkbox" name="closed" field="closed" reference="closed" defaultEnabled="false"/>
 					</layoutElement>
+					<layoutElement column="1" row="8">
+						<component type="input" name="staff" field="staff" reference="staff" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="9">
+						<component type="input" name="date" reference="date" field="date" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
 				</component>
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="closeQualityControl"/>
 				<option type="header" value="true"/>
@@ -689,16 +707,35 @@
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentIsRequiredBasedOnResult"/>
 	</view>
-	<view name="qualityControlReport" menuAccessible="true">
+	<view name="qualityControlReport" plugin="qualityControl" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="report">
-					<bigButton name="printReport" icon="pdfIcon24.png"
-						action="#{form}.fireEvent(generateReportForComponent);" state="disabled" message="genealogies.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo">
-					</bigButton>
+				<group name="reportsForOrder">
+					<smallButton name="pdfOrder" icon="pdfIcon16.png"
+						action="#{form}.fireEvent(printQualityControlReport,pdf,forOrder);" state="enabled"/>
+					<smallButton name="xlsOrder" icon="xlsIcon16.png"
+						action="#{form}.fireEvent(printQualityControlReport,xls,forOrder);" state="enabled"/>
+				</group>				
+				<group name="reportsForUnit">
+					<smallButton name="pdfUnit" icon="pdfIcon16.png"
+						action="#{form}.fireEvent(printQualityControlReport,pdf,forUnit);" state="enabled"/>
+					<smallButton name="xlsUnit" icon="xlsIcon16.png"
+						action="#{form}.fireEvent(printQualityControlReport,xls,forUnit);" state="enabled" />
 				</group>
+				<group name="reportsForBatch">
+					<smallButton name="pdfBatch" icon="pdfIcon16.png"
+						action="#{form}.fireEvent(printQualityControlReport,pdf,forBatch);" state="enabled"/>
+					<smallButton name="xlsBatch" icon="xlsIcon16.png"
+						action="#{form}.fireEvent(printQualityControlReport,xls,forBatch);" state="enabled" />
+				</group>
+				<group name="reportsForOperation">
+					<smallButton name="pdfOperation" icon="pdfIcon16.png"
+						action="#{form}.fireEvent(printQualityControlReport,pdf,forOperation);" state="enabled"/>
+					<smallButton name="xlsOperation" icon="xlsIcon16.png"
+						action="#{form}.fireEvent(printQualityControlReport,xls,forOperation);" state="enabled" />
+				</group>												
 			</ribbon>		
-			<component type="form" name="genealogyForComponent" reference="form">
+			<component type="form" name="qualityControlReport" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="2" hasBorders="false">
 					<layoutElement column="1" row="1">
 						<component type="calendar" name="dateFrom" reference="dateFrom" defaultEnabled="true">
@@ -714,6 +751,6 @@
 				<!--<listener event="generateReportForComponent" bean="com.qcadoo.mes.genealogies.print.ReportService" method="generateReportForComponent" />-->
 			</component>
 		</component>
-		<!--<preRenderHook bean="com.qcadoo.mes.genealogies.print.ReportService" method="addRestrictionToComponentGrid" />-->	
+		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="enableCalendarsOnRender" />	
 	</view>			
 </qcd:views>

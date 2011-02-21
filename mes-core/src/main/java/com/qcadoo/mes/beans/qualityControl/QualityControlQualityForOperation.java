@@ -1,5 +1,7 @@
 package com.qcadoo.mes.beans.qualityControl;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.qcadoo.mes.beans.products.ProductsOperation;
 import com.qcadoo.mes.beans.products.ProductsOrder;
@@ -34,6 +38,11 @@ public class QualityControlQualityForOperation {
     private String controlResult;
 
     private String comment;
+
+    private String staff;
+
+    @Temporal(TemporalType.DATE)
+    private Date date;
 
     private boolean closed = false;
 
@@ -93,4 +102,19 @@ public class QualityControlQualityForOperation {
         this.closed = closed;
     }
 
+    public String getStaff() {
+        return staff;
+    }
+
+    public void setStaff(final String staff) {
+        this.staff = staff;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(final Date date) {
+        this.date = date;
+    }
 }

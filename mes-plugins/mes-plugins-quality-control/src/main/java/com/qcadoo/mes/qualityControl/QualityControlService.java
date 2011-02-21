@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +37,8 @@ import com.qcadoo.mes.view.components.select.SelectComponentState;
 
 @Service
 public class QualityControlService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(QualityControlService.class);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -164,13 +168,8 @@ public class QualityControlService {
                     FieldComponentState staff = (FieldComponentState) viewDefinitionState.getComponentByReference("staff");
                     FieldComponentState date = (FieldComponentState) viewDefinitionState.getComponentByReference("date");
 
-                    if (staff != null) {
-                        staff.setFieldValue(securityService.getCurrentUserName());
-                    }
-
-                    if (date != null) {
-                        date.setFieldValue(new SimpleDateFormat(DateType.DATE_FORMAT).format(new Date()));
-                    }
+                    staff.setFieldValue(securityService.getCurrentUserName());
+                    date.setFieldValue(new SimpleDateFormat(DateType.DATE_FORMAT).format(new Date()));
 
                     closed.setFieldValue(true);
 
@@ -320,6 +319,32 @@ public class QualityControlService {
         }
     }
 
+    public void enableCalendarsOnRender(final ViewDefinitionState state, final Locale locale) {
+        FieldComponentState dateFrom = (FieldComponentState) state.getComponentByReference("dateFrom");
+        FieldComponentState dateTo = (FieldComponentState) state.getComponentByReference("dateTo");
+
+        dateFrom.setEnabled(true);
+        dateTo.setEnabled(true);
+    }
+
+    public void setTakenForControlQuantityToDefaulIfEmpty(final ViewDefinitionState state, final Locale locale) {
+
+        LOG.info("\n SETTING TAKEN FOR CONTROL QUANTITY \n");
+
+        LOG.info("\n FORM IS NOT NULL \n");
+
+        FieldComponentState takenForControlQuantity = (FieldComponentState) state.getComponentByReference("takenForControl");
+
+        LOG.info("\n TAKEN FOR CONTROL QUANTITY: " + takenForControlQuantity);
+        LOG.info("\n TAKEN FOR CONTROL QUANTITY VALUE: " + takenForControlQuantity.getFieldValue());
+
+        if (takenForControlQuantity.getFieldValue() == null) {
+            takenForControlQuantity.setFieldValue(new BigDecimal(1));
+            LOG.info("\n FIELD VALUE WAS SET \n");
+        }
+
+    }
+
     private String getInstructionForOrder(final Long fieldValue) {
         DataDefinition orderDD = dataDefinitionService.get("products", "order");
 
@@ -373,11 +398,11 @@ public class QualityControlService {
                     : plannedQuantity.divide(sampling, RoundingMode.HALF_UP);
 
             for (int i = 0; i <= numberOfControls.intValue(); i++) {
-                DataDefinition qualityForUnitDataDefinition = dataDefinitionService.get("qualityControl", "qualityForUnit");
+                DataDefinition qualityForUnitDataDefinition = dataDefinitionService.get("qualityControl", "qualityControl");
 
-                Entity forUnit = new DefaultEntity("qualityControl", "qualityForUnit");
+                Entity forUnit = new DefaultEntity("qualityControl", "qualityControl");
                 forUnit.setField("order", order);
-                forUnit.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityForUnit"));
+                forUnit.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityControl"));
                 forUnit.setField("closed", false);
 
                 if (i < numberOfControls.intValue()) {
@@ -411,11 +436,11 @@ public class QualityControlService {
     }
 
     private void createAndSaveControlForOperation(final Entity order, final Entity entity) {
-        DataDefinition qualityForOperationDataDefinition = dataDefinitionService.get("qualityControl", "qualityForOperation");
+        DataDefinition qualityForOperationDataDefinition = dataDefinitionService.get("qualityControl", "qualityControl");
 
-        Entity forOperation = new DefaultEntity("qualityControl", "qualityForOperation");
+        Entity forOperation = new DefaultEntity("qualityControl", "qualityControl");
         forOperation.setField("order", order);
-        forOperation.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityForOperation"));
+        forOperation.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityControl"));
         forOperation.setField("operation", entity.getBelongsToField("operation"));
         forOperation.setField("closed", false);
 
@@ -425,11 +450,11 @@ public class QualityControlService {
     }
 
     private void createAndSaveControlForSingleOrder(final Entity order) {
-        DataDefinition qualityForOrderDataDefinition = dataDefinitionService.get("qualityControl", "qualityForOrder");
+        DataDefinition qualityForOrderDataDefinition = dataDefinitionService.get("qualityControl", "qualityControl");
 
-        Entity forOrder = new DefaultEntity("qualityControl", "qualityForOrder");
+        Entity forOrder = new DefaultEntity("qualityControl", "qualityControl");
         forOrder.setField("order", order);
-        forOrder.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityForOrder"));
+        forOrder.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityControl"));
         forOrder.setField("closed", false);
 
         setControlInstruction(order, forOrder);
@@ -438,11 +463,11 @@ public class QualityControlService {
     }
 
     private void createAndSaveControlForSingleBatch(final Entity order, final Entity genealogy) {
-        DataDefinition qualityForBatchDataDefinition = dataDefinitionService.get("qualityControl", "qualityForBatch");
+        DataDefinition qualityForBatchDataDefinition = dataDefinitionService.get("qualityControl", "qualityControl");
 
-        Entity forBatch = new DefaultEntity("qualityControl", "qualityForBatch");
+        Entity forBatch = new DefaultEntity("qualityControl", "qualityControl");
         forBatch.setField("order", order);
-        forBatch.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityForBatch"));
+        forBatch.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityControl"));
         forBatch.setField("batchNr", genealogy.getField("batch"));
         forBatch.setField("closed", false);
 
