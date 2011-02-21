@@ -43,6 +43,7 @@
 		<belongsTo name="staff" plugin="basic" model="staff" lookupField="name" lazy="false" />
 		<belongsTo name="machine" plugin="basic" model="machine" lookupField="name" lazy="false" />
 		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="operation" cascade="nullify" />
+		<identifierExpression value="#number + ' - ' + #name"/>
 	</model>
 	<model name="technology">
 		<string name="number">
@@ -78,6 +79,7 @@
 		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkIfUnitSampligNrIsReq" />
 		<onCopy bean="com.qcadoo.mes.products.TechnologyService" method="clearMasterOnCopy" />
 		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="setFirstTechnologyAsDefault" />
+		<identifierExpression value="#number + ' - ' + #name"/>
 	</model>
 	<model name="technologyOperationComponent">
 		<boolean name="qualityControlRequired" />

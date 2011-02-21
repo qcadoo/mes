@@ -39,6 +39,7 @@
 		<string name="description">
 			<validatesLength max="2048"/>
 		</string>
+		<identifierExpression value="#number + ' - ' + #name"/>
 	</model>
 	<model name="staff" deletable="true">
 		<string name="number">
@@ -55,6 +56,7 @@
 			<validatesLength max="255"/>
 		</string>
 		<string name="post"/>
+		<identifierExpression value="#number + ' - ' + #name"/>
 	</model>
 	<model name="parameter" deletable="false">
 		<boolean name="checkDoneOrderForQuality">

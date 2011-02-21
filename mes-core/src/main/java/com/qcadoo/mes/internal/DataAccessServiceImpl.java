@@ -40,9 +40,11 @@ import java.util.regex.Pattern;
 
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.annotations.Check;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projections;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -438,6 +440,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
+    @Check(constraints = "flag = true")
     @Monitorable
     public void delete(final InternalDataDefinition dataDefinition, final Long... entityIds) {
         checkNotNull(dataDefinition, "DataDefinition must be given");
@@ -569,10 +572,13 @@ public final class DataAccessServiceImpl implements DataAccessService {
     }
 
     private void deleteEntity(final InternalDataDefinition dataDefinition, final Long entityId) {
+
         Object databaseEntity = getDatabaseEntity(dataDefinition, entityId);
 
         checkNotNull(databaseEntity, "Entity[%s][id=%s] cannot be found", dataDefinition.getPluginIdentifier() + "."
                 + dataDefinition.getName(), entityId);
+
+        Entity entity = get(dataDefinition, entityId);
 
         priorityService.deprioritizeEntity(dataDefinition, databaseEntity);
         Map<String, FieldDefinition> fields = dataDefinition.getFields();
@@ -580,7 +586,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
         for (FieldDefinition fieldDefinition : fields.values()) {
             if (fieldDefinition.getType() instanceof HasManyType) {
                 HasManyType hasManyFieldType = (HasManyType) fieldDefinition.getType();
-                EntityList children = (EntityList) entityService.getField(databaseEntity, fieldDefinition);
+                EntityList children = entity.getHasManyField(fieldDefinition.getName());
+                // EntityList children = (EntityList) entityService.getField(databaseEntity, fieldDefinition);
                 InternalDataDefinition childDataDefinition = (InternalDataDefinition) hasManyFieldType.getDataDefinition();
                 if (HasManyType.Cascade.NULLIFY.equals(hasManyFieldType.getCascade())) {
                     for (Object child : children) {
@@ -593,7 +600,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
             if (fieldDefinition.getType() instanceof TreeType) {
                 TreeType treeFieldType = (TreeType) fieldDefinition.getType();
-                EntityTree children = (EntityTree) entityService.getField(databaseEntity, fieldDefinition);
+                // EntityTree children = (EntityTree) entityService.getField(databaseEntity, fieldDefinition);
+                EntityTree children = entity.getTreeField(fieldDefinition.getName());
                 InternalDataDefinition childDataDefinition = (InternalDataDefinition) treeFieldType.getDataDefinition();
                 if (TreeType.Cascade.NULLIFY.equals(treeFieldType.getCascade())) {
                     for (Object child : children) {
@@ -604,8 +612,13 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 }
             }
         }
-
-        getCurrentSession().delete(databaseEntity);
+        try {
+            getCurrentSession().delete(databaseEntity);
+            getCurrentSession().flush();
+        } catch (ConstraintViolationException e) {
+            throw new IllegalStateException(String.format("Entity [ENTITY.%s] is in use",
+                    dataDefinition.getEntityIdentifierField(entity)), e);
+        }
 
         LOG.info("Entity[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + entityId
                 + "] has been deleted");

@@ -72,5 +72,6 @@
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfTechnologyIsNotRemoved" />
 		<onSave bean="com.qcadoo.mes.products.OrderService" method="fillOrderDatesAndWorkers" />
 		<onCopy bean="com.qcadoo.mes.products.OrderService" method="clearOrderDatesAndWorkersOnCopy" />
+		<identifierExpression value="#number + ' - ' + #name"/>
 	</model>	
 </qcd:models>

@@ -68,7 +68,7 @@ import com.qcadoo.mes.model.validators.internal.ValidatorFactory;
 public final class DataDefinitionParser {
 
     private static enum ModelTag {
-        PRIORITY, ONCREATE, ONUPDATE, ONSAVE, ONCOPY, VALIDATESWITH, INTEGER, STRING, TEXT, DECIMAL, DATETIME, DATE, BOOLEAN, BELONGSTO, HASMANY, TREE, ENUM, DICTIONARY, PASSWORD
+        PRIORITY, ONCREATE, ONUPDATE, ONSAVE, ONCOPY, VALIDATESWITH, IDENTIFIEREXPRESSION, INTEGER, STRING, TEXT, DECIMAL, DATETIME, DATE, BOOLEAN, BELONGSTO, HASMANY, TREE, ENUM, DICTIONARY, PASSWORD
     }
 
     private static enum FieldTag {
@@ -176,6 +176,9 @@ public final class DataDefinitionParser {
                 break;
             case VALIDATESWITH:
                 dataDefinition.withValidator(validatorFactory.customEntity(getHookDefinition(reader)));
+                break;
+            case IDENTIFIEREXPRESSION:
+                dataDefinition.withIdentifierExpression(getIdentifierExpression(reader));
                 break;
             default:
                 dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier, dataDefinition, modelTag));
@@ -394,6 +397,10 @@ public final class DataDefinitionParser {
 
     private String getPluginIdentifier(final XMLStreamReader reader) {
         return getStringAttribute(reader, "plugin");
+    }
+
+    private String getIdentifierExpression(final XMLStreamReader reader) {
+        return getStringAttribute(reader, "value");
     }
 
     private Integer getIntegerAttribute(final XMLStreamReader reader, final String name) {

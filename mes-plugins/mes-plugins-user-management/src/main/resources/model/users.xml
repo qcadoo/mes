@@ -51,6 +51,7 @@
 		<password name="oldPassword" persistent="false" />
 		<string name="viewIdentifier" persistent="false" />
 		<validatesWith bean="com.qcadoo.mes.users.UserService" method="checkPassword" />
+		<identifierExpression value="#userName"/>
 	</model>
 	<model name="group">
 		<string name="name" readonly="true">
@@ -61,5 +62,6 @@
 		<string name="role" readonly="true">
 			<validatesPresenceOnCreate />
 		</string>
+		<identifierExpression value="#name"/>
 	</model>
 </qcd:models>

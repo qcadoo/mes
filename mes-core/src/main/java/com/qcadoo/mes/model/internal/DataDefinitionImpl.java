@@ -42,6 +42,7 @@ import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.search.internal.SearchCriteriaImpl;
 import com.qcadoo.mes.model.types.internal.PriorityType;
 import com.qcadoo.mes.model.validators.EntityValidator;
+import com.qcadoo.mes.utils.ExpressionUtil;
 
 public final class DataDefinitionImpl implements InternalDataDefinition {
 
@@ -72,6 +73,8 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     private boolean creatable = true;
 
     private boolean updatable = true;
+
+    private String identifierExpression = "#number";
 
     private Class<?> classForEntity;
 
@@ -172,6 +175,14 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
         }
     }
 
+    public String getEntityIdentifierField(final Entity entity) {
+        String identifier = ExpressionUtil.getValue(entity, identifierExpression);
+        if (identifier == null) {
+            identifier = "id: " + entity.getId();
+        }
+        return identifier;
+    }
+
     @Override
     public List<EntityValidator> getValidators() {
         return validators;
@@ -195,6 +206,10 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     public void withCopyHook(final HookDefinition copyHook) {
         copyHooks.add(copyHook);
+    }
+
+    public void withIdentifierExpression(final String identifierExpression) {
+        this.identifierExpression = identifierExpression;
     }
 
     @Override
