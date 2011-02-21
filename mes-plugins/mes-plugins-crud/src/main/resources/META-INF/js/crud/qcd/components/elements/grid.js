@@ -126,14 +126,16 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				
 				var stype = 'text';
 				var searchoptions = {};
+				var possibleValues = new Object();
 				if (column.filterValues) {
-					var possibleValues = new Object();
 					possibleValues[""] = "";
+					var possibleValuesString = ":"
 					for (var i in column.filterValues) {
 						possibleValues[i] = column.filterValues[i];
+						possibleValuesString += ";"+i +":"+column.filterValues[i];
 					}
 					stype = 'select';
-					searchoptions.value = possibleValues;
+					searchoptions.value = possibleValuesString;
 					searchoptions.defaultValue = "";
 				}
 				
@@ -142,7 +144,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				};
 				
 				if (searchoptions.value) {
-					globalColumnTranslations[column.name] = searchoptions.value;
+					globalColumnTranslations[column.name] = possibleValues;
 					col.formatter = function(cellvalue, options, rowObject) {
 						return globalColumnTranslations[options.colModel.name][cellvalue];
 					}
