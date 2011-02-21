@@ -6,8 +6,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -15,11 +17,12 @@ import javax.persistence.TemporalType;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 
 @Entity
+@SequenceGenerator(name = "SEQ_STORE", sequenceName = "quality_control_quality_order_sequence")
 @Table(name = "quality_control_quality_order")
 public class QualityControlQualityForOrder {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_STORE")
     private Long id;
 
     @Column(nullable = false, unique = true)

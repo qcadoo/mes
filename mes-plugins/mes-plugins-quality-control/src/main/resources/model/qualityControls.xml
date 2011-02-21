@@ -95,4 +95,6 @@
 		<validatesWith bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentForResultIsReq" />
 		<boolean name="closed"/>
 	</model>
+	<mode name="qualityControlReport">
+	</mode>
 </qcd:models>

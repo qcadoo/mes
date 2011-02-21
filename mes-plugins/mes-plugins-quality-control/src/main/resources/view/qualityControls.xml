@@ -688,5 +688,32 @@
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentIsRequiredBasedOnResult"/>
-	</view>		
+	</view>
+	<view name="qualityControlReport" menuAccessible="true">
+		<component type="window" name="window">
+			<ribbon>
+				<group name="report">
+					<bigButton name="printReport" icon="pdfIcon24.png"
+						action="#{form}.fireEvent(generateReportForComponent);" state="disabled" message="genealogies.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo">
+					</bigButton>
+				</group>
+			</ribbon>		
+			<component type="form" name="genealogyForComponent" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="2" hasBorders="false">
+					<layoutElement column="1" row="1">
+						<component type="calendar" name="dateFrom" reference="dateFrom" defaultEnabled="true">
+							<!--<listener event="onChange" bean="com.qcadoo.mes.products.OrderService" method="changeDateFrom"/>-->
+						</component>						
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="calendar" name="dateTo" reference="dateTo" defaultEnabled="true"/>
+					</layoutElement>
+				</component>
+				<option type="header" value="true"/>
+				<option type="expression" value="' '"/>
+				<!--<listener event="generateReportForComponent" bean="com.qcadoo.mes.genealogies.print.ReportService" method="generateReportForComponent" />-->
+			</component>
+		</component>
+		<!--<preRenderHook bean="com.qcadoo.mes.genealogies.print.ReportService" method="addRestrictionToComponentGrid" />-->	
+	</view>			
 </qcd:views>
