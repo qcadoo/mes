@@ -28,6 +28,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
@@ -66,6 +68,7 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
     public void init() {
         exceptionTranslations.put(DataIntegrityViolationException.class, "dataIntegrityViolationException.objectInUse");
         exceptionTranslations.put(CopyException.class, "copyException");
+        messageTranslations.put("Entity.* is in use", "dataIntegrityViolationException.objectInUse");
         messageTranslations.put("Entity.* cannot be found", "illegalStateException.entityNotFound");
         messageTranslations.put("PrintError:DocumentNotGenerated", "illegalStateException.printErrorDocumentNotGenerated");
     }
@@ -79,7 +82,7 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
             String codeStr = mv.getViewName();
             int code = Integer.parseInt(codeStr);
 
-            String customExceptionMessage = getCustomExceptionMessage(exception);
+            CustomTranslationMessage customExceptionMessage = getCustomExceptionMessage(exception);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Adding exception message to view: " + customExceptionMessage);
@@ -91,11 +94,16 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
             Locale locale = retrieveLocaleFromRequestCookie(request);
 
             if (customExceptionMessage != null) {
-                customExceptionMessageHeader = translationService.translate("core.errorPage.error." + customExceptionMessage
-                        + ".header", locale);
-                customExceptionMessageExplanation = translationService.translate("core.errorPage.error." + customExceptionMessage
-                        + ".explanation", locale);
-
+                customExceptionMessageHeader = translationService.translate(
+                        "core.errorPage.error." + customExceptionMessage.getMessage() + ".header", locale);
+                if (customExceptionMessage.getEntityIdentifier() != null) {
+                    customExceptionMessageExplanation = translationService.translate("core.errorPage.error."
+                            + customExceptionMessage.getMessage() + ".explanation", locale,
+                            customExceptionMessage.getEntityIdentifier());
+                } else {
+                    customExceptionMessageExplanation = translationService.translate("core.errorPage.error."
+                            + customExceptionMessage.getMessage() + ".explanation", locale);
+                }
                 Throwable rootException = getRootException(exception);
 
                 if (rootException instanceof CopyException) {
@@ -135,32 +143,41 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
         return null;
     }
 
-    private String getCustomExceptionMessage(final Throwable throwable) {
-        String exceptionMessage = getCustomExceptionMessageForClass(throwable);
+    private CustomTranslationMessage getCustomExceptionMessage(final Throwable throwable) {
+        CustomTranslationMessage exceptionMessage = getCustomExceptionMessageForClass(throwable);
 
         if (exceptionMessage != null) {
             return exceptionMessage;
         }
 
-        exceptionMessage = throwable.getMessage();
+        String exceptionMessageString = throwable.getMessage();
 
-        if (exceptionMessage == null) {
+        if (exceptionMessageString == null) {
             return null;
         }
 
         for (Map.Entry<String, String> translation : messageTranslations.entrySet()) {
-            if (exceptionMessage.matches(translation.getKey())) {
-                return translation.getValue();
+            if (exceptionMessageString.matches(translation.getKey())) {
+                String translationValue = translation.getValue();
+
+                Pattern p = Pattern.compile("\\[ENTITY\\..+\\]");
+                Matcher m = p.matcher(exceptionMessageString);
+                if (m.find()) {
+                    String entityIdentifier = exceptionMessageString.substring(m.start(0) + 8, m.end(0) - 1);
+                    return new CustomTranslationMessage(translationValue, entityIdentifier);
+                }
+
+                return new CustomTranslationMessage(translationValue);
             }
         }
 
         return null;
     }
 
-    private String getCustomExceptionMessageForClass(final Throwable throwable) {
+    private CustomTranslationMessage getCustomExceptionMessageForClass(final Throwable throwable) {
         for (Map.Entry<Class<?>, String> translation : exceptionTranslations.entrySet()) {
             if (translation.getKey().isInstance(throwable)) {
-                return translation.getValue();
+                return new CustomTranslationMessage(translation.getValue());
             }
         }
 
@@ -187,5 +204,29 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
             }
         }
         return locale;
+    }
+
+    private class CustomTranslationMessage {
+
+        private final String message;
+
+        private final String entityIdentifier;
+
+        public CustomTranslationMessage(final String message) {
+            this(message, null);
+        }
+
+        public CustomTranslationMessage(final String message, final String entityIdentifier) {
+            this.message = message;
+            this.entityIdentifier = entityIdentifier;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public String getEntityIdentifier() {
+            return entityIdentifier;
+        }
     }
 }

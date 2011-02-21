@@ -56,6 +56,7 @@
 		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="product" cascade="nullify"/>
 		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="product" cascade="nullify"/>
 		<hasMany name="substituteComponents" model="substituteComponent" joinField="product" cascade="nullify"/>
+		<identifierExpression value="#number + ' - ' + #name"/>
 	</model>
 	<model name="substitute">
 		<string name="number">
@@ -72,6 +73,7 @@
 		<hasMany name="components" model="substituteComponent" joinField="substitute" cascade="delete" copyable="true" />
 		<priority name="priority" scope="product" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
+		<identifierExpression value="#number + ' - ' + #name"/>
 	</model>
 	<model name="substituteComponent">
 		<belongsTo name="product" model="product" lookupField="name">
@@ -88,5 +90,6 @@
 		</decimal>
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfSubstituteIsNotRemoved" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteComponentUniqueness" />
+		<identifierExpression value="#product['number'] + ' - ' + #product['name']"/>
 	</model>
 </qcd:models>
