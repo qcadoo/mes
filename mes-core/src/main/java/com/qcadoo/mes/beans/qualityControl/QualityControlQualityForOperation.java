@@ -1,4 +1,4 @@
-package com.qcadoo.mes.beans.products;
+package com.qcadoo.mes.beans.qualityControl;
 
 import java.util.Date;
 
@@ -6,18 +6,24 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.qcadoo.mes.beans.products.ProductsOperation;
+import com.qcadoo.mes.beans.products.ProductsOrder;
+
 @Entity
-@Table(name = "products_quality_order")
-public class ProductsQualityForOrder {
+@SequenceGenerator(name = "SEQ_STORE", sequenceName = "quality_control_quality_operation_sequence")
+@Table(name = "quality_control_quality_operation")
+public class QualityControlQualityForOperation {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_STORE")
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -26,11 +32,12 @@ public class ProductsQualityForOrder {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsOrder order;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private ProductsOperation operation;
+
     private String controlResult;
 
     private String comment;
-
-    private String controlInstruction;
 
     private String staff;
 
@@ -71,28 +78,12 @@ public class ProductsQualityForOrder {
         this.comment = comment;
     }
 
-    public String getControlInstruction() {
-        return controlInstruction;
+    public ProductsOperation getOperation() {
+        return operation;
     }
 
-    public void setControlInstruction(final String controlInstruction) {
-        this.controlInstruction = controlInstruction;
-    }
-
-    public String getStaff() {
-        return staff;
-    }
-
-    public void setStaff(final String staff) {
-        this.staff = staff;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(final Date date) {
-        this.date = date;
+    public void setOperation(final ProductsOperation operation) {
+        this.operation = operation;
     }
 
     public String getNumber() {
@@ -111,4 +102,19 @@ public class ProductsQualityForOrder {
         this.closed = closed;
     }
 
+    public String getStaff() {
+        return staff;
+    }
+
+    public void setStaff(final String staff) {
+        this.staff = staff;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(final Date date) {
+        this.date = date;
+    }
 }

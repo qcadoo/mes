@@ -37,6 +37,7 @@
 		<string name="fileName" />
 		<hasMany name="orders" model="workPlanComponent" joinField="workPlan" cascade="delete" copyable="true" />
 		<onCopy bean="com.qcadoo.mes.products.WorkPlanService" method="clearGeneratedOnCopy" />
+		<identifierExpression value="##name"/>
 	</model>
 	<model name="workPlanComponent">
 		<belongsTo name="workPlan" model="workPlan" lookupField="name" lazy="false">
@@ -47,6 +48,7 @@
 		</belongsTo>
 		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
 		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkIfOrderTechnologyHasOperations" />
-		<validatesWith bean="com.qcadoo.mes.products.WorkPlanService" method="checkWorkPlanComponentUniqueness" />			
+		<validatesWith bean="com.qcadoo.mes.products.WorkPlanService" method="checkWorkPlanComponentUniqueness" />	
+		<identifierExpression value="#order['number'] + ' - ' + #order['name']"/>		
 	</model>
 </qcd:models>

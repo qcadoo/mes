@@ -118,14 +118,22 @@ public final class ExpressionUtil {
      */
     public static String getValue(final Entity entity, final String expression, final Locale locale) {
         checkState(!isEmpty(expression), "Expression must be defined");
-
-        String value = getValueWithExpression(entity, translate(expression, locale), locale);
+        String value = null;
+        if (locale != null) {
+            value = getValueWithExpression(entity, translate(expression, locale), locale);
+        } else {
+            value = getValueWithExpression(entity, expression, null);
+        }
 
         if (StringUtils.isEmpty(value) || "null".equals(value)) {
             return null;
         } else {
             return value;
         }
+    }
+
+    public static String getValue(final Entity entity, final String expression) {
+        return getValue(entity, expression, null);
     }
 
     private static String translate(final String expression, final Locale locale) {
@@ -191,7 +199,6 @@ public final class ExpressionUtil {
                 values.put(entry.getKey(), entry.getValue());
             } else {
                 FieldType type = dataDefinition.getField(entry.getKey()).getType();
-
                 if (type instanceof BelongsToType) {
                     Entity belongsToEntity = getBelongsToEntity(entry.getValue(), (BelongsToType) type);
                     values.put(entry.getKey(), getValuesForEntity(belongsToEntity, locale, level - 1));

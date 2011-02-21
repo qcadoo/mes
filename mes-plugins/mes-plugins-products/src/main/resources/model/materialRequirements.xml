@@ -38,6 +38,7 @@
 		<string name="fileName" />
 		<hasMany name="orders" model="materialRequirementComponent" joinField="materialRequirement" cascade="delete" copyable="true" />
 		<onCopy bean="com.qcadoo.mes.products.MaterialRequirementService" method="clearGeneratedOnCopy" />
+		<identifierExpression value="#name"/>
 	</model>
 	<model name="materialRequirementComponent">	
 		<belongsTo name="materialRequirement" model="materialRequirement" lookupField="name" lazy="false">
@@ -47,6 +48,7 @@
 			<validatesPresence /> 
 		</belongsTo>
 		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
-		<validatesWith bean="com.qcadoo.mes.products.MaterialRequirementService" method="checkMaterialRequirementComponentUniqueness" />		
+		<validatesWith bean="com.qcadoo.mes.products.MaterialRequirementService" method="checkMaterialRequirementComponentUniqueness" />
+		<identifierExpression value="#order['number'] + ' - ' + #order['name']"/>		
 	</model>	
 </qcd:models>

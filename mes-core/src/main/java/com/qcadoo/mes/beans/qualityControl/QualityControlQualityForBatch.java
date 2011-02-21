@@ -1,4 +1,4 @@
-package com.qcadoo.mes.beans.products;
+package com.qcadoo.mes.beans.qualityControl;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -7,18 +7,23 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.qcadoo.mes.beans.products.ProductsOrder;
+
 @Entity
-@Table(name = "products_quality_batch")
-public class ProductsQualityForBatch {
+@SequenceGenerator(name = "SEQ_STORE", sequenceName = "quality_control_quality_batch_sequence")
+@Table(name = "quality_control_quality_batch")
+public class QualityControlQualityForBatch {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_STORE")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -30,6 +35,8 @@ public class ProductsQualityForBatch {
     private String batchNr;
 
     private BigDecimal controlledQuantity;
+
+    private BigDecimal takenForControlQuantity;
 
     private BigDecimal rejectedQuantity;
 
@@ -142,4 +149,11 @@ public class ProductsQualityForBatch {
         this.closed = closed;
     }
 
+    public BigDecimal getTakenForControlQuantity() {
+        return takenForControlQuantity;
+    }
+
+    public void setTakenForControlQuantity(BigDecimal takenForControlQuantity) {
+        this.takenForControlQuantity = takenForControlQuantity;
+    }
 }

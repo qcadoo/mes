@@ -57,7 +57,7 @@
 				<group name="exportPlan">
 					<smallButtons name="pdfWorker" icon="pdfIcon16.png"
 						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForWorker);" state="disabled">
-						<smallButton name="xlsWorker" icon="xlsIcon16.png"
+					<smallButton name="xlsWorker" icon="xlsIcon16.png"
 							action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);" state="disabled" />
 					</smallButtons>
 					<smallButtons name="pdfMachine" icon="pdfIcon16.png"
@@ -198,12 +198,12 @@
 				<listener event="printOrder" bean="com.qcadoo.mes.products.OrderService" method="printOrder" />
 				<listener event="printMaterialReqForOrder" bean="com.qcadoo.mes.products.MaterialRequirementService" method="printMaterialReqForOrder" />
 				<listener event="printWorkPlanForOrder" bean="com.qcadoo.mes.products.WorkPlanService" method="printWorkPlanForOrder" />
-				<listener event="activateOrder" bean="com.qcadoo.mes.products.QualityControlService" method="autoGenerateQualityControl"/>
+				<listener event="activateOrder" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="autoGenerateQualityControl"/>
 				<listener event="activateOrder" bean="com.qcadoo.mes.genealogies.AutoGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone"/>
 				<listener event="activateOrder" bean="com.qcadoo.mes.products.OrderService" method="activateOrder"/>
 				<listener event="showGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
 				<listener event="newGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
-				<listener event="generateQualityControl" bean="com.qcadoo.mes.products.QualityControlService" method="generateQualityControl" />
+				<listener event="generateQualityControl" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="generateQualityControl" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
@@ -389,10 +389,10 @@
 				<option type="expression" value="#name + ' - ' + #number" />
 				<listener event="activateOrder" bean="com.qcadoo.mes.genealogies.AutoGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone"/>
 				<listener event="activateOrder" bean="com.qcadoo.mes.products.OrderService" method="activateOrder"/>
-				<listener event="activateOrder" bean="com.qcadoo.mes.products.QualityControlService" method="autoGenerateQualityControl"/>
+				<listener event="activateOrder" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="autoGenerateQualityControl"/>
 				<listener event="showGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
 				<listener event="newGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
-				<listener event="generateQualityControl" bean="com.qcadoo.mes.products.QualityControlService" method="generateQualityControl" />
+				<listener event="generateQualityControl" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="generateQualityControl" />
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="generateOrderNumber" />		

@@ -159,7 +159,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		if (data.clearCurrentCodeCode) {
 			dataState.currentCode = "";
 		} else {
-			dataState.currentCode = data.currentCode ? data.currentCode : dataState.currentCode;	
+			dataState.currentCode = data.currentCode ? data.currentCode : dataState.currentCode;
 		}
 		dataState.selectedEntity.id = data.value ? data.value : null;
 		dataState.selectedEntity.value = data.selectedEntityValue;
@@ -262,7 +262,11 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			lookupDropdown.updateAutocomplete(dataState.autocomplete.matches, dataState.autocomplete.entitiesNumber);
 			lookupDropdown.show();
 		} else {
-			elements.input.val(stripHTML(dataState.selectedEntity.value));
+			if (dataState.selectedEntity.value) {
+				elements.input.val(stripHTML(dataState.selectedEntity.value));	
+			} else {
+				elements.input.val(dataState.currentCode);
+			}
 			elements.text.html(dataState.selectedEntity.value);
 		}
 	}

@@ -74,7 +74,12 @@ public final class DecimalType implements FieldType {
 
     @Override
     public String toString(final Object value, final Locale locale) {
-        NumberFormat format = NumberFormat.getNumberInstance(locale);
+        NumberFormat format = null;
+        if (locale != null) {
+            format = NumberFormat.getNumberInstance(locale);
+        } else {
+            format = NumberFormat.getNumberInstance();
+        }
         format.setMinimumFractionDigits(3);
         format.setMaximumFractionDigits(3);
         return format.format(value);

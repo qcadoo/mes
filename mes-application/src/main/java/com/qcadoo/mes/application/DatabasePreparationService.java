@@ -111,6 +111,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuViewDefinition qualityControlForUnitFormView = getMenuViewDefinition("qualityControlsForUnit");
         MenuViewDefinition qualityControlForBatchFormView = getMenuViewDefinition("qualityControlsForBatch");
         MenuViewDefinition qualityControlForOperationFormView = getMenuViewDefinition("qualityControlsForOperation");
+        MenuViewDefinition qualityControlReportFormView = getMenuViewDefinition("qualityControlReport");
 
         MenuMenuCategory menuCategoryHome = addMenuCategory("home", "core.menu.home", 1);
         MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 2);
@@ -142,6 +143,8 @@ public final class DatabasePreparationService implements ApplicationListener<Con
                 genealogyForComponentFormView, 3);
         addMenuViewDefinitionItem("genealogyForProduct", "genealogies.menu.reports.genealogyForProduct", menuCategoryReports,
                 genealogyForProductFormView, 4);
+        addMenuViewDefinitionItem("qualityControlReport", "qualityControl.menu.reports.qualityControlReport",
+                menuCategoryReports, qualityControlReportFormView, 5);
         addMenuViewDefinitionItem("systemParameters", "basic.menu.systemParameters", menuCategoryBasicData,
                 getMenuViewDefinition("systemParameters"), 4);
         addMenuViewDefinitionItem("genealogyAttributes", "genealogy.menu.genealogyAttributes", menuCategoryBasicData,

@@ -146,7 +146,9 @@ public final class LookupComponentState extends FieldComponentState {
     @Override
     public void setFieldValue(final Object value) {
         setFieldValueWithoutRefreshing(convertToLong(value));
-        clearCurrentCodeCode = true;
+        if (!this.isHasError()) {
+            clearCurrentCodeCode = true;
+        }
         eventPerformer.refresh();
     }
 
