@@ -21,6 +21,7 @@ import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.EntityTree;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.search.CustomRestriction;
 import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
@@ -145,9 +146,6 @@ public class QualityControlService {
 
     public void closeQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state.getFieldValue() != null) {
-
-            String controlType = args[0];
-
             if (state instanceof FormComponentState) {
                 FieldComponentState controlResult = (FieldComponentState) viewDefinitionState
                         .getComponentByReference("controlResult");
@@ -177,7 +175,7 @@ public class QualityControlService {
                 }
 
             } else if (state instanceof GridComponentState) {
-                DataDefinition qualityControlDD = dataDefinitionService.get("qualityControl", controlType);
+                DataDefinition qualityControlDD = dataDefinitionService.get("qualityControl", "qualityControl");
                 Entity qualityControl = qualityControlDD.get((Long) state.getFieldValue());
 
                 FieldDefinition controlResultField = qualityControlDD.getField("controlResult");
@@ -345,6 +343,29 @@ public class QualityControlService {
 
     }
 
+    public void addRestrictionToQualityControlGrid(final ViewDefinitionState viewDefinitionState, final Locale locale) {
+        final GridComponentState qualityControlsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("grid");
+        final String qualityControlType = qualityControlsGrid.getName();
+
+        qualityControlsGrid.setCustomRestriction(new CustomRestriction() {
+
+            @Override
+            public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
+                searchCriteriaBuilder.restrictedWith(Restrictions.eq("qualityControlType", qualityControlType));
+            }
+
+        });
+    }
+
+    public void setQualityControlTypeHiddenField(final ViewDefinitionState viewDefinitionState, final Locale locale) {
+        FormComponentState qualityControlsForm = (FormComponentState) viewDefinitionState.getComponentByReference("form");
+        String qualityControlTypeString = qualityControlsForm.getName().replace("Control", "Controls");
+        FieldComponentState qualityControlType = (FieldComponentState) viewDefinitionState
+                .getComponentByReference("qualityControlType");
+
+        qualityControlType.setFieldValue(qualityControlTypeString);
+    }
+
     private String getInstructionForOrder(final Long fieldValue) {
         DataDefinition orderDD = dataDefinitionService.get("products", "order");
 
@@ -404,6 +425,7 @@ public class QualityControlService {
                 forUnit.setField("order", order);
                 forUnit.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityControl"));
                 forUnit.setField("closed", false);
+                forUnit.setField("qualityControlType", "qualityControlsForUnit");
 
                 if (i < numberOfControls.intValue()) {
                     forUnit.setField("controlledQuantity", sampling);
@@ -443,6 +465,7 @@ public class QualityControlService {
         forOperation.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityControl"));
         forOperation.setField("operation", entity.getBelongsToField("operation"));
         forOperation.setField("closed", false);
+        forOperation.setField("qualityControlType", "qualityControlsForOperation");
 
         setControlInstruction(order, forOperation);
 
@@ -456,6 +479,7 @@ public class QualityControlService {
         forOrder.setField("order", order);
         forOrder.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityControl"));
         forOrder.setField("closed", false);
+        forOrder.setField("qualityControlType", "qualityControlsForOrder");
 
         setControlInstruction(order, forOrder);
 
@@ -470,6 +494,7 @@ public class QualityControlService {
         forBatch.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityControl"));
         forBatch.setField("batchNr", genealogy.getField("batch"));
         forBatch.setField("closed", false);
+        forBatch.setField("qualityControlType", "qualityControlsForBatch");
 
         BigDecimal doneQuantity = (BigDecimal) order.getField("doneQuantity");
         BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");

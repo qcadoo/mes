@@ -19,7 +19,7 @@ import com.qcadoo.mes.beans.products.ProductsOperation;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 
 @Entity
-@SequenceGenerator(name = "SEQ_STORE", sequenceName = "quality_control_quality_control_sequence")
+@SequenceGenerator(name = "SEQ_STORE", sequenceName = "quality_control_quality_control_sequence", initialValue = 1, allocationSize = 1)
 @Table(name = "quality_control_quality_control")
 public class QualityControlQualityControl {
 
@@ -30,7 +30,7 @@ public class QualityControlQualityControl {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsOrder order;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private ProductsOperation operation;
 
     @Column(nullable = false, unique = true)
