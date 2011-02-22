@@ -47,7 +47,7 @@ import org.hibernate.annotations.CascadeType;
 import com.qcadoo.mes.beans.genealogies.GenealogiesGenealogy;
 
 @Entity
-@SequenceGenerator(name = "SEQ_STORE", sequenceName = "products_order_sequence")
+@SequenceGenerator(name = "SEQ_STORE", sequenceName = "products_order_sequence", initialValue = 1, allocationSize = 1)
 @Table(name = "products_order")
 public class ProductsOrder {
 

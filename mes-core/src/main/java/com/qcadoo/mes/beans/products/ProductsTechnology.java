@@ -42,7 +42,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 @Entity
-@SequenceGenerator(name = "SEQ_STORE", sequenceName = "products_technology_sequence")
+@SequenceGenerator(name = "SEQ_STORE", sequenceName = "products_technology_sequence", initialValue = 1, allocationSize = 1)
 @Table(name = "products_technology")
 public class ProductsTechnology {
 
