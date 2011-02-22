@@ -575,7 +575,7 @@ public class QualityControlService {
         forBatch.setField("closed", false);
         forBatch.setField("qualityControlType", "qualityControlsForBatch");
 
-        if (getGenealogiesForOrder(order.getId()).size() > 1) {
+        if (getGenealogiesForOrder(order.getId()).size() == 1) {
             BigDecimal doneQuantity = (BigDecimal) order.getField("doneQuantity");
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
 
