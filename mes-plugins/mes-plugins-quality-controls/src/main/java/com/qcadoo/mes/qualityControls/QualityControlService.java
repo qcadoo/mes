@@ -575,15 +575,16 @@ public class QualityControlService {
         forBatch.setField("closed", false);
         forBatch.setField("qualityControlType", "qualityControlsForBatch");
 
-        BigDecimal doneQuantity = (BigDecimal) order.getField("doneQuantity");
-        BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
+        if (getGenealogiesForOrder(order.getId()).size() > 1) {
+            BigDecimal doneQuantity = (BigDecimal) order.getField("doneQuantity");
+            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
 
-        if (doneQuantity != null) {
-            forBatch.setField("controlledQuantity", doneQuantity);
-        } else if (plannedQuantity != null) {
-            forBatch.setField("controlledQuantity", plannedQuantity);
+            if (doneQuantity != null) {
+                forBatch.setField("controlledQuantity", doneQuantity);
+            } else if (plannedQuantity != null) {
+                forBatch.setField("controlledQuantity", plannedQuantity);
+            }
         }
-
         setControlInstruction(order, forBatch);
 
         qualityForBatchDataDefinition.save(forBatch);
