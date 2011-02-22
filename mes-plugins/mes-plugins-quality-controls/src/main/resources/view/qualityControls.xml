@@ -25,7 +25,7 @@
 
 -->
 
-<qcd:views plugin="qualityControl" xmlns:qcd="http://www.qcadoo.com/view">
+<qcd:views plugin="qualityControls" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="qualityControlsForOrder" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window" reference="window">
 			<ribbon>
@@ -71,18 +71,18 @@
 					expression="#order['number']" link="true"/>
 				<option type="column" name="closed" fields="closed" link="false" width="100"/>
 				<option type="order" column="number,order,closed" direction="desc"/>
-				<option type="correspondingView" value="qualityControl/qualityControlForOrder"/>
+				<option type="correspondingView" value="qualityControls/qualityControlForOrder"/>
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="number,order,closed"/>
 				<option type="orderable" value="number,order,closed"/>
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
-				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="closeQualityControl"/>
+				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />			
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="addRestrictionToQualityControlGrid" />
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="addRestrictionToQualityControlGrid" />
 	</view>
 	<view name="qualityControlForOrder" model="qualityControl">
 		<component type="window" name="window" reference="window">
@@ -155,12 +155,12 @@
 							<option type="orderable" value="number,name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="setQualityControlInstruction"/>
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlInstruction"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="select" name="controlResult" field="controlResult" reference="controlResult">
-							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkQualityControlResult"/>
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkQualityControlResult"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4" height="2">
@@ -184,13 +184,13 @@
 					</layoutElement>
 				</component>
 				<component type="input" name="qualityControlType" reference="qualityControlType" field="qualityControlType" defaultVisible="false"/>
-				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="closeQualityControl"/>
+				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
 			</component>
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentIsRequiredBasedOnResult"/>
-		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="setQualityControlTypeHiddenField"/>
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentIsRequiredBasedOnResult"/>
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlTypeHiddenField"/>
 	</view>
 	<view name="qualityControlsForUnit" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window" reference="window">
@@ -238,17 +238,18 @@
 				<option type="column" name="controlledQuantity" fields="controlledQuantity" link="true"/>
 				<option type="column" name="closed" fields="closed" link="false" width="100"/>
 				<option type="order" column="number,order,controlledQuantity,closed" direction="desc"/>
-				<option type="correspondingView" value="qualityControl/qualityControlForUnit"/>
+				<option type="correspondingView" value="qualityControls/qualityControlForUnit"/>
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="number,order,controlledQuantity,closed"/>
 				<option type="orderable" value="number,order,controlledQuantity,closed"/>
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
+				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />			
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="addRestrictionToQualityControlGrid" />		
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="addRestrictionToQualityControlGrid" />		
 	</view>
 	<view name="qualityControlForUnit" model="qualityControl">
 		<component type="window" name="window" reference="window">
@@ -321,7 +322,7 @@
 							<option type="orderable" value="number,name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="setQualityControlInstruction"/>
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlInstruction"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3" height="2">
@@ -337,11 +338,11 @@
 						<component type="input" name="takenForControlQuantity" field="takenForControlQuantity" reference="takenForControlQuantity"/>
 					</layoutElement>					
 					<layoutElement column="1" row="8">
-						<component type="input" name="rejectedQuantity" field="rejectedQuantity" />
+						<component type="input" name="rejectedQuantity" field="rejectedQuantity" reference="rejectedQuantity" />
 					</layoutElement>
 					<layoutElement column="1" row="9">
 						<component type="input" name="acceptedDefectsQuantity" field="acceptedDefectsQuantity" reference="acceptedDefectsQuantity">
-							<listener event="onInputChange" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkAcceptedDefectsQuantity"/>
+							<listener event="onInputChange" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkAcceptedDefectsQuantity"/>
 						</component>
 					</layoutElement>										
 					<layoutElement column="1" row="10">
@@ -359,14 +360,14 @@
 					</layoutElement>
 				</component>
 				<component type="input" name="qualityControlType" reference="qualityControlType" field="qualityControlType" defaultVisible="false"/>
-				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="closeQualityControl"/>
+				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
 			</component>
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
-		<!--<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="setTakenForControlQuantityToDefaulIfEmpty"/>-->
-		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="setQualityControlTypeHiddenField"/>
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQuantitiesToDefaulIfEmpty"/>
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlTypeHiddenField"/>
 	</view>		
 	<view name="qualityControlsForBatch" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window" reference="window">
@@ -414,18 +415,18 @@
 				<option type="column" name="batchNr" fields="batchNr" link="true"/>
 				<option type="column" name="closed" fields="closed" link="false" width="100"/>
 				<option type="order" column="number,order,batchNr,closed" direction="desc"/>
-				<option type="correspondingView" value="qualityControl/qualityControlForBatch"/>
+				<option type="correspondingView" value="qualityControls/qualityControlForBatch"/>
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="number,order,batchNr,closed"/>
 				<option type="orderable" value="number,order,batchNr,closed"/>
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
-				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="closeQualityControl"/>
+				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />			
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="addRestrictionToQualityControlGrid" />		
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="addRestrictionToQualityControlGrid" />		
 	</view>
 	<view name="qualityControlForBatch" model="qualityControl">
 		<component type="window" name="window" reference="window">
@@ -497,7 +498,7 @@
 							<option type="orderable" value="number,name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="setQualityControlInstruction"/>
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlInstruction"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3" height="2">
@@ -516,11 +517,11 @@
 						<component type="input" name="takenForControlQuantity" field="takenForControlQuantity" reference="takenForControlQuantity"/>
 					</layoutElement>							
 					<layoutElement column="1" row="9">
-						<component type="input" name="rejectedQuantity" field="rejectedQuantity" />
+						<component type="input" name="rejectedQuantity" field="rejectedQuantity" reference="rejectedQuantity" />
 					</layoutElement>
 					<layoutElement column="1" row="10">
 						<component type="input" name="acceptedDefectsQuantity" field="acceptedDefectsQuantity" reference="acceptedDefectsQuantity">
-							<listener event="onInputChange" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkAcceptedDefectsQuantity"/>
+							<listener event="onInputChange" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkAcceptedDefectsQuantity"/>
 						</component>
 					</layoutElement>										
 					<layoutElement column="1" row="11">
@@ -538,14 +539,14 @@
 					</layoutElement>
 				</component>
 				<component type="input" name="qualityControlType" reference="qualityControlType" field="qualityControlType" defaultVisible="false"/>
-				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="closeQualityControl"/>
+				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
 			</component>
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
-		<!--<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="setTakenForControlQuantityToDefaulIfEmpty"/>-->
-		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="setQualityControlTypeHiddenField"/>
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQuantitiesToDefaulIfEmpty"/>
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlTypeHiddenField"/>
 	</view>		
 	<view name="qualityControlsForOperation" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window" reference="window">
@@ -594,18 +595,18 @@
 				<option type="column" name="operationName" fields="operation" link="true" expression="#operation['name']"/>
 				<option type="column" name="closed" fields="closed" link="false" width="100"/>
 				<option type="order" column="number,order,operationNumber,operationName,closed" direction="desc"/>
-				<option type="correspondingView" value="qualityControl/qualityControlForOperation"/>
+				<option type="correspondingView" value="qualityControls/qualityControlForOperation"/>
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="number,order,operationNumber,operationName,closed"/>
 				<option type="orderable" value="number,order,operationNumber,operationName,closed"/>
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
-				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="closeQualityControl"/>
+				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />			
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="addRestrictionToQualityControlGrid" />	
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="addRestrictionToQualityControlGrid" />	
 	</view>
 	<view name="qualityControlForOperation" model="qualityControl">
 		<component type="window" name="window" reference="window">
@@ -675,7 +676,7 @@
 							<option type="orderable" value="name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="name" />
-							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="setQualityControlInstruction"/>
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlInstruction"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
@@ -690,7 +691,7 @@
 					</layoutElement>					
 					<layoutElement column="1" row="4" >
 						<component type="select" name="controlResult" field="controlResult" reference="controlResult">
-							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkQualityControlResult"/>
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkQualityControlResult"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5" height="2">
@@ -711,15 +712,16 @@
 					</layoutElement>
 				</component>
 				<component type="input" name="qualityControlType" reference="qualityControlType" field="qualityControlType" defaultVisible="false"/>
-				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControl.QualityControlService" method="closeQualityControl"/>
+				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
 			</component>
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentIsRequiredBasedOnResult"/>
-		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="setQualityControlTypeHiddenField"/>
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentIsRequiredBasedOnResult"/>
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setOperationAsRequired"/>
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlTypeHiddenField"/>
 	</view>
-	<view name="qualityControlReport" plugin="qualityControl" model="qualityControl" menuAccessible="true">
+	<view name="qualityControlReport" plugin="qualityControls" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group name="reportsForOrder">
@@ -863,6 +865,6 @@
 				<listener event="printQualityControlReport" bean="com.qcadoo.mes.qualityControl.print.QualityControlsReportService" method="printQualityControlReport" />
 			</component>
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.qualityControl.QualityControlService" method="enableCalendarsOnRender" />	
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="enableCalendarsOnRender" />	
 	</view>			
 </qcd:views>

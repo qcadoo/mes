@@ -25,7 +25,7 @@
 
 -->
 
-<qcd:models plugin="qualityControl" xmlns:qcd="http://www.qcadoo.com/model">
+<qcd:models plugin="qualityControls" xmlns:qcd="http://www.qcadoo.com/model">
 	<model name="qualityControl">
 		<belongsTo name="order" model="order" plugin="products" lookupField="name" >
 			<validatesPresence/>
@@ -47,8 +47,9 @@
 		<date name="date" />
 		<boolean name="closed"/>
 		<enum name="qualityControlType" values="qualityControlsForOrder,qualityControlsForUnit,qualityControlsForBatch,qualityControlsForOperation"/>
-		<validatesWith bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentForResultIsReq" />
-		<validatesWith bean="com.qcadoo.mes.qualityControl.QualityControlService" method="checkIfCommentForQuantityIsReq" />
+		<validatesWith bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentForResultOrQuantityIsReq" />
+		<validatesWith bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfOperationIsRequired" />
+		<validatesWith bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfQuantitiesAreCorrect" />
 		<date name="dateFrom" persistent="false"/>
 		<date name="dateTo" persistent="false"/>
 	</model>
