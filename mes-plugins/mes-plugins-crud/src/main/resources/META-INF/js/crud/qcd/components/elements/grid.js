@@ -274,11 +274,16 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		// UPDATE SELECT ALL BUTTON
 		if (selectAllCheckBox) {
 			var isAllSelected = true;
+			var isEmpty = true;
 			for (var i in currentEntities) {
+				isEmpty = false;
 				if (currentState.selectedEntities[i] != true) {
 					isAllSelected = false;
 					break;
 				}
+			}
+			if (isEmpty) {
+				isAllSelected = false;
 			}
 			if (isAllSelected) {
 				selectAllCheckBox.attr('checked', true);

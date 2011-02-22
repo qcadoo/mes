@@ -104,12 +104,16 @@
 			windowController.goToLastPage();
 		}
 
-		window.onSessionExpired = function(serializationObject) {
-			windowController.onSessionExpired(serializationObject);
+		window.onSessionExpired = function(serializationObject, isModal) {
+			windowController.onSessionExpired(serializationObject, isModal);
 		}
 
 		window.addMessage = function(type, content) {
 			windowController.addMessage(type, content);
+		}
+
+		window.onLoginSuccess = function() {
+			windowController.onLoginSuccess();
 		}
 
 		window.goToMenuPosition = function(position) {

@@ -48,6 +48,7 @@
 div.headerActionButton {
 	padding: 0px;
 	height: 23px;
+	font-family: Arial, Helvetica, sans-serif;
 	background-image:none;
 	display:inline-block;
 	margin-left: 5px;

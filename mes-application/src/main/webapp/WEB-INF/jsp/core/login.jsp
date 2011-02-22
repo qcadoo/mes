@@ -42,7 +42,7 @@
 			
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/_jquery-1.4.2.min.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/serializator.js"></script>
-			
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/logger.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/snow.js"></script>
 		</c:otherwise>
 	</c:choose>
@@ -75,6 +75,8 @@
 		var errorContentText = '${translation["security.message.errorContent"]}';
 
 		var fillLoginAsDemo = ${showUserAndPassword};
+		var isPopup = ${popup};
+		var targetUrl = "${targetUrl}";
 
 		var usernameInput;
 	
@@ -102,9 +104,15 @@
 				showMessageBox(serverMessageType, serverMessageHeader, serverMessageContent);
 			}
 
-			if (window.parent.getCurrentUserLogin) {
-				var login = window.parent.getCurrentUserLogin();
-				usernameInput.val(login);
+			var currentLogin = null;
+			if (window.parent && window.parent.getCurrentUserLogin) {
+				currentLogin = window.parent.getCurrentUserLogin();
+			} else if (window.opener && window.opener.controller && window.opener.controller.getCurrentUserLogin) {
+				currentLogin = window.opener.controller.getCurrentUserLogin();
+			}
+			
+			if (currentLogin) {
+				usernameInput.val(currentLogin);
 				usernameInput.attr("disabled", "disabled");
 				$("#usernameInput_component_container_form_w").addClass("disabled");
 				passwordInput.focus();
@@ -159,8 +167,10 @@
 				success: function(response) {
 					response = $.trim(response);
 					if (response == "loginSuccessfull") {
-						if (window.parent.goToLastPage) {
-							window.parent.goToLastPage();
+						if (isPopup) {
+							window.location = targetUrl;
+						} else if (window.parent.onLoginSuccess) {
+							window.parent.onLoginSuccess();
 						} else {
 							window.location = "main.html"
 						}
@@ -240,7 +250,7 @@
 		
 			<div id="loginHeader">
 				${translation["security.form.header"]}
-				<c:if test="${! iframe}">
+				<c:if test="${! iframe && ! popup}">
 					<div id="languageDiv">
 				 		<select id="languageSelect" onchange="changeLanguage(this.value)">
 				 			<option value="pl">polski</option>
