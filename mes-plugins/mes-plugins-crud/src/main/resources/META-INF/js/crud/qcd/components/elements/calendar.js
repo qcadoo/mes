@@ -40,6 +40,7 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 	var datepicker;
 	var datepickerElement;
 	
+	var element = this.element;
 	var elementPath = this.elementPath;
 	
 	var opened = false;
@@ -51,6 +52,10 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 	var hasListeners = (this.options.listeners.length > 0) ? true : false;
 	
 	var fireOnChangeListeners = this.fireOnChangeListeners;
+	
+	var addMessage = this.addMessage; 
+	
+	var isValidationError = false;
 	
 	if (this.options.referenceName) {
 		_mainController.registerReferenceName(this.options.referenceName, this);
@@ -160,14 +165,29 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 	
 	function inputDataChanged() {
 		var date = getDate();
-		if (date == null) {
-			QCD.info("DATE NOT OK"); // TODO mina
-		} else {
-			QCD.info("DATE OK");
+		if (!isValidationError) {
+			if (date == null) {
+				addMessage({
+					title: "",
+					content: "not ok"
+				});
+				element.addClass("error");
+			} else {
+					element.removeClass("error");
+			}
 		}
 		fireOnChangeListeners("onChange", [date]);
 		if (hasListeners) {
 			mainController.callEvent("onChange", elementPath, null, null, null);
+		}
+	}
+	
+	this.setComponentError = function(isError) {
+		isValidationError = isError;
+		if (isError) {
+			element.addClass("error");
+		} else {
+			element.removeClass("error");
 		}
 	}
 	
@@ -200,6 +220,13 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 		} catch (e) {
 			return null;
 		}
+	}
+	this.getDate = getDate;
+	
+	this.setDate = function(date) {
+		var dateString = $.datepicker.formatDate("yy-mm-dd", date);
+		input.val(dateString);
+		inputDataChanged();
 	}
 	
 	constructor(this);
