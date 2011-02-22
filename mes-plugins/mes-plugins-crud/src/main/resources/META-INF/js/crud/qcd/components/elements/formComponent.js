@@ -42,6 +42,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	var baseValue;
 	
 	this.input = $("#" + this.elementSearchName + "_input");
+	var input = this.input;
 	
 	function constructor(_this) {
 		_this.registerCallbacks();
@@ -136,7 +137,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 			this.addMessage(messages[i]);
 		}
 		if (messages) {
-			setComponentError(messages.length != 0);
+			this.setComponentError(messages.length != 0);
 		}
 	}
 	
@@ -148,9 +149,9 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 
 		errorMessages.append(messageDiv);
 
-		var top = this.input.offset().top;
+		var top = input.offset().top;
 		var errorIconHeight = errorMessages.height();
-		var inputHeight = this.input.outerHeight() - 1;
+		var inputHeight = input.outerHeight() - 1;
 		var viewHeight = document.documentElement.clientHeight + $(document).scrollTop();
 
 		if ((top+errorIconHeight+inputHeight) > viewHeight) {
@@ -162,7 +163,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 		}
 	}
 	
-	function setComponentError(isError) {
+	this.setComponentError = function(isError) {
 		if (isError) {
 			element.addClass("error");
 		} else {

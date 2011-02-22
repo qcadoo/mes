@@ -25,8 +25,8 @@ public class ReportService {
 
     public void generateReportForComponent(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        GridComponentState batchState = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
         if (state instanceof FormComponentState) {
+            GridComponentState batchState = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
             if (batchState != null && batchState.getFieldValue() != null) {
                 viewDefinitionState.redirectTo("/genealogies/genealogyForComponent.pdf?value=" + batchState.getFieldValue(),
                         true, false);
