@@ -740,6 +740,15 @@
 					<layoutElement column="1" row="1">
 						<component type="calendar" name="dateFrom" reference="dateFrom" defaultEnabled="true">
 							<!--<listener event="onChange" bean="com.qcadoo.mes.products.OrderService" method="changeDateFrom"/>-->
+							<script>
+							<![CDATA[
+								this.addOnChangeListener({
+									onChange: function(selectedValue) {
+										QCD.info(selectedValue);
+									}
+								});
+							]]>
+						</script>
 						</component>						
 					</layoutElement>
 					<layoutElement column="1" row="2">
