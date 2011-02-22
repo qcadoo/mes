@@ -1,4 +1,4 @@
-package com.qcadoo.mes.qualityControl.print;
+package com.qcadoo.mes.qualityControls.print;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

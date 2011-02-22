@@ -1,4 +1,4 @@
-package com.qcadoo.mes.qualityControl.print;
+package com.qcadoo.mes.qualityControls.print;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;

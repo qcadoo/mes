@@ -25,7 +25,7 @@
 
 -->
 
-<users>
+<categories>
 	<row NAME="kategorie" ITEM="kategoria 1" />
 	<row NAME="kategorie" ITEM="kategoria 2" />
 	<row NAME="kategorie" ITEM="kategoria 3" />
@@ -37,4 +37,4 @@
 	<row NAME="jednostki" ITEM="kg" />
 	<row NAME="jednostki" ITEM="szt" />
 	<row NAME="jednostki" ITEM="m2" />
-</users>
+</categories>
