@@ -1,8 +1,9 @@
-package com.qcadoo.mes.qualityControl.print;
+package com.qcadoo.mes.qualityControls.print;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,14 +21,12 @@ public class QualityControlForOrderPdfView extends ReportPdfView {
     private SecurityService securityService;
 
     @Override
-    protected String addContent(final Document document, final Object value, final Locale locale, final PdfWriter writer)
-            throws DocumentException, IOException {
-        // Entity entity = dataDefinitionService.get("genealogies", "productInBatch").get(Long.valueOf(value.toString()));
+    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
+            final PdfWriter writer) throws DocumentException, IOException {
         String documentTitle = getTranslationService().translate("qualityControls.qualityControlForOrder.report.title", locale);
         String documentAuthor = getTranslationService().translate("qualityControls.qualityControlForOrder.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
-        // addTables(document, entity, locale);
         String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("qualityControls.qualityControlForOrder.report.fileName", locale);

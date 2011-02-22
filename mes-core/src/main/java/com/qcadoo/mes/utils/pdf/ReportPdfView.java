@@ -65,10 +65,9 @@ public abstract class ReportPdfView extends AbstractPdfView {
         decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
         decimalFormat.setMaximumFractionDigits(3);
         decimalFormat.setMinimumFractionDigits(3);
-        Object value = model.get("value");
         String fileName;
         try {
-            fileName = addContent(document, value, locale, writer);
+            fileName = addContent(document, model, locale, writer);
         } catch (DocumentException e) {
             throw new IllegalStateException(e.getMessage(), e);
         } catch (IOException e) {
@@ -102,8 +101,8 @@ public abstract class ReportPdfView extends AbstractPdfView {
         PdfUtil.addMetaData(document);
     }
 
-    protected String addContent(final Document document, final Object value, final Locale locale, final PdfWriter writer)
-            throws DocumentException, IOException {
+    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
+            final PdfWriter writer) throws DocumentException, IOException {
         document.add(new Paragraph("", PdfUtil.getArialRegular9Dark()));
         return "document";
     }

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,9 +37,9 @@ public class GenealogyForProductView extends ReportPdfView {
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    protected String addContent(final Document document, final Object value, final Locale locale, final PdfWriter writer)
-            throws DocumentException, IOException {
-        Entity entity = dataDefinitionService.get("genealogies", "genealogy").get(Long.valueOf(value.toString()));
+    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
+            final PdfWriter writer) throws DocumentException, IOException {
+        Entity entity = dataDefinitionService.get("genealogies", "genealogy").get(Long.valueOf(model.get("value").toString()));
         String documentTitle = getTranslationService().translate("genealogies.genealogyForProduct.report.title", locale);
         String documentAuthor = getTranslationService().translate("genealogies.genealogyForProduct.report.author", locale);
         UsersUser user = securityService.getCurrentUser();

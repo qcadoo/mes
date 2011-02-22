@@ -1,4 +1,4 @@
-package com.qcadoo.mes.qualityControl;
+package com.qcadoo.mes.qualityControls;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
