@@ -1108,8 +1108,8 @@ public class OrderServiceTest {
         prepareIsQualityControlAutoCheckEnabled(true);
         prepareCheckIfAllQualityControlsAreClosed(order, false);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("products.qualityControl.not.closed", Locale.ENGLISH)).willReturn(
-                "products.qualityControl.not.closed.pl");
+        given(translationService.translate("qualityControls.qualityControls.not.closed", Locale.ENGLISH)).willReturn(
+                "qualityControls.qualityControls.not.closed.pl");
         Entity parameter = mock(Entity.class);
         given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
                 Collections.singletonList(parameter));
@@ -1120,7 +1120,7 @@ public class OrderServiceTest {
         orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
 
         // then
-        verify(state).addMessage("products.qualityControl.not.closed.pl", MessageType.FAILURE);
+        verify(state).addMessage("qualityControls.qualityControls.not.closed.pl", MessageType.FAILURE);
     }
 
     @Test
@@ -1138,8 +1138,8 @@ public class OrderServiceTest {
         prepareIsQualityControlAutoCheckEnabled(true);
         prepareCheckIfAllQualityControlsAreClosed(order, false);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("products.qualityControl.not.closed", Locale.ENGLISH)).willReturn(
-                "products.qualityControl.not.closed.pl");
+        given(translationService.translate("qualityControls.qualityControls.not.closed", Locale.ENGLISH)).willReturn(
+                "qualityControls.qualityControls.not.closed.pl");
         Entity parameter = mock(Entity.class);
         given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
                 Collections.singletonList(parameter));
@@ -1150,7 +1150,7 @@ public class OrderServiceTest {
         orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
 
         // then
-        verify(state).addMessage("products.qualityControl.not.closed.pl", MessageType.FAILURE);
+        verify(state).addMessage("qualityControls.qualityControls.not.closed.pl", MessageType.FAILURE);
     }
 
     @Test
@@ -1261,12 +1261,12 @@ public class OrderServiceTest {
         if (expected) {
             DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
             given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("01forBatch");
-            given(dataDefinitionService.get("products", "qualityForBatch")).willReturn(dataDefinition);
+            given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
             given(
                     dataDefinition.find().restrictedWith(any(Restriction.class)).restrictedWith(any(Restriction.class)).list()
                             .getTotalNumberOfEntities()).willReturn(0);
         } else {
-            given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("");
+            given(order.getBelongsToField("technology").getField("qualityControlType")).willReturn(null);
         }
     }
 
@@ -1276,6 +1276,8 @@ public class OrderServiceTest {
             List<Entity> entities = new ArrayList<Entity>();
             entities.add(entity);
             given(entity.getField("checkDoneOrderForQuality")).willReturn(true);
+            given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities().size())
+                    .willReturn(1);
             given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
                     entities);
         } else {
@@ -1302,7 +1304,7 @@ public class OrderServiceTest {
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("02forUnit");
-        given(dataDefinitionService.get("products", "qualityForUnit")).willReturn(dataDefinition);
+        given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
         given(
                 dataDefinition.find().restrictedWith(any(Restriction.class)).restrictedWith(any(Restriction.class)).list()
                         .getTotalNumberOfEntities()).willReturn(0);
@@ -1328,7 +1330,7 @@ public class OrderServiceTest {
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("03forOrder");
-        given(dataDefinitionService.get("products", "qualityForUnit")).willReturn(dataDefinition);
+        given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
         given(
                 dataDefinition.find().restrictedWith(any(Restriction.class)).restrictedWith(any(Restriction.class)).list()
                         .getTotalNumberOfEntities()).willReturn(0);
@@ -1345,7 +1347,7 @@ public class OrderServiceTest {
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("04forOperation");
-        given(dataDefinitionService.get("qualityControl", "qualityForOperation")).willReturn(dataDefinition);
+        given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
         given(
                 dataDefinition.find().restrictedWith(any(Restriction.class)).restrictedWith(any(Restriction.class)).list()
                         .getTotalNumberOfEntities()).willReturn(1);

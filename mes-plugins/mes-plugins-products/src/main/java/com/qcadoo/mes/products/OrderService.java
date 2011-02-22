@@ -173,7 +173,8 @@ public final class OrderService {
                         return;
                     }
                     if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
-                        state.addMessage(translationService.translate("products.qualityControl.not.closed", state.getLocale()),
+                        state.addMessage(
+                                translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
                                 MessageType.FAILURE);
                         return;
                     }
@@ -193,7 +194,8 @@ public final class OrderService {
                     }
 
                     if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
-                        state.addMessage(translationService.translate("products.qualityControl.not.closed", state.getLocale()),
+                        state.addMessage(
+                                translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
                                 MessageType.FAILURE);
                         return;
                     }
@@ -221,20 +223,9 @@ public final class OrderService {
         Object controlTypeField = order.getBelongsToField("technology").getField("qualityControlType");
 
         if (controlTypeField != null) {
-
-            String controlType = controlTypeField.toString();
-
             DataDefinition qualityControlDD = null;
 
-            if (controlType.equals("01forBatch")) {
-                qualityControlDD = dataDefinitionService.get("qualityControl", "qualityForBatch");
-            } else if (controlType.equals("02forUnit")) {
-                qualityControlDD = dataDefinitionService.get("qualityControl", "qualityForUnit");
-            } else if (controlType.equals("03forOrder")) {
-                qualityControlDD = dataDefinitionService.get("qualityControl", "qualityForOrder");
-            } else if (controlType.equals("04forOperation")) {
-                qualityControlDD = dataDefinitionService.get("qualityControl", "qualityForOperation");
-            }
+            qualityControlDD = dataDefinitionService.get("qualityControls", "qualityControl");
 
             if (qualityControlDD != null) {
                 SearchCriteriaBuilder searchCriteria = qualityControlDD.find()

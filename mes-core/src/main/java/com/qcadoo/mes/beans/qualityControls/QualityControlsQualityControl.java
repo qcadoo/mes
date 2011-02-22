@@ -1,4 +1,4 @@
-package com.qcadoo.mes.beans.qualityControl;
+package com.qcadoo.mes.beans.qualityControls;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -21,7 +21,7 @@ import com.qcadoo.mes.beans.products.ProductsOrder;
 @Entity
 @SequenceGenerator(name = "SEQ_STORE", sequenceName = "quality_control_quality_control_sequence", initialValue = 1, allocationSize = 1)
 @Table(name = "quality_control_quality_control")
-public class QualityControlQualityControl {
+public class QualityControlsQualityControl {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_STORE")

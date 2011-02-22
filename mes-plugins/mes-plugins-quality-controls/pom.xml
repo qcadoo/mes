@@ -9,13 +9,13 @@
 		<version>0.3.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>mes-plugins-quality-control</artifactId>
+	<artifactId>mes-plugins-quality-controls</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Qcadoo MES :: Plugins :: Quality Control</name>
+	<name>Qcadoo MES :: Plugins :: Quality Controls</name>
 
 	<properties>
-		<mes.plugin.identifier>qualityControl</mes.plugin.identifier>
+		<mes.plugin.identifier>qualityControls</mes.plugin.identifier>
 	</properties>
 
 </project>

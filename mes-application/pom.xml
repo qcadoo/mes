@@ -56,7 +56,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-quality-control</artifactId>
+			<artifactId>mes-plugins-quality-controls</artifactId>
 			<version>0.3.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>

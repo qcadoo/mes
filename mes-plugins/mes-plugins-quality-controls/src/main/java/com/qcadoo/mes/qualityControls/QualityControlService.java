@@ -1,4 +1,4 @@
-package com.qcadoo.mes.qualityControl;
+package com.qcadoo.mes.qualityControls;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,8 +36,6 @@ import com.qcadoo.mes.view.components.select.SelectComponentState;
 
 @Service
 public class QualityControlService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(QualityControlService.class);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -79,6 +75,7 @@ public class QualityControlService {
                     .getComponentByReference("acceptedDefectsQuantity");
 
             if (acceptedDefectsQuantity.getFieldValue() != null
+                    && !acceptedDefectsQuantity.getFieldValue().toString().isEmpty()
                     && (new BigDecimal(acceptedDefectsQuantity.getFieldValue().toString().replace(",", "."))
                             .compareTo(BigDecimal.ZERO) > 0)) {
                 comment.setRequired(true);
@@ -87,6 +84,17 @@ public class QualityControlService {
                 comment.setRequired(false);
             }
         }
+    }
+
+    public boolean checkIfCommentForResultOrQuantityIsReq(final DataDefinition dataDefinition, final Entity entity) {
+        String qualityControlType = (String) entity.getField("qualityControlType");
+
+        if (hasControlResult(qualityControlType)) {
+            return checkIfCommentForResultIsReq(dataDefinition, entity);
+        } else {
+            return checkIfCommentForQuantityIsReq(dataDefinition, entity);
+        }
+
     }
 
     public boolean checkIfCommentForResultIsReq(final DataDefinition dataDefinition, final Entity entity) {
@@ -98,14 +106,12 @@ public class QualityControlService {
             if (comment == null || comment.isEmpty()) {
                 entity.addGlobalError("core.validate.global.error.custom");
                 entity.addError(dataDefinition.getField("comment"),
-                        "qualityControl.quality.control.validate.global.error.comment");
+                        "qualityControls.quality.control.validate.global.error.comment");
                 return false;
-            } else {
-                return true;
             }
-        } else {
-            return true;
         }
+        return true;
+
     }
 
     public boolean checkIfCommentForQuantityIsReq(final DataDefinition dataDefinition, final Entity entity) {
@@ -117,14 +123,12 @@ public class QualityControlService {
             if ((comment == null || comment.isEmpty()) && acceptedDefectsQuantity.compareTo(BigDecimal.ZERO) > 0) {
                 entity.addGlobalError("core.validate.global.error.custom");
                 entity.addError(dataDefinition.getField("comment"),
-                        "qualityControl.quality.control.validate.global.error.comment");
+                        "qualityControls.quality.control.validate.global.error.comment");
                 return false;
-            } else {
-                return true;
             }
-        } else {
-            return true;
         }
+        return true;
+
     }
 
     public void checkQualityControlResult(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -150,17 +154,21 @@ public class QualityControlService {
                 FieldComponentState controlResult = (FieldComponentState) viewDefinitionState
                         .getComponentByReference("controlResult");
 
-                if (controlResult != null
+                String qualityControlType = ((FieldComponentState) viewDefinitionState
+                        .getComponentByReference("qualityControlType")).toString();
+
+                if (hasControlResult(qualityControlType) && controlResult != null
                         && (controlResult.getFieldValue() == null || ((String) controlResult.getFieldValue()).isEmpty())) {
                     controlResult.addMessage(
-                            translationService.translate("qualityControl.quality.control.result.missing", state.getLocale()),
+                            translationService.translate("qualityControls.quality.control.result.missing", state.getLocale()),
                             MessageType.FAILURE);
                     state.addMessage(
-                            translationService.translate("qualityControl.quality.control.result.missing", state.getLocale()),
+                            translationService.translate("qualityControls.quality.control.result.missing", state.getLocale()),
                             MessageType.FAILURE);
                     return;
-                } else if (controlResult != null
-                        && ((controlResult.getFieldValue() != null) || !((String) controlResult.getFieldValue()).isEmpty())) {
+                } else if (!hasControlResult(qualityControlType)
+                        || (controlResult != null && ((controlResult.getFieldValue() != null) || !((String) controlResult
+                                .getFieldValue()).isEmpty()))) {
 
                     FieldComponentState closed = (FieldComponentState) viewDefinitionState.getComponentByReference("closed");
                     FieldComponentState staff = (FieldComponentState) viewDefinitionState.getComponentByReference("staff");
@@ -175,19 +183,22 @@ public class QualityControlService {
                 }
 
             } else if (state instanceof GridComponentState) {
-                DataDefinition qualityControlDD = dataDefinitionService.get("qualityControl", "qualityControl");
+                DataDefinition qualityControlDD = dataDefinitionService.get("qualityControls", "qualityControl");
                 Entity qualityControl = qualityControlDD.get((Long) state.getFieldValue());
 
                 FieldDefinition controlResultField = qualityControlDD.getField("controlResult");
 
                 Object controlResult = qualityControl.getField("controlResult");
+                String qualityControlType = (String) qualityControl.getField("qualityControlType");
 
-                if (controlResultField != null && (controlResult == null || controlResult.toString().isEmpty())) {
+                if (hasControlResult(qualityControlType) && controlResultField != null
+                        && (controlResult == null || controlResult.toString().isEmpty())) {
                     state.addMessage(
-                            translationService.translate("qualityControl.quality.control.result.missing", state.getLocale()),
+                            translationService.translate("qualityControls.quality.control.result.missing", state.getLocale()),
                             MessageType.FAILURE);
                     return;
-                } else if (controlResultField == null || (controlResult != null && !controlResult.toString().isEmpty())) {
+                } else if (!hasControlResult(qualityControlType)
+                        || (controlResultField == null || (controlResult != null && !controlResult.toString().isEmpty()))) {
 
                     qualityControl.setField("staff", securityService.getCurrentUserName());
                     qualityControl.setField("date", new Date());
@@ -197,7 +208,7 @@ public class QualityControlService {
                     ((GridComponentState) state).performEvent(viewDefinitionState, "refresh", new String[0]);
                 }
             }
-            state.addMessage(translationService.translate("qualityControl.quality.control.closed.success", state.getLocale()),
+            state.addMessage(translationService.translate("qualityControls.quality.control.closed.success", state.getLocale()),
                     MessageType.SUCCESS);
         } else {
             if (state instanceof FormComponentState) {
@@ -252,13 +263,13 @@ public class QualityControlService {
                 generateQualityControlForGivenType(qualityControlType, technology, order);
 
                 state.addMessage(
-                        translationService.translate("qualityControl.qualityControl.generated.success", state.getLocale()),
+                        translationService.translate("qualityControls.qualityControls.generated.success", state.getLocale()),
                         MessageType.SUCCESS);
 
                 state.performEvent(viewDefinitionState, "refresh", new String[0]);
             } else {
                 state.addMessage(
-                        translationService.translate("qualityControl.qualityControl.qualityType.missing", state.getLocale()),
+                        translationService.translate("qualityControls.qualityControls.qualityType.missing", state.getLocale()),
                         MessageType.FAILURE);
             }
 
@@ -325,20 +336,23 @@ public class QualityControlService {
         dateTo.setEnabled(true);
     }
 
-    public void setTakenForControlQuantityToDefaulIfEmpty(final ViewDefinitionState state, final Locale locale) {
+    public void setQuantitiesToDefaulIfEmpty(final ViewDefinitionState state, final Locale locale) {
+        FieldComponentState takenForControlQuantity = (FieldComponentState) state
+                .getComponentByReference("takenForControlQuantity");
+        FieldComponentState rejectedQuantity = (FieldComponentState) state.getComponentByReference("rejectedQuantity");
+        FieldComponentState acceptedDefectsQuantity = (FieldComponentState) state
+                .getComponentByReference("acceptedDefectsQuantity");
 
-        LOG.info("\n SETTING TAKEN FOR CONTROL QUANTITY \n");
+        if (takenForControlQuantity.getFieldValue() == null || takenForControlQuantity.getFieldValue().toString().isEmpty()) {
+            takenForControlQuantity.setFieldValue(BigDecimal.ONE);
+        }
 
-        LOG.info("\n FORM IS NOT NULL \n");
+        if (rejectedQuantity.getFieldValue() == null || rejectedQuantity.getFieldValue().toString().isEmpty()) {
+            rejectedQuantity.setFieldValue(BigDecimal.ZERO);
+        }
 
-        FieldComponentState takenForControlQuantity = (FieldComponentState) state.getComponentByReference("takenForControl");
-
-        LOG.info("\n TAKEN FOR CONTROL QUANTITY: " + takenForControlQuantity);
-        LOG.info("\n TAKEN FOR CONTROL QUANTITY VALUE: " + takenForControlQuantity.getFieldValue());
-
-        if (takenForControlQuantity.getFieldValue() == null) {
-            takenForControlQuantity.setFieldValue(new BigDecimal(1));
-            LOG.info("\n FIELD VALUE WAS SET \n");
+        if (acceptedDefectsQuantity.getFieldValue() == null || acceptedDefectsQuantity.getFieldValue().toString().isEmpty()) {
+            acceptedDefectsQuantity.setFieldValue(BigDecimal.ZERO);
         }
 
     }
@@ -364,6 +378,71 @@ public class QualityControlService {
                 .getComponentByReference("qualityControlType");
 
         qualityControlType.setFieldValue(qualityControlTypeString);
+    }
+
+    public void setOperationAsRequired(final ViewDefinitionState state, final Locale locale) {
+        LookupComponentState operation = (LookupComponentState) state.getComponentByReference("operation");
+        operation.setRequired(true);
+    }
+
+    public boolean checkIfOperationIsRequired(final DataDefinition dataDefinition, final Entity entity) {
+        String qualityControlType = (String) entity.getField("qualityControlType");
+
+        if (qualityControlType.equals("qualityControlsForOperation")) {
+            Object operation = entity.getField("operation");
+
+            if (operation == null) {
+                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addError(dataDefinition.getField("operation"),
+                        "qualityControls.quality.control.validate.global.error.operation");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean checkIfQuantitiesAreCorrect(final DataDefinition dataDefinition, final Entity entity) {
+        String qualityControlType = (String) entity.getField("qualityControlType");
+
+        if (hasQuantitiesToBeChecked(qualityControlType)) {
+            BigDecimal takenForControlQuantity = (BigDecimal) entity.getField("takenForControlQuantity");
+            BigDecimal rejectedQuantity = (BigDecimal) entity.getField("rejectedQuantity");
+            BigDecimal acceptedDefectsQuantity = (BigDecimal) entity.getField("acceptedDefectsQuantity");
+
+            if (rejectedQuantity != null && rejectedQuantity.compareTo(takenForControlQuantity) > 0) {
+                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addError(dataDefinition.getField("rejectedQuantity"),
+                        "qualityControls.quality.control.validate.global.error.rejectedQuantity.tooLarge");
+                return false;
+            }
+
+            if (acceptedDefectsQuantity != null && takenForControlQuantity != null
+                    && acceptedDefectsQuantity.compareTo(takenForControlQuantity.subtract(rejectedQuantity)) > 0) {
+                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addError(dataDefinition.getField("acceptedDefectsQuantity"),
+                        "qualityControls.quality.control.validate.global.error.acceptedDefectsQuantity.tooLarge");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean hasQuantitiesToBeChecked(String qualityControlType) {
+        if (qualityControlType.equals("qualityControlsForUnit") || qualityControlType.equals("qualityControlsForBatch")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean hasControlResult(String qualityControlType) {
+        if (qualityControlType.equals("qualityControlsForOrder") || qualityControlType.equals("qualityControlsForOperation")) {
+            return true;
+        }
+
+        return false;
     }
 
     private String getInstructionForOrder(final Long fieldValue) {
@@ -419,11 +498,11 @@ public class QualityControlService {
                     : plannedQuantity.divide(sampling, RoundingMode.HALF_UP);
 
             for (int i = 0; i <= numberOfControls.intValue(); i++) {
-                DataDefinition qualityForUnitDataDefinition = dataDefinitionService.get("qualityControl", "qualityControl");
+                DataDefinition qualityForUnitDataDefinition = dataDefinitionService.get("qualityControls", "qualityControl");
 
-                Entity forUnit = new DefaultEntity("qualityControl", "qualityControl");
+                Entity forUnit = new DefaultEntity("qualityControls", "qualityControl");
                 forUnit.setField("order", order);
-                forUnit.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityControl"));
+                forUnit.setField("number", numberGeneratorService.generateNumber("qualityControls", "qualityControl"));
                 forUnit.setField("closed", false);
                 forUnit.setField("qualityControlType", "qualityControlsForUnit");
 
@@ -458,11 +537,11 @@ public class QualityControlService {
     }
 
     private void createAndSaveControlForOperation(final Entity order, final Entity entity) {
-        DataDefinition qualityForOperationDataDefinition = dataDefinitionService.get("qualityControl", "qualityControl");
+        DataDefinition qualityForOperationDataDefinition = dataDefinitionService.get("qualityControls", "qualityControl");
 
-        Entity forOperation = new DefaultEntity("qualityControl", "qualityControl");
+        Entity forOperation = new DefaultEntity("qualityControls", "qualityControl");
         forOperation.setField("order", order);
-        forOperation.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityControl"));
+        forOperation.setField("number", numberGeneratorService.generateNumber("qualityControls", "qualityControl"));
         forOperation.setField("operation", entity.getBelongsToField("operation"));
         forOperation.setField("closed", false);
         forOperation.setField("qualityControlType", "qualityControlsForOperation");
@@ -473,11 +552,11 @@ public class QualityControlService {
     }
 
     private void createAndSaveControlForSingleOrder(final Entity order) {
-        DataDefinition qualityForOrderDataDefinition = dataDefinitionService.get("qualityControl", "qualityControl");
+        DataDefinition qualityForOrderDataDefinition = dataDefinitionService.get("qualityControls", "qualityControl");
 
-        Entity forOrder = new DefaultEntity("qualityControl", "qualityControl");
+        Entity forOrder = new DefaultEntity("qualityControls", "qualityControl");
         forOrder.setField("order", order);
-        forOrder.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityControl"));
+        forOrder.setField("number", numberGeneratorService.generateNumber("qualityControls", "qualityControl"));
         forOrder.setField("closed", false);
         forOrder.setField("qualityControlType", "qualityControlsForOrder");
 
@@ -487,11 +566,11 @@ public class QualityControlService {
     }
 
     private void createAndSaveControlForSingleBatch(final Entity order, final Entity genealogy) {
-        DataDefinition qualityForBatchDataDefinition = dataDefinitionService.get("qualityControl", "qualityControl");
+        DataDefinition qualityForBatchDataDefinition = dataDefinitionService.get("qualityControls", "qualityControl");
 
-        Entity forBatch = new DefaultEntity("qualityControl", "qualityControl");
+        Entity forBatch = new DefaultEntity("qualityControls", "qualityControl");
         forBatch.setField("order", order);
-        forBatch.setField("number", numberGeneratorService.generateNumber("qualityControl", "qualityControl"));
+        forBatch.setField("number", numberGeneratorService.generateNumber("qualityControls", "qualityControl"));
         forBatch.setField("batchNr", genealogy.getField("batch"));
         forBatch.setField("closed", false);
         forBatch.setField("qualityControlType", "qualityControlsForBatch");
