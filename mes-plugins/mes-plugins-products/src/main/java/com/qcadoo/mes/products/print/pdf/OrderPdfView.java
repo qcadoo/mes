@@ -27,6 +27,7 @@ package com.qcadoo.mes.products.print.pdf;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -48,9 +49,9 @@ public final class OrderPdfView extends ReportPdfView {
     private SecurityService securityService;
 
     @Override
-    protected String addContent(final Document document, final Object value, final Locale locale, final PdfWriter writer)
-            throws DocumentException, IOException {
-        Entity entity = (Entity) value;
+    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
+            final PdfWriter writer) throws DocumentException, IOException {
+        Entity entity = (Entity) model.get("value");
         String documentTitle = getTranslationService().translate("products.order.report.order", locale);
         String documentAuthor = getTranslationService().translate("products.order.report.author", locale);
         UsersUser user = securityService.getCurrentUser();

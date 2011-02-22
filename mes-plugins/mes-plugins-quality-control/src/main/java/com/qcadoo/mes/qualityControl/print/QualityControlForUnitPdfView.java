@@ -3,6 +3,7 @@ package com.qcadoo.mes.qualityControl.print;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,8 +21,8 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
     private SecurityService securityService;
 
     @Override
-    protected String addContent(final Document document, final Object value, final Locale locale, final PdfWriter writer)
-            throws DocumentException, IOException {
+    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
+            final PdfWriter writer) throws DocumentException, IOException {
         String documentTitle = getTranslationService().translate("qualityControls.qualityControlForUnit.report.title", locale);
         String documentAuthor = getTranslationService().translate("qualityControls.qualityControlForUnit.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
