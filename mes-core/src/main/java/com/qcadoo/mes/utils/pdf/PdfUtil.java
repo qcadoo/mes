@@ -311,7 +311,7 @@ public final class PdfUtil {
             cellTable.addCell(new Phrase(nullValue, valueFont));
         } else {
             if (value instanceof BigDecimal && df != null) {
-                cellTable.addCell(new Phrase(df.format((value)), valueFont));
+                cellTable.addCell(new Phrase(df.format(value), valueFont));
             } else {
                 cellTable.addCell(new Phrase(value.toString(), valueFont));
             }
