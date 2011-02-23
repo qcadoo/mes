@@ -16,7 +16,6 @@ import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
-import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -88,7 +87,7 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
         for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
             document.add(Chunk.NEWLINE);
 
-            document.add(prepareTitle(entry.getKey(), locale, "product"));
+            document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "product"));
 
             List<String> productHeader = new ArrayList<String>();
             productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.batch.number", locale));
@@ -111,22 +110,5 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
             }
             document.add(table);
         }
-    }
-
-    private Element prepareTitle(Entity product, Locale locale, String type) {
-
-        Paragraph title = new Paragraph();
-
-        if (type.equals("product")) {
-            title.add(new Phrase(getTranslationService().translate("qualityControls.qualityControl.report.paragrah1", locale),
-                    PdfUtil.getArialBold11Light()));
-            String name = "";
-            if (product != null) {
-                name = product.getField("name").toString();
-            }
-            title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
-        }
-
-        return title;
     }
 }
