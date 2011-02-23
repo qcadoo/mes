@@ -47,10 +47,11 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
         qualityControlsReportService.aggregateOrdersDataForProduct(productOrders, quantities, qualityControlsReportService.getOrderSeries(
                 model.get("dateFrom").toString(), model.get("dateTo").toString(), "qualityControlsForUnit"), true);
 
+        addOrderSeries(document, quantities, locale);
+
         for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
-            addOrderSeries(document, quantities, locale);
-            addProductSeries(document, productOrders, entry, locale);
             document.add(Chunk.NEWLINE);
+            addProductSeries(document, productOrders, entry, locale);
         }
 
         String text = getTranslationService().translate("core.report.endOfReport", locale);
@@ -102,9 +103,14 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
 
         for (Entity entity : entry.getValue()) {
             table.addCell(new Phrase(entity.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(entity.getField("controlledQuantity").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(entity.getField("rejectedQuantity").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(entity.getField("acceptedDefectsQuantity").toString(), PdfUtil.getArialRegular9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            table.addCell(new Phrase(getDecimalFormat().format(entity.getField("controlledQuantity")), PdfUtil
+                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(getDecimalFormat().format(entity.getField("rejectedQuantity")), PdfUtil
+                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(getDecimalFormat().format(entity.getField("acceptedDefectsQuantity")), PdfUtil
+                    .getArialRegular9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
 
