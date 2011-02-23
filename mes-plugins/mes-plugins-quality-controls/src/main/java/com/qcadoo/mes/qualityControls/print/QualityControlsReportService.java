@@ -28,6 +28,7 @@ import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.mes.view.components.grid.GridComponentState;
 
 @Service
 public class QualityControlsReportService {
@@ -44,22 +45,8 @@ public class QualityControlsReportService {
             FieldComponentState dateFrom = (FieldComponentState) viewDefinitionState.getComponentByReference("dateFrom");
             FieldComponentState dateTo = (FieldComponentState) viewDefinitionState.getComponentByReference("dateTo");
             if (dateFrom != null && dateTo != null && dateFrom.getFieldValue() != null && dateTo.getFieldValue() != null) {
-                if ("forOrder".equals(args[1])) {
-                    viewDefinitionState.redirectTo(
-                            "/qualityControl/qualityControlForOrder." + args[0] + "?dateFrom=" + dateFrom.getFieldValue()
-                                    + "&dateTo=" + dateTo.getFieldValue(), true, false);
-                } else if ("forUnit".equals(args[1])) {
-                    viewDefinitionState.redirectTo(
-                            "/qualityControl/qualityControlForUnit." + args[0] + "?dateFrom=" + dateFrom.getFieldValue()
-                                    + "&dateTo=" + dateTo.getFieldValue(), true, false);
-                } else if ("forBatch".equals(args[1])) {
-                    viewDefinitionState.redirectTo(
-                            "/qualityControl/qualityControlForBatch." + args[0] + "?dateFrom=" + dateFrom.getFieldValue()
-                                    + "&dateTo=" + dateTo.getFieldValue(), true, false);
-                } else if ("forOperation".equals(args[1])) {
-                    viewDefinitionState.redirectTo("/qualityControl/qualityControlForOperation." + args[0] + "?dateFrom="
-                            + dateFrom.getFieldValue() + "&dateTo=" + dateTo.getFieldValue(), true, false);
-                }
+                viewDefinitionState.redirectTo("/qualityControl/qualityControlByDates." + args[0] + "?type=" + args[1]
+                        + "&dateFrom=" + dateFrom.getFieldValue() + "&dateTo=" + dateTo.getFieldValue(), true, false);
             } else {
                 state.addMessage(translationService.translate("qualityControl.report.invalidDates", state.getLocale()),
                         MessageType.FAILURE);
@@ -123,5 +110,27 @@ public class QualityControlsReportService {
         } catch (ParseException e) {
             return Collections.emptyList();
         }
+    }
+
+    public void printQualityControlReportForOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (!(state instanceof GridComponentState)) {
+            throw new IllegalStateException("method only for grid");
+        }
+        GridComponentState gridState = (GridComponentState) state;
+        if (gridState.getSelectedEntitiesId().size() == 0) {
+            state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()), MessageType.FAILURE);
+            return;
+        }
+        StringBuilder redirectUrl = new StringBuilder();
+        redirectUrl.append("/qualityControl/qualityControlReport.");
+        redirectUrl.append(args[0]);
+        redirectUrl.append("?type=");
+        redirectUrl.append(args[1]);
+        for (Long entityId : gridState.getSelectedEntitiesId()) {
+            redirectUrl.append("&id=");
+            redirectUrl.append(entityId);
+        }
+        viewDefinitionState.redirectTo(redirectUrl.toString(), true, false);
     }
 }
