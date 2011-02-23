@@ -99,9 +99,9 @@ public class QualityControlsReportService {
                 List<BigDecimal> quantitiesList = new ArrayList<BigDecimal>();
                 if (quantities.containsKey(product)) {
                     quantitiesList = quantities.get(product);
-                    quantitiesList.add(0, quantitiesList.get(0).add((BigDecimal) entity.getField("controlledQuantity")));
-                    quantitiesList.add(1, quantitiesList.get(1).add((BigDecimal) entity.getField("rejectedQuantity")));
-                    quantitiesList.add(2, quantitiesList.get(2).add((BigDecimal) entity.getField("acceptedDefectsQuantity")));
+                    quantitiesList.set(0, quantitiesList.get(0).add((BigDecimal) entity.getField("controlledQuantity")));
+                    quantitiesList.set(1, quantitiesList.get(1).add((BigDecimal) entity.getField("rejectedQuantity")));
+                    quantitiesList.set(2, quantitiesList.get(2).add((BigDecimal) entity.getField("acceptedDefectsQuantity")));
                 } else {
                     quantitiesList.add(0, (BigDecimal) entity.getField("controlledQuantity"));
                     quantitiesList.add(1, (BigDecimal) entity.getField("rejectedQuantity"));
@@ -126,20 +126,20 @@ public class QualityControlsReportService {
                 List<BigDecimal> quantitiesList = new ArrayList<BigDecimal>();
                 if (quantities.containsKey(product)) {
                     quantitiesList = quantities.get(product);
-                    quantitiesList.add(0, quantitiesList.get(0).add(BigDecimal.ONE));
+                    quantitiesList.set(0, quantitiesList.get(0).add(BigDecimal.ONE));
                     if ("01correct".equals(entity.getField("controlResult"))) {
-                        quantitiesList.add(1, quantitiesList.get(1).add(BigDecimal.ONE));
+                        quantitiesList.set(1, quantitiesList.get(1).add(BigDecimal.ONE));
                     } else if ("02incorrect".equals(entity.getField("controlResult"))) {
-                        quantitiesList.add(2, quantitiesList.get(2).add(BigDecimal.ONE));
+                        quantitiesList.set(2, quantitiesList.get(2).add(BigDecimal.ONE));
                     } else if ("03objection".equals(entity.getField("controlResult"))) {
-                        quantitiesList.add(3, quantitiesList.get(3).add(BigDecimal.ONE));
+                        quantitiesList.set(3, quantitiesList.get(3).add(BigDecimal.ONE));
                     }
                     if (entity.getBelongsToField("order").getField("doneQuantity") != null) {
-                        quantitiesList.add(4,
+                        quantitiesList.set(4,
                                 quantitiesList.get(4)
                                         .add((BigDecimal) entity.getBelongsToField("order").getField("doneQuantity")));
                     } else {
-                        quantitiesList.add(
+                        quantitiesList.set(
                                 4,
                                 quantitiesList.get(4).add(
                                         (BigDecimal) entity.getBelongsToField("order").getField("plannedQuantity")));
@@ -186,13 +186,13 @@ public class QualityControlsReportService {
                 List<BigDecimal> quantitiesList = new ArrayList<BigDecimal>();
                 if (quantities.containsKey(operation)) {
                     quantitiesList = quantities.get(operation);
-                    quantitiesList.add(0, quantitiesList.get(0).add(BigDecimal.ONE));
+                    quantitiesList.set(0, quantitiesList.get(0).add(BigDecimal.ONE));
                     if ("01correct".equals(entity.getField("controlResult"))) {
-                        quantitiesList.add(1, quantitiesList.get(1).add(BigDecimal.ONE));
+                        quantitiesList.set(1, quantitiesList.get(1).add(BigDecimal.ONE));
                     } else if ("02incorrect".equals(entity.getField("controlResult"))) {
-                        quantitiesList.add(2, quantitiesList.get(2).add(BigDecimal.ONE));
+                        quantitiesList.set(2, quantitiesList.get(2).add(BigDecimal.ONE));
                     } else if ("03objection".equals(entity.getField("controlResult"))) {
-                        quantitiesList.add(3, quantitiesList.get(3).add(BigDecimal.ONE));
+                        quantitiesList.set(3, quantitiesList.get(3).add(BigDecimal.ONE));
                     }
                 } else {
                     quantitiesList.add(0, BigDecimal.ONE);
