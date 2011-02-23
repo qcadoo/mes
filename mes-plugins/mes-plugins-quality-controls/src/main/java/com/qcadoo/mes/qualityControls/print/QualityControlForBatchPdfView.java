@@ -36,21 +36,23 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
     @Override
     protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
+        Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
+        Map<Entity, List<BigDecimal>> quantities = new HashMap<Entity, List<BigDecimal>>();
+        qualityControlsReportService.aggregateOrdersData(productOrders, quantities, qualityControlsReportService.getOrderSeries(
+                model.get("dateFrom").toString(), model.get("dateTo").toString(), "qualityControlsForBatch"), true);
+
         String documentTitle = getTranslationService().translate("qualityControls.qualityControlForBatch.report.title", locale);
         String documentAuthor = getTranslationService().translate("qualityControls.qualityControl.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
         qualityControlsReportService.addQualityControlReportHeader(document, model.get("dateFrom").toString(), model
                 .get("dateTo").toString(), locale);
-        Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
-        Map<Entity, List<BigDecimal>> quantities = new HashMap<Entity, List<BigDecimal>>();
-        qualityControlsReportService.aggregateOrdersData(productOrders, quantities, qualityControlsReportService.getOrderSeries(
-                model.get("dateFrom").toString(), model.get("dateTo").toString(), "qualityControlsForBatch"), true);
+
+        addOrderSeries(document, quantities, locale);
 
         for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
-            addOrderSeries(document, quantities, locale);
-            addProductSeries(document, productOrders, entry, locale);
             document.add(Chunk.NEWLINE);
+            addProductSeries(document, productOrders, entry, locale);
         }
 
         String text = getTranslationService().translate("core.report.endOfReport", locale);
@@ -105,9 +107,14 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
             table.addCell(new Phrase(entity.getField("batchNr") != null ? entity.getField("batchNr").toString() : "", PdfUtil
                     .getArialRegular9Dark()));
             table.addCell(new Phrase(entity.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(entity.getField("controlledQuantity").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(entity.getField("rejectedQuantity").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(entity.getField("acceptedDefectsQuantity").toString(), PdfUtil.getArialRegular9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            table.addCell(new Phrase(getDecimalFormat().format(entity.getField("controlledQuantity")), PdfUtil
+                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(getDecimalFormat().format(entity.getField("rejectedQuantity")), PdfUtil
+                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(getDecimalFormat().format(entity.getField("acceptedDefectsQuantity")), PdfUtil
+                    .getArialRegular9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
 
         document.add(table);

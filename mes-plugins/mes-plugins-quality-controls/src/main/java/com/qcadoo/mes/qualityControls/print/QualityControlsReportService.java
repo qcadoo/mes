@@ -137,7 +137,7 @@ public class QualityControlsReportService {
             if (product != null) {
                 name = product.getField("name").toString();
             }
-            title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
+            title.add(new Phrase(" " + name, PdfUtil.getArialBold11Dark()));
         }
 
         return title;
