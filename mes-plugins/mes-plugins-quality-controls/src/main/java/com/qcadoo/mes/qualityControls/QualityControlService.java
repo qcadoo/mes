@@ -406,6 +406,7 @@ public class QualityControlService {
         String qualityControlType = (String) entity.getField("qualityControlType");
 
         if (hasQuantitiesToBeChecked(qualityControlType)) {
+            BigDecimal controlledQuantity = (BigDecimal) entity.getField("controlledQuantity");
             BigDecimal takenForControlQuantity = (BigDecimal) entity.getField("takenForControlQuantity");
             BigDecimal rejectedQuantity = (BigDecimal) entity.getField("rejectedQuantity");
             BigDecimal acceptedDefectsQuantity = (BigDecimal) entity.getField("acceptedDefectsQuantity");
@@ -424,6 +425,13 @@ public class QualityControlService {
                         "qualityControls.quality.control.validate.global.error.acceptedDefectsQuantity.tooLarge");
                 return false;
             }
+
+            entity.setField("controlledQuantity", controlledQuantity == null ? BigDecimal.ZERO : controlledQuantity);
+            entity.setField("takenForControlQuantity", takenForControlQuantity == null ? BigDecimal.ZERO
+                    : takenForControlQuantity);
+            entity.setField("rejectedQuantity", rejectedQuantity == null ? BigDecimal.ZERO : rejectedQuantity);
+            entity.setField("acceptedDefectsQuantity", acceptedDefectsQuantity == null ? BigDecimal.ZERO
+                    : acceptedDefectsQuantity);
         }
 
         return true;
@@ -505,6 +513,9 @@ public class QualityControlService {
                 forUnit.setField("number", numberGeneratorService.generateNumber("qualityControls", "qualityControl"));
                 forUnit.setField("closed", false);
                 forUnit.setField("qualityControlType", "qualityControlsForUnit");
+                forUnit.setField("takenForControlQuantity", BigDecimal.ONE);
+                forUnit.setField("rejectedQuantity", BigDecimal.ZERO);
+                forUnit.setField("acceptedDefectsQuantity", BigDecimal.ZERO);
 
                 if (i < numberOfControls.intValue()) {
                     forUnit.setField("controlledQuantity", sampling);
@@ -584,7 +595,14 @@ public class QualityControlService {
             } else if (plannedQuantity != null) {
                 forBatch.setField("controlledQuantity", plannedQuantity);
             }
+        } else {
+            forBatch.setField("controlledQuantity", BigDecimal.ZERO);
         }
+
+        forBatch.setField("takenForControlQuantity", BigDecimal.ONE);
+        forBatch.setField("rejectedQuantity", BigDecimal.ZERO);
+        forBatch.setField("acceptedDefectsQuantity", BigDecimal.ZERO);
+
         setControlInstruction(order, forBatch);
 
         qualityForBatchDataDefinition.save(forBatch);
