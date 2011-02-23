@@ -630,7 +630,7 @@ public class ReportDataService {
         UsersUser user = securityService.getCurrentUser();
         PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
                 (Date) entity.getField("date"), user);
-        document.add(generateBarcode(entity.getField("name").toString()));
+        // document.add(generateBarcode(entity.getField("name").toString()));
         document.add(new Paragraph(translationService.translate("products.workPlan.report.paragrah", locale), PdfUtil
                 .getArialBold11Dark()));
         List<String> orderHeader = new ArrayList<String>();

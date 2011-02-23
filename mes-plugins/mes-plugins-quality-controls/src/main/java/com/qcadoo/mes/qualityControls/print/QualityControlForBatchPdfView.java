@@ -11,8 +11,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lowagie.text.Chunk;
@@ -33,8 +31,6 @@ import com.qcadoo.mes.utils.pdf.ReportPdfView;
 
 public class QualityControlForBatchPdfView extends ReportPdfView {
 
-    private static final Logger LOG = LoggerFactory.getLogger(QualityControlForBatchPdfView.class);
-
     @Autowired
     private SecurityService securityService;
 
@@ -44,29 +40,24 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
     @Override
     protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
-        Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
-        Map<Entity, List<BigDecimal>> quantities = new HashMap<Entity, List<BigDecimal>>();
-        qualityControlsReportService.aggregateOrdersData(productOrders, quantities, qualityControlsReportService.getOrderSeries(
-                model.get("dateFrom").toString(), model.get("dateTo").toString(), "qualityControlsForBatch"), true);
-
         String documentTitle = getTranslationService().translate("qualityControls.qualityControlForBatch.report.title", locale);
         String documentAuthor = getTranslationService().translate("qualityControls.qualityControl.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
-        qualityControlsReportService.addQualityControlReportHeader(document, model.get("dateFrom").toString(), model
-                .get("dateTo").toString(), locale);
 
+        qualityControlsReportService.addQualityControlReportHeader(document, model, locale);
+        Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
+        Map<Entity, List<BigDecimal>> quantities = new HashMap<Entity, List<BigDecimal>>();
+        qualityControlsReportService.aggregateOrdersDataForProduct(productOrders, quantities,
+                qualityControlsReportService.getOrderSeries(model, "qualityControlsForBatch"), true);
         quantities = SortUtil.sortMapUsingComparator(quantities, new EntityNumberComparator());
-
         addOrderSeries(document, quantities, locale);
-
         productOrders = SortUtil.sortMapUsingComparator(productOrders, new EntityNumberComparator());
 
         for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
             document.add(Chunk.NEWLINE);
             addProductSeries(document, productOrders, entry, locale);
         }
-
         String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("qualityControls.qualityControlForBatch.report.fileName", locale);
@@ -101,8 +92,8 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
         document.add(table);
     }
 
-    private void addProductSeries(Document document, Map<Entity, List<Entity>> productOrders, Entry<Entity, List<Entity>> entry,
-            Locale locale) throws DocumentException {
+    private void addProductSeries(final Document document, final Map<Entity, List<Entity>> productOrders,
+            final Entry<Entity, List<Entity>> entry, final Locale locale) throws DocumentException {
 
         document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "product"));
 
