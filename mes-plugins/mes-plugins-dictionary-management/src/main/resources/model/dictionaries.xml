@@ -31,6 +31,10 @@
 			<validatesPresence />
 			<validatesUniqueness />
 		</string>
+		<string name="label" >
+			<validatesPresence />
+			<validatesUniqueness />
+		</string>
 		<hasMany name="dictionaryItems" model="dictionaryItem" joinField="dictionary" cascade="delete" />
 	</model>
 	<model name="dictionaryItem">
