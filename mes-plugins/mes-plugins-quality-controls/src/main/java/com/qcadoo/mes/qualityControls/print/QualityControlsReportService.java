@@ -148,15 +148,23 @@ public class QualityControlsReportService {
                     quantitiesList.add(0, BigDecimal.ONE);
                     if ("01correct".equals(entity.getField("controlResult"))) {
                         quantitiesList.add(1, BigDecimal.ONE);
+                        quantitiesList.add(2, BigDecimal.ZERO);
+                        quantitiesList.add(3, BigDecimal.ZERO);
                     } else if ("02incorrect".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, BigDecimal.ZERO);
                         quantitiesList.add(2, BigDecimal.ONE);
+                        quantitiesList.add(3, BigDecimal.ZERO);
                     } else if ("03objection".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, BigDecimal.ZERO);
+                        quantitiesList.add(2, BigDecimal.ZERO);
                         quantitiesList.add(3, BigDecimal.ONE);
                     }
                     if (entity.getBelongsToField("order").getField("doneQuantity") != null) {
                         quantitiesList.add(4, (BigDecimal) entity.getBelongsToField("order").getField("doneQuantity"));
-                    } else {
+                    } else if (entity.getBelongsToField("order").getField("plannedQuantity") != null) {
                         quantitiesList.add(4, (BigDecimal) entity.getBelongsToField("order").getField("plannedQuantity"));
+                    } else {
+                        quantitiesList.add(4, BigDecimal.ZERO);
                     }
                 }
                 quantities.put(product, quantitiesList);
@@ -190,9 +198,15 @@ public class QualityControlsReportService {
                     quantitiesList.add(0, BigDecimal.ONE);
                     if ("01correct".equals(entity.getField("controlResult"))) {
                         quantitiesList.add(1, BigDecimal.ONE);
+                        quantitiesList.add(2, BigDecimal.ZERO);
+                        quantitiesList.add(3, BigDecimal.ZERO);
                     } else if ("02incorrect".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, BigDecimal.ZERO);
                         quantitiesList.add(2, BigDecimal.ONE);
+                        quantitiesList.add(3, BigDecimal.ZERO);
                     } else if ("03objection".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, BigDecimal.ZERO);
+                        quantitiesList.add(2, BigDecimal.ZERO);
                         quantitiesList.add(3, BigDecimal.ONE);
                     }
                 }
@@ -215,7 +229,7 @@ public class QualityControlsReportService {
         }
     }
 
-    public Element prepareTitle(Entity product, Locale locale, String type) {
+    public Element prepareTitle(final Entity product, final Locale locale, final String type) {
 
         Paragraph title = new Paragraph();
 
