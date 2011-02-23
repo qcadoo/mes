@@ -51,8 +51,7 @@ public class QualityControlForOrderXlsView extends ReportXlsView {
         int rowNum = 1;
         Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
         qualityControlsReportService.aggregateOrdersDataForOrder(productOrders, new HashMap<Entity, List<BigDecimal>>(),
-                qualityControlsReportService.getOrderSeries(model.get("dateFrom").toString(), model.get("dateTo").toString(),
-                        "qualityControlsForOrder"), false);
+                qualityControlsReportService.getOrderSeries(model, "qualityControlsForOrder"), false);
         for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
             for (Entity order : entry.getValue()) {
                 HSSFRow row = sheet.createRow(rowNum++);
