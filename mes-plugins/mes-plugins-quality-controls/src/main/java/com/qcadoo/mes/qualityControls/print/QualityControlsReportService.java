@@ -1,9 +1,28 @@
 package com.qcadoo.mes.qualityControls.print;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.qcadoo.mes.api.DataDefinitionService;
+import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.search.Restrictions;
+import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.types.internal.DateType;
+import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -15,6 +34,9 @@ public class QualityControlsReportService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void printQualityControlReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -45,6 +67,61 @@ public class QualityControlsReportService {
         } else {
             state.addMessage(translationService.translate("qualityControl.report.invalidDates", state.getLocale()),
                     MessageType.FAILURE);
+        }
+    }
+
+    public void addQualityControlReportHeader(final Document document, final String dateFrom, final String dateTo,
+            final Locale locale) throws DocumentException {
+        Paragraph firstParagraphTitle = new Paragraph(new Phrase(translationService.translate(
+                "qualityControls.qualityControl.report.paragrah", locale), PdfUtil.getArialBold11Light()));
+        firstParagraphTitle.add(new Phrase(" " + dateFrom + " - " + dateTo, PdfUtil.getArialBold11Light()));
+        firstParagraphTitle.setSpacingBefore(20);
+        document.add(firstParagraphTitle);
+
+        Paragraph secondParagraphTitle = new Paragraph(new Phrase(translationService.translate(
+                "qualityControls.qualityControl.report.paragrah2", locale), PdfUtil.getArialBold11Light()));
+        secondParagraphTitle.setSpacingBefore(20);
+        document.add(secondParagraphTitle);
+    }
+
+    public void aggregateOrdersData(final Map<Entity, List<Entity>> productOrders,
+            final Map<Entity, List<BigDecimal>> quantities, final List<Entity> orders) {
+        for (Entity entity : orders) {
+            Entity product = entity.getBelongsToField("order").getBelongsToField("product");
+            if (productOrders.containsKey(product)) {
+                List<Entity> ordersList = productOrders.get(product);
+                ordersList.add(entity);
+                productOrders.put(product, ordersList);
+            } else {
+                productOrders.put(product, Arrays.asList(entity));
+            }
+            if (quantities.containsKey(product)) {
+                List<BigDecimal> quantitiesList = quantities.get(product);
+                quantitiesList.add(0, quantitiesList.get(0).add((BigDecimal) entity.getField("controlledQuantity")));
+                quantitiesList.add(1, quantitiesList.get(1).add((BigDecimal) entity.getField("rejectedQuantity")));
+                quantitiesList.add(2, quantitiesList.get(2).add((BigDecimal) entity.getField("acceptedDefectsQuantity")));
+                quantities.put(product, quantitiesList);
+            } else {
+                quantities.put(
+                        product,
+                        Arrays.asList((BigDecimal) entity.getField("controlledQuantity"),
+                                (BigDecimal) entity.getField("rejectedQuantity"),
+                                (BigDecimal) entity.getField("acceptedDefectsQuantity")));
+            }
+        }
+    }
+
+    public List<Entity> getOrderSeries(final String dateFrom, final String dateTo, final String type) {
+        DataDefinition dataDef = dataDefinitionService.get("qualityControls", "qualityControl");
+        try {
+            SearchResult result = dataDef.find()
+                    .restrictedWith(Restrictions.ge(dataDef.getField("date"), DateType.parseDate(dateFrom, false)))
+                    .restrictedWith(Restrictions.le(dataDef.getField("date"), DateType.parseDate(dateTo, true)))
+                    .restrictedWith(Restrictions.eq("qualityControlType", type)).restrictedWith(Restrictions.eq("closed", true))
+                    .list();
+            return result.getEntities();
+        } catch (ParseException e) {
+            return Collections.emptyList();
         }
     }
 }
