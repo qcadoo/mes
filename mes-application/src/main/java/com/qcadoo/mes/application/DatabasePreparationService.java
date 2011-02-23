@@ -143,7 +143,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
                 genealogyForComponentFormView, 3);
         addMenuViewDefinitionItem("genealogyForProduct", "genealogies.menu.reports.genealogyForProduct", menuCategoryReports,
                 genealogyForProductFormView, 4);
-        addMenuViewDefinitionItem("qualityControlReport", "qualityControl.menu.reports.qualityControlReport",
+        addMenuViewDefinitionItem("qualityControlReport", "qualityControls.menu.reports.qualityControlReport",
                 menuCategoryReports, qualityControlReportFormView, 5);
         addMenuViewDefinitionItem("systemParameters", "basic.menu.systemParameters", menuCategoryBasicData,
                 getMenuViewDefinition("systemParameters"), 4);

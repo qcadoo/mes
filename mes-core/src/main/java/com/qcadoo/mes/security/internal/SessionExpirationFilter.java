@@ -25,6 +25,7 @@
 package com.qcadoo.mes.security.internal;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,11 +80,15 @@ public final class SessionExpirationFilter implements Filter {
     }
 
     private void redirectToLoginPage(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        if ("true".equals(request.getParameter("iframe"))) {
+        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            response.getOutputStream().println("sessionExpired");
+        } else if ("true".equals(request.getParameter("popup"))) {
+            String targetUrl = request.getContextPath() + "/login.html?popup=true&targetUrl="
+                    + URLEncoder.encode(request.getRequestURL().toString() + "?" + request.getQueryString(), "ISO-8859-1") + "";
+            response.sendRedirect(response.encodeRedirectURL(targetUrl));
+        } else if ("true".equals(request.getParameter("iframe"))) {
             String targetUrl = request.getContextPath() + "/login.html?iframe=true";
             response.sendRedirect(response.encodeRedirectURL(targetUrl));
-        } else if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
-            response.getOutputStream().println("sessionExpired");
         } else {
             String targetUrl = request.getContextPath() + "/login.html?timeout=true";
             response.sendRedirect(response.encodeRedirectURL(targetUrl));

@@ -31,10 +31,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
@@ -311,7 +307,7 @@ public final class PdfUtil {
             cellTable.addCell(new Phrase(nullValue, valueFont));
         } else {
             if (value instanceof BigDecimal && df != null) {
-                cellTable.addCell(new Phrase(df.format((value)), valueFont));
+                cellTable.addCell(new Phrase(df.format(value), valueFont));
             } else {
                 cellTable.addCell(new Phrase(value.toString(), valueFont));
             }
@@ -322,21 +318,6 @@ public final class PdfUtil {
     public static void addTableCellAsTable(final PdfPTable table, final String label, final Object fieldValue,
             final String nullValue, final Font headerFont, final Font valueFont) {
         addTableCellAsTable(table, label, fieldValue, nullValue, headerFont, valueFont, null);
-    }
-
-    public static Locale retrieveLocaleFromRequestCookie(final HttpServletRequest request) {
-        Locale locale = request.getLocale();
-        Cookie[] cookies = request.getCookies();
-        if ((cookies != null) && (cookies.length > 0)) {
-            for (int i = 0; i < cookies.length; i++) {
-                Cookie c = cookies[i];
-                if ("clientLanguage".equals(c.getName())) {
-                    locale = new Locale(c.getValue(), "");
-                    break;
-                }
-            }
-        }
-        return locale;
     }
 
     public static String getFontsPath(final String windowsFontsPath, final String macosFontsPath, final String linuxFontsPath) {

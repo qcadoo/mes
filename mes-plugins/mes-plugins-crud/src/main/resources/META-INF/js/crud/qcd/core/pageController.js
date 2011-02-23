@@ -25,6 +25,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	
 	var windowUrl = window.location.href;
 	
+	var serializationObjectToInsert;
+	
 	function constructor(_this) {
 		QCDConnector.windowName = "/page/"+pluginIdentifier+"/"+viewName;
 		QCDConnector.mainController = _this;
@@ -277,6 +279,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 		url+="popup=true";
 		
 		popup = new Object();
+		popup.pageController = this;
 		popup.parentComponent = parentComponent;
 		var left = (screen.width/2)-(400);
 		var top = (screen.height/2)-(350);
@@ -345,7 +348,23 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	}
 	
 	this.onSessionExpired = function() {
-		window.parent.onSessionExpired(getSerializationObject());
+		if (!isPopup) {
+			window.parent.onSessionExpired(getSerializationObject());
+		} else {
+			if (window.parent.onSessionExpired) { // modal
+				window.parent.onSessionExpired(getSerializationObject(), true);
+			} else { // popup
+				window.location = "/login.html?popup=true&targetUrl="+escape(windowUrl);
+			}
+			
+			//serializationObjectToInsert = getSerializationObject();
+			//performGoToPage("login.html&popup=true?targetUrl="+windowUrl);
+		}
+		
+	}
+	
+	this.getCurrentUserLogin = function() {
+		return window.parent.getCurrentUserLogin();
 	}
 	
 	function updateSize() {

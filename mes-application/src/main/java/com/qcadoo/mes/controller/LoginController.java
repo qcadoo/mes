@@ -48,7 +48,9 @@ public final class LoginController {
     @RequestMapping(value = "login", method = RequestMethod.GET)
     public ModelAndView getLoginPageView(@RequestParam(required = false) final String loginError,
             @RequestParam(required = false, defaultValue = "false") final Boolean iframe,
+            @RequestParam(required = false, defaultValue = "false") final Boolean popup,
             @RequestParam(required = false, defaultValue = "false") final Boolean logout,
+            @RequestParam(required = false, defaultValue = "") final String targetUrl,
             @RequestParam(required = false, defaultValue = "false") final Boolean timeout, final Locale locale) {
 
         ModelAndView mav = new ModelAndView();
@@ -57,12 +59,14 @@ public final class LoginController {
         mav.addObject("currentLanguage", locale.getLanguage());
 
         mav.addObject("iframe", iframe);
+        mav.addObject("popup", popup);
+        mav.addObject("targetUrl", targetUrl);
 
         if (logout) {
             mav.addObject("messageType", "success");
             mav.addObject("messageHeader", "security.message.logoutHeader");
             mav.addObject("messageContent", "security.message.logoutContent");
-        } else if (timeout || iframe) {
+        } else if (timeout || iframe || popup) {
             mav.addObject("messageType", "info");
             mav.addObject("messageHeader", "security.message.timeoutHeader");
             mav.addObject("messageContent", "security.message.timeoutContent");

@@ -33,6 +33,10 @@ QCD.utils.Modal.createModal = function() {
 			this.iframe.attr("src", src);
 		},
 		
+		refresh: function() {
+			this.iframe.attr("src", this.iframe.attr("src"));
+		},
+		
 		hide: function() {
 			this.iframe.unbind("load");
 			this.dialog.jqmHide();

@@ -199,7 +199,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		
 	};
-	function rowClicked(rowId, col) { // TODO mina CHANGE
+	function rowClicked(rowId, col) {
+		
+		if (!componentEnabled || !currentState.isEditable) {
+			grid.setSelection(rowId, false);
+			return;
+		}
 		
 		if (currentState.selectedEntities[rowId]) {
 			if (col == 0 && currentState.multiselectMode) {
@@ -274,11 +279,16 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		// UPDATE SELECT ALL BUTTON
 		if (selectAllCheckBox) {
 			var isAllSelected = true;
+			var isEmpty = true;
 			for (var i in currentEntities) {
+				isEmpty = false;
 				if (currentState.selectedEntities[i] != true) {
 					isAllSelected = false;
 					break;
 				}
+			}
+			if (isEmpty) {
+				isAllSelected = false;
 			}
 			if (isAllSelected) {
 				selectAllCheckBox.attr('checked', true);

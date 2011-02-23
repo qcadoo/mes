@@ -84,11 +84,11 @@ QCD.WindowController = function(_menuStructure) {
 	window.openModal = function(id, url, serializationObject) {
 		statesStack.push(serializationObject);
 		
-		if (! modalObjects.id) {
-			modalObjects.id = QCD.utils.Modal.createModal();
+		if (! modalObjects[id]) {
+			modalObjects[id] = QCD.utils.Modal.createModal();
 		}
 		
-		modalsStack.push(modalObjects.id);
+		modalsStack.push(modalObjects[id]);
 		
 		if (url.indexOf("?") != -1) {
 			url+="&";
@@ -97,12 +97,16 @@ QCD.WindowController = function(_menuStructure) {
 		}
 		url+="popup=true";
 		
-		modalObjects.id.show("page/"+url, function() {
+		modalObjects[id].show("page/"+url, function() {
 			if (this.src != "" && this.contentWindow.init) {
 				this.contentWindow.init(serializationObjectToInsert);
 				serializationObjectToInsert = null;
 			}
 		});
+	}
+	
+	this.onLoginSuccess = function() {
+			this.goToLastPage();
 	}
 	
 	this.goBack = function(pageController) {
@@ -135,9 +139,19 @@ QCD.WindowController = function(_menuStructure) {
 		return menuController.hasMenuPosition(position);
 	}
 	
-	this.onSessionExpired = function(serializationObject) {
+	this.onSessionExpired = function(serializationObject, isModal) {
 		serializationObjectToInsert = serializationObject;
-		performGoToPage("login.html");
+		if (isModal) {
+			var modal = modalsStack[modalsStack.length - 1]
+			modal.show("login.html?popup=true&targetUrl="+escape(serializationObject.url), function() {
+				if (this.src != "" && this.contentWindow.init) {
+					this.contentWindow.init(serializationObjectToInsert);
+					serializationObjectToInsert = null;
+				}
+			});
+		} else {
+			performGoToPage("login.html");
+		}
 	}
 	
 	this.restoreMenuState = function() {
