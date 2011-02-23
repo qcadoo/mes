@@ -2,7 +2,7 @@ package com.qcadoo.mes.qualityControls.print;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -85,28 +85,28 @@ public class QualityControlsReportService {
     }
 
     public void aggregateOrdersData(final Map<Entity, List<Entity>> productOrders,
-            final Map<Entity, List<BigDecimal>> quantities, final List<Entity> orders) {
+            final Map<Entity, List<BigDecimal>> quantities, final List<Entity> orders, final boolean countQuantities) {
         for (Entity entity : orders) {
             Entity product = entity.getBelongsToField("order").getBelongsToField("product");
+            List<Entity> ordersList = new ArrayList<Entity>();
             if (productOrders.containsKey(product)) {
-                List<Entity> ordersList = productOrders.get(product);
-                ordersList.add(entity);
-                productOrders.put(product, ordersList);
-            } else {
-                productOrders.put(product, Arrays.asList(entity));
+                ordersList = productOrders.get(product);
             }
-            if (quantities.containsKey(product)) {
-                List<BigDecimal> quantitiesList = quantities.get(product);
-                quantitiesList.add(0, quantitiesList.get(0).add((BigDecimal) entity.getField("controlledQuantity")));
-                quantitiesList.add(1, quantitiesList.get(1).add((BigDecimal) entity.getField("rejectedQuantity")));
-                quantitiesList.add(2, quantitiesList.get(2).add((BigDecimal) entity.getField("acceptedDefectsQuantity")));
+            ordersList.add(entity);
+            productOrders.put(product, ordersList);
+            if (countQuantities) {
+                List<BigDecimal> quantitiesList = new ArrayList<BigDecimal>();
+                if (quantities.containsKey(product)) {
+                    quantitiesList = quantities.get(product);
+                    quantitiesList.add(0, quantitiesList.get(0).add((BigDecimal) entity.getField("controlledQuantity")));
+                    quantitiesList.add(1, quantitiesList.get(1).add((BigDecimal) entity.getField("rejectedQuantity")));
+                    quantitiesList.add(2, quantitiesList.get(2).add((BigDecimal) entity.getField("acceptedDefectsQuantity")));
+                } else {
+                    quantitiesList.add(0, (BigDecimal) entity.getField("controlledQuantity"));
+                    quantitiesList.add(1, (BigDecimal) entity.getField("rejectedQuantity"));
+                    quantitiesList.add(2, (BigDecimal) entity.getField("acceptedDefectsQuantity"));
+                }
                 quantities.put(product, quantitiesList);
-            } else {
-                quantities.put(
-                        product,
-                        Arrays.asList((BigDecimal) entity.getField("controlledQuantity"),
-                                (BigDecimal) entity.getField("rejectedQuantity"),
-                                (BigDecimal) entity.getField("acceptedDefectsQuantity")));
             }
         }
     }

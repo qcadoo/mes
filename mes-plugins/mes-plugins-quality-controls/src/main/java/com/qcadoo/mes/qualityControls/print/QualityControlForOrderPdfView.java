@@ -1,7 +1,6 @@
 package com.qcadoo.mes.qualityControls.print;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
@@ -50,14 +48,6 @@ public class QualityControlForOrderPdfView extends ReportPdfView {
 
     private void addOrderSeries(final Document document, final List<Entity> entities, final Locale locale)
             throws DocumentException {
-        List<String> qualityHeader = new ArrayList<String>();
-        qualityHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.product.number", locale));
-        qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForBatch.controlledQuantity.label", locale));
-        qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForBatch.rejectedQuantity.label", locale));
-        qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForBatch.acceptedDefectsQuantity.label", locale));
-        PdfPTable table = PdfUtil.createTableWithHeader(4, qualityHeader, false);
+
     }
 }
