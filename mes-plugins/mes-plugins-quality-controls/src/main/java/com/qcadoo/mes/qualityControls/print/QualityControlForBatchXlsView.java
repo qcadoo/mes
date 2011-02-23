@@ -64,8 +64,7 @@ public class QualityControlForBatchXlsView extends ReportXlsView {
         int rowNum = 1;
         Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
         qualityControlsReportService.aggregateOrdersDataForProduct(productOrders, new HashMap<Entity, List<BigDecimal>>(),
-                qualityControlsReportService.getOrderSeries(model.get("dateFrom").toString(), model.get("dateTo").toString(),
-                        "qualityControlsForBatch"), false);
+                qualityControlsReportService.getOrderSeries(model, "qualityControlsForBatch"), false);
         for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
             for (Entity order : entry.getValue()) {
                 HSSFRow row = sheet.createRow(rowNum++);

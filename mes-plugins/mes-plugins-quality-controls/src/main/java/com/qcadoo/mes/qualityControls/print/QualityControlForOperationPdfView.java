@@ -40,13 +40,11 @@ public class QualityControlForOperationPdfView extends ReportPdfView {
         String documentAuthor = getTranslationService().translate("qualityControls.qualityControl.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
-        qualityControlsReportService.addQualityControlReportHeader(document, model.get("dateFrom").toString(), model
-                .get("dateTo").toString(), locale);
+        qualityControlsReportService.addQualityControlReportHeader(document, model, locale);
         Map<Entity, List<Entity>> operationOrders = new HashMap<Entity, List<Entity>>();
         Map<Entity, List<BigDecimal>> quantities = new HashMap<Entity, List<BigDecimal>>();
-        qualityControlsReportService.aggregateOrdersDataForOperation(operationOrders, quantities, qualityControlsReportService
-                .getOrderSeries(model.get("dateFrom").toString(), model.get("dateTo").toString(), "qualityControlsForOperation"),
-                true);
+        qualityControlsReportService.aggregateOrdersDataForOperation(operationOrders, quantities,
+                qualityControlsReportService.getOrderSeries(model, "qualityControlsForOperation"), true);
         addOrderSeries(document, quantities, locale);
         String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
