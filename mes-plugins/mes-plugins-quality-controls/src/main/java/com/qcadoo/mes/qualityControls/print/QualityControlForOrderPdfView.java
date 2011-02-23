@@ -3,6 +3,7 @@ package com.qcadoo.mes.qualityControls.print;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -21,6 +23,8 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
+import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
+import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
 
@@ -44,7 +48,18 @@ public class QualityControlForOrderPdfView extends ReportPdfView {
         Map<Entity, List<BigDecimal>> quantities = new HashMap<Entity, List<BigDecimal>>();
         qualityControlsReportService.aggregateOrdersDataForOrder(productOrders, quantities,
                 qualityControlsReportService.getOrderSeries(model, "qualityControlsForOrder"), true);
+
+        quantities = SortUtil.sortMapUsingComparator(quantities, new EntityNumberComparator());
+
         addOrderSeries(document, quantities, locale);
+
+        productOrders = SortUtil.sortMapUsingComparator(productOrders, new EntityNumberComparator());
+
+        for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
+            document.add(Chunk.NEWLINE);
+            addProductSeries(document, productOrders, entry, locale);
+        }
+
         String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("qualityControls.qualityControlForOrder.report.fileName", locale);
@@ -78,5 +93,30 @@ public class QualityControlForOrderPdfView extends ReportPdfView {
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
+    }
+
+    private void addProductSeries(Document document, Map<Entity, List<Entity>> productOrders, Entry<Entity, List<Entity>> entry,
+            Locale locale) throws DocumentException {
+
+        document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "product"));
+
+        List<String> productHeader = new ArrayList<String>();
+        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.control.number", locale));
+        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.controlled.quantity", locale));
+        PdfPTable table = PdfUtil.createTableWithHeader(2, productHeader, false);
+
+        List<Entity> sortedOrders = entry.getValue();
+
+        Collections.sort(sortedOrders, new EntityNumberComparator());
+
+        for (Entity entity : sortedOrders) {
+            table.addCell(new Phrase(entity.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(
+                    getTranslationService().translate(
+                            "qualityControls.qualityForOrder.controlResult.value." + entity.getField("controlResult").toString(),
+                            locale), PdfUtil.getArialRegular9Dark()));
+        }
+        document.add(table);
+
     }
 }
