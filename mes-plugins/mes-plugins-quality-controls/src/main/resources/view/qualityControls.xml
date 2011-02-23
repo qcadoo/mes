@@ -766,6 +766,7 @@
 									var dateToElement = #{dateTo};
 									this.addOnChangeListener({
 										onChange: function(selectedValue) {
+											this.performUpdateState();
 											if (selectedValue != null && selectedValue != 0) {
 												var dateTo = dateToElement.getDate();
 												if (dateTo == 0) {
@@ -820,6 +821,7 @@
 									var dateFromElement = #{dateFrom};
 									this.addOnChangeListener({
 										onChange: function(selectedValue) {
+											this.performUpdateState();
 											if (selectedValue != null && selectedValue != 0) {
 												var dateFrom = dateFromElement.getDate();
 												if (dateFrom == 0) {
