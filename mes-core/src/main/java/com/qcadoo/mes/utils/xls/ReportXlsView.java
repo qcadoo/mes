@@ -34,10 +34,10 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.servlet.view.document.AbstractExcelView;
 
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.utils.pdf.PdfUtil;
 
 public abstract class ReportXlsView extends AbstractExcelView {
 
@@ -56,8 +56,7 @@ public abstract class ReportXlsView extends AbstractExcelView {
     @Override
     protected void buildExcelDocument(final Map<String, Object> model, final HSSFWorkbook workbook,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-        Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
-        String fileName = addContent(model, workbook, locale);
+        String fileName = addContent(model, workbook, LocaleContextHolder.getLocale());
         response.setHeader("Content-disposition", "inline; filename=" + fileName + XlsUtil.XLS_EXTENSION);
     }
 
