@@ -44,15 +44,15 @@ public class QualityControlForUnitXlsView extends ReportXlsView {
         cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell2 = header.createCell(2);
         cell2.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForUnit.controlledQuantity.label", locale));
+                "qualityControls.qualityControlForUnit.window.qualityControlForUnit.controlledQuantity.label", locale));
         cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell3 = header.createCell(3);
         cell3.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForUnit.rejectedQuantity.label", locale));
+                "qualityControls.qualityControlForUnit.window.qualityControlForUnit.rejectedQuantity.label", locale));
         cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell4 = header.createCell(4);
         cell4.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForUnit.acceptedDefectsQuantity.label", locale));
+                "qualityControls.qualityControlForUnit.window.qualityControlForUnit.acceptedDefectsQuantity.label", locale));
         cell4.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
     }
 
@@ -61,7 +61,7 @@ public class QualityControlForUnitXlsView extends ReportXlsView {
         Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
         qualityControlsReportService.aggregateOrdersData(productOrders, new HashMap<Entity, List<BigDecimal>>(),
                 qualityControlsReportService.getOrderSeries(model.get("dateFrom").toString(), model.get("dateTo").toString(),
-                        "qualityControlsForBatch"), false);
+                        "qualityControlsForUnit"), false);
         for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
             for (Entity order : entry.getValue()) {
                 HSSFRow row = sheet.createRow(rowNum++);
