@@ -79,7 +79,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
             addMenus();
             addGroups();
             addUsers();
-            addDictionaries();
+            // addDictionaries();
             addParameters();
 
             if (addTestData) {

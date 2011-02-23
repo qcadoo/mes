@@ -48,6 +48,9 @@ public class DictionariesDictionary {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(nullable = false, unique = true)
+    private String label;
+
     public Long getId() {
         return id;
     }
@@ -62,6 +65,14 @@ public class DictionariesDictionary {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     @OneToMany(mappedBy = "dictionary", fetch = FetchType.LAZY)
