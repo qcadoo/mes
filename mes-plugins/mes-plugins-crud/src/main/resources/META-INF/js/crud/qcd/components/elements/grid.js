@@ -199,7 +199,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		
 	};
-	function rowClicked(rowId, col) { // TODO mina CHANGE
+	function rowClicked(rowId, col) {
+		
+		if (!componentEnabled || !currentState.isEditable) {
+			grid.setSelection(rowId, false);
+			return;
+		}
 		
 		if (currentState.selectedEntities[rowId]) {
 			if (col == 0 && currentState.multiselectMode) {
