@@ -32,13 +32,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
@@ -91,23 +91,23 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
             String customExceptionMessageHeader = null;
             String customExceptionMessageExplanation = null;
 
-            Locale locale = retrieveLocaleFromRequestCookie(request);
-
             if (customExceptionMessage != null) {
                 customExceptionMessageHeader = translationService.translate(
-                        "core.errorPage.error." + customExceptionMessage.getMessage() + ".header", locale);
+                        "core.errorPage.error." + customExceptionMessage.getMessage() + ".header",
+                        LocaleContextHolder.getLocale());
                 if (customExceptionMessage.getEntityIdentifier() != null) {
                     customExceptionMessageExplanation = translationService.translate("core.errorPage.error."
-                            + customExceptionMessage.getMessage() + ".explanation", locale,
+                            + customExceptionMessage.getMessage() + ".explanation", LocaleContextHolder.getLocale(),
                             customExceptionMessage.getEntityIdentifier());
                 } else {
                     customExceptionMessageExplanation = translationService.translate("core.errorPage.error."
-                            + customExceptionMessage.getMessage() + ".explanation", locale);
+                            + customExceptionMessage.getMessage() + ".explanation", LocaleContextHolder.getLocale());
                 }
                 Throwable rootException = getRootException(exception);
 
                 if (rootException instanceof CopyException) {
-                    String copyExplanation = getAdditionalMessageForCopyException((CopyException) rootException, locale);
+                    String copyExplanation = getAdditionalMessageForCopyException((CopyException) rootException,
+                            LocaleContextHolder.getLocale());
                     if (copyExplanation != null) {
                         customExceptionMessageExplanation = copyExplanation;
                     }
@@ -115,7 +115,7 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
             }
 
             return errorController.getAccessDeniedPageView(code, exception, customExceptionMessageHeader,
-                    customExceptionMessageExplanation, retrieveLocaleFromRequestCookie(request));
+                    customExceptionMessageExplanation, LocaleContextHolder.getLocale());
         }
 
         return mv;
@@ -189,21 +189,6 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
             return null;
         }
 
-    }
-
-    private Locale retrieveLocaleFromRequestCookie(final HttpServletRequest request) {
-        Locale locale = request.getLocale();
-        Cookie cookies[] = request.getCookies();
-        if ((cookies != null) && (cookies.length > 0)) {
-            for (int i = 0; i < cookies.length; i++) {
-                Cookie c = cookies[i];
-                if ("clientLanguage".equals(c.getName())) {
-                    locale = new Locale(c.getValue(), "");
-                    break;
-                }
-            }
-        }
-        return locale;
     }
 
     private class CustomTranslationMessage {

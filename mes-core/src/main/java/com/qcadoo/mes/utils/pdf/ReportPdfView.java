@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.servlet.view.document.AbstractPdfView;
 
 import com.lowagie.text.Document;
@@ -61,13 +62,12 @@ public abstract class ReportPdfView extends AbstractPdfView {
     @Override
     protected final void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
             final HttpServletRequest request, final HttpServletResponse response) {
-        Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
-        decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
+        decimalFormat = (DecimalFormat) DecimalFormat.getInstance(LocaleContextHolder.getLocale());
         decimalFormat.setMaximumFractionDigits(3);
         decimalFormat.setMinimumFractionDigits(3);
         String fileName;
         try {
-            fileName = addContent(document, model, locale, writer);
+            fileName = addContent(document, model, LocaleContextHolder.getLocale(), writer);
         } catch (DocumentException e) {
             throw new IllegalStateException(e.getMessage(), e);
         } catch (IOException e) {
@@ -87,17 +87,17 @@ public abstract class ReportPdfView extends AbstractPdfView {
     @Override
     protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
             throws DocumentException {
-        Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
         super.prepareWriter(model, writer, request);
-        writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("core.report.page", locale),
-                getTranslationService().translate("core.report.in", locale), PdfUtil.getFontsPath(getWindowsFontsPath(),
-                        getMacosFontsPath(), getLinuxFontsPath())));
+        writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("core.report.page",
+                LocaleContextHolder.getLocale()), getTranslationService().translate("core.report.in",
+                LocaleContextHolder.getLocale()), PdfUtil.getFontsPath(getWindowsFontsPath(), getMacosFontsPath(),
+                getLinuxFontsPath())));
     }
 
     @Override
     protected final void buildPdfMetadata(final Map<String, Object> model, final Document document,
             final HttpServletRequest request) {
-        addTitle(document, PdfUtil.retrieveLocaleFromRequestCookie(request));
+        addTitle(document, LocaleContextHolder.getLocale());
         PdfUtil.addMetaData(document);
     }
 
