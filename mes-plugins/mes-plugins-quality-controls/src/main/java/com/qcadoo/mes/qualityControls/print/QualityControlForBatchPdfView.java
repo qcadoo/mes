@@ -43,7 +43,7 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
                 .get("dateTo").toString(), locale);
         Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
         Map<Entity, List<BigDecimal>> quantities = new HashMap<Entity, List<BigDecimal>>();
-        qualityControlsReportService.aggregateOrdersData(productOrders, quantities, qualityControlsReportService.getOrderSeries(
+        qualityControlsReportService.aggregateOrdersDataForProduct(productOrders, quantities, qualityControlsReportService.getOrderSeries(
                 model.get("dateFrom").toString(), model.get("dateTo").toString(), "qualityControlsForBatch"), true);
         addOrderSeries(document, quantities, locale);
         String text = getTranslationService().translate("core.report.endOfReport", locale);

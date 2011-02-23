@@ -84,7 +84,7 @@ public class QualityControlsReportService {
         document.add(secondParagraphTitle);
     }
 
-    public void aggregateOrdersData(final Map<Entity, List<Entity>> productOrders,
+    public void aggregateOrdersDataForProduct(final Map<Entity, List<Entity>> productOrders,
             final Map<Entity, List<BigDecimal>> quantities, final List<Entity> orders, final boolean countQuantities) {
         for (Entity entity : orders) {
             Entity product = entity.getBelongsToField("order").getBelongsToField("product");
@@ -107,6 +107,95 @@ public class QualityControlsReportService {
                     quantitiesList.add(2, (BigDecimal) entity.getField("acceptedDefectsQuantity"));
                 }
                 quantities.put(product, quantitiesList);
+            }
+        }
+    }
+
+    public void aggregateOrdersDataForOrder(final Map<Entity, List<Entity>> productOrders,
+            final Map<Entity, List<BigDecimal>> quantities, final List<Entity> orders, final boolean countQuantities) {
+        for (Entity entity : orders) {
+            Entity product = entity.getBelongsToField("order").getBelongsToField("product");
+            List<Entity> ordersList = new ArrayList<Entity>();
+            if (productOrders.containsKey(product)) {
+                ordersList = productOrders.get(product);
+            }
+            ordersList.add(entity);
+            productOrders.put(product, ordersList);
+            if (countQuantities) {
+                List<BigDecimal> quantitiesList = new ArrayList<BigDecimal>();
+                if (quantities.containsKey(product)) {
+                    quantitiesList = quantities.get(product);
+                    quantitiesList.add(0, quantitiesList.get(0).add(BigDecimal.ONE));
+                    if ("01correct".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, quantitiesList.get(1).add(BigDecimal.ONE));
+                    } else if ("02incorrect".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(2, quantitiesList.get(2).add(BigDecimal.ONE));
+                    } else if ("03objection".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(3, quantitiesList.get(3).add(BigDecimal.ONE));
+                    }
+                    if (entity.getBelongsToField("order").getField("doneQuantity") != null) {
+                        quantitiesList.add(4,
+                                quantitiesList.get(4)
+                                        .add((BigDecimal) entity.getBelongsToField("order").getField("doneQuantity")));
+                    } else {
+                        quantitiesList.add(
+                                4,
+                                quantitiesList.get(4).add(
+                                        (BigDecimal) entity.getBelongsToField("order").getField("plannedQuantity")));
+                    }
+                } else {
+                    quantitiesList.add(0, BigDecimal.ONE);
+                    if ("01correct".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, BigDecimal.ONE);
+                    } else if ("02incorrect".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(2, BigDecimal.ONE);
+                    } else if ("03objection".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(3, BigDecimal.ONE);
+                    }
+                    if (entity.getBelongsToField("order").getField("doneQuantity") != null) {
+                        quantitiesList.add(4, (BigDecimal) entity.getBelongsToField("order").getField("doneQuantity"));
+                    } else {
+                        quantitiesList.add(4, (BigDecimal) entity.getBelongsToField("order").getField("plannedQuantity"));
+                    }
+                }
+                quantities.put(product, quantitiesList);
+            }
+        }
+    }
+
+    public void aggregateOrdersDataForOperation(final Map<Entity, List<Entity>> operationOrders,
+            final Map<Entity, List<BigDecimal>> quantities, final List<Entity> orders, final boolean countQuantities) {
+        for (Entity entity : orders) {
+            Entity operation = entity.getBelongsToField("operation");
+            List<Entity> ordersList = new ArrayList<Entity>();
+            if (operationOrders.containsKey(operation)) {
+                ordersList = operationOrders.get(operation);
+            }
+            ordersList.add(entity);
+            operationOrders.put(operation, ordersList);
+            if (countQuantities) {
+                List<BigDecimal> quantitiesList = new ArrayList<BigDecimal>();
+                if (quantities.containsKey(operation)) {
+                    quantitiesList = quantities.get(operation);
+                    quantitiesList.add(0, quantitiesList.get(0).add(BigDecimal.ONE));
+                    if ("01correct".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, quantitiesList.get(1).add(BigDecimal.ONE));
+                    } else if ("02incorrect".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(2, quantitiesList.get(2).add(BigDecimal.ONE));
+                    } else if ("03objection".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(3, quantitiesList.get(3).add(BigDecimal.ONE));
+                    }
+                } else {
+                    quantitiesList.add(0, BigDecimal.ONE);
+                    if ("01correct".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, BigDecimal.ONE);
+                    } else if ("02incorrect".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(2, BigDecimal.ONE);
+                    } else if ("03objection".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(3, BigDecimal.ONE);
+                    }
+                }
+                quantities.put(operation, quantitiesList);
             }
         }
     }
