@@ -39,12 +39,12 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
         String documentAuthor = getTranslationService().translate("qualityControls.qualityControl.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
-        qualityControlsReportService.addQualityControlReportHeader(document, model.get("dateFrom").toString(), model
-                .get("dateTo").toString(), locale);
+        qualityControlsReportService.addQualityControlReportHeader(document, model.get("dateFrom").toString(),
+                model.get("dateTo").toString(), locale);
         Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
         Map<Entity, List<BigDecimal>> quantities = new HashMap<Entity, List<BigDecimal>>();
         qualityControlsReportService.aggregateOrdersData(productOrders, quantities, qualityControlsReportService.getOrderSeries(
-                model.get("dateFrom").toString(), model.get("dateTo").toString(), "qualityControlsForUnit"));
+                model.get("dateFrom").toString(), model.get("dateTo").toString(), "qualityControlsForUnit"), true);
         addOrderSeries(document, quantities, locale);
         String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
@@ -61,11 +61,11 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
         List<String> qualityHeader = new ArrayList<String>();
         qualityHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.product.number", locale));
         qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForBatch.controlledQuantity.label", locale));
+                "qualityControls.qualityControlForBatch.window.qualityControlForUnit.controlledQuantity.label", locale));
         qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForBatch.rejectedQuantity.label", locale));
+                "qualityControls.qualityControlForBatch.window.qualityControlForUnit.rejectedQuantity.label", locale));
         qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForBatch.acceptedDefectsQuantity.label", locale));
+                "qualityControls.qualityControlForBatch.window.qualityControlForUnit.acceptedDefectsQuantity.label", locale));
         PdfPTable table = PdfUtil.createTableWithHeader(4, qualityHeader, false);
 
         for (Entry<Entity, List<BigDecimal>> entry : quantities.entrySet()) {
