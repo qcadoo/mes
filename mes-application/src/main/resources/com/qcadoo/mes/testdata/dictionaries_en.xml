@@ -26,15 +26,15 @@
 -->
 
 <categories>
-	<row NAME="categories" ITEM="category 1" />
-	<row NAME="categories" ITEM="category 2" />
-	<row NAME="categories" ITEM="category 3" />
-	<row NAME="categories" ITEM="category 4" />
-	<row NAME="shifts" ITEM="shift 1" />
-	<row NAME="shifts" ITEM="shift 2" />
-	<row NAME="posts" ITEM="post 1" />
-	<row NAME="posts" ITEM="post 2" />
-	<row NAME="units" ITEM="kg" />
-	<row NAME="units" ITEM="units" />
-	<row NAME="units" ITEM="m2" />
+	<row LABEL="categories" NAME="categories" ITEM="category 1" />
+	<row LABEL="categories2" NAME="categories" ITEM="category 2" />
+	<row LABEL="categories3" NAME="categories" ITEM="category 3" />
+	<row LABEL="categories4" NAME="categories" ITEM="category 4" />
+	<row LABEL="shifts" NAME="shifts" ITEM="shift 1" />
+	<row LABEL="shifts2" NAME="shifts" ITEM="shift 2" />
+	<row LABEL="posts" NAME="posts" ITEM="post 1" />
+	<row LABEL="posts2" NAME="posts" ITEM="post 2" />
+	<row LABEL="units" NAME="units" ITEM="kg" />
+	<row LABEL="units2" NAME="units" ITEM="units" />
+	<row LABEL="units3" NAME="units" ITEM="m2" />
 </categories>

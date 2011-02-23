@@ -90,7 +90,7 @@ public final class TestDataLoader {
 
     private static final String[] PRODUCT_ATTRIBUTES = new String[] { "ean", "name", "product_nr", "batch" };
 
-    private static final String[] DICTIONARY_ATTRIBUTES = new String[] { "name", "item" };
+    private static final String[] DICTIONARY_ATTRIBUTES = new String[] { "label", "name", "item" };
 
     private static final String[] USER_ATTRIBUTES = new String[] { "login", "email", "firstname", "lastname", "role" };
 
@@ -281,7 +281,7 @@ public final class TestDataLoader {
     }
 
     private void addDictionary(final Map<String, String> values) {
-        DictionariesDictionary dictionary = getOrAddDictionary(values.get("name"));
+        DictionariesDictionary dictionary = getOrAddDictionary(values.get("name"), values.get("label"));
 
         DictionariesDictionaryItem item = new DictionariesDictionaryItem();
         item.setDictionary(dictionary);
@@ -319,15 +319,19 @@ public final class TestDataLoader {
         sessionFactory.getCurrentSession().save(user);
     }
 
-    private DictionariesDictionary getOrAddDictionary(final String name) {
+    private DictionariesDictionary getOrAddDictionary(final String name, final String label) {
         DictionariesDictionary dictionary = getDictionaryByName(name);
 
         if (dictionary == null) {
             dictionary = new DictionariesDictionary();
             dictionary.setName(name);
+            dictionary.setLabel(label);
+
+            LOG.info("\n DICTIONARY NAME: " + name);
+            LOG.info("\n DICTIONARY LABEL: " + label);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test dictionary {name=" + dictionary.getName() + "}");
+                LOG.debug("Add test dictionary {name=" + dictionary.getName() + ", label=" + dictionary.getLabel() + "}");
             }
 
             sessionFactory.getCurrentSession().save(dictionary);

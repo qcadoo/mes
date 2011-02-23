@@ -31,10 +31,10 @@
 			<ribbon>
 			</ribbon>				
 			<component type="grid" name="dictionaries">
-				<option type="column" name="name" fields="name" link="true" />
-				<option type="order" column="name" direction="asc"/>
-				<option type="searchable" value="name" />
-				<option type="orderable" value="name" />
+				<option type="column" name="label" fields="label" link="true" />
+				<option type="order" column="label" direction="asc"/>
+				<option type="searchable" value="label" />
+				<option type="orderable" value="label" />
 				<option type="paginable" value="true" />
 				<option type="correspondingView" value="dictionaries/dictionary" />
 				<option type="correspondingComponent" value="form" />
