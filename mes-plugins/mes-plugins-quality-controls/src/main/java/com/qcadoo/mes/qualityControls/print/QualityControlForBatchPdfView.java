@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,8 +41,11 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
         qualityControlsReportService.addQualityControlReportHeader(document, model.get("dateFrom").toString(), model
                 .get("dateTo").toString(), locale);
-        addOrderSeries(document, qualityControlsReportService.getOrderSeries(model.get("dateFrom").toString(), model
-                .get("dateTo").toString(), "qualityControlsForBatch"), locale);
+        Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
+        Map<Entity, List<BigDecimal>> quantities = new HashMap<Entity, List<BigDecimal>>();
+        qualityControlsReportService.aggregateOrdersData(productOrders, quantities, qualityControlsReportService.getOrderSeries(
+                model.get("dateFrom").toString(), model.get("dateTo").toString(), "qualityControlsForBatch"));
+        addOrderSeries(document, quantities, locale);
         String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("qualityControls.qualityControlForBatch.report.fileName", locale);
@@ -51,7 +56,7 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
         document.addTitle(getTranslationService().translate("qualityControls.qualityControlForBatch.report.title", locale));
     }
 
-    private void addOrderSeries(final Document document, final List<Entity> entities, final Locale locale)
+    private void addOrderSeries(final Document document, final Map<Entity, List<BigDecimal>> quantities, final Locale locale)
             throws DocumentException {
         List<String> qualityHeader = new ArrayList<String>();
         qualityHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.product.number", locale));
@@ -63,16 +68,13 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
                 "qualityControls.qualityControlForBatch.window.qualityControlForBatch.acceptedDefectsQuantity.label", locale));
         PdfPTable table = PdfUtil.createTableWithHeader(4, qualityHeader, false);
 
-        for (Entity entity : entities) {
-            Entity product = entity.getBelongsToField("order").getBelongsToField("product");
-            table.addCell(new Phrase(product != null ? product.getField("number").toString() : "", PdfUtil.getArialRegular9Dark()));
+        for (Entry<Entity, List<BigDecimal>> entry : quantities.entrySet()) {
+            table.addCell(new Phrase(entry.getKey() != null ? entry.getKey().getField("number").toString() : "", PdfUtil
+                    .getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(getDecimalFormat().format((BigDecimal) entity.getField("controlledQuantity")), PdfUtil
-                    .getArialRegular9Dark()));
-            table.addCell(new Phrase(getDecimalFormat().format((BigDecimal) entity.getField("rejectedQuantity")), PdfUtil
-                    .getArialRegular9Dark()));
-            table.addCell(new Phrase(getDecimalFormat().format((BigDecimal) entity.getField("acceptedDefectsQuantity")), PdfUtil
-                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(getDecimalFormat().format(entry.getValue().get(0)), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(getDecimalFormat().format(entry.getValue().get(1)), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(getDecimalFormat().format(entry.getValue().get(2)), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
