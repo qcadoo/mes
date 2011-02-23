@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -39,13 +40,19 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
         String documentAuthor = getTranslationService().translate("qualityControls.qualityControl.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
-        qualityControlsReportService.addQualityControlReportHeader(document, model.get("dateFrom").toString(),
-                model.get("dateTo").toString(), locale);
+        qualityControlsReportService.addQualityControlReportHeader(document, model, locale);
         Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
         Map<Entity, List<BigDecimal>> quantities = new HashMap<Entity, List<BigDecimal>>();
-        qualityControlsReportService.aggregateOrdersData(productOrders, quantities, qualityControlsReportService.getOrderSeries(
-                model.get("dateFrom").toString(), model.get("dateTo").toString(), "qualityControlsForUnit"), true);
+        qualityControlsReportService.aggregateOrdersDataForProduct(productOrders, quantities,
+                qualityControlsReportService.getOrderSeries(model, "qualityControlsForUnit"), true);
+
         addOrderSeries(document, quantities, locale);
+
+        for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
+            document.add(Chunk.NEWLINE);
+            addProductSeries(document, productOrders, entry, locale);
+        }
+
         String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("qualityControls.qualityControlForUnit.report.fileName", locale);
@@ -61,11 +68,11 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
         List<String> qualityHeader = new ArrayList<String>();
         qualityHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.product.number", locale));
         qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForUnit.controlledQuantity.label", locale));
+                "qualityControls.qualityControlForUnit.window.qualityControlForUnit.controlledQuantity.label", locale));
         qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForUnit.rejectedQuantity.label", locale));
+                "qualityControls.qualityControlForUnit.window.qualityControlForUnit.rejectedQuantity.label", locale));
         qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForUnit.acceptedDefectsQuantity.label", locale));
+                "qualityControls.qualityControlForUnit.window.qualityControlForUnit.acceptedDefectsQuantity.label", locale));
         PdfPTable table = PdfUtil.createTableWithHeader(4, qualityHeader, false);
 
         for (Entry<Entity, List<BigDecimal>> entry : quantities.entrySet()) {
@@ -78,5 +85,33 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
+    }
+
+    private void addProductSeries(Document document, Map<Entity, List<Entity>> productOrders, Entry<Entity, List<Entity>> entry,
+            Locale locale) throws DocumentException {
+
+        document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "product"));
+
+        List<String> productHeader = new ArrayList<String>();
+        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.control.number", locale));
+        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.controlled.quantity", locale));
+        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.rejected.quantity", locale));
+        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.accepted.defects.quantity",
+                locale));
+        PdfPTable table = PdfUtil.createTableWithHeader(4, productHeader, false);
+
+        for (Entity entity : entry.getValue()) {
+            table.addCell(new Phrase(entity.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            table.addCell(new Phrase(getDecimalFormat().format(entity.getField("controlledQuantity")), PdfUtil
+                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(getDecimalFormat().format(entity.getField("rejectedQuantity")), PdfUtil
+                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(getDecimalFormat().format(entity.getField("acceptedDefectsQuantity")), PdfUtil
+                    .getArialRegular9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+        }
+        document.add(table);
+
     }
 }

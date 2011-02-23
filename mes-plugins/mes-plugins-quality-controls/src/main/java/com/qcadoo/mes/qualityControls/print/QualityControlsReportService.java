@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.qcadoo.mes.api.DataDefinitionService;
@@ -57,21 +58,26 @@ public class QualityControlsReportService {
         }
     }
 
-    public void addQualityControlReportHeader(final Document document, final String dateFrom, final String dateTo,
-            final Locale locale) throws DocumentException {
-        Paragraph firstParagraphTitle = new Paragraph(new Phrase(translationService.translate(
-                "qualityControls.qualityControl.report.paragrah", locale), PdfUtil.getArialBold11Light()));
-        firstParagraphTitle.add(new Phrase(" " + dateFrom + " - " + dateTo, PdfUtil.getArialBold11Light()));
-        firstParagraphTitle.setSpacingBefore(20);
-        document.add(firstParagraphTitle);
+    public void addQualityControlReportHeader(final Document document, final Map<String, Object> model, final Locale locale)
+            throws DocumentException {
+        if (model.containsKey("entities")) {
+            // TODO mina
+        } else {
+            Paragraph firstParagraphTitle = new Paragraph(new Phrase(translationService.translate(
+                    "qualityControls.qualityControl.report.paragrah", locale), PdfUtil.getArialBold11Light()));
+            firstParagraphTitle.add(new Phrase(" " + model.get("dateFrom") + " - " + model.get("dateTo"), PdfUtil
+                    .getArialBold11Light()));
+            firstParagraphTitle.setSpacingBefore(20);
+            document.add(firstParagraphTitle);
 
-        Paragraph secondParagraphTitle = new Paragraph(new Phrase(translationService.translate(
-                "qualityControls.qualityControl.report.paragrah2", locale), PdfUtil.getArialBold11Light()));
-        secondParagraphTitle.setSpacingBefore(20);
-        document.add(secondParagraphTitle);
+            Paragraph secondParagraphTitle = new Paragraph(new Phrase(translationService.translate(
+                    "qualityControls.qualityControl.report.paragrah2", locale), PdfUtil.getArialBold11Light()));
+            secondParagraphTitle.setSpacingBefore(20);
+            document.add(secondParagraphTitle);
+        }
     }
 
-    public void aggregateOrdersData(final Map<Entity, List<Entity>> productOrders,
+    public void aggregateOrdersDataForProduct(final Map<Entity, List<Entity>> productOrders,
             final Map<Entity, List<BigDecimal>> quantities, final List<Entity> orders, final boolean countQuantities) {
         for (Entity entity : orders) {
             Entity product = entity.getBelongsToField("order").getBelongsToField("product");
@@ -85,9 +91,9 @@ public class QualityControlsReportService {
                 List<BigDecimal> quantitiesList = new ArrayList<BigDecimal>();
                 if (quantities.containsKey(product)) {
                     quantitiesList = quantities.get(product);
-                    quantitiesList.add(0, quantitiesList.get(0).add((BigDecimal) entity.getField("controlledQuantity")));
-                    quantitiesList.add(1, quantitiesList.get(1).add((BigDecimal) entity.getField("rejectedQuantity")));
-                    quantitiesList.add(2, quantitiesList.get(2).add((BigDecimal) entity.getField("acceptedDefectsQuantity")));
+                    quantitiesList.set(0, quantitiesList.get(0).add((BigDecimal) entity.getField("controlledQuantity")));
+                    quantitiesList.set(1, quantitiesList.get(1).add((BigDecimal) entity.getField("rejectedQuantity")));
+                    quantitiesList.set(2, quantitiesList.get(2).add((BigDecimal) entity.getField("acceptedDefectsQuantity")));
                 } else {
                     quantitiesList.add(0, (BigDecimal) entity.getField("controlledQuantity"));
                     quantitiesList.add(1, (BigDecimal) entity.getField("rejectedQuantity"));
@@ -98,17 +104,130 @@ public class QualityControlsReportService {
         }
     }
 
-    public List<Entity> getOrderSeries(final String dateFrom, final String dateTo, final String type) {
+    public void aggregateOrdersDataForOrder(final Map<Entity, List<Entity>> productOrders,
+            final Map<Entity, List<BigDecimal>> quantities, final List<Entity> orders, final boolean countQuantities) {
+        for (Entity entity : orders) {
+            Entity product = entity.getBelongsToField("order").getBelongsToField("product");
+            List<Entity> ordersList = new ArrayList<Entity>();
+            if (productOrders.containsKey(product)) {
+                ordersList = productOrders.get(product);
+            }
+            ordersList.add(entity);
+            productOrders.put(product, ordersList);
+            if (countQuantities) {
+                List<BigDecimal> quantitiesList = new ArrayList<BigDecimal>();
+                if (quantities.containsKey(product)) {
+                    quantitiesList = quantities.get(product);
+                    quantitiesList.set(0, quantitiesList.get(0).add(BigDecimal.ONE));
+                    if ("01correct".equals(entity.getField("controlResult"))) {
+                        quantitiesList.set(1, quantitiesList.get(1).add(BigDecimal.ONE));
+                    } else if ("02incorrect".equals(entity.getField("controlResult"))) {
+                        quantitiesList.set(2, quantitiesList.get(2).add(BigDecimal.ONE));
+                    } else if ("03objection".equals(entity.getField("controlResult"))) {
+                        quantitiesList.set(3, quantitiesList.get(3).add(BigDecimal.ONE));
+                    }
+                    if (entity.getBelongsToField("order").getField("doneQuantity") != null) {
+                        quantitiesList.set(4,
+                                quantitiesList.get(4)
+                                        .add((BigDecimal) entity.getBelongsToField("order").getField("doneQuantity")));
+                    } else {
+                        quantitiesList.set(
+                                4,
+                                quantitiesList.get(4).add(
+                                        (BigDecimal) entity.getBelongsToField("order").getField("plannedQuantity")));
+                    }
+                } else {
+                    quantitiesList.add(0, BigDecimal.ONE);
+                    if ("01correct".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, BigDecimal.ONE);
+                        quantitiesList.add(2, BigDecimal.ZERO);
+                        quantitiesList.add(3, BigDecimal.ZERO);
+                    } else if ("02incorrect".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, BigDecimal.ZERO);
+                        quantitiesList.add(2, BigDecimal.ONE);
+                        quantitiesList.add(3, BigDecimal.ZERO);
+                    } else if ("03objection".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, BigDecimal.ZERO);
+                        quantitiesList.add(2, BigDecimal.ZERO);
+                        quantitiesList.add(3, BigDecimal.ONE);
+                    }
+                    if (entity.getBelongsToField("order").getField("doneQuantity") != null) {
+                        quantitiesList.add(4, (BigDecimal) entity.getBelongsToField("order").getField("doneQuantity"));
+                    } else if (entity.getBelongsToField("order").getField("plannedQuantity") != null) {
+                        quantitiesList.add(4, (BigDecimal) entity.getBelongsToField("order").getField("plannedQuantity"));
+                    } else {
+                        quantitiesList.add(4, BigDecimal.ZERO);
+                    }
+                }
+                quantities.put(product, quantitiesList);
+            }
+        }
+    }
+
+    public void aggregateOrdersDataForOperation(final Map<Entity, List<Entity>> operationOrders,
+            final Map<Entity, List<BigDecimal>> quantities, final List<Entity> orders, final boolean countQuantities) {
+        for (Entity entity : orders) {
+            Entity operation = entity.getBelongsToField("operation");
+            List<Entity> ordersList = new ArrayList<Entity>();
+            if (operationOrders.containsKey(operation)) {
+                ordersList = operationOrders.get(operation);
+            }
+            ordersList.add(entity);
+            operationOrders.put(operation, ordersList);
+            if (countQuantities) {
+                List<BigDecimal> quantitiesList = new ArrayList<BigDecimal>();
+                if (quantities.containsKey(operation)) {
+                    quantitiesList = quantities.get(operation);
+                    quantitiesList.set(0, quantitiesList.get(0).add(BigDecimal.ONE));
+                    if ("01correct".equals(entity.getField("controlResult"))) {
+                        quantitiesList.set(1, quantitiesList.get(1).add(BigDecimal.ONE));
+                    } else if ("02incorrect".equals(entity.getField("controlResult"))) {
+                        quantitiesList.set(2, quantitiesList.get(2).add(BigDecimal.ONE));
+                    } else if ("03objection".equals(entity.getField("controlResult"))) {
+                        quantitiesList.set(3, quantitiesList.get(3).add(BigDecimal.ONE));
+                    }
+                } else {
+                    quantitiesList.add(0, BigDecimal.ONE);
+                    if ("01correct".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, BigDecimal.ONE);
+                        quantitiesList.add(2, BigDecimal.ZERO);
+                        quantitiesList.add(3, BigDecimal.ZERO);
+                    } else if ("02incorrect".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, BigDecimal.ZERO);
+                        quantitiesList.add(2, BigDecimal.ONE);
+                        quantitiesList.add(3, BigDecimal.ZERO);
+                    } else if ("03objection".equals(entity.getField("controlResult"))) {
+                        quantitiesList.add(1, BigDecimal.ZERO);
+                        quantitiesList.add(2, BigDecimal.ZERO);
+                        quantitiesList.add(3, BigDecimal.ONE);
+                    }
+                }
+                quantities.put(operation, quantitiesList);
+            }
+        }
+    }
+
+    public List<Entity> getOrderSeries(final Map<String, Object> model, final String type) {
         DataDefinition dataDef = dataDefinitionService.get("qualityControls", "qualityControl");
-        try {
-            SearchResult result = dataDef.find()
-                    .restrictedWith(Restrictions.ge(dataDef.getField("date"), DateType.parseDate(dateFrom, false)))
-                    .restrictedWith(Restrictions.le(dataDef.getField("date"), DateType.parseDate(dateTo, true)))
-                    .restrictedWith(Restrictions.eq("qualityControlType", type)).restrictedWith(Restrictions.eq("closed", true))
-                    .list();
-            return result.getEntities();
-        } catch (ParseException e) {
-            return Collections.emptyList();
+
+        if (model.containsKey("entities")) {
+            return Collections.emptyList(); // TODO mina
+        } else {
+            try {
+                SearchResult result = dataDef
+                        .find()
+                        .restrictedWith(
+                                Restrictions.ge(dataDef.getField("date"),
+                                        DateType.parseDate(model.get("dateFrom").toString(), false)))
+                        .restrictedWith(
+                                Restrictions.le(dataDef.getField("date"),
+                                        DateType.parseDate(model.get("dateTo").toString(), true)))
+                        .restrictedWith(Restrictions.eq("qualityControlType", type))
+                        .restrictedWith(Restrictions.eq("closed", true)).list();
+                return result.getEntities();
+            } catch (ParseException e) {
+                return Collections.emptyList();
+            }
         }
     }
 
@@ -132,5 +251,22 @@ public class QualityControlsReportService {
             redirectUrl.append(entityId);
         }
         viewDefinitionState.redirectTo(redirectUrl.toString(), true, false);
+    }
+
+    public Element prepareTitle(final Entity product, final Locale locale, final String type) {
+
+        Paragraph title = new Paragraph();
+
+        if (type.equals("product")) {
+            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah1", locale), PdfUtil
+                    .getArialBold11Light()));
+            String name = "";
+            if (product != null) {
+                name = product.getField("name").toString();
+            }
+            title.add(new Phrase(" " + name, PdfUtil.getArialBold11Dark()));
+        }
+
+        return title;
     }
 }
