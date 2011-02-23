@@ -3,6 +3,7 @@ package com.qcadoo.mes.qualityControls.print;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lowagie.text.Chunk;
@@ -22,10 +25,15 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
+import com.qcadoo.mes.qualityControls.print.utils.EntityBatchNumberComparator;
+import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
+import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
 
 public class QualityControlForBatchPdfView extends ReportPdfView {
+
+    private static final Logger LOG = LoggerFactory.getLogger(QualityControlForBatchPdfView.class);
 
     @Autowired
     private SecurityService securityService;
@@ -48,7 +56,11 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
         qualityControlsReportService.addQualityControlReportHeader(document, model.get("dateFrom").toString(), model
                 .get("dateTo").toString(), locale);
 
+        quantities = SortUtil.sortMapUsingComparator(quantities, new EntityNumberComparator());
+
         addOrderSeries(document, quantities, locale);
+
+        productOrders = SortUtil.sortMapUsingComparator(productOrders, new EntityNumberComparator());
 
         for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
             document.add(Chunk.NEWLINE);
@@ -103,7 +115,11 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
                 locale));
         PdfPTable table = PdfUtil.createTableWithHeader(5, productHeader, false);
 
-        for (Entity entity : entry.getValue()) {
+        List<Entity> sortedOrders = entry.getValue();
+
+        Collections.sort(sortedOrders, new EntityBatchNumberComparator());
+
+        for (Entity entity : sortedOrders) {
             table.addCell(new Phrase(entity.getField("batchNr") != null ? entity.getField("batchNr").toString() : "", PdfUtil
                     .getArialRegular9Dark()));
             table.addCell(new Phrase(entity.getField("number").toString(), PdfUtil.getArialRegular9Dark()));

@@ -39,7 +39,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
-import com.qcadoo.mes.products.util.SortUtil;
+import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.xls.XlsUtil;
 
 @Service

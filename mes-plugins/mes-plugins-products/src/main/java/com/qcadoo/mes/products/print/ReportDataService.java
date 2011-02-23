@@ -43,8 +43,8 @@ import com.qcadoo.mes.internal.EntityTreeNode;
 import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.mes.products.util.EntityOperationInPairNumberComparator;
-import com.qcadoo.mes.products.util.SortUtil;
 import com.qcadoo.mes.utils.Pair;
+import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 
 @Service

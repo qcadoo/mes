@@ -1,4 +1,4 @@
-package com.qcadoo.mes.products.util;
+package com.qcadoo.mes.utils;
 
 import java.util.Collections;
 import java.util.Comparator;
