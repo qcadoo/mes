@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -45,7 +46,13 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
         Map<Entity, List<BigDecimal>> quantities = new HashMap<Entity, List<BigDecimal>>();
         qualityControlsReportService.aggregateOrdersDataForProduct(productOrders, quantities, qualityControlsReportService.getOrderSeries(
                 model.get("dateFrom").toString(), model.get("dateTo").toString(), "qualityControlsForBatch"), true);
-        addOrderSeries(document, quantities, locale);
+
+        for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
+            addOrderSeries(document, quantities, locale);
+            addProductSeries(document, productOrders, entry, locale);
+            document.add(Chunk.NEWLINE);
+        }
+
         String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("qualityControls.qualityControlForBatch.report.fileName", locale);
@@ -80,4 +87,29 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
         document.add(table);
     }
 
+    private void addProductSeries(Document document, Map<Entity, List<Entity>> productOrders, Entry<Entity, List<Entity>> entry,
+            Locale locale) throws DocumentException {
+
+        document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "product"));
+
+        List<String> productHeader = new ArrayList<String>();
+        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.batch.number", locale));
+        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.control.number", locale));
+        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.controlled.quantity", locale));
+        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.rejected.quantity", locale));
+        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.accepted.defects.quantity",
+                locale));
+        PdfPTable table = PdfUtil.createTableWithHeader(5, productHeader, false);
+
+        for (Entity entity : entry.getValue()) {
+            table.addCell(new Phrase(entity.getField("batchNr") != null ? entity.getField("batchNr").toString() : "", PdfUtil
+                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(entity.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(entity.getField("controlledQuantity").toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(entity.getField("rejectedQuantity").toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(entity.getField("acceptedDefectsQuantity").toString(), PdfUtil.getArialRegular9Dark()));
+        }
+
+        document.add(table);
+    }
 }

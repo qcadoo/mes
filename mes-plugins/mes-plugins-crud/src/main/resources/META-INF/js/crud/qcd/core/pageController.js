@@ -356,11 +356,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 			} else { // popup
 				window.location = "/login.html?popup=true&targetUrl="+escape(windowUrl);
 			}
-			
-			//serializationObjectToInsert = getSerializationObject();
-			//performGoToPage("login.html&popup=true?targetUrl="+windowUrl);
 		}
-		
 	}
 	
 	this.getCurrentUserLogin = function() {

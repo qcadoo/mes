@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.qcadoo.mes.api.DataDefinitionService;
@@ -212,5 +213,22 @@ public class QualityControlsReportService {
         } catch (ParseException e) {
             return Collections.emptyList();
         }
+    }
+
+    public Element prepareTitle(Entity product, Locale locale, String type) {
+
+        Paragraph title = new Paragraph();
+
+        if (type.equals("product")) {
+            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah1", locale), PdfUtil
+                    .getArialBold11Light()));
+            String name = "";
+            if (product != null) {
+                name = product.getField("name").toString();
+            }
+            title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
+        }
+
+        return title;
     }
 }
