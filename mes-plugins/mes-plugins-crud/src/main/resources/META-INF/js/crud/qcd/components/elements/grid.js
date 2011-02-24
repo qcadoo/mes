@@ -122,7 +122,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			column.isSerchable = isSerchable;
 			
 			if (!column.hidden) {
-				colNames.push(column.label+"<div class='sortArrow' id='"+elementPath+"_sortArrow_"+column.name+"'></div>");
+				if (isSortable) {
+					colNames.push(column.label+"<div class='sortArrow' id='"+elementPath+"_sortArrow_"+column.name+"'></div>");
+				} else {
+					colNames.push(column.label);
+				}
 				
 				var stype = 'text';
 				var searchoptions = {};

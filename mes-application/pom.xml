@@ -157,11 +157,9 @@
 										<echo file="${basedir}/target/classes/build.properties">
 											buildApplicationName = Qcadoo MES
 											buildApplicationVersion = ${pom.version}
-											buildTime =
-											${build.time}
+											buildTime = ${build.time}
 											buildNumber = ${build.number}
-											buildRevision =
-											${build.revision}
+											buildRevision = ${build.revision}
 										</echo>
 									</tasks>
 								</configuration>
