@@ -19,6 +19,7 @@ import com.lowagie.text.Phrase;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.internal.DataAccessService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchResult;
@@ -40,6 +41,9 @@ public class QualityControlsReportService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private DataAccessService dataAccessService;
+
     public void printQualityControlReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponentState) {
@@ -60,9 +64,7 @@ public class QualityControlsReportService {
 
     public void addQualityControlReportHeader(final Document document, final Map<String, Object> model, final Locale locale)
             throws DocumentException {
-        if (model.containsKey("entities")) {
-            // TODO mina
-        } else {
+        if (!model.containsKey("entities")) {
             Paragraph firstParagraphTitle = new Paragraph(new Phrase(translationService.translate(
                     "qualityControls.qualityControl.report.paragrah", locale), PdfUtil.getArialBold11Light()));
             firstParagraphTitle.add(new Phrase(" " + model.get("dateFrom") + " - " + model.get("dateTo"), PdfUtil
@@ -70,11 +72,11 @@ public class QualityControlsReportService {
             firstParagraphTitle.setSpacingBefore(20);
             document.add(firstParagraphTitle);
 
-            Paragraph secondParagraphTitle = new Paragraph(new Phrase(translationService.translate(
-                    "qualityControls.qualityControl.report.paragrah2", locale), PdfUtil.getArialBold11Light()));
-            secondParagraphTitle.setSpacingBefore(20);
-            document.add(secondParagraphTitle);
         }
+        Paragraph secondParagraphTitle = new Paragraph(new Phrase(translationService.translate(
+                "qualityControls.qualityControl.report.paragrah2", locale), PdfUtil.getArialBold11Light()));
+        secondParagraphTitle.setSpacingBefore(20);
+        document.add(secondParagraphTitle);
     }
 
     public void aggregateOrdersDataForProduct(final Map<Entity, List<Entity>> productOrders,
@@ -207,11 +209,21 @@ public class QualityControlsReportService {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<Entity> getOrderSeries(final Map<String, Object> model, final String type) {
         DataDefinition dataDef = dataDefinitionService.get("qualityControls", "qualityControl");
 
         if (model.containsKey("entities")) {
-            return Collections.emptyList(); // TODO mina
+            if (!(model.get("entities") instanceof List<?>)) {
+                throw new IllegalStateException("entities are not list");
+            }
+            List<Entity> entities = (List<Entity>) model.get("entities");
+            for (Entity entity : entities) {
+                if (!(Boolean) entity.getField("closed")) {
+                    throw new IllegalStateException("quality controll is not closed");
+                }
+            }
+            return entities;
         } else {
             try {
                 SearchResult result = dataDef

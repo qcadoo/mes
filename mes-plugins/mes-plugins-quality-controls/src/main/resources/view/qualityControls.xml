@@ -50,7 +50,7 @@
 						action="#{grid}.fireEvent(printQualityControlReport,pdf,order);" state="disabled"/>
 					<smallButton name="xls" icon="xlsIcon16.png"
 						action="#{grid}.fireEvent(printQualityControlReport,xls,order);" state="disabled"/>
-				</group>	
+				</group>
 			</ribbon>
 			<component type="grid" name="qualityControlsForOrder" reference="grid">
 				<script>
@@ -238,27 +238,53 @@
 						</script>
 					</bigButton>
 				</group>
+				<group name="reports">
+					<smallButton name="pdf" icon="pdfIcon16.png"
+						action="#{grid}.fireEvent(printQualityControlReport,pdf,unit);" state="disabled"/>
+					<smallButton name="xls" icon="xlsIcon16.png"
+						action="#{grid}.fireEvent(printQualityControlReport,xls,unit);" state="disabled"/>
+				</group>
 			</ribbon>
 			<component type="grid" name="qualityControlsForUnit" reference="grid">
 				<script>
 					<![CDATA[
 						var qualityControlStatus = #{window}.getRibbonItem("controlStatus.closeControl");
+						var reportsPdf = #{window}.getRibbonItem("reports.pdf");
+						var reportsXls = #{window}.getRibbonItem("reports.xls");
 						var listener = {
 							onChange: function(selectedEntitiesArray) {
 								if (! selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 									qualityControlStatus.disable();
-								} else if (selectedEntitiesArray.length > 1) {
-									qualityControlStatus.disable("#{translate(moreThanOneRecordSelected)}");
-								} else if (selectedEntitiesArray[0].fields.closed != false) {
-									qualityControlStatus.disable("#{translate(qualityControl.qualityControl.ribbon.alreadyClosed)}");
+									reportsPdf.disable();
+									reportsXls.disable();
 								} else {
-									qualityControlStatus.enable();
+									if (selectedEntitiesArray.length > 1) {
+										qualityControlStatus.disable("#{translate(moreThanOneRecordSelected)}");
+									} else if (selectedEntitiesArray[0].fields.closed == true) {
+										qualityControlStatus.disable("#{translate(qualityControl.qualityControl.ribbon.alreadyClosed)}");
+									} else {
+										qualityControlStatus.enable();
+									}
+									var allClosed = true;
+									for (var i in selectedEntitiesArray) {
+										if (selectedEntitiesArray[i].fields.closed == false) {
+											allClosed = false;
+											break;
+										}
+									}
+									if (allClosed) {
+										reportsPdf.enable();
+										reportsXls.enable();
+									} else {
+										reportsPdf.disable("#{translate(qualityControl.qualityControl.ribbon.notAllClosedClosed)}");
+										reportsXls.disable("#{translate(qualityControl.qualityControl.ribbon.notAllClosedClosed)}");
+									}
 								}
 							}
 						}
 						this.addOnChangeListener(listener);
 					]]>
-				</script>							
+				</script>						
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="order" fields="order"
 					expression="#order['number']" link="true"/>
@@ -272,6 +298,7 @@
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
+				<listener event="printQualityControlReport" bean="com.qcadoo.mes.qualityControls.print.QualityControlsReportService" method="printQualityControlReportForOrder" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />			
@@ -415,27 +442,53 @@
 						</script>
 					</bigButton>
 				</group>
+				<group name="reports">
+					<smallButton name="pdf" icon="pdfIcon16.png"
+						action="#{grid}.fireEvent(printQualityControlReport,pdf,batch);" state="disabled"/>
+					<smallButton name="xls" icon="xlsIcon16.png"
+						action="#{grid}.fireEvent(printQualityControlReport,xls,batch);" state="disabled"/>
+				</group>
 			</ribbon>
 			<component type="grid" name="qualityControlsForBatch" reference="grid">
 				<script>
 					<![CDATA[
 						var qualityControlStatus = #{window}.getRibbonItem("controlStatus.closeControl");
+						var reportsPdf = #{window}.getRibbonItem("reports.pdf");
+						var reportsXls = #{window}.getRibbonItem("reports.xls");
 						var listener = {
 							onChange: function(selectedEntitiesArray) {
 								if (! selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 									qualityControlStatus.disable();
-								} else if (selectedEntitiesArray.length > 1) {
-									qualityControlStatus.disable("#{translate(moreThanOneRecordSelected)}");
-								} else if (selectedEntitiesArray[0].fields.closed != false) {
-									qualityControlStatus.disable("#{translate(qualityControl.qualityControl.ribbon.alreadyClosed)}");
+									reportsPdf.disable();
+									reportsXls.disable();
 								} else {
-									qualityControlStatus.enable();
+									if (selectedEntitiesArray.length > 1) {
+										qualityControlStatus.disable("#{translate(moreThanOneRecordSelected)}");
+									} else if (selectedEntitiesArray[0].fields.closed == true) {
+										qualityControlStatus.disable("#{translate(qualityControl.qualityControl.ribbon.alreadyClosed)}");
+									} else {
+										qualityControlStatus.enable();
+									}
+									var allClosed = true;
+									for (var i in selectedEntitiesArray) {
+										if (selectedEntitiesArray[i].fields.closed == false) {
+											allClosed = false;
+											break;
+										}
+									}
+									if (allClosed) {
+										reportsPdf.enable();
+										reportsXls.enable();
+									} else {
+										reportsPdf.disable("#{translate(qualityControl.qualityControl.ribbon.notAllClosedClosed)}");
+										reportsXls.disable("#{translate(qualityControl.qualityControl.ribbon.notAllClosedClosed)}");
+									}
 								}
 							}
 						}
 						this.addOnChangeListener(listener);
 					]]>
-				</script>			
+				</script>
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="order" fields="order"
 					expression="#order['number']" link="true"/>
@@ -449,6 +502,7 @@
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
+				<listener event="printQualityControlReport" bean="com.qcadoo.mes.qualityControls.print.QualityControlsReportService" method="printQualityControlReportForOrder" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />			
@@ -594,27 +648,53 @@
 						</script>
 					</bigButton>
 				</group>
+				<group name="reports">
+					<smallButton name="pdf" icon="pdfIcon16.png"
+						action="#{grid}.fireEvent(printQualityControlReport,pdf,operation);" state="disabled"/>
+					<smallButton name="xls" icon="xlsIcon16.png"
+						action="#{grid}.fireEvent(printQualityControlReport,xls,operation);" state="disabled"/>
+				</group>
 			</ribbon>
 			<component type="grid" name="qualityControlsForOperation" reference="grid">
 				<script>
 					<![CDATA[
 						var qualityControlStatus = #{window}.getRibbonItem("controlStatus.closeControl");
+						var reportsPdf = #{window}.getRibbonItem("reports.pdf");
+						var reportsXls = #{window}.getRibbonItem("reports.xls");
 						var listener = {
 							onChange: function(selectedEntitiesArray) {
 								if (! selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 									qualityControlStatus.disable();
-								} else if (selectedEntitiesArray.length > 1) {
-									qualityControlStatus.disable("#{translate(moreThanOneRecordSelected)}");
-								} else if (selectedEntitiesArray[0].fields.closed != false) {
-									qualityControlStatus.disable("#{translate(qualityControl.qualityControl.ribbon.alreadyClosed)}");
+									reportsPdf.disable();
+									reportsXls.disable();
 								} else {
-									qualityControlStatus.enable();
+									if (selectedEntitiesArray.length > 1) {
+										qualityControlStatus.disable("#{translate(moreThanOneRecordSelected)}");
+									} else if (selectedEntitiesArray[0].fields.closed == true) {
+										qualityControlStatus.disable("#{translate(qualityControl.qualityControl.ribbon.alreadyClosed)}");
+									} else {
+										qualityControlStatus.enable();
+									}
+									var allClosed = true;
+									for (var i in selectedEntitiesArray) {
+										if (selectedEntitiesArray[i].fields.closed == false) {
+											allClosed = false;
+											break;
+										}
+									}
+									if (allClosed) {
+										reportsPdf.enable();
+										reportsXls.enable();
+									} else {
+										reportsPdf.disable("#{translate(qualityControl.qualityControl.ribbon.notAllClosedClosed)}");
+										reportsXls.disable("#{translate(qualityControl.qualityControl.ribbon.notAllClosedClosed)}");
+									}
 								}
 							}
 						}
 						this.addOnChangeListener(listener);
 					]]>
-				</script>			
+				</script>		
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="order" fields="order"
 					expression="#order['number']" link="true"/>
@@ -629,6 +709,7 @@
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
+				<listener event="printQualityControlReport" bean="com.qcadoo.mes.qualityControls.print.QualityControlsReportService" method="printQualityControlReportForOrder" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />			
@@ -791,6 +872,7 @@
 									var pdfOperation = #{window}.getRibbonItem("reportsForOperation.pdfOperation");
 									var xlsOperation = #{window}.getRibbonItem("reportsForOperation.xlsOperation");
 									var dateToElement = #{dateTo};
+									this.performUpdateState();
 									this.addOnChangeListener({
 										onChange: function(selectedValue) {
 											this.performUpdateState();
@@ -846,6 +928,7 @@
 									var pdfOperation = #{window}.getRibbonItem("reportsForOperation.pdfOperation");
 									var xlsOperation = #{window}.getRibbonItem("reportsForOperation.xlsOperation");
 									var dateFromElement = #{dateFrom};
+									this.performUpdateState();
 									this.addOnChangeListener({
 										onChange: function(selectedValue) {
 											this.performUpdateState();
