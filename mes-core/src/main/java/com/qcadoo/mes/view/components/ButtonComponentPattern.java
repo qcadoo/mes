@@ -25,6 +25,8 @@ public final class ButtonComponentPattern extends AbstractComponentPattern {
 
     private String correspondingComponent;
 
+    private boolean correspondingViewInModal = false;
+
     public ButtonComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
     }
@@ -39,6 +41,8 @@ public final class ButtonComponentPattern extends AbstractComponentPattern {
                 correspondingView = option.getValue();
             } else if ("correspondingComponent".equals(option.getType())) {
                 correspondingComponent = option.getValue();
+            } else if ("correspondingViewInModal".equals(option.getType())) {
+                correspondingViewInModal = Boolean.parseBoolean(option.getValue());
             } else {
                 throw new IllegalStateException("Unknown option for button: " + option.getType());
             }
@@ -54,7 +58,7 @@ public final class ButtonComponentPattern extends AbstractComponentPattern {
         if (url != null) {
             return new ButtonComponentState(url);
         } else {
-            return new ButtonComponentState(correspondingView, correspondingComponent,
+            return new ButtonComponentState(correspondingView, correspondingComponent, correspondingViewInModal,
                     getScopeFieldDefinition() != null ? getScopeFieldDefinition().getName() : "id");
         }
     }

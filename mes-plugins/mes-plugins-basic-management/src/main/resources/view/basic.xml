@@ -32,8 +32,8 @@
 				<group template="gridNewCopyAndRemoveAction"/>
 			</ribbon>				
 			<component type="grid" name="machines" reference="grid">
-				<option type="column" name="number" fields="number" link="true"/>
-				<option type="column" name="name" fields="name" link="true"/>
+				<option type="column" name="number" fields="number" link="true" width="50"/>
+				<option type="column" name="name" fields="name" link="true" width="100"/>
 				<option type="order" column="number" direction="desc"/>
 				<option type="searchable" value="name,number" />
 				<option type="orderable" value="name,number" />
@@ -77,7 +77,7 @@
 				<group template="gridNewCopyAndRemoveAction"/>
 			</ribbon>				
 			<component type="grid" name="staffs" reference="grid">
-				<option type="column" name="number" fields="number" link="true"/>
+				<option type="column" name="number" fields="number" link="true" width="50"/>
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="surname" fields="surname" link="true"/>
 				<option type="column" name="post" fields="post" link="true"/>
@@ -130,36 +130,34 @@
 				</group>
 			</ribbon>				
 			<component type="form" name="parameter" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="2" rows="6">
-					<layoutElement column="1" row="1" height="4">
-						<component type="borderLayout" name="genealogyParametersBorderLayout">
-							<option type="label" value="genealogyParameters" />
-							<component type="gridLayout" name="gridLayout" columns="1" rows="2">
-								<layoutElement column="1" row="1">
-									<component type="checkbox" name="autoGenerateQualityControl" field="autoGenerateQualityControl">
-										<option type="labelWidth" value="80" />
-										<option type="align" value="right" />
-									</component>
-								</layoutElement>
-								<layoutElement column="1" row="2">
-									<component type="checkbox" name="checkDoneOrderForQuality" field="checkDoneOrderForQuality">
-										<option type="labelWidth" value="80" />
-										<option type="align" value="right" />
-									</component>
-								</layoutElement>
-							</component>
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="5" height="2">
-						<component type="borderLayout" name="batchParametersBorderLayout">
-							<option type="label" value="batchParameters" />
-							<component type="gridLayout" name="gridLayout" columns="1" rows="1">
-								<layoutElement column="1" row="1">	
-									<component type="select" name="batchForDoneOrder" field="batchForDoneOrder" reference="batchForDoneOrder">
-										<option type="labelWidth" value="40" />
-									</component>
-								</layoutElement>
-							</component>
+				<component type="gridLayout" name="gridLayout" columns="2" rows="3">
+					<layoutElement column="1" row="1" height="3">
+						<component type="smallTabLayout" name="smallTabLayout">
+							<tabElement name="qualityControl">
+								<component type="gridLayout" name="qualityControlGridLayout" columns="1" rows="2">
+									<layoutElement column="1" row="1">
+										<component type="checkbox" name="autoGenerateQualityControl" field="autoGenerateQualityControl">
+											<option type="labelWidth" value="80" />
+											<option type="align" value="right" />
+										</component>
+									</layoutElement>
+									<layoutElement column="1" row="2">
+										<component type="checkbox" name="checkDoneOrderForQuality" field="checkDoneOrderForQuality">
+											<option type="labelWidth" value="80" />
+											<option type="align" value="right" />
+										</component>
+									</layoutElement>
+								</component>
+							</tabElement>
+							<tabElement name="batch">
+								<component type="gridLayout" name="batchGridLayout" columns="1" rows="1">
+									<layoutElement column="1" row="1">	
+										<component type="select" name="batchForDoneOrder" field="batchForDoneOrder" reference="batchForDoneOrder">
+											<option type="labelWidth" value="50" />
+										</component>
+									</layoutElement>
+								</component>
+							</tabElement>
 						</component>
 					</layoutElement>
 				</component>

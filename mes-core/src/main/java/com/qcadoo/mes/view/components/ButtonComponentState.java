@@ -10,9 +10,13 @@ public class ButtonComponentState extends AbstractComponentState {
 
     public static final String JSON_BELONGS_TO_ENTITY_ID = "belongsToEntityId";
 
+    public static final String JSON_OPEN_IN_MODAL = "openInModal";
+
     private final String correspondingView;
 
     private final String correspondingComponent;
+
+    private final boolean correspondingViewInModal;
 
     private final String correspondingField;
 
@@ -27,16 +31,18 @@ public class ButtonComponentState extends AbstractComponentState {
         this.correspondingView = null;
         this.correspondingComponent = null;
         this.correspondingField = null;
+        this.correspondingViewInModal = false;
         registerEvent("initialize", this, "initialize");
         registerEvent("initializeAfterBack", this, "initialize");
     }
 
     public ButtonComponentState(final String correspondingView, final String correspondingComponent,
-            final String correspondingField) {
+            final boolean correspondingViewInModal, final String correspondingField) {
         this.url = null;
         this.correspondingField = correspondingField;
         this.correspondingView = correspondingView;
         this.correspondingComponent = correspondingComponent;
+        this.correspondingViewInModal = correspondingViewInModal;
         registerEvent("initialize", this, "initialize");
         registerEvent("initializeAfterBack", this, "initialize");
     }
@@ -62,6 +68,7 @@ public class ButtonComponentState extends AbstractComponentState {
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = new JSONObject();
         json.put(JSON_VALUE, value);
+        json.put(JSON_OPEN_IN_MODAL, correspondingViewInModal);
         json.put(JSON_BELONGS_TO_ENTITY_ID, belongsToEntityId);
         return json;
     }

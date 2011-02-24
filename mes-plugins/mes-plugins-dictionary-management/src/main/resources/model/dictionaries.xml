@@ -41,6 +41,7 @@
 		<string name="name" >
 			<validatesPresence />
 			<validatesUniqueness />
+			<validatesLength max="40"/>
 		</string>
 		<string name="description" >
 			<validatesLength max="255"/>

@@ -86,7 +86,11 @@ public final class GridComponentColumn {
         if (StringUtils.hasText(expression)) {
             return ExpressionUtil.getValue(entity, expression, locale);
         } else {
-            return ExpressionUtil.getValue(entity, fields, locale);
+            String value = ExpressionUtil.getValue(entity, fields, locale);
+            if (value != null) {
+                value = value.replaceAll("\n", " ");
+            }
+            return value;
         }
     }
 

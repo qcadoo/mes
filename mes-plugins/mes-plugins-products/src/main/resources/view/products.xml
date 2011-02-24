@@ -33,7 +33,7 @@
 			</ribbon>
 			<component type="grid" name="products" reference="grid">
 				<option type="column" name="number" fields="number" link="true"
-					width="200" />
+					width="150" />
 				<option type="column" name="name" fields="name" link="true"
 					width="300" />
 				<option type="column" name="typeOfMaterial" fields="typeOfMaterial" />
@@ -57,7 +57,7 @@
 				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="product" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="11">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number" reference="number" />
 					</layoutElement>
@@ -68,7 +68,7 @@
 						<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
 					</layoutElement>
 					<layoutElement column="1" row="4">
-						<component type="checkbox" name="genealogyBatchReq" field="genealogyBatchReq"/>
+						<component type="select" name="unit" field="unit" />
 					</layoutElement>	
 					<layoutElement column="2" row="1">
 						<component type="input" name="ean" field="ean" />
@@ -77,49 +77,59 @@
 						<component type="select" name="category" field="category" />
 					</layoutElement>
 					<layoutElement column="2" row="3">
-						<component type="select" name="unit" field="unit" />
+						<component type="input" name="batch" field="batch" />						
 					</layoutElement>
 					<layoutElement column="2" row="4">
-						<component type="input" name="batch" field="batch" />
+						<component type="checkbox" name="genealogyBatchReq" field="genealogyBatchReq">
+							<option type="labelWidth" value="60" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="5" width="3" height="7">
+						<component type="borderLayout" name="substitutesBorderLayout" reference="substitutesBorderLayout">
+							<option type="label" value="substitutesBorderLayoutLabel" />
+							<component type="gridLayout" name="gridsLayout" columns="5" rows="6" hasBorders="false">
+								<layoutElement column="1" row="1" width="2" height="6">
+									<component type="grid" name="substitutes" reference="substitutes" source="#{form}.substitutes">
+										<option type="column" name="number" fields="number" link="true" width="50"/>
+										<option type="column" name="name" fields="name" link="true" width="100"/>
+										<option type="order" column="priority" direction="asc"/>
+										<option type="correspondingView" value="products/substitute" />
+										<option type="correspondingComponent" value="form" />
+										<option type="correspondingViewInModal" value="true" />
+										<option type="paginable" value="false" />
+										<option type="creatable" value="true" />
+										<option type="deletable" value="true" />
+										<option type="fullscreen" value="true" />
+										<option type="multiselect" value="true" />
+									</component>
+								</layoutElement>
+								<layoutElement column="3" row="1" width="3" height="6">
+									<component type="grid" name="substituteComponents"
+										source="#{substitutes}.components">
+										<option type="column" name="number" fields="product"
+											expression="#product['number']" link="true" width="50"/>
+										<option type="column" name="name" fields="product"
+											expression="#product['name']" link="true" width="100"/>
+										<option type="column" name="quantity" fields="quantity" width="40"/>
+										<option type="column" name="unit" fields="product"
+											expression="#product['unit']" link="false" width="30"/>
+										<option type="order" column="number" direction="desc"/>
+										<option type="correspondingView" value="products/substituteComponent" />
+										<option type="correspondingComponent" value="form" />
+										<option type="correspondingViewInModal" value="true" />
+										<option type="paginable" value="false" />
+										<option type="creatable" value="true" />
+										<option type="deletable" value="true" />
+										<option type="fullscreen" value="true" />
+										<option type="multiselect" value="true" />
+									</component>
+								</layoutElement>
+							</component>
+						</component>
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
-			</component>
-			<component type="gridLayout" name="gridsLayout" columns="3" rows="6">
-				<layoutElement column="1" row="1" height="6">
-					<component type="grid" name="substitutes" reference="substitutes" source="#{form}.substitutes">
-						<option type="column" name="number" fields="number" link="true" />
-						<option type="column" name="name" fields="name" link="true" />
-						<option type="column" name="priority" fields="priority" />
-						<option type="order" column="priority" direction="asc"/>
-						<option type="correspondingView" value="products/substitute" />
-						<option type="correspondingComponent" value="form" />
-						<option type="paginable" value="false" />
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1" height="6">
-					<component type="grid" name="substituteComponents"
-						source="#{substitutes}.components">
-						<option type="column" name="number" fields="product"
-							expression="#product['number']" link="true" />
-						<option type="column" name="name" fields="product"
-							expression="#product['name']" link="true" />
-						<option type="column" name="quantity" fields="quantity" />
-						<option type="order" column="number" direction="desc"/>
-						<option type="correspondingView" value="products/substituteComponent" />
-						<option type="correspondingComponent" value="form" />
-						<option type="paginable" value="false" />
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-					</component>
-				</layoutElement>
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="generateProductNumber" />
@@ -131,15 +141,12 @@
 				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="substitute" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="4">
+				<component type="gridLayout" name="gridLayout" columns="1" rows="3">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number" />
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
 						<component type="textarea" name="name" field="name" />
-					</layoutElement>
-					<layoutElement column="1" row="4">
-						<component type="input" name="priority" field="priority" defaultEnabled="false" />
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>
@@ -154,25 +161,30 @@
 				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="substituteComponent" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
+				<component type="gridLayout" name="gridLayout" columns="1" rows="3">
 					<layoutElement column="1" row="1">
-						<component type="lookup" name="product" field="product">
+						<component type="lookup" name="product" field="product" reference="product">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
-							<option type="column" name="category" fields="category" />
-							<option type="searchable" value="name,category" />
-							<option type="orderable" value="name,category" />
+							<option type="column" name="ean" fields="ean" />
+							<option type="searchable" value="name,ean" />
+							<option type="orderable" value="name,ean" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
+							<listener  event="onSelectedEntityChange" bean="com.qcadoo.mes.products.util.UnitService" method="fillProductUnit" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="quantity" field="quantity" />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="unit" reference="unit" defaultEnabled="false" />
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>
 				<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.util.UnitService" method="fillProductUnitPreRender" />
 	</view>
 </qcd:views>

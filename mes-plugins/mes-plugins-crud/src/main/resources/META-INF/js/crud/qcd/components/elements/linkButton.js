@@ -37,6 +37,7 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 	var elementName = this.elementName;
 	
 	var pageUrl;
+	var openInModal;
 	
 	var button = $("#"+this.elementSearchName+"_buttonDiv");
 	var buttonLink = $("#"+this.elementSearchName+"_buttonLink");
@@ -59,6 +60,7 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 	
 	function insertValue(value) {
 		pageUrl = value.value;
+		openInModal = value.openInModal;
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
@@ -76,7 +78,11 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 	function onButtonClick(e) {
 		buttonLink.blur();
 		if (button.hasClass('activeButton')) {
-			mainController.goToPage(pageUrl);
+			if (openInModal) {
+				mainController.openModal(elementPath, pageUrl);
+			} else {
+				mainController.goToPage(pageUrl);
+			}
 		}
 	}
 	
