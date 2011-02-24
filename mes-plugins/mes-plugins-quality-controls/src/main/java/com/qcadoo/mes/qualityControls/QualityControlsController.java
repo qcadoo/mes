@@ -22,7 +22,7 @@ public class QualityControlsController {
     private DataDefinitionService dataDefinitionService;
 
     @RequestMapping(value = "qualityControl/qualityControlByDates.pdf", method = RequestMethod.GET)
-    public ModelAndView qualityControlByDatesPdf(@RequestParam("type") final String type,
+    public final ModelAndView qualityControlByDatesPdf(@RequestParam("type") final String type,
             @RequestParam("dateFrom") final Object dateFrom, @RequestParam("dateTo") final Object dateTo) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("qualityControlFor" + StringUtils.capitalize(type) + "PdfView");
@@ -32,7 +32,7 @@ public class QualityControlsController {
     }
 
     @RequestMapping(value = "qualityControl/qualityControlByDates.xls", method = RequestMethod.GET)
-    public ModelAndView qualityControlByDatesXls(@RequestParam("type") final String type,
+    public final ModelAndView qualityControlByDatesXls(@RequestParam("type") final String type,
             @RequestParam("dateFrom") final Object dateFrom, @RequestParam("dateTo") final Object dateTo) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("qualityControlFor" + StringUtils.capitalize(type) + "XlsView");
@@ -42,7 +42,8 @@ public class QualityControlsController {
     }
 
     @RequestMapping(value = "qualityControl/qualityControlReport.pdf", method = RequestMethod.GET)
-    public ModelAndView qualityControlReportPdf(@RequestParam("type") final String type, @RequestParam("id") final Long[] entities) {
+    public final ModelAndView qualityControlReportPdf(@RequestParam("type") final String type,
+            @RequestParam("id") final Long[] entities) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("qualityControlFor" + StringUtils.capitalize(type) + "PdfView");
         mav.addObject("entities", getQualityControlEntities(entities));
@@ -50,7 +51,8 @@ public class QualityControlsController {
     }
 
     @RequestMapping(value = "qualityControl/qualityControlReport.xls", method = RequestMethod.GET)
-    public ModelAndView qualityControlReportXls(@RequestParam("type") final String type, @RequestParam("id") final Long[] entities) {
+    public final ModelAndView qualityControlReportXls(@RequestParam("type") final String type,
+            @RequestParam("id") final Long[] entities) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("qualityControlFor" + StringUtils.capitalize(type) + "XlsView");
         mav.addObject("entities", getQualityControlEntities(entities));

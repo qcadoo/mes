@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,17 +36,16 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
     private QualityControlsReportService qualityControlsReportService;
 
     @Override
-    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
+    protected final String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
         String documentTitle = getTranslationService().translate("qualityControls.qualityControlForUnit.report.title", locale);
         String documentAuthor = getTranslationService().translate("qualityControls.qualityControl.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
         qualityControlsReportService.addQualityControlReportHeader(document, model, locale);
-        Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
-        Map<Entity, List<BigDecimal>> quantities = new HashMap<Entity, List<BigDecimal>>();
-        qualityControlsReportService.aggregateOrdersDataForProduct(productOrders, quantities,
-                qualityControlsReportService.getOrderSeries(model, "qualityControlsForUnit"), true);
+        List<Entity> orders = qualityControlsReportService.getOrderSeries(model, "qualityControlsForUnit");
+        Map<Entity, List<Entity>> productOrders = qualityControlsReportService.getQualityOrdersForProduct(orders);
+        Map<Entity, List<BigDecimal>> quantities = qualityControlsReportService.getQualityOrdersQuantitiesForProduct(orders);
 
         quantities = SortUtil.sortMapUsingComparator(quantities, new EntityNumberComparator());
 
@@ -66,7 +64,7 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
     }
 
     @Override
-    protected void addTitle(final Document document, final Locale locale) {
+    protected final void addTitle(final Document document, final Locale locale) {
         document.addTitle(getTranslationService().translate("qualityControls.qualityControlForUnit.report.title", locale));
     }
 
@@ -94,8 +92,8 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
         document.add(table);
     }
 
-    private void addProductSeries(Document document, Map<Entity, List<Entity>> productOrders, Entry<Entity, List<Entity>> entry,
-            Locale locale) throws DocumentException {
+    private void addProductSeries(final Document document, final Map<Entity, List<Entity>> productOrders,
+            final Entry<Entity, List<Entity>> entry, final Locale locale) throws DocumentException {
 
         document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "product"));
 
