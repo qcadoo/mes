@@ -254,6 +254,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         sessionFactory.getCurrentSession().save(user);
     }
 
+    @SuppressWarnings({ "unused" })
     private void addDictionaries() {
         addDictionary("categories");
         addDictionary("units");
