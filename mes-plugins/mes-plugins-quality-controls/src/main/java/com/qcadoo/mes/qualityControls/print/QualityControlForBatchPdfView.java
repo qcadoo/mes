@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -38,7 +37,7 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
     private QualityControlsReportService qualityControlsReportService;
 
     @Override
-    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
+    protected final String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
         String documentTitle = getTranslationService().translate("qualityControls.qualityControlForBatch.report.title", locale);
         String documentAuthor = getTranslationService().translate("qualityControls.qualityControl.report.author", locale);
@@ -46,10 +45,10 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
 
         qualityControlsReportService.addQualityControlReportHeader(document, model, locale);
-        Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
-        Map<Entity, List<BigDecimal>> quantities = new HashMap<Entity, List<BigDecimal>>();
-        qualityControlsReportService.aggregateOrdersDataForProduct(productOrders, quantities,
-                qualityControlsReportService.getOrderSeries(model, "qualityControlsForBatch"), true);
+        List<Entity> orders = qualityControlsReportService.getOrderSeries(model, "qualityControlsForBatch");
+        Map<Entity, List<Entity>> productOrders = qualityControlsReportService.getQualityOrdersForProduct(orders);
+        Map<Entity, List<BigDecimal>> quantities = qualityControlsReportService.getQualityOrdersQuantitiesForProduct(orders);
+
         quantities = SortUtil.sortMapUsingComparator(quantities, new EntityNumberComparator());
         addOrderSeries(document, quantities, locale);
         productOrders = SortUtil.sortMapUsingComparator(productOrders, new EntityNumberComparator());
@@ -64,7 +63,7 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
     }
 
     @Override
-    protected void addTitle(final Document document, final Locale locale) {
+    protected final void addTitle(final Document document, final Locale locale) {
         document.addTitle(getTranslationService().translate("qualityControls.qualityControlForBatch.report.title", locale));
     }
 
@@ -79,7 +78,6 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
         qualityHeader.add(getTranslationService().translate(
                 "qualityControls.qualityControlForBatch.window.qualityControlForBatch.acceptedDefectsQuantity.label", locale));
         PdfPTable table = PdfUtil.createTableWithHeader(4, qualityHeader, false);
-
         for (Entry<Entity, List<BigDecimal>> entry : quantities.entrySet()) {
             table.addCell(new Phrase(entry.getKey() != null ? entry.getKey().getField("number").toString() : "", PdfUtil
                     .getArialRegular9Dark()));

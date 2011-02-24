@@ -2,7 +2,6 @@ package com.qcadoo.mes.qualityControls.print;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class QualityControlForUnitXlsView extends ReportXlsView {
     private QualityControlsReportService qualityControlsReportService;
 
     @Override
-    protected String addContent(final Map<String, Object> model, final HSSFWorkbook workbook, final Locale locale) {
+    protected final String addContent(final Map<String, Object> model, final HSSFWorkbook workbook, final Locale locale) {
         HSSFSheet sheet = workbook.createSheet(getTranslationService().translate(
                 "qualityControls.qualityControlForUnit.report.title", locale));
         sheet.setZoom(4, 3);
@@ -58,9 +57,8 @@ public class QualityControlForUnitXlsView extends ReportXlsView {
 
     private void addOrderSeries(final Map<String, Object> model, final HSSFSheet sheet) {
         int rowNum = 1;
-        Map<Entity, List<Entity>> productOrders = new HashMap<Entity, List<Entity>>();
-        qualityControlsReportService.aggregateOrdersDataForProduct(productOrders, new HashMap<Entity, List<BigDecimal>>(),
-                qualityControlsReportService.getOrderSeries(model, "qualityControlsForUnit"), false);
+        Map<Entity, List<Entity>> productOrders = qualityControlsReportService
+                .getQualityOrdersForProduct(qualityControlsReportService.getOrderSeries(model, "qualityControlsForUnit"));
         for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
             for (Entity order : entry.getValue()) {
                 HSSFRow row = sheet.createRow(rowNum++);

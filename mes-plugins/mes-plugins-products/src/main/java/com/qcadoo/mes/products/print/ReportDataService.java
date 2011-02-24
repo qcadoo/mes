@@ -551,6 +551,7 @@ public class ReportDataService {
         table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
     }
 
+    @SuppressWarnings({ "unused" })
     private Image generateBarcode(final String code) throws BadElementException {
         Code128Bean codeBean = new Code128Bean();
         final int dpi = 150;
