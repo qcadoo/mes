@@ -33,7 +33,7 @@
 			</ribbon>
 			<component type="grid" name="operations" reference="grid">
 				<option type="column" name="number" fields="number" link="true"/>
-				<option type="column" name="name" fields="name" link="true"/>
+				<option type="column" name="name" fields="name" link="true" width="200"/>
 				<option type="order" column="number" direction="desc"/>
 				<option type="correspondingView" value="products/operation"/>
 				<option type="correspondingComponent" value="form" />
@@ -66,9 +66,9 @@
 					<layoutElement column="1" row="6">
 						<component type="lookup" name="staff" field="staff">
 							<option type="column" name="name" fields="name" link="true"
-								width="300" />
-							<option type="column" name="surname" fields="surname" link="true"/>
-							<option type="column" name="post" fields="post" link="true"/>
+								width="200" />
+							<option type="column" name="surname" fields="surname" link="true" width="200"/>
+							<option type="column" name="post" fields="post" link="false" width="200"/>
 							<option type="searchable" value="name,number,surname,post" />
 							<option type="orderable" value="name,number,surname,post" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
@@ -78,7 +78,7 @@
 					<layoutElement column="1" row="7">
 						<component type="lookup" name="machine" field="machine">
 							<option type="column" name="name" fields="name" link="true"
-								width="300" />
+								width="200" />
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
@@ -97,7 +97,7 @@
 				<group template="gridNewCopyAndRemoveAction"/>
 			</ribbon>
 			<component type="grid" name="technologies" reference="grid">
-				<option type="column" name="number" fields="number" link="true" />
+				<option type="column" name="number" fields="number" link="true" width="50"/>
 				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="product" fields="product"
 					expression="#product['name']" />
@@ -133,10 +133,10 @@
 					<layoutElement column="1" row="5">
 						<component type="lookup" name="product" field="product">
 							<option type="column" name="name" fields="name" link="true"
-								width="300" />
-							<option type="column" name="category" fields="category" />
-							<option type="searchable" value="name,category" />
-							<option type="orderable" value="name,category" />
+								width="200" />
+							<option type="column" name="ean" fields="ean" />
+							<option type="searchable" value="name,ean" />
+							<option type="orderable" value="name,ean" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkBatchNrReq"/>
@@ -436,10 +436,10 @@
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" field="product">
 							<option type="column" name="name" fields="name" link="true"
-								width="300" />
-							<option type="column" name="category" fields="category" />
-							<option type="searchable" value="name,category" />
-							<option type="orderable" value="name,category" />
+								width="200" />
+							<option type="column" name="ean" fields="ean" />
+							<option type="searchable" value="name,ean" />
+							<option type="orderable" value="name,ean" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkBatchNrReq"/>
@@ -470,10 +470,10 @@
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" field="product">
 							<option type="column" name="name" fields="name" link="true"
-								width="300" />
-							<option type="column" name="category" fields="category" />
-							<option type="searchable" value="name,category" />
-							<option type="orderable" value="name,category" />
+								width="200" />
+							<option type="column" name="ean" fields="ean" />
+							<option type="searchable" value="name,ean" />
+							<option type="orderable" value="name,ean" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 						</component>

@@ -115,6 +115,7 @@
 							<component type="button" name="changePasswordButton" reference="changePasswordButton" source="#{form}">
 								<option type="correspondingView" value="users/userChangePassword" />
 								<option type="correspondingComponent" value="form" />
+								<option type="correspondingViewInModal" value="true" />
 							</component>
 						</component>
 					</layoutElement>
@@ -132,7 +133,7 @@
 				<group template="formSaveAction"/>
 			</ribbon>
 			<component type="form" name="user" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
+				<component type="gridLayout" name="gridLayout" columns="1" rows="2">
 					<layoutElement column="1" row="1">
 						<component type="password" name="password" reference="passwordTextInput" field="password" />
 					</layoutElement>

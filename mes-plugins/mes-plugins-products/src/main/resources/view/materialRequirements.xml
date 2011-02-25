@@ -100,7 +100,6 @@
 						var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
 						var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
 						var saveRibbonItem = #{window}.getRibbonItem("actions.save");
-						//var generateRibbonItem = #{window}.getRibbonItem("actions.generate");
 						
 						var containsAtLeastOneOrder = false;
 						var entityExists = false;
@@ -137,23 +136,16 @@
 									xlsRibbonItem.enable();
 									pdfRibbonItem.enable();
 									saveRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
-									// generateRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
 								} else {
 									xlsRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
 									pdfRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
 									saveRibbonItem.enable();
-									//if (containsAtLeastOneOrder) {
-										//generateRibbonItem.enable();
-									//} else {
-										//generateRibbonItem.disable("#{translate(products.ribbon.message.noOrders)}");
-									//}
 								}
 							} else {
 								copyRibbonItem.disable("#{translate(recordNotCreated)}");
 								xlsRibbonItem.disable("#{translate(recordNotCreated)}");
 								pdfRibbonItem.disable("#{translate(recordNotCreated)}");
 								saveRibbonItem.enable();
-								//generateRibbonItem.disable("#{translate(recordNotCreated)}");
 							}
 						}
 					]]>
@@ -182,12 +174,12 @@
 					</layoutElement>
 					<layoutElement column="2" row="1" width="2" height="6">
 						<component type="grid" name="materialRequirementComponents" reference="materialRequirementComponents" source="#{form}.orders">
-							<option type="column" name="number" fields="order" expression="#order['number']"/>
+							<option type="column" name="number" fields="order" expression="#order['number']" width="50"/>
 							<option type="column" name="name" fields="order" expression="#order['name']"/>
-							<!--<option type="column" name="state" fields="order" expression="#order['state']"/>-->
 							<option type="order" column="number" direction="desc"/>
 							<option type="correspondingView" value="products/materialRequirementComponent" />
 							<option type="correspondingComponent" value="form" />
+							<option type="correspondingViewInModal" value="true" />
 							<option type="paginable" value="false" />
 							<option type="creatable" value="true" />
 							<option type="deletable" value="true" />
@@ -212,11 +204,11 @@
 				<group template="formSaveAction"/>
 			</ribbon>		
 			<component type="form" name="materialRequirementComponent" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
+				<component type="gridLayout" name="gridLayout" columns="1" rows="1">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="order" field="order">
 							<option type="column" name="name" fields="name" link="true"
-								width="300" />
+								width="200" />
 							<option type="searchable" value="number,name" />
 							<option type="orderable" value="number,name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>

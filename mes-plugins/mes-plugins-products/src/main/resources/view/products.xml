@@ -165,7 +165,7 @@
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" field="product" reference="product">
 							<option type="column" name="name" fields="name" link="true"
-								width="300" />
+								width="200" />
 							<option type="column" name="ean" fields="ean" />
 							<option type="searchable" value="name,ean" />
 							<option type="orderable" value="name,ean" />

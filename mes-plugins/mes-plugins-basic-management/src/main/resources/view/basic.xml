@@ -130,7 +130,7 @@
 				</group>
 			</ribbon>				
 			<component type="form" name="parameter" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="2" rows="3">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
 					<layoutElement column="1" row="1" height="3">
 						<component type="smallTabLayout" name="smallTabLayout">
 							<tabElement name="qualityControl">

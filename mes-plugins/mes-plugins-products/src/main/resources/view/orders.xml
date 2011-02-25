@@ -154,11 +154,11 @@
 						this.addOnChangeListener(listener);
 					]]>
 				</script>
-				<option type="column" name="number" fields="number" link="true" />
+				<option type="column" name="number" fields="number" link="true" width="50"/>
 				<option type="column" name="name" fields="name" link="true" />
-				<option type="column" name="state" fields="state" />
-				<option type="column" name="dateFrom" fields="dateFrom" />
-				<option type="column" name="dateTo" fields="dateTo" />
+				<option type="column" name="state" fields="state" width="50"/>
+				<option type="column" name="dateFrom" fields="dateFrom" width="70"/>
+				<option type="column" name="dateTo" fields="dateTo" width="70"/>
 				<option type="order" column="number" direction="desc" />
 				<option type="correspondingView" value="products/order" />
 				<option type="correspondingComponent" value="form" />
@@ -315,22 +315,24 @@
 				<component type="gridLayout" name="gridLayout" columns="3"
 					rows="6">
 					<layoutElement column="1" row="1">
+						<component type="select" name="state" field="state" reference="state" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
 						<component type="input" name="number" reference="number"
 							field="number" />
 					</layoutElement>
-					<layoutElement column="1" row="2" height="2">
+					<layoutElement column="1" row="3" height="2">
 						<component type="textarea" name="name" field="name" reference="name" hasDescription="true" />
 					</layoutElement>
-					<layoutElement column="1" row="4">
+					<layoutElement column="1" row="5">
 						<component type="calendar" name="dateFrom" field="dateFrom">
 							<listener event="onChange" bean="com.qcadoo.mes.products.OrderService" method="changeDateFrom"/>
 						</component>						
 					</layoutElement>
-					<layoutElement column="1" row="5">
-						<component type="calendar" name="dateTo" field="dateTo" reference="dateTo" />
-					</layoutElement>
 					<layoutElement column="1" row="6">
-						<component type="select" name="state" field="state" reference="state" defaultEnabled="false" />
+						<component type="calendar" name="dateTo" field="dateTo" reference="dateTo" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="lookup" name="product" reference="product"

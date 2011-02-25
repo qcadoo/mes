@@ -73,6 +73,7 @@
 						<option type="order" column="itemOrder" direction="asc"/>
 						<option type="correspondingView" value="menu/menuViewDefinitionItem" />
 						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
 						<option type="paginable" value="false" />
 						<option type="height" value="200" />
 						<option type="width" value="400" />
@@ -90,7 +91,7 @@
 				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="menuViewDefinitionItem" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
+				<component type="gridLayout" name="gridLayout" columns="1" rows="3">
 					<layoutElement column="1" row="1">
 						<component type="input" name="name" field="name" hasDescription="false" />
 					</layoutElement>

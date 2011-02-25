@@ -44,9 +44,7 @@
 			<validatesPresence />
 			<validatesUniqueness />
 		</string>
-		<boolean name="active" readonly="false" default="true">
-			<validatesPresence />
-		</boolean>
+		<boolean name="active" readonly="false" default="true" />
 		<string name="translationName" />
 		<belongsTo name="menuCategory" model="menuCategory" lookupField="name" lazy="false">
 			<validatesPresence /> 
