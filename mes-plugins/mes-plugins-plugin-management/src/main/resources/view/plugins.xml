@@ -40,12 +40,11 @@
 				</group>
 			</ribbon>
 			<component type="grid" name="plugins" reference="grid">
-				<option type="column" name="name" fields="name" link="true" />
-				<option type="column" name="description" fields="description" />
+				<option type="column" name="name" fields="name" link="true" width="200"/>
 				<option type="column" name="version" fields="version" />
 				<option type="column" name="vendor" fields="vendor" />
-				<option type="column" name="base" fields="base" link="false" />
-				<option type="column" name="status" fields="status" />
+				<option type="column" name="base" fields="base" link="false" width="50"/>
+				<option type="column" name="status" fields="status" width="50"/>
 				<option type="order" column="name" direction="asc"/>
 				<option type="correspondingView" value="plugins/plugin" />
 				<option type="correspondingComponent" value="form" />

@@ -376,8 +376,8 @@
 	border: 1px solid #ec1c24;
 }
 .component_container_form .required .component_container_form_w .lookupValueWrapper {
-	border: solid #a1a1a1 1px; /*EDISONDA NEW*/
-	border-bottom: solid #d7d7d7 1px; /*EDISONDA NEW*/	
+	border: 1px solid #464646;
+	border-bottom: 1px solid #d7d7d7;
 }
 .component_container_form .disabled .component_container_form_w .lookupValueWrapper,
 .component_container_form .disabled.required .component_container_form_w .lookupValueWrapper {

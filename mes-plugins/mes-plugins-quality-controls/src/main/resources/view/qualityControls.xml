@@ -175,11 +175,9 @@
 					<layoutElement column="1" row="2">
 						<component type="lookup" name="order" reference="order"
 							field="order">
-							<option type="column" name="number" fields="number" link="true"
-								width="300" />
-							<option type="column" name="name" fields="name" link="true" />
-							<option type="searchable" value="number,name" />
-							<option type="orderable" value="number,name" />
+							<option type="column" name="name" fields="name" link="true" width="200" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlInstruction"/>
@@ -369,11 +367,9 @@
 					<layoutElement column="1" row="2">
 						<component type="lookup" name="order" reference="order"
 							field="order">
-							<option type="column" name="number" fields="number" link="true"
-								width="300" />
-							<option type="column" name="name" fields="name" link="true" />
-							<option type="searchable" value="number,name" />
-							<option type="orderable" value="number,name" />
+							<option type="column" name="name" fields="name" link="true" width="200" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlInstruction"/>
@@ -572,11 +568,9 @@
 					<layoutElement column="1" row="2">
 						<component type="lookup" name="order" reference="order"
 							field="order">
-							<option type="column" name="number" fields="number" link="true"
-								width="300" />
-							<option type="column" name="name" fields="name" link="true" />
-							<option type="searchable" value="number,name" />
-							<option type="orderable" value="number,name" />
+							<option type="column" name="name" fields="name" link="true" width="200" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlInstruction"/>
@@ -779,7 +773,7 @@
 					<layoutElement column="1" row="2">
 						<component type="lookup" name="order" reference="order"
 							field="order">
-							<option type="column" name="name" fields="name" link="true" />
+							<option type="column" name="name" fields="name" link="true" width="200" />
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
@@ -790,7 +784,7 @@
 					<layoutElement column="1" row="3">
 						<component type="lookup" name="operation" reference="operation"
 							field="operation">
-							<option type="column" name="name" fields="name" link="true" />
+							<option type="column" name="name" fields="name" link="true" width="200" />
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>

@@ -44,7 +44,7 @@ public final class TextInputComponentPattern extends FieldComponentPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new FieldComponentState(this);
+        return new TranslatedFieldComponentState(this);
     }
 
     @Override

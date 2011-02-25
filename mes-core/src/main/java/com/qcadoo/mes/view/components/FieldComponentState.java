@@ -3,8 +3,6 @@ package com.qcadoo.mes.view.components;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 
 public class FieldComponentState extends AbstractComponentState {
@@ -17,10 +15,7 @@ public class FieldComponentState extends AbstractComponentState {
 
     private boolean required;
 
-    private final FieldComponentPattern pattern;
-
     public FieldComponentState(final FieldComponentPattern pattern) {
-        this.pattern = pattern;
         defaultRequired = pattern.isRequired();
     }
 
@@ -37,17 +32,6 @@ public class FieldComponentState extends AbstractComponentState {
     @Override
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = new JSONObject();
-
-        FieldDefinition fieldDefinition = pattern.getFieldComponentFieldDefinition();
-        if (fieldDefinition != null) {
-            if (EnumType.class.isAssignableFrom(fieldDefinition.getType().getClass())) {
-                String code = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(),
-                        fieldDefinition.getName())
-                        + ".value." + value;
-                value = getTranslationService().translate(code, getLocale());
-            }
-        }
-
         json.put(JSON_VALUE, value);
         json.put(JSON_REQUIRED, isRequired());
         return json;
