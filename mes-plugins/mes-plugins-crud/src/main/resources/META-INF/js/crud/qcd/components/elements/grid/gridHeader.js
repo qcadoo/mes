@@ -214,8 +214,16 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 					filterClicked();
 				}
 			}, "filterIcon16_dis.png");
+			headerElements.clearFilterButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
+				if (headerElements.clearFilterButton.hasClass("headerButtonEnabled")) {
+					clearFilterClicked();
+				}
+			}, "clearIcon16_dis.png");
+			headerElements.clearFilterButton.attr("title",translations.clearFilterButton);
 			headerElement.append(headerElements.filterButton);
+			headerElement.append(headerElements.clearFilterButton);
 			setEnabledButton(headerElements.filterButton, false);
+			headerElements.clearFilterButton.hide();
 		}
 		if (gridParameters.canNew) {
 			headerElements.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.newButton,function(e) {
@@ -366,21 +374,37 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 		if (headerElements.filterButton.hasClass("headerButtonActive")) {
 			headerElements.filterButton.removeClass("headerButtonActive");
 			headerElements.filterButton.label.html(translations.addFilterButton);
+			headerElements.clearFilterButton.hide();
 		} else {
 			headerElements.filterButton.addClass("headerButtonActive");
 			headerElements.filterButton.label.html(translations.removeFilterButton);
+			headerElements.clearFilterButton.show();
 		}
 		gridController.onFilterButtonClicked();
+	}
+	
+	function clearFilterClicked() {
+		gridController.onClearFilterClicked();
+	}
+	
+	this.setFiltersValuesEmpty = function() {
+		setEnabledButton(headerElements.clearFilterButton, false);
+	}
+	
+	this.setFiltersValuesNotEmpty = function() {
+		setEnabledButton(headerElements.clearFilterButton, true);
 	}
 	
 	this.setFilterActive = function() {
 		headerElements.filterButton.addClass("headerButtonActive");
 		headerElements.filterButton.label.html(translations.removeFilterButton);
+		headerElements.clearFilterButton.show();
 	}
 	
 	this.setFilterNotActive = function() {
 		headerElements.filterButton.removeClass("headerButtonActive");
 		headerElements.filterButton.label.html(translations.addFilterButton);
+		headerElements.clearFilterButton.hide();
 	}
 	
 	this.setPredefinedFilter = function(predefinedFilter) {

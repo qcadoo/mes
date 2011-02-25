@@ -57,7 +57,7 @@
 		<belongsTo name="product" model="product" lookupField="name" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
-		<boolean name="master" />
+		<boolean name="master" default="true" />
 		<string name="description" />
 		<boolean name="batchRequired" />
 		<boolean name="shiftFeatureRequired" />

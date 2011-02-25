@@ -34,6 +34,8 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 	
 	var element;
 	
+	var jsObjects = new Object();
+	
 	this.constructElement = function() {
 		
 		element = $("<div>");
@@ -59,6 +61,8 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 					var itemModel = groupModel.items[itemsIter];
 					var itemElement = null;
 					var isSmall = false;
+					
+					itemModel.group = groupModel.name;
 					
 					if (itemModel.type == "BIG_BUTTON") {
 						if (itemModel.items) {
@@ -125,7 +129,7 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 	}
 	
 	function createBigButton(path, itemModel) {
-		var aElement = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+"></div><label>"+itemModel.label+"</label></div></div></span>");
+		var aElement = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+"></div><label class='ribbonLabel'>"+itemModel.label+"</label></div></div></span>");
 		var liElement = $("<li>").append(aElement);
 		var ribbonListElement = $("<ul>").addClass("ribbonListElement").append(liElement);
 		var itemElement = $("<div>").addClass("ribbonBigElement").append(ribbonListElement);
@@ -203,6 +207,7 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 			var menuItem = $("<li>").append(menuItemButton);
 			menuItemButton.bind('click', {itemElement: menuItem, itemName: itemModel.name+"."+menuItemName, clickAction: dropdownItem.clickAction}, buttonClicked);
 			dropdownItem.element = menuItem;
+			dropdownItem.group = itemModel.group;
 			dropdownMenuContent.append(menuItem);
 		}
 		var dropdownMenu = $("<div>").addClass("dropdownMenu").addClass("m_module").append(dropdownMenuContent);
@@ -299,7 +304,10 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 	}
 	
 	function createJsObject(item) {
-		return {
+		if (jsObjects[item.group+"-"+item.name]) {
+			return jsObjects[item.group+"-"+item.name];
+		}
+		var jsObject = {
 			element: item.element,
 			tooltipElement: item.tooltipElement,
 			tooltipMessageElementContent: item.tooltipMessageElementContent,
@@ -346,7 +354,9 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 				}
 				this.element.onChangeListeners.push(listener);
 			}
-		}
+		};
+		jsObjects[item.group+"-"+item.name] = jsObject;
+		return jsObject;
 	}
 	
 	this.performScripts = function() {
@@ -363,7 +373,6 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 	}
 	
 	this.updateRibbonState = function(ribbonState) {
-		QCD.info(ribbonState);
 		for (var g in ribbonState.groups) {
 			var group = ribbonState.groups[g];
 			for (var i in group.items) {

@@ -157,6 +157,7 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         JSONObject translations = new JSONObject();
 
         addTranslation(translations, "addFilterButton", locale);
+        addTranslation(translations, "clearFilterButton", locale);
         addTranslation(translations, "noResults", locale);
         addTranslation(translations, "removeFilterButton", locale);
         addTranslation(translations, "newButton", locale);

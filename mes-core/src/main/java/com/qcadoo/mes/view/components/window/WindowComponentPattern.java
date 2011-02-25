@@ -404,7 +404,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonNewAction;
     }
 
-    private RibbonGroup createFormSaveCopyAndRemoveActionsTemplate() {
+    private RibbonGroup createFormSaveCopyAndRemoveActionsTemplate() { // TODO
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("actions");
         ribbonGroup.addItem(createFormSaveAction());
@@ -476,9 +476,9 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
     private RibbonActionItem createFormCopyAction() {
         RibbonActionItem ribbonCopyAction = new RibbonActionItem();
         ribbonCopyAction.setAction(translateRibbonAction("#{form}.performCopy;"));
-        ribbonCopyAction.setIcon("copyIcon24.png");
+        ribbonCopyAction.setIcon("copyIcon16.png");
         ribbonCopyAction.setName("copy");
-        ribbonCopyAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+        ribbonCopyAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
         ribbonCopyAction.setEnabled(false);
         // ribbonCopyAction.setMessage("recordNotCreated");
         ribbonCopyAction
@@ -500,10 +500,10 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
     private RibbonActionItem createFormSaveAndNewAction() {
         RibbonActionItem ribbonSaveNewAction = new RibbonActionItem();
         ribbonSaveNewAction.setAction(translateRibbonAction("#{form}.performSaveAndClear;"));
-        ribbonSaveNewAction.setIcon("saveNewIcon24.png");
+        ribbonSaveNewAction.setIcon("saveNewIcon16.png");
         ribbonSaveNewAction.setName("saveNew");
         ribbonSaveNewAction.setEnabled(true);
-        ribbonSaveNewAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+        ribbonSaveNewAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
         return ribbonSaveNewAction;
     }
 

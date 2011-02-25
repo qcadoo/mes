@@ -190,54 +190,9 @@
 							</tabElement>
 						</component>
 					</layoutElement>
-					
-					<!--<layoutElement column="2" row="1" height="2">
-						<component type="borderLayout" name="batchBorderLayout">
-							<option type="label" value="batchLayoutLabel" />
-							<component type="gridLayout" name="gridsLayout" columns="1" rows="1">
-								<layoutElement column="1" row="1">
-									<component type="checkbox" name="batchRequired" reference="batchRequired" field="batchRequired" />
-								</layoutElement>
-							</component>
-						</component>
-					</layoutElement>-->
-					<!--<layoutElement column="2" row="3" height="3">
-						<component type="borderLayout" name="featuresBorderLayout">
-							<option type="label" value="featuresLayoutLabel" />
-							<component type="gridLayout" name="gridsLayout" columns="1" rows="3">
-								<layoutElement column="1" row="1">
-									<component type="checkbox" name="shiftFeatureRequired" reference="shiftFeatureRequired" field="shiftFeatureRequired" />
-								</layoutElement>
-								<layoutElement column="1" row="2">	
-									<component type="checkbox" name="postFeatureRequired" reference="postFeatureRequired" field="postFeatureRequired" />
-								</layoutElement>
-								<layoutElement column="1" row="3">
-									<component type="checkbox" name="otherFeatureRequired" reference="otherFeatureRequired" field="otherFeatureRequired" />
-								</layoutElement>
-							</component>
-						</component>
-					</layoutElement>-->
 					<layoutElement column="2" row="6">
 						<component type="select" name="componentQuantityAlgorithm" field="componentQuantityAlgorithm" />
 					</layoutElement>
-					<!--<layoutElement column="3" row="1" height="4">
-						<component type="borderLayout" name="qualityBorderLayout">
-							<option type="label" value="qualityLayoutLabel" />
-							<component type="gridLayout" name="gridsLayout" columns="1" rows="4">
-								<layoutElement column="1" row="1">
-									<component type="select" name="qualityControlType" reference="qualityControlType" field="qualityControlType" >
-										<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkQualityControlType"/>									
-									</component>
-								</layoutElement>
-								<layoutElement column="1" row="2">	
-									<component type="input" name="unitSamplingNr" reference="unitSamplingNr" field="unitSamplingNr" />
-								</layoutElement>
-								<layoutElement column="1" row="3" height="2">
-									<component type="textarea" name="qualityControlInstruction" reference="qualityControlInstruction" field="qualityControlInstruction" />
-								</layoutElement>
-							</component>
-						</component>
-					</layoutElement>-->
 				</component>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
@@ -299,48 +254,6 @@
 							<option type="fullscreen" value="true" />
 							<option type="multiselect" value="true" />
 						</component>
-					
-						<!--<component type="form" name="operationForm" reference="operationForm" field="#{technologyTree}">
-							<component type="gridLayout" name="gridsLayout" columns="2" rows="2" hasBorders="false">
-								<layoutElement column="1" row="1" width="2">
-									<component type="lookup" name="operation" field="operation">
-										<option type="column" name="name" fields="name"
-											width="300" />
-										<option type="searchable" value="name" />
-										<option type="orderable" value="name" />
-										<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-										<option type="fieldCode" value="number" />
-									</component>
-								</layoutElement>
-								<layoutElement column="1" row="2" width="2">
-									<component type="awesomeDynamicList" name="inProducts" reference="inProducts" 
-											field="operationProductInComponents">
-											<option type="hasBorder" value="true" />
-											<components>
-												<component type="gridLayout" name="gridLayout"
-													columns="1" rows="2" fixedRowHeight="false">
-													<layoutElement column="1" row="1">
-														<component type="lookup" name="product" field="product">
-															<option type="column" name="name" fields="name" link="true"
-																width="300" />
-															<option type="column" name="category" fields="category" />
-															<option type="searchable" value="name,category" />
-															<option type="orderable" value="name,category" />
-															<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-															<option type="fieldCode" value="number" />
-															<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkBatchNrReq"/>
-														</component>
-													</layoutElement>
-													<layoutElement column="1" row="2">
-														<component type="input" name="quantity" field="quantity" />
-													</layoutElement>
-												</component>
-											</components>
-										</component>
-								</layoutElement>
-							</component>
-						</component>-->
-					
 					</layoutElement>
 					<layoutElement column="3" row="1" height="5">
 						<component type="grid" name="outProducts" reference="outProducts" source="#{technologyTree}.operationProductOutComponents">
@@ -349,6 +262,8 @@
 							<option type="column" name="name" fields="product"
 								expression="#product['name']" link="true" />
 							<option type="column" name="quantity" fields="quantity" />
+							<option type="column" name="unit" fields="product"
+								expression="#product['unit']" link="false" width="70"/>
 							<option type="order" column="number" direction="desc"/>
 							<option type="correspondingView" value="products/operationProductOutComponent" />
 							<option type="correspondingComponent" value="form" />
@@ -432,9 +347,9 @@
 				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="1" rows="3">
+				<component type="gridLayout" name="gridLayout" columns="1" rows="4">
 					<layoutElement column="1" row="1">
-						<component type="lookup" name="product" field="product">
+						<component type="lookup" name="product" field="product" reference="product">
 							<option type="column" name="name" fields="name" link="true"
 								width="200" />
 							<option type="column" name="ean" fields="ean" />
@@ -443,12 +358,16 @@
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkBatchNrReq"/>
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.util.UnitService" method="fillProductUnit" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="quantity" field="quantity" />
 					</layoutElement>
 					<layoutElement column="1" row="3">
+						<component type="input" name="unit" reference="unit" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
 						<component type="checkbox" name="batchRequired" reference="batchRequired" field="batchRequired" >
 							<option type="labelWidth" value="35" />
 						</component>
@@ -458,6 +377,7 @@
 				<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.util.UnitService" method="fillProductUnitPreRender" />
 	</view>
 	<view name="operationProductOutComponent" model="operationProductOutComponent">
 		<component type="window" name="window">
@@ -466,9 +386,9 @@
 				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="1" rows="2">
+				<component type="gridLayout" name="gridLayout" columns="1" rows="3">
 					<layoutElement column="1" row="1">
-						<component type="lookup" name="product" field="product">
+						<component type="lookup" name="product" field="product" reference="product">
 							<option type="column" name="name" fields="name" link="true"
 								width="200" />
 							<option type="column" name="ean" fields="ean" />
@@ -476,15 +396,20 @@
 							<option type="orderable" value="name,ean" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.util.UnitService" method="fillProductUnit" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="quantity" field="quantity" />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="unit" reference="unit" defaultEnabled="false" />
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>
 				<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.util.UnitService" method="fillProductUnitPreRender" />
 	</view>
 </qcd:views>

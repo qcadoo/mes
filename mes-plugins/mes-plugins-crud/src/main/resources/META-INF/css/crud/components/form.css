@@ -71,7 +71,7 @@
 
 .required .component_form_element .label {
 	font-weight: bold;
-	font-size: 12px; /*EDISONDA NEW*/
+	//font-size: 12px; /*EDISONDA NEW*/
 }
 
 .component_element_textarea .label {
@@ -180,7 +180,10 @@
 
 .disabled .component_container_form_inner input[type='text'],
 .disabled .component_container_form_inner input[type='password'],
-.disabled .component_container_form_inner textarea {
+.disabled .component_container_form_inner textarea,
+.disabled.required .component_container_form_inner input[type='text'],
+.disabled.required .component_container_form_inner input[type='password'],
+.disabled.required .component_container_form_inner textarea {
 	//background-color: #F0F0F0;
 	//color: #818181;
 	color: #959595; /*EDISONDA NEW*/
@@ -208,8 +211,12 @@
 	
 .component_container_form .required input[type='text'],
 .component_container_form .required input[type='password'],
-.component_container_form .required textarea {
+.component_container_form .required textarea,
+.component_container_form .required .lookupValueWrapper,
+.component_container_form .required .component_container_form_w .lookupValueWrapper {
 	//border: 1px solid #464646; /*EDISONDA NEW*/	
+	border: 1px solid #464646;
+	border-bottom: 1px solid #d7d7d7;
 }
 
 .component_container_form .error input[type='text'],
@@ -361,14 +368,24 @@
 	//border: solid #959595 1px;
 	border: solid #a1a1a1 1px; /*EDISONDA NEW*/
 	border-bottom: solid #d7d7d7 1px; /*EDISONDA NEW*/
+	border-radius: 2px; /*EDISONDA NEW*/
+	-moz-border-radius: 2px; /*EDISONDA NEW*/
+	-webkit-boder-radius: 2px; /*EDISONDA NEW*/
 }
 .component_container_form .error .component_container_form_w .lookupValueWrapper {
 	border: 1px solid #ec1c24;
 }
 .component_container_form .required .component_container_form_w .lookupValueWrapper {
-	//border: 1px solid #464646;
 	border: solid #a1a1a1 1px; /*EDISONDA NEW*/
 	border-bottom: solid #d7d7d7 1px; /*EDISONDA NEW*/	
+}
+.component_container_form .disabled .component_container_form_w .lookupValueWrapper,
+.component_container_form .disabled.required .component_container_form_w .lookupValueWrapper {
+	border: solid #cccccc 1px; /*EDISONDA NEW*/
+	border-bottom: solid #e8e8e8 1px; /*EDISONDA NEW*/
+}
+.disabled.required .component_container_form_inner .lookupValueWrapper input[type='text'] {
+	border: none;
 }
 
 .component_container_form_w .lookupValueWrapper .lookupInputWrapper {
@@ -564,7 +581,7 @@
 	border-color: #A7A7A7;
 	border: none;
 	background-color: #A7A7A7;
-	margin: 5px 0;
+	margin: 19px 0;
 }
 
 .component_label {

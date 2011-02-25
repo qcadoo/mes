@@ -161,6 +161,10 @@ public final class WorkPlanService {
         ribbonUtil.setGenerateButtonState(state, locale, "workPlan");
     }
 
+    public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale) {
+        ribbonUtil.setGridGenerateButtonState(state, locale, "workPlan");
+    }
+
     public void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
 
         if (state.getFieldValue() instanceof Long) {

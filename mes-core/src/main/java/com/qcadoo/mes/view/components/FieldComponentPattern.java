@@ -8,6 +8,7 @@ import java.util.Map;
 import org.json.JSONException;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
@@ -67,6 +68,10 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
         options.put("labelWidth", labelWidth);
 
         return options;
+    }
+
+    public FieldDefinition getFieldComponentFieldDefinition() {
+        return getFieldDefinition();
     }
 
     public boolean isRequired() {

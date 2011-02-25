@@ -465,18 +465,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		headerController.updatePagingParameters(currentState.firstEntity, currentState.maxEntities, value.totalEntities);
 		
-//		grid.setSelection(currentState.selectedEntityId, false);
-//		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
-//		
-//		if (rowIndex == false) {
-//			currentState.selectedEntityId = null;
-//			rowIndex = null;
-//			fireOnChangeListeners("onChange", [null]);
-//		} else {
-//			fireOnChangeListeners("onChange", [currentEntities[currentState.selectedEntityId]]);
-//		}
-//		headerController.onRowClicked(rowIndex);
-		
 		currentState.selectedEntities = value.selectedEntities;
 		for (var i in currentState.selectedEntities) {
 			if (currentState.selectedEntities[i]) {
@@ -710,6 +698,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			currentState.filters = null;
 		}
 		onCurrentStateChange();
+		onFiltersStateChange();
 	}
 	
 	this.onFilterButtonClicked = function() {
@@ -723,6 +712,17 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			currentGridHeight += 23;
 		}
 		grid.setGridHeight(currentGridHeight);
+		onCurrentStateChange();
+		onFiltersStateChange();
+	}
+	
+	this.onClearFilterClicked = function() {
+		currentState.filters = new Object();
+		for (var i in columnModel) {
+			var column = columnModel[i];
+			$("#gs_"+column.name).val("");
+		}
+		onFiltersStateChange();
 		onCurrentStateChange();
 	}
 	
@@ -767,6 +767,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		$("#gs_"+column).val(filterText);
 		$("#gs_"+column).focus();
 		updateSearchFields();
+		onFiltersStateChange();
 	}
 	
 	this.setFilterObject = function(filter) {
@@ -807,6 +808,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		setSortColumnAndDirection({column: filter.orderColumn, direction: filter.orderDirection});
 		
 		updateSearchFields();
+		onFiltersStateChange();
 		onCurrentStateChange(true);
 	}
 	
@@ -853,6 +855,21 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		grid.setGridHeight(currentGridHeight);
 		
 		grid.setGridWidth(_width-24, RESIZE_COLUMNS_ON_UPDATE_SIZE);
+	}
+	
+	function onFiltersStateChange() {
+		var hasFiltersValues = false; 
+		for (var i in currentState.filters) {
+			if (currentState.filters[i] && currentState.filters[i] != "") {
+				hasFiltersValues = true;
+				break;
+			}
+		}
+		if (hasFiltersValues) {
+			headerController.setFiltersValuesNotEmpty();	
+		} else {
+			headerController.setFiltersValuesEmpty();
+		}
 	}
 	
 	function onCurrentStateChange(forceUpdate) {

@@ -21,24 +21,19 @@
 					<bigButton name="activateOrder" icon="startIcon24.png" state="disabled">
 						<script>
 							<![CDATA[
+								this.element.width(100);
 								this.addOnChangeListener({
 									onClick: function() {
-										if (window.confirm("#{translate(products.orders.window.ribbon.status.activateOrder.confirm)}")) {
-											#{grid}.performEvent('activateOrder', [true]);
-										};
-									}
-								});
-							]]>
-						</script>
-					</bigButton>
-					<bigButton name="finishOrder" icon="acceptIcon24.png" state="disabled">
-						<script>
-							<![CDATA[
-								this.addOnChangeListener({
-									onClick: function() {
-										if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
-											#{grid}.performEvent('activateOrder', [false]);
-										};
+										this.element.width(100);
+										if (this.state == "begin") {
+											if (window.confirm("#{translate(products.orders.window.ribbon.status.activateOrder.confirm)}")) {
+												#{grid}.performEvent('activateOrder', [true]);
+											};
+										} else if (this.state == "finish") {
+											if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
+												#{grid}.performEvent('activateOrder', [false]);
+											};
+										}
 									}
 								});
 							]]>
@@ -57,23 +52,22 @@
 				<group name="exportPlan">
 					<smallButtons name="pdfWorker" icon="pdfIcon16.png"
 						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForWorker);" state="disabled">
-					<smallButton name="xlsWorker" icon="xlsIcon16.png"
-							action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);" state="disabled" />
+						<smallButton name="pdfMachine" icon="pdfIcon16.png"
+							action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForMachine);" state="disabled"/>
+						<smallButton name="pdfProduct" icon="pdfIcon16.png"
+							action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForProduct);" state="disabled"/>
 					</smallButtons>
-					<smallButtons name="pdfMachine" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForMachine);" state="disabled">
+					<smallButtons name="xlsWorker" icon="xlsIcon16.png"
+							action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);" state="disabled">
 						<smallButton name="xlsMachine" icon="xlsIcon16.png"
 							action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForMachine);" state="disabled" />
-					</smallButtons>
-					<smallButtons name="pdfProduct" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForProduct);" state="disabled">
 						<smallButton name="xlsProduct" icon="xlsIcon16.png"
 							action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);" state="disabled" />
 					</smallButtons>
 				</group>
 				<group name="genealogy">
 					<bigButton name="genealogy" action="#{grid}.fireEvent(showGenealogy);" icon="genealogyIcon24.png" state="disabled" />
-					<bigButton name="newGenealogy" action="#{grid}.fireEvent(newGenealogy);" icon="genealogyIcon24.png" state="disabled" />
+					<bigButton name="newGenealogy" action="#{grid}.fireEvent(newGenealogy);" icon="newGenealogyIcon24.png" state="disabled" />
 				</group>
 				<group name="qualityContol">
 					<bigButton name="generateQualityControl" action="#{grid}.fireEvent(generateQualityControl);" icon="qualityControlIcon24.png" state="disabled" />
@@ -86,15 +80,14 @@
 						var pdfMaterialReq = #{window}.getRibbonItem("export.pdfMaterialReq");
 						var xlsMaterialReq = #{window}.getRibbonItem("export.pdfMaterialReq.xlsMaterialReq");
 						var pdfWorker = #{window}.getRibbonItem("exportPlan.pdfWorker");
-						var xlsWorker = #{window}.getRibbonItem("exportPlan.pdfWorker.xlsWorker");
-						var pdfMachine = #{window}.getRibbonItem("exportPlan.pdfMachine");
-						var xlsMachine = #{window}.getRibbonItem("exportPlan.pdfMachine.xlsMachine");
-						var pdfProduct = #{window}.getRibbonItem("exportPlan.pdfProduct");
-						var xlsProduct = #{window}.getRibbonItem("exportPlan.pdfProduct.xlsProduct");
+						var xlsWorker = #{window}.getRibbonItem("exportPlan.xlsWorker");
+						var pdfMachine = #{window}.getRibbonItem("exportPlan.pdfWorker.pdfMachine");
+						var xlsMachine = #{window}.getRibbonItem("exportPlan.xlsWorker.xlsMachine");
+						var pdfProduct = #{window}.getRibbonItem("exportPlan.pdfWorker.pdfProduct");
+						var xlsProduct = #{window}.getRibbonItem("exportPlan.xlsWorker.xlsProduct");
 						var genealogy = #{window}.getRibbonItem("genealogy.genealogy");
 						var newGenealogy = #{window}.getRibbonItem("genealogy.newGenealogy");
 						var activateOrder = #{window}.getRibbonItem("status.activateOrder");
-						var finishOrder = #{window}.getRibbonItem("status.finishOrder");
 						var genQualityControl = #{window}.getRibbonItem("qualityContol.generateQualityControl");
 						var listener = {
 							onChange: function(selectedEntitiesArray) {
@@ -111,7 +104,6 @@
 									genealogy.disable();
 									newGenealogy.disable();
 									activateOrder.disable();
-									finishOrder.disable();
 									genQualityControl.disable();
 								} else {
 									if (selectedEntitiesArray.length == 1) {
@@ -121,15 +113,18 @@
 										var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
 										if (selectedEntityStatus == '01pending') {
 											activateOrder.enable();
-											finishOrder.disable();
+											activateOrder.state = "begin";
+											activateOrder.setLabel("#{translate(products.orders.window.ribbon.status.activateOrder)}");
+											activateOrder.setIcon('startIcon24.png');
 											genQualityControl.enable();
 										} else if (selectedEntityStatus == '02inProgress') {
-											activateOrder.disable();
-											finishOrder.enable();
+											activateOrder.enable();
+											activateOrder.state = "finish";
+											activateOrder.setLabel("#{translate(products.orders.window.ribbon.status.finishOrder)}");
+											activateOrder.setIcon('acceptIcon24.png');
 											genQualityControl.enable();
 										} else {
 											activateOrder.disable();
-											finishOrder.disable();
 											genQualityControl.disable();
 										}
 									} else {
@@ -137,7 +132,6 @@
 										genealogy.disable("#{translate(moreThanOneRecordSelected)}");
 										newGenealogy.disable("#{translate(moreThanOneRecordSelected)}");
 										activateOrder.disable("#{translate(moreThanOneRecordSelected)}");
-										finishOrder.disable("#{translate(moreThanOneRecordSelected)}");
 										genQualityControl.disable("#{translate(moreThanOneRecordSelected)}");
 									}
 									pdfMaterialReq.enable();
@@ -156,9 +150,9 @@
 				</script>
 				<option type="column" name="number" fields="number" link="true" width="50"/>
 				<option type="column" name="name" fields="name" link="true" />
-				<option type="column" name="state" fields="state" width="50"/>
-				<option type="column" name="dateFrom" fields="dateFrom" width="70"/>
-				<option type="column" name="dateTo" fields="dateTo" width="70"/>
+				<option type="column" name="state" fields="state" width="40"/>
+				<option type="column" name="dateFrom" fields="dateFrom" width="40"/>
+				<option type="column" name="dateTo" fields="dateTo" width="40"/>
 				<option type="order" column="number" direction="desc" />
 				<option type="correspondingView" value="products/order" />
 				<option type="correspondingComponent" value="form" />
@@ -218,24 +212,19 @@
 					<bigButton name="activateOrder" icon="startIcon24.png" state="disabled">
 						<script>
 							<![CDATA[
+								this.element.width(100);
 								this.addOnChangeListener({
 									onClick: function() {
-										if (window.confirm("#{translate(products.orders.window.ribbon.status.activateOrder.confirm)}")) {
-											#{form}.performEvent('activateOrder', [true]);
-										};
-									}
-								});
-							]]>
-						</script>
-					</bigButton>
-					<bigButton name="finishOrder" icon="acceptIcon24.png" state="disabled">
-						<script>
-							<![CDATA[
-								this.addOnChangeListener({
-									onClick: function() {
-										if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
-											#{form}.performEvent('activateOrder', [false]);
-										};
+										this.element.width(100);
+										if (this.state == "begin") {
+											if (window.confirm("#{translate(products.orders.window.ribbon.status.activateOrder.confirm)}")) {
+												#{form}.performEvent('activateOrder', [true]);
+											};
+										} else if (this.state == "finish") {
+											if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
+												#{form}.performEvent('activateOrder', [false]);
+											};
+										}
 									}
 								});
 							]]>
@@ -244,7 +233,7 @@
 				</group>
 				<group name="genealogy">
 					<bigButton name="genealogy" action="#{form}.fireEvent(showGenealogy);" icon="genealogyIcon24.png" state="disabled" />
-					<bigButton name="newGenealogy" action="#{form}.fireEvent(newGenealogy);" icon="genealogyIcon24.png" state="disabled" />
+					<bigButton name="newGenealogy" action="#{form}.fireEvent(newGenealogy);" icon="newGenealogyIcon24.png" state="disabled" />
 				</group>
 				<group name="qualityContol">
 					<bigButton name="generateQualityControl" action="#{form}.fireEvent(generateQualityControl);" icon="qualityControlIcon24.png" state="disabled" />
@@ -261,7 +250,6 @@
 						var genealogy = #{window}.getRibbonItem("genealogy.genealogy");
 						var newGenealogy = #{window}.getRibbonItem("genealogy.newGenealogy");
 						var activateOrder = #{window}.getRibbonItem("status.activateOrder");
-						var finishOrder = #{window}.getRibbonItem("status.finishOrder");
 						var genQualityControl = #{window}.getRibbonItem("qualityContol.generateQualityControl");
 						
 						this.addOnChangeListener({
@@ -277,15 +265,18 @@
 									cancel.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
 									del.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
 									activateOrder.disable();
-									finishOrder.disable();
 									genQualityControl.disable();
 								} else if (state && state == "02inProgress") { 
-									activateOrder.disable();
-									finishOrder.enable();
+									activateOrder.enable();
+									activateOrder.state = "finish";
+									activateOrder.setLabel("#{translate(products.orders.window.ribbon.status.finishOrder)}");
+									activateOrder.setIcon('acceptIcon24.png');
 									genQualityControl.enable();
 								} else if (state && state == "01pending") {
 									activateOrder.enable();
-									finishOrder.disable();
+									activateOrder.state = "begin";
+									activateOrder.setLabel("#{translate(products.orders.window.ribbon.status.activateOrder)}");
+									activateOrder.setIcon('startIcon24.png');
 									genQualityControl.enable();
 								} else {
 									save.enable();
@@ -313,11 +304,9 @@
 					]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="6">
+					rows="7">
 					<layoutElement column="1" row="1">
-						<component type="select" name="state" field="state" reference="state" defaultEnabled="false">
-							<option type="textRepresentationOnDisabled" value="true" />
-						</component>
+						<component type="input" name="state" field="state" reference="state" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="number" reference="number"
@@ -327,24 +316,32 @@
 						<component type="textarea" name="name" field="name" reference="name" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="1" row="5">
-						<component type="calendar" name="dateFrom" field="dateFrom">
-							<listener event="onChange" bean="com.qcadoo.mes.products.OrderService" method="changeDateFrom"/>
-						</component>						
+						<component type="separatorLine" name="line1" />
 					</layoutElement>
 					<layoutElement column="1" row="6">
-						<component type="calendar" name="dateTo" field="dateTo" reference="dateTo" />
+						<component type="calendar" name="dateFrom" field="dateFrom">
+							<listener event="onChange" bean="com.qcadoo.mes.products.OrderService" method="changeDateFrom"/>
+							<option type="labelWidth" value="55" />
+						</component>						
+					</layoutElement>
+					<layoutElement column="1" row="7">
+						<component type="calendar" name="dateTo" field="dateTo" reference="dateTo">
+							<option type="labelWidth" value="55" />
+						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="lookup" name="product" reference="product"
 							field="product">
 							<option type="column" name="name" fields="name" link="true"
-								width="300" />
-							<option type="searchable" value="name" />
-							<option type="orderable" value="name" />
+								width="200" />
+							<option type="column" name="ean" fields="ean" />
+							<option type="searchable" value="name,ean" />
+							<option type="orderable" value="name,ean" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.OrderService" method="changeOrderProduct"/>
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.OrderService" method="setDefaultNameUsingProduct"/>
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.util.UnitService" method="fillProductUnit" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
@@ -364,11 +361,23 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="4">
-						<component type="input" name="plannedQuantity"
-							reference="plannedQuantity" field="plannedQuantity" />
+						<component type="separatorLine" name="line2" />
 					</layoutElement>
 					<layoutElement column="2" row="5">
-						<component type="input" name="doneQuantity" field="doneQuantity" />
+						<component type="input" name="plannedQuantity"
+							reference="plannedQuantity" field="plannedQuantity">
+							<option type="labelWidth" value="55" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="6">
+						<component type="input" name="doneQuantity" field="doneQuantity">
+							<option type="labelWidth" value="55" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="7">
+						<component type="input" name="unit" reference="unit" defaultEnabled="false">
+							<option type="labelWidth" value="55" />
+						</component>
 					</layoutElement>
 					<layoutElement column="3" row="1">
 						<component type="calendar" name="effectiveDateFrom"
@@ -401,6 +410,7 @@
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="fillDefaultTechnology" />		
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="disableFormForDoneOrder" />
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="disableTechnologiesIfProductDoesNotAny" />
-		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="setAndDisableState"/>		
+		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="setAndDisableState"/>
+		<preRenderHook bean="com.qcadoo.mes.products.util.UnitService" method="fillProductUnitPreRender" />		
 	</view>
 </qcd:views>

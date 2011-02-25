@@ -39,7 +39,11 @@ public final class SelectComponentPattern extends FieldComponentPattern {
         Map<String, String> values = new LinkedHashMap<String, String>();
 
         if (!isRequired() || getFieldDefinition().getDefaultValue() == null) {
-            List<String> blankCodes = Lists.newArrayList(getTranslationPath() + ".blankValue", "core.form.blankComboBoxValue");
+            String coreBlankTranslationKey = "core.form.blankComboBoxValue";
+            if (isRequired()) {
+                coreBlankTranslationKey = "core.form.requiredBlankComboBoxValue";
+            }
+            List<String> blankCodes = Lists.newArrayList(getTranslationPath() + ".blankValue", coreBlankTranslationKey);
             values.put("", getTranslationService().translate(blankCodes, locale));
         }
 

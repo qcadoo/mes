@@ -132,6 +132,10 @@ public final class MaterialRequirementService {
         ribbonUtil.setGenerateButtonState(state, locale, "materialRequirement");
     }
 
+    public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale) {
+        ribbonUtil.setGridGenerateButtonState(state, locale, "materialRequirement");
+    }
+
     public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponentState) {

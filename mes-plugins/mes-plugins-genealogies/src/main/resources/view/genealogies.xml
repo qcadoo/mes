@@ -85,19 +85,20 @@
 				</group>
 			</ribbon>		
 			<component type="form" name="genealogyForComponent" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="10" hasBorders="false">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="7" hasBorders="false">
 					<layoutElement column="1" row="1">
 					  	<component type="lookup" name="product" reference="product">
 							<option type="column" name="name" fields="name" link="true"
-								width="300" />
-							<option type="searchable" value="name" />
-							<option type="orderable" value="name" />
+								width="200" />
+							<option type="column" name="ean" fields="ean" />
+							<option type="searchable" value="name,ean" />
+							<option type="orderable" value="name,ean" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.genealogies.print.ReportService" method="changeProduct"/>
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="2" width="3" height="9">
+					<layoutElement column="1" row="2" width="3" height="6">
 						<component type="grid" name="batches" reference="batches" model="productInBatch">
 							<option type="column" name="batch" fields="batch" />
 							<option type="searchable" value="batch" />
@@ -143,19 +144,20 @@
 				</group>
 			</ribbon>		
 			<component type="form" name="genealogyForProduct" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="10" hasBorders="false">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="7" hasBorders="false">
 					<layoutElement column="1" row="1">
 					  	<component type="lookup" name="product" reference="product">
 							<option type="column" name="name" fields="name" link="true"
-								width="300" />
-							<option type="searchable" value="name" />
-							<option type="orderable" value="name" />
+								width="200" />
+							<option type="column" name="ean" fields="ean" />
+							<option type="searchable" value="name,ean" />
+							<option type="orderable" value="name,ean" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.genealogies.print.ReportService" method="changeProduct"/>
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="2" width="3" height="9">
+					<layoutElement column="1" row="2" width="3" height="6">
 						<component type="grid" name="batches" reference="batches" model="genealogy">
 							<option type="column" name="batch" fields="batch" />
 							<option type="searchable" value="batch" />
