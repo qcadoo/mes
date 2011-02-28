@@ -551,6 +551,7 @@ public class ReportDataService {
         table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
     }
 
+    /*
     @SuppressWarnings({ "unused" })
     private Image generateBarcode(final String code) throws BadElementException {
         Code128Bean codeBean = new Code128Bean();
@@ -592,7 +593,7 @@ public class ReportDataService {
 
         return null;
     }
-
+*/
     private void addOrderSeries(final PdfPTable table, final List<Entity> orders, final DecimalFormat df)
             throws DocumentException {
         Collections.sort(orders, new EntityNumberComparator());
