@@ -1,5 +1,6 @@
 package com.qcadoo.mes.qualityControls.print;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -12,6 +13,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
+import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.xls.ReportXlsView;
 import com.qcadoo.mes.utils.xls.XlsUtil;
 
@@ -49,8 +52,11 @@ public class QualityControlForOrderXlsView extends ReportXlsView {
         int rowNum = 1;
         Map<Entity, List<Entity>> productOrders = qualityControlsReportService
                 .getQualityOrdersForProduct(qualityControlsReportService.getOrderSeries(model, "qualityControlsForOrder"));
+        productOrders = SortUtil.sortMapUsingComparator(productOrders, new EntityNumberComparator());
         for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
-            for (Entity order : entry.getValue()) {
+            List<Entity> orders = entry.getValue();
+            Collections.sort(orders, new EntityNumberComparator());
+            for (Entity order : orders) {
                 HSSFRow row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(entry.getKey() == null ? "" : entry.getKey().getField("number").toString());
                 row.createCell(1).setCellValue(order.getField("number").toString());

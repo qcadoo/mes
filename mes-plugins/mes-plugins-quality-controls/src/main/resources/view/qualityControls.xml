@@ -208,7 +208,7 @@
 						</component>
 					</layoutElement>
 				</component>
-				<component type="input" name="qualityControlType" reference="qualityControlType" field="qualityControlType" defaultVisible="false"/>
+				<component type="select" name="qualityControlType" reference="qualityControlType" field="qualityControlType" defaultVisible="false"/>
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
@@ -409,7 +409,7 @@
 						<component type="textarea" name="controlInstruction" reference="controlInstruction" field="controlInstruction" defaultEnabled="false"/>
 					</layoutElement>
 				</component>
-				<component type="input" name="qualityControlType" reference="qualityControlType" field="qualityControlType" defaultVisible="false"/>
+				<component type="select" name="qualityControlType" reference="qualityControlType" field="qualityControlType" defaultVisible="false"/>
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
@@ -613,7 +613,7 @@
 						<component type="textarea" name="controlInstruction" reference="controlInstruction" field="controlInstruction" defaultEnabled="false"/>
 					</layoutElement>
 				</component>
-				<component type="input" name="qualityControlType" reference="qualityControlType" field="qualityControlType" defaultVisible="false"/>
+				<component type="select" name="qualityControlType" reference="qualityControlType" field="qualityControlType" defaultVisible="false"/>
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
@@ -777,7 +777,7 @@
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-							<option type="fieldCode" value="name" />
+							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlInstruction"/>
 						</component>
 					</layoutElement>
@@ -788,7 +788,7 @@
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-							<option type="fieldCode" value="name" />
+							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>					
 					<layoutElement column="1" row="4" >
@@ -813,7 +813,7 @@
 						</component>
 					</layoutElement>
 				</component>
-				<component type="input" name="qualityControlType" reference="qualityControlType" field="qualityControlType" defaultVisible="false"/>
+				<component type="select" name="qualityControlType" reference="qualityControlType" field="qualityControlType" defaultVisible="false"/>
 				<listener event="closeQualityControl" bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl"/>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
