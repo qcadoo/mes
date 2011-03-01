@@ -295,15 +295,25 @@ public class QualityControlsReportService {
 
         Paragraph title = new Paragraph();
 
-        if (type.equals("product")) {
+        if (type.equals("batch")) {
             title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah1", locale), PdfUtil
                     .getArialBold11Light()));
-            String name = "";
-            if (product != null) {
-                name = product.getField("name").toString();
-            }
-            title.add(new Phrase(" " + name, PdfUtil.getArialBold11Dark()));
+        } else if (type.equals("order")) {
+            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah2", locale), PdfUtil
+                    .getArialBold11Light()));
+        } else if (type.equals("unit")) {
+            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah3", locale), PdfUtil
+                    .getArialBold11Light()));
+        } else if (type.equals("operation")) {
+            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah4", locale), PdfUtil
+                    .getArialBold11Light()));
         }
+
+        String name = "";
+        if (product != null) {
+            name = product.getField("name").toString();
+        }
+        title.add(new Phrase(" " + name, PdfUtil.getArialBold11Dark()));
 
         return title;
     }

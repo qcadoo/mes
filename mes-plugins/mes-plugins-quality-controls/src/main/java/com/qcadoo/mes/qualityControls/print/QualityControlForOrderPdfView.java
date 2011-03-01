@@ -121,10 +121,11 @@ public class QualityControlForOrderPdfView extends ReportPdfView {
     private void addProductSeries(final Document document, final Map<Entity, List<Entity>> productOrders,
             final Entry<Entity, List<Entity>> entry, final Locale locale) throws DocumentException {
 
-        document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "product"));
+        document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "order"));
         List<String> productHeader = new ArrayList<String>();
         productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.control.number", locale));
-        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.controlled.quantity", locale));
+        productHeader.add(getTranslationService().translate(
+                "qualityControls.qualityControlForOrder.window.qualityControlForOrder.controlResult.label", locale));
         PdfPTable table = PdfUtil.createTableWithHeader(2, productHeader, false);
         List<Entity> sortedOrders = entry.getValue();
         Collections.sort(sortedOrders, new EntityNumberComparator());

@@ -117,7 +117,7 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
     private void addProductSeries(final Document document, final Map<Entity, List<Entity>> productOrders,
             final Entry<Entity, List<Entity>> entry, final Locale locale) throws DocumentException {
 
-        document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "product"));
+        document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "batch"));
 
         List<String> productHeader = new ArrayList<String>();
         productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.batch.number", locale));
@@ -135,8 +135,7 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
         for (Entity entity : sortedOrders) {
             table.addCell(new Phrase(entity.getField("batchNr") != null ? entity.getField("batchNr").toString() : "", PdfUtil
                     .getArialRegular9Dark()));
-            table.addCell(new Phrase(((Entity) entity.getField("order")).getField("number").toString(), PdfUtil
-                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(entity.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             table.addCell(new Phrase(getDecimalFormat().format(entity.getField("controlledQuantity")), PdfUtil
                     .getArialRegular9Dark()));

@@ -319,7 +319,7 @@
 				<component type="gridLayout" name="gridLayout" columns="3"
 					rows="7">
 					<layoutElement column="1" row="1">
-						<component type="input" name="state" field="state" reference="state" defaultEnabled="false" />
+						<component type="select" name="state" field="state" reference="state" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="number" reference="number"

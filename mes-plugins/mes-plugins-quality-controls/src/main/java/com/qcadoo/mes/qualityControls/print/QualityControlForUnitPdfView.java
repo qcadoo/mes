@@ -119,7 +119,7 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
     private void addProductSeries(final Document document, final Map<Entity, List<Entity>> productOrders,
             final Entry<Entity, List<Entity>> entry, final Locale locale) throws DocumentException {
 
-        document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "product"));
+        document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "unit"));
 
         List<String> productHeader = new ArrayList<String>();
         productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.control.number", locale));

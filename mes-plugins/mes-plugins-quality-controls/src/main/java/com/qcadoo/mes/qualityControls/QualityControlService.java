@@ -174,7 +174,7 @@ public class QualityControlService {
                         .getComponentByReference("controlResult");
 
                 String qualityControlType = ((FieldComponentState) viewDefinitionState
-                        .getComponentByReference("qualityControlType")).toString();
+                        .getComponentByReference("qualityControlType")).getFieldValue().toString();
 
                 if (hasControlResult(qualityControlType) && controlResult != null
                         && (controlResult.getFieldValue() == null || ((String) controlResult.getFieldValue()).isEmpty())) {
