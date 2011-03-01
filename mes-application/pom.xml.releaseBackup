@@ -1,0 +1,174 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.qcadoo.mes</groupId>
+		<artifactId>mes</artifactId>
+		<version>0.3.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>mes-application</artifactId>
+	<packaging>war</packaging>
+
+	<name>Qcadoo MES :: Application</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-crud</artifactId>
+			<version>0.3.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-dictionary-management</artifactId>
+			<version>0.3.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-user-management</artifactId>
+			<version>0.3.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-plugin-management</artifactId>
+			<version>0.3.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-menu-management</artifactId>
+			<version>0.3.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-products</artifactId>
+			<version>0.3.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-basic-management</artifactId>
+			<version>0.3.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-genealogies</artifactId>
+			<version>0.3.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-quality-controls</artifactId>
+			<version>0.3.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-jsp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.yahoo.platform.yui</groupId>
+			<artifactId>yuicompressor</artifactId>
+			<version>2.3.6</version>
+		</dependency>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>system</scope>
+			<systemPath>${basedir}/driver/postgresql-8.4-701.jdbc4.jar</systemPath>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>maven-jetty-plugin</artifactId>
+				<configuration>
+					<systemProperties>
+						<systemProperty>
+							<name>QCADOO_CONF</name>
+							<value>${basedir}/conf/${profile.name}</value>
+						</systemProperty>
+						<systemProperty>
+							<name>QCADOO_LOG</name>
+							<value>${basedir}/target/logs</value>
+						</systemProperty>
+						<systemProperty>
+							<name>QCADOO_PLUGINS_TMP_PATH</name>
+							<value>${basedir}/target/tmp</value>
+						</systemProperty>
+						<systemProperty>
+							<name>QCADOO_PLUGINS_PATH</name>
+							<value>${basedir}/target/lib</value>
+						</systemProperty>
+						<systemProperty>
+							<name>QCADOO_WEBAPP_PATH</name>
+							<value>${basedir}/src/main/webapp</value>
+						</systemProperty>
+						<systemProperty>
+							<name>QCADOO_RESTART_CMD</name>
+							<value>${basedir}/restart.sh</value>
+						</systemProperty>
+					</systemProperties>
+					<webAppConfig>
+						<contextPath>/</contextPath>
+						<baseResource implementation="org.mortbay.resource.ResourceCollection">
+							<resourcesAsCSV>
+								${basedir}/src/main/webapp;
+								${basedir}/../mes-plugins/mes-plugins-crud/src/main/resources/META-INF;
+								${basedir}/../mes-plugins/mes-plugins-plugin-management/src/main/resources/META-INF;
+								${basedir}/../mes-plugins/mes-plugins-products/src/main/resources/META-INF;
+							</resourcesAsCSV>
+						</baseResource>
+					</webAppConfig>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>package</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<mkdir dir="${basedir}/target/classes" />
+										<exec command="git rev-list --max-count=1 --all" osfamily="unix" outputproperty="build.revision" />
+										<tstamp>
+											<format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" />
+										</tstamp>
+										<property name="build.number" value="-" />
+										<echo file="${basedir}/target/classes/build.properties">
+											buildApplicationName = Qcadoo MES
+											buildApplicationVersion = ${pom.version}
+											buildTime = ${build.time}
+											buildNumber = ${build.number}
+											buildRevision = ${build.revision}
+										</echo>
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+</project>
