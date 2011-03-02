@@ -25,7 +25,7 @@
 
 -->
 
-<qcd:models plugin="products" xmlns:qcd="http://www.qcadoo.com/model">
+<models plugin="products" xmlns="http://www.qcadoo.com/model">
 	<model name="product">
 		<string name="number">
 			<validatesPresence />
@@ -51,12 +51,12 @@
 		</string>
 		<boolean name="genealogyBatchReq" />
 		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" copyable="true" />
-		<hasMany name="technologies" model="technology" joinField="product" cascade="nullify" />
-		<hasMany name="orders" model="order" joinField="product" cascade="nullify"/>
-		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="product" cascade="nullify"/>
-		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="product" cascade="nullify"/>
-		<hasMany name="substituteComponents" model="substituteComponent" joinField="product" cascade="nullify"/>
-		<identifierExpression value="#number + ' - ' + #name"/>
+		<hasMany name="technologies" model="technology" joinField="product" cascade="none" />
+		<hasMany name="orders" model="order" joinField="product" cascade="none"/>
+		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="product" cascade="none"/>
+		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="product" cascade="none"/>
+		<hasMany name="substituteComponents" model="substituteComponent" joinField="product" cascade="none"/>
+		<toStringExpression expression="#number + ' - ' + #name"/>
 	</model>
 	<model name="substitute">
 		<string name="number">
@@ -67,29 +67,29 @@
 		<string name="name">
 			<validatesPresence />
 		</string>
-		<belongsTo name="product" model="product" lookupField="name" lazy="false">
+		<belongsTo name="product" model="product" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
 		<hasMany name="components" model="substituteComponent" joinField="substitute" cascade="delete" copyable="true" />
 		<priority name="priority" scope="product" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
-		<identifierExpression value="#number + ' - ' + #name"/>
+		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
+		<toStringExpression expression="#number + ' - ' + #name"/>
 	</model>
 	<model name="substituteComponent">
-		<belongsTo name="product" model="product" lookupField="name">
+		<belongsTo name="product" model="product">
 			<validatesPresence /> 
 		</belongsTo>
-		<belongsTo name="substitute" model="substitute" lookupField="name">
+		<belongsTo name="substitute" model="substitute">
 			<validatesPresence /> 
 		</belongsTo>
 		<decimal name="quantity">
 			<validatesPresence />
-			<validatesRange from="0" inclusive="false" />
+			<validatesRange from="0" exclusively="true" />
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfSubstituteIsNotRemoved" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteComponentUniqueness" />
-		<identifierExpression value="#product['number'] + ' - ' + #product['name']"/>
+		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfSubstituteIsNotRemoved" />
+		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkSubstituteComponentUniqueness" />
+		<toStringExpression expression="#product['number'] + ' - ' + #product['name']"/>
 	</model>
-</qcd:models>
+</models>

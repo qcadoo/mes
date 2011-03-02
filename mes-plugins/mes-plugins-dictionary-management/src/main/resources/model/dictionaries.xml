@@ -25,7 +25,7 @@
 
 -->
 
-<qcd:models plugin="dictionaries" xmlns:qcd="http://www.qcadoo.com/model">
+<models plugin="dictionaries" xmlns="http://www.qcadoo.com/model">
 	<model name="dictionary" deletable="false">
 		<string name="name" >
 			<validatesPresence />
@@ -46,8 +46,8 @@
 		<string name="description" >
 			<validatesLength max="255"/>
 		</string>
-		<belongsTo name="dictionary" model="dictionary" lookupField="name">
+		<belongsTo name="dictionary" model="dictionary">
 			<validatesPresence />
 		</belongsTo>
 	</model>
-</qcd:models>
+</models>

@@ -25,12 +25,12 @@
 
 -->
 
-<qcd:models plugin="qualityControls" xmlns:qcd="http://www.qcadoo.com/model">
+<models plugin="qualityControls" xmlns="http://www.qcadoo.com/model">
 	<model name="qualityControl">
-		<belongsTo name="order" model="order" plugin="products" lookupField="name" >
+		<belongsTo name="order" model="order" plugin="products">
 			<validatesPresence/>
 		</belongsTo>
-		<belongsTo name="operation" model="operation" plugin="products" lookupField="name" />
+		<belongsTo name="operation" model="operation" plugin="products" />
 		<string name="number">
 			<validatesUniqueness/>
 			<validatesPresence/>
@@ -45,12 +45,12 @@
 		<decimal name="acceptedDefectsQuantity" />		
 		<string name="staff" />
 		<date name="date" />
-		<boolean name="closed"/>
-		<enum name="qualityControlType" values="qualityControlsForOrder,qualityControlsForUnit,qualityControlsForBatch,qualityControlsForOperation"/>
-		<validatesWith bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentForResultOrQuantityIsReq" />
-		<validatesWith bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfOperationIsRequired" />
-		<validatesWith bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfQuantitiesAreCorrect" />
 		<date name="dateFrom" persistent="false"/>
 		<date name="dateTo" persistent="false"/>
+		<boolean name="closed"/>
+		<enum name="qualityControlType" values="qualityControlsForOrder,qualityControlsForUnit,qualityControlsForBatch,qualityControlsForOperation"/>
+		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentForResultOrQuantityIsReq" />
+		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfOperationIsRequired" />
+		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfQuantitiesAreCorrect" />
 	</model>
-</qcd:models>
+</models>

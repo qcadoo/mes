@@ -46,7 +46,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.components.window.WindowComponentPattern;
 import com.qcadoo.mes.view.internal.ViewDefinitionImpl;

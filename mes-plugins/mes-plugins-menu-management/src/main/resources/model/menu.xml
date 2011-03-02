@@ -25,7 +25,7 @@
 
 -->
 
-<qcd:models plugin="menu" xmlns:qcd="http://www.qcadoo.com/model">
+<models plugin="menu" xmlns="http://www.qcadoo.com/model">
 	<model name="menuCategory">
 		<string name="name" >
 			<validatesPresence />
@@ -46,10 +46,10 @@
 		</string>
 		<boolean name="active" readonly="false" default="true" />
 		<string name="translationName" />
-		<belongsTo name="menuCategory" model="menuCategory" lookupField="name" lazy="false">
+		<belongsTo name="menuCategory" model="menuCategory" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
-		<belongsTo name="viewDefinition" model="viewDefinition" lookupField="viewName" lazy="false">
+		<belongsTo name="viewDefinition" model="viewDefinition" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
 		<priority name="itemOrder" scope="menuCategory" />
@@ -69,4 +69,4 @@
 		<hasMany name="menuViewDefinitionItems" model="menuViewDefinitionItem" joinField="viewDefinition" cascade="delete" />
 	</model>
 	
-</qcd:models>
+</models>

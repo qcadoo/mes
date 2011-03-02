@@ -25,7 +25,7 @@
 
 -->
 
-<qcd:models plugin="basic" xmlns:qcd="http://www.qcadoo.com/model">
+<models plugin="basic" xmlns="http://www.qcadoo.com/model">
 	<model name="machine" deletable="true">
 		<string name="name" >
 			<validatesPresence />
@@ -39,7 +39,7 @@
 		<string name="description">
 			<validatesLength max="2048"/>
 		</string>
-		<identifierExpression value="#number + ' - ' + #name"/>
+		<toStringExpression expression="#number + ' - ' + #name"/>
 	</model>
 	<model name="staff" deletable="true">
 		<string name="number">
@@ -56,7 +56,7 @@
 			<validatesLength max="255"/>
 		</string>
 		<string name="post"/>
-		<identifierExpression value="#number + ' - ' + #name"/>
+		<toStringExpression expression="#number + ' - ' + #name"/>
 	</model>
 	<model name="parameter" deletable="false">
 		<boolean name="checkDoneOrderForQuality">
@@ -69,4 +69,4 @@
 			<validatesPresence />
 		</enum>
 	</model>
-</qcd:models>
+</models>

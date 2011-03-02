@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<models plugin="full" xmlns="http://www.qcadoo.com/model">
+	<dictionary name="categories">
+		<value>category1</value>
+		<value>category2</value>
+	</dictionary>
+	<dictionary name="otherCategories" modificable="false">
+		<value>one</value>
+		<value>two</value>
+	</dictionary>
+	<model name="firstEntity" insertable="false" deletable="false">
+		<integer name="fInteger" required="true" unique="true">		
+			<validatesWith class="com.qcadoo.dao.CustomHook" method="validateField" />
+			<validatesWith class="com.qcadoo.dao.CustomHook" method="staticValidateField" static="true" />
+			<validatesLength min="1" max="3" />						
+			<validatesPrecision min="2" max="4" />								
+			<validatesRange from="18" exclusively="true" />			
+		</integer>
+		<string name="fString" default="ala" required="true" unique="false">
+			<validatesLength is="2" />	 
+			<validatesRange from="daap" to="dzzp" />
+			<validatesRegex pattern="d??p" />
+		</string>
+		<text name="fText" readonly="true" />
+		<string name="fStringNotPersistent" persistent="false" />
+		<string name="fStringWithExpression" expression="#fString" />
+		<decimal name="fDecimal">
+			<validatesScale min="2" max="4" />
+			<validatesPrecision is="2" />
+		</decimal>
+		<datetime name="fDatetime" required="false" />
+		<date name="fDate" />
+		<boolean name="fBoolean" />
+		<belongsTo name="fSecondEntity" plugin="other" model="secondEntity" lazy="false" />		
+		<belongsTo name="fSecondEntity2" plugin="other" model="secondEntity" lazy="true" required="true" />		
+		<tree name="fTree" model="secondEntity" cascade="delete" joinField="fFirstEntity" />
+		<hasMany name="fHasMany" model="thirdEntity" cascade="none" joinField="fFirstEntity" />
+		<dictionary name="fDictionary" dictionary="categories" />
+		<dictionary name="fOtherDictionary" plugin="other" dictionary="categories" />
+		<enum name="fEnum" values="one,two,three" />
+		<password name="fPassword" />
+		
+		<priority name="fPriority" scope="fParent" />
+		
+		<validatesWith class="com.qcadoo.dao.CustomHook" method="validate" />
+			
+		<savesWith class="com.qcadoo.dao.CustomHook" method="hook" />
+		<savesWith class="com.qcadoo.dao.CustomHook" method="staticHook" static="true" />
+		<updatesWith class="com.qcadoo.dao.CustomHook" method="updateHook" />
+		<createsWith class="com.qcadoo.dao.CustomHook" method="createHook" />
+		<copiesWith class="com.qcadoo.dao.CustomHook" method="copyHook" />
+		
+		<toString expression="#fString" />
+	</model>	
+	<model name="secondEntity" updatable="false">
+		<belongsTo name="fFirstEntity" model="firstEntity" />
+		<belongsTo name="parent" model="secondEntity" />
+		<hasMany name="children" model="secondEntity" joinField="parent" />
+	</model>
+	<model name="thirdEntity">
+		<belongsTo name="fFirstEntity" model="firstEntity" />
+	</model>
+</models>

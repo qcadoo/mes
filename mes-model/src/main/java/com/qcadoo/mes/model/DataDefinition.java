@@ -179,4 +179,6 @@ public interface DataDefinition {
      */
     boolean isPrioritizable();
 
+    Entity create();
+
 }

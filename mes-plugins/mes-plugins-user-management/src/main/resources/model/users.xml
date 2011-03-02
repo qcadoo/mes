@@ -25,14 +25,14 @@
 
 -->
 
-<qcd:models plugin="users" xmlns:qcd="http://www.qcadoo.com/model">
+<models plugin="users" xmlns="http://www.qcadoo.com/model">
 	<model name="user">
 		<string name="userName" >
 			<validatesPresence />
 			<validatesUniqueness />
 			<validatesRegex regex="^[a-zA-Z0-9\\.]+$" message="users.validate.global.error.loginIllegalCharacters" />
 		</string>
-		<belongsTo name="userGroup" model="group" lookupField="name" lazy="false">
+		<belongsTo name="userGroup" model="group" lazy="false">
 			<validatesPresence />
 		</belongsTo>
 		<string name="email" />
@@ -43,25 +43,29 @@
 		</string>
 		<string name="email" />
 		<password name="password">
-			<validatesPresenceOnCreate />
+			<!-- TODO validatesPresenceOnCreate -->
+			<validatesPresence />
 		</password>
 		<password name="passwordConfirmation" persistent="false">
-			<validatesPresenceOnCreate />
+			<!-- TODO validatesPresenceOnCreate -->
+			<validatesPresence />
 		</password>
 		<password name="oldPassword" persistent="false" />
 		<string name="viewIdentifier" persistent="false" />
-		<validatesWith bean="com.qcadoo.mes.users.UserService" method="checkPassword" />
-		<identifierExpression value="#userName"/>
+		<validatesWith class="com.qcadoo.mes.users.UserService" method="checkPassword" />
+		<toStringExpression expression="#userName"/>
 	</model>
 	<model name="group">
 		<string name="name" readonly="true">
-			<validatesPresenceOnCreate />
+			<!-- TODO validatesPresenceOnCreate -->
+			<validatesPresence />
 			<validatesUniqueness />
 		</string>
 		<string name="description" />
 		<string name="role" readonly="true">
-			<validatesPresenceOnCreate />
+			<!-- TODO validatesPresenceOnCreate -->
+			<validatesPresence />
 		</string>
-		<identifierExpression value="#name"/>
+		<toStringExpression expression="#name"/>
 	</model>
-</qcd:models>
+</models>

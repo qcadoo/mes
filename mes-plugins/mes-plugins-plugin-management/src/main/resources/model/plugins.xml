@@ -25,26 +25,31 @@
 
 -->
 
-<qcd:models plugin="plugins" xmlns:qcd="http://www.qcadoo.com/model">
+<models plugin="plugins" xmlns="http://www.qcadoo.com/model">
 	<model name="plugin">
 		<string name="name" readonly="true" >
-			<validatesPresenceOnCreate />
+			<!-- TODO validatesPresenceOnCreate -->
+			<validatesPresence />
 		</string>
 		<string name="description" readonly="true" />
 		<string name="vendor" readonly="true" >
-			<validatesPresenceOnCreate />
+			<!-- TODO validatesPresenceOnCreate -->
+			<validatesPresence />
 		</string>
 		<string name="version" readonly="true" >
-			<validatesPresenceOnCreate />
+			<!-- TODO validatesPresenceOnCreate -->
+			<validatesPresence />
 		</string>
 		<enum name="status" values="01downloaded,02installed,03active">
-			<validatesPresenceOnCreate />
+			<!-- TODO validatesPresenceOnCreate -->
+			<validatesPresence />
 		</enum>
 		<boolean name="base" readonly="true">
-			<validatesPresenceOnCreate />
+			<!-- TODO validatesPresenceOnCreate -->
+			<validatesPresence />
 		</boolean>
 		<string name="identifier" readonly="true" />
 		<string name="packageName" readonly="true" />
 		<string name="fileName" readonly="true" />
 	</model>
-</qcd:models>
+</models>

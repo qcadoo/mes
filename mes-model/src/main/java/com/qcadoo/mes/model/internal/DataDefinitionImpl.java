@@ -34,6 +34,7 @@ import java.util.Set;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DataAccessService;
+import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.model.search.SearchCriteria;
@@ -175,6 +176,7 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
         }
     }
 
+    @Override
     public String getEntityIdentifierField(final Entity entity) {
         String identifier = ExpressionUtil.getValue(entity, identifierExpression);
         if (identifier == null) {
@@ -307,6 +309,11 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("cannot find mapping class for definition: " + getFullyQualifiedClassName(), e);
         }
+    }
+
+    @Override
+    public Entity create() {
+        return new DefaultEntity(getPluginIdentifier(), getName());
     }
 
 }
