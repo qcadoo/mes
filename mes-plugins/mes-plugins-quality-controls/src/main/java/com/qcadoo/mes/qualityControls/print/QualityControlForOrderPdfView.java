@@ -1,3 +1,27 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo MES
+ * Version: 0.3.0
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
+
 package com.qcadoo.mes.qualityControls.print;
 
 import java.io.IOException;
@@ -97,10 +121,11 @@ public class QualityControlForOrderPdfView extends ReportPdfView {
     private void addProductSeries(final Document document, final Map<Entity, List<Entity>> productOrders,
             final Entry<Entity, List<Entity>> entry, final Locale locale) throws DocumentException {
 
-        document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "product"));
+        document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "order"));
         List<String> productHeader = new ArrayList<String>();
         productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.control.number", locale));
-        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.controlled.quantity", locale));
+        productHeader.add(getTranslationService().translate(
+                "qualityControls.qualityControlForOrder.window.qualityControlForOrder.controlResult.label", locale));
         PdfPTable table = PdfUtil.createTableWithHeader(2, productHeader, false);
         List<Entity> sortedOrders = entry.getValue();
         Collections.sort(sortedOrders, new EntityNumberComparator());

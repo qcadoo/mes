@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.2.0
+ * Version: 0.3.0
  *
  * This file is part of Qcadoo.
  *
@@ -53,7 +53,7 @@ public interface ViewDefinitionService {
     @PreAuthorize("hasRole('ROLE_ADMIN') or (#pluginIdentifier == 'dictionaries') or (#pluginIdentifier == 'products' "
             + "and (#viewName != 'orders' and #viewName != 'order' or hasRole('ROLE_SUPERVISOR'))) or "
             + "(#pluginIdentifier == 'basic') or "
-            + "(#pluginIdentifier == 'qualityControl') or "
+            + "(#pluginIdentifier == 'qualityControls') or "
             + "(#pluginIdentifier == 'genealogies') or "
             + "(#pluginIdentifier == 'users' and (#viewName == 'profile' or #viewName == 'profileChangePassword')) or (#pluginIdentifier == 'core' and #viewName == 'systemInfo')")
     ViewDefinition get(String pluginIdentifier, String viewName);
