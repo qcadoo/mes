@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.2.0
+ * Version: 0.3.0
  *
  * This file is part of Qcadoo.
  *
@@ -36,7 +36,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.beans.basic.BasicParameter;
-import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.menu.MenuMenuCategory;
 import com.qcadoo.mes.beans.menu.MenuMenuViewDefinitionItem;
 import com.qcadoo.mes.beans.menu.MenuViewDefinition;
@@ -79,7 +78,6 @@ public final class DatabasePreparationService implements ApplicationListener<Con
             addMenus();
             addGroups();
             addUsers();
-            // addDictionaries();
             addParameters();
 
             if (addTestData) {
@@ -252,21 +250,6 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         user.setDescription(null);
         user.setPassword(password);
         sessionFactory.getCurrentSession().save(user);
-    }
-
-    @SuppressWarnings({ "unused" })
-    private void addDictionaries() {
-        addDictionary("categories");
-        addDictionary("units");
-        addDictionary("shifts");
-        addDictionary("posts");
-    }
-
-    private void addDictionary(final String name) {
-        LOG.info("Adding dictionary \"" + name + "\"");
-        DictionariesDictionary dictionary = new DictionariesDictionary();
-        dictionary.setName(name);
-        sessionFactory.getCurrentSession().save(dictionary);
     }
 
     private void addTestData() {

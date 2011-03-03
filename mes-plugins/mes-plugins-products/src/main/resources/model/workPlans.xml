@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.2.0
+    Version: 0.3.0
 
     This file is part of Qcadoo.
 
@@ -37,7 +37,7 @@
 		<string name="fileName" />
 		<hasMany name="orders" model="workPlanComponent" joinField="workPlan" cascade="delete" copyable="true" />
 		<onCopy bean="com.qcadoo.mes.products.WorkPlanService" method="clearGeneratedOnCopy" />
-		<identifierExpression value="##name"/>
+		<identifierExpression value="#name"/>
 	</model>
 	<model name="workPlanComponent">
 		<belongsTo name="workPlan" model="workPlan" lookupField="name" lazy="false">

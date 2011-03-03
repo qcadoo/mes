@@ -1,3 +1,27 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo MES
+ * Version: 0.3.0
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
+
 package com.qcadoo.mes.qualityControls;
 
 import static org.mockito.BDDMockito.given;
@@ -15,6 +39,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -29,6 +54,7 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.view.ComponentState.MessageType;
@@ -36,10 +62,11 @@ import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
+import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 import com.qcadoo.mes.view.components.select.SelectComponentState;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ FormComponentState.class, SelectComponentState.class, GridComponentState.class })
+@PrepareForTest({ FormComponentState.class, SelectComponentState.class, GridComponentState.class, LookupComponentState.class })
 public class QualityControlServiceTest {
 
     private SecurityService securityService = null;
@@ -134,11 +161,12 @@ public class QualityControlServiceTest {
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
 
+        given(entity.getField("qualityControlType")).willReturn("qualityControlsForOrder");
         given(entity.getField("controlResult")).willReturn("03objection");
         given(entity.getField("comment")).willReturn(null);
 
         // when
-        qualityControlService.checkIfCommentForResultIsReq(dataDefinition, entity);
+        qualityControlService.checkIfCommentForResultOrQuantityIsReq(dataDefinition, entity);
 
         // then
         verify(entity).addGlobalError("core.validate.global.error.custom");
@@ -152,11 +180,12 @@ public class QualityControlServiceTest {
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
 
+        given(entity.getField("qualityControlType")).willReturn("qualityControlsForUnit");
         given(entity.getField("acceptedDefectsQuantity")).willReturn(new BigDecimal("1"));
         given(entity.getField("comment")).willReturn(null);
 
         // when
-        qualityControlService.checkIfCommentForQuantityIsReq(dataDefinition, entity);
+        qualityControlService.checkIfCommentForResultOrQuantityIsReq(dataDefinition, entity);
 
         // then
         verify(entity).addGlobalError("core.validate.global.error.custom");
@@ -183,8 +212,8 @@ public class QualityControlServiceTest {
         given(viewDefinitionState.getComponentByReference("staff")).willReturn(staff);
         given(viewDefinitionState.getComponentByReference("date")).willReturn(date);
         given(viewDefinitionState.getComponentByReference("qualityControlType")).willReturn(qualityControlType);
-        given(((FieldComponentState) viewDefinitionState.getComponentByReference("qualityControlType")).toString()).willReturn(
-                "qualityControlsForUnit");
+        given(((FieldComponentState) viewDefinitionState.getComponentByReference("qualityControlType")).getFieldValue())
+                .willReturn("qualityControlsForUnit");
         given(qualityControlType.equals("qualityControlsForOrder")).willReturn(false);
         given(qualityControlType.equals("qualityControlsForOperation")).willReturn(false);
         given(controlResult.getFieldValue()).willReturn("03objection");
@@ -246,8 +275,8 @@ public class QualityControlServiceTest {
         given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
         given(controlResult.getFieldValue()).willReturn(null);
         given(viewDefinitionState.getComponentByReference("qualityControlType")).willReturn(qualityControlType);
-        given(((FieldComponentState) viewDefinitionState.getComponentByReference("qualityControlType")).toString()).willReturn(
-                "qualityControlsForOrder");
+        given(((FieldComponentState) viewDefinitionState.getComponentByReference("qualityControlType")).getFieldValue())
+                .willReturn("qualityControlsForOrder");
         given(qualityControlType.equals("qualityControlsForOrder")).willReturn(true);
         given(qualityControlType.equals("qualityControlsForOperation")).willReturn(true);
         given(translationService.translate("qualityControls.quality.control.result.missing", Locale.ENGLISH)).willReturn(
@@ -449,5 +478,72 @@ public class QualityControlServiceTest {
         verify(takenForControl).setFieldValue(BigDecimal.ONE);
         verify(rejectedQuantity).setFieldValue(BigDecimal.ZERO);
         verify(acceptedDefectsQuantity).setFieldValue(BigDecimal.ZERO);
+    }
+
+    @Test
+    public void shouldSetCommentAsRequiredOnPositiveDefectsQuantity() {
+        // given
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        FieldComponentState acceptedDefectsQuantity = mock(FieldComponentState.class);
+        FieldComponentState comment = mock(FieldComponentState.class);
+
+        given(viewDefinitionState.getComponentByReference("comment")).willReturn(comment);
+        given(acceptedDefectsQuantity.getFieldValue()).willReturn("1");
+        given(acceptedDefectsQuantity.getFieldValue().toString()).willReturn("1");
+
+        // when
+        qualityControlService.checkAcceptedDefectsQuantity(viewDefinitionState, acceptedDefectsQuantity, new String[] {});
+
+        // then
+        verify(comment).setRequired(true);
+    }
+
+    @Test
+    public void shouldSetCommentAsNotRequiredOnPositiveDefectsQuantity() {
+        // given
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        FieldComponentState state = mock(FieldComponentState.class);
+        FieldComponentState comment = mock(FieldComponentState.class);
+
+        given(viewDefinitionState.getComponentByReference("comment")).willReturn(comment);
+        given(state.getFieldValue()).willReturn("0");
+        given(state.getFieldValue().toString()).willReturn("0");
+
+        // when
+        qualityControlService.checkAcceptedDefectsQuantity(viewDefinitionState, state, new String[] {});
+
+        // then
+        verify(comment).setRequired(false);
+    }
+
+    @Test
+    @Ignore
+    public void shouldSetQualityControlInstructionToDefault() {
+        // given
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        LookupComponentState state = mock(LookupComponentState.class);
+        FieldComponentState controlInstruction = mock(FieldComponentState.class);
+        DataDefinition orderDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        SearchCriteriaBuilder searchCriteria = mock(SearchCriteriaBuilder.class, RETURNS_DEEP_STUBS);
+
+        given(viewDefinitionState.getComponentByReference("controlInstruction")).willReturn(controlInstruction);
+        given(state.getFieldValue()).willReturn(1L);
+
+        given(dataDefinitionService.get("products", "order")).willReturn(orderDD);
+
+        given(
+                orderDD.find().withMaxResults(1)
+                        .restrictedWith(Restrictions.idRestriction(Mockito.anyLong(), RestrictionOperator.EQ))).willReturn(
+                searchCriteria);
+
+        given(searchCriteria.list().getEntities().get(0).getBelongsToField("technology").getField("qualityControlInstruction"))
+                .willReturn("test");
+
+        // when
+        qualityControlService.setQualityControlInstruction(viewDefinitionState, state, new String[] {});
+
+        // then
+        verify(controlInstruction).setFieldValue("");
+        verify(controlInstruction).setFieldValue("test");
     }
 }

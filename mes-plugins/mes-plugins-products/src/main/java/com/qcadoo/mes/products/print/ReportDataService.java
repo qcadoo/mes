@@ -1,3 +1,27 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo MES
+ * Version: 0.3.0
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
+
 package com.qcadoo.mes.products.print;
 
 import java.awt.image.BufferedImage;
@@ -551,6 +575,7 @@ public class ReportDataService {
         table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
     }
 
+    /*
     @SuppressWarnings({ "unused" })
     private Image generateBarcode(final String code) throws BadElementException {
         Code128Bean codeBean = new Code128Bean();
@@ -592,7 +617,7 @@ public class ReportDataService {
 
         return null;
     }
-
+*/
     private void addOrderSeries(final PdfPTable table, final List<Entity> orders, final DecimalFormat df)
             throws DocumentException {
         Collections.sort(orders, new EntityNumberComparator());

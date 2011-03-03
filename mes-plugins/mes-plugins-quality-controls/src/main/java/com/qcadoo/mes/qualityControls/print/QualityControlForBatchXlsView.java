@@ -1,7 +1,32 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo MES
+ * Version: 0.3.0
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
+
 package com.qcadoo.mes.qualityControls.print;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -14,6 +39,9 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.qualityControls.print.utils.EntityBatchNumberComparator;
+import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
+import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.xls.ReportXlsView;
 import com.qcadoo.mes.utils.xls.XlsUtil;
 
@@ -63,8 +91,11 @@ public class QualityControlForBatchXlsView extends ReportXlsView {
         int rowNum = 1;
         Map<Entity, List<Entity>> productOrders = qualityControlsReportService
                 .getQualityOrdersForProduct(qualityControlsReportService.getOrderSeries(model, "qualityControlsForBatch"));
+        productOrders = SortUtil.sortMapUsingComparator(productOrders, new EntityNumberComparator());
         for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
-            for (Entity order : entry.getValue()) {
+            List<Entity> orders = entry.getValue();
+            Collections.sort(orders, new EntityBatchNumberComparator());
+            for (Entity order : orders) {
                 HSSFRow row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(entry.getKey() == null ? "" : entry.getKey().getField("number").toString());
                 row.createCell(1).setCellValue(order.getField("batchNr") == null ? "" : order.getField("batchNr").toString());
