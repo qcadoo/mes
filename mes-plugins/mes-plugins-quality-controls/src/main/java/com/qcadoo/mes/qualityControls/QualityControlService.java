@@ -471,6 +471,12 @@ public class QualityControlService {
         qualityControl.setEnabledWithChildren(!disabled);
     }
 
+    public boolean clearQualityControlOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+        entity.setField("closed", "0");
+        entity.setField("controlResult", null);
+        return true;
+    }
+
     private boolean hasQuantitiesToBeChecked(String qualityControlType) {
         if ("qualityControlsForUnit".equals(qualityControlType) || "qualityControlsForBatch".equals(qualityControlType)) {
             return true;

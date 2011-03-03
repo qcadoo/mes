@@ -52,5 +52,6 @@
 		<validatesWith bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfQuantitiesAreCorrect" />
 		<date name="dateFrom" persistent="false"/>
 		<date name="dateTo" persistent="false"/>
+		<onCopy bean="com.qcadoo.mes.qualityControls.QualityControlService" method="clearQualityControlOnCopy" />
 	</model>
 </qcd:models>
