@@ -456,6 +456,21 @@ public class QualityControlService {
         return true;
     }
 
+    public void disableFormForClosedControl(final ViewDefinitionState state, final Locale locale) {
+        FormComponentState qualityControl = (FormComponentState) state.getComponentByReference("form");
+        boolean disabled = false;
+
+        if (qualityControl.getEntityId() != null) {
+            Entity entity = dataDefinitionService.get("qualityControls", "qualityControl").get(qualityControl.getEntityId());
+
+            if (entity != null && (Boolean) entity.getField("closed") && qualityControl.isValid()) {
+                disabled = true;
+            }
+        }
+
+        qualityControl.setEnabledWithChildren(!disabled);
+    }
+
     private boolean hasQuantitiesToBeChecked(String qualityControlType) {
         if ("qualityControlsForUnit".equals(qualityControlType) || "qualityControlsForBatch".equals(qualityControlType)) {
             return true;

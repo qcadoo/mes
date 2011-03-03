@@ -216,6 +216,7 @@
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentIsRequiredBasedOnResult"/>
 		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlTypeHiddenField"/>
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="disableFormForClosedControl"/>
 	</view>
 	<view name="qualityControlsForUnit" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window" reference="window">
@@ -418,6 +419,7 @@
 		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
 		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQuantitiesToDefaulIfEmpty"/>
 		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlTypeHiddenField"/>
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="disableFormForClosedControl"/>
 	</view>		
 	<view name="qualityControlsForBatch" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window" reference="window">
@@ -622,6 +624,7 @@
 		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentIsRequiredBasedOnDefects"/>	
 		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQuantitiesToDefaulIfEmpty"/>
 		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlTypeHiddenField"/>
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="disableFormForClosedControl"/>
 	</view>		
 	<view name="qualityControlsForOperation" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window" reference="window">
@@ -822,6 +825,7 @@
 		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentIsRequiredBasedOnResult"/>
 		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setOperationAsRequired"/>
 		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlTypeHiddenField"/>
+		<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService" method="disableFormForClosedControl"/>
 	</view>
 	<view name="qualityControlReport" plugin="qualityControls" model="qualityControl" menuAccessible="true">
 		<component type="window" name="window" reference="window">

@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -517,14 +516,21 @@ public class QualityControlServiceTest {
     }
 
     @Test
-    @Ignore
-    public void shouldSetQualityControlInstructionToDefault() {
+    public void shouldSetQualityControlInstructionToDefaultFromTechnology() {
         // given
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         LookupComponentState state = mock(LookupComponentState.class);
         FieldComponentState controlInstruction = mock(FieldComponentState.class);
         DataDefinition orderDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         SearchCriteriaBuilder searchCriteria = mock(SearchCriteriaBuilder.class, RETURNS_DEEP_STUBS);
+
+        Entity technology = new DefaultEntity("products", "technology");
+        technology.setField("qualityControlInstruction", "test");
+
+        List<Entity> orders = new ArrayList<Entity>();
+        Entity genealogy = new DefaultEntity("products", "order");
+        genealogy.setField("technology", technology);
+        orders.add(genealogy);
 
         given(viewDefinitionState.getComponentByReference("controlInstruction")).willReturn(controlInstruction);
         given(state.getFieldValue()).willReturn(1L);
@@ -536,8 +542,7 @@ public class QualityControlServiceTest {
                         .restrictedWith(Restrictions.idRestriction(Mockito.anyLong(), RestrictionOperator.EQ))).willReturn(
                 searchCriteria);
 
-        given(searchCriteria.list().getEntities().get(0).getBelongsToField("technology").getField("qualityControlInstruction"))
-                .willReturn("test");
+        given(searchCriteria.list().getEntities()).willReturn(orders);
 
         // when
         qualityControlService.setQualityControlInstruction(viewDefinitionState, state, new String[] {});
@@ -545,5 +550,120 @@ public class QualityControlServiceTest {
         // then
         verify(controlInstruction).setFieldValue("");
         verify(controlInstruction).setFieldValue("test");
+    }
+
+    @Test
+    public void shouldSetOperationAsRequired() {
+        // given
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        LookupComponentState operation = mock(LookupComponentState.class);
+
+        given(viewDefinitionState.getComponentByReference("operation")).willReturn(operation);
+
+        // when
+        qualityControlService.setOperationAsRequired(viewDefinitionState, Locale.ENGLISH);
+
+        // then
+        verify(operation).setRequired(true);
+    }
+
+    @Test
+    public void shouldSetQualityControlTypeHiddenFieldToQualityControlsForBatch() {
+        // given
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        FormComponentState qualityControlsForm = mock(FormComponentState.class);
+        FieldComponentState qualityControlType = mock(FieldComponentState.class);
+
+        given(viewDefinitionState.getComponentByReference("form")).willReturn(qualityControlsForm);
+        given(qualityControlsForm.getName()).willReturn("qualityControlForBatch");
+        given(viewDefinitionState.getComponentByReference("qualityControlType")).willReturn(qualityControlType);
+
+        // when
+        qualityControlService.setQualityControlTypeHiddenField(viewDefinitionState, Locale.ENGLISH);
+
+        // then
+        verify(qualityControlType).setFieldValue("qualityControlsForBatch");
+    }
+
+    @Test
+    public void shouldSetErrorMessageOnEmptyOperationField() {
+        // given
+        DataDefinition qualityControlDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        FieldDefinition operation = mock(FieldDefinition.class);
+
+        Entity qualityControl = mock(Entity.class);
+        given(qualityControl.getField("qualityControlType")).willReturn("qualityControlsForOperation");
+        given(qualityControl.getField("operation")).willReturn(null);
+
+        given(qualityControlDD.getField("operation")).willReturn(operation);
+
+        // when
+        qualityControlService.checkIfOperationIsRequired(qualityControlDD, qualityControl);
+
+        // then
+        verify(qualityControl).addGlobalError("core.validate.global.error.custom");
+        verify(qualityControl).addError(qualityControlDD.getField("operation"),
+                "qualityControls.quality.control.validate.global.error.operation");
+    }
+
+    @Test
+    public void shouldSetQuantitiesToDefaultValues() {
+        // given
+        DataDefinition qualityControlDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        Entity entity = mock(Entity.class);
+        given(entity.getField("qualityControlType")).willReturn("qualityControlsForUnit");
+        given(entity.getField("controlledQuantity")).willReturn(null);
+        given(entity.getField("takenForControlQuantity")).willReturn(null);
+        given(entity.getField("rejectedQuantity")).willReturn(null);
+        given(entity.getField("acceptedDefectsQuantity")).willReturn(null);
+
+        // when
+        qualityControlService.checkIfQuantitiesAreCorrect(qualityControlDD, entity);
+
+        // then
+        verify(entity).setField("controlledQuantity", BigDecimal.ZERO);
+        verify(entity).setField("takenForControlQuantity", BigDecimal.ZERO);
+        verify(entity).setField("rejectedQuantity", BigDecimal.ZERO);
+        verify(entity).setField("acceptedDefectsQuantity", BigDecimal.ZERO);
+    }
+
+    @Test
+    public void shouldAddErrorMessageOnTooLargeRejectedQuantity() {
+        // given
+        DataDefinition qualityControlDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        Entity entity = mock(Entity.class);
+        given(entity.getField("qualityControlType")).willReturn("qualityControlsForUnit");
+        given(entity.getField("controlledQuantity")).willReturn(null);
+        given(entity.getField("takenForControlQuantity")).willReturn(new BigDecimal("1"));
+        given(entity.getField("rejectedQuantity")).willReturn(new BigDecimal("5"));
+        given(entity.getField("acceptedDefectsQuantity")).willReturn(null);
+
+        // when
+        qualityControlService.checkIfQuantitiesAreCorrect(qualityControlDD, entity);
+
+        // then
+        verify(entity).addGlobalError("core.validate.global.error.custom");
+        verify(entity).addError(qualityControlDD.getField("rejectedQuantity"),
+                "qualityControls.quality.control.validate.global.error.rejectedQuantity.tooLarge");
+    }
+
+    @Test
+    public void shouldAddErrorMessageOnTooLargeAcceptedDefectsQuantity() {
+        // given
+        DataDefinition qualityControlDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        Entity entity = mock(Entity.class);
+        given(entity.getField("qualityControlType")).willReturn("qualityControlsForUnit");
+        given(entity.getField("controlledQuantity")).willReturn(null);
+        given(entity.getField("takenForControlQuantity")).willReturn(new BigDecimal("5"));
+        given(entity.getField("rejectedQuantity")).willReturn(new BigDecimal("5"));
+        given(entity.getField("acceptedDefectsQuantity")).willReturn(new BigDecimal("10"));
+
+        // when
+        qualityControlService.checkIfQuantitiesAreCorrect(qualityControlDD, entity);
+
+        // then
+        verify(entity).addGlobalError("core.validate.global.error.custom");
+        verify(entity).addError(qualityControlDD.getField("acceptedDefectsQuantity"),
+                "qualityControls.quality.control.validate.global.error.acceptedDefectsQuantity.tooLarge");
     }
 }
