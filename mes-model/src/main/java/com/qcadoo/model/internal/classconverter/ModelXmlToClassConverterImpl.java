@@ -16,7 +16,6 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.CtNewMethod;
-import javassist.NotFoundException;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -44,11 +43,19 @@ public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter impl
     public Collection<Class<?>> convert(final Resource... resources) {
         try {
             Map<String, CtClass> ctClasses = new HashMap<String, CtClass>();
+            Map<String, Class<?>> existingClasses = new HashMap<String, Class<?>>();
+
+            for (Resource resource : resources) {
+                if (resource.isReadable()) {
+                    LOG.info("Getting existing classes from " + resource.getURI().toString());
+                    existingClasses.putAll(findExistingClasses(resource.getInputStream()));
+                }
+            }
 
             for (Resource resource : resources) {
                 if (resource.isReadable()) {
                     LOG.info("Creating classes from " + resource.getURI().toString());
-                    ctClasses.putAll(createClasses(resource.getInputStream()));
+                    ctClasses.putAll(createClasses(existingClasses, resource.getInputStream()));
                 }
             }
 
@@ -65,6 +72,8 @@ public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter impl
                 classes.add(ctClass.toClass());
             }
 
+            classes.addAll(existingClasses.values());
+
             return classes;
         } catch (IOException e) {
             throw new IllegalStateException("Failed to convert model.xml to classes", e);
@@ -77,7 +86,35 @@ public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter impl
         }
     }
 
-    private Map<String, CtClass> createClasses(final InputStream stream) throws XMLStreamException, XMLStreamException {
+    private Map<String, Class<?>> findExistingClasses(final InputStream stream) throws XMLStreamException, XMLStreamException {
+        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(stream);
+        Map<String, Class<?>> existingClasses = new HashMap<String, Class<?>>();
+
+        String pluginIdentifier = null;
+
+        while (reader.hasNext() && reader.next() > 0) {
+            if (isTagStarted(reader, TAG_MODELS)) {
+                pluginIdentifier = getPluginIdentifier(reader);
+            } else if (isTagStarted(reader, TAG_MODEL)) {
+                String modelName = getStringAttribute(reader, "name");
+                String className = ClassNameUtils.getFullyQualifiedClassName(pluginIdentifier, modelName);
+
+                try {
+                    existingClasses.put(className, ClassLoader.getSystemClassLoader().loadClass(className));
+                    LOG.info("Class " + className + " already exists, skipping");
+                } catch (ClassNotFoundException e) {
+                    // ignoring
+                }
+            }
+        }
+
+        reader.close();
+
+        return existingClasses;
+    }
+
+    private Map<String, CtClass> createClasses(final Map<String, Class<?>> existingClasses, final InputStream stream)
+            throws XMLStreamException, XMLStreamException {
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(stream);
         Map<String, CtClass> ctClasses = new HashMap<String, CtClass>();
 
@@ -90,10 +127,9 @@ public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter impl
                 String modelName = getStringAttribute(reader, "name");
                 String className = ClassNameUtils.getFullyQualifiedClassName(pluginIdentifier, modelName);
 
-                try {
-                    classPool.get(className);
+                if (existingClasses.containsKey(className)) {
                     LOG.info("Class " + className + " already exists, skipping");
-                } catch (NotFoundException e) {
+                } else {
                     LOG.info("Creating class " + className);
                     ctClasses.put(className, classPool.makeClass(className));
                 }

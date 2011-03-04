@@ -37,8 +37,6 @@ public class ModelXmlToClassConverterTest {
                 .getFullyQualifiedClassName("full", "firstEntity")))) {
             propertyDescriptors.put(propertyDescriptor.getName(), propertyDescriptor);
         }
-
-        System.out.println(propertyDescriptors);
     }
 
     @Test

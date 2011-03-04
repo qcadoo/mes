@@ -239,6 +239,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         // given
         Entity entity = new DefaultEntity(dataDefinition, null, Collections.singletonMap("name", (Object) "text"));
         Entity savedEntity = new DefaultEntity(dataDefinition, 13L, Collections.singletonMap("name", (Object) "text2"));
+        given(dataDefinition.create(null)).willReturn(new DefaultEntity(dataDefinition));
         given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
         name.setFieldValue("text");
 
@@ -278,6 +279,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         // given
         Entity entity = new DefaultEntity(dataDefinition, 13L, Collections.singletonMap("name", (Object) "text2"));
         Entity savedEntity = new DefaultEntity(dataDefinition, 13L, Collections.singletonMap("name", (Object) "text2"));
+        given(dataDefinition.create(13L)).willReturn(new DefaultEntity(dataDefinition, 13L));
         given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
         given(dataDefinition.getFields().keySet()).willReturn(Collections.singleton("name"));
         name.setFieldValue("text");
@@ -314,6 +316,7 @@ public class FormComponentStateTest extends AbstractStateTest {
 
         given(translationService.translate(eq("global.error"), any(Locale.class))).willReturn("translated global error");
         given(translationService.translate(eq("field.error"), any(Locale.class))).willReturn("translated field error");
+        given(dataDefinition.create(null)).willReturn(new DefaultEntity(dataDefinition));
         given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
         name.setFieldValue("text");
 

@@ -67,14 +67,11 @@ public class GenealogyAttributeServiceTest {
     @Test
     public void shouldReturnNewGenealogyAttributeId() throws Exception {
         // given
+        Entity newEntity = mock(Entity.class);
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         given(dataDefinitionService.get("genealogies", "currentAttribute")).willReturn(dataDefinition);
-
-        Entity newEntity = new DefaultEntity(dataDefinition);
-        newEntity.setField("shift", "");
-        newEntity.setField("post", "");
-        newEntity.setField("other", "");
+        given(dataDefinition.create()).willReturn(newEntity);
 
         Entity savedEntity = new DefaultEntity(dataDefinition, 15L);
 
@@ -89,6 +86,9 @@ public class GenealogyAttributeServiceTest {
 
         // then
         verify(dataDefinitionService.get("genealogies", "currentAttribute")).save(newEntity);
+        verify(newEntity).setField("shift", "");
+        verify(newEntity).setField("post", "");
+        verify(newEntity).setField("other", "");
         assertEquals(Long.valueOf(15L), id);
     }
 }
