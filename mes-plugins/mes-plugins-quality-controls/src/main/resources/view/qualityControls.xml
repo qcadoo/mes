@@ -144,6 +144,10 @@
 
 						this.addOnChangeListener({
 							onSetValue: function(value) {
+								if (! value.content || ! value.content.entityId) {
+									return;
+								}
+							
 								var closed = #{closed}.getValue().content.value;
 								if (closed && closed == false) {
 									qualityControlStatus.enable();
