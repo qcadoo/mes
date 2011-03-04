@@ -50,9 +50,9 @@ QCD.utils.Modal.createModal = function() {
 			this.dialog.jqmShow();
 			QCD.components.elements.utils.LoadingIndicator.blockElement(this.dialog);
 			this.iframe.load(function() {
+				iframe.show();
 				onLoadFunction.call(this);
 				QCD.components.elements.utils.LoadingIndicator.unblockElement(dialog);
-				iframe.show();
 			});
 			this.iframe.attr("src", src);
 		},

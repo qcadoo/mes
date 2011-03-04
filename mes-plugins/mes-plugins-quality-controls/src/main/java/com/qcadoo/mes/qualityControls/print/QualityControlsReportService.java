@@ -296,16 +296,16 @@ public class QualityControlsReportService {
         Paragraph title = new Paragraph();
 
         if (type.equals("batch")) {
-            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah1", locale), PdfUtil
-                    .getArialBold11Light()));
-        } else if (type.equals("order")) {
-            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah2", locale), PdfUtil
-                    .getArialBold11Light()));
-        } else if (type.equals("unit")) {
             title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah3", locale), PdfUtil
                     .getArialBold11Light()));
-        } else if (type.equals("operation")) {
+        } else if (type.equals("order")) {
             title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah4", locale), PdfUtil
+                    .getArialBold11Light()));
+        } else if (type.equals("unit")) {
+            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah5", locale), PdfUtil
+                    .getArialBold11Light()));
+        } else if (type.equals("operation")) {
+            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah6", locale), PdfUtil
                     .getArialBold11Light()));
         }
 

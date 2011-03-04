@@ -378,7 +378,8 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 		} else {
 			headerElements.filterButton.addClass("headerButtonActive");
 			headerElements.filterButton.label.html(translations.removeFilterButton);
-			headerElements.clearFilterButton.show();
+//			headerElements.clearFilterButton.show();
+			headerElements.clearFilterButton.css("display","inline-block");
 		}
 		gridController.onFilterButtonClicked();
 	}
@@ -398,7 +399,8 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 	this.setFilterActive = function() {
 		headerElements.filterButton.addClass("headerButtonActive");
 		headerElements.filterButton.label.html(translations.removeFilterButton);
-		headerElements.clearFilterButton.show();
+//		headerElements.clearFilterButton.show();
+		headerElements.clearFilterButton.css("display","inline-block");
 	}
 	
 	this.setFilterNotActive = function() {
