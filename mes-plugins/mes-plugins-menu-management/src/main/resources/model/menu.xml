@@ -27,44 +27,26 @@
 
 <models plugin="menu" xmlns="http://www.qcadoo.com/model">
 	<model name="menuCategory">
-		<string name="name" >
-			<validatesPresence />
-			<validatesUniqueness />
-		</string>
-		<boolean name="active" readonly="false" default="true">
-			<validatesPresence />
-		</boolean>
+		<string name="name" required="true" unique="true" />
+		<boolean name="active" readonly="false" default="true" required="true" />
 		<string name="translationName" />
 		<hasMany name="viewDefinitionItems" model="menuViewDefinitionItem" joinField="menuCategory" cascade="delete" />
 		<priority name="categoryOrder" />
 	</model>
 	
 	<model name="menuViewDefinitionItem">
-		<string name="name" >
-			<validatesPresence />
-			<validatesUniqueness />
-		</string>
+		<string name="name" required="true" unique="true" />
 		<boolean name="active" readonly="false" default="true" />
 		<string name="translationName" />
-		<belongsTo name="menuCategory" model="menuCategory" lazy="false">
-			<validatesPresence /> 
-		</belongsTo>
-		<belongsTo name="viewDefinition" model="viewDefinition" lazy="false">
-			<validatesPresence /> 
-		</belongsTo>
+		<belongsTo name="menuCategory" model="menuCategory" lazy="false" required="true" />
+		<belongsTo name="viewDefinition" model="viewDefinition" lazy="false" required="true" />
 		<priority name="itemOrder" scope="menuCategory" />
 	</model>
 	
 	<model name="viewDefinition">
-		<string name="menuName" >
-			<validatesPresence />
-		</string>
-		<string name="viewName" >
-			<validatesPresence />
-		</string>
-		<string name="pluginIdentifier" >
-			<validatesPresence />
-		</string>
+		<string name="menuName" required="true" />
+		<string name="viewName" required="true" />
+		<string name="pluginIdentifier" required="true" />
 		<boolean name="url"/>
 		<hasMany name="menuViewDefinitionItems" model="menuViewDefinitionItem" joinField="viewDefinition" cascade="delete" />
 	</model>

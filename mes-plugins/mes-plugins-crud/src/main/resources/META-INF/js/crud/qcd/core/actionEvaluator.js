@@ -53,7 +53,7 @@ QCD.ActionEvaluator = function(_pageController) {
 		var referencePatternRegexp = /#\{[^\}]+\}/g;
 		var referencePatternMatches = jsBody.match(referencePatternRegexp);
 		
-		for (var i in referencePatternMatches) {
+		for(var i = 0; i < referencePatternMatches.length; i++) { 
 			var referencePattern = referencePatternMatches[i];
 			referenceName = referencePattern.substring(2, referencePattern.length-1);
 			if (! referenceObject[referenceName]) {
@@ -73,7 +73,7 @@ QCD.ActionEvaluator = function(_pageController) {
 		
 		var thisPatternRegexp = /\Wthis\W/g;
 		var thisPatternMatches = jsBody.match(thisPatternRegexp);
-		for (var i in thisPatternMatches) {
+		for(var i = 0; i < thisPatternMatches.length; i++) { 
 			var thisPattern = thisPatternMatches[i];
 			jsBody = jsBody.replace(thisPattern, thisPattern[0]+"thisObject"+thisPattern[thisPattern.length-1]);
 		}
@@ -112,14 +112,15 @@ QCD.ActionEvaluator = function(_pageController) {
 				var argumentsEnd = elementAction.indexOf(")");
 				var argumentsList = new Array();
 				
-				//(argumentsBegin < argumentsEnd-1) because it then means that there are no arguments
-				//and only empty parenthesis ()
+				// (argumentsBegin < argumentsEnd-1) because it then means that
+				// there are no arguments
+				// and only empty parenthesis ()
 				if(argumentsBegin > 0 && argumentsEnd > 0 && argumentsBegin < argumentsEnd-1) {
 					var args = elementAction.substring(argumentsBegin+1, argumentsEnd);
 					argumentsList = args.split(",");
 					elementAction = elementAction.substring(0, argumentsBegin);
 				} else if(argumentsBegin == argumentsEnd-1) {
-					//we need to get rid of the empty parenthesis
+					// we need to get rid of the empty parenthesis
 					elementAction = elementAction.substring(0, argumentsBegin);
 				}
 

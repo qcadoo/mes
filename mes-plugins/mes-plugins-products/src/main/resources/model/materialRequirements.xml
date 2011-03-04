@@ -27,8 +27,7 @@
 
 <models plugin="products" xmlns="http://www.qcadoo.com/model">
 	<model name="materialRequirement">	
-		<string name="name">
-			<validatesPresence />
+		<string name="name" required="true">
 			<validatesLength max="255"/>
 		</string>
 		<datetime name="date" />
@@ -37,18 +36,14 @@
 		<boolean name="generated" />
 		<string name="fileName" />
 		<hasMany name="orders" model="materialRequirementComponent" joinField="materialRequirement" cascade="delete" copyable="true" />
-		<copiesWith class="com.qcadoo.mes.products.MaterialRequirementService" method="clearGeneratedOnCopy" />
-		<toStringExpression expression="#name"/>
+		<onCopy class="com.qcadoo.mes.products.MaterialRequirementService" method="clearGeneratedOnCopy" />
+		<toString expression="#name"/>
 	</model>
 	<model name="materialRequirementComponent">	
-		<belongsTo name="materialRequirement" model="materialRequirement" lazy="false">
-			<validatesPresence /> 
-		</belongsTo>
-		<belongsTo name="order" model="order" lazy="false">
-			<validatesPresence /> 
-		</belongsTo>
+		<belongsTo name="materialRequirement" model="materialRequirement" lazy="false" required="true" />
+		<belongsTo name="order" model="order" lazy="false" required="true" />
 		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
 		<validatesWith class="com.qcadoo.mes.products.MaterialRequirementService" method="checkMaterialRequirementComponentUniqueness" />
-		<toStringExpression expression="#order['number'] + ' - ' + #order['name']"/>		
+		<toString expression="#order['number'] + ' - ' + #order['name']"/>		
 	</model>	
 </models>

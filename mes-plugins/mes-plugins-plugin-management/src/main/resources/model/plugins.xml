@@ -26,28 +26,13 @@
 -->
 
 <models plugin="plugins" xmlns="http://www.qcadoo.com/model">
-	<model name="plugin" class="com.qcadoo.mes.beans.plugins.PluginsPlugin">
-		<string name="name" readonly="true" >
-			<!-- TODO validatesPresenceOnCreate -->
-			<validatesPresence />
-		</string>
+	<model name="plugin">
+		<string name="name" readonly="true" required="true" /><!-- TODO validatesPresenceOnCreate -->
 		<string name="description" readonly="true" />
-		<string name="vendor" readonly="true" >
-			<!-- TODO validatesPresenceOnCreate -->
-			<validatesPresence />
-		</string>
-		<string name="version" readonly="true" >
-			<!-- TODO validatesPresenceOnCreate -->
-			<validatesPresence />
-		</string>
-		<enum name="status" values="01downloaded,02installed,03active">
-			<!-- TODO validatesPresenceOnCreate -->
-			<validatesPresence />
-		</enum>
-		<boolean name="base" readonly="true">
-			<!-- TODO validatesPresenceOnCreate -->
-			<validatesPresence />
-		</boolean>
+		<string name="vendor" readonly="true" required="true" /><!-- TODO validatesPresenceOnCreate -->
+		<string name="version" readonly="true" required="true" /><!-- TODO validatesPresenceOnCreate -->
+		<enum name="status" values="01downloaded,02installed,03active" required="true" /><!-- TODO validatesPresenceOnCreate -->
+		<boolean name="base" readonly="true" required="true" /><!-- TODO validatesPresenceOnCreate -->
 		<string name="identifier" readonly="true" />
 		<string name="packageName" readonly="true" />
 		<string name="fileName" readonly="true" />

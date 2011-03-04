@@ -26,28 +26,18 @@
 -->
 
 <models plugin="dictionaries" xmlns="http://www.qcadoo.com/model">
-	<model name="dictionary" deletable="false" class="com.qcadoo.model.internal.dictionaries.DictionariesDictionary">
-		<string name="name" >
-			<validatesPresence />
-			<validatesUniqueness />
-		</string>
-		<string name="label" >
-			<validatesPresence />
-			<validatesUniqueness />
-		</string>
+	<model name="dictionary" deletable="false">
+		<string name="name" required="true" unique="true" />
+		<string name="label" required="true" unique="true" />
 		<hasMany name="dictionaryItems" model="dictionaryItem" joinField="dictionary" cascade="delete" />
 	</model>
-	<model name="dictionaryItem" class="com.qcadoo.model.internal.dictionaries.DictionariesDictionaryItem">
-		<string name="name" >
-			<validatesPresence />
-			<validatesUniqueness />
+	<model name="dictionaryItem">
+		<string name="name" required="true" unique="true">
 			<validatesLength max="40"/>
 		</string>
 		<string name="description" >
 			<validatesLength max="255"/>
 		</string>
-		<belongsTo name="dictionary" model="dictionary">
-			<validatesPresence />
-		</belongsTo>
+		<belongsTo name="dictionary" model="dictionary" required="true" />
 	</model>
 </models>

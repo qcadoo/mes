@@ -27,14 +27,10 @@
 
 <models plugin="products" xmlns="http://www.qcadoo.com/model">
 	<model name="operation">
-		<string name="number">
-			<validatesPresence/>
-			<validatesUniqueness/>
+		<string name="number" required="true" unique="true">
 			<validatesLength max="255"/>
 		</string>
-		<string name="name">
-			<validatesPresence/>
-			<validatesUniqueness/>		
+		<string name="name" required="true" unique="true">
 			<validatesLength max="2048"/>
 		</string>
 		<string name="comment">	
@@ -43,20 +39,14 @@
 		<belongsTo name="staff" plugin="basic" model="staff" lazy="false" />
 		<belongsTo name="machine" plugin="basic" model="machine" lazy="false" />
 		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="operation" cascade="none" />
-		<toStringExpression expression="#number + ' - ' + #name"/>
+		<toString expression="#number + ' - ' + #name"/>
 	</model>
 	<model name="technology">
-		<string name="number">
-			<validatesPresence />
-			<validatesUniqueness />
+		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
 		</string>
-		<string name="name">
-			<validatesPresence />
-		</string>
-		<belongsTo name="product" model="product" lazy="false">
-			<validatesPresence /> 
-		</belongsTo>
+		<string name="name" required="true" />
+		<belongsTo name="product" model="product" lazy="false" required="true" />
 		<boolean name="master" default="true" />
 		<string name="description" />
 		<boolean name="batchRequired" />
@@ -64,9 +54,7 @@
 		<boolean name="postFeatureRequired" />
 		<boolean name="otherFeatureRequired" />
 		<boolean name="componentQuantityAlgorithm" />
-		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology" default="01perProductOut">
-			<validatesPresence />
-		</enum>
+		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology" default="01perProductOut" required="true" />
 		<enum name="qualityControlType" values="01forBatch,02forUnit,03forOrder,04forOperation" />
 		<decimal name="unitSamplingNr" />
 		<string name="qualityControlInstruction">
@@ -77,58 +65,42 @@
 		<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="checkTechnologyDefault" />
 		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 		<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="checkIfUnitSampligNrIsReq" />
-		<copiesWith class="com.qcadoo.mes.products.TechnologyService" method="clearMasterOnCopy" />
-		<savesWith class="com.qcadoo.mes.products.TechnologyService" method="setFirstTechnologyAsDefault" />
-		<toStringExpression expression="#number + ' - ' + #name"/>
+		<onCopy class="com.qcadoo.mes.products.TechnologyService" method="clearMasterOnCopy" />
+		<onSave class="com.qcadoo.mes.products.TechnologyService" method="setFirstTechnologyAsDefault" />
+		<toString expression="#number + ' - ' + #name"/>
 	</model>
 	<model name="technologyOperationComponent">
 		<boolean name="qualityControlRequired" />
-		<belongsTo name="technology" model="technology">
-			<validatesPresence /> 
-		</belongsTo>
+		<belongsTo name="technology" model="technology" required="true" />
 		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" copyable="true" />
 		<belongsTo name="parent" model="technologyOperationComponent" />
-		<enum name="entityType" values="operation,referenceTechnology">
-			<validatesPresence /> 
-		</enum>
-			<!-- operation -->
+		<enum name="entityType" values="operation,referenceTechnology" required="true" />
 		<belongsTo name="operation" model="operation" />
 		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="operationComponent" cascade="delete" copyable="true" />
 		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="operationComponent" cascade="delete" copyable="true" />
-			<!-- technology -->
 		<belongsTo name="referenceTechnology" model="technology" />
 		<enum name="referenceMode" values="01reference,02copy" default="01reference" persistent="false" />
 		<priority name="priority" scope="parent" />
 		<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="validateTechnologyOperationComponent" />
 		<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="copyReferencedTechnology" />
-		<savesWith class="com.qcadoo.mes.products.TechnologyService" method="setQualityControlTypeForTechnology" />
+		<onSave class="com.qcadoo.mes.products.TechnologyService" method="setQualityControlTypeForTechnology" />
 	</model>
 	<model name="operationProductInComponent">
-		<belongsTo name="operationComponent" model="technologyOperationComponent">
-			<validatesPresence /> 
-		</belongsTo>
-		<belongsTo name="product" model="product">
-			<validatesPresence /> 
-		</belongsTo>
-		<decimal name="quantity">
-			<validatesPresence />
+		<belongsTo name="operationComponent" model="technologyOperationComponent" required="true" />
+		<belongsTo name="product" model="product" required="true" />
+		<decimal name="quantity" required="true">
 			<validatesRange from="0" exclusively="true" />
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
 		</decimal>
 		<boolean name="batchRequired" />
 		<hasMany name="genealogyProductInComponents" plugin="genealogies" model="genealogyProductInComponent" joinField="productInComponent" cascade="delete"/>
-		<savesWith class="com.qcadoo.mes.products.TechnologyService" method="fillBatchRequiredForTechnology" />
+		<onSave class="com.qcadoo.mes.products.TechnologyService" method="fillBatchRequiredForTechnology" />
 	</model>
 	<model name="operationProductOutComponent">
-		<belongsTo name="operationComponent" model="technologyOperationComponent">
-			<validatesPresence /> 
-		</belongsTo>
-		<belongsTo name="product" model="product">
-			<validatesPresence /> 
-		</belongsTo>
-		<decimal name="quantity">
-			<validatesPresence />
+		<belongsTo name="operationComponent" model="technologyOperationComponent" required="true" />
+		<belongsTo name="product" model="product" required="true" />
+		<decimal name="quantity" required="true">
 			<validatesRange from="0" exclusively="true" />
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />

@@ -26,15 +26,11 @@
 -->
 
 <models plugin="users" xmlns="http://www.qcadoo.com/model">
-	<model name="user" class="com.qcadoo.mes.beans.users.UsersUser">
-		<string name="userName" >
-			<validatesPresence />
-			<validatesUniqueness />
-			<validatesRegex regex="^[a-zA-Z0-9\\.]+$" message="users.validate.global.error.loginIllegalCharacters" />
+	<model name="user">
+		<string name="userName" required="true" unique="true">
+			<validatesRegex pattern="^[a-zA-Z0-9\\.]+$" message="users.validate.global.error.loginIllegalCharacters" />
 		</string>
-		<belongsTo name="userGroup" model="group" lazy="false">
-			<validatesPresence />
-		</belongsTo>
+		<belongsTo name="userGroup" model="group" lazy="false" required="true" />
 		<string name="email" />
 		<string name="firstName" />
 		<string name="lastName" />
@@ -42,30 +38,17 @@
 			<validatesLength max="255"/>
 		</string>
 		<string name="email" />
-		<password name="password">
-			<!-- TODO validatesPresenceOnCreate -->
-			<validatesPresence />
-		</password>
-		<password name="passwordConfirmation" persistent="false">
-			<!-- TODO validatesPresenceOnCreate -->
-			<validatesPresence />
-		</password>
+		<password name="password" required="true" /><!-- TODO validatesPresenceOnCreate -->
+		<password name="passwordConfirmation" persistent="false" required="true" /><!-- TODO validatesPresenceOnCreate -->
 		<password name="oldPassword" persistent="false" />
 		<string name="viewIdentifier" persistent="false" />
 		<validatesWith class="com.qcadoo.mes.users.UserService" method="checkPassword" />
-		<toStringExpression expression="#userName"/>
+		<toString expression="#userName"/>
 	</model>
-	<model name="group" class="com.qcadoo.mes.beans.users.UsersGroup">
-		<string name="name" readonly="true">
-			<!-- TODO validatesPresenceOnCreate -->
-			<validatesPresence />
-			<validatesUniqueness />
-		</string>
+	<model name="group">
+		<string name="name" readonly="true" required="true" unique="true" /><!-- TODO validatesPresenceOnCreate -->
 		<string name="description" />
-		<string name="role" readonly="true">
-			<!-- TODO validatesPresenceOnCreate -->
-			<validatesPresence />
-		</string>
-		<toStringExpression expression="#name"/>
+		<string name="role" readonly="true" required="true" /><!-- TODO validatesPresenceOnCreate -->
+		<toString expression="#name"/>
 	</model>
 </models>

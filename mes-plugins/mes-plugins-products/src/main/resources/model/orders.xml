@@ -27,24 +27,14 @@
 
 <models plugin="products" xmlns="http://www.qcadoo.com/model">
 	<model name="order">
-		<string name="number">
-			<validatesPresence />
-			<validatesUniqueness />
+		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
-			<validatesRegex regex="^[a-zA-Z0-9\\_\\.\\(\\)]+$" />
+			<validatesRegex pattern="^[a-zA-Z0-9\\_\\.\\(\\)]+$" />
 		</string>
-		<string name="name">
-			<validatesPresence />
-		</string>
-		<date name="dateFrom">
-			<validatesPresence />
-		</date>
-		<date name="dateTo">
-			<validatesPresence />
-		</date>
-		<enum name="state" values="01pending,02inProgress,03done">
-			<validatesPresence />
-		</enum>
+		<string name="name" required="true" />
+		<date name="dateFrom" required="true" />
+		<date name="dateTo" required="true" />
+		<enum name="state" values="01pending,02inProgress,03done" required="true" />
 		<belongsTo name="product" model="product" />
 		<string name="defaultTechnology" persistent="false" />
 		<belongsTo name="technology" model="technology" />
@@ -70,8 +60,8 @@
 		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkOrderTechnology" />
 		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfTechnologyIsNotRemoved" />
-		<savesWith class="com.qcadoo.mes.products.OrderService" method="fillOrderDatesAndWorkers" />
-		<savesWith class="com.qcadoo.mes.products.OrderService" method="clearOrderDatesAndWorkersOnCopy" />
-		<toStringExpression expression="#number + ' - ' + #name"/>
+		<onCopy class="com.qcadoo.mes.products.OrderService" method="fillOrderDatesAndWorkers" />
+		<onCopy class="com.qcadoo.mes.products.OrderService" method="clearOrderDatesAndWorkersOnCopy" />
+		<toString expression="#number + ' - ' + #name"/>
 	</model>	
 </models>
