@@ -45,14 +45,10 @@ import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.NumberGeneratorService;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
@@ -63,6 +59,10 @@ import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 import com.qcadoo.mes.view.components.select.SelectComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ FormComponentState.class, SelectComponentState.class, GridComponentState.class, LookupComponentState.class })
@@ -361,8 +361,10 @@ public class QualityControlServiceTest {
     @Test
     public void shouldGenerateQualityControlForBatch() {
         // given
+        DataDefinition genealogyDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+
         List<Entity> genealogies = new ArrayList<Entity>();
-        Entity genealogy = new DefaultEntity("genealogies", "genealogy");
+        Entity genealogy = new DefaultEntity(genealogyDataDefinition);
         genealogy.setField("batch", "1");
         genealogies.add(genealogy);
 
@@ -370,7 +372,6 @@ public class QualityControlServiceTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
         DataDefinition orderDataDefinition = mock(DataDefinition.class);
-        DataDefinition genealogyDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         DataDefinition qualityForBatchDataDefinition = mock(DataDefinition.class);
 
         Entity order = mock(Entity.class);
@@ -522,13 +523,14 @@ public class QualityControlServiceTest {
         LookupComponentState state = mock(LookupComponentState.class);
         FieldComponentState controlInstruction = mock(FieldComponentState.class);
         DataDefinition orderDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        DataDefinition technologyDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         SearchCriteriaBuilder searchCriteria = mock(SearchCriteriaBuilder.class, RETURNS_DEEP_STUBS);
 
-        Entity technology = new DefaultEntity("products", "technology");
+        Entity technology = new DefaultEntity(technologyDD);
         technology.setField("qualityControlInstruction", "test");
 
         List<Entity> orders = new ArrayList<Entity>();
-        Entity genealogy = new DefaultEntity("products", "order");
+        Entity genealogy = new DefaultEntity(orderDD);
         genealogy.setField("technology", technology);
         orders.add(genealogy);
 

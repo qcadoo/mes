@@ -36,9 +36,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 public class GenealogyAttributeServiceTest {
 
@@ -46,8 +47,8 @@ public class GenealogyAttributeServiceTest {
     public void shouldReturnExistingGenealogyAttributeId() throws Exception {
         // given
         List<Entity> entities = new ArrayList<Entity>();
-        entities.add(new DefaultEntity("", "", 13L));
-        entities.add(new DefaultEntity("", "", 14L));
+        entities.add(new DefaultEntity(null, 13L));
+        entities.add(new DefaultEntity(null, 14L));
 
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
@@ -66,17 +67,19 @@ public class GenealogyAttributeServiceTest {
     @Test
     public void shouldReturnNewGenealogyAttributeId() throws Exception {
         // given
-        Entity newEntity = new DefaultEntity("genealogies", "currentAttribute");
+        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
+        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        given(dataDefinitionService.get("genealogies", "currentAttribute")).willReturn(dataDefinition);
+
+        Entity newEntity = new DefaultEntity(dataDefinition);
         newEntity.setField("shift", "");
         newEntity.setField("post", "");
         newEntity.setField("other", "");
 
-        Entity savedEntity = new DefaultEntity("genealogies", "currentAttribute", 15L);
+        Entity savedEntity = new DefaultEntity(dataDefinition, 15L);
 
-        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
-                .willReturn(new ArrayList<Entity>());
-        given(dataDefinitionService.get("genealogies", "currentAttribute").save(newEntity)).willReturn(savedEntity);
+        given(dataDefinition.find().withMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
+        given(dataDefinition.save(newEntity)).willReturn(savedEntity);
 
         GenealogyAttributeService genealogyAttributeService = new GenealogyAttributeService();
         setField(genealogyAttributeService, "dataDefinitionService", dataDefinitionService);
@@ -88,5 +91,4 @@ public class GenealogyAttributeServiceTest {
         verify(dataDefinitionService.get("genealogies", "currentAttribute")).save(newEntity);
         assertEquals(Long.valueOf(15L), id);
     }
-
 }

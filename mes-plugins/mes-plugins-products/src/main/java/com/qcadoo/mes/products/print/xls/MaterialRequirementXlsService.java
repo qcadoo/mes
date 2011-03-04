@@ -36,11 +36,11 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.xls.XlsUtil;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public final class MaterialRequirementXlsService extends XlsDocumentService {

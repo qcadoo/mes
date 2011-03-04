@@ -32,15 +32,14 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.EntityTree;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.awesomeDynamicList.AwesomeDynamicListState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public final class GenealogyService {
@@ -165,7 +164,7 @@ public final class GenealogyService {
                 return e;
             }
         }
-        Entity genealogyProductInComponent = new DefaultEntity("genealogies", "genealogyProductInComponent");
+        Entity genealogyProductInComponent = dataDefinitionService.get("genealogies", "genealogyProductInComponent").create();
         genealogyProductInComponent.setField("genealogy", genealogy);
         genealogyProductInComponent.setField("productInComponent", operationProductInComponent);
         genealogyProductInComponent.setField("batch", new ArrayList<Entity>());

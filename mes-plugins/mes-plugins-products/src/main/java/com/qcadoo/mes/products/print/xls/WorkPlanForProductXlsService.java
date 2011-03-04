@@ -35,10 +35,10 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityOperationNumberComparator;
 import com.qcadoo.mes.utils.xls.XlsUtil;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public final class WorkPlanForProductXlsService extends XlsDocumentService {

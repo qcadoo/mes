@@ -53,20 +53,20 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.EntityList;
 import com.qcadoo.mes.internal.EntityTree;
-import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ FormComponentState.class, GenealogyService.class, TransactionAspectSupport.class })
@@ -675,9 +675,10 @@ public class AutoGenealogyServiceTest {
     @Test
     public void shouldFillLastUsedShiftFeature() {
         // given
-        Entity entity = new DefaultEntity("test", "entity");
-
         DataDefinition dataDefinition = mock(DataDefinition.class);
+
+        Entity entity = new DefaultEntity(dataDefinition);
+
         Entity feature = mock(Entity.class);
         List<Entity> featureEntities = new ArrayList<Entity>();
         featureEntities.add(feature);
@@ -699,9 +700,9 @@ public class AutoGenealogyServiceTest {
     @Test
     public void shouldFailFillLastUsedShiftFeature() {
         // given
-        Entity entity = new DefaultEntity("test", "entity");
-
         DataDefinition dataDefinition = mock(DataDefinition.class);
+
+        Entity entity = new DefaultEntity(dataDefinition);
 
         given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
                 .willReturn(new ArrayList<Entity>());
@@ -716,9 +717,9 @@ public class AutoGenealogyServiceTest {
     @Test
     public void shouldFillLastUsedOtherFeature() {
         // given
-        Entity entity = new DefaultEntity("test", "entity");
-
         DataDefinition dataDefinition = mock(DataDefinition.class);
+
+        Entity entity = new DefaultEntity(dataDefinition);
         Entity feature = mock(Entity.class);
         List<Entity> featureEntities = new ArrayList<Entity>();
         featureEntities.add(feature);
@@ -740,9 +741,9 @@ public class AutoGenealogyServiceTest {
     @Test
     public void shouldFailFillLastUsedOtherFeature() {
         // given
-        Entity entity = new DefaultEntity("test", "entity");
-
         DataDefinition dataDefinition = mock(DataDefinition.class);
+
+        Entity entity = new DefaultEntity(dataDefinition);
 
         given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
                 .willReturn(new ArrayList<Entity>());
@@ -757,9 +758,9 @@ public class AutoGenealogyServiceTest {
     @Test
     public void shouldFillLastUsedPostFeature() {
         // given
-        Entity entity = new DefaultEntity("test", "entity");
-
         DataDefinition dataDefinition = mock(DataDefinition.class);
+
+        Entity entity = new DefaultEntity(dataDefinition);
         Entity feature = mock(Entity.class);
         List<Entity> featureEntities = new ArrayList<Entity>();
         featureEntities.add(feature);
@@ -781,9 +782,9 @@ public class AutoGenealogyServiceTest {
     @Test
     public void shouldFailFillLastUsedPostFeature() {
         // given
-        Entity entity = new DefaultEntity("test", "entity");
-
         DataDefinition dataDefinition = mock(DataDefinition.class);
+
+        Entity entity = new DefaultEntity(dataDefinition);
 
         given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
                 .willReturn(new ArrayList<Entity>());
@@ -849,9 +850,9 @@ public class AutoGenealogyServiceTest {
     }
 
     private Entity createOperationProductInComponent(final Long id, final boolean batchRequired, final boolean withoutBatch) {
-        Entity operationProductInComponent = new DefaultEntity("products", "operationProductInComponent", id);
+        Entity operationProductInComponent = dataDefinitionService.get("products", "operationProductInComponent").create(id);
         operationProductInComponent.setField("batchRequired", batchRequired);
-        Entity product = new DefaultEntity("products", "product", id);
+        Entity product = dataDefinitionService.get("products", "product").create(id);
         product.setField("name", "name" + id);
         product.setField("number", "number" + id);
         if (!withoutBatch) {
@@ -864,7 +865,7 @@ public class AutoGenealogyServiceTest {
 
     private List<Entity> getCurrentAttribute() {
         List<Entity> list = new ArrayList<Entity>();
-        Entity currentAttribute = new DefaultEntity("genealogies", "currentAttribute");
+        Entity currentAttribute = dataDefinitionService.get("genealogies", "currentAttribute").create();
         currentAttribute.setField("shift", "test");
         currentAttribute.setField("post", "test");
         currentAttribute.setField("other", "test");
@@ -877,7 +878,7 @@ public class AutoGenealogyServiceTest {
 
     private List<Entity> getParameter(final String value) {
         List<Entity> list = new ArrayList<Entity>();
-        Entity currentAttribute = new DefaultEntity("basic", "parameter");
+        Entity currentAttribute = dataDefinitionService.get("basic", "parameter").create();
         currentAttribute.setField("batchForDoneOrder", value);
         list.add(currentAttribute);
         return list;

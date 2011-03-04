@@ -44,18 +44,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.EntityList;
 import com.qcadoo.mes.internal.EntityTree;
-import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.awesomeDynamicList.AwesomeDynamicListState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 public class GenealogyServiceTest {
 
@@ -482,13 +481,13 @@ public class GenealogyServiceTest {
     }
 
     private Entity craeteGenealogyProductInComponent(final Long id, final Entity operationProductInComponent) {
-        Entity genealogyProductInComponent = new DefaultEntity("genealogies", "genealogyProductInComponent", id);
+        Entity genealogyProductInComponent = dataDefinitionService.get("genealogies", "genealogyProductInComponent").create(id);
         genealogyProductInComponent.setField("productInComponent", operationProductInComponent);
         return genealogyProductInComponent;
     }
 
     private Entity craeteOperationProductInComponent(final Long id, final boolean batchRequired) {
-        Entity operationProductInComponent = new DefaultEntity("genealogies", "genealogyProductInComponent", id);
+        Entity operationProductInComponent = dataDefinitionService.get("genealogies", "genealogyProductInComponent").get(id);
         operationProductInComponent.setField("batchRequired", batchRequired);
         return operationProductInComponent;
     }

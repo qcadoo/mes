@@ -36,11 +36,11 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
 import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.xls.ReportXlsView;
 import com.qcadoo.mes.utils.xls.XlsUtil;
+import com.qcadoo.model.api.Entity;
 
 public class QualityControlForOrderXlsView extends ReportXlsView {
 

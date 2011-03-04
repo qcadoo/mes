@@ -36,9 +36,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 public class ParameterServiceTest {
 
@@ -46,8 +47,8 @@ public class ParameterServiceTest {
     public void shouldReturnExistingGenealogyAttributeId() throws Exception {
         // given
         List<Entity> entities = new ArrayList<Entity>();
-        entities.add(new DefaultEntity("", "", 13L));
-        entities.add(new DefaultEntity("", "", 14L));
+        entities.add(new DefaultEntity(null, 13L));
+        entities.add(new DefaultEntity(null, 14L));
 
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(entities);
@@ -65,16 +66,18 @@ public class ParameterServiceTest {
     @Test
     public void shouldReturnNewGenealogyAttributeId() throws Exception {
         // given
-        Entity newEntity = new DefaultEntity("basic", "parameter");
-        newEntity.setField("checkDoneOrderForQuality", false);
-        newEntity.setField("batchForDoneOrder", "01none");
+        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
 
-        Entity savedEntity = new DefaultEntity("basic", "parameter", 15L);
+        Entity newEntity = mock(Entity.class);
 
-        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
-        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
-                new ArrayList<Entity>());
-        given(dataDefinitionService.get("basic", "parameter").save(newEntity)).willReturn(savedEntity);
+        given(dataDefinitionService.get("basic", "parameter")).willReturn(dataDefinition);
+        given(dataDefinition.create()).willReturn(newEntity);
+
+        Entity savedEntity = new DefaultEntity(dataDefinition, 15L);
+
+        given(dataDefinition.find().withMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
+        given(dataDefinition.save(newEntity)).willReturn(savedEntity);
 
         ParameterService parameterService = new ParameterService();
         setField(parameterService, "dataDefinitionService", dataDefinitionService);
@@ -83,7 +86,9 @@ public class ParameterServiceTest {
         Long id = parameterService.getParameterId();
 
         // then
-        verify(dataDefinitionService.get("basic", "parameter")).save(newEntity);
+        verify(dataDefinition).save(newEntity);
+        verify(newEntity).setField("checkDoneOrderForQuality", false);
+        verify(newEntity).setField("batchForDoneOrder", "01none");
         assertEquals(Long.valueOf(15L), id);
     }
 

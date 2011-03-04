@@ -36,19 +36,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchResult;
-import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 @Service
 public class AutoGenealogyService {
@@ -210,10 +209,10 @@ public class AutoGenealogyService {
                     + " " + mainBatch, MessageType.INFO);
             return;
         }
-        Entity genealogy = new DefaultEntity("genealogies", "genealogy");
+        DataDefinition genealogyDef = dataDefinitionService.get("genealogies", "genealogy");
+        Entity genealogy = genealogyDef.create();
         genealogy.setField("order", order);
         genealogy.setField("batch", mainBatch);
-        DataDefinition genealogyDef = dataDefinitionService.get("genealogies", "genealogy");
         completeAttributesForGenealogy(technology, genealogy, lastUsedMode);
         completeBatchForComponents(technology, genealogy, lastUsedMode);
 
@@ -258,7 +257,7 @@ public class AutoGenealogyService {
             currentAttribute = searchResult.getEntities().get(0);
         }
         if ((Boolean) technology.getField("shiftFeatureRequired")) {
-            Entity shift = new DefaultEntity("genealogies", "shiftFeature");
+            Entity shift = dataDefinitionService.get("genealogies", "shiftFeature").create();
             shift.setField("genealogy", genealogy);
             if (currentAttribute == null) {
                 shift.setField("value", null);
@@ -274,7 +273,7 @@ public class AutoGenealogyService {
             }
         }
         if ((Boolean) technology.getField("otherFeatureRequired")) {
-            Entity other = new DefaultEntity("genealogies", "otherFeature");
+            Entity other = dataDefinitionService.get("genealogies", "otherFeature").create();
             other.setField("genealogy", genealogy);
             if (currentAttribute == null) {
                 other.setField("value", null);
@@ -290,7 +289,7 @@ public class AutoGenealogyService {
             }
         }
         if ((Boolean) technology.getField("postFeatureRequired")) {
-            Entity post = new DefaultEntity("genealogies", "postFeature");
+            Entity post = dataDefinitionService.get("genealogies", "postFeature").create();
             post.setField("genealogy", genealogy);
             if (currentAttribute == null) {
                 post.setField("value", null);
@@ -317,7 +316,7 @@ public class AutoGenealogyService {
         for (Entity operationComponent : operationComponents) {
             for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                 if ((Boolean) operationProductComponent.getField("batchRequired")) {
-                    Entity productIn = new DefaultEntity("genealogies", "genealogyProductInComponent");
+                    Entity productIn = dataDefinitionService.get("genealogies", "genealogyProductInComponent").create();
                     productIn.setField("genealogy", genealogy);
                     productIn.setField("productInComponent", operationProductComponent);
 
@@ -330,7 +329,7 @@ public class AutoGenealogyService {
                     }
 
                     if (batch != null) {
-                        Entity productBatch = new DefaultEntity("genealogies", "productInBatch");
+                        Entity productBatch = dataDefinitionService.get("genealogies", "productInBatch").create();
                         productBatch.setField("batch", batch);
                         productBatch.setField("productInComponent", productIn);
                         productIn.setField("batch", Collections.singletonList(productBatch));

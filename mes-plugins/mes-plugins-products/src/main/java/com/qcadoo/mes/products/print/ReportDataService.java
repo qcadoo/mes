@@ -24,12 +24,8 @@
 
 package com.qcadoo.mes.products.print;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,24 +37,18 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.krysalis.barcode4j.impl.code128.Code128Bean;
-import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
-import org.krysalis.barcode4j.tools.UnitConv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lowagie.text.BadElementException;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
-import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.beans.users.UsersUser;
@@ -70,6 +60,7 @@ import com.qcadoo.mes.products.util.EntityOperationInPairNumberComparator;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class ReportDataService {
@@ -576,48 +567,16 @@ public class ReportDataService {
     }
 
     /*
-    @SuppressWarnings({ "unused" })
-    private Image generateBarcode(final String code) throws BadElementException {
-        Code128Bean codeBean = new Code128Bean();
-        final int dpi = 150;
-
-        codeBean.setModuleWidth(UnitConv.in2mm(1.0f / dpi));
-        codeBean.doQuietZone(false);
-        codeBean.setHeight(8);
-        codeBean.setFontSize(0.0);
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-            BitmapCanvasProvider canvas = new BitmapCanvasProvider(out, "image/x-png", dpi, BufferedImage.TYPE_BYTE_BINARY,
-                    false, 0);
-
-            codeBean.generateBarcode(canvas, code);
-
-            canvas.finish();
-        } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
-        } finally {
-            try {
-                out.close();
-            } catch (IOException e) {
-                LOG.error(e.getMessage(), e);
-            }
-        }
-
-        try {
-            Image image = Image.getInstance(out.toByteArray());
-            image.setAlignment(Image.RIGHT);
-
-            return image;
-        } catch (MalformedURLException e) {
-            LOG.error(e.getMessage(), e);
-        } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
-        }
-
-        return null;
-    }
-*/
+     * @SuppressWarnings({ "unused" }) private Image generateBarcode(final String code) throws BadElementException { Code128Bean
+     * codeBean = new Code128Bean(); final int dpi = 150; codeBean.setModuleWidth(UnitConv.in2mm(1.0f / dpi));
+     * codeBean.doQuietZone(false); codeBean.setHeight(8); codeBean.setFontSize(0.0); ByteArrayOutputStream out = new
+     * ByteArrayOutputStream(); try { BitmapCanvasProvider canvas = new BitmapCanvasProvider(out, "image/x-png", dpi,
+     * BufferedImage.TYPE_BYTE_BINARY, false, 0); codeBean.generateBarcode(canvas, code); canvas.finish(); } catch (IOException e)
+     * { LOG.error(e.getMessage(), e); } finally { try { out.close(); } catch (IOException e) { LOG.error(e.getMessage(), e); } }
+     * try { Image image = Image.getInstance(out.toByteArray()); image.setAlignment(Image.RIGHT); return image; } catch
+     * (MalformedURLException e) { LOG.error(e.getMessage(), e); } catch (IOException e) { LOG.error(e.getMessage(), e); } return
+     * null; }
+     */
     private void addOrderSeries(final PdfPTable table, final List<Entity> orders, final DecimalFormat df)
             throws DocumentException {
         Collections.sort(orders, new EntityNumberComparator());

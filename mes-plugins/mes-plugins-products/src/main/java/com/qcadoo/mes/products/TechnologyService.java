@@ -36,14 +36,10 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.NumberGeneratorService;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.EntityList;
 import com.qcadoo.mes.internal.EntityTree;
 import com.qcadoo.mes.internal.EntityTreeNode;
-import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
@@ -57,6 +53,9 @@ import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 import com.qcadoo.mes.view.components.select.SelectComponentState;
 import com.qcadoo.mes.view.components.tree.TreeComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public final class TechnologyService {
@@ -149,7 +148,7 @@ public final class TechnologyService {
         reportDataService.countQuantityForProductsIn(inProductsWithCount, technology, BigDecimal.ONE, false);
 
         for (Map.Entry<Entity, BigDecimal> inProductWithCount : inProductsWithCount.entrySet()) {
-            Entity inProduct = new DefaultEntity("products", "operationProductInComponent");
+            Entity inProduct = dataDefinitionService.get("products", "operationProductInComponent").create();
             inProduct.setField("operationComponent", rootOperation);
             inProduct.setField("product", inProductWithCount.getKey());
             inProduct.setField("quantity", inProductWithCount.getValue());

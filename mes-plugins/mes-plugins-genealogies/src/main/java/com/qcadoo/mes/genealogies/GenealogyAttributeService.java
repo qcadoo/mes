@@ -28,11 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 @Service
 @Transactional
@@ -42,20 +41,20 @@ public class GenealogyAttributeService {
     private DataDefinitionService dataDefinitionService;
 
     public Long getGenealogyAttributeId() {
+        DataDefinition dataDefinition = dataDefinitionService.get("genealogies", "currentAttribute");
 
-        SearchResult searchResult = dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list();
+        SearchResult searchResult = dataDefinition.find().withMaxResults(1).list();
 
         if (searchResult.getEntities().size() > 0) {
             return searchResult.getEntities().get(0).getId();
         } else {
 
-            Entity newAttribute = new DefaultEntity("genealogies", "currentAttribute");
+            Entity newAttribute = dataDefinition.create();
 
             newAttribute.setField("shift", "");
             newAttribute.setField("post", "");
             newAttribute.setField("other", "");
 
-            DataDefinition dataDefinition = dataDefinitionService.get("genealogies", "currentAttribute");
             Entity savedAttribute = dataDefinition.save(newAttribute);
 
             return savedAttribute.getId();

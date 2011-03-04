@@ -31,8 +31,8 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lowagie.text.DocumentException;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.model.api.Entity;
 
 public abstract class DocumentService {
 

@@ -31,9 +31,8 @@ import org.springframework.stereotype.Service;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.products.print.ReportDataService;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public final class WorkPlanForMachinePdfService extends PdfDocumentService {
@@ -43,7 +42,7 @@ public final class WorkPlanForMachinePdfService extends PdfDocumentService {
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        productReportService.addSeries(document, (DefaultEntity) entity, locale, "machine");
+        productReportService.addSeries(document, entity, locale, "machine");
     }
 
     @Override
