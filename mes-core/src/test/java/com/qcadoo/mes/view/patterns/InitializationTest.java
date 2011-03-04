@@ -35,8 +35,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.types.HasManyType;
@@ -45,6 +43,8 @@ import com.qcadoo.mes.view.components.TextInputComponentPattern;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.components.window.WindowComponentPattern;
 import com.qcadoo.mes.view.internal.ViewDefinitionImpl;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.FieldDefinition;
 
 public class InitializationTest extends AbstractPatternTest {
 

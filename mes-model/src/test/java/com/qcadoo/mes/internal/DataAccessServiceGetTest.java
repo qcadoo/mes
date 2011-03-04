@@ -35,11 +35,11 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.mockito.Matchers;
 
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 public final class DataAccessServiceGetTest extends DataAccessTest {
 

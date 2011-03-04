@@ -32,11 +32,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.internal.DataAccessTest;
 import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.internal.hooks.EntityHookDefinitionImpl;
 
 public class HookTest extends DataAccessTest {
 
@@ -48,7 +49,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldNotCallAnyHookIfNotDefined() throws Exception {
         // given
-        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        Entity entity = new DefaultEntity(dataDefinition);
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -63,11 +64,12 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallOnCreateHook() throws Exception {
         // given
-        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        Entity entity = new DefaultEntity(dataDefinition);
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.withCreateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onCreate"));
+        dataDefinition.addCreateHook(new EntityHookDefinitionImpl(CustomEntityService.class.getName(), "onCreate",
+                applicationContext));
 
         // when
         entity = dataDefinition.save(entity);
@@ -80,7 +82,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallOnUpdateHook() throws Exception {
         // given
-        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 1L);
+        Entity entity = new DefaultEntity(dataDefinition, 1L);
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -88,7 +90,8 @@ public class HookTest extends DataAccessTest {
 
         given(sessionFactory.getCurrentSession().get(any(Class.class), Matchers.anyInt())).willReturn(databaseObject);
 
-        dataDefinition.withUpdateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onUpdate"));
+        dataDefinition.addUpdateHook(new EntityHookDefinitionImpl(CustomEntityService.class.getName(), "onUpdate",
+                applicationContext));
 
         // when
         entity = dataDefinition.save(entity);
@@ -101,12 +104,14 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallAllDefinedHooksWhileCreating() throws Exception {
         // given
-        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        Entity entity = new DefaultEntity(dataDefinition);
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.withCreateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onCreate"));
-        dataDefinition.withSaveHook(hookFactory.getHook(CustomEntityService.class.getName(), "onSave"));
+        dataDefinition.addCreateHook(new EntityHookDefinitionImpl(CustomEntityService.class.getName(), "onCreate",
+                applicationContext));
+        dataDefinition
+                .addSaveHook(new EntityHookDefinitionImpl(CustomEntityService.class.getName(), "onSave", applicationContext));
 
         // when
         entity = dataDefinition.save(entity);
@@ -119,7 +124,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallOnSaveHookWhileUpdating() throws Exception {
         // given
-        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 1L);
+        Entity entity = new DefaultEntity(dataDefinition, 1L);
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -127,7 +132,8 @@ public class HookTest extends DataAccessTest {
 
         given(sessionFactory.getCurrentSession().get(any(Class.class), Matchers.anyInt())).willReturn(databaseObject);
 
-        dataDefinition.withSaveHook(hookFactory.getHook(CustomEntityService.class.getName(), "onSave"));
+        dataDefinition
+                .addSaveHook(new EntityHookDefinitionImpl(CustomEntityService.class.getName(), "onSave", applicationContext));
 
         // when
         entity = dataDefinition.save(entity);
@@ -140,7 +146,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallAllDefinedHooksWhileUpdating() throws Exception {
         // given
-        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 1L);
+        Entity entity = new DefaultEntity(dataDefinition, 1L);
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -148,8 +154,10 @@ public class HookTest extends DataAccessTest {
 
         given(sessionFactory.getCurrentSession().get(any(Class.class), Matchers.anyInt())).willReturn(databaseObject);
 
-        dataDefinition.withUpdateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onUpdate"));
-        dataDefinition.withSaveHook(hookFactory.getHook(CustomEntityService.class.getName(), "onSave"));
+        dataDefinition.addUpdateHook(new EntityHookDefinitionImpl(CustomEntityService.class.getName(), "onUpdate",
+                applicationContext));
+        dataDefinition
+                .addSaveHook(new EntityHookDefinitionImpl(CustomEntityService.class.getName(), "onSave", applicationContext));
 
         // when
         entity = dataDefinition.save(entity);
@@ -162,11 +170,12 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallOnSaveHookWhileCreating() throws Exception {
         // given
-        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        Entity entity = new DefaultEntity(dataDefinition);
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.withCreateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onSave"));
+        dataDefinition.addCreateHook(new EntityHookDefinitionImpl(CustomEntityService.class.getName(), "onSave",
+                applicationContext));
 
         // when
         entity = dataDefinition.save(entity);

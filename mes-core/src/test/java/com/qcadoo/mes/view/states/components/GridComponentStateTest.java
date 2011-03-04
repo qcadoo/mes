@@ -52,12 +52,8 @@ import org.mockito.Mockito;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
@@ -66,13 +62,17 @@ import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.internal.StringType;
-import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.FieldEntityIdChangeListener;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.grid.GridComponentColumn;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.states.AbstractStateTest;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.internal.utils.ExpressionUtils;
 
 public class GridComponentStateTest extends AbstractStateTest {
 
@@ -548,7 +548,8 @@ public class GridComponentStateTest extends AbstractStateTest {
         given(result.getEntities()).willReturn(Collections.<Entity> emptyList());
         grid.initialize(json, Locale.ENGLISH);
         grid.addFieldEntityIdChangeListener("field", listener);
-        Entity copiedEntity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text(1)"));
+        Entity copiedEntity = new DefaultEntity(substituteDataDefinition, 14L, Collections.singletonMap("name",
+                (Object) "text(1)"));
         given(substituteDataDefinition.copy(13L)).willReturn(copiedEntity);
 
         // when
@@ -659,11 +660,11 @@ public class GridComponentStateTest extends AbstractStateTest {
                 dataDefinitionService.get(anyString(), anyString()).getField(anyString()).getType()
                         .toString(anyString(), any(Locale.class))).willReturn("John");
 
-        ExpressionUtil.setStaticDataDefinitionService(dataDefinitionService);
+        ExpressionUtils.setStaticDataDefinitionService(dataDefinitionService);
         GridComponentColumn column = new GridComponentColumn("name");
         column.setExpression("#name + ' ' + #id");
 
-        Entity entity = new DefaultEntity("plugin", "name", 13L, ImmutableMap.of("name", (Object) "John"));
+        Entity entity = new DefaultEntity(productDataDefinition, 13L, ImmutableMap.of("name", (Object) "John"));
 
         // when
         String value = column.getValue(entity, Locale.ENGLISH);
@@ -682,7 +683,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         GridComponentColumn column = new GridComponentColumn("name");
         column.addField(field);
 
-        Entity entity = new DefaultEntity("plugin", "name", 13L, ImmutableMap.of("name", (Object) "John"));
+        Entity entity = new DefaultEntity(productDataDefinition, 13L, ImmutableMap.of("name", (Object) "John"));
 
         // when
         String value = column.getValue(entity, Locale.ENGLISH);
@@ -706,7 +707,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         column.addField(field1);
         column.addField(field2);
 
-        Entity entity = new DefaultEntity("plugin", "name", 13L, ImmutableMap.of("name", (Object) "John", "lastname",
+        Entity entity = new DefaultEntity(productDataDefinition, 13L, ImmutableMap.of("name", (Object) "John", "lastname",
                 (Object) "Smith"));
 
         // when

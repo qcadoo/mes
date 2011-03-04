@@ -33,14 +33,14 @@ import org.hibernate.proxy.HibernateProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.model.types.internal.PasswordType;
-import com.qcadoo.mes.utils.ExpressionUtil;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.internal.api.InternalDataDefinition;
+import com.qcadoo.model.internal.utils.ExpressionUtils;
 
 @Service
 public final class EntityService {
@@ -103,8 +103,7 @@ public final class EntityService {
     }
 
     public Entity convertToGenericEntity(final InternalDataDefinition dataDefinition, final Object databaseEntity) {
-        Entity genericEntity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(),
-                getId(databaseEntity));
+        Entity genericEntity = dataDefinition.create(getId(databaseEntity));
 
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             if (fieldDefinitionEntry.getValue().isPersistent()) {
@@ -120,7 +119,7 @@ public final class EntityService {
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             if (fieldDefinitionEntry.getValue().getExpression() != null) {
                 genericEntity.setField(fieldDefinitionEntry.getKey(),
-                        ExpressionUtil.getValue(genericEntity, fieldDefinitionEntry.getValue().getExpression(), Locale.ENGLISH));
+                        ExpressionUtils.getValue(genericEntity, fieldDefinitionEntry.getValue().getExpression(), Locale.ENGLISH));
             }
         }
 

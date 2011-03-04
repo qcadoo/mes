@@ -31,31 +31,26 @@ import java.util.Locale;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.FieldType;
-import com.qcadoo.mes.model.validators.FieldValidator;
-import com.qcadoo.mes.model.validators.internal.RequiredOnCreateValidator;
-import com.qcadoo.mes.model.validators.internal.RequiredValidator;
-import com.qcadoo.mes.model.validators.internal.UniqueValidator;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.internal.api.FieldHookDefinition;
+import com.qcadoo.model.internal.api.InternalFieldDefinition;
+import com.qcadoo.model.internal.validators.RequiredValidator;
+import com.qcadoo.model.internal.validators.UniqueValidator;
 
-public final class FieldDefinitionImpl implements FieldDefinition {
+public final class FieldDefinitionImpl implements InternalFieldDefinition {
 
     private final String name;
 
     private FieldType type;
 
-    private final List<FieldValidator> validators = new ArrayList<FieldValidator>();
-
-    private boolean readOnlyOnUpdate;
+    private final List<FieldHookDefinition> validators = new ArrayList<FieldHookDefinition>();
 
     private boolean readOnly;
 
     private boolean required;
-
-    private boolean requiredOnCreate;
-
-    private boolean customField;
 
     private boolean unique;
 
@@ -97,7 +92,7 @@ public final class FieldDefinitionImpl implements FieldDefinition {
     }
 
     @Override
-    public List<FieldValidator> getValidators() {
+    public List<FieldHookDefinition> getValidators() {
         return validators;
     }
 
@@ -106,27 +101,14 @@ public final class FieldDefinitionImpl implements FieldDefinition {
         return dataDefinition;
     }
 
-    public FieldDefinitionImpl withValidator(final FieldValidator validator) {
+    public FieldDefinitionImpl withValidator(final FieldHookDefinition validator) {
         if (validator instanceof RequiredValidator) {
             required = true;
-        }
-        if (validator instanceof RequiredOnCreateValidator) {
-            requiredOnCreate = true;
         }
         if (validator instanceof UniqueValidator) {
             unique = true;
         }
         this.validators.add(validator);
-        return this;
-    }
-
-    @Override
-    public boolean isReadOnlyOnUpdate() {
-        return readOnlyOnUpdate || expression != null;
-    }
-
-    public FieldDefinition withReadOnlyOnUpdate(final boolean readOnlyOnUpdate) {
-        this.readOnlyOnUpdate = readOnlyOnUpdate;
         return this;
     }
 
@@ -143,15 +125,6 @@ public final class FieldDefinitionImpl implements FieldDefinition {
     @Override
     public boolean isRequired() {
         return required && expression == null;
-    }
-
-    @Override
-    public boolean isRequiredOnCreate() {
-        return requiredOnCreate && expression == null;
-    }
-
-    public void setCustomField(final boolean customField) {
-        this.customField = customField;
     }
 
     @Override
@@ -188,10 +161,19 @@ public final class FieldDefinitionImpl implements FieldDefinition {
     }
 
     @Override
+    public boolean callValidators(final Entity entity, final Object oldValue, final Object newValue) {
+        for (FieldHookDefinition hook : validators) {
+            if (!hook.call(entity, oldValue, newValue)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public int hashCode() {
-        return new HashCodeBuilder(13, 31).append(customField).append(defaultValue).append(readOnlyOnUpdate).append(name)
-                .append(required).append(type).append(unique).append(validators).append(readOnly).append(requiredOnCreate)
-                .append(expression).toHashCode();
+        return new HashCodeBuilder(13, 31).append(defaultValue).append(name).append(required).append(type).append(unique)
+                .append(validators).append(readOnly).append(expression).toHashCode();
     }
 
     @Override
@@ -206,11 +188,10 @@ public final class FieldDefinitionImpl implements FieldDefinition {
             return false;
         }
         FieldDefinitionImpl other = (FieldDefinitionImpl) obj;
-        return new EqualsBuilder().append(customField, other.customField).append(defaultValue, other.defaultValue)
-                .append(readOnlyOnUpdate, other.readOnlyOnUpdate).append(name, other.name).append(required, other.required)
-                .append(type, other.type).append(unique, other.unique).append(validators, other.validators)
-                .append(readOnly, other.readOnly).append(requiredOnCreate, other.requiredOnCreate)
-                .append(expression, other.expression).isEquals();
+        return new EqualsBuilder().append(defaultValue, other.defaultValue).append(name, other.name)
+                .append(required, other.required).append(type, other.type).append(unique, other.unique)
+                .append(validators, other.validators).append(readOnly, other.readOnly).append(expression, other.expression)
+                .isEquals();
     }
 
     @Override

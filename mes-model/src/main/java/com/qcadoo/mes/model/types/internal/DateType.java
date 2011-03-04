@@ -34,9 +34,9 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.FieldType;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 public final class DateType implements FieldType {
 

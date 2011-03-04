@@ -33,13 +33,13 @@ import java.util.Set;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.search.Order;
 import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.SearchCriteria;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.internal.api.InternalDataDefinition;
 
 public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaBuilder {
 

@@ -32,6 +32,7 @@ import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.model.api.DataDefinitionService;
 
 @Service
 public class NumberGeneratorService {

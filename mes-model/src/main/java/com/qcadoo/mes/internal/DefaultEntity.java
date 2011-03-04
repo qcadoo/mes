@@ -33,17 +33,16 @@ import java.util.Map;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.validators.ErrorMessage;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 public final class DefaultEntity implements Entity {
 
     private Long id;
 
-    private final String pluginIdentifier;
-
-    private final String name;
+    private final DataDefinition dataDefinition;
 
     private final Map<String, Object> fields;
 
@@ -53,19 +52,18 @@ public final class DefaultEntity implements Entity {
 
     private boolean notValidFlag = false;
 
-    public DefaultEntity(final String pluginIdentifier, final String name, final Long id, final Map<String, Object> fields) {
-        this.pluginIdentifier = pluginIdentifier;
-        this.name = name;
+    public DefaultEntity(final DataDefinition dataDefinition, final Long id, final Map<String, Object> fields) {
+        this.dataDefinition = dataDefinition;
         this.id = id;
         this.fields = fields;
     }
 
-    public DefaultEntity(final String pluginIdentifier, final String name, final Long id) {
-        this(pluginIdentifier, name, id, new HashMap<String, Object>());
+    public DefaultEntity(final DataDefinition dataDefinition, final Long id) {
+        this(dataDefinition, id, new HashMap<String, Object>());
     }
 
-    public DefaultEntity(final String pluginIdentifier, final String name) {
-        this(pluginIdentifier, name, null, new HashMap<String, Object>());
+    public DefaultEntity(final DataDefinition dataDefinition) {
+        this(dataDefinition, null, new HashMap<String, Object>());
     }
 
     @Override
@@ -130,7 +128,7 @@ public final class DefaultEntity implements Entity {
 
     @Override
     public int hashCode() {
-        HashCodeBuilder hcb = new HashCodeBuilder(23, 41).append(id).append(name).append(pluginIdentifier);
+        HashCodeBuilder hcb = new HashCodeBuilder(23, 41).append(id).append(dataDefinition);
 
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             if (field.getValue() instanceof Collection) {
@@ -154,8 +152,7 @@ public final class DefaultEntity implements Entity {
             return false;
         }
         DefaultEntity other = (DefaultEntity) obj;
-        EqualsBuilder eb = new EqualsBuilder().append(id, other.id).append(name, other.name)
-                .append(pluginIdentifier, other.pluginIdentifier);
+        EqualsBuilder eb = new EqualsBuilder().append(id, other.id).append(dataDefinition, other.dataDefinition);
 
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             if (field.getValue() instanceof Collection) {
@@ -165,12 +162,11 @@ public final class DefaultEntity implements Entity {
         }
 
         return eb.isEquals();
-
     }
 
     @Override
     public DefaultEntity copy() {
-        DefaultEntity entity = new DefaultEntity(pluginIdentifier, name, id);
+        DefaultEntity entity = new DefaultEntity(dataDefinition, id);
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             if (field.getValue() instanceof Entity) {
                 entity.setField(field.getKey(), ((Entity) field.getValue()).copy());
@@ -208,17 +204,22 @@ public final class DefaultEntity implements Entity {
 
     @Override
     public String getName() {
-        return name;
+        return dataDefinition.getName();
     }
 
     @Override
     public String getPluginIdentifier() {
-        return pluginIdentifier;
+        return dataDefinition.getPluginIdentifier();
+    }
+
+    @Override
+    public DataDefinition getDataDefinition() {
+        return dataDefinition;
     }
 
     @Override
     public String toString() {
-        StringBuilder entity = new StringBuilder("Entity[" + pluginIdentifier + "." + name + "][id=" + id);
+        StringBuilder entity = new StringBuilder("Entity[" + dataDefinition + "][id=" + id);
         for (Map.Entry<String, Object> field : fields.entrySet()) {
 
             entity.append(",").append(field.getKey()).append("=");
@@ -229,8 +230,7 @@ public final class DefaultEntity implements Entity {
 
             if (field.getValue() instanceof Entity) {
                 Entity belongsToEntity = (Entity) field.getValue();
-                entity.append("Entity[" + belongsToEntity.getPluginIdentifier() + "." + belongsToEntity.getName() + "][id="
-                        + belongsToEntity.getId() + "]");
+                entity.append("Entity[" + belongsToEntity.getDataDefinition() + "][id=" + belongsToEntity.getId() + "]");
             } else {
                 entity.append(field.getValue());
             }

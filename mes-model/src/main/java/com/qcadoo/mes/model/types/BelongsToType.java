@@ -24,7 +24,7 @@
 
 package com.qcadoo.mes.model.types;
 
-import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.model.api.DataDefinition;
 
 /**
  * Object represents "belongs to" field type.
@@ -37,13 +37,6 @@ public interface BelongsToType extends LookupedType {
      * @return data definition
      */
     DataDefinition getDataDefinition();
-
-    /**
-     * Return lookup field name.
-     * 
-     * @return lookup field name
-     */
-    String getLookupFieldName();
 
     /**
      * Return true if field will be lazy loaded.

@@ -16,13 +16,15 @@ public class Utils {
 
     public static final String SPRING_CONTEXT_PATH = "spring.xml";
 
-    public static final ClassPathResource MODEL_XML_RESOURCE = new ClassPathResource("full-model.xml");
+    public static final ClassPathResource FULL_XML_RESOURCE = new ClassPathResource("full-model.xml");
 
     public static final ClassPathResource OTHER_XML_RESOURCE = new ClassPathResource("other-model.xml");
 
     public static final ClassPathResource MODEL_XML_INVALID_RESOURCE = new ClassPathResource("log4j.xml");
 
-    public static final ClassPathResource HBM_RESOURCE = new ClassPathResource("full.hbm.xml");
+    public static final ClassPathResource FULL_HBM_RESOURCE = new ClassPathResource("full.hbm.xml");
+
+    public static final ClassPathResource EMPTY_HBM_RESOURCE = new ClassPathResource("empty.hbm.xml");
 
     public static DataSource createDataSource() {
         BasicDataSource dataSource = new BasicDataSource();

@@ -26,8 +26,8 @@ package com.qcadoo.mes.model.types;
 
 import java.util.Locale;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 /**
  * Object represents field type.

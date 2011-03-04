@@ -26,7 +26,7 @@
 -->
 
 <models plugin="dictionaries" xmlns="http://www.qcadoo.com/model">
-	<model name="dictionary" deletable="false">
+	<model name="dictionary" deletable="false" class="com.qcadoo.model.internal.dictionaries.DictionariesDictionary">
 		<string name="name" >
 			<validatesPresence />
 			<validatesUniqueness />
@@ -37,7 +37,7 @@
 		</string>
 		<hasMany name="dictionaryItems" model="dictionaryItem" joinField="dictionary" cascade="delete" />
 	</model>
-	<model name="dictionaryItem">
+	<model name="dictionaryItem" class="com.qcadoo.model.internal.dictionaries.DictionariesDictionaryItem">
 		<string name="name" >
 			<validatesPresence />
 			<validatesUniqueness />

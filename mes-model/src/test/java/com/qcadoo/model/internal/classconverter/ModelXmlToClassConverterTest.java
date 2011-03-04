@@ -5,16 +5,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.beans.PropertyDescriptor;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.qcadoo.model.Utils;
 import com.qcadoo.model.internal.api.ModelXmlToClassConverter;
+import com.qcadoo.model.internal.utils.ClassNameUtils;
 
 public class ModelXmlToClassConverterTest {
 
@@ -26,14 +29,16 @@ public class ModelXmlToClassConverterTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        for (Class<?> clazz : modelXmlToClassConverter.convert(Utils.MODEL_XML_RESOURCE, Utils.OTHER_XML_RESOURCE)) {
+        for (Class<?> clazz : modelXmlToClassConverter.convert(Utils.FULL_XML_RESOURCE, Utils.OTHER_XML_RESOURCE)) {
             classes.put(clazz.getCanonicalName(), clazz);
         }
 
-        for (PropertyDescriptor propertyDescriptor : PropertyUtils.getPropertyDescriptors(classes
-                .get("com.qcadoo.model.beans.FullFirstEntity"))) {
+        for (PropertyDescriptor propertyDescriptor : PropertyUtils.getPropertyDescriptors(classes.get(ClassNameUtils
+                .getFullyQualifiedClassName("full", "firstEntity")))) {
             propertyDescriptors.put(propertyDescriptor.getName(), propertyDescriptor);
         }
+
+        System.out.println(propertyDescriptors);
     }
 
     @Test
@@ -43,16 +48,46 @@ public class ModelXmlToClassConverterTest {
 
     @Test
     public void shouldHaveProperName() throws Exception {
-        assertNotNull(classes.get("com.qcadoo.model.beans.FullFirstEntity"));
-        assertNotNull(classes.get("com.qcadoo.model.beans.FullSecondEntity"));
-        assertNotNull(classes.get("com.qcadoo.model.beans.FullThirdEntity"));
-        assertNotNull(classes.get("com.qcadoo.model.beans.OtherFirstEntity"));
-        assertNotNull(classes.get("com.qcadoo.model.beans.OtherSecondEntity"));
+        assertNotNull(classes.get(ClassNameUtils.getFullyQualifiedClassName("full", "firstEntity")));
+        assertNotNull(classes.get(ClassNameUtils.getFullyQualifiedClassName("full", "secondEntity")));
+        assertNotNull(classes.get(ClassNameUtils.getFullyQualifiedClassName("full", "thirdEntity")));
+        assertNotNull(classes.get(ClassNameUtils.getFullyQualifiedClassName("other", "firstEntity")));
+        assertNotNull(classes.get(ClassNameUtils.getFullyQualifiedClassName("other", "secondEntity")));
     }
 
     @Test
     public void shouldDefineIdentifier() {
         verifyField(propertyDescriptors.get("id"), Long.class);
+    }
+
+    @Test
+    public void shouldDefineSimpleFields() throws Exception {
+        verifyField(propertyDescriptors.get("fieldInteger"), Integer.class);
+        verifyField(propertyDescriptors.get("fieldString"), String.class);
+        verifyField(propertyDescriptors.get("fieldText"), String.class);
+        verifyField(propertyDescriptors.get("fieldDecimal"), BigDecimal.class);
+        verifyField(propertyDescriptors.get("fieldDatetime"), Date.class);
+        verifyField(propertyDescriptors.get("fieldDate"), Date.class);
+        verifyField(propertyDescriptors.get("fieldBoolean"), Boolean.class);
+        verifyField(propertyDescriptors.get("fieldDictionary"), String.class);
+        verifyField(propertyDescriptors.get("fieldOtherDictionary"), String.class);
+        verifyField(propertyDescriptors.get("fieldEnum"), String.class);
+        verifyField(propertyDescriptors.get("fieldPassword"), String.class);
+        verifyField(propertyDescriptors.get("fieldPriority"), Integer.class);
+    }
+
+    @Test
+    public void shouldDefineBelongsToFields() throws Exception {
+        verifyField(propertyDescriptors.get("fieldSecondEntity"),
+                classes.get(ClassNameUtils.getFullyQualifiedClassName("other", "secondEntity")));
+        verifyField(propertyDescriptors.get("fieldSecondEntity2"),
+                classes.get(ClassNameUtils.getFullyQualifiedClassName("other", "secondEntity")));
+    }
+
+    @Test
+    public void shouldDefineHasManyFields() throws Exception {
+        verifyField(propertyDescriptors.get("fieldTree"), Set.class);
+        verifyField(propertyDescriptors.get("fieldHasMany"), Set.class);
     }
 
     private void verifyField(final PropertyDescriptor propertyDescriptor, final Class<?> type) {
@@ -62,12 +97,12 @@ public class ModelXmlToClassConverterTest {
     private void verifyField(final PropertyDescriptor propertyDescriptor, final Class<?> type, final boolean readable,
             final boolean writable) {
         assertEquals(type, propertyDescriptor.getPropertyType());
-        if(writable) {
+        if (writable) {
             assertNotNull(propertyDescriptor.getWriteMethod());
         } else {
             assertNull(propertyDescriptor.getWriteMethod());
         }
-        if(readable) {
+        if (readable) {
             assertNotNull(propertyDescriptor.getReadMethod());
         } else {
             assertNull(propertyDescriptor.getReadMethod());

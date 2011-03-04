@@ -36,11 +36,11 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.components.SimpleComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.model.api.DataDefinition;
 
 public class ComponentStateTest {
 

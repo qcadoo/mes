@@ -26,9 +26,9 @@ package com.qcadoo.mes.model.search.internal;
 
 import java.util.List;
 
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.search.SearchCriteria;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.model.api.Entity;
 
 public final class SearchResultImpl implements SearchResult {
 

@@ -41,23 +41,23 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleTreeDatabaseObject;
+import com.qcadoo.model.api.Entity;
 
 public final class DataAccessServiceSaveTest extends DataAccessTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailIfEntityWithGivenIdNotExist() throws Exception {
         // then
-        dataDefinition.save(new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 1L));
+        dataDefinition.save(new DefaultEntity(dataDefinition, 1L));
     }
 
     @Test
     public void shouldSaveNewEntity() throws Exception {
         // given
-        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        Entity entity = new DefaultEntity(dataDefinition);
         entity.setField("name", "Mr T");
         entity.setField("age", 66);
 
@@ -76,7 +76,7 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
     @Test
     public void shouldSaveExistingEntity() throws Exception {
         // given
-        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 1L);
+        Entity entity = new DefaultEntity(dataDefinition, 1L);
         entity.setField("name", "Mr T");
         entity.setField("age", 66);
 
@@ -103,7 +103,7 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
     @Test
     public void shouldFailIfFieldTypeIsNotValid() throws Exception {
         // given
-        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        Entity entity = new DefaultEntity(dataDefinition);
         entity.setField("name", "Mr T");
         entity.setField("age", "r");
 
@@ -117,7 +117,7 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
     @Test
     public void shouldConvertTypeFromInteger() throws Exception {
         // given
-        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        Entity entity = new DefaultEntity(dataDefinition);
         entity.setField("name", "Mr T");
         entity.setField("age", "66");
 
@@ -131,17 +131,17 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
     @Test
     public void shouldSaveHasManyField() throws Exception {
         // given
-        Entity child1 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 2L);
+        Entity child1 = new DefaultEntity(dataDefinition, 2L);
         child1.setField("name", "Mr T");
         child1.setField("age", "66");
 
-        Entity child2 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        Entity child2 = new DefaultEntity(dataDefinition);
         child2.setField("name", "Mr X");
         child2.setField("age", "67");
 
         List<Entity> children = Arrays.asList(new Entity[] { child1, child2 });
 
-        Entity parent = new DefaultEntity(parentDataDefinition.getPluginIdentifier(), parentDataDefinition.getName(), 1L);
+        Entity parent = new DefaultEntity(parentDataDefinition, 1L);
         parent.setField("entities", children);
 
         SampleParentDatabaseObject existingParent = new SampleParentDatabaseObject(1L);
@@ -177,7 +177,7 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
         // given
         EntityList entities = new EntityList(dataDefinition, "", 1L);
 
-        Entity parent = new DefaultEntity(parentDataDefinition.getPluginIdentifier(), parentDataDefinition.getName(), 1L);
+        Entity parent = new DefaultEntity(parentDataDefinition, 1L);
         parent.setField("entities", entities);
 
         SampleParentDatabaseObject existingParent = new SampleParentDatabaseObject(1L);
@@ -200,14 +200,14 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
     @Test
     public void shouldSaveTreeField() throws Exception {
         // given
-        Entity child1 = new DefaultEntity(treeDataDefinition.getPluginIdentifier(), treeDataDefinition.getName());
+        Entity child1 = new DefaultEntity(treeDataDefinition);
         child1.setField("name", "Mr T");
 
-        Entity root = new DefaultEntity(treeDataDefinition.getPluginIdentifier(), treeDataDefinition.getName(), 2L);
+        Entity root = new DefaultEntity(treeDataDefinition, 2L);
         root.setField("name", "Mr X");
         root.setField("children", Collections.singletonList(child1));
 
-        Entity parent = new DefaultEntity(parentDataDefinition.getPluginIdentifier(), parentDataDefinition.getName(), 1L);
+        Entity parent = new DefaultEntity(parentDataDefinition, 1L);
         parent.setField("tree", Collections.singletonList(root));
 
         SampleParentDatabaseObject existingParent = new SampleParentDatabaseObject(1L);
@@ -245,7 +245,7 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
         // given
         EntityTree tree = new EntityTree(dataDefinition, "", 1L);
 
-        Entity parent = new DefaultEntity(parentDataDefinition.getPluginIdentifier(), parentDataDefinition.getName(), 1L);
+        Entity parent = new DefaultEntity(parentDataDefinition, 1L);
         parent.setField("tree", tree);
 
         SampleParentDatabaseObject existingParent = new SampleParentDatabaseObject(1L);

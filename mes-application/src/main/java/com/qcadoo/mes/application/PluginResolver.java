@@ -51,7 +51,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.qcadoo.mes.api.PluginManagementService;
-import com.qcadoo.mes.beans.plugins.PluginsPlugin;
+import com.qcadoo.mes.beans.plugins.plugins.PluginsPlugin;
 
 @Component
 public final class PluginResolver implements ApplicationListener<ContextRefreshedEvent> {

@@ -32,13 +32,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.plugins.internal.enums.PluginStatus;
 import com.qcadoo.mes.utils.Pair;
@@ -48,6 +44,10 @@ import com.qcadoo.mes.view.menu.MenuItem;
 import com.qcadoo.mes.view.menu.MenulItemsGroup;
 import com.qcadoo.mes.view.menu.items.UrlMenuItem;
 import com.qcadoo.mes.view.menu.items.ViewDefinitionMenuItemItem;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.Monitorable;
 
 @Service
 public final class MenuServiceImpl implements MenuService {
@@ -80,7 +80,7 @@ public final class MenuServiceImpl implements MenuService {
             int existingViewsNumber = viewDefinitionDD.find().restrictedWith(Restrictions.eq("pluginIdentifier", view.getKey()))
                     .restrictedWith(Restrictions.eq("viewName", view.getValue())).list().getTotalNumberOfEntities();
             if (existingViewsNumber == 0) {
-                Entity viewDefinitionEntity = new DefaultEntity("menu", "viewDefinition", null);
+                Entity viewDefinitionEntity = viewDefinitionDD.create();
                 viewDefinitionEntity.setField("menuName", view.getValue());
                 viewDefinitionEntity.setField("viewName", view.getValue());
                 viewDefinitionEntity.setField("pluginIdentifier", view.getKey());
@@ -108,13 +108,13 @@ public final class MenuServiceImpl implements MenuService {
         addUrlItem("genealogyAttributes", "genealogyAttribute.html", "genealogies");
     }
 
-    private void addUrlItem(String name, String url, String pluginIdentifier) {
+    private void addUrlItem(final String name, final String url, final String pluginIdentifier) {
         DataDefinition viewDefinitionDD = dataDefinitionService.get("menu", "viewDefinition");
 
         int existingViewsNumber = viewDefinitionDD.find().restrictedWith(Restrictions.eq("pluginIdentifier", pluginIdentifier))
                 .restrictedWith(Restrictions.eq("viewName", url)).list().getTotalNumberOfEntities();
         if (existingViewsNumber == 0) {
-            Entity viewDefinitionEntity = new DefaultEntity("menu", name, null);
+            Entity viewDefinitionEntity = viewDefinitionDD.create();
             viewDefinitionEntity.setField("menuName", name);
             viewDefinitionEntity.setField("viewName", url);
             viewDefinitionEntity.setField("pluginIdentifier", pluginIdentifier);

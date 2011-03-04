@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.validators.ErrorMessage;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 /**
  * Service for getting translations.

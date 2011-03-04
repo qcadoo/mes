@@ -42,9 +42,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.CustomRestriction;
 import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.RestrictionOperator;
@@ -55,6 +52,9 @@ import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.states.AbstractComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 public final class GridComponentState extends AbstractComponentState {
 

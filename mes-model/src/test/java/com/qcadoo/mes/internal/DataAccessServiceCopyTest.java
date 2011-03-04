@@ -39,13 +39,14 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleTreeDatabaseObject;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.TreeType;
-import com.qcadoo.mes.model.validators.internal.UniqueValidator;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.internal.api.FieldHookDefinition;
+import com.qcadoo.model.internal.validators.UniqueValidator;
 
 public final class DataAccessServiceCopyTest extends DataAccessTest {
 
@@ -72,7 +73,10 @@ public final class DataAccessServiceCopyTest extends DataAccessTest {
     @Test
     public void shouldCopyEntityWithUniqueField() throws Exception {
         // given
-        fieldDefinitionName.withValidator(new UniqueValidator());
+        FieldHookDefinition fieldHook = new UniqueValidator();
+        fieldHook.initialize(dataDefinition, fieldDefinitionName);
+
+        fieldDefinitionName.withValidator(fieldHook);
 
         SampleSimpleDatabaseObject simpleDatabaseObject = new SampleSimpleDatabaseObject();
         simpleDatabaseObject.setId(13L);
@@ -95,7 +99,10 @@ public final class DataAccessServiceCopyTest extends DataAccessTest {
     @Test
     public void shouldCopyEntityWithUniqueField2() throws Exception {
         // given
-        fieldDefinitionName.withValidator(new UniqueValidator());
+        FieldHookDefinition fieldHook = new UniqueValidator();
+        fieldHook.initialize(dataDefinition, fieldDefinitionName);
+
+        fieldDefinitionName.withValidator(fieldHook);
 
         SampleSimpleDatabaseObject simpleDatabaseObject = new SampleSimpleDatabaseObject();
         simpleDatabaseObject.setId(13L);

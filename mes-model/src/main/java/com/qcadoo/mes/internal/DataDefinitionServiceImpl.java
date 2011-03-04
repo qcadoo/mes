@@ -33,9 +33,9 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.aop.internal.Monitorable;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Monitorable;
 
 @Service
 public final class DataDefinitionServiceImpl implements DataDefinitionService {

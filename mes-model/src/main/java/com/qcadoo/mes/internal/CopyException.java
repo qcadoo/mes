@@ -24,7 +24,7 @@
 
 package com.qcadoo.mes.internal;
 
-import com.qcadoo.mes.api.Entity;
+import com.qcadoo.model.api.Entity;
 
 @SuppressWarnings("serial")
 public class CopyException extends RuntimeException {

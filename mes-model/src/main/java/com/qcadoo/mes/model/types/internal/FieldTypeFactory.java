@@ -24,12 +24,12 @@
 
 package com.qcadoo.mes.model.types.internal;
 
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.EnumeratedType;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.LookupedType;
 import com.qcadoo.mes.model.types.TreeType;
+import com.qcadoo.model.api.FieldDefinition;
 
 public interface FieldTypeFactory {
 
@@ -55,9 +55,9 @@ public interface FieldTypeFactory {
 
     EnumeratedType dictionaryType(final String dictionaryName);
 
-    LookupedType lazyBelongsToType(String pluginIdentifier, final String entityName, final String lookupFieldName);
+    LookupedType lazyBelongsToType(String pluginIdentifier, final String entityName);
 
-    LookupedType eagerBelongsToType(String pluginIdentifier, final String entityName, final String lookupFieldName);
+    LookupedType eagerBelongsToType(String pluginIdentifier, final String entityName);
 
     FieldType hasManyType(String pluginIdentifier, final String entityName, final String fieldName, HasManyType.Cascade cascade,
             boolean copyable);

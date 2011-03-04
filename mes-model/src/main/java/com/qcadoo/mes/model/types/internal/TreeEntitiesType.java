@@ -27,11 +27,11 @@ package com.qcadoo.mes.model.types.internal;
 import java.util.Locale;
 import java.util.Set;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.TreeType;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 public final class TreeEntitiesType implements TreeType {
 

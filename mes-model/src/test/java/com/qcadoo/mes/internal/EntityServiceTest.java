@@ -47,14 +47,14 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.DataDefinitionImpl;
 import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
 import com.qcadoo.mes.model.search.Restrictions;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 public class EntityServiceTest extends DataAccessTest {
 
@@ -208,7 +208,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldSetBelongsToField() throws Exception {
         // given
-        Entity parentEntity = new DefaultEntity("", "", 1L);
+        Entity parentEntity = new DefaultEntity(dataDefinition, 1L);
         parentEntity.setField("name", "Mr X");
 
         SampleParentDatabaseObject parentDatabaseEntity = new SampleParentDatabaseObject(1L);
@@ -299,7 +299,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldConvertGenericEntityIntoDatabaseOne() throws Exception {
         // given
-        Entity genericEntity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 2L);
+        Entity genericEntity = new DefaultEntity(dataDefinition, 2L);
         genericEntity.setField("name", "Mr T");
         genericEntity.setField("age", 12);
         genericEntity.setField("belongsTo", 1L);
@@ -328,7 +328,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldConvertGenericEntityIntoDatabaseOneUsingExistingEntity() throws Exception {
         // given
-        Entity genericEntity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 2L);
+        Entity genericEntity = new DefaultEntity(dataDefinition, 2L);
         genericEntity.setField("name", "Mr T");
         genericEntity.setField("age", 12);
         genericEntity.setField("belongsTo", 1L);
@@ -341,8 +341,7 @@ public class EntityServiceTest extends DataAccessTest {
         given(session.get(SampleParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
         given(session.load(SampleParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
-        validationService.validateGenericEntity(dataDefinition, genericEntity,
-                new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 2L));
+        validationService.validateGenericEntity(dataDefinition, genericEntity, new DefaultEntity(dataDefinition, 2L));
 
         // when
         Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
@@ -362,7 +361,7 @@ public class EntityServiceTest extends DataAccessTest {
         // given
         DataDefinition dataDefinition = mock(DataDefinition.class);
 
-        DefaultEntity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 5L);
+        DefaultEntity entity = new DefaultEntity(dataDefinition, 5L);
         entity.setField("test", "testValue");
 
         given(dataDefinition.get(5L)).willReturn(entity);
@@ -382,8 +381,8 @@ public class EntityServiceTest extends DataAccessTest {
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         FieldDefinition fieldDefinition = mock(FieldDefinition.class);
 
-        Entity entity1 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 1L);
-        Entity entity2 = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 2L);
+        Entity entity1 = new DefaultEntity(dataDefinition, 1L);
+        Entity entity2 = new DefaultEntity(dataDefinition, 2L);
 
         given(fieldDefinition.getName()).willReturn("joinField");
         given(dataDefinition.getField("joinField")).willReturn(fieldDefinition);

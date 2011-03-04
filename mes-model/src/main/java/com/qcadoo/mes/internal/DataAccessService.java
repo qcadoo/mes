@@ -26,10 +26,10 @@ package com.qcadoo.mes.internal;
 
 import java.util.Set;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.search.SearchCriteria;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.internal.api.InternalDataDefinition;
 
 public interface DataAccessService {
 

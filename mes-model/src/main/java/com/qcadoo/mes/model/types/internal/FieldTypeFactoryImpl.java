@@ -28,19 +28,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.DictionaryService;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.EnumeratedType;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.LookupedType;
 import com.qcadoo.mes.model.types.TreeType;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.DictionaryService;
+import com.qcadoo.model.api.FieldDefinition;
 
 @Service
 public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
-    @Autowired
+    // @Autowired
     private DictionaryService dictionaryService;
 
     @Autowired
@@ -114,13 +114,13 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     }
 
     @Override
-    public LookupedType lazyBelongsToType(final String pluginIdentifier, final String entityName, final String lookupFieldName) {
-        return new BelongsToEntityType(pluginIdentifier, entityName, lookupFieldName, dataDefinitionService, true);
+    public LookupedType lazyBelongsToType(final String pluginIdentifier, final String entityName) {
+        return new BelongsToEntityType(pluginIdentifier, entityName, dataDefinitionService, true);
     }
 
     @Override
-    public LookupedType eagerBelongsToType(final String pluginIdentifier, final String entityName, final String lookupFieldName) {
-        return new BelongsToEntityType(pluginIdentifier, entityName, lookupFieldName, dataDefinitionService, false);
+    public LookupedType eagerBelongsToType(final String pluginIdentifier, final String entityName) {
+        return new BelongsToEntityType(pluginIdentifier, entityName, dataDefinitionService, false);
     }
 
     @Override

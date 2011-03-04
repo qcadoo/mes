@@ -46,10 +46,10 @@
 			<xs:element name="validatesWith" type="hookType"
 				minOccurs="0" maxOccurs="unbounded" />
 			<xs:choice minOccurs="0" maxOccurs="unbounded">
-				<xs:element name="savesWith" type="hookType" />
-				<xs:element name="updatesWith" type="hookType" />
-				<xs:element name="createsWith" type="hookType" />
-				<xs:element name="copiesWith" type="hookType" />
+				<xs:element name="onSave" type="hookType" />
+				<xs:element name="onUpdate" type="hookType" />
+				<xs:element name="onCreate" type="hookType" />
+				<xs:element name="onCopy" type="hookType" />
 			</xs:choice>
 			<xs:element name="toString" type="toStringType"
 				minOccurs="0" maxOccurs="1" />
@@ -97,15 +97,8 @@
 	</xs:complexType>
 	
 	<xs:complexType name="hookType">
-		<xs:attribute name="class" use="required">
-			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:pattern value="[a-z][a-zA-Z0-9.]*.[a-zA-Z0-9]+" />
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>		
+		<xs:attribute name="class" type="classType" use="required" />
 		<xs:attribute name="method" type="identifierType" use="required" />
-		<xs:attribute name="static" type="xs:boolean" default="false" />		
 	</xs:complexType>
 
 	<xs:complexType name="fieldType">
@@ -216,6 +209,12 @@
 	<xs:simpleType name="identifierType">
 		<xs:restriction base="xs:string">
 			<xs:pattern value="[a-z][a-zA-Z0-9]*" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="classType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-z][a-zA-Z0-9.]*.[a-zA-Z0-9]+" />
 		</xs:restriction>
 	</xs:simpleType>
 

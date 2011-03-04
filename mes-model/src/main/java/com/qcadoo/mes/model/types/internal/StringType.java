@@ -28,9 +28,9 @@ import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.FieldType;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 public final class StringType implements FieldType {
 

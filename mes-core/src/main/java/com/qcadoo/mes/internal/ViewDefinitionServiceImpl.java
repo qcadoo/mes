@@ -35,10 +35,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Node;
 
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
+import com.qcadoo.model.api.Monitorable;
 
 @Service
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {

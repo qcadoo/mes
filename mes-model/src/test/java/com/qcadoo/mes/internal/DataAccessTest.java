@@ -40,20 +40,17 @@ import org.junit.Before;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.DictionaryService;
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleTreeDatabaseObject;
-import com.qcadoo.mes.model.hooks.internal.HookFactory;
 import com.qcadoo.mes.model.internal.DataDefinitionImpl;
 import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.model.types.internal.FieldTypeFactory;
 import com.qcadoo.mes.model.types.internal.FieldTypeFactoryImpl;
-import com.qcadoo.mes.model.validators.internal.ValidatorFactory;
-import com.qcadoo.mes.model.validators.internal.ValidatorFactoryImpl;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.DictionaryService;
 
 public abstract class DataAccessTest {
 
@@ -73,15 +70,11 @@ public abstract class DataAccessTest {
 
     protected FieldTypeFactory fieldTypeFactory = null;
 
-    protected ValidatorFactory fieldValidatorFactory = null;
-
     protected EntityService entityService = null;
 
     protected ValidationService validationService = null;
 
     protected PriorityService priorityService = null;
-
-    protected HookFactory hookFactory;
 
     protected DataAccessService dataAccessService = null;
 
@@ -142,11 +135,6 @@ public abstract class DataAccessTest {
         ReflectionTestUtils.setField(fieldTypeFactory, "dictionaryService", dictionaryService);
         ReflectionTestUtils.setField(fieldTypeFactory, "dataDefinitionService", dataDefinitionService);
 
-        hookFactory = new HookFactory();
-        ReflectionTestUtils.setField(hookFactory, "applicationContext", applicationContext);
-
-        fieldValidatorFactory = new ValidatorFactoryImpl();
-
         treeDataDefinition = new DataDefinitionImpl("tree", "tree.entity", dataAccessService);
         given(dataDefinitionService.get("tree", "entity")).willReturn(treeDataDefinition);
 
@@ -179,10 +167,10 @@ public abstract class DataAccessTest {
                 false));
 
         treeFieldDefinitionParent = new FieldDefinitionImpl(null, "parent");
-        treeFieldDefinitionParent.withType(fieldTypeFactory.eagerBelongsToType("tree", "entity", "name"));
+        treeFieldDefinitionParent.withType(fieldTypeFactory.eagerBelongsToType("tree", "entity"));
 
         treeFieldDefinitionOwner = new FieldDefinitionImpl(null, "owner");
-        treeFieldDefinitionOwner.withType(fieldTypeFactory.eagerBelongsToType("parent", "entity", "name"));
+        treeFieldDefinitionOwner.withType(fieldTypeFactory.eagerBelongsToType("parent", "entity"));
 
         treeDataDefinition.withField(treeFieldDefinitionName);
         treeDataDefinition.withField(treeFieldDefinitionChildren);
@@ -191,10 +179,10 @@ public abstract class DataAccessTest {
         treeDataDefinition.setFullyQualifiedClassName(SampleTreeDatabaseObject.class.getCanonicalName());
 
         fieldDefinitionBelongsTo = new FieldDefinitionImpl(null, "belongsTo");
-        fieldDefinitionBelongsTo.withType(fieldTypeFactory.eagerBelongsToType("parent", "entity", "name"));
+        fieldDefinitionBelongsTo.withType(fieldTypeFactory.eagerBelongsToType("parent", "entity"));
 
         fieldDefinitionLazyBelongsTo = new FieldDefinitionImpl(null, "lazyBelongsTo");
-        fieldDefinitionLazyBelongsTo.withType(fieldTypeFactory.lazyBelongsToType("parent", "entity", "name"));
+        fieldDefinitionLazyBelongsTo.withType(fieldTypeFactory.lazyBelongsToType("parent", "entity"));
 
         fieldDefinitionName = new FieldDefinitionImpl(null, "name");
         fieldDefinitionName.withType(fieldTypeFactory.stringType());

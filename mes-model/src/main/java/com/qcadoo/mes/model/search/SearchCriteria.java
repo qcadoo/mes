@@ -26,7 +26,7 @@ package com.qcadoo.mes.model.search;
 
 import java.util.Set;
 
-import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.model.api.DataDefinition;
 
 /**
  * Object represents the criteria for finding entities. It is used for building SQL query.

@@ -35,13 +35,13 @@ import org.json.JSONObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.components.FieldComponentPattern;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
+import com.qcadoo.model.api.FieldDefinition;
 
 @ViewComponent("tree")
 public final class TreeComponentPattern extends FieldComponentPattern {

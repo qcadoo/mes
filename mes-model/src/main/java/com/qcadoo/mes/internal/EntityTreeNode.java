@@ -28,9 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.validators.ErrorMessage;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 public class EntityTreeNode implements Entity {
 
@@ -62,6 +63,11 @@ public class EntityTreeNode implements Entity {
     @Override
     public Long getId() {
         return entity.getId();
+    }
+
+    @Override
+    public DataDefinition getDataDefinition() {
+        return entity.getDataDefinition();
     }
 
     @Override

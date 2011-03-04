@@ -20,9 +20,8 @@
 	<xsl:template name="entityName">
 		<xsl:param name="modelName" />
 		<xsl:param name="pluginName" />
-		<xsl:attribute name="entity-name">
-			<xsl:value-of
-			select="concat('com.qcadoo.model.beans.', translate(substring($pluginName, 1, 1), $smallcase, $uppercase), substring($pluginName, 2), translate(substring($modelName, 1, 1),  $smallcase, $uppercase), substring($modelName, 2))" />
+		<xsl:attribute name="class">
+			<xsl:value-of select="concat('com.qcadoo.model.beans.', $pluginName, '.', translate(substring($pluginName, 1, 1),  $smallcase, $uppercase), substring($pluginName, 2), translate(substring($modelName, 1, 1),  $smallcase, $uppercase), substring($modelName, 2))" />
 		</xsl:attribute>
 	</xsl:template>
 
@@ -31,12 +30,11 @@
 			<xsl:variable name="table_name">
 				<xsl:value-of select="concat(/qcd:models/@plugin, '_', @name)" />
 			</xsl:variable>
-			<xsl:call-template name="entityName">
-				<xsl:with-param name="modelName" select="@name" />
-				<xsl:with-param name="pluginName" select="/qcd:models/@plugin" />
-			</xsl:call-template>
 			<xsl:attribute name="table">
 			    <xsl:value-of select="$table_name" />
+			</xsl:attribute>
+			<xsl:attribute name="name">
+				<xsl:value-of select="concat('com.qcadoo.model.beans.', /qcd:models/@plugin, '.', translate(substring(/qcd:models/@plugin, 1, 1),  $smallcase, $uppercase), substring(/qcd:models/@plugin, 2), translate(substring(@name, 1, 1),  $smallcase, $uppercase), substring(@name, 2))" />
 			</xsl:attribute>
 			<id column="id" name="id" type="long">
 				<generator class="increment" />
@@ -145,7 +143,7 @@
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:string[not(@expression)]">
+	<xsl:template match="//qcd:model/qcd:string[not(@expression) and not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">string</xsl:attribute>
 			<xsl:call-template name="property" />

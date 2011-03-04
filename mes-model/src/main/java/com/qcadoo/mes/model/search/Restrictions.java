@@ -26,15 +26,15 @@ package com.qcadoo.mes.model.search;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.restrictions.internal.BelongsToRestriction;
 import com.qcadoo.mes.model.search.restrictions.internal.IsNotNullRestriction;
 import com.qcadoo.mes.model.search.restrictions.internal.IsNullRestriction;
 import com.qcadoo.mes.model.search.restrictions.internal.LikeRestriction;
 import com.qcadoo.mes.model.search.restrictions.internal.LogicalOperatorRestriction;
 import com.qcadoo.mes.model.search.restrictions.internal.SimpleRestriction;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 /**
  * Class creates restrictions for search criteria.
@@ -58,7 +58,7 @@ public final class Restrictions {
      * @return restriction
      */
     public static Restriction eq(final FieldDefinition fieldDefinition, final Object expectedValue) {
-        Entity validatedEntity = new DefaultEntity("", "");
+        Entity validatedEntity = new DefaultEntity(null); // TODO
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;
@@ -133,7 +133,7 @@ public final class Restrictions {
      * @return restriction
      */
     public static Restriction ge(final FieldDefinition fieldDefinition, final Object expectedValue) {
-        Entity validatedEntity = new DefaultEntity("", "");
+        Entity validatedEntity = new DefaultEntity(null); // TODO
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;
@@ -151,7 +151,7 @@ public final class Restrictions {
      * @return restriction
      */
     public static Restriction gt(final FieldDefinition fieldDefinition, final Object expectedValue) {
-        Entity validatedEntity = new DefaultEntity("", "");
+        Entity validatedEntity = new DefaultEntity(null); // TODO
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;
@@ -191,7 +191,7 @@ public final class Restrictions {
      * @return restriction
      */
     public static Restriction le(final FieldDefinition fieldDefinition, final Object expectedValue) {
-        Entity validatedEntity = new DefaultEntity("", "");
+        Entity validatedEntity = new DefaultEntity(null); // TODO
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;
@@ -209,7 +209,7 @@ public final class Restrictions {
      * @return restriction
      */
     public static Restriction lt(final FieldDefinition fieldDefinition, final Object expectedValue) {
-        Entity validatedEntity = new DefaultEntity("", "");
+        Entity validatedEntity = new DefaultEntity(null); // TODO
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;
@@ -227,7 +227,7 @@ public final class Restrictions {
      * @return restriction
      */
     public static Restriction ne(final FieldDefinition fieldDefinition, final Object expectedValue) {
-        Entity validatedEntity = new DefaultEntity("", "");
+        Entity validatedEntity = new DefaultEntity(null); // TODO
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;

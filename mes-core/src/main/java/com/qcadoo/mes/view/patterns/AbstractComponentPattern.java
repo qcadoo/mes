@@ -44,8 +44,6 @@ import org.w3c.dom.NodeList;
 
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.TreeType;
@@ -61,6 +59,8 @@ import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 import com.qcadoo.mes.view.xml.ViewDefinitionParserImpl;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.FieldDefinition;
 
 public abstract class AbstractComponentPattern implements ComponentPattern {
 

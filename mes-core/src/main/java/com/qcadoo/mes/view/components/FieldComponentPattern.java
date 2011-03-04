@@ -32,11 +32,11 @@ import java.util.Map;
 import org.json.JSONException;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
+import com.qcadoo.model.api.FieldDefinition;
 
 public abstract class FieldComponentPattern extends AbstractComponentPattern {
 

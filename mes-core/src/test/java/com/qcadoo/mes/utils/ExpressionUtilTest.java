@@ -38,15 +38,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.internal.IntegerType;
 import com.qcadoo.mes.model.types.internal.StringType;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.internal.utils.ExpressionUtils;
 
 public class ExpressionUtilTest {
 
@@ -57,19 +58,19 @@ public class ExpressionUtilTest {
         dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
         given(dataDefinitionService.get(anyString(), anyString())).willReturn(dataDefinition);
-        ExpressionUtil.setStaticDataDefinitionService(dataDefinitionService);
+        ExpressionUtils.setStaticDataDefinitionService(dataDefinitionService);
     }
 
     @Test
     public void shouldReturnStringRepresentationOfOneFieldWithoutExpression() throws Exception {
         // given
-        Entity entity = new DefaultEntity("", "", 1L);
+        Entity entity = new DefaultEntity(null, 1L);
         entity.setField("name", "Mr T");
 
         FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name").withType(new StringType());
 
         // when
-        String value = ExpressionUtil.getValue(entity, Lists.newArrayList(fieldDefinition), null);
+        String value = ExpressionUtils.getValue(entity, Lists.newArrayList(fieldDefinition), null);
 
         // then
         assertEquals("Mr T", value);
@@ -78,7 +79,7 @@ public class ExpressionUtilTest {
     @Test
     public void shouldReturnJoinedStringRepresentationsOfMultipleFieldWithoutExpression() throws Exception {
         // given
-        Entity entity = new DefaultEntity("", "", 1L);
+        Entity entity = new DefaultEntity(null, 1L);
         entity.setField("name", "Mr T");
         entity.setField("age", 33);
         entity.setField("sex", "F");
@@ -88,7 +89,7 @@ public class ExpressionUtilTest {
         FieldDefinition fieldDefinitionSex = new FieldDefinitionImpl(null, "sex").withType(new StringType());
 
         // when
-        String value = ExpressionUtil.getValue(entity,
+        String value = ExpressionUtils.getValue(entity,
                 Lists.newArrayList(fieldDefinitionName, fieldDefinitionAge, fieldDefinitionSex), Locale.ENGLISH);
 
         // then
@@ -98,13 +99,13 @@ public class ExpressionUtilTest {
     @Test
     public void shouldGenerateValueOfTheSingleFieldColumn() throws Exception {
         // given
-        Entity entity = new DefaultEntity("", "", 1L);
+        Entity entity = new DefaultEntity(dataDefinition, 1L);
         entity.setField("name", "Mr T");
 
         given(dataDefinition.getField(eq("name")).getType().toString(eq("Mr T"), eq(Locale.ENGLISH))).willReturn("Mr X");
 
         // when
-        String value = ExpressionUtil.getValue(entity, "#name.toUpperCase()", Locale.ENGLISH);
+        String value = ExpressionUtils.getValue(entity, "#name.toUpperCase()", Locale.ENGLISH);
 
         // then
         assertEquals("MR X", value);
@@ -113,11 +114,11 @@ public class ExpressionUtilTest {
     @Test
     public void shouldGenerateValueOfEmptyField() throws Exception {
         // given
-        Entity entity = new DefaultEntity("", "", 1L);
+        Entity entity = new DefaultEntity(dataDefinition, 1L);
         entity.setField("name", null);
 
         // when
-        String value = ExpressionUtil.getValue(entity, "#name", null);
+        String value = ExpressionUtils.getValue(entity, "#name", null);
 
         // then
         assertNull(value);
@@ -126,7 +127,7 @@ public class ExpressionUtilTest {
     @Test
     public void shouldGenerateValueOfTheMultiFieldColumn() throws Exception {
         // given
-        Entity entity = new DefaultEntity("", "", 1L);
+        Entity entity = new DefaultEntity(dataDefinition, 1L);
         entity.setField("name", "Mr T");
         entity.setField("age", 33);
         entity.setField("sex", "F");
@@ -136,7 +137,7 @@ public class ExpressionUtilTest {
         given(dataDefinition.getField(eq("age")).getType().toString(eq(33), eq(Locale.ENGLISH))).willReturn("34");
 
         // when
-        String value = ExpressionUtil.getValue(entity,
+        String value = ExpressionUtils.getValue(entity,
                 "#name + \" -> (\" + (#age) + \") -> \" + (#sex == \"F\" ? \"female\" : \"male\")", Locale.ENGLISH);
 
         // then
@@ -146,7 +147,7 @@ public class ExpressionUtilTest {
     @Test
     public void shouldGenerateValueOfTheBelongsToColumn() throws Exception {
         // given
-        Entity product = new DefaultEntity("", "", 1L);
+        Entity product = new DefaultEntity(dataDefinition, 1L);
         product.setField("name", "P1");
 
         BelongsToType belongsToType = mock(BelongsToType.class);
@@ -155,11 +156,11 @@ public class ExpressionUtilTest {
         given(dataDefinition.getField(eq("product")).getType()).willReturn(belongsToType);
         given(belongsToType.getDataDefinition()).willReturn(dataDefinition);
 
-        Entity entity = new DefaultEntity("", "", 1L);
+        Entity entity = new DefaultEntity(dataDefinition, 1L);
         entity.setField("product", product);
 
         // when
-        String value = ExpressionUtil.getValue(entity, "#product['name']", Locale.ENGLISH);
+        String value = ExpressionUtils.getValue(entity, "#product['name']", Locale.ENGLISH);
 
         // then
         assertEquals("P1", value);

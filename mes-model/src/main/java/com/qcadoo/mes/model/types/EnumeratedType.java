@@ -24,7 +24,8 @@
 
 package com.qcadoo.mes.model.types;
 
-import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Object represents "enum" field type.
@@ -36,5 +37,5 @@ public interface EnumeratedType extends FieldType {
      * 
      * @return values
      */
-    List<String> values();
+    Map<String, String> values(Locale locale);
 }

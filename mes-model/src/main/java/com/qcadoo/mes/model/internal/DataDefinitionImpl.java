@@ -32,18 +32,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.qcadoo.mes.api.Entity;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import com.qcadoo.mes.internal.DataAccessService;
 import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.model.search.SearchCriteria;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.search.internal.SearchCriteriaImpl;
 import com.qcadoo.mes.model.types.internal.PriorityType;
-import com.qcadoo.mes.model.validators.EntityValidator;
-import com.qcadoo.mes.utils.ExpressionUtil;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.internal.api.EntityHookDefinition;
+import com.qcadoo.model.internal.api.InternalDataDefinition;
+import com.qcadoo.model.internal.utils.ExpressionUtils;
 
 public final class DataDefinitionImpl implements InternalDataDefinition {
 
@@ -59,15 +62,15 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     private FieldDefinition priorityField;
 
-    private final List<EntityValidator> validators = new ArrayList<EntityValidator>();
+    private final List<EntityHookDefinition> validators = new ArrayList<EntityHookDefinition>();
 
-    private final List<HookDefinition> createHooks = new ArrayList<HookDefinition>();
+    private final List<EntityHookDefinition> createHooks = new ArrayList<EntityHookDefinition>();
 
-    private final List<HookDefinition> updateHooks = new ArrayList<HookDefinition>();
+    private final List<EntityHookDefinition> updateHooks = new ArrayList<EntityHookDefinition>();
 
-    private final List<HookDefinition> saveHooks = new ArrayList<HookDefinition>();
+    private final List<EntityHookDefinition> saveHooks = new ArrayList<EntityHookDefinition>();
 
-    private final List<HookDefinition> copyHooks = new ArrayList<HookDefinition>();
+    private final List<EntityHookDefinition> copyHooks = new ArrayList<EntityHookDefinition>();
 
     private boolean deletable = true;
 
@@ -112,6 +115,9 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     @Override
     public Entity save(final Entity entity) {
+        if (!this.equals(entity.getDataDefinition())) {
+            throw new IllegalStateException("Incompatible types");
+        }
         return dataAccessService.save(this, entity);
     }
 
@@ -178,7 +184,7 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     @Override
     public String getEntityIdentifierField(final Entity entity) {
-        String identifier = ExpressionUtil.getValue(entity, identifierExpression);
+        String identifier = ExpressionUtils.getValue(entity, identifierExpression);
         if (identifier == null) {
             identifier = "id: " + entity.getId();
         }
@@ -186,58 +192,94 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     }
 
     @Override
-    public List<EntityValidator> getValidators() {
+    public List<EntityHookDefinition> getValidators() {
         return validators;
     }
 
-    public void withValidator(final EntityValidator validator) {
+    public List<EntityHookDefinition> getCopyHooks() {
+        return copyHooks;
+    }
+
+    public List<EntityHookDefinition> getCreateHooks() {
+        return createHooks;
+    }
+
+    public List<EntityHookDefinition> getSaveHooks() {
+        return saveHooks;
+    }
+
+    public List<EntityHookDefinition> getUpdateHooks() {
+        return updateHooks;
+    }
+
+    public void addValidatorHook(final EntityHookDefinition validator) {
         this.validators.add(validator);
     }
 
-    public void withCreateHook(final HookDefinition createHook) {
+    public void addCreateHook(final EntityHookDefinition createHook) {
         createHooks.add(createHook);
     }
 
-    public void withUpdateHook(final HookDefinition updateHook) {
+    public void addUpdateHook(final EntityHookDefinition updateHook) {
         updateHooks.add(updateHook);
     }
 
-    public void withSaveHook(final HookDefinition saveHook) {
+    public void addSaveHook(final EntityHookDefinition saveHook) {
         saveHooks.add(saveHook);
     }
 
-    public void withCopyHook(final HookDefinition copyHook) {
+    public void addCopyHook(final EntityHookDefinition copyHook) {
         copyHooks.add(copyHook);
     }
 
-    public void withIdentifierExpression(final String identifierExpression) {
+    public void setToStringExpression(final String identifierExpression) {
         this.identifierExpression = identifierExpression;
     }
 
     @Override
-    public void callCreateHook(final Entity entity) {
-        for (HookDefinition hook : createHooks) {
-            hook.callWithEntity(this, entity);
+    public boolean callCreateHook(final Entity entity) {
+        for (EntityHookDefinition hook : createHooks) {
+            if (!hook.call(entity)) {
+                return false;
+            }
         }
-        for (HookDefinition hook : saveHooks) {
-            hook.callWithEntity(this, entity);
+        for (EntityHookDefinition hook : saveHooks) {
+            if (!hook.call(entity)) {
+                return false;
+            }
         }
+        return true;
     }
 
     @Override
-    public void callUpdateHook(final Entity entity) {
-        for (HookDefinition hook : updateHooks) {
-            hook.callWithEntity(this, entity);
+    public boolean callUpdateHook(final Entity entity) {
+        for (EntityHookDefinition hook : updateHooks) {
+            if (!hook.call(entity)) {
+                return false;
+            }
         }
-        for (HookDefinition hook : saveHooks) {
-            hook.callWithEntity(this, entity);
+        for (EntityHookDefinition hook : saveHooks) {
+            if (!hook.call(entity)) {
+                return false;
+            }
         }
+        return true;
     }
 
     @Override
     public boolean callCopyHook(final Entity entity) {
-        for (HookDefinition hook : copyHooks) {
-            if (!hook.callWithEntityAndGetBoolean(this, entity)) {
+        for (EntityHookDefinition hook : copyHooks) {
+            if (!hook.call(entity)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean callValidators(final Entity entity) {
+        for (EntityHookDefinition hook : validators) {
+            if (!hook.call(entity)) {
                 return false;
             }
         }
@@ -266,7 +308,7 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
         return priorityField != null;
     }
 
-    public void withPriorityField(final FieldDefinition priorityField) {
+    public void addPriorityField(final FieldDefinition priorityField) {
         checkState(priorityField.getType() instanceof PriorityType, "priority field has wrong type");
         this.priorityField = priorityField;
     }
@@ -291,11 +333,11 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     }
 
     @Override
-    public boolean isCreatable() {
+    public boolean isInstertable() {
         return creatable;
     }
 
-    public void setCreatable(final boolean creatable) {
+    public void setInsertable(final boolean creatable) {
         this.creatable = creatable;
     }
 
@@ -313,7 +355,37 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     @Override
     public Entity create() {
-        return new DefaultEntity(getPluginIdentifier(), getName());
+        return new DefaultEntity(this);
+    }
+
+    @Override
+    public Entity create(final Long id) {
+        return new DefaultEntity(this, id);
+    }
+
+    @Override
+    public String toString() {
+        return getPluginIdentifier() + "." + getName();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(23, 41).append(name).append(pluginIdentifier).toHashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof DataDefinitionImpl)) {
+            return false;
+        }
+        DataDefinitionImpl other = (DataDefinitionImpl) obj;
+        return new EqualsBuilder().append(name, other.name).append(pluginIdentifier, other.pluginIdentifier).isEquals();
     }
 
 }

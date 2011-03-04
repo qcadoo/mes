@@ -30,9 +30,9 @@ import java.util.Locale;
 
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.utils.ExpressionUtil;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.internal.utils.ExpressionUtils;
 
 public final class GridComponentColumn {
 
@@ -108,9 +108,9 @@ public final class GridComponentColumn {
 
     public String getValue(final Entity entity, final Locale locale) {
         if (StringUtils.hasText(expression)) {
-            return ExpressionUtil.getValue(entity, expression, locale);
+            return ExpressionUtils.getValue(entity, expression, locale);
         } else {
-            String value = ExpressionUtil.getValue(entity, fields, locale);
+            String value = ExpressionUtils.getValue(entity, fields, locale);
             if (value != null) {
                 value = value.replaceAll("\n", " ");
             }

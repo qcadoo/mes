@@ -32,9 +32,9 @@ public class ModelXmlToHbmConverterTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        hbmInputStream = modelXmlToHbmConverter.convert(Utils.MODEL_XML_RESOURCE).iterator().next();
-        hbmInputSource = new InputSource(modelXmlToHbmConverter.convert(Utils.MODEL_XML_RESOURCE).iterator().next());
-        hbmDocument = buildControlDocument(new InputSource(modelXmlToHbmConverter.convert(Utils.MODEL_XML_RESOURCE).iterator()
+        hbmInputStream = modelXmlToHbmConverter.convert(Utils.FULL_XML_RESOURCE).iterator().next();
+        hbmInputSource = new InputSource(modelXmlToHbmConverter.convert(Utils.FULL_XML_RESOURCE).iterator().next());
+        hbmDocument = buildControlDocument(new InputSource(modelXmlToHbmConverter.convert(Utils.FULL_XML_RESOURCE).iterator()
                 .next()));
     }
 
@@ -61,9 +61,9 @@ public class ModelXmlToHbmConverterTest {
 
     @Test
     public void shouldCreateNameMergingPluginAndEntityNames() throws Exception {
-        assertNodeEquals("com.qcadoo.model.beans.FullFirstEntity", "/hibernate-mapping/class[1]/@entity-name");
-        assertNodeEquals("com.qcadoo.model.beans.FullSecondEntity", "/hibernate-mapping/class[2]/@entity-name");
-        assertNodeEquals("com.qcadoo.model.beans.FullThirdEntity", "/hibernate-mapping/class[3]/@entity-name");
+        assertNodeEquals("com.qcadoo.model.beans.full.FullFirstEntity", "/hibernate-mapping/class[1]/@name");
+        assertNodeEquals("com.qcadoo.model.beans.full.FullSecondEntity", "/hibernate-mapping/class[2]/@name");
+        assertNodeEquals("com.qcadoo.model.beans.full.FullThirdEntity", "/hibernate-mapping/class[3]/@name");
     }
 
     @Test
@@ -115,58 +115,68 @@ public class ModelXmlToHbmConverterTest {
 
     @Test
     public void shouldDefineProperties() throws Exception {
-        assertNodeCount(13, "/hibernate-mapping/class[1]/property");
+        assertNodeCount(12, "/hibernate-mapping/class[1]/property");
         assertNodeCount(0, "/hibernate-mapping/class[2]/property");
         assertNodeCount(0, "/hibernate-mapping/class[3]/property");
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fInteger' and @type='integer']");
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fString' and @type='string']");
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fText' and @type='text']");
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fDecimal' and @type='big_decimal']");
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fDatetime' and @type='timestamp']");
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fDate' and @type='date']");
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fBoolean' and @type='boolean']");
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fDictionary' and @type='string']");
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fOtherDictionary' and @type='string']");
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fEnum' and @type='string']");
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fPassword' and @type='string']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldInteger' and @type='integer']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldString' and @type='string']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldText' and @type='text']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldDecimal' and @type='big_decimal']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldDatetime' and @type='timestamp']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldDate' and @type='date']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldBoolean' and @type='boolean']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldDictionary' and @type='string']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldOtherDictionary' and @type='string']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldEnum' and @type='string']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldPassword' and @type='string']");
+    }
+
+    @Test
+    public void shouldIgnoreNotPersistentProperties() throws Exception {
+        assertNodeNotExists("/hibernate-mapping/class[1]/property[@name='fieldStringNotPersistent']");
+    }
+
+    @Test
+    public void shouldIgnorePropertiesWithExpression() throws Exception {
+        assertNodeNotExists("/hibernate-mapping/class[1]/property[@name='fieldStringWithExpression']");
     }
 
     @Test
     public void shouldDefinePriorityProperty() throws Exception {
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fPriority' and @type='integer' and @not-null='true']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldPriority' and @type='integer' and @not-null='true']");
     }
 
     @Test
     public void shouldDefineUniqueProperty() throws Exception {
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fInteger' and @unique='true']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldInteger' and @unique='true']");
         assertNodeCount(1, "/hibernate-mapping/class/property[@unique='true']");
     }
 
     @Test
     public void shouldDefineNotNullProperty() throws Exception {
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fInteger' and @not-null='true']");
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fString' and @not-null='true']");
-        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fPriority' and @not-null='true']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldInteger' and @not-null='true']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldString' and @not-null='true']");
+        assertNodeExists("/hibernate-mapping/class[1]/property[@name='fieldPriority' and @not-null='true']");
         assertNodeCount(3, "/hibernate-mapping/class/property[@not-null='true']");
     }
 
     @Test
     public void shouldDefineLengthProperty() throws Exception {
-        assertNodeEquals("3", "/hibernate-mapping/class[1]/property[@name='fInteger']/@length");
-        assertNodeEquals("2", "/hibernate-mapping/class[1]/property[@name='fString']/@length");
+        assertNodeEquals("3", "/hibernate-mapping/class[1]/property[@name='fieldInteger']/@length");
+        assertNodeEquals("2", "/hibernate-mapping/class[1]/property[@name='fieldString']/@length");
         assertNodeCount(2, "/hibernate-mapping/class/property/@length");
     }
 
     @Test
     public void shouldDefineScaleProperty() throws Exception {
-        assertNodeEquals("4", "/hibernate-mapping/class[1]/property[@name='fDecimal']/@scale");
+        assertNodeEquals("4", "/hibernate-mapping/class[1]/property[@name='fieldDecimal']/@scale");
         assertNodeCount(1, "/hibernate-mapping/class/property/@scale");
     }
 
     @Test
     public void shouldDefinePrecisionProperty() throws Exception {
-        assertNodeEquals("4", "/hibernate-mapping/class[1]/property[@name='fInteger']/@precision");
-        assertNodeEquals("2", "/hibernate-mapping/class[1]/property[@name='fDecimal']/@precision");
+        assertNodeEquals("4", "/hibernate-mapping/class[1]/property[@name='fieldInteger']/@precision");
+        assertNodeEquals("2", "/hibernate-mapping/class[1]/property[@name='fieldDecimal']/@precision");
         assertNodeCount(2, "/hibernate-mapping/class/property/@precision");
     }
 
@@ -175,18 +185,18 @@ public class ModelXmlToHbmConverterTest {
         assertNodeCount(2, "/hibernate-mapping/class[1]/many-to-one");
         assertNodeCount(2, "/hibernate-mapping/class[2]/many-to-one");
         assertNodeCount(1, "/hibernate-mapping/class[3]/many-to-one");
-        assertNodeExists("/hibernate-mapping/class[1]/many-to-one[@name='fSecondEntity']");
-        assertNodeExists("/hibernate-mapping/class[1]/many-to-one[@name='fSecondEntity2']");
-        assertNodeEquals("com.qcadoo.model.beans.OtherSecondEntity",
-                "/hibernate-mapping/class[1]/many-to-one[@name='fSecondEntity']/@entity-name");
-        assertNodeEquals("com.qcadoo.model.beans.OtherSecondEntity",
-                "/hibernate-mapping/class[1]/many-to-one[@name='fSecondEntity2']/@entity-name");
-        assertNodeEquals("none", "/hibernate-mapping/class[1]/many-to-one[@name='fSecondEntity']/@cascade");
-        assertNodeEquals("none", "/hibernate-mapping/class[1]/many-to-one[@name='fSecondEntity2']/@cascade");
-        assertNodeEquals("false", "/hibernate-mapping/class[1]/many-to-one[@name='fSecondEntity']/@lazy");
-        assertNodeEquals("proxy", "/hibernate-mapping/class[1]/many-to-one[@name='fSecondEntity2']/@lazy");
-        assertNodeEquals("false", "/hibernate-mapping/class[1]/many-to-one[@name='fSecondEntity']/@not-null");
-        assertNodeEquals("true", "/hibernate-mapping/class[1]/many-to-one[@name='fSecondEntity2']/@not-null");
+        assertNodeExists("/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity']");
+        assertNodeExists("/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity2']");
+        assertNodeEquals("com.qcadoo.model.beans.other.OtherSecondEntity",
+                "/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity']/@class");
+        assertNodeEquals("com.qcadoo.model.beans.other.OtherSecondEntity",
+                "/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity2']/@class");
+        assertNodeEquals("none", "/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity']/@cascade");
+        assertNodeEquals("none", "/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity2']/@cascade");
+        assertNodeEquals("false", "/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity']/@lazy");
+        assertNodeEquals("proxy", "/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity2']/@lazy");
+        assertNodeEquals("false", "/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity']/@not-null");
+        assertNodeEquals("true", "/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity2']/@not-null");
     }
 
     @Test
@@ -194,18 +204,18 @@ public class ModelXmlToHbmConverterTest {
         assertNodeCount(2, "/hibernate-mapping/class[1]/set");
         assertNodeCount(1, "/hibernate-mapping/class[2]/set");
         assertNodeCount(0, "/hibernate-mapping/class[3]/set");
-        assertNodeExists("/hibernate-mapping/class[1]/set[@name='fTree']");
-        assertNodeExists("/hibernate-mapping/class[1]/set[@name='fHasMany']");
-        assertNodeEquals("com.qcadoo.model.beans.FullSecondEntity",
-                "/hibernate-mapping/class[1]/set[@name='fTree']/one-to-many/@entity-name");
-        assertNodeEquals("com.qcadoo.model.beans.FullThirdEntity",
-                "/hibernate-mapping/class[1]/set[@name='fHasMany']/one-to-many/@entity-name");
-        assertNodeEquals("fFirstEntity", "/hibernate-mapping/class[1]/set[@name='fTree']/key/@column");
-        assertNodeEquals("fFirstEntity", "/hibernate-mapping/class[1]/set[@name='fHasMany']/key/@column");
-        assertNodeEquals("true", "/hibernate-mapping/class[1]/set[@name='fTree']/@lazy");
-        assertNodeEquals("true", "/hibernate-mapping/class[1]/set[@name='fHasMany']/@lazy");
-        assertNodeEquals("delete", "/hibernate-mapping/class[1]/set[@name='fTree']/@cascade");
-        assertNodeEquals("none", "/hibernate-mapping/class[1]/set[@name='fHasMany']/@cascade");
+        assertNodeExists("/hibernate-mapping/class[1]/set[@name='fieldTree']");
+        assertNodeExists("/hibernate-mapping/class[1]/set[@name='fieldHasMany']");
+        assertNodeEquals("com.qcadoo.model.beans.full.FullSecondEntity",
+                "/hibernate-mapping/class[1]/set[@name='fieldTree']/one-to-many/@class");
+        assertNodeEquals("com.qcadoo.model.beans.full.FullThirdEntity",
+                "/hibernate-mapping/class[1]/set[@name='fieldHasMany']/one-to-many/@class");
+        assertNodeEquals("fieldFirstEntity", "/hibernate-mapping/class[1]/set[@name='fieldTree']/key/@column");
+        assertNodeEquals("fieldFirstEntity", "/hibernate-mapping/class[1]/set[@name='fieldHasMany']/key/@column");
+        assertNodeEquals("true", "/hibernate-mapping/class[1]/set[@name='fieldTree']/@lazy");
+        assertNodeEquals("true", "/hibernate-mapping/class[1]/set[@name='fieldHasMany']/@lazy");
+        assertNodeEquals("delete", "/hibernate-mapping/class[1]/set[@name='fieldTree']/@cascade");
+        assertNodeEquals("none", "/hibernate-mapping/class[1]/set[@name='fieldHasMany']/@cascade");
     }
 
     private void assertNodeEquals(final String expectedValue, final String xpath) throws Exception {

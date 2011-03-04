@@ -72,18 +72,9 @@ public final class SelectComponentPattern extends FieldComponentPattern {
         }
 
         if (EnumType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
-            List<String> vals = ((EnumeratedType) getFieldDefinition().getType()).values();
-            for (String val : vals) {
-                String code = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(),
-                        getFieldDefinition().getName())
-                        + ".value." + val;
-                values.put(val, getTranslationService().translate(code, locale));
-            }
+            values.putAll(((EnumeratedType) getFieldDefinition().getType()).values(locale));
         } else if (DictionaryType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
-            List<String> vals = ((EnumeratedType) getFieldDefinition().getType()).values();
-            for (String val : vals) {
-                values.put(val, val);
-            }
+            values.putAll(((EnumeratedType) getFieldDefinition().getType()).values(locale));
         } else if (BelongsToType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
             throw new IllegalStateException("Select for belongsTo type is not supported");
         } else {

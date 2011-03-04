@@ -5,9 +5,9 @@
 		<value>category4</value>
 	</dictionary>
 	<model name="firstEntity">
-		<string name="fString" />
+		<string name="fieldString" />
 	</model>
 	<model name="secondEntity">
-		<string name="fString" />
+		<string name="fieldString" />
 	</model>
 </models>

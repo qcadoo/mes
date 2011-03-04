@@ -24,8 +24,9 @@
 
 package com.qcadoo.mes.beans.sample;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 public class CustomEntityService {
 
@@ -45,7 +46,8 @@ public class CustomEntityService {
         entity.setField("name", "delete");
     }
 
-    public boolean isEqualToQwerty(final DataDefinition dataDefinition, final Object object) {
+    public boolean isEqualToQwerty(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+            final Entity entity, final Object oldObject, final Object object) {
         return String.valueOf(object).equals("qwerty");
     }
 

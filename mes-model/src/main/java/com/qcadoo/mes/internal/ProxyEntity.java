@@ -32,10 +32,10 @@ import java.util.Map;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.validators.ErrorMessage;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 public final class ProxyEntity implements Entity {
 
@@ -200,6 +200,11 @@ public final class ProxyEntity implements Entity {
             loadEntity();
         }
         return entity.getTreeField(fieldName);
+    }
+
+    @Override
+    public DataDefinition getDataDefinition() {
+        return dataDefinition;
     }
 
     @Override

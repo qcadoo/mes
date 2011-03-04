@@ -24,22 +24,18 @@
 
 package com.qcadoo.mes.model.types.internal;
 
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.BelongsToType;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 public final class BelongsToEntityType implements BelongsToType {
 
     private final DataDefinitionService dataDefinitionService;
-
-    private final String lookupFieldName;
 
     private final String pluginIdentifier;
 
@@ -47,11 +43,10 @@ public final class BelongsToEntityType implements BelongsToType {
 
     private final boolean lazyLoading;
 
-    public BelongsToEntityType(final String pluginIdentifier, final String entityName, final String lookupFieldName,
+    public BelongsToEntityType(final String pluginIdentifier, final String entityName,
             final DataDefinitionService dataDefinitionService, final boolean lazyLoading) {
         this.pluginIdentifier = pluginIdentifier;
         this.entityName = entityName;
-        this.lookupFieldName = lookupFieldName;
         this.dataDefinitionService = dataDefinitionService;
         this.lazyLoading = lazyLoading;
     }
@@ -78,14 +73,16 @@ public final class BelongsToEntityType implements BelongsToType {
 
     @Override
     public Map<Long, String> lookup(final String prefix) {
-        SearchResult resultSet = getDataDefinition().find().orderAscBy(lookupFieldName).list();
-        Map<Long, String> possibleValues = new LinkedHashMap<Long, String>();
-
-        for (Entity entity : resultSet.getEntities()) {
-            possibleValues.put(entity.getId(), (String) entity.getField(lookupFieldName));
-        }
-
-        return possibleValues;
+        // TODO
+        // SearchResult resultSet = getDataDefinition().find().list();
+        // Map<Long, String> possibleValues = new LinkedHashMap<Long, String>();
+        //
+        // for (Entity entity : resultSet.getEntities()) {
+        // possibleValues.put(entity.getId(), (String) entity.getField(lookupFieldName));
+        // }
+        //
+        // return possibleValues;
+        return null;
     }
 
     @Override
@@ -110,11 +107,6 @@ public final class BelongsToEntityType implements BelongsToType {
     @Override
     public DataDefinition getDataDefinition() {
         return dataDefinitionService.get(pluginIdentifier, entityName);
-    }
-
-    @Override
-    public String getLookupFieldName() {
-        return lookupFieldName;
     }
 
     @Override

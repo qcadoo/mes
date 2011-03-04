@@ -30,16 +30,14 @@ import java.util.Map.Entry;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.model.types.internal.PasswordType;
-import com.qcadoo.mes.model.validators.EntityValidator;
-import com.qcadoo.mes.model.validators.FieldValidator;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.internal.api.InternalDataDefinition;
+import com.qcadoo.model.internal.api.InternalFieldDefinition;
 
 @Service
 public final class ValidationService {
@@ -58,7 +56,7 @@ public final class ValidationService {
         }
     }
 
-    private void copyReadOnlyAndMissingFields(final DataDefinition dataDefinition, final Entity genericEntity,
+    private void copyReadOnlyAndMissingFields(final InternalDataDefinition dataDefinition, final Entity genericEntity,
             final Entity existingGenericEntity) {
         for (Map.Entry<String, FieldDefinition> field : dataDefinition.getFields().entrySet()) {
             Object value = existingGenericEntity != null ? existingGenericEntity.getField(field.getKey()) : null;
@@ -68,9 +66,9 @@ public final class ValidationService {
             if (field.getValue().isReadOnly()) {
                 genericEntity.setField(field.getKey(), value);
             }
-            if (field.getValue().isReadOnlyOnUpdate() && genericEntity.getId() != null) {
-                genericEntity.setField(field.getKey(), value);
-            }
+            // if (field.getValue().isReadOnlyOnUpdate() && genericEntity.getId() != null) {
+            // genericEntity.setField(field.getKey(), value);
+            // }
             if (!genericEntity.getFields().containsKey(field.getKey()) && genericEntity.getId() != null) {
                 genericEntity.setField(field.getKey(), value);
             }
@@ -79,7 +77,8 @@ public final class ValidationService {
 
     private void parseAndValidateEntity(final InternalDataDefinition dataDefinition, final Entity genericEntity) {
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
-            Object validateFieldValue = parseAndValidateField(dataDefinition, fieldDefinitionEntry.getValue(),
+            Object validateFieldValue = parseAndValidateField(dataDefinition,
+                    (InternalFieldDefinition) fieldDefinitionEntry.getValue(),
                     genericEntity.getField(fieldDefinitionEntry.getKey()), genericEntity);
             genericEntity.setField(fieldDefinitionEntry.getKey(), validateFieldValue);
         }
@@ -88,23 +87,18 @@ public final class ValidationService {
             if (!genericEntity.isFieldValid(fieldDefinitionEntry.getKey())) {
                 continue;
             }
-            for (FieldValidator fieldValidator : fieldDefinitionEntry.getValue().getValidators()) {
-                fieldValidator.validate(dataDefinition, fieldDefinitionEntry.getValue(), genericEntity);
-                if (!genericEntity.isFieldValid(fieldDefinitionEntry.getKey())) {
-                    break;
-                }
-            }
+
+            ((InternalFieldDefinition) fieldDefinitionEntry.getValue()).callValidators(genericEntity, null,
+                    genericEntity.getField(fieldDefinitionEntry.getKey()));
         }
 
         if (genericEntity.isValid()) {
-            for (EntityValidator entityValidator : dataDefinition.getValidators()) {
-                entityValidator.validate(dataDefinition, genericEntity);
-            }
+            dataDefinition.callValidators(genericEntity);
         }
     }
 
-    private Object parseAndValidateValue(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
-            final Object value, final Entity validatedEntity) {
+    private Object parseAndValidateValue(final InternalDataDefinition dataDefinition,
+            final InternalFieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         Object fieldValue = null;
         if (value != null) {
             fieldValue = fieldDefinition.getType().toObject(fieldDefinition, value, validatedEntity);
@@ -112,16 +106,16 @@ public final class ValidationService {
                 return null;
             }
         }
-        for (FieldValidator fieldValidator : fieldDefinition.getValidators()) {
-            if (!fieldValidator.validate(dataDefinition, fieldDefinition, fieldValue, validatedEntity)) {
-                return null;
-            }
+
+        if (fieldDefinition.callValidators(validatedEntity, null, fieldValue)) {
+            return fieldValue;
+        } else {
+            return null;
         }
-        return fieldValue;
     }
 
-    private Object parseAndValidateBelongsToField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
-            final Object value, final Entity validatedEntity) {
+    private Object parseAndValidateBelongsToField(final InternalDataDefinition dataDefinition,
+            final InternalFieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         Entity referencedEntity;
 
         if (value != null) {
@@ -156,8 +150,8 @@ public final class ValidationService {
         return parseAndValidateValue(dataDefinition, fieldDefinition, referencedEntity, validatedEntity);
     }
 
-    private Object parseAndValidateField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
-            final Object value, final Entity validatedEntity) {
+    private Object parseAndValidateField(final InternalDataDefinition dataDefinition,
+            final InternalFieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         if (fieldDefinition.getType() instanceof BelongsToType) {
             return parseAndValidateBelongsToField(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validatedEntity);
         } else if (fieldDefinition.getType() instanceof HasManyType) {

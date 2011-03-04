@@ -47,10 +47,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.google.common.base.Preconditions;
-import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentPattern;
@@ -63,6 +61,8 @@ import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.internal.ViewComponentsResolver;
 import com.qcadoo.mes.view.internal.ViewDefinitionImpl;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 
 @Service
 public final class ViewDefinitionParserImpl implements ViewDefinitionParser {

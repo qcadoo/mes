@@ -26,7 +26,7 @@
 -->
 
 <models plugin="users" xmlns="http://www.qcadoo.com/model">
-	<model name="user">
+	<model name="user" class="com.qcadoo.mes.beans.users.UsersUser">
 		<string name="userName" >
 			<validatesPresence />
 			<validatesUniqueness />
@@ -55,7 +55,7 @@
 		<validatesWith class="com.qcadoo.mes.users.UserService" method="checkPassword" />
 		<toStringExpression expression="#userName"/>
 	</model>
-	<model name="group">
+	<model name="group" class="com.qcadoo.mes.beans.users.UsersGroup">
 		<string name="name" readonly="true">
 			<!-- TODO validatesPresenceOnCreate -->
 			<validatesPresence />

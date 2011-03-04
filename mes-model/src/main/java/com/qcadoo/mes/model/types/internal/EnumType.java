@@ -25,12 +25,14 @@
 package com.qcadoo.mes.model.types.internal;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.EnumeratedType;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 public final class EnumType implements EnumeratedType {
 
@@ -56,8 +58,15 @@ public final class EnumType implements EnumeratedType {
     }
 
     @Override
-    public List<String> values() {
-        return values;
+    public Map<String, String> values(final Locale locale) {
+        // TODO i18n
+        Map<String, String> values2 = new HashMap<String, String>();
+
+        for (String k : values) {
+            values2.put(k, k);
+        }
+
+        return values2;
     }
 
     @Override
@@ -67,13 +76,14 @@ public final class EnumType implements EnumeratedType {
 
     @Override
     public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
-        String stringValue = String.valueOf(value);
-        if (!values().contains(stringValue)) {
-            validatedEntity
-                    .addError(fieldDefinition, "core.validate.field.error.invalidDictionaryItem", String.valueOf(values()));
-            return null;
-        }
-        return stringValue;
+        // String stringValue = String.valueOf(value);
+        // if (!values().contains(stringValue)) {
+        // validatedEntity
+        // .addError(fieldDefinition, "core.validate.field.error.invalidDictionaryItem", String.valueOf(values()));
+        // return null;
+        // }
+        // return stringValue;
+        return null; // TODO
     }
 
     @Override

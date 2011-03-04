@@ -33,10 +33,10 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.types.internal.PriorityType;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.internal.api.InternalDataDefinition;
 
 @Service
 public final class PriorityService {

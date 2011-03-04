@@ -38,14 +38,14 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
+import com.qcadoo.model.api.Entity;
 
 public class PriorityTest extends DataAccessTest {
 
     @Before
     public void init() {
-        dataDefinition.withPriorityField(fieldDefinitionPriority);
+        dataDefinition.addPriorityField(fieldDefinitionPriority);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class PriorityTest extends DataAccessTest {
     @Test
     public void shouldAddPriorityToEntityOnCreate() throws Exception {
         // given
-        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
+        Entity entity = new DefaultEntity(dataDefinition);
         entity.setField("priority", 13);
         entity.setField("belongsTo", 1L);
 

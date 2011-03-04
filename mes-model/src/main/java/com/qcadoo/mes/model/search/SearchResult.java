@@ -26,7 +26,7 @@ package com.qcadoo.mes.model.search;
 
 import java.util.List;
 
-import com.qcadoo.mes.api.Entity;
+import com.qcadoo.model.api.Entity;
 
 /**
  * SearchResult contains list of entities, total number of entities and the search criteria used for produce this search result.

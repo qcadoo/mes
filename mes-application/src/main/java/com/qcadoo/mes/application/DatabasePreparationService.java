@@ -35,10 +35,10 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.beans.basic.BasicParameter;
-import com.qcadoo.mes.beans.menu.MenuMenuCategory;
-import com.qcadoo.mes.beans.menu.MenuMenuViewDefinitionItem;
-import com.qcadoo.mes.beans.menu.MenuViewDefinition;
+import com.qcadoo.mes.beans.plugins.basic.BasicParameter;
+import com.qcadoo.mes.beans.plugins.menu.MenuMenuCategory;
+import com.qcadoo.mes.beans.plugins.menu.MenuMenuViewDefinitionItem;
+import com.qcadoo.mes.beans.plugins.menu.MenuViewDefinition;
 import com.qcadoo.mes.beans.users.UsersGroup;
 import com.qcadoo.mes.beans.users.UsersUser;
 

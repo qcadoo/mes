@@ -24,7 +24,7 @@
 
 package com.qcadoo.mes.model.types;
 
-import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.model.api.DataDefinition;
 
 /**
  * Object represents "has many" field type.

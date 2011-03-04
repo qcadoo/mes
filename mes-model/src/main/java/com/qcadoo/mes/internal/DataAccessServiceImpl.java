@@ -53,13 +53,6 @@ import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.beans.genealogies.GenealogiesGenealogy;
-import com.qcadoo.mes.beans.genealogies.GenealogiesProductInBatch;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.aop.internal.Monitorable;
-import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.search.Order;
 import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.Restrictions;
@@ -68,7 +61,12 @@ import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.search.internal.SearchResultImpl;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.TreeType;
-import com.qcadoo.mes.model.validators.ErrorMessage;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.Monitorable;
+import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.model.internal.api.InternalDataDefinition;
 
 @Service
 public final class DataAccessServiceImpl implements DataAccessService {
@@ -301,7 +299,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     }
 
     public Entity copy(final InternalDataDefinition dataDefinition, final Entity sourceEntity) {
-        Entity targetEntity = new DefaultEntity(sourceEntity.getPluginIdentifier(), sourceEntity.getName());
+        Entity targetEntity = dataDefinition.create();
 
         for (String fieldName : dataDefinition.getFields().keySet()) {
             targetEntity.setField(fieldName, getCopyValueOfSimpleField(sourceEntity, dataDefinition, fieldName));
@@ -476,37 +474,37 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         // FIXME masz
 
-        if (searchCriteria.getDistinctProperty() != null) {
-            Class<?> entityClass = ((InternalDataDefinition) searchCriteria.getDataDefinition()).getClassForEntity();
-            Set<String> batches = new HashSet<String>();
-            List<Object> uniqueResults = new ArrayList<Object>();
-
-            if (GenealogiesGenealogy.class.equals(entityClass)) {
-                for (Object o : results) {
-                    String batch = ((GenealogiesGenealogy) o).getBatch();
-
-                    if (!batches.contains(batch)) {
-                        uniqueResults.add(o);
-                        batches.add(batch);
-                    }
-                }
-
-                results = uniqueResults;
-                totalNumberOfEntities = results.size();
-            } else if (GenealogiesProductInBatch.class.equals(entityClass)) {
-                for (Object o : results) {
-                    String batch = ((GenealogiesProductInBatch) o).getBatch();
-
-                    if (!batches.contains(batch)) {
-                        uniqueResults.add(o);
-                        batches.add(batch);
-                    }
-                }
-
-                results = uniqueResults;
-                totalNumberOfEntities = results.size();
-            }
-        }
+        // if (searchCriteria.getDistinctProperty() != null) {
+        // Class<?> entityClass = ((InternalDataDefinition) searchCriteria.getDataDefinition()).getClassForEntity();
+        // Set<String> batches = new HashSet<String>();
+        // List<Object> uniqueResults = new ArrayList<Object>();
+        //
+        // if (GenealogiesGenealogy.class.equals(entityClass)) {
+        // for (Object o : results) {
+        // String batch = ((GenealogiesGenealogy) o).getBatch();
+        //
+        // if (!batches.contains(batch)) {
+        // uniqueResults.add(o);
+        // batches.add(batch);
+        // }
+        // }
+        //
+        // results = uniqueResults;
+        // totalNumberOfEntities = results.size();
+        // } else if (GenealogiesProductInBatch.class.equals(entityClass)) {
+        // for (Object o : results) {
+        // String batch = ((GenealogiesProductInBatch) o).getBatch();
+        //
+        // if (!batches.contains(batch)) {
+        // uniqueResults.add(o);
+        // batches.add(batch);
+        // }
+        // }
+        //
+        // results = uniqueResults;
+        // totalNumberOfEntities = results.size();
+        // }
+        // }
 
         LOG.info("There are " + totalNumberOfEntities + " entities matching criteria " + searchCriteria);
 
