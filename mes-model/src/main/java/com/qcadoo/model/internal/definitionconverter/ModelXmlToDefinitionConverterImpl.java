@@ -51,7 +51,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.model.api.DataAccessService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.DictionaryService;
@@ -64,6 +63,7 @@ import com.qcadoo.model.api.utils.DateUtils;
 import com.qcadoo.model.internal.AbstractModelXmlConverter;
 import com.qcadoo.model.internal.DataDefinitionImpl;
 import com.qcadoo.model.internal.FieldDefinitionImpl;
+import com.qcadoo.model.internal.api.DataAccessService;
 import com.qcadoo.model.internal.api.EntityHookDefinition;
 import com.qcadoo.model.internal.api.ErrorMessageDefinition;
 import com.qcadoo.model.internal.api.FieldHookDefinition;
@@ -99,8 +99,8 @@ import com.qcadoo.model.internal.validators.UniqueValidator;
 @Service
 public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlConverter implements ModelXmlToDefinitionConverter { // ,
 
-                                                                                                                                  // ApplicationListener<ContextRefreshedEvent>
-                                                                                                                                  // {
+    // ApplicationListener<ContextRefreshedEvent>
+    // {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelXmlToDefinitionConverterImpl.class);
 
@@ -156,8 +156,10 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
             while (reader.hasNext() && reader.next() > 0) {
                 if (isTagStarted(reader, TAG_MODELS)) {
                     pluginIdentifier = getPluginIdentifier(reader);
+                } else if (isTagStarted(reader, TAG_DICTIONARY)) {
+                    getDictionary(reader, pluginIdentifier);
                 } else if (isTagStarted(reader, TAG_MODEL)) {
-                    dataDefinitions.add(parse(reader, pluginIdentifier));
+                    dataDefinitions.add(getDataDefinition(reader, pluginIdentifier));
                 }
             }
 
@@ -171,8 +173,29 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
         }
     }
 
-    private DataDefinition parse(final XMLStreamReader reader, final String pluginIdentifier) throws XMLStreamException,
+    private void getDictionary(final XMLStreamReader reader, final String pluginIdentifier) throws XMLStreamException,
             IllegalStateException {
+
+        // TODO dictionaries
+
+        System.out.println(" ----> " + getStringAttribute(reader, "name"));
+        getBooleanAttribute(reader, "modificable", true);
+
+        while (reader.hasNext() && reader.next() > 0) {
+            if (isTagEnded(reader, TAG_DICTIONARY)) {
+                break;
+            }
+
+            if (isTagStarted(reader, "value")) {
+                System.out.println(" ----> " + reader.getText());
+            }
+
+        }
+
+    }
+
+    private DataDefinition getDataDefinition(final XMLStreamReader reader, final String pluginIdentifier)
+            throws XMLStreamException, IllegalStateException {
         DataDefinitionImpl dataDefinition = getModelDefinition(reader, pluginIdentifier);
 
         LOG.info("Creating dataDefinition " + dataDefinition);
@@ -189,7 +212,6 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
             }
 
             addModelElement(reader, pluginIdentifier, dataDefinition, tag);
-
         }
 
         for (EntityHookDefinition hook : dataDefinition.getCopyHooks()) {

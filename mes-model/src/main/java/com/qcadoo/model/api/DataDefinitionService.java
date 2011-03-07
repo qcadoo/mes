@@ -26,7 +26,6 @@ package com.qcadoo.model.api;
 
 import java.util.List;
 
-
 /**
  * Service for manipulating data definitions.
  * 
@@ -60,6 +59,7 @@ public interface DataDefinitionService {
      * @param dataDefinition
      *            data definition
      */
+    // TODO not public API
     void save(DataDefinition dataDefinition);
 
     /**
@@ -68,6 +68,7 @@ public interface DataDefinitionService {
      * @param dataDefinition
      *            data definition
      */
+    // TODO not public API
     void delete(DataDefinition dataDefinition);
 
 }

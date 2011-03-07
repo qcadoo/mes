@@ -76,6 +76,7 @@ public interface DataDefinition {
      * @param id
      *            set of id
      */
+    // TODO varargs
     Set<Long> copy(final Set<Long> id);
 
     /**
@@ -92,6 +93,7 @@ public interface DataDefinition {
      * @param id
      *            set of id
      */
+    // TODO varargs
     void delete(final Set<Long> id);
 
     /**
@@ -153,6 +155,7 @@ public interface DataDefinition {
      *            entity
      * @return entity identifier
      */
+    // TODO it should be entity's method
     String getEntityIdentifierField(final Entity entity);
 
     /**
@@ -160,6 +163,7 @@ public interface DataDefinition {
      * 
      * @return priority field's definion, null if entity is not prioritizable
      */
+    // TODO it is neccessary to put it in API?
     FieldDefinition getPriorityField();
 
     /**

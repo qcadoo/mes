@@ -54,6 +54,7 @@ import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.model.beans.plugins.PluginsPlugin;
 
 @Component
+// TODO after implementing plugins, reimplement it
 public final class PluginResolver implements ApplicationListener<ContextRefreshedEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginResolver.class);
@@ -77,7 +78,6 @@ public final class PluginResolver implements ApplicationListener<ContextRefreshe
             Resource[] resources = event.getApplicationContext().getResources("classpath*:plugin.xml");
             for (Resource resource : resources) {
                 if (resource.isReadable()) {
-                    // TODO
                     // parse(resource.getInputStream(), resource.getURL().toString());
                 }
             }

@@ -174,7 +174,6 @@ public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter impl
 
     private void parse(final XMLStreamReader reader, final CtClass ctClass, final String pluginIdentifier)
             throws XMLStreamException, IllegalStateException {
-
         LOG.info("Defining class " + ctClass.getName());
 
         createField(ctClass, "id", Long.class.getCanonicalName());

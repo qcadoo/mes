@@ -261,12 +261,11 @@ public class FormComponentState extends AbstractContainerState {
         for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
             FieldDefinition fieldDefinition = getDataDefinition().getField(field.getKey());
 
-            // TODO
-            if (fieldDefinition.isRequired()) { // || (entityId == null && fieldDefinition.isRequiredOnCreate())) {
+            if (fieldDefinition.isRequired()) {
                 field.getValue().setRequired(true);
             }
 
-            if (fieldDefinition.isReadOnly()) { // || (entityId != null && fieldDefinition.isReadOnlyOnUpdate())) {
+            if (fieldDefinition.isReadOnly()) {
                 field.getValue().setEnabled(false);
             }
         }
@@ -324,8 +323,7 @@ public class FormComponentState extends AbstractContainerState {
         for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
             FieldDefinition fieldDefinition = getDataDefinition().getField(field.getKey());
 
-            // TODO
-            if (!(fieldDefinition.isReadOnly())) { // || (entityId != null && fieldDefinition.isReadOnlyOnUpdate()))) {
+            if (!(fieldDefinition.isReadOnly())) {
                 field.getValue().setEnabled(enabled);
                 field.getValue().requestComponentUpdateState();
             }

@@ -83,23 +83,23 @@ public final class TestDataLoader {
     @Value("${addOtherUsers}")
     private boolean addOtherUsers;
 
-    // public void loadTestData() {
-    // readDataFromXML("units", new String[] { "name" });
-    //
-    // if (addOtherUsers) {
-    // readDataFromXML("users", USER_ATTRIBUTES);
-    // }
-    // readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
-    // readDataFromXML("products", PRODUCT_ATTRIBUTES);
-    // readDataFromXML("machines", MACHINE_ATTRIBUTES);
-    // readDataFromXML("staff", STAFF_ATTRIBUTES);
-    // readDataFromXML("operations", OPERATION_ATTRIBUTES);
-    // readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
-    // readDataFromXML("orders", ORDER_ATTRIBUTES);
-    // addMaterialRequirements();
-    // addWorkPlans();
-    // }
-    //
+    public void loadTestData() {
+        // readDataFromXML("units", new String[] { "name" });
+        //
+        // if (addOtherUsers) {
+        // readDataFromXML("users", USER_ATTRIBUTES);
+        // }
+        // readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
+        // readDataFromXML("products", PRODUCT_ATTRIBUTES);
+        // readDataFromXML("machines", MACHINE_ATTRIBUTES);
+        // readDataFromXML("staff", STAFF_ATTRIBUTES);
+        // readDataFromXML("operations", OPERATION_ATTRIBUTES);
+        // readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
+        // readDataFromXML("orders", ORDER_ATTRIBUTES);
+        // addMaterialRequirements();
+        // addWorkPlans();
+    }
+
     // private File getXmlFile(final String type) throws IOException {
     // return applicationContext.getResource("classpath:/com/qcadoo/mes/testdata/" + type + "_" + locale + ".xml").getFile();
     // }

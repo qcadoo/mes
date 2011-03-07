@@ -25,7 +25,7 @@ public class Application implements ApplicationListener<ContextRefreshedEvent> {
 
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-        // TODO
+        // TODO after implementing plugins - move it to proper place
         ((ModelXmlToDefinitionConverterImpl) modelXmlToDefinitionConverter).onApplicationEvent(event);
         ((ViewDefinitionParserImpl) viewDefinitionParser).onApplicationEvent(event);
         menuService.onApplicationEvent(event);

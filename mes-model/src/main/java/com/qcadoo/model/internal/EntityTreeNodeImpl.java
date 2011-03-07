@@ -52,7 +52,7 @@ public class EntityTreeNodeImpl implements EntityTreeNode {
     }
 
     @Override
-    public String getEntityType() {
+    public String getEntityNoteType() {
         return getStringField("entityType");
     }
 

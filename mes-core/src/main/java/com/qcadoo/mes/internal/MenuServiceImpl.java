@@ -50,6 +50,7 @@ import com.qcadoo.model.api.aop.Monitorable;
 import com.qcadoo.model.api.search.Restrictions;
 
 @Service
+// TODO after implementing plugins, reimplement it
 public final class MenuServiceImpl implements MenuService { // , ApplicationListener<ContextRefreshedEvent> {
 
     // private static final Logger LOG = LoggerFactory.getLogger(MenuServiceImpl.class);
@@ -205,7 +206,7 @@ public final class MenuServiceImpl implements MenuService { // , ApplicationList
 
     private boolean belongsToActivePlugin(final String pluginIdentifier) {
         return true;
-        // TODO
+        // TODO after implementing plugins it should not be neccessary
         // return pluginManagementService.getByIdentifierAndStatus(pluginIdentifier, PluginStatus.ACTIVE.getValue()) != null;
     }
 

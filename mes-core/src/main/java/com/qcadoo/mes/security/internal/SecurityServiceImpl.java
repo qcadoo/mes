@@ -24,41 +24,47 @@
 
 package com.qcadoo.mes.security.internal;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.SecurityService;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.aop.Monitorable;
-import com.qcadoo.model.beans.users.UsersUser;
+import com.qcadoo.model.api.search.Restrictions;
 
 @Service
 public final class SecurityServiceImpl implements SecurityService {
 
     @Autowired
-    private SessionFactory sessionFactory;
-
-    @Override
-    @Transactional(readOnly = true)
-    @Monitorable
-    public UsersUser getCurrentUser() {
-        String login = SecurityContextHolder.getContext().getAuthentication().getName();
-        UsersUser user = (UsersUser) sessionFactory.getCurrentSession().createCriteria(UsersUser.class)
-                .add(Restrictions.eq("userName", login)).uniqueResult();
-        checkNotNull(user, "Current user with login %s cannot be found", login);
-        return user;
-    }
+    private DataDefinitionService dataDefinitionService;
 
     @Override
     @Transactional(readOnly = true)
     @Monitorable
     public String getCurrentUserName() {
-        return getCurrentUser().getUserName();
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Entity> users = dataDefinitionService.get("users", "user").find().restrictedWith(Restrictions.eq("userName", login))
+                .withMaxResults(1).list().getEntities();
+        checkState(users.size() > 0, "Current user with login %s cannot be found", login);
+        return users.get(0).getStringField("userName");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Monitorable
+    public Long getCurrentUserId() {
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Entity> users = dataDefinitionService.get("users", "user").find().restrictedWith(Restrictions.eq("userName", login))
+                .withMaxResults(1).list().getEntities();
+        checkState(users.size() > 0, "Current user with login %s cannot be found", login);
+        return users.get(0).getId();
     }
 
 }

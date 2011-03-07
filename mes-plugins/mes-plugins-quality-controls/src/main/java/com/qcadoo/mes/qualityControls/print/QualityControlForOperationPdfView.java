@@ -49,7 +49,6 @@ import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.beans.users.UsersUser;
 
 public class QualityControlForOperationPdfView extends ReportPdfView {
 
@@ -65,8 +64,7 @@ public class QualityControlForOperationPdfView extends ReportPdfView {
         String documentTitle = getTranslationService().translate("qualityControls.qualityControlForOperation.report.title",
                 locale);
         String documentAuthor = getTranslationService().translate("qualityControls.qualityControl.report.author", locale);
-        UsersUser user = securityService.getCurrentUser();
-        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
+        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
         qualityControlsReportService.addQualityControlReportHeader(document, model, locale);
 
         List<Entity> orders = qualityControlsReportService.getOrderSeries(model, "qualityControlsForOperation");

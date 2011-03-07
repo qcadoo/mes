@@ -26,6 +26,10 @@
 -->
 
 <models plugin="basic" xmlns="http://www.qcadoo.com/model">
+	<dictionary name="categories" />
+	<dictionary name="shifts" />
+	<dictionary name="posts" />
+	<dictionary name="units" />
 	<model name="machine" deletable="true">
 		<string name="name" required="true">
 			<validatesLength max="2048"/>

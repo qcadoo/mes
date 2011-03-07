@@ -54,7 +54,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.model.api.CopyException;
-import com.qcadoo.model.api.DataAccessService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -68,6 +67,7 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.types.HasManyType;
 import com.qcadoo.model.api.types.TreeType;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.model.internal.api.DataAccessService;
 import com.qcadoo.model.internal.api.InternalDataDefinition;
 import com.qcadoo.model.internal.search.Order;
 import com.qcadoo.model.internal.search.SearchResultImpl;

@@ -49,7 +49,7 @@ public class UserProfileController {
 
     @RequestMapping(value = "userProfile", method = RequestMethod.GET)
     public ModelAndView getAccessDeniedPageView(final Locale locale) {
-        JSONObject json = new JSONObject(ImmutableMap.of("window.user.id", securityService.getCurrentUser().getId().toString()));
+        JSONObject json = new JSONObject(ImmutableMap.of("window.user.id", securityService.getCurrentUserId().toString()));
         Map<String, String> arguments = ImmutableMap.of("context", json.toString());
         return crudController.prepareView("users", "profile", arguments, locale);
     }

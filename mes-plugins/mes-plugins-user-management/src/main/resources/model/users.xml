@@ -34,6 +34,7 @@
 		<string name="email" />
 		<string name="firstName" />
 		<string name="lastName" />
+		<boolean name="enabled" default="true" />
 		<string name="description" >
 			<validatesLength max="255"/>
 		</string>
@@ -45,9 +46,9 @@
 		<toString expression="#userName"/>
 	</model>
 	<model name="group">
-		<string name="name" readonly="true" required="true" unique="true" /><!-- TODO validatesPresenceOnCreate -->
+		<string name="name" required="true" unique="true" /><!-- TODO validatesPresenceOnCreate readonly="true" -->
 		<string name="description" />
-		<string name="role" readonly="true" required="true" /><!-- TODO validatesPresenceOnCreate -->
+		<string name="role" required="true" /><!-- TODO validatesPresenceOnCreate readonly="true" -->
 		<toString expression="#name"/>
 	</model>
 </models>

@@ -35,13 +35,13 @@ import java.util.Set;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.qcadoo.model.api.DataAccessService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteria;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.utils.ExpressionUtils;
+import com.qcadoo.model.internal.api.DataAccessService;
 import com.qcadoo.model.internal.api.EntityHookDefinition;
 import com.qcadoo.model.internal.api.InternalDataDefinition;
 import com.qcadoo.model.internal.search.SearchCriteriaImpl;

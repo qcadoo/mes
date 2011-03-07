@@ -46,7 +46,6 @@ import org.springframework.context.ApplicationContext;
 
 import com.qcadoo.model.CustomHook;
 import com.qcadoo.model.Utils;
-import com.qcadoo.model.api.DataAccessService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.DictionaryService;
@@ -54,6 +53,7 @@ import com.qcadoo.model.api.types.BelongsToType;
 import com.qcadoo.model.api.types.HasManyType;
 import com.qcadoo.model.api.types.TreeType;
 import com.qcadoo.model.internal.DataDefinitionServiceImpl;
+import com.qcadoo.model.internal.api.DataAccessService;
 import com.qcadoo.model.internal.api.EntityHookDefinition;
 import com.qcadoo.model.internal.api.FieldHookDefinition;
 import com.qcadoo.model.internal.api.InternalDataDefinition;

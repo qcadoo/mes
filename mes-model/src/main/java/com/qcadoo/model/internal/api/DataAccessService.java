@@ -22,13 +22,13 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.model.api;
+package com.qcadoo.model.internal.api;
 
 import java.util.Set;
 
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteria;
 import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.model.internal.api.InternalDataDefinition;
 
 public interface DataAccessService {
 

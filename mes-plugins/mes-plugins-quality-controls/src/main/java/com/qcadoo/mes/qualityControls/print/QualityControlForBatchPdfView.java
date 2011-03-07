@@ -50,7 +50,6 @@ import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.beans.users.UsersUser;
 
 public class QualityControlForBatchPdfView extends ReportPdfView {
 
@@ -65,8 +64,7 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
             final PdfWriter writer) throws DocumentException, IOException {
         String documentTitle = getTranslationService().translate("qualityControls.qualityControlForBatch.report.title", locale);
         String documentAuthor = getTranslationService().translate("qualityControls.qualityControl.report.author", locale);
-        UsersUser user = securityService.getCurrentUser();
-        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
+        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
 
         qualityControlsReportService.addQualityControlReportHeader(document, model, locale);
         List<Entity> orders = qualityControlsReportService.getOrderSeries(model, "qualityControlsForBatch");

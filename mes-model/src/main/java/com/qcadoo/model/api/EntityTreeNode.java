@@ -7,6 +7,6 @@ public interface EntityTreeNode extends Entity {
 
     List<EntityTreeNode> getChildren();
 
-    String getEntityType();
+    String getEntityNoteType();
 
 }

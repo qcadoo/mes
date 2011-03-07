@@ -15,6 +15,8 @@ public abstract class AbstractModelXmlConverter {
 
     protected static final String TAG_MODELS = "models";
 
+    protected static final String TAG_DICTIONARY = "dictionary";
+
     protected static final String TAG_MODEL = "model";
 
     protected static final String TAG_PLUGIN = "plugin";

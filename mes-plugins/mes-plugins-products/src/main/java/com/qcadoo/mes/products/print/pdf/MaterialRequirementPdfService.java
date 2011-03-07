@@ -50,7 +50,6 @@ import com.qcadoo.mes.products.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.beans.users.UsersUser;
 
 @Service
 public final class MaterialRequirementPdfService extends PdfDocumentService {
@@ -69,9 +68,8 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         String documenTitle = getTranslationService().translate("products.materialRequirement.report.title", locale);
         String documentAuthor = getTranslationService().translate("products.materialRequirement.report.author", locale);
-        UsersUser user = securityService.getCurrentUser();
         PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
-                (Date) entity.getField("date"), user);
+                (Date) entity.getField("date"), securityService.getCurrentUserName());
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(getTranslationService().translate("products.materialRequirement.report.paragrah", locale),
                 PdfUtil.getArialBold11Dark()));

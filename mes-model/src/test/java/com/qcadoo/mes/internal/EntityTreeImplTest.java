@@ -191,7 +191,7 @@ public class EntityTreeImplTest {
         // then
         assertEquals(1, node.getChildren().size());
         assertEquals(child, node.getChildren().get(0));
-        assertEquals("entityType1", node.getEntityType());
+        assertEquals("entityType1", node.getEntityNoteType());
     }
 
 }

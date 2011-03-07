@@ -47,7 +47,6 @@ import com.qcadoo.mes.utils.pdf.ReportPdfView;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
-import com.qcadoo.model.beans.users.UsersUser;
 
 public class GenealogyForComponentView extends ReportPdfView {
 
@@ -64,8 +63,7 @@ public class GenealogyForComponentView extends ReportPdfView {
                 Long.valueOf(model.get("value").toString()));
         String documentTitle = getTranslationService().translate("genealogies.genealogyForComponent.report.title", locale);
         String documentAuthor = getTranslationService().translate("genealogies.genealogyForComponent.report.author", locale);
-        UsersUser user = securityService.getCurrentUser();
-        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
+        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
         addTables(document, entity, locale);
         String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);

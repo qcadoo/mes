@@ -60,7 +60,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.utils.DateUtils;
-import com.qcadoo.model.beans.users.UsersUser;
 
 @Service
 public class ReportDataService {
@@ -612,9 +611,8 @@ public class ReportDataService {
             throws DocumentException {
         String documenTitle = translationService.translate("products.workPlan.report.title", locale);
         String documentAuthor = translationService.translate("products.materialRequirement.report.author", locale);
-        UsersUser user = securityService.getCurrentUser();
         PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
-                (Date) entity.getField("date"), user);
+                (Date) entity.getField("date"), securityService.getCurrentUserName());
         // document.add(generateBarcode(entity.getField("name").toString()));
         document.add(new Paragraph(translationService.translate("products.workPlan.report.paragrah", locale), PdfUtil
                 .getArialBold11Dark()));

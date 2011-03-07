@@ -39,7 +39,7 @@ public interface SearchCriteriaBuilder {
      * Find entities using this criteria.
      * 
      * @return search result
-     * @see com.qcadoo.model.api.DataAccessService#find(SearchCriteria)
+     * @see com.qcadoo.model.internal.api.DataAccessService#find(SearchCriteria)
      */
     SearchResult list();
 
