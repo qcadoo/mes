@@ -24,7 +24,7 @@
 
 package com.qcadoo.mes.api;
 
-import com.qcadoo.mes.beans.users.UsersUser;
+import com.qcadoo.model.beans.users.UsersUser;
 
 /**
  * Service for getting current user.

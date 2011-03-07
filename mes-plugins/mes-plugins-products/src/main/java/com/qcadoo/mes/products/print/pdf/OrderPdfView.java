@@ -38,10 +38,10 @@ import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.beans.users.UsersUser;
 
 public final class OrderPdfView extends ReportPdfView {
 

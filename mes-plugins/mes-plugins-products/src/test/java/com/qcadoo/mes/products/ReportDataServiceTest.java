@@ -40,15 +40,17 @@ import java.util.Map.Entry;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.internal.EntityList;
-import com.qcadoo.mes.internal.EntityTree;
-import com.qcadoo.mes.model.search.Restriction;
-import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.search.Restriction;
+import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.EntityListImpl;
+import com.qcadoo.model.internal.EntityTreeImpl;
 
 public class ReportDataServiceTest {
 
@@ -64,7 +66,7 @@ public class ReportDataServiceTest {
 
     private final List<Entity> entityTreeListTechnologyWithoutRoot = new ArrayList<Entity>();
 
-    private final EntityTree entityTree = new EntityTree(dataDefinition, "technology", new Long(1));
+    private final EntityTree entityTree = new EntityTreeImpl(dataDefinition, "technology", new Long(1));
 
     private final List<Entity> products1 = new ArrayList<Entity>();
 
@@ -114,13 +116,13 @@ public class ReportDataServiceTest {
     public void init() {
         reportDataService = new ReportDataService();
 
-        EntityTree entityTreeSubTechnology = new EntityTree(dataDefinition, "technology", new Long(2));
-        EntityList componentsList1 = new EntityList(dataDefinition, "operationProductInComponent", new Long(1));
-        EntityList componentsList2 = new EntityList(dataDefinition, "operationProductInComponent", new Long(2));
-        EntityList componentsList3 = new EntityList(dataDefinition, "operationProductInComponent", new Long(3));
-        EntityList componentsOutList1 = new EntityList(dataDefinition, "operationProductOutComponent", new Long(11));
-        EntityList componentsOutList2 = new EntityList(dataDefinition, "operationProductOutComponent", new Long(12));
-        EntityList componentsOutList3 = new EntityList(dataDefinition, "operationProductOutComponent", new Long(13));
+        EntityTree entityTreeSubTechnology = new EntityTreeImpl(dataDefinition, "technology", new Long(2));
+        EntityList componentsList1 = new EntityListImpl(dataDefinition, "operationProductInComponent", new Long(1));
+        EntityList componentsList2 = new EntityListImpl(dataDefinition, "operationProductInComponent", new Long(2));
+        EntityList componentsList3 = new EntityListImpl(dataDefinition, "operationProductInComponent", new Long(3));
+        EntityList componentsOutList1 = new EntityListImpl(dataDefinition, "operationProductOutComponent", new Long(11));
+        EntityList componentsOutList2 = new EntityListImpl(dataDefinition, "operationProductOutComponent", new Long(12));
+        EntityList componentsOutList3 = new EntityListImpl(dataDefinition, "operationProductOutComponent", new Long(13));
 
         Entity machine1 = new DefaultEntity(dataDefinition);
         machine1.setId(new Long(1));
@@ -270,7 +272,7 @@ public class ReportDataServiceTest {
         order.setField("technology", technologyForQuantityPerTechnologyAlghorithm);
         order.setField("plannedQuantity", new BigDecimal("5"));
         workPlanComponent.setField("order", order);
-        EntityList componentsList = new EntityList(dataDefinition, "workPlan", new Long(15));
+        EntityList componentsList = new EntityListImpl(dataDefinition, "workPlan", new Long(15));
         workPlan.setField("orders", componentsList);
         components.add(workPlanComponent);
 
@@ -312,7 +314,7 @@ public class ReportDataServiceTest {
         Entity order = new DefaultEntity(dataDefinition);
         order.setField("technology", null);
         materialRequirementComponent.setField("order", order);
-        EntityList componentsList = new EntityList(dataDefinition, "materialRequirement", new Long(1));
+        EntityList componentsList = new EntityListImpl(dataDefinition, "materialRequirement", new Long(1));
         materialRequirement.setField("orders", componentsList);
         List<Entity> components = new ArrayList<Entity>();
         components.add(materialRequirementComponent);
@@ -335,7 +337,7 @@ public class ReportDataServiceTest {
         order.setField("technology", new DefaultEntity(dataDefinition));
         order.setField("plannedQuantity", null);
         materialRequirementComponent.setField("order", order);
-        EntityList componentsList = new EntityList(dataDefinition, "materialRequirement", new Long(1));
+        EntityList componentsList = new EntityListImpl(dataDefinition, "materialRequirement", new Long(1));
         materialRequirement.setField("orders", componentsList);
         List<Entity> components = new ArrayList<Entity>();
         components.add(materialRequirementComponent);
@@ -358,7 +360,7 @@ public class ReportDataServiceTest {
         order.setField("technology", new DefaultEntity(dataDefinition));
         order.setField("plannedQuantity", BigDecimal.ZERO);
         materialRequirementComponent.setField("order", order);
-        EntityList componentsList = new EntityList(dataDefinition, "materialRequirement", new Long(1));
+        EntityList componentsList = new EntityListImpl(dataDefinition, "materialRequirement", new Long(1));
         materialRequirement.setField("orders", componentsList);
         List<Entity> components = new ArrayList<Entity>();
         components.add(materialRequirementComponent);
@@ -383,7 +385,7 @@ public class ReportDataServiceTest {
         order.setField("technology", technologyForQuantityPerTechnologyAlghorithm);
         order.setField("plannedQuantity", BigDecimal.ONE);
         materialRequirementComponent.setField("order", order);
-        EntityList componentsList = new EntityList(dataDefinition, "materialRequirement", new Long(15));
+        EntityList componentsList = new EntityListImpl(dataDefinition, "materialRequirement", new Long(15));
         materialRequirement.setField("orders", componentsList);
         List<Entity> components = new ArrayList<Entity>();
         components.add(materialRequirementComponent);
@@ -1065,7 +1067,7 @@ public class ReportDataServiceTest {
         Entity order = new DefaultEntity(dataDefinition);
         order.setField("technology", null);
         workPlanComponent.setField("order", order);
-        EntityList componentsList = new EntityList(dataDefinition, "workPlan", new Long(1));
+        EntityList componentsList = new EntityListImpl(dataDefinition, "workPlan", new Long(1));
         workPlan.setField("orders", componentsList);
         List<Entity> components = new ArrayList<Entity>();
         components.add(workPlanComponent);

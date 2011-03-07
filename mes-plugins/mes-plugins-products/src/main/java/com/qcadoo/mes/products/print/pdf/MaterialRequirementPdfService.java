@@ -44,14 +44,13 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.beans.users.UsersUser;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.mes.products.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.beans.users.UsersUser;
 
 @Service
 public final class MaterialRequirementPdfService extends PdfDocumentService {
@@ -91,10 +90,10 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         productHeader.add(getTranslationService().translate("products.product.name.label", locale));
         productHeader.add(getTranslationService().translate("products.product.unit.label", locale));
         productHeader.add(getTranslationService().translate("products.technologyOperationComponent.quantity.label", locale));
-        addTechnologySeries(document, (DefaultEntity) entity, productHeader);
+        addTechnologySeries(document, entity, productHeader);
     }
 
-    private void addTechnologySeries(final Document document, final DefaultEntity entity, final List<String> productHeader)
+    private void addTechnologySeries(final Document document, final Entity entity, final List<String> productHeader)
             throws DocumentException {
         Map<Entity, BigDecimal> products = reportDataService.prepareTechnologySeries(entity);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());

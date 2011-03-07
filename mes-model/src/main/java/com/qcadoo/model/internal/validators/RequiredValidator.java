@@ -26,11 +26,11 @@ package com.qcadoo.model.internal.validators;
 
 import java.util.List;
 
-import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.types.HasManyType;
+import com.qcadoo.model.api.types.TreeType;
 import com.qcadoo.model.internal.api.ErrorMessageDefinition;
 import com.qcadoo.model.internal.api.FieldHookDefinition;
 

@@ -48,11 +48,6 @@ import org.w3c.dom.Node;
 
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.model.types.BelongsToType;
-import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.model.types.internal.EnumType;
-import com.qcadoo.mes.model.types.internal.IntegerType;
-import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
@@ -67,6 +62,11 @@ import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 import com.qcadoo.mes.view.xml.ViewDefinitionParserImpl;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.types.BelongsToType;
+import com.qcadoo.model.api.types.HasManyType;
+import com.qcadoo.model.internal.types.EnumType;
+import com.qcadoo.model.internal.types.IntegerType;
+import com.qcadoo.model.internal.types.StringType;
 
 public class GridComponentPatternTest extends AbstractPatternTest {
 

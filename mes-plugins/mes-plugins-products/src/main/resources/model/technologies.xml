@@ -53,7 +53,6 @@
 		<boolean name="shiftFeatureRequired" />
 		<boolean name="postFeatureRequired" />
 		<boolean name="otherFeatureRequired" />
-		<boolean name="componentQuantityAlgorithm" />
 		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology" default="01perProductOut" required="true" />
 		<enum name="qualityControlType" values="01forBatch,02forUnit,03forOrder,04forOperation" />
 		<decimal name="unitSamplingNr" />

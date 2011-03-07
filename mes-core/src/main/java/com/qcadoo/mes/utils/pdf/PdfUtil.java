@@ -51,12 +51,12 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
-import com.qcadoo.mes.beans.users.UsersUser;
-import com.qcadoo.mes.model.types.internal.DateType;
+import com.qcadoo.model.api.utils.DateUtils;
+import com.qcadoo.model.beans.users.UsersUser;
 
 public final class PdfUtil {
 
-    public static final SimpleDateFormat D_T_F = new SimpleDateFormat(DateType.REPORT_DATE_TIME_FORMAT);
+    public static final SimpleDateFormat D_T_F = new SimpleDateFormat(DateUtils.REPORT_DATE_TIME_FORMAT);
 
     private static final Logger LOG = LoggerFactory.getLogger(PdfUtil.class);
 
@@ -276,7 +276,7 @@ public final class PdfUtil {
 
     public static void addDocumentHeader(final Document document, final String name, final String documenTitle,
             final String documentAuthor, final Date date, final UsersUser user) throws DocumentException {
-        SimpleDateFormat df = new SimpleDateFormat(DateType.DATE_TIME_FORMAT);
+        SimpleDateFormat df = new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT);
         LineSeparator line = new LineSeparator(3, 100f, lineDarkColor, Element.ALIGN_LEFT, 0);
         document.add(Chunk.NEWLINE);
         Paragraph title = new Paragraph(new Phrase(documenTitle, arialBold19Light));

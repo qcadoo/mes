@@ -46,8 +46,6 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerState;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -60,6 +58,8 @@ import com.qcadoo.mes.view.states.AbstractStateTest;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.types.StringType;
 
 public class FormComponentStateTest extends AbstractStateTest {
 

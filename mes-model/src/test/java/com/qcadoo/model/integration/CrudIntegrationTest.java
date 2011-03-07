@@ -11,9 +11,9 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.Restrictions;
 
 public class CrudIntegrationTest extends IntegrationTest {
 

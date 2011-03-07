@@ -9,7 +9,6 @@ import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
 import com.qcadoo.model.internal.api.ModelXmlResolver;
 import com.qcadoo.model.internal.api.ModelXmlToClassConverter;
-import com.qcadoo.model.internal.api.ModelXmlToDefinitionConverter;
 import com.qcadoo.model.internal.api.ModelXmlToHbmConverter;
 
 public class DynamicSessionFactoryBean extends LocalSessionFactoryBean {
@@ -19,9 +18,6 @@ public class DynamicSessionFactoryBean extends LocalSessionFactoryBean {
 
     @Autowired
     private ModelXmlToClassConverter modelXmlToClassConverter;
-
-    @Autowired
-    private ModelXmlToDefinitionConverter modelXmlToDefinitionConverter;
 
     @Autowired
     private ModelXmlResolver modelXmlResolver;
@@ -35,8 +31,6 @@ public class DynamicSessionFactoryBean extends LocalSessionFactoryBean {
         for (InputStream stream : modelXmlToHbmConverter.convert(resources)) {
             config.addInputStream(stream);
         }
-
-        modelXmlToDefinitionConverter.convert(resources);
     }
 
 }

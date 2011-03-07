@@ -45,8 +45,8 @@ import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.model.api.DictionaryService;
-import com.qcadoo.model.internal.dictionaries.DictionariesDictionary;
-import com.qcadoo.model.internal.dictionaries.DictionariesDictionaryItem;
+import com.qcadoo.model.beans.dictionaries.DictionariesDictionary;
+import com.qcadoo.model.beans.dictionaries.DictionariesDictionaryItem;
 import com.qcadoo.model.internal.dictionaries.DictionaryServiceImpl;
 
 public class DictionaryServiceTest {

@@ -32,13 +32,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.model.search.Restrictions;
-import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.internal.utils.ExpressionUtils;
+import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.utils.ExpressionUtils;
 
 public final class LookupComponentState extends FieldComponentState {
 

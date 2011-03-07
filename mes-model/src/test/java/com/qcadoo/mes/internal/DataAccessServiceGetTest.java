@@ -39,7 +39,12 @@ import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.internal.EntityListImpl;
+import com.qcadoo.model.internal.EntityTreeImpl;
+import com.qcadoo.model.internal.types.IntegerType;
 
 public final class DataAccessServiceGetTest extends DataAccessTest {
 
@@ -80,7 +85,7 @@ public final class DataAccessServiceGetTest extends DataAccessTest {
     @Test
     public void shouldNotFailIfFieldTypeIsNotValid() throws Exception {
         // given
-        fieldDefinitionName.withType(fieldTypeFactory.integerType());
+        fieldDefinitionName.withType(new IntegerType());
 
         SampleSimpleDatabaseObject simpleDatabaseObject = new SampleSimpleDatabaseObject();
         simpleDatabaseObject.setId(1L);
@@ -121,7 +126,7 @@ public final class DataAccessServiceGetTest extends DataAccessTest {
         // then
         assertEquals(1L, entity.getId().longValue());
         assertEquals("Mr T", entity.getField("name"));
-        assertThat(entity.getField("tree"), CoreMatchers.instanceOf(EntityTree.class));
+        assertThat(entity.getField("tree"), CoreMatchers.instanceOf(EntityTreeImpl.class));
 
         EntityTree tree = entity.getTreeField("tree");
 
@@ -145,7 +150,7 @@ public final class DataAccessServiceGetTest extends DataAccessTest {
         // then
         assertEquals(1L, entity.getId().longValue());
         assertEquals("Mr T", entity.getField("name"));
-        assertThat(entity.getField("entities"), CoreMatchers.instanceOf(EntityList.class));
+        assertThat(entity.getField("entities"), CoreMatchers.instanceOf(EntityListImpl.class));
 
         EntityList entities = entity.getHasManyField("entities");
 

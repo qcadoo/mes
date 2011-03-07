@@ -41,8 +41,8 @@ import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.states.AbstractContainerState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.utils.ExpressionUtils;
 import com.qcadoo.model.api.validators.ErrorMessage;
-import com.qcadoo.model.internal.utils.ExpressionUtils;
 
 public class FormComponentState extends AbstractContainerState {
 

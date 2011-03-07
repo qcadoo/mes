@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.internal.utils.ExpressionUtils;
+import com.qcadoo.model.api.utils.ExpressionUtils;
 
 public final class GridComponentColumn {
 

@@ -16,12 +16,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.qcadoo.model.Utils;
-import com.qcadoo.model.internal.api.ModelXmlToClassConverter;
 import com.qcadoo.model.internal.utils.ClassNameUtils;
 
 public class ModelXmlToClassConverterTest {
 
-    private final static ModelXmlToClassConverter modelXmlToClassConverter = new ModelXmlToClassConverterImpl();
+    private final static ModelXmlToClassConverterImpl modelXmlToClassConverter = new ModelXmlToClassConverterImpl();
 
     private static Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
 
@@ -29,6 +28,8 @@ public class ModelXmlToClassConverterTest {
 
     @BeforeClass
     public static void init() throws Exception {
+        modelXmlToClassConverter.setBeanClassLoader(ClassLoader.getSystemClassLoader());
+
         for (Class<?> clazz : modelXmlToClassConverter.convert(Utils.FULL_XML_RESOURCE, Utils.OTHER_XML_RESOURCE)) {
             classes.put(clazz.getCanonicalName(), clazz);
         }

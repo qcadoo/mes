@@ -8,7 +8,7 @@ public interface Constants {
 
     String XSD = "com/qcadoo/model/model-1.0.xsd";
 
-    String RESOURCE_PATTERN = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + "**/*-model.xml";
+    String RESOURCE_PATTERN = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + "model/*.xml";
 
     String VALIDATION_MESSAGE_REQUIRED = "required";
 

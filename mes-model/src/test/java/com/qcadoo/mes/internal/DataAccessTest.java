@@ -43,14 +43,26 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleTreeDatabaseObject;
-import com.qcadoo.mes.model.internal.DataDefinitionImpl;
-import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
-import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.model.types.TreeType;
-import com.qcadoo.mes.model.types.internal.FieldTypeFactory;
-import com.qcadoo.mes.model.types.internal.FieldTypeFactoryImpl;
+import com.qcadoo.model.api.DataAccessService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.DictionaryService;
+import com.qcadoo.model.api.types.HasManyType;
+import com.qcadoo.model.api.types.TreeType;
+import com.qcadoo.model.internal.DataAccessServiceImpl;
+import com.qcadoo.model.internal.DataDefinitionImpl;
+import com.qcadoo.model.internal.EntityService;
+import com.qcadoo.model.internal.FieldDefinitionImpl;
+import com.qcadoo.model.internal.PriorityService;
+import com.qcadoo.model.internal.ValidationService;
+import com.qcadoo.model.internal.types.BelongsToEntityType;
+import com.qcadoo.model.internal.types.BooleanType;
+import com.qcadoo.model.internal.types.DateType;
+import com.qcadoo.model.internal.types.DecimalType;
+import com.qcadoo.model.internal.types.HasManyEntitiesType;
+import com.qcadoo.model.internal.types.IntegerType;
+import com.qcadoo.model.internal.types.PriorityType;
+import com.qcadoo.model.internal.types.StringType;
+import com.qcadoo.model.internal.types.TreeEntitiesType;
 
 public abstract class DataAccessTest {
 
@@ -67,8 +79,6 @@ public abstract class DataAccessTest {
     protected final ApplicationContext applicationContext = mock(ApplicationContext.class);
 
     protected final DataAccessService dataAccessServiceMock = mock(DataAccessService.class);
-
-    protected FieldTypeFactory fieldTypeFactory = null;
 
     protected EntityService entityService = null;
 
@@ -131,10 +141,6 @@ public abstract class DataAccessTest {
         ReflectionTestUtils.setField(dataAccessService, "priorityService", priorityService);
         ReflectionTestUtils.setField(dataAccessService, "validationService", validationService);
 
-        fieldTypeFactory = new FieldTypeFactoryImpl();
-        ReflectionTestUtils.setField(fieldTypeFactory, "dictionaryService", dictionaryService);
-        ReflectionTestUtils.setField(fieldTypeFactory, "dataDefinitionService", dataDefinitionService);
-
         treeDataDefinition = new DataDefinitionImpl("tree", "tree.entity", dataAccessService);
         given(dataDefinitionService.get("tree", "entity")).willReturn(treeDataDefinition);
 
@@ -145,14 +151,15 @@ public abstract class DataAccessTest {
         given(dataDefinitionService.get("simple", "entity")).willReturn(dataDefinition);
 
         parentFieldDefinitionName = new FieldDefinitionImpl(null, "name");
-        parentFieldDefinitionName.withType(fieldTypeFactory.stringType());
+        parentFieldDefinitionName.withType(new StringType());
 
         parentFieldDefinitionHasMany = new FieldDefinitionImpl(null, "entities");
-        parentFieldDefinitionHasMany.withType(fieldTypeFactory.hasManyType("simple", "entity", "belongsTo",
-                HasManyType.Cascade.DELETE, false));
+        parentFieldDefinitionHasMany.withType(new HasManyEntitiesType("simple", "entity", "belongsTo",
+                HasManyType.Cascade.DELETE, false, dataDefinitionService));
 
         parentFieldDefinitionTree = new FieldDefinitionImpl(null, "tree");
-        parentFieldDefinitionTree.withType(fieldTypeFactory.treeType("tree", "entity", "owner", TreeType.Cascade.DELETE, false));
+        parentFieldDefinitionTree.withType(new TreeEntitiesType("tree", "entity", "owner", TreeType.Cascade.DELETE, false,
+                dataDefinitionService));
 
         parentDataDefinition.withField(parentFieldDefinitionName);
         parentDataDefinition.withField(parentFieldDefinitionHasMany);
@@ -160,17 +167,17 @@ public abstract class DataAccessTest {
         parentDataDefinition.setFullyQualifiedClassName(SampleParentDatabaseObject.class.getCanonicalName());
 
         treeFieldDefinitionName = new FieldDefinitionImpl(null, "name");
-        treeFieldDefinitionName.withType(fieldTypeFactory.stringType());
+        treeFieldDefinitionName.withType(new StringType());
 
         treeFieldDefinitionChildren = new FieldDefinitionImpl(null, "children");
-        treeFieldDefinitionChildren.withType(fieldTypeFactory.hasManyType("tree", "entity", "parent", HasManyType.Cascade.DELETE,
-                false));
+        treeFieldDefinitionChildren.withType(new HasManyEntitiesType("tree", "entity", "parent", HasManyType.Cascade.DELETE,
+                false, dataDefinitionService));
 
         treeFieldDefinitionParent = new FieldDefinitionImpl(null, "parent");
-        treeFieldDefinitionParent.withType(fieldTypeFactory.eagerBelongsToType("tree", "entity"));
+        treeFieldDefinitionParent.withType(new BelongsToEntityType("tree", "entity", dataDefinitionService, false));
 
         treeFieldDefinitionOwner = new FieldDefinitionImpl(null, "owner");
-        treeFieldDefinitionOwner.withType(fieldTypeFactory.eagerBelongsToType("parent", "entity"));
+        treeFieldDefinitionOwner.withType(new BelongsToEntityType("parent", "entity", dataDefinitionService, false));
 
         treeDataDefinition.withField(treeFieldDefinitionName);
         treeDataDefinition.withField(treeFieldDefinitionChildren);
@@ -179,29 +186,29 @@ public abstract class DataAccessTest {
         treeDataDefinition.setFullyQualifiedClassName(SampleTreeDatabaseObject.class.getCanonicalName());
 
         fieldDefinitionBelongsTo = new FieldDefinitionImpl(null, "belongsTo");
-        fieldDefinitionBelongsTo.withType(fieldTypeFactory.eagerBelongsToType("parent", "entity"));
+        fieldDefinitionBelongsTo.withType(new BelongsToEntityType("parent", "entity", dataDefinitionService, false));
 
         fieldDefinitionLazyBelongsTo = new FieldDefinitionImpl(null, "lazyBelongsTo");
-        fieldDefinitionLazyBelongsTo.withType(fieldTypeFactory.lazyBelongsToType("parent", "entity"));
+        fieldDefinitionLazyBelongsTo.withType(new BelongsToEntityType("parent", "entity", dataDefinitionService, true));
 
         fieldDefinitionName = new FieldDefinitionImpl(null, "name");
-        fieldDefinitionName.withType(fieldTypeFactory.stringType());
+        fieldDefinitionName.withType(new StringType());
 
         fieldDefinitionAge = new FieldDefinitionImpl(null, "age");
-        fieldDefinitionAge.withType(fieldTypeFactory.integerType());
+        fieldDefinitionAge.withType(new IntegerType());
 
         fieldDefinitionPriority = new FieldDefinitionImpl(null, "priority");
-        fieldDefinitionPriority.withType(fieldTypeFactory.priorityType(fieldDefinitionBelongsTo));
+        fieldDefinitionPriority.withType(new PriorityType(fieldDefinitionBelongsTo));
         fieldDefinitionPriority.withReadOnly(true);
 
         fieldDefinitionMoney = new FieldDefinitionImpl(null, "money");
-        fieldDefinitionMoney.withType(fieldTypeFactory.decimalType());
+        fieldDefinitionMoney.withType(new DecimalType());
 
         fieldDefinitionRetired = new FieldDefinitionImpl(null, "retired");
-        fieldDefinitionRetired.withType(fieldTypeFactory.booleanType());
+        fieldDefinitionRetired.withType(new BooleanType());
 
         fieldDefinitionBirthDate = new FieldDefinitionImpl(null, "birthDate");
-        fieldDefinitionBirthDate.withType(fieldTypeFactory.dateType());
+        fieldDefinitionBirthDate.withType(new DateType());
 
         dataDefinition.withField(fieldDefinitionName);
         dataDefinition.withField(fieldDefinitionAge);

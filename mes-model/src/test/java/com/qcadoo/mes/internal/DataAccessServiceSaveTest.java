@@ -45,6 +45,11 @@ import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleTreeDatabaseObject;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.EntityListImpl;
+import com.qcadoo.model.internal.EntityTreeImpl;
 
 public final class DataAccessServiceSaveTest extends DataAccessTest {
 
@@ -175,7 +180,7 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
     @Test
     public void shouldNotSaveEntityListField() throws Exception {
         // given
-        EntityList entities = new EntityList(dataDefinition, "", 1L);
+        EntityList entities = new EntityListImpl(dataDefinition, "", 1L);
 
         Entity parent = new DefaultEntity(parentDataDefinition, 1L);
         parent.setField("entities", entities);
@@ -243,7 +248,7 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
     @Test
     public void shouldNotSaveEntityTreeField() throws Exception {
         // given
-        EntityTree tree = new EntityTree(dataDefinition, "", 1L);
+        EntityTree tree = new EntityTreeImpl(dataDefinition, "", 1L);
 
         Entity parent = new DefaultEntity(parentDataDefinition, 1L);
         parent.setField("tree", tree);

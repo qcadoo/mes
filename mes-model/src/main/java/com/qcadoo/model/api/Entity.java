@@ -27,8 +27,6 @@ package com.qcadoo.model.api;
 import java.util.List;
 import java.util.Map;
 
-import com.qcadoo.mes.internal.EntityList;
-import com.qcadoo.mes.internal.EntityTree;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
 /**

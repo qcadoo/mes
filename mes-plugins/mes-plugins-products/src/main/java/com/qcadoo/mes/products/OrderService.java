@@ -35,9 +35,6 @@ import org.springframework.util.StringUtils;
 import com.qcadoo.mes.api.NumberGeneratorService;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.model.search.Restrictions;
-import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
@@ -49,6 +46,9 @@ import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchResult;
 
 @Service
 public final class OrderService {

@@ -27,8 +27,8 @@ package com.qcadoo.mes.view.components;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.types.EnumeratedType;
 
 public class TranslatedFieldComponentState extends FieldComponentState {
 
@@ -47,11 +47,8 @@ public class TranslatedFieldComponentState extends FieldComponentState {
 
         FieldDefinition fieldDefinition = pattern.getFieldComponentFieldDefinition();
         if (fieldDefinition != null) {
-            if (EnumType.class.isAssignableFrom(fieldDefinition.getType().getClass())) {
-                String code = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(),
-                        fieldDefinition.getName())
-                        + ".value." + value;
-                value = getTranslationService().translate(code, getLocale());
+            if (EnumeratedType.class.isAssignableFrom(fieldDefinition.getType().getClass())) {
+                value = ((EnumeratedType) fieldDefinition.getType()).values(getLocale()).get(value);
             }
         }
 

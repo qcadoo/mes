@@ -46,6 +46,10 @@
 
 	<context:property-placeholder location="file:${QCADOO_CONF}/db.properties,file:${QCADOO_CONF}/mes.properties,file:${QCADOO_CONF}/report.properties,classpath*:hibernate.properties" />
 
+	<context:component-scan base-package="com.qcadoo.mes">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+
 	<bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="targetClass">
 			<value>org.springframework.util.Log4jConfigurer</value>
@@ -59,6 +63,8 @@
 			</list>
 		</property>
 	</bean>
+	
+	<context:component-scan base-package="com.qcadoo.model" />
 
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
@@ -68,10 +74,8 @@
 		<property name="password" value="${dbPassword}" />
 	</bean>
 
-	<bean id="sessionFactory"
-		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+	<bean id="sessionFactory" class="com.qcadoo.model.internal.sessionfactory.DynamicSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<property name="packagesToScan" value="com.qcadoo.mes" />
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">${hibernateDialect}</prop>
@@ -89,6 +93,8 @@
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
+	
+	<tx:annotation-driven />
 	
 	<security:global-method-security
 		pre-post-annotations="enabled">
@@ -156,6 +162,11 @@
 			<value>SELECT U.username, G.role as authority FROM Users_User U JOIN
 				Users_Group G ON u.usergroup_id = G.id WHERE U.username like ?</value>
 		</property>
+	</bean>
+
+	<bean id="delegatePasswordEncoder"
+		class="com.qcadoo.mes.security.internal.DelegatePasswordEncoder">
+		<constructor-arg ref="passwordEncoder" />
 	</bean>
 
 	<bean id="passwordEncoder"

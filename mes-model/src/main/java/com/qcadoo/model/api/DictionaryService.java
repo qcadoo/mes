@@ -24,6 +24,7 @@
 
 package com.qcadoo.model.api;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +33,8 @@ import java.util.Set;
  * Service for getting dictionaries.
  */
 public interface DictionaryService {
+
+    List<String> keys(String dictionary);
 
     /**
      * Return all values for given dictionary's name.

@@ -42,10 +42,12 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleTreeDatabaseObject;
-import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.types.HasManyType;
+import com.qcadoo.model.api.types.TreeType;
 import com.qcadoo.model.internal.api.FieldHookDefinition;
+import com.qcadoo.model.internal.types.HasManyEntitiesType;
+import com.qcadoo.model.internal.types.TreeEntitiesType;
 import com.qcadoo.model.internal.validators.UniqueValidator;
 
 public final class DataAccessServiceCopyTest extends DataAccessTest {
@@ -152,8 +154,8 @@ public final class DataAccessServiceCopyTest extends DataAccessTest {
     @Test
     public void shouldCopyEntityWithHasManyField() throws Exception {
         // given
-        parentFieldDefinitionHasMany.withType(fieldTypeFactory.hasManyType("simple", "entity", "belongsTo",
-                HasManyType.Cascade.DELETE, true));
+        parentFieldDefinitionHasMany.withType(new HasManyEntitiesType("simple", "entity", "belongsTo",
+                HasManyType.Cascade.DELETE, true, dataDefinitionService));
 
         SampleSimpleDatabaseObject simpleDatabaseObject = new SampleSimpleDatabaseObject();
         simpleDatabaseObject.setId(12L);
@@ -208,7 +210,8 @@ public final class DataAccessServiceCopyTest extends DataAccessTest {
     @Test
     public void shouldCopyEntityWithTreeField() throws Exception {
         // given
-        parentFieldDefinitionTree.withType(fieldTypeFactory.treeType("tree", "entity", "owner", TreeType.Cascade.DELETE, true));
+        parentFieldDefinitionTree.withType(new TreeEntitiesType("tree", "entity", "owner", TreeType.Cascade.DELETE, true,
+                dataDefinitionService));
 
         SampleTreeDatabaseObject treeDatabaseObject = new SampleTreeDatabaseObject();
         treeDatabaseObject.setId(12L);

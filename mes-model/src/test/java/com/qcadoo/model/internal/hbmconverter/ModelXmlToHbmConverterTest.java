@@ -186,7 +186,11 @@ public class ModelXmlToHbmConverterTest {
         assertNodeCount(2, "/hibernate-mapping/class[2]/many-to-one");
         assertNodeCount(1, "/hibernate-mapping/class[3]/many-to-one");
         assertNodeExists("/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity']");
+        assertNodeEquals("fieldSecondEntity_id",
+                "/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity']/column/@name");
         assertNodeExists("/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity2']");
+        assertNodeEquals("fieldSecondEntity2_id",
+                "/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity2']/column/@name");
         assertNodeEquals("com.qcadoo.model.beans.other.OtherSecondEntity",
                 "/hibernate-mapping/class[1]/many-to-one[@name='fieldSecondEntity']/@class");
         assertNodeEquals("com.qcadoo.model.beans.other.OtherSecondEntity",
@@ -210,8 +214,8 @@ public class ModelXmlToHbmConverterTest {
                 "/hibernate-mapping/class[1]/set[@name='fieldTree']/one-to-many/@class");
         assertNodeEquals("com.qcadoo.model.beans.full.FullThirdEntity",
                 "/hibernate-mapping/class[1]/set[@name='fieldHasMany']/one-to-many/@class");
-        assertNodeEquals("fieldFirstEntity", "/hibernate-mapping/class[1]/set[@name='fieldTree']/key/@column");
-        assertNodeEquals("fieldFirstEntity", "/hibernate-mapping/class[1]/set[@name='fieldHasMany']/key/@column");
+        assertNodeEquals("fieldFirstEntity_id", "/hibernate-mapping/class[1]/set[@name='fieldTree']/key/@column");
+        assertNodeEquals("fieldFirstEntity_id", "/hibernate-mapping/class[1]/set[@name='fieldHasMany']/key/@column");
         assertNodeEquals("true", "/hibernate-mapping/class[1]/set[@name='fieldTree']/@lazy");
         assertNodeEquals("true", "/hibernate-mapping/class[1]/set[@name='fieldHasMany']/@lazy");
         assertNodeEquals("delete", "/hibernate-mapping/class[1]/set[@name='fieldTree']/@cascade");

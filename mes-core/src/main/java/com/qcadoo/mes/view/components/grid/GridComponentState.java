@@ -42,19 +42,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.model.search.CustomRestriction;
-import com.qcadoo.mes.model.search.Restriction;
-import com.qcadoo.mes.model.search.RestrictionOperator;
-import com.qcadoo.mes.model.search.Restrictions;
-import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.model.search.SearchResult;
-import com.qcadoo.mes.model.types.BelongsToType;
-import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.model.api.search.Restriction;
+import com.qcadoo.model.api.search.RestrictionOperator;
+import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.types.BelongsToType;
+import com.qcadoo.model.api.utils.DateUtils;
 
 public final class GridComponentState extends AbstractComponentState {
 
@@ -492,8 +492,8 @@ public final class GridComponentState extends AbstractComponentState {
 
         private Restriction getRestrictionsToDate(final Pair<RestrictionOperator, String> parsedFilterValue,
                 final FieldDefinition fieldDefinition) throws ParseException {
-            Date minDate = DateType.parseDate(parsedFilterValue.getValue(), false);
-            Date maxDate = DateType.parseDate(parsedFilterValue.getValue(), true);
+            Date minDate = DateUtils.parseDate(parsedFilterValue.getValue(), false);
+            Date maxDate = DateUtils.parseDate(parsedFilterValue.getValue(), true);
             if (minDate == null || maxDate == null) {
                 throw new ParseException("wrong date", 1);
             }

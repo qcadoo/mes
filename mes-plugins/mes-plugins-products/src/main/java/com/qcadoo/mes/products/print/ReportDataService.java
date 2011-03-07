@@ -51,23 +51,23 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.beans.users.UsersUser;
-import com.qcadoo.mes.internal.EntityTree;
-import com.qcadoo.mes.internal.EntityTreeNode;
-import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.mes.products.util.EntityOperationInPairNumberComparator;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.utils.DateUtils;
+import com.qcadoo.model.beans.users.UsersUser;
 
 @Service
 public class ReportDataService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReportDataService.class);
 
-    private static final SimpleDateFormat D_F = new SimpleDateFormat(DateType.DATE_FORMAT);
+    private static final SimpleDateFormat D_F = new SimpleDateFormat(DateUtils.DATE_FORMAT);
 
     private final int[] defaultWorkPlanColumnWidth = new int[] { 20, 20, 20, 13, 13, 13 };
 

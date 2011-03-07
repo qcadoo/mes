@@ -53,11 +53,11 @@
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 				<option type="fullscreen" value="true" />
-				<listener event="download" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDownloadClick" />
-				<listener event="update" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginUpdateClick" />
-				<listener event="enable" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginEnableClick" />
-				<listener event="disable" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDisableClick" />
-				<listener event="removePlugin" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginRemoveClick" />
+				<listener event="download" bean="com.qcadoo.mes.plugins.controller.PluginManagementHook" method="onPluginDownloadClick" />
+				<listener event="update" bean="com.qcadoo.mes.plugins.controller.PluginManagementHook" method="onPluginUpdateClick" />
+				<listener event="enable" bean="com.qcadoo.mes.plugins.controller.PluginManagementHook" method="onPluginEnableClick" />
+				<listener event="disable" bean="com.qcadoo.mes.plugins.controller.PluginManagementHook" method="onPluginDisableClick" />
+				<listener event="removePlugin" bean="com.qcadoo.mes.plugins.controller.PluginManagementHook" method="onPluginRemoveClick" />
 				<script>
 					<![CDATA[
 						var downloadRibbonItem = #{window}.getRibbonItem("plugins.download");
@@ -168,7 +168,7 @@
 					</layoutElement>
 				</component>
 				<option type="expression" value="#name" />
-				<listener event="update" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginUpdateClick" />
+				<listener event="update" bean="com.qcadoo.mes.plugins.controller.PluginManagementHook" method="onPluginUpdateClick" />
 			</component>
 		</component>
 	</view>

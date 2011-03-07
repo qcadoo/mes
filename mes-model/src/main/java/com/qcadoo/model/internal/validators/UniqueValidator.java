@@ -24,13 +24,13 @@
 
 package com.qcadoo.model.internal.validators;
 
-import com.qcadoo.mes.model.search.RestrictionOperator;
-import com.qcadoo.mes.model.search.Restrictions;
-import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.search.RestrictionOperator;
+import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.internal.api.ErrorMessageDefinition;
 import com.qcadoo.model.internal.api.FieldHookDefinition;
 

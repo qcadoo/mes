@@ -42,7 +42,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.view.ViewDefinition;
-import com.qcadoo.model.api.Monitorable;
+import com.qcadoo.model.api.aop.Monitorable;
 
 @Controller
 public class CrudController {

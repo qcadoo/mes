@@ -25,6 +25,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
@@ -33,11 +34,19 @@ import com.qcadoo.model.internal.api.ModelXmlToClassConverter;
 import com.qcadoo.model.internal.utils.ClassNameUtils;
 
 @Component
-public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter implements ModelXmlToClassConverter {
+public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter implements ModelXmlToClassConverter,
+        BeanClassLoaderAware {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelXmlToClassConverterImpl.class);
 
     private final ClassPool classPool = ClassPool.getDefault();
+
+    private ClassLoader classLoader;
+
+    @Override
+    public void setBeanClassLoader(final ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
 
     @Override
     public Collection<Class<?>> convert(final Resource... resources) {
@@ -69,7 +78,7 @@ public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter impl
             List<Class<?>> classes = new ArrayList<Class<?>>();
 
             for (CtClass ctClass : ctClasses.values()) {
-                classes.add(ctClass.toClass());
+                classes.add(ctClass.toClass(classLoader));
             }
 
             classes.addAll(existingClasses.values());
@@ -100,7 +109,7 @@ public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter impl
                 String className = ClassNameUtils.getFullyQualifiedClassName(pluginIdentifier, modelName);
 
                 try {
-                    existingClasses.put(className, ClassLoader.getSystemClassLoader().loadClass(className));
+                    existingClasses.put(className, classLoader.loadClass(className));
                     LOG.info("Class " + className + " already exists, skipping");
                 } catch (ClassNotFoundException e) {
                     // ignoring

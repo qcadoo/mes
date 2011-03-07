@@ -39,16 +39,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.MessageSource;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
-@Controller
-public final class TranslationServiceImpl implements TranslationService {
+@Service
+public final class TranslationServiceImpl implements TranslationService, ApplicationListener<ContextRefreshedEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TranslationServiceImpl.class);
 
@@ -141,7 +143,8 @@ public final class TranslationServiceImpl implements TranslationService {
         return dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "." + fieldName;
     }
 
-    public void init() {
+    @Override
+    public void onApplicationEvent(final ContextRefreshedEvent event) {
         getMessagesByPrefix("commons", COMMONS_MESSAGES);
         getMessagesByPrefix("security", SECURITY_MESSAGES);
         getMessagesByPrefix("core.dashboard", DASHBOARD_MESSAGES);

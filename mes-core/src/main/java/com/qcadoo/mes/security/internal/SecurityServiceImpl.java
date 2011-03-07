@@ -34,8 +34,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.beans.users.UsersUser;
-import com.qcadoo.model.api.Monitorable;
+import com.qcadoo.model.api.aop.Monitorable;
+import com.qcadoo.model.beans.users.UsersUser;
 
 @Service
 public final class SecurityServiceImpl implements SecurityService {

@@ -34,7 +34,7 @@ public class BelongsToIntegrationTest extends IntegrationTest {
         Map<String, Object> result = jdbcTemplate.queryForMap("select * from " + TABLE_NAME_COMPONENT);
 
         assertNotNull(result);
-        assertEquals(product.getId(), result.get("product"));
+        assertEquals(product.getId(), result.get("product_id"));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class BelongsToIntegrationTest extends IntegrationTest {
         Map<String, Object> result = jdbcTemplate.queryForMap("select * from " + TABLE_NAME_COMPONENT);
 
         assertNotNull(result);
-        assertEquals(product.getId(), result.get("product"));
+        assertEquals(product.getId(), result.get("product_id"));
     }
 
     @Test

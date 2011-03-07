@@ -39,10 +39,6 @@ import org.json.JSONObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.model.types.internal.BooleanType;
-import com.qcadoo.mes.model.types.internal.DictionaryType;
-import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
@@ -50,6 +46,8 @@ import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.types.EnumeratedType;
+import com.qcadoo.model.api.types.HasManyType;
 
 @ViewComponent("grid")
 public final class GridComponentPattern extends AbstractComponentPattern {
@@ -238,20 +236,13 @@ public final class GridComponentPattern extends AbstractComponentPattern {
 
         JSONObject json = new JSONObject();
 
-        if (column.getFields().get(0).getType() instanceof EnumType) {
-            EnumType type = (EnumType) column.getFields().get(0).getType();
-            Map<String, String> sortedValues = type.values(locale);
-            // Collections.sort(sortedValues);
-            for (Map.Entry<String, String> value : sortedValues.entrySet()) {
-                json.put(value.getKey(), value.getValue());
-            }
-        } else if (column.getFields().get(0).getType() instanceof DictionaryType) {
-            DictionaryType type = (DictionaryType) column.getFields().get(0).getType();
+        if (column.getFields().get(0).getType() instanceof EnumeratedType) {
+            EnumeratedType type = (EnumeratedType) column.getFields().get(0).getType();
             Map<String, String> sortedValues = type.values(locale);
             for (Map.Entry<String, String> value : sortedValues.entrySet()) {
                 json.put(value.getKey(), value.getValue());
             }
-        } else if (column.getFields().get(0).getType() instanceof BooleanType) {
+        } else if (column.getFields().get(0).getType().getType().equals(Boolean.class)) {
             json.put("1", getTranslationService().translate("commons.true", locale));
             json.put("0", getTranslationService().translate("commons.false", locale));
         }

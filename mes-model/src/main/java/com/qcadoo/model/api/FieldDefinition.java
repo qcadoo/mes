@@ -26,7 +26,7 @@ package com.qcadoo.model.api;
 
 import java.util.Locale;
 
-import com.qcadoo.mes.model.types.FieldType;
+import com.qcadoo.model.api.types.FieldType;
 
 /**
  * Object defines database field.

@@ -34,14 +34,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.model.types.BelongsToType;
-import com.qcadoo.mes.model.types.EnumeratedType;
-import com.qcadoo.mes.model.types.internal.DictionaryType;
-import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.components.FieldComponentPattern;
+import com.qcadoo.model.api.types.BelongsToType;
+import com.qcadoo.model.api.types.EnumeratedType;
 
 @ViewComponent("select")
 public final class SelectComponentPattern extends FieldComponentPattern {
@@ -71,9 +69,7 @@ public final class SelectComponentPattern extends FieldComponentPattern {
             values.put("", getTranslationService().translate(blankCodes, locale));
         }
 
-        if (EnumType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
-            values.putAll(((EnumeratedType) getFieldDefinition().getType()).values(locale));
-        } else if (DictionaryType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
+        if (EnumeratedType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
             values.putAll(((EnumeratedType) getFieldDefinition().getType()).values(locale));
         } else if (BelongsToType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
             throw new IllegalStateException("Select for belongsTo type is not supported");

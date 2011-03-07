@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.qcadoo.model.api.Monitorable;
+import com.qcadoo.model.api.aop.Monitorable;
 
 @Aspect
 @Component

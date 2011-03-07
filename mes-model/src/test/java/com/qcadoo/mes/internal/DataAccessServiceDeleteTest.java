@@ -42,7 +42,8 @@ import org.junit.Test;
 
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.model.api.types.HasManyType;
+import com.qcadoo.model.internal.types.HasManyEntitiesType;
 
 public class DataAccessServiceDeleteTest extends DataAccessTest {
 
@@ -83,8 +84,8 @@ public class DataAccessServiceDeleteTest extends DataAccessTest {
         simpleDatabaseObject.setBelongsTo(parentDatabaseEntity);
         List<SampleSimpleDatabaseObject> entities = new ArrayList<SampleSimpleDatabaseObject>();
         entities.add(simpleDatabaseObject);
-        parentFieldDefinitionHasMany.withType(fieldTypeFactory.hasManyType("simple", "entity", "belongsTo",
-                HasManyType.Cascade.NULLIFY, false));
+        parentFieldDefinitionHasMany.withType(new HasManyEntitiesType("simple", "entity", "belongsTo",
+                HasManyType.Cascade.NULLIFY, false, dataDefinitionService));
         parentDataDefinition.withField(parentFieldDefinitionHasMany);
 
         Criteria databaseCriteria = mock(Criteria.class, RETURNS_DEEP_STUBS);

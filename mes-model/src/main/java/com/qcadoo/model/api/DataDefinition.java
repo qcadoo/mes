@@ -27,7 +27,7 @@ package com.qcadoo.model.api;
 import java.util.Map;
 import java.util.Set;
 
-import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 
 /**
  * Object defines database structure. The {@link #getPluginIdentifier()} and {@link #getName()} are used to calculate table name.

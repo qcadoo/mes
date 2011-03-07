@@ -1,8 +1,9 @@
 package com.qcadoo.model.integration;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.qcadoo.model.api.security.PasswordEncoder;
 
 @Service
 public class MockPasswordEncoder implements PasswordEncoder {

@@ -45,7 +45,7 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.controller.ErrorController;
-import com.qcadoo.mes.internal.CopyException;
+import com.qcadoo.model.api.CopyException;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
 public final class TranslatedMessageExceptionResolver extends SimpleMappingExceptionResolver {

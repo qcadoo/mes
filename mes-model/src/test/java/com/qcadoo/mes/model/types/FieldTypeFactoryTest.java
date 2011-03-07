@@ -28,9 +28,8 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -40,20 +39,22 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.qcadoo.mes.internal.DataAccessTest;
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
-import com.qcadoo.mes.model.types.internal.BelongsToEntityType;
-import com.qcadoo.mes.model.types.internal.BooleanType;
-import com.qcadoo.mes.model.types.internal.DateTimeType;
-import com.qcadoo.mes.model.types.internal.DateType;
-import com.qcadoo.mes.model.types.internal.DecimalType;
-import com.qcadoo.mes.model.types.internal.IntegerType;
-import com.qcadoo.mes.model.types.internal.PasswordType;
-import com.qcadoo.mes.model.types.internal.PriorityType;
-import com.qcadoo.mes.model.types.internal.StringType;
-import com.qcadoo.mes.model.types.internal.TextType;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.security.PasswordEncoder;
+import com.qcadoo.model.api.types.FieldType;
+import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.FieldDefinitionImpl;
+import com.qcadoo.model.internal.types.BelongsToEntityType;
+import com.qcadoo.model.internal.types.BooleanType;
+import com.qcadoo.model.internal.types.DateTimeType;
+import com.qcadoo.model.internal.types.DateType;
+import com.qcadoo.model.internal.types.DecimalType;
+import com.qcadoo.model.internal.types.IntegerType;
+import com.qcadoo.model.internal.types.PasswordType;
+import com.qcadoo.model.internal.types.PriorityType;
+import com.qcadoo.model.internal.types.StringType;
+import com.qcadoo.model.internal.types.TextType;
 
 public class FieldTypeFactoryTest extends DataAccessTest {
 
@@ -112,13 +113,10 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnBooleanType() throws Exception {
         // when
-        FieldType fieldType = fieldTypeFactory.booleanType();
+        FieldType fieldType = new BooleanType();
 
         // then
         assertThat(fieldType, is(BooleanType.class));
-        assertTrue(fieldType.isSearchable());
-        assertTrue(fieldType.isOrderable());
-        assertFalse(fieldType.isAggregable());
         assertEquals(Boolean.class, fieldType.getType());
         assertNotNull(fieldType.toObject(fieldDefinition, false, entity));
     }
@@ -126,13 +124,10 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnDateType() throws Exception {
         // when
-        FieldType fieldType = fieldTypeFactory.dateType();
+        FieldType fieldType = new DateType();
 
         // then
         assertThat(fieldType, is(DateType.class));
-        assertTrue(fieldType.isSearchable());
-        assertTrue(fieldType.isOrderable());
-        assertFalse(fieldType.isAggregable());
         assertEquals(Date.class, fieldType.getType());
         assertNotNull(fieldType.toObject(fieldDefinition, new Date(), entity));
     }
@@ -140,13 +135,10 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnDateTimeType() throws Exception {
         // when
-        FieldType fieldType = fieldTypeFactory.dateTimeType();
+        FieldType fieldType = new DateTimeType();
 
         // then
         assertThat(fieldType, is(DateTimeType.class));
-        assertTrue(fieldType.isSearchable());
-        assertTrue(fieldType.isOrderable());
-        assertFalse(fieldType.isAggregable());
         assertEquals(Date.class, fieldType.getType());
         assertNotNull(fieldType.toObject(fieldDefinition, new Date(), entity));
     }
@@ -154,13 +146,10 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnDecimalType() throws Exception {
         // when
-        FieldType fieldType = fieldTypeFactory.decimalType();
+        FieldType fieldType = new DecimalType();
 
         // then
         assertThat(fieldType, is(DecimalType.class));
-        assertTrue(fieldType.isSearchable());
-        assertTrue(fieldType.isOrderable());
-        assertTrue(fieldType.isAggregable());
         assertEquals(BigDecimal.class, fieldType.getType());
         assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1.21), entity));
         assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1), entity));
@@ -171,13 +160,10 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnIntegerType() throws Exception {
         // when
-        FieldType fieldType = fieldTypeFactory.integerType();
+        FieldType fieldType = new IntegerType();
 
         // then
         assertThat(fieldType, is(IntegerType.class));
-        assertTrue(fieldType.isSearchable());
-        assertTrue(fieldType.isOrderable());
-        assertTrue(fieldType.isAggregable());
         assertEquals(Integer.class, fieldType.getType());
         assertNotNull(fieldType.toObject(fieldDefinition, 1, entity));
         assertNotNull(fieldType.toObject(fieldDefinition, 1234567890, entity));
@@ -186,13 +172,10 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnStringType() throws Exception {
         // when
-        FieldType fieldType = fieldTypeFactory.stringType();
+        FieldType fieldType = new StringType();
 
         // then
         assertThat(fieldType, is(StringType.class));
-        assertTrue(fieldType.isSearchable());
-        assertTrue(fieldType.isOrderable());
-        assertFalse(fieldType.isAggregable());
         assertEquals(String.class, fieldType.getType());
         assertNotNull(fieldType.toObject(fieldDefinition, "test", entity));
         assertNotNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 255), entity));
@@ -204,13 +187,10 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnTextType() throws Exception {
         // when
-        FieldType fieldType = fieldTypeFactory.textType();
+        FieldType fieldType = new TextType();
 
         // then
         assertThat(fieldType, is(TextType.class));
-        assertTrue(fieldType.isSearchable());
-        assertTrue(fieldType.isOrderable());
-        assertFalse(fieldType.isAggregable());
         assertEquals(String.class, fieldType.getType());
         assertNotNull(fieldType.toObject(fieldDefinition, "test", entity));
         assertNotNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 2048), entity));
@@ -222,13 +202,10 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnBelongToType() throws Exception {
         // when
-        FieldType fieldType = fieldTypeFactory.eagerBelongsToType("parent", "entity");
+        FieldType fieldType = new BelongsToEntityType("parent", "entity", dataDefinitionService, false);
 
         // then
         assertThat(fieldType, is(BelongsToEntityType.class));
-        assertFalse(fieldType.isSearchable());
-        assertFalse(fieldType.isOrderable());
-        assertFalse(fieldType.isAggregable());
         assertEquals(Object.class, fieldType.getType());
         assertNotNull(fieldType.toObject(fieldDefinition, new DefaultEntity(dataDefinition), entity));
     }
@@ -236,13 +213,11 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnPasswordType() throws Exception {
         // when
-        FieldType fieldType = fieldTypeFactory.passwordType();
+        PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
+        FieldType fieldType = new PasswordType(passwordEncoder);
 
         // then
         assertThat(fieldType, is(PasswordType.class));
-        assertFalse(fieldType.isSearchable());
-        assertFalse(fieldType.isOrderable());
-        assertFalse(fieldType.isAggregable());
         assertEquals(String.class, fieldType.getType());
     }
 
@@ -252,13 +227,10 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "aaa");
 
         // when
-        FieldType fieldType = fieldTypeFactory.priorityType(fieldDefinition);
+        FieldType fieldType = new PriorityType(fieldDefinition);
 
         // then
         assertThat(fieldType, is(PriorityType.class));
-        assertFalse(fieldType.isSearchable());
-        assertTrue(fieldType.isOrderable());
-        assertFalse(fieldType.isAggregable());
         assertEquals(Integer.class, fieldType.getType());
         assertNotNull(fieldType.toObject(fieldDefinition, 1, entity));
         assertEquals(fieldDefinition, ((PriorityType) fieldType).getScopeFieldDefinition());

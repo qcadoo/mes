@@ -26,10 +26,10 @@ package com.qcadoo.model.internal.api;
 
 import java.util.List;
 
-import com.qcadoo.mes.model.search.SearchCriteria;
-import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteria;
+import com.qcadoo.model.api.search.SearchResult;
 
 /**
  * Object defines database structure. This is {@link DataDefinition} extension for internal usage.

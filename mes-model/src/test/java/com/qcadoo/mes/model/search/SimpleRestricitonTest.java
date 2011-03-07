@@ -41,6 +41,8 @@ import org.junit.Test;
 
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.internal.DataAccessTest;
+import com.qcadoo.model.api.search.Restriction;
+import com.qcadoo.model.api.search.Restrictions;
 
 public final class SimpleRestricitonTest extends DataAccessTest {
 

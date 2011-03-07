@@ -30,6 +30,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.qcadoo.mes.internal.DataAccessTest;
+import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.api.search.SearchCriteria;
 
 public final class SearchCriteriaBuilderTest extends DataAccessTest {
 

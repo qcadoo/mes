@@ -43,39 +43,36 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
 
-import com.qcadoo.mes.internal.DataAccessService;
-import com.qcadoo.mes.internal.DataDefinitionServiceImpl;
-import com.qcadoo.mes.model.types.BelongsToType;
-import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.model.types.TreeType;
-import com.qcadoo.mes.model.types.internal.BelongsToEntityType;
-import com.qcadoo.mes.model.types.internal.BooleanType;
-import com.qcadoo.mes.model.types.internal.DateTimeType;
-import com.qcadoo.mes.model.types.internal.DateType;
-import com.qcadoo.mes.model.types.internal.DecimalType;
-import com.qcadoo.mes.model.types.internal.EnumType;
-import com.qcadoo.mes.model.types.internal.FieldTypeFactory;
-import com.qcadoo.mes.model.types.internal.FieldTypeFactoryImpl;
-import com.qcadoo.mes.model.types.internal.HasManyEntitiesType;
-import com.qcadoo.mes.model.types.internal.IntegerType;
-import com.qcadoo.mes.model.types.internal.PasswordType;
-import com.qcadoo.mes.model.types.internal.PriorityType;
-import com.qcadoo.mes.model.types.internal.StringType;
-import com.qcadoo.mes.model.types.internal.TextType;
-import com.qcadoo.mes.model.types.internal.TreeEntitiesType;
 import com.qcadoo.model.CustomHook;
 import com.qcadoo.model.Utils;
+import com.qcadoo.model.api.DataAccessService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.DictionaryService;
+import com.qcadoo.model.api.types.BelongsToType;
+import com.qcadoo.model.api.types.HasManyType;
+import com.qcadoo.model.api.types.TreeType;
+import com.qcadoo.model.internal.DataDefinitionServiceImpl;
 import com.qcadoo.model.internal.api.EntityHookDefinition;
 import com.qcadoo.model.internal.api.FieldHookDefinition;
 import com.qcadoo.model.internal.api.InternalDataDefinition;
 import com.qcadoo.model.internal.api.InternalFieldDefinition;
 import com.qcadoo.model.internal.api.ModelXmlToClassConverter;
 import com.qcadoo.model.internal.classconverter.ModelXmlToClassConverterImpl;
+import com.qcadoo.model.internal.types.BelongsToEntityType;
+import com.qcadoo.model.internal.types.BooleanType;
+import com.qcadoo.model.internal.types.DateTimeType;
+import com.qcadoo.model.internal.types.DateType;
+import com.qcadoo.model.internal.types.DecimalType;
+import com.qcadoo.model.internal.types.EnumType;
+import com.qcadoo.model.internal.types.HasManyEntitiesType;
+import com.qcadoo.model.internal.types.IntegerType;
+import com.qcadoo.model.internal.types.PasswordType;
+import com.qcadoo.model.internal.types.PriorityType;
+import com.qcadoo.model.internal.types.StringType;
+import com.qcadoo.model.internal.types.TextType;
+import com.qcadoo.model.internal.types.TreeEntitiesType;
 import com.qcadoo.model.internal.validators.CustomEntityValidator;
 import com.qcadoo.model.internal.validators.CustomValidator;
 import com.qcadoo.model.internal.validators.LengthValidator;
@@ -94,8 +91,6 @@ public class ModelXmlToDefinitionConverterTest {
 
     private static DataAccessService dataAccessService;
 
-    private static FieldTypeFactory fieldTypeFactory;
-
     private static ApplicationContext applicationContext;
 
     private static DictionaryService dictionaryService;
@@ -112,20 +107,15 @@ public class ModelXmlToDefinitionConverterTest {
 
         dataDefinitionService = new DataDefinitionServiceImpl();
 
-        fieldTypeFactory = new FieldTypeFactoryImpl();
-        setField(fieldTypeFactory, "dictionaryService", dictionaryService);
-        setField(fieldTypeFactory, "dataDefinitionService", dataDefinitionService);
-        setField(fieldTypeFactory, "passwordEncoder", mock(PasswordEncoder.class));
-
         modelXmlToDefinitionConverter = new ModelXmlToDefinitionConverterImpl();
         setField(modelXmlToDefinitionConverter, "dataDefinitionService", dataDefinitionService);
         setField(modelXmlToDefinitionConverter, "dataAccessService", dataAccessService);
-        setField(modelXmlToDefinitionConverter, "fieldTypeFactory", fieldTypeFactory);
         setField(modelXmlToDefinitionConverter, "applicationContext", applicationContext);
 
         given(applicationContext.getBean(CustomHook.class)).willReturn(new CustomHook());
 
         ModelXmlToClassConverter modelXmlToClassConverter = new ModelXmlToClassConverterImpl();
+        ((ModelXmlToClassConverterImpl) modelXmlToClassConverter).setBeanClassLoader(ClassLoader.getSystemClassLoader());
         modelXmlToClassConverter.convert(Utils.FULL_XML_RESOURCE, Utils.OTHER_XML_RESOURCE);
 
         dataDefinitions = modelXmlToDefinitionConverter.convert(Utils.FULL_XML_RESOURCE, Utils.OTHER_XML_RESOURCE);

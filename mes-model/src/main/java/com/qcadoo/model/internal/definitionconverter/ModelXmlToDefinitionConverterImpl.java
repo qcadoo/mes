@@ -46,31 +46,45 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.internal.DataAccessService;
-import com.qcadoo.mes.model.internal.DataDefinitionImpl;
-import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
-import com.qcadoo.mes.model.types.FieldType;
-import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.model.types.TreeType;
-import com.qcadoo.mes.model.types.internal.DateTimeType;
-import com.qcadoo.mes.model.types.internal.DateType;
-import com.qcadoo.mes.model.types.internal.DecimalType;
-import com.qcadoo.mes.model.types.internal.FieldTypeFactory;
-import com.qcadoo.mes.model.types.internal.IntegerType;
+import com.qcadoo.model.api.DataAccessService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.security.PasswordEncoder;
+import com.qcadoo.model.api.types.FieldType;
+import com.qcadoo.model.api.types.HasManyType;
+import com.qcadoo.model.api.types.TreeType;
+import com.qcadoo.model.api.utils.DateUtils;
 import com.qcadoo.model.internal.AbstractModelXmlConverter;
+import com.qcadoo.model.internal.DataDefinitionImpl;
+import com.qcadoo.model.internal.FieldDefinitionImpl;
 import com.qcadoo.model.internal.api.EntityHookDefinition;
 import com.qcadoo.model.internal.api.ErrorMessageDefinition;
 import com.qcadoo.model.internal.api.FieldHookDefinition;
+import com.qcadoo.model.internal.api.ModelXmlResolver;
 import com.qcadoo.model.internal.api.ModelXmlToDefinitionConverter;
 import com.qcadoo.model.internal.hooks.EntityHookDefinitionImpl;
 import com.qcadoo.model.internal.hooks.FieldHookDefinitionImpl;
+import com.qcadoo.model.internal.types.BelongsToEntityType;
+import com.qcadoo.model.internal.types.BooleanType;
+import com.qcadoo.model.internal.types.DateTimeType;
+import com.qcadoo.model.internal.types.DateType;
+import com.qcadoo.model.internal.types.DecimalType;
+import com.qcadoo.model.internal.types.DictionaryType;
+import com.qcadoo.model.internal.types.EnumType;
+import com.qcadoo.model.internal.types.HasManyEntitiesType;
+import com.qcadoo.model.internal.types.IntegerType;
+import com.qcadoo.model.internal.types.PasswordType;
+import com.qcadoo.model.internal.types.PriorityType;
+import com.qcadoo.model.internal.types.StringType;
+import com.qcadoo.model.internal.types.TextType;
+import com.qcadoo.model.internal.types.TreeEntitiesType;
 import com.qcadoo.model.internal.utils.ClassNameUtils;
 import com.qcadoo.model.internal.validators.CustomEntityValidator;
 import com.qcadoo.model.internal.validators.CustomValidator;
@@ -83,9 +97,15 @@ import com.qcadoo.model.internal.validators.ScaleValidator;
 import com.qcadoo.model.internal.validators.UniqueValidator;
 
 @Service
-public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlConverter implements ModelXmlToDefinitionConverter {
+public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlConverter implements ModelXmlToDefinitionConverter { // ,
+
+                                                                                                                                  // ApplicationListener<ContextRefreshedEvent>
+                                                                                                                                  // {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelXmlToDefinitionConverterImpl.class);
+
+    @Autowired
+    private DictionaryService dictionaryService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -94,10 +114,18 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
     private DataAccessService dataAccessService;
 
     @Autowired
-    private FieldTypeFactory fieldTypeFactory;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private ModelXmlResolver modelXmlResolver;
+
+    // @Override
+    public void onApplicationEvent(final ContextRefreshedEvent event) {
+        convert(modelXmlResolver.getResources());
+    }
 
     @Override
     public Collection<DataDefinition> convert(final Resource... resources) {
@@ -146,6 +174,8 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
     private DataDefinition parse(final XMLStreamReader reader, final String pluginIdentifier) throws XMLStreamException,
             IllegalStateException {
         DataDefinitionImpl dataDefinition = getModelDefinition(reader, pluginIdentifier);
+
+        LOG.info("Creating dataDefinition " + dataDefinition);
 
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagEnded(reader, TAG_MODEL)) {
@@ -245,28 +275,30 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
     private FieldType getDictionaryType(final XMLStreamReader reader) {
         String dictionaryName = getStringAttribute(reader, "dictionary");
         checkState(hasText(dictionaryName), "Dictionary name is required");
-        return fieldTypeFactory.dictionaryType(dictionaryName);
+        return new DictionaryType(dictionaryName, dictionaryService);
     }
 
     private FieldType getEnumType(final XMLStreamReader reader) throws XMLStreamException {
         String values = getStringAttribute(reader, "values");
-        return fieldTypeFactory.enumType(values.split(","));
+        return new EnumType(values.split(","));
     }
 
     private FieldType getHasManyType(final XMLStreamReader reader, final String pluginIdentifier) {
         String plugin = getStringAttribute(reader, "plugin");
         HasManyType.Cascade cascade = "delete".equals(getStringAttribute(reader, "cascade")) ? HasManyType.Cascade.DELETE
                 : HasManyType.Cascade.NULLIFY;
-        return fieldTypeFactory.hasManyType(plugin != null ? plugin : pluginIdentifier, getStringAttribute(reader, TAG_MODEL),
-                getStringAttribute(reader, "joinField"), cascade, getBooleanAttribute(reader, "copyable", false));
+        return new HasManyEntitiesType(plugin != null ? plugin : pluginIdentifier, getStringAttribute(reader, TAG_MODEL),
+                getStringAttribute(reader, "joinField"), cascade, getBooleanAttribute(reader, "copyable", false),
+                dataDefinitionService);
     }
 
     private FieldType getTreeType(final XMLStreamReader reader, final String pluginIdentifier) {
         String plugin = getStringAttribute(reader, "plugin");
         TreeType.Cascade cascade = "delete".equals(getStringAttribute(reader, "cascade")) ? TreeType.Cascade.DELETE
                 : TreeType.Cascade.NULLIFY;
-        return fieldTypeFactory.treeType(plugin != null ? plugin : pluginIdentifier, getStringAttribute(reader, TAG_MODEL),
-                getStringAttribute(reader, "joinField"), cascade, getBooleanAttribute(reader, "copyable", false));
+        return new TreeEntitiesType(plugin != null ? plugin : pluginIdentifier, getStringAttribute(reader, TAG_MODEL),
+                getStringAttribute(reader, "joinField"), cascade, getBooleanAttribute(reader, "copyable", false),
+                dataDefinitionService);
     }
 
     private FieldType getBelongsToType(final XMLStreamReader reader, final String pluginIdentifier) {
@@ -274,9 +306,9 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
         String plugin = getStringAttribute(reader, "plugin");
         String modelName = getStringAttribute(reader, TAG_MODEL);
         if (lazy) {
-            return fieldTypeFactory.lazyBelongsToType(plugin != null ? plugin : pluginIdentifier, modelName);
+            return new BelongsToEntityType(plugin != null ? plugin : pluginIdentifier, modelName, dataDefinitionService, true);
         } else {
-            return fieldTypeFactory.eagerBelongsToType(plugin != null ? plugin : pluginIdentifier, modelName);
+            return new BelongsToEntityType(plugin != null ? plugin : pluginIdentifier, modelName, dataDefinitionService, false);
         }
     }
 
@@ -357,19 +389,19 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
             final String fieldType) throws XMLStreamException {
         switch (modelTag) {
             case INTEGER:
-                return fieldTypeFactory.integerType();
+                return new IntegerType();
             case STRING:
-                return fieldTypeFactory.stringType();
+                return new StringType();
             case TEXT:
-                return fieldTypeFactory.textType();
+                return new TextType();
             case DECIMAL:
-                return fieldTypeFactory.decimalType();
+                return new DecimalType();
             case DATETIME:
-                return fieldTypeFactory.dateTimeType();
+                return new DateTimeType();
             case DATE:
-                return fieldTypeFactory.dateType();
+                return new DateType();
             case BOOLEAN:
-                return fieldTypeFactory.booleanType();
+                return new BooleanType();
             case BELONGSTO:
                 return getBelongsToType(reader, pluginIdentifier);
             case HASMANY:
@@ -381,7 +413,7 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
             case DICTIONARY:
                 return getDictionaryType(reader);
             case PASSWORD:
-                return fieldTypeFactory.passwordType();
+                return new PasswordType(passwordEncoder);
             default:
                 throw new IllegalStateException("Illegal field type " + fieldType);
         }
@@ -392,9 +424,9 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
             if (range == null) {
                 return null;
             } else if (type instanceof DateTimeType) {
-                return new SimpleDateFormat(DateTimeType.DATE_TIME_FORMAT).parse(range);
+                return new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).parse(range);
             } else if (type instanceof DateType) {
-                return new SimpleDateFormat(DateType.DATE_FORMAT).parse(range);
+                return new SimpleDateFormat(DateUtils.DATE_FORMAT).parse(range);
             } else if (type instanceof DecimalType) {
                 return new BigDecimal(range);
             } else if (type instanceof IntegerType) {
@@ -435,8 +467,8 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
         if (scopeAttribute != null) {
             scopedField = dataDefinition.getField(scopeAttribute);
         }
-        return new FieldDefinitionImpl(dataDefinition, getStringAttribute(reader, "name")).withType(fieldTypeFactory
-                .priorityType(scopedField));
+        return new FieldDefinitionImpl(dataDefinition, getStringAttribute(reader, "name"))
+                .withType(new PriorityType(scopedField));
     }
 
 }

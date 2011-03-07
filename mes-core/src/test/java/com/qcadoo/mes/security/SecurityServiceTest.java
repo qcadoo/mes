@@ -39,8 +39,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.security.internal.SecurityServiceImpl;
+import com.qcadoo.model.beans.users.UsersUser;
 
 public class SecurityServiceTest {
 

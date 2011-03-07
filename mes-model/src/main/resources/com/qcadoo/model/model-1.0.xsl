@@ -5,7 +5,7 @@
 	exclude-result-prefixes="qcd">
 
 	<xsl:output method="xml" version="1.0" encoding="UTF-8"
-		doctype-system="http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"
+		doctype-system="http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
 		doctype-public="-//Hibernate/Hibernate Mapping DTD 3.0//EN" />
 
 	<xsl:template match="/qcd:models">
@@ -13,7 +13,7 @@
 			<xsl:apply-templates select="qcd:model" />
 		</hibernate-mapping>
 	</xsl:template>
-
+	
 	<xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'" />
 	<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
 
@@ -119,8 +119,15 @@
 		</xsl:choose>
 		<column>
 			<xsl:attribute name="name">
+				<xsl:choose>
+				<xsl:when test="local-name()='belongsTo'">
+			    	<xsl:value-of select="concat(@name, '_id')" />
+			    </xsl:when>
+			    <xsl:otherwise>
 			    	<xsl:value-of select="@name" />
-				</xsl:attribute>
+			    </xsl:otherwise>
+			    </xsl:choose>
+			</xsl:attribute>
 			<xsl:if test="@default">
 				<xsl:attribute name="default">
 				    	<xsl:value-of select="concat(&quot;'&quot;, @default, &quot;'&quot;)" />
@@ -129,7 +136,7 @@
 		</column>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:integer">
+	<xsl:template match="//qcd:model/qcd:integer[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">integer</xsl:attribute>
 			<xsl:call-template name="property" />
@@ -150,91 +157,91 @@
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:password">
+	<xsl:template match="//qcd:model/qcd:password[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">string</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:text">
+	<xsl:template match="//qcd:model/qcd:text[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">text</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:decimal">
+	<xsl:template match="//qcd:model/qcd:decimal[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">big_decimal</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:datetime">
+	<xsl:template match="//qcd:model/qcd:datetime[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">timestamp</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:date">
+	<xsl:template match="//qcd:model/qcd:date[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">date</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:boolean">
+	<xsl:template match="//qcd:model/qcd:boolean[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">boolean</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:enum">
+	<xsl:template match="//qcd:model/qcd:enum[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">string</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:dictionary">
+	<xsl:template match="//qcd:model/qcd:dictionary[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">string</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:long">
+	<xsl:template match="//qcd:model/qcd:long[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">long</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:short">
+	<xsl:template match="//qcd:model/qcd:short[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">short</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:float">
+	<xsl:template match="//qcd:model/qcd:float[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">float</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:double">
+	<xsl:template match="//qcd:model/qcd:double[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">double</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:hasMany | //qcd:model/qcd:tree">
+	<xsl:template match="//qcd:model/qcd:hasMany[not(@persistent='false')] | //qcd:model/qcd:tree[not(@persistent='false')]">
 		<set>
 			<xsl:attribute name="cascade">
 			<xsl:choose>
@@ -248,7 +255,7 @@
 			</xsl:attribute>
 			<key>
 				<xsl:attribute name="column">
-            	<xsl:value-of select="@joinField" />
+            	<xsl:value-of select="concat(@joinField, '_id')" />
             </xsl:attribute>
 			</key>
 			<one-to-many>
@@ -270,7 +277,7 @@
 		</set>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:belongsTo">
+	<xsl:template match="//qcd:model/qcd:belongsTo[not(@persistent='false')]">
 		<many-to-one>
 			<xsl:choose>
 				<xsl:when test="@plugin">

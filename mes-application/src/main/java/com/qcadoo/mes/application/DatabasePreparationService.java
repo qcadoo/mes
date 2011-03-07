@@ -34,7 +34,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.beans.users.UsersGroup;
+import com.qcadoo.model.beans.users.UsersGroup;
 
 @Component
 public final class DatabasePreparationService implements ApplicationListener<ContextRefreshedEvent> {

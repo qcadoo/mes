@@ -1,9 +1,12 @@
 package com.qcadoo.model;
 
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 
+@Service
 public class CustomHook {
 
     public void hook(final DataDefinition dataDefinition, final Entity entity) {

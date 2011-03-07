@@ -35,8 +35,8 @@ import org.mockito.Matchers;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.internal.DataAccessTest;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.hooks.EntityHookDefinitionImpl;
 
 public class HookTest extends DataAccessTest {

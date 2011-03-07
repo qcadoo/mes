@@ -38,16 +38,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
-import com.qcadoo.mes.model.types.BelongsToType;
-import com.qcadoo.mes.model.types.internal.IntegerType;
-import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.internal.utils.ExpressionUtils;
+import com.qcadoo.model.api.types.BelongsToType;
+import com.qcadoo.model.api.utils.ExpressionUtils;
+import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.FieldDefinitionImpl;
+import com.qcadoo.model.internal.types.IntegerType;
+import com.qcadoo.model.internal.types.StringType;
 
 public class ExpressionUtilTest {
 

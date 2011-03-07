@@ -17,9 +17,9 @@ public class Utils {
 
     public static final String SPRING_CONTEXT_PATH = "spring.xml";
 
-    public static final Resource FULL_XML_RESOURCE = new FileSystemResource("src/test/resources/full-model.xml");
+    public static final Resource FULL_XML_RESOURCE = new FileSystemResource("src/test/resources/model/full.xml");
 
-    public static final Resource OTHER_XML_RESOURCE = new FileSystemResource("src/test/resources/other-model.xml");
+    public static final Resource OTHER_XML_RESOURCE = new FileSystemResource("src/test/resources/model/other.xml");
 
     public static final Resource MODEL_XML_INVALID_RESOURCE = new FileSystemResource("src/test/resources/log4j.xml");
 

@@ -49,12 +49,17 @@ import org.springframework.util.ReflectionUtils;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.model.internal.DataDefinitionImpl;
-import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
-import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.internal.DataDefinitionImpl;
+import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.EntityListImpl;
+import com.qcadoo.model.internal.FieldDefinitionImpl;
+import com.qcadoo.model.internal.ProxyEntity;
+import com.qcadoo.model.internal.types.IntegerType;
+import com.qcadoo.model.internal.types.StringType;
 
 public class EntityServiceTest extends DataAccessTest {
 
@@ -119,7 +124,7 @@ public class EntityServiceTest extends DataAccessTest {
         SampleSimpleDatabaseObject databaseEntity = new SampleSimpleDatabaseObject(1L);
         databaseEntity.setName("Mr T");
 
-        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name").withType(fieldTypeFactory.integerType());
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name").withType(new IntegerType());
 
         // when
         entityService.getField(databaseEntity, fieldDefinition);
@@ -173,7 +178,7 @@ public class EntityServiceTest extends DataAccessTest {
         // given
         SampleSimpleDatabaseObject databaseEntity = new SampleSimpleDatabaseObject(1L);
 
-        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "unknown").withType(fieldTypeFactory.stringType());
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "unknown").withType(new StringType());
 
         // when
         entityService.setField(databaseEntity, fieldDefinition, "XXX");
@@ -286,11 +291,11 @@ public class EntityServiceTest extends DataAccessTest {
 
         List<Entity> hasManyField = genericEntity.getHasManyField("entities");
 
-        Field field = ReflectionUtils.findField(EntityList.class, "entities");
+        Field field = ReflectionUtils.findField(EntityListImpl.class, "entities");
         ReflectionUtils.makeAccessible(field);
         ReflectionUtils.setField(field, hasManyField, Collections.emptyList());
 
-        assertThat(hasManyField, instanceOf(EntityList.class));
+        assertThat(hasManyField, instanceOf(EntityListImpl.class));
         assertEquals(dataDefinition, ReflectionTestUtils.getField(hasManyField, "dataDefinition"));
         assertEquals(Long.valueOf(1), ReflectionTestUtils.getField(hasManyField, "parentId"));
         assertEquals(fieldDefinitionBelongsTo, ReflectionTestUtils.getField(hasManyField, "joinFieldDefinition"));
@@ -389,7 +394,7 @@ public class EntityServiceTest extends DataAccessTest {
         given(dataDefinition.find().restrictedWith(Restrictions.belongsTo(fieldDefinition, 5L)).list().getEntities()).willReturn(
                 Lists.newArrayList(entity1, entity2));
 
-        List<Entity> entityList = new EntityList(dataDefinition, "joinField", 5L);
+        List<Entity> entityList = new EntityListImpl(dataDefinition, "joinField", 5L);
 
         // then
         assertNotNull(entityList);

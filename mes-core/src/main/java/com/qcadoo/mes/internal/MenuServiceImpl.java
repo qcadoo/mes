@@ -29,14 +29,13 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.model.search.Restrictions;
-import com.qcadoo.mes.plugins.internal.enums.PluginStatus;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.menu.MenuDefinition;
@@ -47,10 +46,11 @@ import com.qcadoo.mes.view.menu.items.ViewDefinitionMenuItemItem;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.Monitorable;
+import com.qcadoo.model.api.aop.Monitorable;
+import com.qcadoo.model.api.search.Restrictions;
 
 @Service
-public final class MenuServiceImpl implements MenuService {
+public final class MenuServiceImpl implements MenuService { // , ApplicationListener<ContextRefreshedEvent> {
 
     // private static final Logger LOG = LoggerFactory.getLogger(MenuServiceImpl.class);
 
@@ -61,10 +61,10 @@ public final class MenuServiceImpl implements MenuService {
     private PluginManagementService pluginManagementService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private ViewDefinitionService viewDefinitionService;
 
     @Autowired
-    private ViewDefinitionService viewDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     @Value("${showAdministrationMenu}")
     private boolean showAdministrationMenu;
@@ -72,7 +72,7 @@ public final class MenuServiceImpl implements MenuService {
     @Override
     @Transactional
     @Monitorable
-    public void updateViewDefinitionDatabase() {
+    public void onApplicationEvent(final ContextRefreshedEvent event) {
         DataDefinition viewDefinitionDD = dataDefinitionService.get("menu", "viewDefinition");
 
         List<Pair<String, String>> menuViews = viewDefinitionService.listForMenu();
@@ -204,6 +204,9 @@ public final class MenuServiceImpl implements MenuService {
     }
 
     private boolean belongsToActivePlugin(final String pluginIdentifier) {
-        return pluginManagementService.getByIdentifierAndStatus(pluginIdentifier, PluginStatus.ACTIVE.getValue()) != null;
+        return true;
+        // TODO
+        // return pluginManagementService.getByIdentifierAndStatus(pluginIdentifier, PluginStatus.ACTIVE.getValue()) != null;
     }
+
 }

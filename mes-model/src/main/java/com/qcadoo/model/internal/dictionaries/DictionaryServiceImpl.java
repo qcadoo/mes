@@ -27,6 +27,7 @@ package com.qcadoo.model.internal.dictionaries;
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.springframework.util.StringUtils.hasText;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,13 +43,35 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.model.api.DictionaryService;
-import com.qcadoo.model.api.Monitorable;
+import com.qcadoo.model.api.aop.Monitorable;
+import com.qcadoo.model.beans.dictionaries.DictionariesDictionary;
+import com.qcadoo.model.beans.dictionaries.DictionariesDictionaryItem;
 
 @Service
 public final class DictionaryServiceImpl implements DictionaryService {
 
     @Autowired
     private SessionFactory sessionFactory;
+
+    @Override
+    @Transactional(readOnly = true)
+    @Monitorable
+    @SuppressWarnings("unchecked")
+    public List<String> keys(final String dictionary) {
+        checkArgument(hasText(dictionary), "dictionary name must be given");
+
+        List<DictionariesDictionaryItem> items = sessionFactory.getCurrentSession()
+                .createCriteria(DictionariesDictionaryItem.class).createAlias("dictionary", "dc")
+                .add(Restrictions.eq("dc.name", dictionary)).addOrder(Order.asc("name")).list();
+
+        List<String> keys = new ArrayList<String>();
+
+        for (DictionariesDictionaryItem item : items) {
+            keys.add(item.getName());
+        }
+
+        return keys;
+    }
 
     @Override
     @Transactional(readOnly = true)

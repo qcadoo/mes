@@ -55,11 +55,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.internal.EntityList;
-import com.qcadoo.mes.internal.EntityTree;
-import com.qcadoo.mes.model.search.Restriction;
-import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -67,6 +62,11 @@ import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.Restriction;
+import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.EntityListImpl;
+import com.qcadoo.model.internal.EntityTreeImpl;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ FormComponentState.class, GenealogyService.class, TransactionAspectSupport.class })
@@ -292,7 +292,7 @@ public class AutoGenealogyServiceTest {
                 ((List<Entity>) args[1]).add(createOperationComponent(false));
                 return null;
             }
-        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTree.class), anyListOf(Entity.class));
+        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
 
         given(dataDefinitionService.get("genealogies", "genealogy").save(any(Entity.class)).isValid()).willReturn(true);
 
@@ -341,7 +341,7 @@ public class AutoGenealogyServiceTest {
                 ((List<Entity>) args[1]).add(createOperationComponent(false));
                 return null;
             }
-        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTree.class), anyListOf(Entity.class));
+        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
 
         given(dataDefinitionService.get("genealogies", "genealogy").save(any(Entity.class)).isValid()).willReturn(true);
 
@@ -389,7 +389,7 @@ public class AutoGenealogyServiceTest {
                 ((List<Entity>) args[1]).add(createOperationComponent(true));
                 return null;
             }
-        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTree.class), anyListOf(Entity.class));
+        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
 
         given(translationService.translate("genealogies.message.autoGenealogy.missingShift", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.missingShift.pl");
@@ -554,7 +554,7 @@ public class AutoGenealogyServiceTest {
                 ((List<Entity>) args[1]).add(createOperationComponent(false));
                 return null;
             }
-        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTree.class), anyListOf(Entity.class));
+        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
 
         given(dataDefinitionService.get("genealogies", "genealogy").save(any(Entity.class)).isValid()).willReturn(true);
 
@@ -608,7 +608,7 @@ public class AutoGenealogyServiceTest {
                 ((List<Entity>) args[1]).add(createOperationComponent(false));
                 return null;
             }
-        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTree.class), anyListOf(Entity.class));
+        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
 
         given(dataDefinitionService.get("genealogies", "genealogy").save(any(Entity.class)).isValid()).willReturn(true);
 
@@ -843,16 +843,16 @@ public class AutoGenealogyServiceTest {
         DataDefinition listDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         given(listDataDefinition.find().restrictedWith(any(Restriction.class)).list().getEntities()).willReturn(productsEntities);
 
-        EntityList operationProductInComponents = new EntityList(listDataDefinition, "joinField", 1L);
+        EntityListImpl operationProductInComponents = new EntityListImpl(listDataDefinition, "joinField", 1L);
 
         given(operationComponent.getHasManyField("operationProductInComponents")).willReturn(operationProductInComponents);
         return operationComponent;
     }
 
     private Entity createOperationProductInComponent(final Long id, final boolean batchRequired, final boolean withoutBatch) {
-        Entity operationProductInComponent = dataDefinitionService.get("products", "operationProductInComponent").create(id);
+        Entity operationProductInComponent = new DefaultEntity(null, id);
         operationProductInComponent.setField("batchRequired", batchRequired);
-        Entity product = dataDefinitionService.get("products", "product").create(id);
+        Entity product = new DefaultEntity(null, id);
         product.setField("name", "name" + id);
         product.setField("number", "number" + id);
         if (!withoutBatch) {
@@ -865,7 +865,7 @@ public class AutoGenealogyServiceTest {
 
     private List<Entity> getCurrentAttribute() {
         List<Entity> list = new ArrayList<Entity>();
-        Entity currentAttribute = dataDefinitionService.get("genealogies", "currentAttribute").create();
+        Entity currentAttribute = new DefaultEntity(null);
         currentAttribute.setField("shift", "test");
         currentAttribute.setField("post", "test");
         currentAttribute.setField("other", "test");
@@ -878,7 +878,7 @@ public class AutoGenealogyServiceTest {
 
     private List<Entity> getParameter(final String value) {
         List<Entity> list = new ArrayList<Entity>();
-        Entity currentAttribute = dataDefinitionService.get("basic", "parameter").create();
+        Entity currentAttribute = new DefaultEntity(null);
         currentAttribute.setField("batchForDoneOrder", value);
         list.add(currentAttribute);
         return list;

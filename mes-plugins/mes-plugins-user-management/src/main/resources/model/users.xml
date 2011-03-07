@@ -37,7 +37,6 @@
 		<string name="description" >
 			<validatesLength max="255"/>
 		</string>
-		<string name="email" />
 		<password name="password" required="true" /><!-- TODO validatesPresenceOnCreate -->
 		<password name="passwordConfirmation" persistent="false" required="true" /><!-- TODO validatesPresenceOnCreate -->
 		<password name="oldPassword" persistent="false" />
