@@ -102,6 +102,172 @@
 
 .windowContainer .windowComponents {
 	margin: 0;
-	padding: 0;
 	padding: 10px;
+}
+
+.tabRibbonContainer {
+	display: inline-block;
+	background: red;	
+}
+
+.windowContainer .tabWindowHeader {
+	background: #ebebeb;
+	padding-left: 20px;
+	z-index: 110;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-weight: normal; /*EDISONDA NEW*/
+	font-size: 15px; /*EDISONDA NEW*/
+	font-family: "Lucida Grande"; /*EDISONDA NEW*/
+	color: #959595; /*EDISONDA NEW*/
+	height: 35px; /*EDISONDA NEW*/
+	line-height: 35px; /*EDISONDA NEW*/
+}
+.windowContainer .tabWindowHeader.noTabs {
+	border-bottom: 1px solid #a7a7a7;
+}
+
+.windowContainer .tabWindowHeader span {
+	color: #232323;
+}
+
+.windowContainer .tabWindowComponents {
+	margin: 0;
+	padding: 0;
+}
+.windowContainer .tabWindowComponents.noTabs {
+	margin: 0;
+	padding: 10px;
+}
+
+.windowContainer .windowTabs {
+	background: #ebebeb;
+	border-bottom: solid #a7a7a7 1px;
+	position: relative;
+	height: 30px;
+}
+
+.windowContainer .windowTabs div {
+	position: absolute;
+	top: 0px;
+	left: 8px;
+	text-align: left;
+}
+
+.windowContainer .windowTabs div a {
+	display: inline-block;
+	height: 22px;
+	line-height: 22px;
+	margin-top: 5px;
+	margin-left: 10px;
+	border-top: solid #a7a7a7 1px;
+	border-left: solid #a7a7a7 1px;
+	border-right: solid #a7a7a7 1px;
+	color: black;
+	font-family: "Lucida Grande"; /*EDISONDA NEW*/
+	font-size: 12px;
+	text-decoration: none;
+	padding: 2px 10px 0px 10px;
+	background: #f0f0f0;
+	vertical-align: top;
+	
+	border-top-left-radius: 5px; /*EDISONDA NEW*/
+	-moz-border-radius-topleft: 5px; /*EDISONDA NEW*/
+	-webkit-boder-top-left-radius: 5px; /*EDISONDA NEW*/
+	border-top-right-radius: 5px; /*EDISONDA NEW*/
+	-moz-border-radius-topright: 5px; /*EDISONDA NEW*/
+	-webkit-boder-top-right-radius: 5px; /*EDISONDA NEW*/
+}
+
+.windowContainer .windowTabs a.activeTab {
+	background: #fafafa;
+	height: 26px;
+	margin-top: 2px;
+	border-top: solid #FFCA33 3px;
+	padding-top: 0px;
+}
+.windowContainer .windowTabs a.activeTab.errorTab {
+	border-top: solid #ff0000 3px;
+}
+
+.windowContainer .windowTabs a.errorTab {
+	border-top: solid #ff0000 3px;
+	border-left: solid #ff0000 1px;
+	border-right: solid #ff0000 1px;
+	padding-top: 0px;
+}
+
+#q_row3_out_container {
+	height:70px;
+	font-family: Arial, Helvetica, sans-serif;	
+	background-image:url('/css/core/menu/images/q_row3_bg.png');
+	background-position: top;
+	background-repeat: repeat-x;
+}
+
+#q_row3_out_container #q_row3_out_left {
+	display: inline-block;
+	height: 100%;
+}
+
+#q_row3_out_container #q_row3_out_main {
+	display: inline-block;
+	height: 100%;
+}
+
+#q_row3_out_container #q_row3_out_tabs_left {
+	display: inline-block;
+	vertical-align: top;
+	height: 94px;
+	width: 5px;
+	position: relative;
+}
+
+#q_row3_out_container #q_row3_out_tabs_left > div {
+	position: absolute;
+	top: 0;
+	left: -20px;
+	height: 94px;
+	width: 25px;
+	background-image:url('/css/core/menu/images/q_row3_tabs_bg_left_2.png');
+	background-position: top;
+	background-repeat: no-repeat;
+}
+
+#q_row3_out_container #q_row3_out_tabs {
+	display: inline-block;
+	vertical-align: top;
+	height: 94px;
+	background-image:url('/css/core/menu/images/q_row3_tabs_bg_2.png');
+	background-position: top;
+	background-repeat: repeat-x;
+	padding-left: 5px;
+}
+
+#q_row3_out_container #q_row3_out_tabs_right {
+	display: inline-block;
+	vertical-align: top;
+	height: 94px;
+	width: 5px;
+	position: relative;
+}
+
+#q_row3_out_container #q_row3_out_tabs_right > div {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 94px;
+	width: 25px;
+	background-image:url('/css/core/menu/images/q_row3_tabs_bg_right_2.png');
+	background-position: top;
+	background-repeat: no-repeat;
+}
+
+
+.tabWindowRibbon #q_row4_out {
+	background-image:url('/css/core/menu/images/shadow_20.png');
+	background-position: top;
+	background-repeat: repeat-x;
+	height: 20px;
 }

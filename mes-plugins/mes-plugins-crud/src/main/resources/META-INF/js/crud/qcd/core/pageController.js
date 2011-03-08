@@ -82,7 +82,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 		for (var i in pageComponents) {
 			pageComponents[i].performScript();
 		}
-		
 		if (serializationObject) {
 			setComponentState(serializationObject);
 			if (hasDataDefinition) {

@@ -261,22 +261,33 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser { //
     public ComponentPattern parseComponent(final Node componentNode, final ViewDefinition viewDefinition,
             final ContainerPattern parent, final String pluginIdentifier) {
         String type = getStringAttribute(componentNode, "type");
+
+        if (parent == null && !("window".equals(type) || "tabWindow".equals(type))) {
+            throw new IllegalStateException("Unsupported component: " + type);
+        }
+
+        ComponentPattern component = viewComponentsResolver.getViewComponentInstance(type,
+                getComponentDefinition(componentNode, parent, viewDefinition));
+
+        component.parse(componentNode, this);
+
+        return component;
+    }
+
+    @Override
+    public ComponentDefinition getComponentDefinition(final Node componentNode, final ContainerPattern parent,
+            final ViewDefinition viewDefinition) {
+        String name = getStringAttribute(componentNode, "name");
+        String fieldPath = getStringAttribute(componentNode, "field");
+        String sourceFieldPath = getStringAttribute(componentNode, "source");
         String plugin = getStringAttribute(componentNode, "plugin");
         String model = getStringAttribute(componentNode, "model");
 
         DataDefinition customDataDefinition = null;
 
         if (model != null) {
-            String modelPluginIdentifier = plugin != null ? plugin : pluginIdentifier;
+            String modelPluginIdentifier = plugin != null ? plugin : viewDefinition.getPluginIdentifier();
             customDataDefinition = dataDefinitionService.get(modelPluginIdentifier, model);
-        }
-
-        String name = getStringAttribute(componentNode, "name");
-        String fieldPath = getStringAttribute(componentNode, "field");
-        String sourceFieldPath = getStringAttribute(componentNode, "source");
-
-        if (parent == null && !"window".equals(type)) {
-            throw new IllegalStateException("Unsupported component: " + type);
         }
 
         ComponentDefinition componentDefinition = new ComponentDefinition();
@@ -293,11 +304,7 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser { //
         componentDefinition.setHasDescription(getBooleanAttribute(componentNode, "hasDescription", false));
         componentDefinition.setDataDefinition(customDataDefinition);
 
-        ComponentPattern component = viewComponentsResolver.getViewComponentInstance(type, componentDefinition);
-
-        component.parse(componentNode, this);
-
-        return component;
+        return componentDefinition;
     }
 
     @Override

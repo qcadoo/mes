@@ -409,7 +409,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         return dataDefinition;
     }
 
-    protected final TranslationService getTranslationService() {
+    public final TranslationService getTranslationService() {
         return translationService;
     }
 
@@ -417,7 +417,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         return viewDefinition;
     }
 
-    protected final String getTranslationPath() {
+    public final String getTranslationPath() {
         return getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getFunctionalPath();
     }
 
