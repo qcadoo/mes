@@ -27,7 +27,7 @@
 
 <qcd:views plugin="qualityControls" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="qualityControls" model="qualityControl" menuAccessible="true">
-		<component type="tabWindow" name="window" reference="window" header="false" fixedHeight="true">
+		<component type="window" name="window" reference="window" header="false" fixedHeight="true">
 			<windowTab name="forOrder" reference="forOrderTab">
 				<ribbon>
 					<!--<group template="gridNewCopyAndRemoveAction"/>-->
