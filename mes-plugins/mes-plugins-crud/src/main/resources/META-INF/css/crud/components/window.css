@@ -170,7 +170,6 @@
 	text-decoration: none;
 	padding: 2px 10px 0px 10px;
 	background: #f0f0f0;
-	//background: #ebebeb;
 	vertical-align: top;
 	
 	border-top-left-radius: 5px; /*EDISONDA NEW*/
@@ -185,6 +184,11 @@
 	background: #fafafa;
 	height: 26px;
 	margin-top: 2px;
+	border-top: solid #FFCA33 3px;
+	padding-top: 0px;
+}
+.windowContainer .windowTabs a.activeTab.errorTab {
+	border-top: solid #ff0000 3px;
 }
 
 .windowContainer .windowTabs a.errorTab {
@@ -197,31 +201,19 @@
 #q_row3_out_container {
 	height:70px;
 	font-family: Arial, Helvetica, sans-serif;	
-	//background-color:#f5f5f5;
-	//background-image:url('/css/core/menu/images/q_row3_tabs_bg.png');
-	//background-image:url('/css/core/menu/images/q_row3_tabs_bg_2.png');
 	background-image:url('/css/core/menu/images/q_row3_bg.png');
 	background-position: top;
 	background-repeat: repeat-x;
-	//background-color: #d1d1d1;
 }
 
 #q_row3_out_container #q_row3_out_left {
 	display: inline-block;
 	height: 100%;
-	/*background-color:#f5f5f5;
-	background-image:url('/css/core/menu/images/q_row3_bg.png');
-	background-position: top;
-	background-repeat: repeat-x*/;
 }
 
 #q_row3_out_container #q_row3_out_main {
 	display: inline-block;
 	height: 100%;
-	/*background-color:#f5f5f5;
-	background-image:url('/css/core/menu/images/q_row3_bg.png');
-	background-position: top;
-	background-repeat: repeat-x;*/
 }
 
 #q_row3_out_container #q_row3_out_tabs_left {
@@ -230,9 +222,6 @@
 	height: 94px;
 	width: 5px;
 	position: relative;
-	//background-image:url('/css/core/menu/images/q_row3_tabs_bg_left.png');
-	//background-position: top;
-	//background-repeat: no-repeat;
 }
 
 #q_row3_out_container #q_row3_out_tabs_left > div {
@@ -250,7 +239,7 @@
 	display: inline-block;
 	vertical-align: top;
 	height: 94px;
-	background-image:url('/css/core/menu/images/q_row3_tabs_bg.png');
+	background-image:url('/css/core/menu/images/q_row3_tabs_bg_2.png');
 	background-position: top;
 	background-repeat: repeat-x;
 	padding-left: 5px;
@@ -262,9 +251,6 @@
 	height: 94px;
 	width: 5px;
 	position: relative;
-	//background-image:url('/css/core/menu/images/q_row3_tabs_bg_right.png');
-	//background-position: top;
-	//background-repeat: no-repeat;
 }
 
 #q_row3_out_container #q_row3_out_tabs_right > div {
@@ -283,6 +269,5 @@
 	background-image:url('/css/core/menu/images/shadow_20.png');
 	background-position: top;
 	background-repeat: repeat-x;
-	//height: 6px;
 	height: 20px;
 }
