@@ -23,7 +23,7 @@ public class DefaultPluginFileManager implements PluginFileManager {
             return false;
         }
         for (String key : keys) {
-            if (!checkFileRightsToRead(key)) {
+            if (!checkFileRightsToRead(key, pluginsTmpPath)) {
                 return false;
             }
         }
@@ -47,18 +47,53 @@ public class DefaultPluginFileManager implements PluginFileManager {
 
     @Override
     public boolean uninstallPlugin(final String... keys) throws PluginException {
-        // TODO Auto-generated method stub
-        return false;
+        for (String key : keys) {
+            if (!checkFileRightsToRead(key, pluginsTmpPath) && !checkFileRightsToRead(key, pluginsPath)) {
+                return false;
+            }
+        }
+
+        for (String key : keys) {
+            File file = new File(pluginsTmpPath + getProperty("file.separator") + key);
+            if (!file.exists()) {
+                file = new File(pluginsPath + getProperty("file.separator") + key);
+            }
+            try {
+                FileUtils.forceDelete(file);
+            } catch (IOException e) {
+                LOG.error("Problem with removing plugin file - " + e.getMessage());
+                if (file.exists()) {
+                    LOG.info("Trying delete file after JVM stop");
+                    file.deleteOnExit();
+                } else {
+                    throw new PluginException(e.getMessage(), e.getCause());
+                }
+            }
+        }
+        return true;
     }
 
     @Override
-    public void removePlugin(final String key) {
-        // TODO Auto-generated method stub
-
+    public void removePlugin(final String key) throws PluginException {
+        File file = new File((pluginsTmpPath + getProperty("file.separator") + key));
+        if (!file.exists()) {
+            file = new File(pluginsPath + getProperty("file.separator") + key);
+        }
+        try {
+            FileUtils.forceDelete(file);
+        } catch (IOException e) {
+            LOG.error("Problem with removing plugin file - " + e.getMessage());
+            if (file.exists()) {
+                LOG.info("Trying delete file after JVM stop");
+                file.deleteOnExit();
+            } else {
+                throw new PluginException(e.getMessage(), e.getCause());
+            }
+        }
     }
 
-    private boolean checkFileRightsToRead(final String key) {
-        File file = new File(pluginsTmpPath + getProperty("file.separator") + key);
+    private boolean checkFileRightsToRead(final String key, final String path) {
+        File file = new File(path + getProperty("file.separator") + key);
         if (!file.exists() || !file.canRead()) {
             return false;
         }

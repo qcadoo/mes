@@ -65,6 +65,7 @@ public class PluginUpdateTest {
         // given
         given(anotherPlugin.getName()).willReturn("pluginname");
         given(plugin.hasState(PluginState.TEMPORARY)).willReturn(true);
+        given(plugin.getPluginState()).willReturn(PluginState.TEMPORARY);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
         given(anotherPlugin.getPluginInformation()).willReturn(pluginInformation);
@@ -79,7 +80,7 @@ public class PluginUpdateTest {
         // then
         verify(pluginDao).save(plugin);
         verify(plugin).setPluginInformation(pluginInformation);
-        verify(pluginFileManager).removePlugin("filename");
+        verify(pluginFileManager).uninstallPlugin("filename");
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
@@ -121,6 +122,7 @@ public class PluginUpdateTest {
         // given
         given(anotherPlugin.getName()).willReturn("pluginname");
         given(plugin.hasState(PluginState.TEMPORARY)).willReturn(true);
+        given(plugin.getPluginState()).willReturn(PluginState.TEMPORARY);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
         given(anotherPlugin.getPluginInformation()).willReturn(pluginInformation);
@@ -136,7 +138,7 @@ public class PluginUpdateTest {
         // then
         verify(pluginDao).save(plugin);
         verify(plugin).setPluginInformation(pluginInformation);
-        verify(pluginFileManager).removePlugin("filename");
+        verify(pluginFileManager).uninstallPlugin("filename");
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_MISSING_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
@@ -149,6 +151,7 @@ public class PluginUpdateTest {
         // given
         given(anotherPlugin.getName()).willReturn("pluginname");
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
+        given(plugin.getPluginState()).willReturn(PluginState.DISABLED);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
         given(anotherPlugin.getPluginInformation()).willReturn(pluginInformation);
@@ -165,7 +168,7 @@ public class PluginUpdateTest {
         // then
         verify(pluginDao).save(plugin);
         verify(plugin).setPluginInformation(pluginInformation);
-        verify(pluginFileManager).removePlugin("filename");
+        verify(pluginFileManager).uninstallPlugin("filename");
         verify(pluginServerManager).restart();
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
@@ -205,6 +208,7 @@ public class PluginUpdateTest {
         // given
         given(anotherPlugin.getName()).willReturn("pluginname");
         given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
+        given(plugin.getPluginState()).willReturn(PluginState.ENABLED);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
         given(anotherPlugin.getPluginInformation()).willReturn(pluginInformation);
@@ -219,7 +223,7 @@ public class PluginUpdateTest {
         // then
         verify(pluginDao).save(plugin);
         verify(plugin).setPluginInformation(pluginInformation);
-        verify(pluginFileManager).removePlugin("filename");
+        verify(pluginFileManager).uninstallPlugin("filename");
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
