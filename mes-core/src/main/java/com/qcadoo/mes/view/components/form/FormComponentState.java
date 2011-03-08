@@ -157,6 +157,16 @@ public class FormComponentState extends AbstractContainerState {
     }
 
     @Override
+    public boolean isHasError() { // form never has error - its field can have
+        for (ComponentState child : getChildren().values()) {
+            if (child.isHasError()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public Object getFieldValue() {
         return getEntityId();
     }

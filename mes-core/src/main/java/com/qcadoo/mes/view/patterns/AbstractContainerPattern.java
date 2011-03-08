@@ -120,4 +120,8 @@ public abstract class AbstractContainerPattern extends AbstractComponentPattern 
         }
     }
 
+    public void parseWithoutChildren(final Node componentNode, final ViewDefinitionParser parser) {
+        super.parse(componentNode, parser);
+    }
+
 }
