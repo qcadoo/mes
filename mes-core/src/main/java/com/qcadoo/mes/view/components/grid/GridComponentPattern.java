@@ -25,7 +25,6 @@
 package com.qcadoo.mes.view.components.grid;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -40,17 +39,15 @@ import org.json.JSONObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.model.types.internal.BooleanType;
-import com.qcadoo.mes.model.types.internal.DictionaryType;
-import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.types.EnumeratedType;
+import com.qcadoo.model.api.types.HasManyType;
 
 @ViewComponent("grid")
 public final class GridComponentPattern extends AbstractComponentPattern {
@@ -87,7 +84,7 @@ public final class GridComponentPattern extends AbstractComponentPattern {
 
     private boolean hasPredefinedFilters = false;
 
-    private List<PredefinedFilter> predefinedFilters = new LinkedList<PredefinedFilter>();
+    private final List<PredefinedFilter> predefinedFilters = new LinkedList<PredefinedFilter>();
 
     private int height = DEFAULT_GRID_HEIGHT;
 
@@ -239,22 +236,13 @@ public final class GridComponentPattern extends AbstractComponentPattern {
 
         JSONObject json = new JSONObject();
 
-        if (column.getFields().get(0).getType() instanceof EnumType) {
-            EnumType type = (EnumType) column.getFields().get(0).getType();
-            List<String> sortedValues = type.values();
-            Collections.sort(sortedValues);
-            for (String value : sortedValues) {
-                String fieldCode = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(),
-                        column.getFields().get(0).getName())
-                        + ".value." + value;
-                json.put(value, getTranslationService().translate(fieldCode, locale));
+        if (column.getFields().get(0).getType() instanceof EnumeratedType) {
+            EnumeratedType type = (EnumeratedType) column.getFields().get(0).getType();
+            Map<String, String> sortedValues = type.values(locale);
+            for (Map.Entry<String, String> value : sortedValues.entrySet()) {
+                json.put(value.getKey(), value.getValue());
             }
-        } else if (column.getFields().get(0).getType() instanceof DictionaryType) {
-            DictionaryType type = (DictionaryType) column.getFields().get(0).getType();
-            for (String value : type.values()) {
-                json.put(value, value);
-            }
-        } else if (column.getFields().get(0).getType() instanceof BooleanType) {
+        } else if (column.getFields().get(0).getType().getType().equals(Boolean.class)) {
             json.put("1", getTranslationService().translate("commons.true", locale));
             json.put("0", getTranslationService().translate("commons.false", locale));
         }

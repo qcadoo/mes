@@ -37,10 +37,10 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.pdf.PdfWriter;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.products.print.DocumentService;
 import com.qcadoo.mes.utils.pdf.PdfPageNumbering;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
+import com.qcadoo.model.api.Entity;
 
 public abstract class PdfDocumentService extends DocumentService {
 

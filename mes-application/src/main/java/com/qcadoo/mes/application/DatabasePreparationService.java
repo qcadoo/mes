@@ -24,23 +24,25 @@
 
 package com.qcadoo.mes.application;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.beans.basic.BasicParameter;
-import com.qcadoo.mes.beans.menu.MenuMenuCategory;
-import com.qcadoo.mes.beans.menu.MenuMenuViewDefinitionItem;
-import com.qcadoo.mes.beans.menu.MenuViewDefinition;
-import com.qcadoo.mes.beans.users.UsersGroup;
-import com.qcadoo.mes.beans.users.UsersUser;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.Restrictions;
 
 @Component
 public final class DatabasePreparationService implements ApplicationListener<ContextRefreshedEvent> {
@@ -48,7 +50,10 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     private static final Logger LOG = LoggerFactory.getLogger(DatabasePreparationService.class);
 
     @Autowired
-    private SessionFactory sessionFactory;
+    private DataSource dataSource;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private TestDataLoader testDataLoader;
@@ -59,9 +64,11 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     @Value("${showSystemInfo}")
     private boolean showSystemInfo;
 
-    private UsersGroup adminGroup;
+    private final Map<String, Entity> menuCategories = new HashMap<String, Entity>();
 
-    private UsersGroup supervisorsGroup;
+    private Entity adminGroup;
+
+    private Entity supervisorsGroup;
 
     @Value("${addAdministrationMenuToDatabase}")
     private boolean addAdministrationMenuToDatabase;
@@ -75,49 +82,53 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         if (databaseHasToBePrepared()) {
             LOG.info("Database has to be prepared ...");
 
+            createPersistenceLogins();
             addMenus();
             addGroups();
             addUsers();
             addParameters();
 
             if (addTestData) {
-                addTestData();
+                testDataLoader.loadTestData();
             }
         } else {
             LOG.info("Database has been already prepared, skipping");
         }
     }
 
+    private void createPersistenceLogins() {
+        new JdbcTemplate(dataSource).execute(JdbcTokenRepositoryImpl.CREATE_TABLE_SQL);
+    }
+
     private void addMenus() {
+        Entity menuCategoryGridView = getMenuViewDefinition("menuCategories");
+        Entity technologyGridView = getMenuViewDefinition("technologies");
+        Entity orderGridView = getMenuViewDefinition("orders");
+        Entity pluginGridView = getMenuViewDefinition("plugins");
+        Entity userGridView = getMenuViewDefinition("users");
+        Entity dictionaryGridView = getMenuViewDefinition("dictionaries");
+        Entity materialRequirementGridView = getMenuViewDefinition("materialRequirements");
+        Entity productGridView = getMenuViewDefinition("products");
+        Entity groupGridView = getMenuViewDefinition("groups");
+        Entity machineGridView = getMenuViewDefinition("machines");
+        Entity staffGridView = getMenuViewDefinition("staffs");
+        Entity workPlanGridView = getMenuViewDefinition("workPlans");
+        Entity operationGridView = getMenuViewDefinition("operations");
+        Entity genealogyForComponentFormView = getMenuViewDefinition("genealogyForComponent");
+        Entity genealogyForProductFormView = getMenuViewDefinition("genealogyForProduct");
+        Entity qualityControlForOrderFormView = getMenuViewDefinition("qualityControlsForOrder");
+        Entity qualityControlForUnitFormView = getMenuViewDefinition("qualityControlsForUnit");
+        Entity qualityControlForBatchFormView = getMenuViewDefinition("qualityControlsForBatch");
+        Entity qualityControlForOperationFormView = getMenuViewDefinition("qualityControlsForOperation");
+        Entity qualityControlReportFormView = getMenuViewDefinition("qualityControlReport");
 
-        MenuViewDefinition menuCategoryGridView = getMenuViewDefinition("menuCategories");
-        MenuViewDefinition technologyGridView = getMenuViewDefinition("technologies");
-        MenuViewDefinition orderGridView = getMenuViewDefinition("orders");
-        MenuViewDefinition pluginGridView = getMenuViewDefinition("plugins");
-        MenuViewDefinition userGridView = getMenuViewDefinition("users");
-        MenuViewDefinition dictionaryGridView = getMenuViewDefinition("dictionaries");
-        MenuViewDefinition materialRequirementGridView = getMenuViewDefinition("materialRequirements");
-        MenuViewDefinition productGridView = getMenuViewDefinition("products");
-        MenuViewDefinition groupGridView = getMenuViewDefinition("groups");
-        MenuViewDefinition machineGridView = getMenuViewDefinition("machines");
-        MenuViewDefinition staffGridView = getMenuViewDefinition("staffs");
-        MenuViewDefinition workPlanGridView = getMenuViewDefinition("workPlans");
-        MenuViewDefinition operationGridView = getMenuViewDefinition("operations");
-        MenuViewDefinition genealogyForComponentFormView = getMenuViewDefinition("genealogyForComponent");
-        MenuViewDefinition genealogyForProductFormView = getMenuViewDefinition("genealogyForProduct");
-        MenuViewDefinition qualityControlForOrderFormView = getMenuViewDefinition("qualityControlsForOrder");
-        MenuViewDefinition qualityControlForUnitFormView = getMenuViewDefinition("qualityControlsForUnit");
-        MenuViewDefinition qualityControlForBatchFormView = getMenuViewDefinition("qualityControlsForBatch");
-        MenuViewDefinition qualityControlForOperationFormView = getMenuViewDefinition("qualityControlsForOperation");
-        MenuViewDefinition qualityControlReportFormView = getMenuViewDefinition("qualityControlReport");
-
-        MenuMenuCategory menuCategoryHome = addMenuCategory("home", "core.menu.home", 1);
-        MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 2);
-        MenuMenuCategory menuCategoryTechnology = addMenuCategory("technology", "core.menu.technology", 3);
-        MenuMenuCategory menuCategoryOrders = addMenuCategory("orders", "core.menu.orders", 4);
-        MenuMenuCategory menuCategoryReports = addMenuCategory("reports", "core.menu.reports", 5);
-        MenuMenuCategory menuCategoryQuality = addMenuCategory("quality", "core.menu.quality", 6);
-        MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 7);
+        Entity menuCategoryHome = addMenuCategory("home", "core.menu.home", 1);
+        Entity menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 2);
+        Entity menuCategoryTechnology = addMenuCategory("technology", "core.menu.technology", 3);
+        Entity menuCategoryOrders = addMenuCategory("orders", "core.menu.orders", 4);
+        Entity menuCategoryReports = addMenuCategory("reports", "core.menu.reports", 5);
+        Entity menuCategoryQuality = addMenuCategory("quality", "core.menu.quality", 6);
+        Entity menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 7);
 
         addMenuViewDefinitionItem("home", "core.menu.home", menuCategoryHome, getMenuViewDefinition("homePage"), 1);
         addMenuViewDefinitionItem("profile", "core.menu.profile", menuCategoryHome, getMenuViewDefinition("profile"), 2);
@@ -172,32 +183,37 @@ public final class DatabasePreparationService implements ApplicationListener<Con
                 qualityControlForOperationFormView, 4);
     }
 
-    private void addMenuViewDefinitionItem(final String name, final String translation, final MenuMenuCategory menuCategory,
-            final MenuViewDefinition menuViewDefinition, final int order) {
+    private void addMenuViewDefinitionItem(final String name, final String translation, final Entity menuCategory,
+            final Entity menuViewDefinition, final int order) {
         LOG.info("Adding menu view item \"" + name + "\"");
-        MenuMenuViewDefinitionItem menuItem = new MenuMenuViewDefinitionItem();
-        menuItem.setItemOrder(order);
-        menuItem.setMenuCategory(menuCategory);
-        menuItem.setName(name);
-        menuItem.setActive(true);
-        menuItem.setTranslationName(translation);
-        menuItem.setViewDefinition(menuViewDefinition);
-        sessionFactory.getCurrentSession().save(menuItem);
+        Entity menuItem = dataDefinitionService.get("menu", "menuViewDefinitionItem").create();
+        menuItem.setField("itemOrder", order);
+        menuItem.setField("menuCategory", menuCategory);
+        menuItem.setField("name", name);
+        menuItem.setField("active", true);
+        menuItem.setField("translationName", translation);
+        menuItem.setField("viewDefinition", menuViewDefinition);
+        dataDefinitionService.get("menu", "menuViewDefinitionItem").save(menuItem);
     }
 
-    private MenuViewDefinition getMenuViewDefinition(final String name) {
-        return (MenuViewDefinition) sessionFactory.getCurrentSession().createCriteria(MenuViewDefinition.class)
-                .add(Restrictions.eq("menuName", name)).setMaxResults(1).uniqueResult();
+    private Entity getMenuViewDefinition(final String name) {
+        return dataDefinitionService.get("menu", "viewDefinition").find().restrictedWith(Restrictions.eq("menuName", name))
+                .withMaxResults(1).list().getEntities().get(0);
     }
 
-    private MenuMenuCategory addMenuCategory(final String name, final String translation, final int order) {
+    private Entity addMenuCategory(final String name, final String translation, final int order) {
+        if (menuCategories.containsKey(name)) {
+            return menuCategories.get(name);
+        }
+
         LOG.info("Adding menu category \"" + name + "\"");
-        MenuMenuCategory category = new MenuMenuCategory();
-        category.setName(name);
-        category.setActive(true);
-        category.setTranslationName(translation);
-        category.setCategoryOrder(order);
-        sessionFactory.getCurrentSession().save(category);
+        Entity category = dataDefinitionService.get("menu", "menuCategory").create();
+        category.setField("name", name);
+        category.setField("active", true);
+        category.setField("translationName", translation);
+        category.setField("categoryOrder", order);
+        category = dataDefinitionService.get("menu", "menuCategory").save(category);
+        menuCategories.put(name, category);
         return category;
     }
 
@@ -207,57 +223,50 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         addGroup("Users", "ROLE_USER");
     }
 
-    private UsersGroup addGroup(final String name, final String role) {
-        LOG.info("Adding group \"" + name + "\" with role \"" + role + "\"");
-        UsersGroup group = new UsersGroup();
-        group.setName(name);
-        group.setRole(role);
-        group.setDescription(null);
-        sessionFactory.getCurrentSession().save(group);
-        return group;
-    }
-
     private void addParameters() {
         LOG.info("Adding parameters");
-        BasicParameter parameter = new BasicParameter();
-        parameter.setCheckDoneOrderForQuality(false);
-        parameter.setBatchForDoneOrder("01none");
-        sessionFactory.getCurrentSession().save(parameter);
+        Entity parameter = dataDefinitionService.get("basic", "parameter").create();
+        parameter.setField("checkDoneOrderForQuality", false);
+        parameter.setField("autoGenerateQualityControl", false);
+        parameter.setField("batchForDoneOrder", "01none");
+        dataDefinitionService.get("basic", "parameter").save(parameter);
     }
 
     private void addUsers() {
-        addUser("demo", "demo@email.com", "Demo", "Demo", "2a97516c354b68848cdbd8f54a226a0a55b21ed138e207ad6c5cbb9c00aa5aea",
-                supervisorsGroup);
+        addUser("demo", "demo@email.com", "Demo", "Demo", "demo", supervisorsGroup);
         if (addHardAdminPass) {
-            addUser("admin", "admin@email.com", "Admin", "Admin",
-                    "6b63dcb740cd63e4497883ae1fb645c5880face17b6483b468ce4c50f93698be", adminGroup);
+            // TODO password
+            addUser("admin", "admin@email.com", "Admin", "Admin", "qwe123", adminGroup);
         } else {
-            addUser("admin", "admin@email.com", "Admin", "Admin",
-                    "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", adminGroup);
+            addUser("admin", "admin@email.com", "Admin", "Admin", "admin", adminGroup);
         }
     }
 
     private void addUser(final String login, final String email, final String firstName, final String lastName,
-            final String password, final UsersGroup group) {
+            final String password, final Entity group) {
         LOG.info("Adding \"" + login + "\" user");
-        UsersUser user = new UsersUser();
-        user.setUserName(login);
-        user.setUserGroup(group);
-        user.setDescription("");
-        user.setEmail(email);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setDescription(null);
-        user.setPassword(password);
-        sessionFactory.getCurrentSession().save(user);
+        Entity entity = dataDefinitionService.get("users", "user").create();
+        entity.setField("userName", login);
+        entity.setField("userGroup", group);
+        entity.setField("email", email);
+        entity.setField("firstName", firstName);
+        entity.setField("lastName", lastName);
+        entity.setField("password", password);
+        entity.setField("passwordConfirmation", password);
+        entity.setField("enabled", true);
+        dataDefinitionService.get("users", "user").save(entity);
     }
 
-    private void addTestData() {
-        testDataLoader.loadTestData();
+    private Entity addGroup(final String name, final String role) {
+        LOG.info("Adding group \"" + name + "\" with role \"" + role + "\"");
+        Entity entity = dataDefinitionService.get("users", "group").create();
+        entity.setField("name", name);
+        entity.setField("role", role);
+        return dataDefinitionService.get("users", "group").save(entity);
     }
 
     private boolean databaseHasToBePrepared() {
-        return sessionFactory.getCurrentSession().createCriteria(UsersUser.class).list().size() == 0;
+        return dataDefinitionService.get("users", "user").find().list().getTotalNumberOfEntities() == 0;
     }
 
 }

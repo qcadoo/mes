@@ -35,15 +35,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.search.Restrictions;
-import com.qcadoo.mes.model.search.SearchResult;
-import com.qcadoo.mes.model.types.internal.DateTimeType;
-import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
 import com.qcadoo.mes.products.util.OrderPrintUtil;
@@ -53,6 +46,12 @@ import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.utils.DateUtils;
 
 @Service
 public final class MaterialRequirementService {
@@ -165,7 +164,7 @@ public final class MaterialRequirementService {
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
-                date.setFieldValue(new SimpleDateFormat(DateTimeType.DATE_TIME_FORMAT).format(new Date()));
+                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
             }
 
             state.performEvent(viewDefinitionState, "save", new String[0]);
@@ -244,7 +243,7 @@ public final class MaterialRequirementService {
     }
 
     private String getFullFileName(final Date date, final String fileName) {
-        return path + fileName + "_" + new SimpleDateFormat(DateType.REPORT_DATE_TIME_FORMAT).format(date) + "_";
+        return path + fileName + "_" + new SimpleDateFormat(DateUtils.REPORT_DATE_TIME_FORMAT).format(date) + "_";
     }
 
     private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {

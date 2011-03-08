@@ -43,15 +43,13 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.beans.users.UsersUser;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.mes.products.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public final class MaterialRequirementPdfService extends PdfDocumentService {
@@ -70,9 +68,8 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         String documenTitle = getTranslationService().translate("products.materialRequirement.report.title", locale);
         String documentAuthor = getTranslationService().translate("products.materialRequirement.report.author", locale);
-        UsersUser user = securityService.getCurrentUser();
         PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
-                (Date) entity.getField("date"), user);
+                (Date) entity.getField("date"), securityService.getCurrentUserName());
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(getTranslationService().translate("products.materialRequirement.report.paragrah", locale),
                 PdfUtil.getArialBold11Dark()));
@@ -91,10 +88,10 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         productHeader.add(getTranslationService().translate("products.product.name.label", locale));
         productHeader.add(getTranslationService().translate("products.product.unit.label", locale));
         productHeader.add(getTranslationService().translate("products.technologyOperationComponent.quantity.label", locale));
-        addTechnologySeries(document, (DefaultEntity) entity, productHeader);
+        addTechnologySeries(document, entity, productHeader);
     }
 
-    private void addTechnologySeries(final Document document, final DefaultEntity entity, final List<String> productHeader)
+    private void addTechnologySeries(final Document document, final Entity entity, final List<String> productHeader)
             throws DocumentException {
         Map<Entity, BigDecimal> products = reportDataService.prepareTechnologySeries(entity);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());

@@ -41,13 +41,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.search.Restrictions;
-import com.qcadoo.mes.model.search.SearchResult;
-import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
@@ -55,6 +49,12 @@ import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.utils.DateUtils;
 
 @Service
 public class QualityControlsReportService {
@@ -278,10 +278,10 @@ public class QualityControlsReportService {
                         .find()
                         .restrictedWith(
                                 Restrictions.ge(dataDef.getField("date"),
-                                        DateType.parseDate(model.get("dateFrom").toString(), false)))
+                                        DateUtils.parseDate(model.get("dateFrom").toString(), false)))
                         .restrictedWith(
                                 Restrictions.le(dataDef.getField("date"),
-                                        DateType.parseDate(model.get("dateTo").toString(), true)))
+                                        DateUtils.parseDate(model.get("dateTo").toString(), true)))
                         .restrictedWith(Restrictions.eq("qualityControlType", type))
                         .restrictedWith(Restrictions.eq("closed", true)).list();
                 return result.getEntities();

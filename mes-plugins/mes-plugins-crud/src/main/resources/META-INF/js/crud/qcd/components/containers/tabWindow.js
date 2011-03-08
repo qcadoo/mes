@@ -196,18 +196,21 @@ QCD.components.containers.TabWindow = function(_element, _mainController) {
 			var containerHeight = Math.round(_height - 2 * margin - 70);
 			height = containerHeight;
 			if (this.options.header) {
-				height -= 34;
+				//height -= 34;
+				height -= 24;
 			}
 			childrenElement.height(containerHeight);
 		}
 		
 		if (this.options.tabMode) {
-			var componentsHeight = height ? height-30 : null;
+			//var componentsHeight = height ? height-30 : null;
+			var componentsHeight = height ? height-35 : null;
 			for (var i in this.components) {
 				this.components[i].updateSize(width, componentsHeight);
 			}
 		} else {
-			var componentsHeight = height ? height-20 : null;
+			//var componentsHeight = height ? height-20 : null;
+			var componentsHeight = height ? height-18 : null;
 			for (var i in this.components) {
 				this.components[i].updateSize(width-20, componentsHeight);
 			}

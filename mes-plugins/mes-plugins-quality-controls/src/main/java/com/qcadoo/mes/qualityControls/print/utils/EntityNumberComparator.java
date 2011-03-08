@@ -27,7 +27,7 @@ package com.qcadoo.mes.qualityControls.print.utils;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import com.qcadoo.mes.api.Entity;
+import com.qcadoo.model.api.Entity;
 
 public class EntityNumberComparator implements Comparator<Entity>, Serializable {
 

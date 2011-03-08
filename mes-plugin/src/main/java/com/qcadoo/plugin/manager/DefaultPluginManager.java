@@ -4,7 +4,6 @@ import static com.google.common.collect.Lists.newArrayList;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import com.qcadoo.plugin.Plugin;
@@ -20,9 +19,8 @@ import com.qcadoo.plugin.PluginManager;
 import com.qcadoo.plugin.PluginOperationResult;
 import com.qcadoo.plugin.PluginServerManager;
 import com.qcadoo.plugin.PluginState;
-import com.qcadoo.plugin.PluginSystemLifecycle;
 
-public class DefaultPluginManager implements PluginAccessor, PluginSystemLifecycle, PluginManager {
+public class DefaultPluginManager implements PluginManager {
 
     private PluginAccessor pluginAccessor;
 
@@ -269,53 +267,6 @@ public class DefaultPluginManager implements PluginAccessor, PluginSystemLifecyc
         } else {
             return PluginOperationResult.success();
         }
-    }
-
-    @Override
-    public void init() {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void shutdown() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public Plugin getEnabledPlugin(final String pluginKey) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Collection<Plugin> getEnabledPlugins() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Plugin getPlugin(final String key) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Collection<Plugin> getPlugins() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean isPluginEnabled(final String key) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean isSystemPlugin(final String key) {
-        // TODO Auto-generated method stub
-        return false;
     }
 
     public void setPluginAccessor(final PluginAccessor pluginAccessor) {

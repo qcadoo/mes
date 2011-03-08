@@ -121,11 +121,15 @@
 	font-size: 15px; /*EDISONDA NEW*/
 	font-family: "Lucida Grande"; /*EDISONDA NEW*/
 	color: #959595; /*EDISONDA NEW*/
-	height: 35px; /*EDISONDA NEW*/
-	line-height: 35px; /*EDISONDA NEW*/
+	height: 25px; /*EDISONDA NEW*/
+	line-height: 25px; /*EDISONDA NEW*/
+	padding-top: 6px;
 }
 .windowContainer .tabWindowHeader.noTabs {
 	border-bottom: 1px solid #a7a7a7;
+	height: 35px; /*EDISONDA NEW*/
+	line-height: 35px; /*EDISONDA NEW*/
+	padding-top: 0px;
 }
 
 .windowContainer .tabWindowHeader span {
@@ -145,7 +149,8 @@
 	background: #ebebeb;
 	border-bottom: solid #a7a7a7 1px;
 	position: relative;
-	height: 30px;
+	//height: 30px;
+	height: 35px;
 }
 
 .windowContainer .windowTabs div {
@@ -159,7 +164,8 @@
 	display: inline-block;
 	height: 22px;
 	line-height: 22px;
-	margin-top: 5px;
+	//margin-top: 5px;
+	margin-top: 10px;
 	margin-left: 10px;
 	border-top: solid #a7a7a7 1px;
 	border-left: solid #a7a7a7 1px;
@@ -183,7 +189,8 @@
 .windowContainer .windowTabs a.activeTab {
 	background: #fafafa;
 	height: 26px;
-	margin-top: 2px;
+	//margin-top: 2px;
+	margin-top: 7px;
 	border-top: solid #FFCA33 3px;
 	padding-top: 0px;
 }

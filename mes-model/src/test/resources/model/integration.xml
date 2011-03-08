@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<models plugin="products" xmlns="http://www.qcadoo.com/model">
+	<dictionary name="categories">
+		<value>category1</value>
+		<value>category2</value>
+	</dictionary>
+	<model name="product">
+		<string name="number" required="true" unique="true" />
+		<string name="name" required="true" />
+		<integer name="quantity">
+			<validatesRange from="0" exclusively="true" />
+		</integer>
+		<dictionary name="category" dictionary="categories" />
+		<hasMany name="components" model="component" joinField="product" cascade="none" />
+	</model>
+	<model name="component">
+		<string name="name" required="true" />
+		<belongsTo name="product" model="product" required="false" lazy="false" />
+		<belongsTo name="machine" model="machine" required="false" />				
+	</model>
+	<model name="machine">
+		<string name="name" required="true" />
+		<hasMany name="components" model="component" joinField="product" cascade="delete" />
+	</model>
+</models>

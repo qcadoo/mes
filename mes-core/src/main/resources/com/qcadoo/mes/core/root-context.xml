@@ -46,6 +46,10 @@
 
 	<context:property-placeholder location="file:${QCADOO_CONF}/db.properties,file:${QCADOO_CONF}/mes.properties,file:${QCADOO_CONF}/report.properties,classpath*:hibernate.properties" />
 
+	<context:component-scan base-package="com.qcadoo.mes">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+
 	<bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="targetClass">
 			<value>org.springframework.util.Log4jConfigurer</value>
@@ -59,6 +63,8 @@
 			</list>
 		</property>
 	</bean>
+	
+	<context:component-scan base-package="com.qcadoo.model" />
 
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
@@ -68,10 +74,8 @@
 		<property name="password" value="${dbPassword}" />
 	</bean>
 
-	<bean id="sessionFactory"
-		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+	<bean id="sessionFactory" class="com.qcadoo.model.internal.sessionfactory.DynamicSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<property name="packagesToScan" value="com.qcadoo.mes" />
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">${hibernateDialect}</prop>
@@ -89,6 +93,8 @@
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
+	
+	<tx:annotation-driven />
 	
 	<security:global-method-security
 		pre-post-annotations="enabled">
@@ -131,7 +137,7 @@
 			<security:port-mapping http="8282" https="8443" />
 		</security:port-mappings>
 		
-		<security:remember-me user-service-ref="userDetailsService" services-alias="_rememberMeServices" key="qcd01" data-source-ref="dataSource" />
+		<security:remember-me user-service-ref="userDetailsService" data-source-ref="dataSource" services-alias="rememberMeServices" key="qcd01" />
 		
 	</security:http>
 
@@ -158,6 +164,11 @@
 		</property>
 	</bean>
 
+	<bean id="delegatePasswordEncoder"
+		class="com.qcadoo.mes.security.internal.DelegatePasswordEncoder">
+		<constructor-arg ref="passwordEncoder" />
+	</bean>
+	
 	<bean id="passwordEncoder"
 		class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
 		<constructor-arg value="256" />
@@ -205,7 +216,7 @@
 		<property name="authenticationManager" ref="authenticationManager" />
 		<property name="authenticationFailureHandler" ref="failureHandler" />
 		<property name="authenticationSuccessHandler" ref="successHandler" />
-		<property name="rememberMeServices" ref="_rememberMeServices" />
+		<property name="rememberMeServices" ref="rememberMeServices" />
 	</bean>
 
 	<bean id="successHandler"

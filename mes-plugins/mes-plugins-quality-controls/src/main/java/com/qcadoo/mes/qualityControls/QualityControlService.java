@@ -34,21 +34,9 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.NumberGeneratorService;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.internal.EntityTree;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.search.CustomRestriction;
-import com.qcadoo.mes.model.search.RestrictionOperator;
-import com.qcadoo.mes.model.search.Restrictions;
-import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.model.search.SearchResult;
-import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -57,6 +45,17 @@ import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 import com.qcadoo.mes.view.components.select.SelectComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.model.api.search.RestrictionOperator;
+import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.utils.DateUtils;
 
 @Service
 public class QualityControlService {
@@ -194,7 +193,7 @@ public class QualityControlService {
                     FieldComponentState date = (FieldComponentState) viewDefinitionState.getComponentByReference("date");
 
                     staff.setFieldValue(securityService.getCurrentUserName());
-                    date.setFieldValue(new SimpleDateFormat(DateType.DATE_FORMAT).format(new Date()));
+                    date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_FORMAT).format(new Date()));
 
                     closed.setFieldValue(true);
 
@@ -506,7 +505,7 @@ public class QualityControlService {
         return true;
     }
 
-    private boolean hasQuantitiesToBeChecked(String qualityControlType) {
+    private boolean hasQuantitiesToBeChecked(final String qualityControlType) {
         if ("qualityControlsForUnit".equals(qualityControlType) || "qualityControlsForBatch".equals(qualityControlType)) {
             return true;
         }
@@ -514,7 +513,7 @@ public class QualityControlService {
         return false;
     }
 
-    private boolean hasControlResult(String qualityControlType) {
+    private boolean hasControlResult(final String qualityControlType) {
         if ("qualityControlsForOrder".equals(qualityControlType) || "qualityControlsForOperation".equals(qualityControlType)) {
             return true;
         }
@@ -577,7 +576,7 @@ public class QualityControlService {
             for (int i = 0; i <= numberOfControls.intValue(); i++) {
                 DataDefinition qualityForUnitDataDefinition = dataDefinitionService.get("qualityControls", "qualityControl");
 
-                Entity forUnit = new DefaultEntity("qualityControls", "qualityControl");
+                Entity forUnit = qualityForUnitDataDefinition.create();
                 forUnit.setField("order", order);
                 forUnit.setField("number", numberGeneratorService.generateNumber("qualityControls", "qualityControl"));
                 forUnit.setField("closed", false);
@@ -619,7 +618,7 @@ public class QualityControlService {
     private void createAndSaveControlForOperation(final Entity order, final Entity entity) {
         DataDefinition qualityForOperationDataDefinition = dataDefinitionService.get("qualityControls", "qualityControl");
 
-        Entity forOperation = new DefaultEntity("qualityControls", "qualityControl");
+        Entity forOperation = qualityForOperationDataDefinition.create();
         forOperation.setField("order", order);
         forOperation.setField("number", numberGeneratorService.generateNumber("qualityControls", "qualityControl"));
         forOperation.setField("operation", entity.getBelongsToField("operation"));
@@ -634,7 +633,7 @@ public class QualityControlService {
     private void createAndSaveControlForSingleOrder(final Entity order) {
         DataDefinition qualityForOrderDataDefinition = dataDefinitionService.get("qualityControls", "qualityControl");
 
-        Entity forOrder = new DefaultEntity("qualityControls", "qualityControl");
+        Entity forOrder = qualityForOrderDataDefinition.create();
         forOrder.setField("order", order);
         forOrder.setField("number", numberGeneratorService.generateNumber("qualityControls", "qualityControl"));
         forOrder.setField("closed", false);
@@ -648,7 +647,7 @@ public class QualityControlService {
     private void createAndSaveControlForSingleBatch(final Entity order, final Entity genealogy) {
         DataDefinition qualityForBatchDataDefinition = dataDefinitionService.get("qualityControls", "qualityControl");
 
-        Entity forBatch = new DefaultEntity("qualityControls", "qualityControl");
+        Entity forBatch = qualityForBatchDataDefinition.create();
         forBatch.setField("order", order);
         forBatch.setField("number", numberGeneratorService.generateNumber("qualityControls", "qualityControl"));
         forBatch.setField("batchNr", genealogy.getField("batch"));

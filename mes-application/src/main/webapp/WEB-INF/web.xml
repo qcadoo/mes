@@ -35,6 +35,10 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 			classpath:com/qcadoo/mes/core/root-context.xml
+			classpath*:root-context.xml
+			/WEB-INF/web-context.xml
+			classpath:com/qcadoo/mes/core/web-context.xml
+			classpath*:web-context.xml
 		</param-value>
 	</context-param>
 
@@ -111,10 +115,8 @@
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>
-				/WEB-INF/web-context.xml
-				classpath:com/qcadoo/mes/core/web-context.xml
-				classpath*:context.xml
+			<param-value> 
+				/WEB-INF/empty-context.xml
 			</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>

@@ -192,7 +192,7 @@
 		</component>
 	</view>
 	<view name="tabWindowOrder" model="order">
-		<component type="tabWindow" name="window" reference="window" header="true">
+		<component type="window" name="window" reference="window" header="true">
 			<ribbon>
 				<group template="navigation"/>
 				<group template="formSaveCopyAndRemoveActions"/>
@@ -427,7 +427,7 @@
 	
 	
 	<view name="tabProducts" model="product" menuAccessible="true">
-		<component type="tabWindow" name="window">
+		<component type="window" name="window">
 			<ribbon>
 				<group template="gridNewCopyAndRemoveAction"/>
 			</ribbon>
@@ -451,7 +451,7 @@
 		</component>
 	</view>
 	<view name="tabProduct" model="product">
-		<component type="tabWindow" name="window" header="true">
+		<component type="window" name="window" header="true">
 			<ribbon>
 				<group template="navigation"/>
 				<group template="formSaveCopyAndRemoveActions"/>
