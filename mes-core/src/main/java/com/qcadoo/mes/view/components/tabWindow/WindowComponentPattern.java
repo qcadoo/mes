@@ -17,7 +17,8 @@ import com.qcadoo.mes.view.ribbon.Ribbon;
 import com.qcadoo.mes.view.ribbon.RibbonUtils;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
-@ViewComponent("tabWindow")
+//@ViewComponent("tabWindow")
+@ViewComponent("window")
 public class WindowComponentPattern extends AbstractContainerPattern {
 
     private static final String JSP_PATH = "containers/tabWindow.jsp";
