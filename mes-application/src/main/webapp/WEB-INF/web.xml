@@ -36,6 +36,9 @@
 		<param-value>
 			classpath:com/qcadoo/mes/core/root-context.xml
 			classpath*:root-context.xml
+			/WEB-INF/web-context.xml
+			classpath:com/qcadoo/mes/core/web-context.xml
+			classpath*:web-context.xml
 		</param-value>
 	</context-param>
 
@@ -113,9 +116,7 @@
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
 			<param-value>
-				/WEB-INF/web-context.xml
-				classpath:com/qcadoo/mes/core/web-context.xml
-				classpath*:web-context.xml
+				/WEB-INF/empty-context.xml
 			</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>

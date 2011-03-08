@@ -78,6 +78,7 @@ public class GridComponentPatternTest extends AbstractPatternTest {
         TranslationService translationService = mock(TranslationService.class);
         com.qcadoo.model.api.localization.TranslationService translationService2 = mock(com.qcadoo.model.api.localization.TranslationService.class);
         given(translationService.translate(Mockito.anyString(), Mockito.any(Locale.class))).willReturn("i18n");
+        given(translationService2.translate(Mockito.anyString(), Mockito.any(Locale.class))).willReturn("i18n");
         FieldDefinition nameFieldDefinition = mock(FieldDefinition.class);
         given(nameFieldDefinition.getType()).willReturn(new EnumType(translationService2, "", "v1", "v2"));
 

@@ -77,8 +77,6 @@ public final class TranslationServiceImpl implements TranslationService, Applica
     public String translate(final String messageCode, final Locale locale, final Object... args) {
         String message = translateWithError(messageCode, locale, args);
 
-        TRANSLATION_LOG.warn(" ----> " + hashCode() + " " + messageCode);
-
         if (message != null) {
             return message.trim();
         }

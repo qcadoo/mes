@@ -6,6 +6,10 @@
 
 	<context:component-scan base-package="com.qcadoo.model" />
 
+	<bean class="com.qcadoo.model.integration.MockPasswordEncoder" />
+	
+	<bean class="com.qcadoo.model.integration.MockTranslationService" />
+
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />

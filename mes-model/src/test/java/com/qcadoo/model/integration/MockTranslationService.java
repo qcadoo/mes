@@ -2,11 +2,8 @@ package com.qcadoo.model.integration;
 
 import java.util.Locale;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.model.api.localization.TranslationService;
 
-@Service
 public class MockTranslationService implements TranslationService {
 
     @Override
