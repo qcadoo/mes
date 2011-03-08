@@ -49,11 +49,11 @@ import org.xml.sax.SAXException;
 
 import com.qcadoo.mes.api.PluginManagementOperationStatus;
 import com.qcadoo.mes.api.PluginManagementService;
-import com.qcadoo.mes.beans.plugins.PluginsPlugin;
-import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.plugins.internal.enums.PluginStatus;
 import com.qcadoo.mes.plugins.internal.exceptions.PluginException;
 import com.qcadoo.mes.plugins.internal.util.PluginUtil;
+import com.qcadoo.model.api.aop.Monitorable;
+import com.qcadoo.model.beans.plugins.PluginsPlugin;
 
 @Service
 public final class PluginManagementServiceImpl implements PluginManagementService {

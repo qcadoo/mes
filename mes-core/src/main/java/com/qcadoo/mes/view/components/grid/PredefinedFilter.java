@@ -35,7 +35,7 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.mes.model.types.internal.DateType;
+import com.qcadoo.model.api.utils.DateUtils;
 
 public class PredefinedFilter {
 
@@ -106,7 +106,7 @@ public class PredefinedFilter {
         } else {
             throw new IllegalStateException("unsupported predefined filter expression: '" + expression + "'");
         }
-        return new SimpleDateFormat(DateType.DATE_FORMAT).format(date.toDate());
+        return new SimpleDateFormat(DateUtils.DATE_FORMAT).format(date.toDate());
     }
 
     public String getOrderColumn() {

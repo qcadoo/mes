@@ -54,19 +54,9 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.NumberGeneratorService;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.internal.EntityList;
-import com.qcadoo.mes.internal.EntityTree;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.search.Restriction;
-import com.qcadoo.mes.model.search.SearchResult;
-import com.qcadoo.mes.model.types.internal.BooleanType;
-import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -74,10 +64,21 @@ import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.components.lookup.LookupComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.ExpressionService;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.search.Restriction;
+import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.internal.EntityListImpl;
+import com.qcadoo.model.internal.EntityTreeImpl;
+import com.qcadoo.model.internal.types.BooleanType;
+import com.qcadoo.model.internal.types.StringType;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ FormComponentState.class, LookupComponentState.class, FieldComponentState.class, EntityTree.class,
-        EntityList.class, GridComponentState.class })
+@PrepareForTest({ FormComponentState.class, LookupComponentState.class, FieldComponentState.class, EntityTreeImpl.class,
+        EntityListImpl.class, GridComponentState.class })
 public class OrderServiceTest {
 
     private OrderService orderService;
@@ -96,11 +97,13 @@ public class OrderServiceTest {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         translationService = mock(TranslationService.class);
         numberGeneratorService = mock(NumberGeneratorService.class);
+        ExpressionService expressionService = mock(ExpressionService.class);
         orderService = new OrderService();
         setField(orderService, "securityService", securityService);
         setField(orderService, "dataDefinitionService", dataDefinitionService);
         setField(orderService, "translationService", translationService);
         setField(orderService, "numberGeneratorService", numberGeneratorService);
+        setField(orderService, "expressionService", expressionService);
     }
 
     @Test
@@ -951,7 +954,7 @@ public class OrderServiceTest {
         Entity entity = mock(Entity.class);
         Entity order = mock(Entity.class);
         Entity technology = mock(Entity.class);
-        EntityTree operations = mock(EntityTree.class);
+        EntityTreeImpl operations = mock(EntityTreeImpl.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
         given(entity.getBelongsToField("order")).willReturn(order);
         given(order.getField("technology")).willReturn(technology);
@@ -972,7 +975,7 @@ public class OrderServiceTest {
         Entity entity = mock(Entity.class);
         Entity order = mock(Entity.class);
         Entity technology = mock(Entity.class);
-        EntityTree operations = mock(EntityTree.class);
+        EntityTreeImpl operations = mock(EntityTreeImpl.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
         given(entity.getBelongsToField("order")).willReturn(order);
         given(order.getField("technology")).willReturn(technology);

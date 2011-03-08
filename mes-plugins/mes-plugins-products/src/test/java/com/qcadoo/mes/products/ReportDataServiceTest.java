@@ -40,102 +40,104 @@ import java.util.Map.Entry;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.internal.EntityList;
-import com.qcadoo.mes.internal.EntityTree;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.search.Restriction;
-import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.utils.Pair;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.search.Restriction;
+import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.EntityListImpl;
+import com.qcadoo.model.internal.EntityTreeImpl;
 
 public class ReportDataServiceTest {
 
     private ReportDataService reportDataService = null;
 
-    private DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+    private final DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
 
-    private List<Entity> entityTreeList = new ArrayList<Entity>();
+    private final List<Entity> entityTreeList = new ArrayList<Entity>();
 
-    private List<Entity> entityTreeListWithoutTechnology = new ArrayList<Entity>();
+    private final List<Entity> entityTreeListWithoutTechnology = new ArrayList<Entity>();
 
-    private List<Entity> entityTreeListSubTechnologyWithoutRoot = new ArrayList<Entity>();
+    private final List<Entity> entityTreeListSubTechnologyWithoutRoot = new ArrayList<Entity>();
 
-    private List<Entity> entityTreeListTechnologyWithoutRoot = new ArrayList<Entity>();
+    private final List<Entity> entityTreeListTechnologyWithoutRoot = new ArrayList<Entity>();
 
-    private EntityTree entityTree = new EntityTree(dataDefinition, "technology", new Long(1));
+    private final EntityTree entityTree = new EntityTreeImpl(dataDefinition, "technology", new Long(1));
 
-    private List<Entity> products1 = new ArrayList<Entity>();
+    private final List<Entity> products1 = new ArrayList<Entity>();
 
-    private List<Entity> products2 = new ArrayList<Entity>();
+    private final List<Entity> products2 = new ArrayList<Entity>();
 
-    private List<Entity> products3 = new ArrayList<Entity>();
+    private final List<Entity> products3 = new ArrayList<Entity>();
 
-    private Entity product3 = new DefaultEntity("products", "product");
+    private final Entity product3 = new DefaultEntity(dataDefinition);
 
-    private Entity product2 = new DefaultEntity("products", "product");
+    private final Entity product2 = new DefaultEntity(dataDefinition);
 
-    private Entity product1 = new DefaultEntity("products", "product");
+    private final Entity product1 = new DefaultEntity(dataDefinition);
 
-    private Entity technologyForQuantityPerTechnologyAlghorithm = new DefaultEntity("products", "technology");
+    private final Entity technologyForQuantityPerTechnologyAlghorithm = new DefaultEntity(dataDefinition);
 
-    private Entity technologyForQuantityPerOutProductsAlghorithm = new DefaultEntity("products", "technology");
+    private final Entity technologyForQuantityPerOutProductsAlghorithm = new DefaultEntity(dataDefinition);
 
-    private List<Entity> products4 = new ArrayList<Entity>();
+    private final List<Entity> products4 = new ArrayList<Entity>();
 
-    private Entity product4 = new DefaultEntity("products", "product");
+    private final Entity product4 = new DefaultEntity(dataDefinition);
 
-    private List<Entity> products5 = new ArrayList<Entity>();
+    private final List<Entity> products5 = new ArrayList<Entity>();
 
-    private List<Entity> products6 = new ArrayList<Entity>();
+    private final List<Entity> products6 = new ArrayList<Entity>();
 
-    private List<Entity> products7 = new ArrayList<Entity>();
+    private final List<Entity> products7 = new ArrayList<Entity>();
 
-    private List<Entity> products8 = new ArrayList<Entity>();
+    private final List<Entity> products8 = new ArrayList<Entity>();
 
-    private List<Entity> products9 = new ArrayList<Entity>();
+    private final List<Entity> products9 = new ArrayList<Entity>();
 
-    private Entity product5 = new DefaultEntity("products", "product");
+    private final Entity product5 = new DefaultEntity(dataDefinition);
 
-    private Entity product6 = new DefaultEntity("products", "product");
+    private final Entity product6 = new DefaultEntity(dataDefinition);
 
-    private Entity product7 = new DefaultEntity("products", "product");
+    private final Entity product7 = new DefaultEntity(dataDefinition);
 
-    private Entity workPlan = new DefaultEntity("products", "workPlan");
+    private final Entity workPlan = new DefaultEntity(dataDefinition);
 
-    private List<Entity> components = new ArrayList<Entity>();
+    private final List<Entity> components = new ArrayList<Entity>();
 
-    private List<Entity> componentsOutProducts = new ArrayList<Entity>();
+    private final List<Entity> componentsOutProducts = new ArrayList<Entity>();
 
-    private List<Entity> componentsOutProducts2 = new ArrayList<Entity>();
+    private final List<Entity> componentsOutProducts2 = new ArrayList<Entity>();
 
     @Before
     public void init() {
         reportDataService = new ReportDataService();
 
-        EntityTree entityTreeSubTechnology = new EntityTree(dataDefinition, "technology", new Long(2));
-        EntityList componentsList1 = new EntityList(dataDefinition, "operationProductInComponent", new Long(1));
-        EntityList componentsList2 = new EntityList(dataDefinition, "operationProductInComponent", new Long(2));
-        EntityList componentsList3 = new EntityList(dataDefinition, "operationProductInComponent", new Long(3));
-        EntityList componentsOutList1 = new EntityList(dataDefinition, "operationProductOutComponent", new Long(11));
-        EntityList componentsOutList2 = new EntityList(dataDefinition, "operationProductOutComponent", new Long(12));
-        EntityList componentsOutList3 = new EntityList(dataDefinition, "operationProductOutComponent", new Long(13));
+        EntityTree entityTreeSubTechnology = new EntityTreeImpl(dataDefinition, "technology", new Long(2));
+        EntityList componentsList1 = new EntityListImpl(dataDefinition, "operationProductInComponent", new Long(1));
+        EntityList componentsList2 = new EntityListImpl(dataDefinition, "operationProductInComponent", new Long(2));
+        EntityList componentsList3 = new EntityListImpl(dataDefinition, "operationProductInComponent", new Long(3));
+        EntityList componentsOutList1 = new EntityListImpl(dataDefinition, "operationProductOutComponent", new Long(11));
+        EntityList componentsOutList2 = new EntityListImpl(dataDefinition, "operationProductOutComponent", new Long(12));
+        EntityList componentsOutList3 = new EntityListImpl(dataDefinition, "operationProductOutComponent", new Long(13));
 
-        Entity machine1 = new DefaultEntity("basic", "machine");
+        Entity machine1 = new DefaultEntity(dataDefinition);
         machine1.setId(new Long(1));
-        Entity machine2 = new DefaultEntity("basic", "machine");
+        Entity machine2 = new DefaultEntity(dataDefinition);
         machine2.setId(new Long(2));
 
-        Entity worker1 = new DefaultEntity("basic", "worker");
+        Entity worker1 = new DefaultEntity(dataDefinition);
         worker1.setId(new Long(1));
-        Entity worker2 = new DefaultEntity("basic", "worker");
+        Entity worker2 = new DefaultEntity(dataDefinition);
         worker2.setId(new Long(2));
 
-        Entity operation1 = new DefaultEntity("products", "operation");
+        Entity operation1 = new DefaultEntity(dataDefinition);
         operation1.setField("machine", machine1);
         operation1.setField("staff", null);
-        Entity operationComponentRoot = new DefaultEntity("products", "technologyOperationComponent");
+        Entity operationComponentRoot = new DefaultEntity(dataDefinition);
         operationComponentRoot.setField("entityType", "operation");
         operationComponentRoot.setField("parent", null);
         operationComponentRoot.setId(new Long(1));
@@ -143,10 +145,10 @@ public class ReportDataServiceTest {
         operationComponentRoot.setField("operationProductInComponents", componentsList1);
         operationComponentRoot.setField("operationProductOutComponents", componentsOutList1);
 
-        Entity operation2 = new DefaultEntity("products", "operation");
+        Entity operation2 = new DefaultEntity(dataDefinition);
         operation2.setField("machine", machine2);
         operation2.setField("staff", worker2);
-        Entity operationComponent2 = new DefaultEntity("products", "technologyOperationComponent");
+        Entity operationComponent2 = new DefaultEntity(dataDefinition);
         operationComponent2.setField("entityType", "operation");
         operationComponent2.setField("parent", operationComponentRoot);
         operationComponent2.setId(new Long(2));
@@ -154,10 +156,10 @@ public class ReportDataServiceTest {
         operationComponent2.setField("operationProductInComponents", componentsList2);
         operationComponent2.setField("operationProductOutComponents", componentsOutList2);
 
-        Entity operation3 = new DefaultEntity("products", "operation");
+        Entity operation3 = new DefaultEntity(dataDefinition);
         operation3.setField("machine", null);
         operation3.setField("staff", worker1);
-        Entity operationComponent3 = new DefaultEntity("products", "technologyOperationComponent");
+        Entity operationComponent3 = new DefaultEntity(dataDefinition);
         operationComponent3.setField("entityType", "operation");
         operationComponent3.setField("parent", operationComponentRoot);
         operationComponent3.setId(new Long(3));
@@ -168,22 +170,22 @@ public class ReportDataServiceTest {
         entityTreeList.add(operationComponent2);
         entityTreeList.add(operationComponent3);
 
-        Entity technology = new DefaultEntity("products", "technology");
+        Entity technology = new DefaultEntity(dataDefinition);
         technology.setField("operationComponents", entityTreeSubTechnology);
         technology.setField("componentQuantityAlgorithm", "02perTechnology");
-        Entity operationTechnology = new DefaultEntity("products", "technologyOperationComponent");
+        Entity operationTechnology = new DefaultEntity(dataDefinition);
         operationTechnology.setField("entityType", "technology");
         operationTechnology.setField("parent", operationComponentRoot);
         operationTechnology.setId(new Long(4));
         operationTechnology.setField("referenceTechnology", technology);
 
-        Entity operationTechnology2 = new DefaultEntity("products", "technologyOperationComponent");
+        Entity operationTechnology2 = new DefaultEntity(dataDefinition);
         operationTechnology2.setField("entityType", "technology");
         operationTechnology2.setField("parent", operationComponentRoot);
         operationTechnology2.setId(new Long(5));
         operationTechnology2.setField("referenceTechnology", technology);
 
-        Entity operationTechnology3 = new DefaultEntity("products", "technologyOperationComponent");
+        Entity operationTechnology3 = new DefaultEntity(dataDefinition);
         operationTechnology3.setField("entityType", "technology");
         operationTechnology3.setField("parent", null);
         operationTechnology3.setId(new Long(6));
@@ -201,21 +203,21 @@ public class ReportDataServiceTest {
         product1.setField("typeOfMaterial", "02intermediate");
         product1.setField("number", "1");
         product1.setId(new Long(1));
-        Entity productInComponent1 = new DefaultEntity("products", "operationProductInComponent");
+        Entity productInComponent1 = new DefaultEntity(dataDefinition);
         productInComponent1.setField("product", product1);
         productInComponent1.setField("quantity", BigDecimal.ONE);
 
         product2.setField("typeOfMaterial", "01component");
         product2.setField("number", "2");
         product2.setId(new Long(2));
-        Entity productInComponent2 = new DefaultEntity("products", "operationProductInComponent");
+        Entity productInComponent2 = new DefaultEntity(dataDefinition);
         productInComponent2.setField("product", product2);
         productInComponent2.setField("quantity", new BigDecimal("2"));
 
         product3.setField("typeOfMaterial", "02intermediate");
         product3.setField("number", "3");
         product3.setId(new Long(3));
-        Entity productInComponent3 = new DefaultEntity("products", "operationProductInComponent");
+        Entity productInComponent3 = new DefaultEntity(dataDefinition);
         productInComponent3.setField("product", product3);
         productInComponent3.setField("quantity", new BigDecimal("3"));
 
@@ -229,7 +231,7 @@ public class ReportDataServiceTest {
         product4.setField("typeOfMaterial", "02intermediate");
         product4.setField("number", "4");
         product4.setId(new Long(4));
-        Entity productInComponent4 = new DefaultEntity("products", "operationProductOutComponent");
+        Entity productInComponent4 = new DefaultEntity(dataDefinition);
         productInComponent4.setField("product", product4);
         productInComponent4.setField("quantity", new BigDecimal("5"));
         products4.add(productInComponent4);
@@ -237,7 +239,7 @@ public class ReportDataServiceTest {
         product5.setField("typeOfMaterial", "02intermediate");
         product5.setField("number", "5");
         product5.setId(new Long(5));
-        Entity productInComponent5 = new DefaultEntity("products", "operationProductOutComponent");
+        Entity productInComponent5 = new DefaultEntity(dataDefinition);
         productInComponent5.setField("product", product5);
         productInComponent5.setField("quantity", new BigDecimal("3"));
         products5.add(productInComponent5);
@@ -245,14 +247,14 @@ public class ReportDataServiceTest {
         product6.setField("typeOfMaterial", "02intermediate");
         product6.setField("number", "6");
         product6.setId(new Long(6));
-        Entity productInComponent6 = new DefaultEntity("products", "operationProductOutComponent");
+        Entity productInComponent6 = new DefaultEntity(dataDefinition);
         productInComponent6.setField("product", product6);
         productInComponent6.setField("quantity", new BigDecimal("2"));
 
         product7.setField("typeOfMaterial", "04waste");
         product7.setField("number", "7");
         product7.setId(new Long(7));
-        Entity productInComponent7 = new DefaultEntity("products", "operationProductOutComponent");
+        Entity productInComponent7 = new DefaultEntity(dataDefinition);
         productInComponent7.setField("product", product7);
         productInComponent7.setField("quantity", new BigDecimal("2"));
 
@@ -265,17 +267,17 @@ public class ReportDataServiceTest {
         products9.add(productInComponent4);
 
         workPlan.setId(new Long(15));
-        Entity workPlanComponent = new DefaultEntity("products", "workPlanComponent");
-        Entity order = new DefaultEntity("products", "order");
+        Entity workPlanComponent = new DefaultEntity(dataDefinition);
+        Entity order = new DefaultEntity(dataDefinition);
         order.setField("technology", technologyForQuantityPerTechnologyAlghorithm);
         order.setField("plannedQuantity", new BigDecimal("5"));
         workPlanComponent.setField("order", order);
-        EntityList componentsList = new EntityList(dataDefinition, "workPlan", new Long(15));
+        EntityList componentsList = new EntityListImpl(dataDefinition, "workPlan", new Long(15));
         workPlan.setField("orders", componentsList);
         components.add(workPlanComponent);
 
-        Entity workPlanComponent2 = new DefaultEntity("products", "workPlanComponent");
-        Entity order2 = new DefaultEntity("products", "order");
+        Entity workPlanComponent2 = new DefaultEntity(dataDefinition);
+        Entity order2 = new DefaultEntity(dataDefinition);
         order2.setField("technology", technologyForQuantityPerOutProductsAlghorithm);
         order2.setField("plannedQuantity", new BigDecimal("5"));
         workPlanComponent2.setField("order", order2);
@@ -307,12 +309,12 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnEmptyMapIfTechnologyIsEmpty() {
         // given
-        Entity materialRequirement = new DefaultEntity("products", "materialRequirement");
-        Entity materialRequirementComponent = new DefaultEntity("products", "materialRequirementComponent");
-        Entity order = new DefaultEntity("products", "order");
+        Entity materialRequirement = new DefaultEntity(dataDefinition);
+        Entity materialRequirementComponent = new DefaultEntity(dataDefinition);
+        Entity order = new DefaultEntity(dataDefinition);
         order.setField("technology", null);
         materialRequirementComponent.setField("order", order);
-        EntityList componentsList = new EntityList(dataDefinition, "materialRequirement", new Long(1));
+        EntityList componentsList = new EntityListImpl(dataDefinition, "materialRequirement", new Long(1));
         materialRequirement.setField("orders", componentsList);
         List<Entity> components = new ArrayList<Entity>();
         components.add(materialRequirementComponent);
@@ -329,13 +331,13 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnEmptyMapIfQuantityIsEmpty() {
         // given
-        Entity materialRequirement = new DefaultEntity("products", "materialRequirement");
-        Entity materialRequirementComponent = new DefaultEntity("products", "materialRequirementComponent");
-        Entity order = new DefaultEntity("products", "order");
-        order.setField("technology", new DefaultEntity("products", "technology"));
+        Entity materialRequirement = new DefaultEntity(dataDefinition);
+        Entity materialRequirementComponent = new DefaultEntity(dataDefinition);
+        Entity order = new DefaultEntity(dataDefinition);
+        order.setField("technology", new DefaultEntity(dataDefinition));
         order.setField("plannedQuantity", null);
         materialRequirementComponent.setField("order", order);
-        EntityList componentsList = new EntityList(dataDefinition, "materialRequirement", new Long(1));
+        EntityList componentsList = new EntityListImpl(dataDefinition, "materialRequirement", new Long(1));
         materialRequirement.setField("orders", componentsList);
         List<Entity> components = new ArrayList<Entity>();
         components.add(materialRequirementComponent);
@@ -352,13 +354,13 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnEmptyMapIfQuantityIsLessThenOne() {
         // given
-        Entity materialRequirement = new DefaultEntity("products", "materialRequirement");
-        Entity materialRequirementComponent = new DefaultEntity("products", "materialRequirementComponent");
-        Entity order = new DefaultEntity("products", "order");
-        order.setField("technology", new DefaultEntity("products", "technology"));
+        Entity materialRequirement = new DefaultEntity(dataDefinition);
+        Entity materialRequirementComponent = new DefaultEntity(dataDefinition);
+        Entity order = new DefaultEntity(dataDefinition);
+        order.setField("technology", new DefaultEntity(dataDefinition));
         order.setField("plannedQuantity", BigDecimal.ZERO);
         materialRequirementComponent.setField("order", order);
-        EntityList componentsList = new EntityList(dataDefinition, "materialRequirement", new Long(1));
+        EntityList componentsList = new EntityListImpl(dataDefinition, "materialRequirement", new Long(1));
         materialRequirement.setField("orders", componentsList);
         List<Entity> components = new ArrayList<Entity>();
         components.add(materialRequirementComponent);
@@ -375,15 +377,15 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnNotEmptyMapIfQuantityIsMoreThenZero() {
         // given
-        Entity materialRequirement = new DefaultEntity("products", "materialRequirement");
+        Entity materialRequirement = new DefaultEntity(dataDefinition);
         materialRequirement.setField("onlyComponents", false);
         materialRequirement.setId(new Long(15));
-        Entity materialRequirementComponent = new DefaultEntity("products", "materialRequirementComponent");
-        Entity order = new DefaultEntity("products", "order");
+        Entity materialRequirementComponent = new DefaultEntity(dataDefinition);
+        Entity order = new DefaultEntity(dataDefinition);
         order.setField("technology", technologyForQuantityPerTechnologyAlghorithm);
         order.setField("plannedQuantity", BigDecimal.ONE);
         materialRequirementComponent.setField("order", order);
-        EntityList componentsList = new EntityList(dataDefinition, "materialRequirement", new Long(15));
+        EntityList componentsList = new EntityListImpl(dataDefinition, "materialRequirement", new Long(15));
         materialRequirement.setField("orders", componentsList);
         List<Entity> components = new ArrayList<Entity>();
         components.add(materialRequirementComponent);
@@ -1060,12 +1062,12 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnEmptyMapIfTechnologyIsEmptyForWorkPlan() {
         // given
-        Entity workPlan = new DefaultEntity("products", "workPlan");
-        Entity workPlanComponent = new DefaultEntity("products", "workPlanComponent");
-        Entity order = new DefaultEntity("products", "order");
+        Entity workPlan = new DefaultEntity(dataDefinition);
+        Entity workPlanComponent = new DefaultEntity(dataDefinition);
+        Entity order = new DefaultEntity(dataDefinition);
         order.setField("technology", null);
         workPlanComponent.setField("order", order);
-        EntityList componentsList = new EntityList(dataDefinition, "workPlan", new Long(1));
+        EntityList componentsList = new EntityListImpl(dataDefinition, "workPlan", new Long(1));
         workPlan.setField("orders", componentsList);
         List<Entity> components = new ArrayList<Entity>();
         components.add(workPlanComponent);

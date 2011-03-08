@@ -28,10 +28,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.search.SearchResult;
 
 @Service
 public class NumberGeneratorService {

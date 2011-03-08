@@ -45,8 +45,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.components.window.WindowComponentPattern;
 import com.qcadoo.mes.view.internal.ViewDefinitionImpl;
@@ -55,6 +53,7 @@ import com.qcadoo.mes.view.patterns.AbstractPatternTest;
 import com.qcadoo.mes.view.patterns.ComponentPatternMock;
 import com.qcadoo.mes.view.states.ComponentStateMock;
 import com.qcadoo.mes.view.states.ComponentStateMock.TestEvent;
+import com.qcadoo.model.api.DataDefinition;
 
 public class ViewDefinitionTest extends AbstractPatternTest {
 

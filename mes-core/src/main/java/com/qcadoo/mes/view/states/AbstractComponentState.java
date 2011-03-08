@@ -31,7 +31,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.FieldEntityIdChangeListener;
 import com.qcadoo.mes.view.ScopeEntityIdChangeListener;
@@ -39,6 +38,7 @@ import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.internal.EntityIdChangeListenerHolder;
 import com.qcadoo.mes.view.internal.EventHandlerHolder;
 import com.qcadoo.mes.view.internal.MessageHolder;
+import com.qcadoo.model.api.DataDefinition;
 
 public abstract class AbstractComponentState implements ComponentState, FieldEntityIdChangeListener, ScopeEntityIdChangeListener {
 

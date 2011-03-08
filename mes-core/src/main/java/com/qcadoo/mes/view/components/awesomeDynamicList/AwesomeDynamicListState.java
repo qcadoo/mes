@@ -33,7 +33,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerState;
@@ -42,6 +41,7 @@ import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.internal.ViewDefinitionStateImpl;
+import com.qcadoo.model.api.Entity;
 
 public class AwesomeDynamicListState extends FieldComponentState implements ContainerState {
 

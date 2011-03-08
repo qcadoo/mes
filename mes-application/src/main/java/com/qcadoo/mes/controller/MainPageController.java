@@ -82,7 +82,7 @@ public final class MainPageController {
         mav.addObject("viewsList", viewDefinitionService.list());
         mav.addObject("commonTranslations", translationService.getCommonsMessages(locale));
         mav.addObject("menuStructure", menuService.getMenu(locale).getAsJson());
-        mav.addObject("userLogin", securityService.getCurrentUser().getUserName());
+        mav.addObject("userLogin", securityService.getCurrentUserName());
         return mav;
     }
 
@@ -90,7 +90,7 @@ public final class MainPageController {
     public ModelAndView getHomePageView(@RequestParam final Map<String, String> arguments, final Locale locale) {
         ModelAndView mav = new ModelAndView();
 
-        mav.addObject("userLogin", securityService.getCurrentUser().getUserName());
+        mav.addObject("userLogin", securityService.getCurrentUserName());
 
         mav.addObject("translationsMap", translationService.getDashboardMessages(locale));
 

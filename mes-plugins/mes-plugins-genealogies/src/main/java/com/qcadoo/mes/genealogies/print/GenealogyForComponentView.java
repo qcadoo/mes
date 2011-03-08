@@ -40,14 +40,13 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.genealogies.print.util.EntityOrderNumberComparator;
-import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.Restrictions;
 
 public class GenealogyForComponentView extends ReportPdfView {
 
@@ -64,8 +63,7 @@ public class GenealogyForComponentView extends ReportPdfView {
                 Long.valueOf(model.get("value").toString()));
         String documentTitle = getTranslationService().translate("genealogies.genealogyForComponent.report.title", locale);
         String documentAuthor = getTranslationService().translate("genealogies.genealogyForComponent.report.author", locale);
-        UsersUser user = securityService.getCurrentUser();
-        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
+        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
         addTables(document, entity, locale);
         String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
@@ -131,7 +129,7 @@ public class GenealogyForComponentView extends ReportPdfView {
         List<Entity> batchList = dataDefinitionService.get("genealogies", "productInBatch").find()
                 .restrictedWith(Restrictions.eq("batch", entity.getField("batch"))).list().getEntities();
         for (Entity batch : batchList) {
-            Entity genealogy = (Entity) ((Entity) ((Entity) batch.getField("productInComponent")).getField("genealogy"));
+            Entity genealogy = ((Entity) ((Entity) batch.getField("productInComponent")).getField("genealogy"));
             if (!genealogies.contains(genealogy)) {
                 genealogies.add(genealogy);
             }

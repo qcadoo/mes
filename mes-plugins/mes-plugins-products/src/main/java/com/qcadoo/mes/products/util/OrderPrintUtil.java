@@ -36,15 +36,14 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class OrderPrintUtil {
@@ -66,7 +65,7 @@ public class OrderPrintUtil {
         OrderValidator orderValidator = new OrderValidator() {
 
             @Override
-            public String validateOrder(Entity order) {
+            public String validateOrder(final Entity order) {
                 if (order.getField("technology") == null) {
                     return order.getField("number")
                             + ": "
@@ -85,7 +84,7 @@ public class OrderPrintUtil {
         OrderValidator orderValidator = new OrderValidator() {
 
             @Override
-            public String validateOrder(Entity order) {
+            public String validateOrder(final Entity order) {
                 if (order.getField("technology") == null) {
                     return order.getField("number")
                             + ": "
@@ -148,7 +147,9 @@ public class OrderPrintUtil {
     private Entity createNewOrderPrint(final Set<Entity> orders, final String entityName, final String detailEntityName,
             final Map<String, Object> entityFieldsMap, final Locale locale) {
 
-        Entity materialReq = new DefaultEntity("products", entityName);
+        DataDefinition data = dataDefinitionService.get("products", entityName);
+
+        Entity materialReq = data.create();
 
         materialReq.setField("name", generateOrderPrintName(orders, locale));
         materialReq.setField("generated", true);
@@ -160,11 +161,10 @@ public class OrderPrintUtil {
             }
         }
 
-        DataDefinition data = dataDefinitionService.get("products", entityName);
         Entity saved = data.save(materialReq);
 
         for (Entity order : orders) {
-            Entity materialReqComponent = new DefaultEntity("products", detailEntityName);
+            Entity materialReqComponent = dataDefinitionService.get("products", detailEntityName).create();
             materialReqComponent.setField("order", order);
             materialReqComponent.setField(entityName, saved);
             dataDefinitionService.get("products", detailEntityName).save(materialReqComponent);

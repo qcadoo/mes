@@ -44,18 +44,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.internal.EntityList;
-import com.qcadoo.mes.internal.EntityTree;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.awesomeDynamicList.AwesomeDynamicListState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.search.Restriction;
+import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.EntityListImpl;
+import com.qcadoo.model.internal.EntityTreeImpl;
 
 public class GenealogyServiceTest {
 
@@ -343,7 +345,7 @@ public class GenealogyServiceTest {
 
         DataDefinition dataDefinition = mock(DataDefinition.class);
 
-        EntityTree operationComponents = new EntityTree(dataDefinition, "joinField", null);
+        EntityTree operationComponents = new EntityTreeImpl(dataDefinition, "joinField", null);
 
         Entity technology = mock(Entity.class);
         given(technology.getTreeField("operationComponents")).willReturn(operationComponents);
@@ -381,6 +383,10 @@ public class GenealogyServiceTest {
         given(form.isValid()).willReturn(true);
         given(form.getEntityId()).willReturn(11L);
         given(form.getEntity().getField("order").toString()).willReturn("13");
+
+        Entity genealogyProductInComponent = new DefaultEntity(null);
+        given(dataDefinitionService.get("genealogies", "genealogyProductInComponent").create()).willReturn(
+                genealogyProductInComponent);
 
         Entity technology = mock(Entity.class);
         given(technology.getTreeField("operationComponents")).willReturn(operationProductInComponents);
@@ -427,10 +433,10 @@ public class GenealogyServiceTest {
         given(listDataDefinition.find().restrictedWith(any(Restriction.class)).list().getEntities()).willReturn(
                 productsEntities1, productsEntities3);
 
-        EntityTree subOperationComponents = new EntityTree(treeDataDefinition, "joinField", 13L);
+        EntityTree subOperationComponents = new EntityTreeImpl(treeDataDefinition, "joinField", 13L);
 
-        EntityList operationProductInComponents1 = new EntityList(listDataDefinition, "joinField", 1L);
-        EntityList operationProductInComponents3 = new EntityList(listDataDefinition, "joinField", 3L);
+        EntityList operationProductInComponents1 = new EntityListImpl(listDataDefinition, "joinField", 1L);
+        EntityList operationProductInComponents3 = new EntityListImpl(listDataDefinition, "joinField", 3L);
 
         Entity operationComponent1 = mock(Entity.class);
         given(operationComponent1.getId()).willReturn(1L);
@@ -457,7 +463,7 @@ public class GenealogyServiceTest {
         entities.add(operationComponent2);
         subEntities.add(operationComponent3);
 
-        EntityTree operationComponents = new EntityTree(treeDataDefinition, "joinField", 13L);
+        EntityTree operationComponents = new EntityTreeImpl(treeDataDefinition, "joinField", 13L);
         return operationComponents;
     }
 
@@ -470,7 +476,7 @@ public class GenealogyServiceTest {
         given(existingListDataDefinition.find().restrictedWith(any(Restriction.class)).list().getEntities()).willReturn(
                 existingEntities);
 
-        EntityList existingOperationComponents = new EntityList(existingListDataDefinition, "joinField", 11L);
+        EntityList existingOperationComponents = new EntityListImpl(existingListDataDefinition, "joinField", 11L);
         return existingOperationComponents;
     }
 
@@ -482,13 +488,14 @@ public class GenealogyServiceTest {
     }
 
     private Entity craeteGenealogyProductInComponent(final Long id, final Entity operationProductInComponent) {
-        Entity genealogyProductInComponent = new DefaultEntity("genealogies", "genealogyProductInComponent", id);
+        Entity genealogyProductInComponent = new DefaultEntity(null, id);
         genealogyProductInComponent.setField("productInComponent", operationProductInComponent);
         return genealogyProductInComponent;
     }
 
     private Entity craeteOperationProductInComponent(final Long id, final boolean batchRequired) {
-        Entity operationProductInComponent = new DefaultEntity("genealogies", "genealogyProductInComponent", id);
+        Entity operationProductInComponent = new DefaultEntity(null, id);
+        System.out.println(operationProductInComponent);
         operationProductInComponent.setField("batchRequired", batchRequired);
         return operationProductInComponent;
     }

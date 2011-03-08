@@ -41,7 +41,6 @@ import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractContainerPattern;
 import com.qcadoo.mes.view.ribbon.Ribbon;
 import com.qcadoo.mes.view.ribbon.RibbonActionItem;
@@ -50,7 +49,7 @@ import com.qcadoo.mes.view.ribbon.RibbonComboItem;
 import com.qcadoo.mes.view.ribbon.RibbonGroup;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
-@ViewComponent("window")
+//@ViewComponent("window")
 public final class WindowComponentPattern extends AbstractContainerPattern {
 
     private static final String JSP_PATH = "containers/window.jsp";

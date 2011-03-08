@@ -26,12 +26,14 @@ package com.qcadoo.mes.internal;
 
 import java.util.Locale;
 
+import org.springframework.context.event.ContextRefreshedEvent;
+
 import com.qcadoo.mes.view.menu.MenuDefinition;
 
 public interface MenuService {
 
-    void updateViewDefinitionDatabase();
-
     MenuDefinition getMenu(final Locale locale);
+
+    void onApplicationEvent(final ContextRefreshedEvent event);
 
 }

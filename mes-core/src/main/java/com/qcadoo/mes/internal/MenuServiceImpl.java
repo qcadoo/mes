@@ -29,18 +29,13 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.aop.internal.Monitorable;
-import com.qcadoo.mes.model.search.Restrictions;
-import com.qcadoo.mes.plugins.internal.enums.PluginStatus;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.menu.MenuDefinition;
@@ -48,9 +43,15 @@ import com.qcadoo.mes.view.menu.MenuItem;
 import com.qcadoo.mes.view.menu.MenulItemsGroup;
 import com.qcadoo.mes.view.menu.items.UrlMenuItem;
 import com.qcadoo.mes.view.menu.items.ViewDefinitionMenuItemItem;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.aop.Monitorable;
+import com.qcadoo.model.api.search.Restrictions;
 
 @Service
-public final class MenuServiceImpl implements MenuService {
+// TODO after implementing plugins, reimplement it
+public final class MenuServiceImpl implements MenuService { // , ApplicationListener<ContextRefreshedEvent> {
 
     // private static final Logger LOG = LoggerFactory.getLogger(MenuServiceImpl.class);
 
@@ -61,10 +62,10 @@ public final class MenuServiceImpl implements MenuService {
     private PluginManagementService pluginManagementService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private ViewDefinitionService viewDefinitionService;
 
     @Autowired
-    private ViewDefinitionService viewDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     @Value("${showAdministrationMenu}")
     private boolean showAdministrationMenu;
@@ -72,7 +73,7 @@ public final class MenuServiceImpl implements MenuService {
     @Override
     @Transactional
     @Monitorable
-    public void updateViewDefinitionDatabase() {
+    public void onApplicationEvent(final ContextRefreshedEvent event) {
         DataDefinition viewDefinitionDD = dataDefinitionService.get("menu", "viewDefinition");
 
         List<Pair<String, String>> menuViews = viewDefinitionService.listForMenu();
@@ -80,7 +81,7 @@ public final class MenuServiceImpl implements MenuService {
             int existingViewsNumber = viewDefinitionDD.find().restrictedWith(Restrictions.eq("pluginIdentifier", view.getKey()))
                     .restrictedWith(Restrictions.eq("viewName", view.getValue())).list().getTotalNumberOfEntities();
             if (existingViewsNumber == 0) {
-                Entity viewDefinitionEntity = new DefaultEntity("menu", "viewDefinition", null);
+                Entity viewDefinitionEntity = viewDefinitionDD.create();
                 viewDefinitionEntity.setField("menuName", view.getValue());
                 viewDefinitionEntity.setField("viewName", view.getValue());
                 viewDefinitionEntity.setField("pluginIdentifier", view.getKey());
@@ -108,13 +109,13 @@ public final class MenuServiceImpl implements MenuService {
         addUrlItem("genealogyAttributes", "genealogyAttribute.html", "genealogies");
     }
 
-    private void addUrlItem(String name, String url, String pluginIdentifier) {
+    private void addUrlItem(final String name, final String url, final String pluginIdentifier) {
         DataDefinition viewDefinitionDD = dataDefinitionService.get("menu", "viewDefinition");
 
         int existingViewsNumber = viewDefinitionDD.find().restrictedWith(Restrictions.eq("pluginIdentifier", pluginIdentifier))
                 .restrictedWith(Restrictions.eq("viewName", url)).list().getTotalNumberOfEntities();
         if (existingViewsNumber == 0) {
-            Entity viewDefinitionEntity = new DefaultEntity("menu", name, null);
+            Entity viewDefinitionEntity = viewDefinitionDD.create();
             viewDefinitionEntity.setField("menuName", name);
             viewDefinitionEntity.setField("viewName", url);
             viewDefinitionEntity.setField("pluginIdentifier", pluginIdentifier);
@@ -204,6 +205,9 @@ public final class MenuServiceImpl implements MenuService {
     }
 
     private boolean belongsToActivePlugin(final String pluginIdentifier) {
-        return pluginManagementService.getByIdentifierAndStatus(pluginIdentifier, PluginStatus.ACTIVE.getValue()) != null;
+        return true;
+        // TODO after implementing plugins it should not be neccessary
+        // return pluginManagementService.getByIdentifierAndStatus(pluginIdentifier, PluginStatus.ACTIVE.getValue()) != null;
     }
+
 }

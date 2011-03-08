@@ -34,16 +34,15 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.validators.ErrorMessage;
-import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.FieldEntityIdChangeListener;
 import com.qcadoo.mes.view.ScopeEntityIdChangeListener;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.states.AbstractContainerState;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.utils.ExpressionUtils;
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 public class FormComponentState extends AbstractContainerState {
 
@@ -133,7 +132,7 @@ public class FormComponentState extends AbstractContainerState {
     }
 
     public Entity getEntity() {
-        Entity entity = new DefaultEntity(getDataDefinition().getPluginIdentifier(), getDataDefinition().getName(), entityId);
+        Entity entity = getDataDefinition().create(entityId);
         copyFieldsToEntity(entity);
         copyContextToEntity(entity);
         return entity;
@@ -197,12 +196,12 @@ public class FormComponentState extends AbstractContainerState {
 
     private String getHeaderEdit() {
         Entity entity = getDataDefinition().get(entityId);
-        return ExpressionUtil.getValue(entity, expressionEdit, getLocale());
+        return ExpressionUtils.getValue(entity, expressionEdit, getLocale());
     }
 
     private Object getHeaderNew() {
         if (expressionNew != null) {
-            return ExpressionUtil.getValue(getEntity(), expressionNew, getLocale());
+            return ExpressionUtils.getValue(getEntity(), expressionNew, getLocale());
         } else {
             return JSONObject.NULL;
         }
@@ -272,11 +271,11 @@ public class FormComponentState extends AbstractContainerState {
         for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
             FieldDefinition fieldDefinition = getDataDefinition().getField(field.getKey());
 
-            if (fieldDefinition.isRequired() || (entityId == null && fieldDefinition.isRequiredOnCreate())) {
+            if (fieldDefinition.isRequired()) {
                 field.getValue().setRequired(true);
             }
 
-            if (fieldDefinition.isReadOnly() || (entityId != null && fieldDefinition.isReadOnlyOnUpdate())) {
+            if (fieldDefinition.isReadOnly()) {
                 field.getValue().setEnabled(false);
             }
         }
@@ -334,7 +333,7 @@ public class FormComponentState extends AbstractContainerState {
         for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
             FieldDefinition fieldDefinition = getDataDefinition().getField(field.getKey());
 
-            if (!(fieldDefinition.isReadOnly() || (entityId != null && fieldDefinition.isReadOnlyOnUpdate()))) {
+            if (!(fieldDefinition.isReadOnly())) {
                 field.getValue().setEnabled(enabled);
                 field.getValue().requestComponentUpdateState();
             }
@@ -353,11 +352,17 @@ public class FormComponentState extends AbstractContainerState {
 
         public void save(final String[] args) {
             Entity databaseEntity = getFormEntity();
+
+            System.out.println(databaseEntity);
+
             if (databaseEntity == null && entityId != null) {
                 throw new IllegalStateException("Entity cannot be found");
             }
 
             Entity entity = getEntity();
+
+            System.out.println(entity);
+            System.out.println(entity.isValid());
 
             if (entity.isValid()) {
                 entity = getDataDefinition().save(entity);
