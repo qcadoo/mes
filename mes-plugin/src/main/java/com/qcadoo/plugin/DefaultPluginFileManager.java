@@ -3,9 +3,13 @@ package com.qcadoo.plugin;
 import static java.lang.System.getProperty;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +27,7 @@ public class DefaultPluginFileManager implements PluginFileManager {
             return false;
         }
         for (String key : keys) {
-            if (!checkFileRightsToRead(key)) {
+            if (!checkFileRightsToRead(key, pluginsTmpPath)) {
                 return false;
             }
         }
@@ -41,24 +45,73 @@ public class DefaultPluginFileManager implements PluginFileManager {
 
     @Override
     public File uploadPlugin(final PluginArtifact pluginArtifact) throws PluginException {
-        // TODO Auto-generated method stub
-        return null;
+        InputStream input = pluginArtifact.getInputStream();
+        File pluginFile = new File(pluginsTmpPath + getProperty("file.separator") + pluginArtifact.getName());
+        OutputStream output = null;
+        try {
+            output = new FileOutputStream(pluginFile);
+            IOUtils.copy(input, output);
+
+            output.flush();
+        } catch (IOException e) {
+            LOG.error("Problem with upload plugin file - " + e.getMessage());
+            throw new PluginException(e.getMessage(), e.getCause());
+        } finally {
+            IOUtils.closeQuietly(input);
+            IOUtils.closeQuietly(output);
+        }
+        return pluginFile;
     }
 
     @Override
     public boolean uninstallPlugin(final String... keys) throws PluginException {
-        // TODO Auto-generated method stub
-        return false;
+        for (String key : keys) {
+            if (!checkFileRightsToRead(key, pluginsTmpPath) && !checkFileRightsToRead(key, pluginsPath)) {
+                return false;
+            }
+        }
+
+        for (String key : keys) {
+            File file = new File(pluginsTmpPath + getProperty("file.separator") + key);
+            if (!file.exists()) {
+                file = new File(pluginsPath + getProperty("file.separator") + key);
+            }
+            try {
+                FileUtils.forceDelete(file);
+            } catch (IOException e) {
+                LOG.error("Problem with removing plugin file - " + e.getMessage());
+                if (file.exists()) {
+                    LOG.info("Trying delete file after JVM stop");
+                    file.deleteOnExit();
+                } else {
+                    throw new PluginException(e.getMessage(), e.getCause());
+                }
+            }
+        }
+        return true;
     }
 
     @Override
-    public void removePlugin(final String key) {
-        // TODO Auto-generated method stub
-
+    public void removePlugin(final String key) throws PluginException {
+        File file = new File((pluginsTmpPath + getProperty("file.separator") + key));
+        if (!file.exists()) {
+            file = new File(pluginsPath + getProperty("file.separator") + key);
+        }
+        try {
+            FileUtils.forceDelete(file);
+        } catch (IOException e) {
+            LOG.error("Problem with removing plugin file - " + e.getMessage());
+            if (file.exists()) {
+                LOG.info("Trying delete file after JVM stop");
+                file.deleteOnExit();
+            } else {
+                throw new PluginException(e.getMessage(), e.getCause());
+            }
+        }
     }
 
-    private boolean checkFileRightsToRead(final String key) {
-        File file = new File(pluginsTmpPath + getProperty("file.separator") + key);
+    private boolean checkFileRightsToRead(final String key, final String path) {
+        File file = new File(path + getProperty("file.separator") + key);
         if (!file.exists() || !file.canRead()) {
             return false;
         }
