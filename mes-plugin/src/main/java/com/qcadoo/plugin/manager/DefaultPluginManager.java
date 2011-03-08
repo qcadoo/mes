@@ -229,7 +229,7 @@ public class DefaultPluginManager implements PluginAccessor, PluginSystemLifecyc
         if (databasePlugin.hasState(PluginState.TEMPORARY)) {
             if (!pluginDependencyResult.isDependenciesSatisfied()
                     && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
-                pluginFileManager.removePlugin(databasePlugin.getFilename());
+                pluginFileManager.uninstallPlugin(databasePlugin.getFilename());
                 databasePlugin.setPluginInformation(plugin.getPluginInformation());
                 pluginDao.save(databasePlugin);
                 return PluginOperationResult.successWithMissingDependencies(pluginDependencyResult);
@@ -260,7 +260,7 @@ public class DefaultPluginManager implements PluginAccessor, PluginSystemLifecyc
             }
             // TODO KRNA disable/enable
         }
-        pluginFileManager.removePlugin(databasePlugin.getFilename());
+        pluginFileManager.uninstallPlugin(databasePlugin.getFilename());
         databasePlugin.setPluginInformation(plugin.getPluginInformation());
         pluginDao.save(databasePlugin);
         if (shouldRestart) {

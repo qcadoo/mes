@@ -10,5 +10,5 @@ public interface PluginFileManager {
 
     public boolean uninstallPlugin(final String... keys) throws PluginException;
 
-    public void removePlugin(final String key);
+    public void removePlugin(final String key) throws PluginException;
 }
