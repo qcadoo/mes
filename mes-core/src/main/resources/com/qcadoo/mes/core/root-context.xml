@@ -137,7 +137,7 @@
 			<security:port-mapping http="8282" https="8443" />
 		</security:port-mappings>
 		
-		<security:remember-me user-service-ref="userDetailsService" services-alias="_rememberMeServices" key="qcd01" data-source-ref="dataSource" />
+		<security:remember-me user-service-ref="userDetailsService" data-source-ref="dataSource" services-alias="rememberMeServices" key="qcd01" />
 		
 	</security:http>
 
@@ -168,7 +168,7 @@
 		class="com.qcadoo.mes.security.internal.DelegatePasswordEncoder">
 		<constructor-arg ref="passwordEncoder" />
 	</bean>
-
+	
 	<bean id="passwordEncoder"
 		class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
 		<constructor-arg value="256" />
@@ -216,7 +216,7 @@
 		<property name="authenticationManager" ref="authenticationManager" />
 		<property name="authenticationFailureHandler" ref="failureHandler" />
 		<property name="authenticationSuccessHandler" ref="successHandler" />
-		<property name="rememberMeServices" ref="_rememberMeServices" />
+		<property name="rememberMeServices" ref="rememberMeServices" />
 	</bean>
 
 	<bean id="successHandler"

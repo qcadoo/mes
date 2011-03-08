@@ -32,13 +32,20 @@ import java.util.Map;
 
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.localization.TranslationService;
 import com.qcadoo.model.api.types.EnumeratedType;
 
 public final class EnumType implements EnumeratedType {
 
     private final List<String> keys;
 
-    public EnumType(final String... keys) {
+    private final TranslationService translationService;
+
+    private final String translationPath;
+
+    public EnumType(final TranslationService translationService, final String translationPath, final String... keys) {
+        this.translationService = translationService;
+        this.translationPath = translationPath;
         this.keys = Arrays.asList(keys);
     }
 
@@ -46,13 +53,8 @@ public final class EnumType implements EnumeratedType {
     public Map<String, String> values(final Locale locale) {
         Map<String, String> values = new HashMap<String, String>();
 
-        // TODO i18n
-        // String code = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(),
-        // fieldDefinition.getName())
-        // + ".value." + value;
-
-        for (String k : keys) {
-            values.put(k, k);
+        for (String key : keys) {
+            values.put(key, translationService.translate(translationPath + ".value." + key, locale));
         }
 
         return values;

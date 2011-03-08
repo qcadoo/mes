@@ -9,7 +9,6 @@ import com.qcadoo.mes.internal.MenuService;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 import com.qcadoo.mes.view.xml.ViewDefinitionParserImpl;
 import com.qcadoo.model.internal.api.ModelXmlToDefinitionConverter;
-import com.qcadoo.model.internal.definitionconverter.ModelXmlToDefinitionConverterImpl;
 
 @Component
 public class Application implements ApplicationListener<ContextRefreshedEvent> {
@@ -26,7 +25,7 @@ public class Application implements ApplicationListener<ContextRefreshedEvent> {
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {
         // TODO after implementing plugins - move it to proper place
-        ((ModelXmlToDefinitionConverterImpl) modelXmlToDefinitionConverter).onApplicationEvent(event);
+        modelXmlToDefinitionConverter.onApplicationEvent(event);
         ((ViewDefinitionParserImpl) viewDefinitionParser).onApplicationEvent(event);
         menuService.onApplicationEvent(event);
 

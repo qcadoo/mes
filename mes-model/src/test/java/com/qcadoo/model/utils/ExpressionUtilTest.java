@@ -22,15 +22,15 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.utils;
+package com.qcadoo.model.utils;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.Locale;
 
@@ -39,26 +39,28 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.localization.TranslationService;
 import com.qcadoo.model.api.types.BelongsToType;
-import com.qcadoo.model.api.utils.ExpressionUtils;
 import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.ExpressionServiceImpl;
 import com.qcadoo.model.internal.FieldDefinitionImpl;
 import com.qcadoo.model.internal.types.IntegerType;
 import com.qcadoo.model.internal.types.StringType;
 
 public class ExpressionUtilTest {
 
-    private DataDefinition dataDefinition;
+    private TranslationService translationService;
+
+    private ExpressionService expressionService;
 
     @Before
     public void init() {
-        dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
-        given(dataDefinitionService.get(anyString(), anyString())).willReturn(dataDefinition);
-        ExpressionUtils.setStaticDataDefinitionService(dataDefinitionService);
+        expressionService = new ExpressionServiceImpl();
+        translationService = mock(TranslationService.class);
+        setField(expressionService, "translationService", translationService);
     }
 
     @Test
@@ -70,7 +72,7 @@ public class ExpressionUtilTest {
         FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name").withType(new StringType());
 
         // when
-        String value = ExpressionUtils.getValue(entity, Lists.newArrayList(fieldDefinition), null);
+        String value = expressionService.getValue(entity, Lists.newArrayList(fieldDefinition), null);
 
         // then
         assertEquals("Mr T", value);
@@ -89,7 +91,7 @@ public class ExpressionUtilTest {
         FieldDefinition fieldDefinitionSex = new FieldDefinitionImpl(null, "sex").withType(new StringType());
 
         // when
-        String value = ExpressionUtils.getValue(entity,
+        String value = expressionService.getValue(entity,
                 Lists.newArrayList(fieldDefinitionName, fieldDefinitionAge, fieldDefinitionSex), Locale.ENGLISH);
 
         // then
@@ -99,13 +101,14 @@ public class ExpressionUtilTest {
     @Test
     public void shouldGenerateValueOfTheSingleFieldColumn() throws Exception {
         // given
+        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         Entity entity = new DefaultEntity(dataDefinition, 1L);
         entity.setField("name", "Mr T");
 
         given(dataDefinition.getField(eq("name")).getType().toString(eq("Mr T"), eq(Locale.ENGLISH))).willReturn("Mr X");
 
         // when
-        String value = ExpressionUtils.getValue(entity, "#name.toUpperCase()", Locale.ENGLISH);
+        String value = expressionService.getValue(entity, "#name.toUpperCase()", Locale.ENGLISH);
 
         // then
         assertEquals("MR X", value);
@@ -114,11 +117,12 @@ public class ExpressionUtilTest {
     @Test
     public void shouldGenerateValueOfEmptyField() throws Exception {
         // given
+        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         Entity entity = new DefaultEntity(dataDefinition, 1L);
         entity.setField("name", null);
 
         // when
-        String value = ExpressionUtils.getValue(entity, "#name", null);
+        String value = expressionService.getValue(entity, "#name", null);
 
         // then
         assertNull(value);
@@ -127,6 +131,7 @@ public class ExpressionUtilTest {
     @Test
     public void shouldGenerateValueOfTheMultiFieldColumn() throws Exception {
         // given
+        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         Entity entity = new DefaultEntity(dataDefinition, 1L);
         entity.setField("name", "Mr T");
         entity.setField("age", 33);
@@ -137,7 +142,7 @@ public class ExpressionUtilTest {
         given(dataDefinition.getField(eq("age")).getType().toString(eq(33), eq(Locale.ENGLISH))).willReturn("34");
 
         // when
-        String value = ExpressionUtils.getValue(entity,
+        String value = expressionService.getValue(entity,
                 "#name + \" -> (\" + (#age) + \") -> \" + (#sex == \"F\" ? \"female\" : \"male\")", Locale.ENGLISH);
 
         // then
@@ -147,6 +152,7 @@ public class ExpressionUtilTest {
     @Test
     public void shouldGenerateValueOfTheBelongsToColumn() throws Exception {
         // given
+        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         Entity product = new DefaultEntity(dataDefinition, 1L);
         product.setField("name", "P1");
 
@@ -160,7 +166,7 @@ public class ExpressionUtilTest {
         entity.setField("product", product);
 
         // when
-        String value = ExpressionUtils.getValue(entity, "#product['name']", Locale.ENGLISH);
+        String value = expressionService.getValue(entity, "#product['name']", Locale.ENGLISH);
 
         // then
         assertEquals("P1", value);

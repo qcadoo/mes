@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.internal;
+package com.qcadoo.mes.localization.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,6 +76,9 @@ public final class TranslationServiceImpl implements TranslationService, Applica
     @Override
     public String translate(final String messageCode, final Locale locale, final Object... args) {
         String message = translateWithError(messageCode, locale, args);
+
+        TRANSLATION_LOG.warn(" ----> " + hashCode() + " " + messageCode);
+
         if (message != null) {
             return message.trim();
         }

@@ -40,6 +40,7 @@ import org.junit.Test;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -184,7 +185,7 @@ public class EntityTreeImplTest {
         Entity entity = mock(Entity.class);
         given(entity.getStringField("entityType")).willReturn("entityType1");
 
-        EntityTreeNodeImpl child = mock(EntityTreeNodeImpl.class);
+        EntityTreeNode child = mock(EntityTreeNode.class);
         EntityTreeNodeImpl node = new EntityTreeNodeImpl(entity);
         node.addChild(child);
 

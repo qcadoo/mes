@@ -27,12 +27,16 @@ package com.qcadoo.mes.application;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +48,9 @@ import com.qcadoo.model.api.search.Restrictions;
 public final class DatabasePreparationService implements ApplicationListener<ContextRefreshedEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(DatabasePreparationService.class);
+
+    @Autowired
+    private DataSource dataSource;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -75,6 +82,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         if (databaseHasToBePrepared()) {
             LOG.info("Database has to be prepared ...");
 
+            createPersistenceLogins();
             addMenus();
             addGroups();
             addUsers();
@@ -86,6 +94,10 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         } else {
             LOG.info("Database has been already prepared, skipping");
         }
+    }
+
+    private void createPersistenceLogins() {
+        new JdbcTemplate(dataSource).execute(JdbcTokenRepositoryImpl.CREATE_TABLE_SQL);
     }
 
     private void addMenus() {

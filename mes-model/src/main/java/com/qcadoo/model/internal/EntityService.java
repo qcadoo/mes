@@ -34,11 +34,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.types.BelongsToType;
 import com.qcadoo.model.api.types.HasManyType;
 import com.qcadoo.model.api.types.TreeType;
-import com.qcadoo.model.api.utils.ExpressionUtils;
 import com.qcadoo.model.internal.api.InternalDataDefinition;
 import com.qcadoo.model.internal.types.PasswordType;
 
@@ -47,6 +47,9 @@ public final class EntityService {
 
     @Autowired
     private SessionFactory sessionFactory;
+
+    @Autowired
+    private ExpressionService expressionService;
 
     public static final String FIELD_ID = "id";
 
@@ -118,8 +121,8 @@ public final class EntityService {
 
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             if (fieldDefinitionEntry.getValue().getExpression() != null) {
-                genericEntity.setField(fieldDefinitionEntry.getKey(),
-                        ExpressionUtils.getValue(genericEntity, fieldDefinitionEntry.getValue().getExpression(), Locale.ENGLISH));
+                genericEntity.setField(fieldDefinitionEntry.getKey(), expressionService.getValue(genericEntity,
+                        fieldDefinitionEntry.getValue().getExpression(), Locale.ENGLISH));
             }
         }
 

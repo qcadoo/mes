@@ -62,6 +62,6 @@
 		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfTechnologyIsNotRemoved" />
 		<onCopy class="com.qcadoo.mes.products.OrderService" method="fillOrderDatesAndWorkers" />
 		<onCopy class="com.qcadoo.mes.products.OrderService" method="clearOrderDatesAndWorkersOnCopy" />
-		<toString expression="#number + ' - ' + #name"/>
+		<identifier expression="#number + ' - ' + #name"/>
 	</model>	
 </models>

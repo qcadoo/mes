@@ -25,7 +25,7 @@ import com.qcadoo.model.internal.api.Constants;
 import com.qcadoo.model.internal.api.ModelXmlToHbmConverter;
 
 @Component
-public class ModelXmlToHbmConverterImpl implements ModelXmlToHbmConverter {
+public final class ModelXmlToHbmConverterImpl implements ModelXmlToHbmConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelXmlToHbmConverterImpl.class);
 

@@ -39,8 +39,8 @@ import org.json.JSONObject;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.utils.ExpressionUtils;
 
 public final class TreeComponentState extends FieldComponentState {

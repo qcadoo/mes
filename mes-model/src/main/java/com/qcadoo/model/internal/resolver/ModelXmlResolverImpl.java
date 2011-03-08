@@ -11,7 +11,7 @@ import com.qcadoo.model.internal.api.Constants;
 import com.qcadoo.model.internal.api.ModelXmlResolver;
 
 @Component
-public class ModelXmlResolverImpl implements ModelXmlResolver {
+public final class ModelXmlResolverImpl implements ModelXmlResolver {
 
     private final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 

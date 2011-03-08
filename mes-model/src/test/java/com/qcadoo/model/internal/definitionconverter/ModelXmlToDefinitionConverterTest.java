@@ -32,6 +32,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
@@ -40,8 +41,11 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
 import com.qcadoo.model.CustomHook;
@@ -52,6 +56,7 @@ import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.types.BelongsToType;
 import com.qcadoo.model.api.types.HasManyType;
 import com.qcadoo.model.api.types.TreeType;
+import com.qcadoo.model.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.model.internal.DataDefinitionServiceImpl;
 import com.qcadoo.model.internal.api.DataAccessService;
 import com.qcadoo.model.internal.api.EntityHookDefinition;
@@ -105,12 +110,19 @@ public class ModelXmlToDefinitionConverterTest {
         dataAccessService = mock(DataAccessService.class);
         dictionaryService = mock(DictionaryService.class);
 
+        DictionariesDictionary dictionary = new DictionariesDictionary();
+        SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
+        given(
+                sessionFactory.getCurrentSession().createCriteria(DictionariesDictionary.class).add(Mockito.any(Criterion.class))
+                        .setMaxResults(1).uniqueResult()).willReturn(dictionary);
+
         dataDefinitionService = new DataDefinitionServiceImpl();
 
         modelXmlToDefinitionConverter = new ModelXmlToDefinitionConverterImpl();
         setField(modelXmlToDefinitionConverter, "dataDefinitionService", dataDefinitionService);
         setField(modelXmlToDefinitionConverter, "dataAccessService", dataAccessService);
         setField(modelXmlToDefinitionConverter, "applicationContext", applicationContext);
+        setField(modelXmlToDefinitionConverter, "sessionFactory", sessionFactory);
 
         given(applicationContext.getBean(CustomHook.class)).willReturn(new CustomHook());
 

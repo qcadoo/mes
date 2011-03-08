@@ -11,7 +11,7 @@ import com.qcadoo.model.internal.api.ModelXmlResolver;
 import com.qcadoo.model.internal.api.ModelXmlToClassConverter;
 import com.qcadoo.model.internal.api.ModelXmlToHbmConverter;
 
-public class DynamicSessionFactoryBean extends LocalSessionFactoryBean {
+public final class DynamicSessionFactoryBean extends LocalSessionFactoryBean {
 
     @Autowired
     private ModelXmlToHbmConverter modelXmlToHbmConverter;

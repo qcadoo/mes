@@ -42,6 +42,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,17 +51,20 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.localization.TranslationService;
 import com.qcadoo.model.api.security.PasswordEncoder;
 import com.qcadoo.model.api.types.FieldType;
 import com.qcadoo.model.api.types.HasManyType;
 import com.qcadoo.model.api.types.TreeType;
 import com.qcadoo.model.api.utils.DateUtils;
+import com.qcadoo.model.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.model.internal.AbstractModelXmlConverter;
 import com.qcadoo.model.internal.DataDefinitionImpl;
 import com.qcadoo.model.internal.FieldDefinitionImpl;
@@ -105,6 +110,9 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
     private static final Logger LOG = LoggerFactory.getLogger(ModelXmlToDefinitionConverterImpl.class);
 
     @Autowired
+    private SessionFactory sessionFactory;
+
+    @Autowired
     private DictionaryService dictionaryService;
 
     @Autowired
@@ -122,7 +130,11 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
     @Autowired
     private ModelXmlResolver modelXmlResolver;
 
-    // @Override
+    @Autowired
+    private TranslationService translationService;
+
+    @Override
+    @Transactional
     public void onApplicationEvent(final ContextRefreshedEvent event) {
         convert(modelXmlResolver.getResources());
     }
@@ -173,13 +185,27 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
         }
     }
 
-    private void getDictionary(final XMLStreamReader reader, final String pluginIdentifier) throws XMLStreamException,
-            IllegalStateException {
+    private void getDictionary(final XMLStreamReader reader, final String pluginIdentifier) throws XMLStreamException {
+        String name = getStringAttribute(reader, "name");
 
-        // TODO dictionaries
+        DictionariesDictionary dictionary = (DictionariesDictionary) sessionFactory.getCurrentSession()
+                .createCriteria(DictionariesDictionary.class).add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult();
 
-        System.out.println(" ----> " + getStringAttribute(reader, "name"));
-        getBooleanAttribute(reader, "modificable", true);
+        if (dictionary != null) {
+            return;
+        }
+
+        // getBooleanAttribute(reader, "modificable", true);
+
+        dictionary = new DictionariesDictionary();
+        dictionary.setName(name);
+
+        // TODO dictionary label
+        dictionary.setLabel(name);
+
+        sessionFactory.getCurrentSession().save(dictionary);
+
+        // TODO dictionary values
 
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagEnded(reader, TAG_DICTIONARY)) {
@@ -187,15 +213,13 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
             }
 
             if (isTagStarted(reader, "value")) {
-                System.out.println(" ----> " + reader.getText());
+                // System.out.println(" ----> " + reader.getElementText());
             }
-
         }
-
     }
 
     private DataDefinition getDataDefinition(final XMLStreamReader reader, final String pluginIdentifier)
-            throws XMLStreamException, IllegalStateException {
+            throws XMLStreamException {
         DataDefinitionImpl dataDefinition = getModelDefinition(reader, pluginIdentifier);
 
         LOG.info("Creating dataDefinition " + dataDefinition);
@@ -272,8 +296,8 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
             case VALIDATESWITH:
                 dataDefinition.addValidatorHook(new CustomEntityValidator(getHookDefinition(reader)));
                 break;
-            case TOSTRING:
-                dataDefinition.setToStringExpression(getIdentifierExpression(reader));
+            case IDENTIFIER:
+                dataDefinition.setIdentifierExpression(getIdentifierExpression(reader));
                 break;
             default:
                 dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier, dataDefinition, modelTag));
@@ -300,9 +324,9 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
         return new DictionaryType(dictionaryName, dictionaryService);
     }
 
-    private FieldType getEnumType(final XMLStreamReader reader) throws XMLStreamException {
+    private FieldType getEnumType(final XMLStreamReader reader, final String translationPath) throws XMLStreamException {
         String values = getStringAttribute(reader, "values");
-        return new EnumType(values.split(","));
+        return new EnumType(translationService, translationPath, values.split(","));
     }
 
     private FieldType getHasManyType(final XMLStreamReader reader, final String pluginIdentifier) {
@@ -337,12 +361,13 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
     private FieldDefinition getFieldDefinition(final XMLStreamReader reader, final String pluginIdentifier,
             final DataDefinitionImpl dataDefinition, final ModelTag modelTag) throws XMLStreamException {
         String fieldType = reader.getLocalName();
-        FieldDefinitionImpl fieldDefinition = new FieldDefinitionImpl(dataDefinition, getStringAttribute(reader, "name"));
+        String name = getStringAttribute(reader, "name");
+        FieldDefinitionImpl fieldDefinition = new FieldDefinitionImpl(dataDefinition, name);
         fieldDefinition.withReadOnly(getBooleanAttribute(reader, "readonly", false));
         fieldDefinition.withDefaultValue(getStringAttribute(reader, "default"));
         fieldDefinition.setPersistent(getBooleanAttribute(reader, "persistent", true));
         fieldDefinition.setExpression(getStringAttribute(reader, "expression"));
-        FieldType type = getFieldType(reader, pluginIdentifier, modelTag, fieldType);
+        FieldType type = getFieldType(reader, dataDefinition, name, modelTag, fieldType);
         fieldDefinition.withType(type);
 
         if (getBooleanAttribute(reader, "required", false)) {
@@ -407,8 +432,8 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
         }
     }
 
-    private FieldType getFieldType(final XMLStreamReader reader, final String pluginIdentifier, final ModelTag modelTag,
-            final String fieldType) throws XMLStreamException {
+    private FieldType getFieldType(final XMLStreamReader reader, final DataDefinition dataDefinition, final String fieldName,
+            final ModelTag modelTag, final String fieldType) throws XMLStreamException {
         switch (modelTag) {
             case INTEGER:
                 return new IntegerType();
@@ -425,13 +450,14 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
             case BOOLEAN:
                 return new BooleanType();
             case BELONGSTO:
-                return getBelongsToType(reader, pluginIdentifier);
+                return getBelongsToType(reader, dataDefinition.getPluginIdentifier());
             case HASMANY:
-                return getHasManyType(reader, pluginIdentifier);
+                return getHasManyType(reader, dataDefinition.getPluginIdentifier());
             case TREE:
-                return getTreeType(reader, pluginIdentifier);
+                return getTreeType(reader, dataDefinition.getPluginIdentifier());
             case ENUM:
-                return getEnumType(reader);
+                return getEnumType(reader, dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "."
+                        + fieldName);
             case DICTIONARY:
                 return getDictionaryType(reader);
             case PASSWORD:

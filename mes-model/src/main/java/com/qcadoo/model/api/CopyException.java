@@ -24,9 +24,8 @@
 
 package com.qcadoo.model.api;
 
-
 @SuppressWarnings("serial")
-public class CopyException extends RuntimeException {
+public final class CopyException extends RuntimeException {
 
     private final Entity entity;
 

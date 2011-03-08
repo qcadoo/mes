@@ -40,10 +40,10 @@ public final class TextType implements FieldType {
     }
 
     @Override
-    public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
+    public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity entity) {
         String stringValue = String.valueOf(value);
         if (StringUtils.length(stringValue) > 2048) {
-            validatedEntity.addError(fieldDefinition, "core.validate.field.error.invalidLength", String.valueOf(2048));
+            entity.addError(fieldDefinition, "core.validate.field.error.invalidLength", String.valueOf(2048));
             return null;
         }
         return stringValue;

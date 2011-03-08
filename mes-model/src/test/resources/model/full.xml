@@ -48,7 +48,7 @@
 		<onCreate class="com.qcadoo.model.CustomHook" method="createHook" />
 		<onCopy class="com.qcadoo.model.CustomHook" method="copyHook" />
 		
-		<toString expression="#fieldString" />
+		<identifier expression="#fieldString" />
 	</model>	
 	<model name="secondEntity" updatable="false">
 		<belongsTo name="fieldFirstEntity" model="firstEntity" />

@@ -48,7 +48,7 @@
 		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="product" cascade="none"/>
 		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="product" cascade="none"/>
 		<hasMany name="substituteComponents" model="substituteComponent" joinField="product" cascade="none"/>
-		<toString expression="#number + ' - ' + #name"/>
+		<identifier expression="#number + ' - ' + #name"/>
 	</model>
 	<model name="substitute">
 		<string name="number" required="true" unique="true">
@@ -59,7 +59,7 @@
 		<hasMany name="components" model="substituteComponent" joinField="substitute" cascade="delete" copyable="true" />
 		<priority name="priority" scope="product" />
 		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
-		<toString expression="#number + ' - ' + #name"/>
+		<identifier expression="#number + ' - ' + #name"/>
 	</model>
 	<model name="substituteComponent">
 		<belongsTo name="product" model="product" required="true" />
@@ -71,6 +71,6 @@
 		</decimal>
 		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfSubstituteIsNotRemoved" />
 		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkSubstituteComponentUniqueness" />
-		<toString expression="#product['number'] + ' - ' + #product['name']"/>
+		<identifier expression="#product['number'] + ' - ' + #product['name']"/>
 	</model>
 </models>

@@ -37,13 +37,13 @@
 		<string name="fileName" />
 		<hasMany name="orders" model="materialRequirementComponent" joinField="materialRequirement" cascade="delete" copyable="true" />
 		<onCopy class="com.qcadoo.mes.products.MaterialRequirementService" method="clearGeneratedOnCopy" />
-		<toString expression="#name"/>
+		<identifier expression="#name"/>
 	</model>
 	<model name="materialRequirementComponent">	
 		<belongsTo name="materialRequirement" model="materialRequirement" lazy="false" required="true" />
 		<belongsTo name="order" model="order" lazy="false" required="true" />
 		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
 		<validatesWith class="com.qcadoo.mes.products.MaterialRequirementService" method="checkMaterialRequirementComponentUniqueness" />
-		<toString expression="#order['number'] + ' - ' + #order['name']"/>		
+		<identifier expression="#order['number'] + ' - ' + #order['name']"/>		
 	</model>	
 </models>

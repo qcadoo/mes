@@ -59,6 +59,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.ExpressionServiceImpl;
 import com.qcadoo.model.internal.types.StringType;
 
 public class FormComponentStateTest extends AbstractStateTest {
@@ -109,6 +110,8 @@ public class FormComponentStateTest extends AbstractStateTest {
         ((AbstractContainerState) form).setTranslationService(translationService);
         ((AbstractContainerState) form).addFieldEntityIdChangeListener("name", name);
         form.initialize(new JSONObject(ImmutableMap.of("components", new JSONObject())), Locale.ENGLISH);
+
+        new ExpressionServiceImpl().init();
     }
 
     @Test

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -58,6 +59,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.aop.Monitorable;
 import com.qcadoo.model.api.search.Restriction;
@@ -86,6 +88,9 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Autowired
     private PriorityService priorityService;
+
+    @Autowired
+    private ExpressionService expressionService;
 
     private static final Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
 
@@ -476,7 +481,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         List<?> results = criteria.list();
 
-        // FIXME masz
+        // FIXME masz distinct
 
         // if (searchCriteria.getDistinctProperty() != null) {
         // Class<?> entityClass = ((InternalDataDefinition) searchCriteria.getDataDefinition()).getClassForEntity();
@@ -619,7 +624,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
             getCurrentSession().flush();
         } catch (ConstraintViolationException e) {
             throw new IllegalStateException(String.format("Entity [ENTITY.%s] is in use",
-                    dataDefinition.getEntityIdentifierField(entity)), e);
+                    expressionService.getValue(entity, dataDefinition.getIdentifierExpression(), Locale.ENGLISH), e));
         }
 
         LOG.info("Entity[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + entityId

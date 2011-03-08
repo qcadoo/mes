@@ -36,7 +36,7 @@
 		<string name="fileName" />
 		<hasMany name="orders" model="workPlanComponent" joinField="workPlan" cascade="delete" copyable="true" />
 		<onCopy class="com.qcadoo.mes.products.WorkPlanService" method="clearGeneratedOnCopy" />
-		<toString expression="#name"/>
+		<identifier expression="#name"/>
 	</model>
 	<model name="workPlanComponent">
 		<belongsTo name="workPlan" model="workPlan" lazy="false" required="true" />
@@ -44,6 +44,6 @@
 		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
 		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderTechnologyHasOperations" />
 		<validatesWith class="com.qcadoo.mes.products.WorkPlanService" method="checkWorkPlanComponentUniqueness" />	
-		<toString expression="#order['number'] + ' - ' + #order['name']"/>		
+		<identifier expression="#order['number'] + ' - ' + #order['name']"/>		
 	</model>
 </models>

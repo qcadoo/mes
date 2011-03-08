@@ -6,7 +6,7 @@ import javax.xml.stream.XMLStreamReader;
 public abstract class AbstractModelXmlConverter {
 
     protected static enum ModelTag {
-        PRIORITY, ONCREATE, ONUPDATE, ONSAVE, ONCOPY, VALIDATESWITH, TOSTRING, INTEGER, STRING, TEXT, DECIMAL, DATETIME, DATE, BOOLEAN, BELONGSTO, HASMANY, TREE, ENUM, DICTIONARY, PASSWORD
+        PRIORITY, ONCREATE, ONUPDATE, ONSAVE, ONCOPY, VALIDATESWITH, IDENTIFIER, INTEGER, STRING, TEXT, DECIMAL, DATETIME, DATE, BOOLEAN, BELONGSTO, HASMANY, TREE, ENUM, DICTIONARY, PASSWORD
     }
 
     protected static enum FieldTag {
@@ -26,7 +26,7 @@ public abstract class AbstractModelXmlConverter {
     }
 
     protected String getIdentifierExpression(final XMLStreamReader reader) {
-        return getStringAttribute(reader, "value");
+        return getStringAttribute(reader, "expression");
     }
 
     protected Integer getIntegerAttribute(final XMLStreamReader reader, final String name) {

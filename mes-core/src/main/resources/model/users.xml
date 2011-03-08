@@ -38,17 +38,17 @@
 		<string name="description" >
 			<validatesLength max="255"/>
 		</string>
-		<password name="password" required="true" /><!-- TODO validatesPresenceOnCreate -->
-		<password name="passwordConfirmation" persistent="false" required="true" /><!-- TODO validatesPresenceOnCreate -->
+		<password name="password" /><!-- TODO validatesPresenceOnCreate -->
+		<password name="passwordConfirmation" persistent="false" /><!-- TODO validatesPresenceOnCreate -->
 		<password name="oldPassword" persistent="false" />
 		<string name="viewIdentifier" persistent="false" />
 		<validatesWith class="com.qcadoo.mes.users.UserService" method="checkPassword" />
-		<toString expression="#userName"/>
+		<identifier expression="#userName"/>
 	</model>
 	<model name="group">
-		<string name="name" required="true" unique="true" /><!-- TODO validatesPresenceOnCreate readonly="true" -->
+		<string name="name" required="true" unique="true" />
 		<string name="description" />
-		<string name="role" required="true" /><!-- TODO validatesPresenceOnCreate readonly="true" -->
-		<toString expression="#name"/>
+		<string name="role" required="true" />
+		<identifier expression="#name"/>
 	</model>
 </models>

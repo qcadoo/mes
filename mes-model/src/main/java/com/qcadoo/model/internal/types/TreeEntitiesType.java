@@ -63,7 +63,7 @@ public final class TreeEntitiesType implements TreeType {
     }
 
     @Override
-    public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
+    public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity entity) {
         return null;
     }
 

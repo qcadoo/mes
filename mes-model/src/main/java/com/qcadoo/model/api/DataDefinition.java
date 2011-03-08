@@ -149,16 +149,6 @@ public interface DataDefinition {
     FieldDefinition getField(final String fieldName);
 
     /**
-     * Return entity identifier value.
-     * 
-     * @param entity
-     *            entity
-     * @return entity identifier
-     */
-    // TODO it should be entity's method
-    String getEntityIdentifierField(final Entity entity);
-
-    /**
      * Return priority field's definition.
      * 
      * @return priority field's definion, null if entity is not prioritizable

@@ -40,7 +40,6 @@ import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteria;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.model.api.utils.ExpressionUtils;
 import com.qcadoo.model.internal.api.DataAccessService;
 import com.qcadoo.model.internal.api.EntityHookDefinition;
 import com.qcadoo.model.internal.api.InternalDataDefinition;
@@ -182,15 +181,6 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     }
 
     @Override
-    public String getEntityIdentifierField(final Entity entity) {
-        String identifier = ExpressionUtils.getValue(entity, identifierExpression);
-        if (identifier == null) {
-            identifier = "id: " + entity.getId();
-        }
-        return identifier;
-    }
-
-    @Override
     public List<EntityHookDefinition> getValidators() {
         return validators;
     }
@@ -231,8 +221,13 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
         copyHooks.add(copyHook);
     }
 
-    public void setToStringExpression(final String identifierExpression) {
+    public void setIdentifierExpression(final String identifierExpression) {
         this.identifierExpression = identifierExpression;
+    }
+
+    @Override
+    public String getIdentifierExpression() {
+        return identifierExpression;
     }
 
     @Override

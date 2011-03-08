@@ -32,11 +32,11 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
-public class EntityTreeNodeImpl implements EntityTreeNode {
+public final class EntityTreeNodeImpl implements EntityTreeNode {
 
     private final List<EntityTreeNode> children = new ArrayList<EntityTreeNode>();
 

@@ -50,7 +50,6 @@ public interface DictionaryService {
      * 
      * @return the dictionaries
      */
-    // TODO i18n names
     Set<String> dictionaries();
 
 }

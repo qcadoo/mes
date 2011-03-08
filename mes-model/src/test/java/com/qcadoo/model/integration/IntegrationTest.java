@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.internal.api.ModelXmlToDefinitionConverter;
-import com.qcadoo.model.internal.definitionconverter.ModelXmlToDefinitionConverterImpl;
 
 public abstract class IntegrationTest {
 
@@ -43,8 +42,7 @@ public abstract class IntegrationTest {
         sessionFactory = applicationContext.getBean(SessionFactory.class);
         jdbcTemplate = applicationContext.getBean(JdbcTemplate.class);
 
-        ((ModelXmlToDefinitionConverterImpl) applicationContext.getBean(ModelXmlToDefinitionConverter.class))
-                .onApplicationEvent(null);
+        (applicationContext.getBean(ModelXmlToDefinitionConverter.class)).onApplicationEvent(null);
     }
 
     @Before

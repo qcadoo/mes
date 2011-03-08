@@ -70,8 +70,8 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.types.BelongsToType;
 import com.qcadoo.model.api.types.HasManyType;
-import com.qcadoo.model.api.utils.ExpressionUtils;
 import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.ExpressionServiceImpl;
 import com.qcadoo.model.internal.types.StringType;
 
 public class GridComponentStateTest extends AbstractStateTest {
@@ -126,7 +126,7 @@ public class GridComponentStateTest extends AbstractStateTest {
 
         viewDefinitionState = mock(ViewDefinitionState.class);
 
-        productDataDefinition = mock(DataDefinition.class);
+        productDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         substituteDataDefinition = mock(DataDefinition.class);
 
         HasManyType substitutesFieldType = mock(HasManyType.class);
@@ -157,6 +157,8 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid = new GridComponentState(substitutesFieldDefinition, columns, null, null);
         grid.setDataDefinition(substituteDataDefinition);
         grid.setTranslationService(translationService);
+
+        new ExpressionServiceImpl().init();
     }
 
     @Test
@@ -656,11 +658,8 @@ public class GridComponentStateTest extends AbstractStateTest {
     public void shouldGetValueUsingExpression() throws Exception {
         // given
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
-        given(
-                dataDefinitionService.get(anyString(), anyString()).getField(anyString()).getType()
-                        .toString(anyString(), any(Locale.class))).willReturn("John");
+        given(productDataDefinition.getField(anyString()).getType().toString(anyString(), any(Locale.class))).willReturn("John");
 
-        ExpressionUtils.setStaticDataDefinitionService(dataDefinitionService);
         GridComponentColumn column = new GridComponentColumn("name");
         column.setExpression("#name + ' ' + #id");
 

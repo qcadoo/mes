@@ -52,8 +52,7 @@ public interface FieldType {
      *            entity
      * @return valid value
      */
-    // TODO what is it?
-    Object toObject(FieldDefinition fieldDefinition, Object value, Entity validatedEntity);
+    Object toObject(FieldDefinition fieldDefinition, Object value, Entity entity);
 
     /**
      * Convert field's value to string.

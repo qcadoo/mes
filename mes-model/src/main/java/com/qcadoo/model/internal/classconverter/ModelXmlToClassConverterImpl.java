@@ -34,7 +34,7 @@ import com.qcadoo.model.internal.api.ModelXmlToClassConverter;
 import com.qcadoo.model.internal.utils.ClassNameUtils;
 
 @Component
-public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter implements ModelXmlToClassConverter,
+public final class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter implements ModelXmlToClassConverter,
         BeanClassLoaderAware {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelXmlToClassConverterImpl.class);
@@ -95,7 +95,7 @@ public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter impl
         }
     }
 
-    private Map<String, Class<?>> findExistingClasses(final InputStream stream) throws XMLStreamException, XMLStreamException {
+    private Map<String, Class<?>> findExistingClasses(final InputStream stream) throws XMLStreamException {
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(stream);
         Map<String, Class<?>> existingClasses = new HashMap<String, Class<?>>();
 
@@ -123,7 +123,7 @@ public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter impl
     }
 
     private Map<String, CtClass> createClasses(final Map<String, Class<?>> existingClasses, final InputStream stream)
-            throws XMLStreamException, XMLStreamException {
+            throws XMLStreamException {
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(stream);
         Map<String, CtClass> ctClasses = new HashMap<String, CtClass>();
 
@@ -150,8 +150,7 @@ public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter impl
         return ctClasses;
     }
 
-    private void defineClasses(final Map<String, CtClass> ctClasses, final InputStream stream) throws XMLStreamException,
-            XMLStreamException {
+    private void defineClasses(final Map<String, CtClass> ctClasses, final InputStream stream) throws XMLStreamException {
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(stream);
 
         String pluginIdentifier = null;
@@ -173,7 +172,7 @@ public class ModelXmlToClassConverterImpl extends AbstractModelXmlConverter impl
     }
 
     private void parse(final XMLStreamReader reader, final CtClass ctClass, final String pluginIdentifier)
-            throws XMLStreamException, IllegalStateException {
+            throws XMLStreamException {
         LOG.info("Defining class " + ctClass.getName());
 
         createField(ctClass, "id", Long.class.getCanonicalName());

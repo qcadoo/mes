@@ -120,4 +120,6 @@ public interface InternalDataDefinition extends DataDefinition {
 
     List<EntityHookDefinition> getValidators();
 
+    String getIdentifierExpression();
+
 }

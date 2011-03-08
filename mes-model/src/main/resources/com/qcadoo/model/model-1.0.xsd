@@ -51,7 +51,7 @@
 				<xs:element name="onCreate" type="hookType" />
 				<xs:element name="onCopy" type="hookType" />
 			</xs:choice>
-			<xs:element name="toString" type="toStringType"
+			<xs:element name="identifier" type="identifierExpressionType"
 				minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
 		<xs:attribute name="name" type="identifierType" use="required" />
@@ -60,7 +60,7 @@
 		<xs:attribute name="updatable" type="xs:boolean" />
 	</xs:complexType>
 
-	<xs:complexType name="toStringType">
+	<xs:complexType name="identifierExpressionType">
 		<xs:attribute name="expression" type="xs:string" />
 	</xs:complexType>
 	
