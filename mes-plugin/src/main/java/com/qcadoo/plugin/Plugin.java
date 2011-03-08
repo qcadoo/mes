@@ -21,7 +21,7 @@ public interface Plugin {
 
     PluginState getPluginState();
 
-    Set<String> getRequiredPlugins();
+    Set<PluginInformation> getRequiredPlugins();
 
     URL getResource(final String path);
 

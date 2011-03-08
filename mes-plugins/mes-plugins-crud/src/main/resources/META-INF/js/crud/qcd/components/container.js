@@ -36,6 +36,10 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 		this.components = components;
 	}
 	
+	this.getChildren = function() {
+		return components;
+	}
+	
 	this.getComponentsValue = function() {
 		var values = new Object();
 		for (var i in components) {

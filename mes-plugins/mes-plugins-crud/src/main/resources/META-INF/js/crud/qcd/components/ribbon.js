@@ -45,8 +45,14 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 		element.append($("<div>").attr("id", "q_row4_out"));
 		
 		var content = $("<div>").attr("id", "q_menu_row3");
+		content.append(this.constructElementContent());
 		contentWrapper.append(content);
 		
+		return element;
+	}
+	
+	this.constructElementContent = function() {
+		var content = $("<div>"); 
 		if (ribbonModel.groups) {
 			for (var groupIter in ribbonModel.groups) {
 				var groupModel = ribbonModel.groups[groupIter];
@@ -125,7 +131,7 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 				content.append(groupElement);
 			}
 		}
-		return element;
+		return content;
 	}
 	
 	function createBigButton(path, itemModel) {

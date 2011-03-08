@@ -26,6 +26,7 @@ package com.qcadoo.mes.view.xml;
 
 import org.w3c.dom.Node;
 
+import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ContainerPattern;
@@ -37,6 +38,8 @@ public interface ViewDefinitionParser {
     ComponentOption parseOption(Node option);
 
     ComponentPattern parseComponent(Node componentNode, ContainerPattern parent);
+
+    ComponentDefinition getComponentDefinition(Node componentNode, ContainerPattern parent, ViewDefinition viewDefinition);
 
     ComponentCustomEvent parseCustomEvent(Node listenerNode);
 
