@@ -3,9 +3,13 @@ package com.qcadoo.plugin;
 import static java.lang.System.getProperty;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +45,22 @@ public class DefaultPluginFileManager implements PluginFileManager {
 
     @Override
     public File uploadPlugin(final PluginArtifact pluginArtifact) throws PluginException {
-        // TODO Auto-generated method stub
-        return null;
+        InputStream input = pluginArtifact.getInputStream();
+        File pluginFile = new File(pluginsTmpPath + getProperty("file.separator") + pluginArtifact.getName());
+        OutputStream output = null;
+        try {
+            output = new FileOutputStream(pluginFile);
+            IOUtils.copy(input, output);
+
+            output.flush();
+        } catch (IOException e) {
+            LOG.error("Problem with upload plugin file - " + e.getMessage());
+            throw new PluginException(e.getMessage(), e.getCause());
+        } finally {
+            IOUtils.closeQuietly(input);
+            IOUtils.closeQuietly(output);
+        }
+        return pluginFile;
     }
 
     @Override

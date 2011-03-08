@@ -2,8 +2,11 @@ package com.qcadoo.plugin;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
@@ -217,6 +220,40 @@ public class PluginFileTest {
         // then
         assertTrue(result);
         assertFalse(pluginFile.exists());
+    }
+
+    @Test
+    public void shouldUploadPluginFile() throws Exception {
+        // given
+        File newPluginFile = new File(source, "newpluginname.jar");
+        FileUtils.touch(newPluginFile);
+
+        PluginArtifact pluginArtifact = mock(PluginArtifact.class);
+        given(pluginArtifact.getInputStream()).willReturn(new FileInputStream(newPluginFile));
+        given(pluginArtifact.getName()).willReturn("uploadpluginname.jar");
+
+        // when
+        File pluginFile = defaultPluginFileManager.uploadPlugin(pluginArtifact);
+
+        // then
+        assertTrue(pluginFile.exists());
+    }
+
+    @Test(expected = PluginException.class)
+    public void shouldThrowExceptionOnUploadingPluginFileWhenOperationFail() throws Exception {
+        // given
+        File newPluginFile = new File(source, "newpluginname.jar");
+        FileUtils.touch(newPluginFile);
+        defaultPluginFileManager.setPluginsTmpPath(":***;");
+
+        PluginArtifact pluginArtifact = mock(PluginArtifact.class);
+        given(pluginArtifact.getInputStream()).willReturn(new FileInputStream(newPluginFile));
+        given(pluginArtifact.getName()).willReturn("uploadpluginname.jar");
+
+        // when
+        defaultPluginFileManager.uploadPlugin(pluginArtifact);
+
+        // then
     }
 
     @After
