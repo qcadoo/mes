@@ -636,4 +636,36 @@ public class PluginDependencyManagerTest {
         assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
         assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin4")));
     }
+
+    @Test
+    public void shouldSortPlugins() {
+        // given
+        Set<PluginDependencyInformation> requiredPlugins1 = new HashSet<PluginDependencyInformation>();
+        requiredPlugins1.add(dependencyInfo1);
+        requiredPlugins1.add(dependencyInfo3);
+        given(plugin1.getRequiredPlugins()).willReturn(requiredPlugins1);
+
+        Set<PluginDependencyInformation> requiredPlugins2 = new HashSet<PluginDependencyInformation>();
+        requiredPlugins2.add(dependencyInfo3);
+        requiredPlugins2.add(dependencyInfo4);
+        given(plugin2.getRequiredPlugins()).willReturn(requiredPlugins2);
+
+        given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo4));
+
+        List<Plugin> argumentPlugins = new ArrayList<Plugin>();
+        argumentPlugins.add(plugin1);
+        argumentPlugins.add(plugin2);
+        argumentPlugins.add(plugin3);
+        argumentPlugins.add(plugin4);
+
+        // when
+        List<Plugin> sortedPlugins = manager.sortPluginsInDependencyOrder(argumentPlugins);
+
+        // then
+        assertEquals(4, sortedPlugins.size());
+        assertEquals(plugin4, sortedPlugins.get(0));
+        assertEquals(plugin3, sortedPlugins.get(1));
+        assertEquals(plugin2, sortedPlugins.get(2));
+        assertEquals(plugin1, sortedPlugins.get(3));
+    }
 }
