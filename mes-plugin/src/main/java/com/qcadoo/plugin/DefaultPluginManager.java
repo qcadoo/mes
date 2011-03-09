@@ -188,6 +188,7 @@ public class DefaultPluginManager implements PluginManager {
 
         Plugin existingPlugin = pluginAccessor.getPlugin(plugin.getIdentifier());
         if (existingPlugin == null) {
+            plugin.changeStateTo(PluginState.TEMPORARY);
             pluginDao.save(plugin);
 
             if (!pluginDependencyResult.isDependenciesSatisfied()
