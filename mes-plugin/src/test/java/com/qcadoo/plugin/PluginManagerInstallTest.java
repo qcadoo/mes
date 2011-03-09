@@ -206,26 +206,41 @@ public class PluginManagerInstallTest {
     @Test
     public void shouldInstallEnabledPlugin() throws Exception {
         // given
-
         given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
         given(plugin.getPluginState()).willReturn(PluginState.ENABLED);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
 
+        given(pluginFileManager.installPlugin("anotherFilename")).willReturn(true);
+        given(anotherPlugin.getFilename()).willReturn("anotherFilename");
         given(plugin.getFilename()).willReturn("filename");
 
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
         given(pluginDependencyManager.getDependenciesToEnable(newArrayList(anotherPlugin))).willReturn(pluginDependencyResult);
 
+        Plugin dependencyPlugin = mock(Plugin.class);
+        given(pluginAccessor.getPlugin("dependencyplugin")).willReturn(dependencyPlugin);
+        given(dependencyPlugin.getIdentifier()).willReturn("dependencyplugin");
+
+        PluginDependencyResult installPluginDependencyResult = PluginDependencyResult.enabledDependencies(Collections
+                .singleton(new PluginDependencyInformation("dependencyplugin", null, false, null, false)));
+        given(pluginDependencyManager.getDependenciesToDisable(newArrayList(anotherPlugin))).willReturn(
+                installPluginDependencyResult);
+
         // when
         PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
 
         // then
+        verify(plugin).changeStateTo(PluginState.DISABLED);
+        verify(anotherPlugin).changeStateTo(PluginState.ENABLING);
+        verify(dependencyPlugin).changeStateTo(PluginState.DISABLED);
+        verify(dependencyPlugin).changeStateTo(PluginState.ENABLING);
         verify(pluginDao).save(anotherPlugin);
-        verify(anotherPlugin).changeStateTo(plugin.getPluginState());
+        verify(pluginDao).save(dependencyPlugin);
         verify(pluginFileManager).uninstallPlugin("filename");
+        verify(pluginServerManager).restart();
         assertTrue(pluginOperationResult.isSuccess());
-        assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
+        assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
     }
@@ -290,10 +305,39 @@ public class PluginManagerInstallTest {
     }
 
     @Test
-    public void shouldNotInstallPluginIfCannotInstall() throws Exception {
+    public void shouldNotInstallDisabledPluginIfCannotInstall() throws Exception {
         // given
 
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
+        given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
+        given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
+
+        given(plugin.getFilename()).willReturn("filename");
+        given(anotherPlugin.getFilename()).willReturn("anotherFilename");
+        given(pluginFileManager.installPlugin("anotherFilename")).willReturn(false);
+
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
+        given(pluginDependencyManager.getDependenciesToEnable(newArrayList(anotherPlugin))).willReturn(pluginDependencyResult);
+
+        // when
+        PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
+
+        // then
+        verify(pluginDao, never()).save(anotherPlugin);
+        verify(anotherPlugin, never()).changeStateTo(plugin.getPluginState());
+        verify(pluginFileManager, never()).removePlugin("filename");
+        verify(pluginFileManager).removePlugin("anotherFilename");
+        verify(pluginServerManager, never()).restart();
+        assertFalse(pluginOperationResult.isSuccess());
+        assertEquals(PluginOperationStatus.CANNOT_INSTALL_PLUGIN, pluginOperationResult.getStatus());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
+    }
+
+    @Test
+    public void shouldNotInstallEnabledPluginIfCannotInstall() throws Exception {
+        // given
+
+        given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
 
