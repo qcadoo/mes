@@ -1,7 +1,9 @@
 package com.qcadoo.plugin.dependency;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -30,16 +32,17 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
 
         Set<String> argumentPluginIdentifiersSet = getArgumentIdentifiersSet(plugins);
 
-        List<Plugin> dependencyPlugins = new LinkedList<Plugin>();
-
         boolean isCyclic = false;
 
         for (Plugin plugin : plugins) {
 
+            if (markedNodes.contains(plugin.getIdentifier())) {
+                continue;
+            }
+
             markedNodes.add(plugin.getIdentifier());
 
             for (PluginDependencyInformation dependencyInfo : plugin.getRequiredPlugins()) {
-
                 if (markedNodes.contains(dependencyInfo.getKey())) {
                     isCyclic = true;
                     continue;
@@ -62,7 +65,16 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
                     unsatisfiedDependencies.add(dependencyInfo);
                 } else {
                     disabledDependencies.add(dependencyInfo);
-                    dependencyPlugins.add(requiredPlugin);
+
+                    PluginDependencyResult nextLevelDependencioesResult = getDependenciesToEnable(
+                            Collections.singletonList(requiredPlugin), markedNodes);
+
+                    if (!nextLevelDependencioesResult.getUnsatisfiedDependencies().isEmpty()
+                            || nextLevelDependencioesResult.isCyclic()) {
+                        return nextLevelDependencioesResult;
+                    }
+
+                    disabledDependencies.addAll(nextLevelDependencioesResult.getDisabledDependencies());
                 }
 
             }
@@ -80,19 +92,54 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
             return PluginDependencyResult.satisfiedDependencies();
         }
 
-        PluginDependencyResult nextLevelDependencioesResult = getDependenciesToEnable(dependencyPlugins, markedNodes);
-
-        if (!nextLevelDependencioesResult.getUnsatisfiedDependencies().isEmpty() || nextLevelDependencioesResult.isCyclic()) {
-            return nextLevelDependencioesResult;
+        Iterator<PluginDependencyInformation> dependencyInfoIterator = disabledDependencies.iterator();
+        while (dependencyInfoIterator.hasNext()) {
+            if (argumentPluginIdentifiersSet.contains(dependencyInfoIterator.next().getKey())) {
+                dependencyInfoIterator.remove();
+            }
         }
 
-        disabledDependencies.addAll(nextLevelDependencioesResult.getDisabledDependencies());
         return PluginDependencyResult.disabledDependencies(disabledDependencies);
     }
 
     public PluginDependencyResult getDependenciesToDisable(final List<Plugin> plugins) {
 
-        return null;
+        Collection<Plugin> systemPlugins = pluginAccessor.getPlugins();
+
+        List<Plugin> enabledDependencyPlugins = new LinkedList<Plugin>();
+
+        Set<String> argumentPluginIdentifiersSet = getArgumentIdentifiersSet(plugins);
+
+        for (Plugin plugin : systemPlugins) {
+            if (!PluginState.ENABLED.equals(plugin.getPluginState())) {
+                continue;
+            }
+            for (Plugin pluginToDisable : plugins) {
+
+                if (plugin.getRequiredPlugins().contains(new PluginDependencyInformation(pluginToDisable.getIdentifier()))) {
+                    enabledDependencyPlugins.add(plugin);
+                }
+            }
+        }
+
+        Set<PluginDependencyInformation> enabledDependencies = new HashSet<PluginDependencyInformation>();
+        for (Plugin plugin : enabledDependencyPlugins) {
+            enabledDependencies.add(new PluginDependencyInformation(plugin.getIdentifier()));
+        }
+
+        if (!enabledDependencyPlugins.isEmpty()) {
+            PluginDependencyResult nextLevelDependencioesResult = getDependenciesToDisable(enabledDependencyPlugins);
+            enabledDependencies.addAll(nextLevelDependencioesResult.getEnabledDependencies());
+        }
+
+        Iterator<PluginDependencyInformation> dependencyInfoIterator = enabledDependencies.iterator();
+        while (dependencyInfoIterator.hasNext()) {
+            if (argumentPluginIdentifiersSet.contains(dependencyInfoIterator.next().getKey())) {
+                dependencyInfoIterator.remove();
+            }
+        }
+
+        return PluginDependencyResult.enabledDependencies(enabledDependencies);
     }
 
     public List<Plugin> sortPluginsInDependencyOrder(final Collection<Plugin> plugins) {

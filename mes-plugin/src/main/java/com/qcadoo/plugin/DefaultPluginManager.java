@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.qcadoo.plugin.dependency.PluginDependencyInformation;
 import com.qcadoo.plugin.dependency.PluginDependencyResult;
 
 public class DefaultPluginManager implements PluginManager {
@@ -152,6 +153,9 @@ public class DefaultPluginManager implements PluginManager {
         }
 
         for (Plugin plugin : plugins) {
+            if (plugin.hasState(PluginState.ENABLED)) {
+                plugin.changeStateTo(PluginState.DISABLED);
+            }
             pluginDao.delete(plugin);
         }
 
@@ -190,6 +194,7 @@ public class DefaultPluginManager implements PluginManager {
 
         Plugin existingPlugin = pluginAccessor.getPlugin(plugin.getIdentifier());
         if (existingPlugin == null) {
+            plugin.changeStateTo(PluginState.TEMPORARY);
             pluginDao.save(plugin);
 
             if (!pluginDependencyResult.isDependenciesSatisfied()
@@ -207,17 +212,19 @@ public class DefaultPluginManager implements PluginManager {
                     pluginDao.save(plugin);
                     return PluginOperationResult.successWithMissingDependencies(pluginDependencyResult);
                 }
+                plugin.changeStateTo(existingPlugin.getPluginState());
             } else if (existingPlugin.hasState(PluginState.DISABLED)) {
                 if (!pluginDependencyResult.isDependenciesSatisfied()
                         && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
                     pluginFileManager.removePlugin(plugin.getFilename());
                     return PluginOperationResult.unsatisfiedDependencies(pluginDependencyResult);
                 }
-                if (!pluginFileManager.installPlugin(new String[] { plugin.getFilename() })) {
+                if (!pluginFileManager.installPlugin(plugin.getFilename())) {
                     pluginFileManager.removePlugin(plugin.getFilename());
                     return PluginOperationResult.cannotInstallPlugin();
                 }
                 shouldRestart = true;
+                plugin.changeStateTo(existingPlugin.getPluginState());
             } else if (existingPlugin.hasState(PluginState.ENABLED)) {
                 if (!pluginDependencyResult.isDependenciesSatisfied()) {
                     if (!pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
@@ -230,10 +237,24 @@ public class DefaultPluginManager implements PluginManager {
                         return PluginOperationResult.disabledDependencies(pluginDependencyResult);
                     }
                 }
-                // TODO KRNA disable/enable
+                if (!pluginFileManager.installPlugin(plugin.getFilename())) {
+                    pluginFileManager.removePlugin(plugin.getFilename());
+                    return PluginOperationResult.cannotInstallPlugin();
+                }
+                shouldRestart = true;
+                PluginDependencyResult installPluginDependencyResult = pluginDependencyManager
+                        .getDependenciesToDisable(newArrayList(plugin));
+                existingPlugin.changeStateTo(PluginState.DISABLED);
+                plugin.changeStateTo(PluginState.ENABLING);
+                for (PluginDependencyInformation pluginDependencyInformation : installPluginDependencyResult
+                        .getEnabledDependencies()) {
+                    Plugin dependency = pluginAccessor.getPlugin(pluginDependencyInformation.getKey());
+                    dependency.changeStateTo(PluginState.DISABLED);
+                    dependency.changeStateTo(PluginState.ENABLING);
+                    pluginDao.save(dependency);
+                }
             }
             pluginFileManager.uninstallPlugin(existingPlugin.getFilename());
-            plugin.changeStateTo(existingPlugin.getPluginState());
             pluginDao.save(plugin);
             if (shouldRestart) {
                 pluginServerManager.restart();

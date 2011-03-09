@@ -1,7 +1,6 @@
 package com.qcadoo.plugin;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Collections.singleton;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -20,7 +19,7 @@ import org.mockito.Mockito;
 import com.qcadoo.plugin.dependency.PluginDependencyInformation;
 import com.qcadoo.plugin.dependency.PluginDependencyResult;
 
-public class PluginManagerUpdateTest {
+public class PluginManagerInstallTest {
 
     private Plugin plugin = mock(Plugin.class);
 
@@ -38,8 +37,6 @@ public class PluginManagerUpdateTest {
 
     private PluginDescriptorParser pluginDescriptorParser = mock(PluginDescriptorParser.class);
 
-    private PluginDependencyInformation pluginInformation = new PluginDependencyInformation("unknownplugin");
-
     private PluginArtifact pluginArtifact = mock(PluginArtifact.class);
 
     private DefaultPluginManager pluginManager;
@@ -50,7 +47,7 @@ public class PluginManagerUpdateTest {
     public void init() {
         given(pluginAccessor.getPlugin("pluginname")).willReturn(plugin);
 
-        given(plugin.getIdentifier()).willReturn("pluginname");
+        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
 
         pluginManager = new DefaultPluginManager();
         pluginManager.setPluginAccessor(pluginAccessor);
@@ -62,9 +59,9 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldUpdateTemporaryPlugin() throws Exception {
+    public void shouldInstallTemporaryPlugin() throws Exception {
         // given
-        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
+
         given(plugin.hasState(PluginState.TEMPORARY)).willReturn(true);
         given(plugin.getPluginState()).willReturn(PluginState.TEMPORARY);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
@@ -88,7 +85,7 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldFailureWithCorruptedPluginOnUpdate() throws Exception {
+    public void shouldFailureWithCorruptedPluginOnInstall() throws Exception {
         // given
         given(pluginDescriptorParser.parse(file)).willThrow(new PluginException());
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
@@ -105,7 +102,7 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldFailureOnUploadingPluginOnUpdate() throws Exception {
+    public void shouldFailureOnUploadingPluginOnInstall() throws Exception {
         // given
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willThrow(new PluginException());
 
@@ -119,9 +116,9 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldUpdateTemporaryPluginAndNotifyAboutMissingDependencies() throws Exception {
+    public void shouldInstallTemporaryPluginAndNotifyAboutMissingDependencies() throws Exception {
         // given
-        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
+
         given(plugin.hasState(PluginState.TEMPORARY)).willReturn(true);
         given(plugin.getPluginState()).willReturn(PluginState.TEMPORARY);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
@@ -149,9 +146,9 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldUpdateDisabledPlugin() throws Exception {
+    public void shouldInstallDisabledPlugin() throws Exception {
         // given
-        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
+
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
         given(plugin.getPluginState()).willReturn(PluginState.DISABLED);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
@@ -178,9 +175,9 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldFailureUpdateDisabledPluginWithMissingDependencies() throws Exception {
+    public void shouldFailureInstallDisabledPluginWithMissingDependencies() throws Exception {
         // given
-        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
+
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
@@ -207,36 +204,51 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldUpdateEnabledPlugin() throws Exception {
+    public void shouldInstallEnabledPlugin() throws Exception {
         // given
-        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
         given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
         given(plugin.getPluginState()).willReturn(PluginState.ENABLED);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
 
+        given(pluginFileManager.installPlugin("anotherFilename")).willReturn(true);
+        given(anotherPlugin.getFilename()).willReturn("anotherFilename");
         given(plugin.getFilename()).willReturn("filename");
 
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
         given(pluginDependencyManager.getDependenciesToEnable(newArrayList(anotherPlugin))).willReturn(pluginDependencyResult);
 
+        Plugin dependencyPlugin = mock(Plugin.class);
+        given(pluginAccessor.getPlugin("dependencyplugin")).willReturn(dependencyPlugin);
+        given(dependencyPlugin.getIdentifier()).willReturn("dependencyplugin");
+
+        PluginDependencyResult installPluginDependencyResult = PluginDependencyResult.enabledDependencies(Collections
+                .singleton(new PluginDependencyInformation("dependencyplugin", null, false, null, false)));
+        given(pluginDependencyManager.getDependenciesToDisable(newArrayList(anotherPlugin))).willReturn(
+                installPluginDependencyResult);
+
         // when
         PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
 
         // then
+        verify(plugin).changeStateTo(PluginState.DISABLED);
+        verify(anotherPlugin).changeStateTo(PluginState.ENABLING);
+        verify(dependencyPlugin).changeStateTo(PluginState.DISABLED);
+        verify(dependencyPlugin).changeStateTo(PluginState.ENABLING);
         verify(pluginDao).save(anotherPlugin);
-        verify(anotherPlugin).changeStateTo(plugin.getPluginState());
+        verify(pluginDao).save(dependencyPlugin);
         verify(pluginFileManager).uninstallPlugin("filename");
+        verify(pluginServerManager).restart();
         assertTrue(pluginOperationResult.isSuccess());
-        assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
+        assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
     }
 
     @Test
-    public void shouldFailureUpdateEnabledPluginWithUnsitisfiedDependencies() throws Exception {
+    public void shouldFailureInstallEnabledPluginWithUnsitisfiedDependencies() throws Exception {
         // given
-        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
+
         given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
@@ -263,9 +275,9 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldFailureUpdateEnabledPluginWithDisabledDependencies() throws Exception {
+    public void shouldFailureInstallEnabledPluginWithDisabledDependencies() throws Exception {
         // given
-        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
+
         given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
@@ -293,9 +305,9 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldNotUpdatePluginIfCannotInstall() throws Exception {
+    public void shouldNotInstallDisabledPluginIfCannotInstall() throws Exception {
         // given
-        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
+
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
@@ -322,7 +334,36 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldNotUpdateSystemPlugin() throws Exception {
+    public void shouldNotInstallEnabledPluginIfCannotInstall() throws Exception {
+        // given
+
+        given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
+        given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
+        given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
+
+        given(plugin.getFilename()).willReturn("filename");
+        given(anotherPlugin.getFilename()).willReturn("anotherFilename");
+        given(pluginFileManager.installPlugin("anotherFilename")).willReturn(false);
+
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
+        given(pluginDependencyManager.getDependenciesToEnable(newArrayList(anotherPlugin))).willReturn(pluginDependencyResult);
+
+        // when
+        PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
+
+        // then
+        verify(pluginDao, never()).save(anotherPlugin);
+        verify(anotherPlugin, never()).changeStateTo(plugin.getPluginState());
+        verify(pluginFileManager, never()).removePlugin("filename");
+        verify(pluginFileManager).removePlugin("anotherFilename");
+        verify(pluginServerManager, never()).restart();
+        assertFalse(pluginOperationResult.isSuccess());
+        assertEquals(PluginOperationStatus.CANNOT_INSTALL_PLUGIN, pluginOperationResult.getStatus());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
+    }
+
+    @Test
+    public void shouldNotInstallSystemPlugin() throws Exception {
         // given
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
@@ -341,19 +382,21 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldInstallPlugin() throws Exception {
+    public void shouldInstallNotExistingPlugin() throws Exception {
         // given
-        given(pluginDescriptorParser.parse(file)).willReturn(plugin);
+        given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
+        given(anotherPlugin.getIdentifier()).willReturn("notExistingPluginname");
 
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
-        given(pluginDependencyManager.getDependenciesToEnable(newArrayList(plugin))).willReturn(pluginDependencyResult);
+        given(pluginDependencyManager.getDependenciesToEnable(newArrayList(anotherPlugin))).willReturn(pluginDependencyResult);
 
         // when
         PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
 
         // then
-        verify(pluginDao).save(plugin);
+        verify(pluginDao).save(anotherPlugin);
+        verify(anotherPlugin).changeStateTo(PluginState.TEMPORARY);
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
@@ -361,20 +404,21 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldInstallPluginAndNotifyAboutMissingDependencies() throws Exception {
+    public void shouldInstallNotExistingPluginAndNotifyAboutMissingDependencies() throws Exception {
         // given
-        given(pluginDescriptorParser.parse(file)).willReturn(plugin);
+        given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
+        given(anotherPlugin.getIdentifier()).willReturn("notExistingPluginname");
 
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult
-                .unsatisfiedDependencies(singleton(pluginInformation));
-        given(pluginDependencyManager.getDependenciesToEnable(newArrayList(plugin))).willReturn(pluginDependencyResult);
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.unsatisfiedDependencies(Collections
+                .singleton(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
+        given(pluginDependencyManager.getDependenciesToEnable(newArrayList(anotherPlugin))).willReturn(pluginDependencyResult);
 
         // when
         PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
 
         // then
-        verify(pluginDao).save(plugin);
+        verify(pluginDao).save(anotherPlugin);
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_MISSING_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
