@@ -3,6 +3,8 @@ package com.qcadoo.plugin;
 import java.util.Collection;
 import java.util.List;
 
+import com.qcadoo.plugin.dependency.PluginDependencyResult;
+
 public interface PluginDependencyManager {
 
     /**
@@ -24,6 +26,6 @@ public interface PluginDependencyManager {
      */
     PluginDependencyResult getDependenciesToDisable(List<Plugin> plugins);
 
-    List<Plugin> sortPlugins(Collection<Plugin> plugins);
+    List<Plugin> sortPluginsInDependencyOrder(Collection<Plugin> plugins);
 
 }

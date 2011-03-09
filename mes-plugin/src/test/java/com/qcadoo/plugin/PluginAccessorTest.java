@@ -169,7 +169,8 @@ public class PluginAccessorTest {
         Set<Plugin> pluginsFromDatabase = Sets.newHashSet(plugin1, plugin2);
         List<Plugin> sortedPluginsToInitialize = Lists.newArrayList(plugin2, plugin1);
 
-        given(pluginDependencyManager.sortPlugins(Mockito.anyCollectionOf(Plugin.class))).willReturn(sortedPluginsToInitialize);
+        given(pluginDependencyManager.sortPluginsInDependencyOrder(Mockito.anyCollectionOf(Plugin.class))).willReturn(
+                sortedPluginsToInitialize);
 
         given(pluginDescriptorParser.loadPlugins()).willReturn(pluginsFromDescriptor);
 
@@ -200,7 +201,8 @@ public class PluginAccessorTest {
         Set<Plugin> pluginsFromDatabase = Sets.newHashSet(plugin1, plugin2, plugin3);
         List<Plugin> sortedPluginsToInitialize = Lists.newArrayList(plugin2, plugin1);
 
-        given(pluginDependencyManager.sortPlugins(Mockito.anyCollectionOf(Plugin.class))).willReturn(sortedPluginsToInitialize);
+        given(pluginDependencyManager.sortPluginsInDependencyOrder(Mockito.anyCollectionOf(Plugin.class))).willReturn(
+                sortedPluginsToInitialize);
 
         given(pluginDescriptorParser.loadPlugins()).willReturn(pluginsFromDescriptor);
 

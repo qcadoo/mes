@@ -2,6 +2,8 @@ package com.qcadoo.plugin;
 
 import java.util.Set;
 
+import com.qcadoo.plugin.dependency.PluginDependencyInformation;
+
 public interface Plugin {
 
     // void addModule(final Module module);
@@ -16,7 +18,7 @@ public interface Plugin {
 
     PluginState getPluginState();
 
-    Set<PluginInformation> getRequiredPlugins();
+    Set<PluginDependencyInformation> getRequiredPlugins();
 
     boolean isSystemPlugin();
 

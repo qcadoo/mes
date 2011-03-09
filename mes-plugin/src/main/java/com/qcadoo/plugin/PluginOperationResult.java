@@ -1,5 +1,7 @@
 package com.qcadoo.plugin;
 
+import com.qcadoo.plugin.dependency.PluginDependencyResult;
+
 public class PluginOperationResult {
 
     private final PluginOperationStatus status;

@@ -15,6 +15,9 @@ import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.qcadoo.plugin.dependency.PluginDependencyInformation;
+import com.qcadoo.plugin.dependency.PluginDependencyResult;
+
 public class PluginManagerTest {
 
     private Plugin plugin = mock(Plugin.class);
@@ -138,7 +141,7 @@ public class PluginManagerTest {
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
 
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.disabledDependencies(Collections
-                .singletonList(pluginInformation));
+                .singleton(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
         given(pluginDependencyManager.getDependenciesToEnable(singletonList(plugin))).willReturn(pluginDependencyResult);
 
         // when
@@ -151,8 +154,9 @@ public class PluginManagerTest {
         assertEquals(PluginOperationStatus.DISABLED_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
-        assertEquals("unknownplugin", pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().get(0)
-                .getName());
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
+        assertTrue(pluginOperationResult.getPluginDependencyResult().getDisabledDependencies()
+                .contains(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
     }
 
     @Test
@@ -160,8 +164,8 @@ public class PluginManagerTest {
         // given
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
 
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult
-                .unsatisfiedDependencies(singletonList(pluginInformation));
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.unsatisfiedDependencies(Collections
+                .singleton(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
         given(pluginDependencyManager.getDependenciesToEnable(singletonList(plugin))).willReturn(pluginDependencyResult);
 
         // when
@@ -173,8 +177,9 @@ public class PluginManagerTest {
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.UNSATISFIED_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
-        assertEquals("unknownplugin", pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().get(0)
-                .getName());
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
+        assertTrue(pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies()
+                .contains(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
     }
 
     @Test
@@ -269,8 +274,8 @@ public class PluginManagerTest {
         // given
         given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
 
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult
-                .enabledDependencies(singletonList(pluginInformation));
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.enabledDependencies(Collections
+                .singleton(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
         given(pluginDependencyManager.getDependenciesToDisable(singletonList(plugin))).willReturn(pluginDependencyResult);
 
         // when
@@ -282,7 +287,9 @@ public class PluginManagerTest {
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.ENABLED_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
-        assertEquals("unknownplugin", pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().get(0).getName());
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
+        assertTrue(pluginOperationResult.getPluginDependencyResult().getEnabledDependencies()
+                .contains(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
     }
 
     @Test
@@ -332,8 +339,8 @@ public class PluginManagerTest {
     @Test
     public void shouldNotUninstallPluginWithEnabledDependencies() throws Exception {
         // given
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult
-                .enabledDependencies(singletonList(pluginInformation));
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.enabledDependencies(Collections
+                .singleton(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
         given(pluginDependencyManager.getDependenciesToDisable(singletonList(plugin))).willReturn(pluginDependencyResult);
 
         given(plugin.getFilename()).willReturn("filename");
@@ -348,7 +355,9 @@ public class PluginManagerTest {
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.ENABLED_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
-        assertEquals("unknownplugin", pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().get(0).getName());
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
+        assertTrue(pluginOperationResult.getPluginDependencyResult().getEnabledDependencies()
+                .contains(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
     }
 
     @Test
