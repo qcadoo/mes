@@ -6,6 +6,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.qcadoo.plugin.dependency.PluginDependencyResult;
+
 public class DefaultPluginManager implements PluginManager {
 
     private PluginAccessor pluginAccessor;

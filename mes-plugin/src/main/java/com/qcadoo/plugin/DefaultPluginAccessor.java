@@ -81,7 +81,7 @@ public class DefaultPluginAccessor implements PluginAccessor {
             }
         }
 
-        for (Plugin plugin : pluginDependencyManager.sortPlugins(plugins.values())) {
+        for (Plugin plugin : pluginDependencyManager.sortPluginsInDependencyOrder(plugins.values())) {
             if (plugin.hasState(PluginState.ENABLING)) {
                 plugin.changeStateTo(PluginState.ENABLED);
                 pluginDao.save(plugin);
