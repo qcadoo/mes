@@ -1,13 +1,30 @@
 package com.qcadoo.plugin;
 
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DefaultPluginServerManager implements PluginServerManager {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultPluginServerManager.class);
 
     private String restartCommand;
 
     @Override
     public void restart() {
-        // TODO Auto-generated method stub
+        try {
+            Process shutdownProcess = Runtime.getRuntime().exec(restartCommand);
+            shutdownProcess.waitFor();
 
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Shutdown exit value: " + shutdownProcess.exitValue());
+            }
+        } catch (IOException e) {
+            throw new PluginException("Restart failed - " + e.getMessage(), e);
+        } catch (InterruptedException e) {
+            throw new PluginException("Restart failed - " + e.getMessage(), e);
+        }
     }
 
     public void setRestartCommand(final String restartCommand) {

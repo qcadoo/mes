@@ -36,7 +36,7 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
 
         for (Plugin plugin : plugins) {
 
-            markedNodes.add(plugin.getName());
+            markedNodes.add(plugin.getIdentifier());
 
             for (PluginDependencyInformation dependencyInfo : plugin.getRequiredPlugins()) {
 
@@ -102,7 +102,7 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
     private Set<String> getArgumentIdentifiersSet(final List<Plugin> plugins) {
         Set<String> argumentPluginInformationsSet = new HashSet<String>();
         for (Plugin plugin : plugins) {
-            argumentPluginInformationsSet.add(plugin.getName());
+            argumentPluginInformationsSet.add(plugin.getIdentifier());
         }
         return argumentPluginInformationsSet;
     }

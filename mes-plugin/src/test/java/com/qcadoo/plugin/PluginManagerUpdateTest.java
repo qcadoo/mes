@@ -18,9 +18,8 @@ import org.mockito.Mockito;
 
 import com.qcadoo.plugin.dependency.PluginDependencyInformation;
 import com.qcadoo.plugin.dependency.PluginDependencyResult;
-import com.qcadoo.plugin.manager.DefaultPluginManager;
 
-public class PluginUpdateTest {
+public class PluginManagerUpdateTest {
 
     private Plugin plugin = mock(Plugin.class);
 
@@ -65,7 +64,7 @@ public class PluginUpdateTest {
     @Test
     public void shouldUpdateTemporaryPlugin() throws Exception {
         // given
-        given(anotherPlugin.getName()).willReturn("pluginname");
+        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
         given(plugin.hasState(PluginState.TEMPORARY)).willReturn(true);
         given(plugin.getPluginState()).willReturn(PluginState.TEMPORARY);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
@@ -122,7 +121,7 @@ public class PluginUpdateTest {
     @Test
     public void shouldUpdateTemporaryPluginAndNotifyAboutMissingDependencies() throws Exception {
         // given
-        given(anotherPlugin.getName()).willReturn("pluginname");
+        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
         given(plugin.hasState(PluginState.TEMPORARY)).willReturn(true);
         given(plugin.getPluginState()).willReturn(PluginState.TEMPORARY);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
@@ -152,7 +151,7 @@ public class PluginUpdateTest {
     @Test
     public void shouldUpdateDisabledPlugin() throws Exception {
         // given
-        given(anotherPlugin.getName()).willReturn("pluginname");
+        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
         given(plugin.getPluginState()).willReturn(PluginState.DISABLED);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
@@ -181,7 +180,7 @@ public class PluginUpdateTest {
     @Test
     public void shouldFailureUpdateDisabledPluginWithMissingDependencies() throws Exception {
         // given
-        given(anotherPlugin.getName()).willReturn("pluginname");
+        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
@@ -210,7 +209,7 @@ public class PluginUpdateTest {
     @Test
     public void shouldUpdateEnabledPlugin() throws Exception {
         // given
-        given(anotherPlugin.getName()).willReturn("pluginname");
+        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
         given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
         given(plugin.getPluginState()).willReturn(PluginState.ENABLED);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
@@ -237,7 +236,7 @@ public class PluginUpdateTest {
     @Test
     public void shouldFailureUpdateEnabledPluginWithUnsitisfiedDependencies() throws Exception {
         // given
-        given(anotherPlugin.getName()).willReturn("pluginname");
+        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
         given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
@@ -266,7 +265,7 @@ public class PluginUpdateTest {
     @Test
     public void shouldFailureUpdateEnabledPluginWithDisabledDependencies() throws Exception {
         // given
-        given(anotherPlugin.getName()).willReturn("pluginname");
+        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
         given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
@@ -296,7 +295,7 @@ public class PluginUpdateTest {
     @Test
     public void shouldNotUpdatePluginIfCannotInstall() throws Exception {
         // given
-        given(anotherPlugin.getName()).willReturn("pluginname");
+        given(anotherPlugin.getIdentifier()).willReturn("pluginname");
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);

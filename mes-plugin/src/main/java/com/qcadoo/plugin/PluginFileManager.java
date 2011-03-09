@@ -4,11 +4,11 @@ import java.io.File;
 
 public interface PluginFileManager {
 
-    public boolean installPlugin(final String... keys) throws PluginException;
+    public boolean installPlugin(final String... keys);
 
-    public File uploadPlugin(final PluginArtifact pluginArtifact) throws PluginException;
+    public File uploadPlugin(final PluginArtifact pluginArtifact);
 
-    public boolean uninstallPlugin(final String... keys) throws PluginException;
+    public boolean uninstallPlugin(final String... keys);
 
-    public void removePlugin(final String key) throws PluginException;
+    public void removePlugin(final String key);
 }

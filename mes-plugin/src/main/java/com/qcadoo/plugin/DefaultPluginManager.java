@@ -1,4 +1,4 @@
-package com.qcadoo.plugin.manager;
+package com.qcadoo.plugin;
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -6,18 +6,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.qcadoo.plugin.Plugin;
-import com.qcadoo.plugin.PluginAccessor;
-import com.qcadoo.plugin.PluginArtifact;
-import com.qcadoo.plugin.PluginDao;
-import com.qcadoo.plugin.PluginDependencyManager;
-import com.qcadoo.plugin.PluginDescriptorParser;
-import com.qcadoo.plugin.PluginException;
-import com.qcadoo.plugin.PluginFileManager;
-import com.qcadoo.plugin.PluginManager;
-import com.qcadoo.plugin.PluginOperationResult;
-import com.qcadoo.plugin.PluginServerManager;
-import com.qcadoo.plugin.PluginState;
 import com.qcadoo.plugin.dependency.PluginDependencyResult;
 
 public class DefaultPluginManager implements PluginManager {
@@ -223,11 +211,13 @@ public class DefaultPluginManager implements PluginManager {
         PluginDependencyResult pluginDependencyResult = pluginDependencyManager.getDependenciesToEnable(newArrayList(plugin));
 
         // TODO KRNA get appropriate
-        Plugin databasePlugin = pluginAccessor.getPlugin(plugin.getName());
+        Plugin databasePlugin = pluginAccessor.getPlugin(plugin.getIdentifier());
         if (databasePlugin.hasState(PluginState.TEMPORARY)) {
             if (!pluginDependencyResult.isDependenciesSatisfied()
                     && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
                 pluginFileManager.uninstallPlugin(databasePlugin.getFilename());
+                // TODO pluginDao.save(plugin) == pluginDao.save(databasePlugin)
+                // don't use setPluginInformation
                 databasePlugin.setPluginInformation(plugin.getPluginInformation());
                 pluginDao.save(databasePlugin);
                 return PluginOperationResult.successWithMissingDependencies(pluginDependencyResult);
@@ -259,6 +249,8 @@ public class DefaultPluginManager implements PluginManager {
             // TODO KRNA disable/enable
         }
         pluginFileManager.uninstallPlugin(databasePlugin.getFilename());
+        // TODO pluginDao.save(plugin) == pluginDao.save(databasePlugin)
+        // don't use setPluginInformation
         databasePlugin.setPluginInformation(plugin.getPluginInformation());
         pluginDao.save(databasePlugin);
         if (shouldRestart) {

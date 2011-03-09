@@ -47,19 +47,19 @@ public class PluginDependencyManagerTest {
     @Before
     public void init() {
         plugin1 = mock(Plugin.class, RETURNS_DEEP_STUBS);
-        given(plugin1.getName()).willReturn("testPlugin1");
+        given(plugin1.getIdentifier()).willReturn("testPlugin1");
         given(plugin1.getPluginInformation().getVersion()).willReturn("1.1");
 
         plugin2 = mock(Plugin.class, RETURNS_DEEP_STUBS);
-        given(plugin2.getName()).willReturn("testPlugin2");
+        given(plugin2.getIdentifier()).willReturn("testPlugin2");
         given(plugin2.getPluginInformation().getVersion()).willReturn("1.1");
 
         plugin3 = mock(Plugin.class, RETURNS_DEEP_STUBS);
-        given(plugin3.getName()).willReturn("testPlugin3");
+        given(plugin3.getIdentifier()).willReturn("testPlugin3");
         given(plugin3.getPluginInformation().getVersion()).willReturn("1.1");
 
         plugin4 = mock(Plugin.class, RETURNS_DEEP_STUBS);
-        given(plugin4.getName()).willReturn("testPlugin4");
+        given(plugin4.getIdentifier()).willReturn("testPlugin4");
         given(plugin4.getPluginInformation().getVersion()).willReturn("1.1");
     }
 
