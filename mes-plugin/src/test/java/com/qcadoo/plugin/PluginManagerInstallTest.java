@@ -19,7 +19,7 @@ import org.mockito.Mockito;
 import com.qcadoo.plugin.dependency.PluginDependencyInformation;
 import com.qcadoo.plugin.dependency.PluginDependencyResult;
 
-public class PluginManagerUpdateTest {
+public class PluginManagerInstallTest {
 
     private Plugin plugin = mock(Plugin.class);
 
@@ -59,7 +59,7 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldUpdateTemporaryPlugin() throws Exception {
+    public void shouldInstallTemporaryPlugin() throws Exception {
         // given
 
         given(plugin.hasState(PluginState.TEMPORARY)).willReturn(true);
@@ -85,7 +85,7 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldFailureWithCorruptedPluginOnUpdate() throws Exception {
+    public void shouldFailureWithCorruptedPluginOnInstall() throws Exception {
         // given
         given(pluginDescriptorParser.parse(file)).willThrow(new PluginException());
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
@@ -102,7 +102,7 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldFailureOnUploadingPluginOnUpdate() throws Exception {
+    public void shouldFailureOnUploadingPluginOnInstall() throws Exception {
         // given
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willThrow(new PluginException());
 
@@ -116,7 +116,7 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldUpdateTemporaryPluginAndNotifyAboutMissingDependencies() throws Exception {
+    public void shouldInstallTemporaryPluginAndNotifyAboutMissingDependencies() throws Exception {
         // given
 
         given(plugin.hasState(PluginState.TEMPORARY)).willReturn(true);
@@ -146,7 +146,7 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldUpdateDisabledPlugin() throws Exception {
+    public void shouldInstallDisabledPlugin() throws Exception {
         // given
 
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
@@ -175,7 +175,7 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldFailureUpdateDisabledPluginWithMissingDependencies() throws Exception {
+    public void shouldFailureInstallDisabledPluginWithMissingDependencies() throws Exception {
         // given
 
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
@@ -204,7 +204,7 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldUpdateEnabledPlugin() throws Exception {
+    public void shouldInstallEnabledPlugin() throws Exception {
         // given
 
         given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
@@ -231,7 +231,7 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldFailureUpdateEnabledPluginWithUnsitisfiedDependencies() throws Exception {
+    public void shouldFailureInstallEnabledPluginWithUnsitisfiedDependencies() throws Exception {
         // given
 
         given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
@@ -260,7 +260,7 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldFailureUpdateEnabledPluginWithDisabledDependencies() throws Exception {
+    public void shouldFailureInstallEnabledPluginWithDisabledDependencies() throws Exception {
         // given
 
         given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
@@ -290,7 +290,7 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldNotUpdatePluginIfCannotInstall() throws Exception {
+    public void shouldNotInstallPluginIfCannotInstall() throws Exception {
         // given
 
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
@@ -319,7 +319,7 @@ public class PluginManagerUpdateTest {
     }
 
     @Test
-    public void shouldNotUpdateSystemPlugin() throws Exception {
+    public void shouldNotInstallSystemPlugin() throws Exception {
         // given
         given(pluginDescriptorParser.parse(file)).willReturn(anotherPlugin);
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
