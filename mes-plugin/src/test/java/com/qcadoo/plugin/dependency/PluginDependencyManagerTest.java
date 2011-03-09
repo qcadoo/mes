@@ -641,7 +641,7 @@ public class PluginDependencyManagerTest {
     public void shouldSortPlugins() {
         // given
         Set<PluginDependencyInformation> requiredPlugins1 = new HashSet<PluginDependencyInformation>();
-        requiredPlugins1.add(dependencyInfo1);
+        requiredPlugins1.add(dependencyInfo2);
         requiredPlugins1.add(dependencyInfo3);
         given(plugin1.getRequiredPlugins()).willReturn(requiredPlugins1);
 
@@ -651,6 +651,11 @@ public class PluginDependencyManagerTest {
         given(plugin2.getRequiredPlugins()).willReturn(requiredPlugins2);
 
         given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo4));
+
+        given(pluginAccessor.getPlugin("testPlugin1")).willReturn(plugin1);
+        given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);
+        given(pluginAccessor.getPlugin("testPlugin3")).willReturn(plugin3);
+        given(pluginAccessor.getPlugin("testPlugin4")).willReturn(plugin4);
 
         List<Plugin> argumentPlugins = new ArrayList<Plugin>();
         argumentPlugins.add(plugin1);

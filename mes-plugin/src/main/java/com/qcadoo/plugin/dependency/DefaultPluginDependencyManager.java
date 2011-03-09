@@ -1,5 +1,6 @@
 package com.qcadoo.plugin.dependency;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -143,7 +144,52 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
     }
 
     public List<Plugin> sortPluginsInDependencyOrder(final Collection<Plugin> plugins) {
-        return null;
+        List<Plugin> sortedPlugins = new LinkedList<Plugin>();
+
+        for (Plugin plugin : plugins) {
+            sortedPlugins.add(plugin);
+            Set<PluginDependencyInformation> requiredPlugins = plugin.getRequiredPlugins();
+            for (PluginDependencyInformation pluginDependencyInfo : requiredPlugins) {
+                Plugin requiredPlugin = pluginAccessor.getPlugin(pluginDependencyInfo.getKey());
+                Collection<Plugin> dependencyPlugins = getPluginsBasedOnDependencyInfo(requiredPlugin.getRequiredPlugins());
+                if (!dependencyPlugins.isEmpty()) {
+                    List<Plugin> recursivelySortedList = sortPluginsInDependencyOrder(dependencyPlugins);
+                    sortedPlugins.addAll(recursivelySortedList);
+                }
+            }
+        }
+
+        // TODO: this one could be invoked only once at the very end to boost performance
+        removeDuplicateWithOrder(sortedPlugins);
+
+        return sortedPlugins;
+    }
+
+    private void removeDuplicateWithOrder(List<Plugin> list) {
+
+        Collections.reverse(list);
+
+        Set<Plugin> set = new HashSet<Plugin>();
+        List<Plugin> sortedList = new LinkedList<Plugin>();
+
+        for (Plugin plugin : list) {
+            if (set.add(plugin)) {
+                sortedList.add(plugin);
+            }
+        }
+
+        list.clear();
+        list.addAll(sortedList);
+    }
+
+    private Collection<Plugin> getPluginsBasedOnDependencyInfo(Set<PluginDependencyInformation> requiredPlugins) {
+        List<Plugin> plugins = new ArrayList<Plugin>();
+
+        for (PluginDependencyInformation dependencyInfo : requiredPlugins) {
+            plugins.add(pluginAccessor.getPlugin(dependencyInfo.getKey()));
+        }
+
+        return plugins;
     }
 
     private Set<String> getArgumentIdentifiersSet(final List<Plugin> plugins) {
