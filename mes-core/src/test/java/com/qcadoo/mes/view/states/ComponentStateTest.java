@@ -36,11 +36,12 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.components.SimpleComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.internal.ExpressionServiceImpl;
 
 public class ComponentStateTest {
 
@@ -104,6 +105,8 @@ public class ComponentStateTest {
     @Test
     public void shouldHaveRequestUpdateStateFlag() throws Exception {
         // given
+        new ExpressionServiceImpl().init();
+
         TranslationService translationService = mock(TranslationService.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
         AbstractComponentState componentState = new FormComponentState(null, "2");

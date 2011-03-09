@@ -32,13 +32,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.search.Restrictions;
-import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.model.search.SearchResult;
-import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.components.FieldComponentState;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.utils.ExpressionUtils;
 
 public final class LookupComponentState extends FieldComponentState {
 
@@ -138,7 +138,7 @@ public final class LookupComponentState extends FieldComponentState {
             for (Entity entity : autocompleteMatches) {
                 JSONObject matchEntity = new JSONObject();
                 matchEntity.put("id", entity.getId());
-                matchEntity.put("value", ExpressionUtil.getValue(entity, expression, getLocale()));
+                matchEntity.put("value", ExpressionUtils.getValue(entity, expression, getLocale()));
                 matchEntity.put("code", String.valueOf(entity.getField(fieldCode)));
                 matches.put(matchEntity);
             }
@@ -256,7 +256,7 @@ public final class LookupComponentState extends FieldComponentState {
 
                 if (entity != null) {
                     selectedEntityCode = String.valueOf(entity.getField(fieldCode));
-                    selectedEntityValue = ExpressionUtil.getValue(entity, expression, getLocale());
+                    selectedEntityValue = ExpressionUtils.getValue(entity, expression, getLocale());
                 } else {
                     setFieldValueWithoutRefreshing(null);
                     selectedEntityCode = "";

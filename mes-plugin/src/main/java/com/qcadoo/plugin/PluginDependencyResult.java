@@ -11,11 +11,19 @@ public class PluginDependencyResult {
 
     private final List<PluginInformation> enabledDependencies;
 
+    private boolean cycleExists;
+
     private PluginDependencyResult(final List<PluginInformation> disabledDependencies,
             final List<PluginInformation> unsatisfiedDependencies, final List<PluginInformation> enabledDependencies) {
         this.disabledDependencies = disabledDependencies;
         this.unsatisfiedDependencies = unsatisfiedDependencies;
         this.enabledDependencies = enabledDependencies;
+    }
+
+    private PluginDependencyResult(final boolean cycleExists) {
+        this(Collections.<PluginInformation> emptyList(), Collections.<PluginInformation> emptyList(), Collections
+                .<PluginInformation> emptyList());
+        this.cycleExists = cycleExists;
     }
 
     public List<PluginInformation> getDisabledDependencies() {
@@ -50,8 +58,16 @@ public class PluginDependencyResult {
                 Collections.<PluginInformation> emptyList(), enabledDependencies);
     }
 
-    public boolean isDependenciesSatisfied() {
-        return disabledDependencies.isEmpty() && unsatisfiedDependencies.isEmpty() && enabledDependencies.isEmpty();
+    public static PluginDependencyResult cyclicDependencies() {
+        return new PluginDependencyResult(true);
     }
 
+    public boolean isDependenciesSatisfied() {
+        return disabledDependencies.isEmpty() && unsatisfiedDependencies.isEmpty() && enabledDependencies.isEmpty()
+                && !isCyclic();
+    }
+
+    public boolean isCyclic() {
+        return cycleExists;
+    }
 }

@@ -46,9 +46,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.plugins.internal.enums.PluginDescriptorProperties;
 import com.qcadoo.mes.plugins.internal.exceptions.PluginException;
+import com.qcadoo.model.beans.plugins.PluginsPlugin;
 
 @Component
 public final class PluginUtil {

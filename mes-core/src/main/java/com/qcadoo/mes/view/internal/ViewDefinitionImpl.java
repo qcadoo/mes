@@ -42,13 +42,13 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ContainerPattern;
+import com.qcadoo.mes.view.HookDefinition;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
+import com.qcadoo.model.api.DataDefinition;
 
 public final class ViewDefinitionImpl implements ViewDefinition {
 

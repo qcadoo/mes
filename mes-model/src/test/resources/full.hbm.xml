@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class entity-name="com.qcadoo.model.beans.full.FullFirstEntity" table="full_firstEntity">		
+		<id column="id" name="id" type="long">
+			<generator class="increment" />
+		</id>
+		<property type="integer" name="fieldInteger" not-null="true"
+			unique="true" length="3" precision="4">
+			<column name="fieldInteger" />
+		</property>
+		<property type="string" name="fieldString" not-null="true"
+			length="2">
+			<column name="fieldString" default="'ala'" />
+		</property>
+		<property type="text" name="fieldText" not-null="false">
+			<column name="fieldText" />
+		</property>
+		<property type="big_decimal" name="fieldDecimal" not-null="false"
+			precision="2" scale="4">
+			<column name="fieldDecimal" />
+		</property>
+		<property type="timestamp" name="fieldDatetime" not-null="false">
+			<column name="fieldDatetime" />
+		</property>
+		<property type="date" name="fieldDate" not-null="false">
+			<column name="fieldDate" />
+		</property>
+		<property type="boolean" name="fieldBoolean" not-null="false">
+			<column name="fieldBoolean" />
+		</property>
+		<many-to-one entity-name="com.qcadoo.model.beans.other.OtherSecondEntity" cascade="none"
+			lazy="false" name="fieldSecondEntity" not-null="false">
+			<column name="fieldSecondEntity" />
+		</many-to-one>
+		<many-to-one entity-name="com.qcadoo.model.beans.other.OtherSecondEntity" cascade="none"
+			lazy="proxy" name="fieldSecondEntity2" not-null="true">
+			<column name="fieldSecondEntity2" />
+		</many-to-one>
+		<set cascade="delete" lazy="true" name="fieldTree">
+			<key column="fieldFirstEntity" />
+			<one-to-many entity-name="com.qcadoo.model.beans.full.FullSecondEntity" />
+		</set>
+		<set cascade="none" lazy="true" name="fieldHasMany">
+			<key column="fieldFirstEntity" />
+			<one-to-many entity-name="com.qcadoo.model.beans.full.FullThirdEntity" />
+		</set>
+		<property type="string" name="fieldDictionary" not-null="false">
+			<column name="fieldDictionary" />
+		</property>
+		<property type="string" name="fieldOtherDictionary" not-null="false">
+			<column name="fieldOtherDictionary" />
+		</property>
+		<property type="string" name="fieldEnum" not-null="false">
+			<column name="fieldEnum" />
+		</property>
+		<property type="string" name="fieldPassword" not-null="false">
+			<column name="fieldPassword" />
+		</property>
+		<property type="integer" name="fieldPriority" not-null="true">
+			<column name="fieldPriority" />
+		</property>
+		<sql-insert>insert must not be executed on full_firstEntity</sql-insert>
+		<sql-delete>delete must not be executed on full_firstEntity</sql-delete>
+	</class>
+	<class entity-name="com.qcadoo.model.beans.full.FullSecondEntity" table="full_secondEntity">
+		<id column="id" name="id" type="long">
+			<generator class="increment" />
+		</id>
+		<many-to-one entity-name="com.qcadoo.model.beans.full.FullFirstEntity" cascade="none"
+			lazy="proxy" name="fieldFirstEntity" not-null="false">
+			<column name="fieldFirstEntity" />
+		</many-to-one>
+		<many-to-one entity-name="com.qcadoo.model.beans.full.FullSecondEntity" cascade="none"
+			lazy="proxy" name="parent" not-null="false">
+			<column name="parent" />
+		</many-to-one>
+		<set cascade="none" lazy="true" name="children">
+			<key column="parent" />
+			<one-to-many entity-name="com.qcadoo.model.beans.full.FullSecondEntity" />
+		</set>
+		<sql-update>update must not be executed on full_secondEntity</sql-update>
+	</class>
+	<class entity-name="com.qcadoo.model.beans.full.FullThirdEntity" table="full_thirdEntity">
+		<id column="id" name="id" type="long">
+			<generator class="increment" />
+		</id>
+		<many-to-one entity-name="com.qcadoo.model.beans.full.FullFirstEntity" cascade="none"
+			lazy="proxy" name="fieldFirstEntity" not-null="false">
+			<column name="fieldFirstEntity" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

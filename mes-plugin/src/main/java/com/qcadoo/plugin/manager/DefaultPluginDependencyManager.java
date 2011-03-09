@@ -2,6 +2,7 @@ package com.qcadoo.plugin.manager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -20,25 +21,36 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
         this.pluginAccessor = pluginAccessor;
     }
 
-    public PluginDependencyResult getDependenciesToEnable(List<Plugin> plugins) {
+    public PluginDependencyResult getDependenciesToEnable(final List<Plugin> plugins) {
+        return getDependenciesToEnable(plugins, new HashSet<PluginInformation>());
+    }
+
+    private PluginDependencyResult getDependenciesToEnable(final List<Plugin> plugins, final Set<PluginInformation> markedNodes) {
 
         List<PluginInformation> disabledDependencies = new ArrayList<PluginInformation>();
         List<PluginInformation> unsatisfiedDependencies = new ArrayList<PluginInformation>();
 
-        Set<PluginInformation> argumentPluginInformationsSet = getArgumentPluginInformationsSet(plugins);
+        List<Plugin> dependencyPlugins = new LinkedList<Plugin>();
+
+        boolean isCyclic = false;
 
         for (Plugin plugin : plugins) {
 
+            markedNodes.add(plugin.getPluginInformation());
+
             for (PluginInformation requiredPluginInformation : plugin.getRequiredPlugins()) {
-                if (argumentPluginInformationsSet.contains(requiredPluginInformation)) {
-                    continue;
-                }
 
                 Plugin requiredPlugin = pluginAccessor.getPlugin(requiredPluginInformation.getPluginKey());
 
                 if (requiredPlugin != null) {
                     if (isPluginDisabled(requiredPlugin)) {
+
+                        if (markedNodes.contains(requiredPlugin.getPluginInformation())) {
+                            isCyclic = true;
+                        }
+
                         addToList(disabledDependencies, requiredPlugin.getPluginInformation());
+                        dependencyPlugins.add(requiredPlugin);
                     }
                 } else {
                     addToList(unsatisfiedDependencies, requiredPluginInformation);
@@ -47,8 +59,23 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
 
         }
 
-        if (unsatisfiedDependencies.size() == 0) {
-            return PluginDependencyResult.disabledDependencies(disabledDependencies);
+        if (unsatisfiedDependencies.isEmpty()) {
+            if (isCyclic) {
+                return PluginDependencyResult.cyclicDependencies();
+            }
+            if (dependencyPlugins.isEmpty()) {
+                return PluginDependencyResult.disabledDependencies(disabledDependencies);
+            }
+
+            PluginDependencyResult nextLevelDependencioesResult = getDependenciesToEnable(dependencyPlugins, markedNodes);
+
+            if (nextLevelDependencioesResult.getUnsatisfiedDependencies().isEmpty() && !nextLevelDependencioesResult.isCyclic()) {
+                disabledDependencies.addAll(nextLevelDependencioesResult.getDisabledDependencies());
+
+                return PluginDependencyResult.disabledDependencies(disabledDependencies);
+            } else {
+                return nextLevelDependencioesResult;
+            }
         } else {
             return PluginDependencyResult.unsatisfiedDependencies(unsatisfiedDependencies);
         }
@@ -60,6 +87,8 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
 
         Set<PluginInformation> argumentPluginInformationsSet = getArgumentPluginInformationsSet(plugins);
 
+        List<Plugin> dependencyPlugins = new LinkedList<Plugin>();
+
         for (Plugin plugin : plugins) {
             for (PluginInformation requiredPluginInformation : plugin.getRequiredPlugins()) {
                 if (argumentPluginInformationsSet.contains(requiredPluginInformation)) {
@@ -70,12 +99,23 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
 
                 if (PluginState.ENABLED.equals(requiredPlugin.getPluginState())) {
                     addToList(enabledDependencies, requiredPluginInformation);
+                    dependencyPlugins.add(requiredPlugin);
                 }
             }
 
         }
 
-        return PluginDependencyResult.enabledDependencies(enabledDependencies);
+        if (dependencyPlugins.isEmpty()) {
+            return PluginDependencyResult.enabledDependencies(enabledDependencies);
+        }
+
+        PluginDependencyResult nextLevelDependencioesResult = getDependenciesToDisable(dependencyPlugins);
+        if (nextLevelDependencioesResult.getUnsatisfiedDependencies().isEmpty()) {
+            enabledDependencies.addAll(nextLevelDependencioesResult.getEnabledDependencies());
+            return PluginDependencyResult.enabledDependencies(enabledDependencies);
+        } else {
+            return nextLevelDependencioesResult;
+        }
     }
 
     private Set<PluginInformation> getArgumentPluginInformationsSet(List<Plugin> plugins) {

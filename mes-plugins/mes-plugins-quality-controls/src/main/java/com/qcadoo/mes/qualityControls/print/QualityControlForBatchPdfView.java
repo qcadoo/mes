@@ -43,14 +43,13 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.qualityControls.print.utils.EntityBatchNumberComparator;
 import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
 import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
+import com.qcadoo.model.api.Entity;
 
 public class QualityControlForBatchPdfView extends ReportPdfView {
 
@@ -65,8 +64,7 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
             final PdfWriter writer) throws DocumentException, IOException {
         String documentTitle = getTranslationService().translate("qualityControls.qualityControlForBatch.report.title", locale);
         String documentAuthor = getTranslationService().translate("qualityControls.qualityControl.report.author", locale);
-        UsersUser user = securityService.getCurrentUser();
-        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
+        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
 
         qualityControlsReportService.addQualityControlReportHeader(document, model, locale);
         List<Entity> orders = qualityControlsReportService.getOrderSeries(model, "qualityControlsForBatch");

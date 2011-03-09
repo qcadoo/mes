@@ -25,16 +25,11 @@
 
 -->
 
-<qcd:models plugin="qualityControls" xmlns:qcd="http://www.qcadoo.com/model">
+<models plugin="qualityControls" xmlns="http://www.qcadoo.com/model">
 	<model name="qualityControl">
-		<belongsTo name="order" model="order" plugin="products" lookupField="name" >
-			<validatesPresence/>
-		</belongsTo>
-		<belongsTo name="operation" model="operation" plugin="products" lookupField="name" />
-		<string name="number">
-			<validatesUniqueness/>
-			<validatesPresence/>
-		</string>		
+		<belongsTo name="order" model="order" plugin="products" required="true" />
+		<belongsTo name="operation" model="operation" plugin="products" />
+		<string name="number" required="true" unique="true" />
 		<enum name="controlResult" values="01correct,02incorrect,03objection"/>
 		<string name="batchNr" />
 		<string name="comment" />
@@ -45,13 +40,13 @@
 		<decimal name="acceptedDefectsQuantity" />		
 		<string name="staff" />
 		<date name="date" />
-		<boolean name="closed"/>
-		<enum name="qualityControlType" values="qualityControlsForOrder,qualityControlsForUnit,qualityControlsForBatch,qualityControlsForOperation"/>
-		<validatesWith bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentForResultOrQuantityIsReq" />
-		<validatesWith bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfOperationIsRequired" />
-		<validatesWith bean="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfQuantitiesAreCorrect" />
 		<date name="dateFrom" persistent="false"/>
 		<date name="dateTo" persistent="false"/>
-		<onCopy bean="com.qcadoo.mes.qualityControls.QualityControlService" method="clearQualityControlOnCopy" />
+		<boolean name="closed"/>
+		<enum name="qualityControlType" values="qualityControlsForOrder,qualityControlsForUnit,qualityControlsForBatch,qualityControlsForOperation"/>
+		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentForResultOrQuantityIsReq" />
+		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfOperationIsRequired" />
+		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfQuantitiesAreCorrect" />
+		<onCopy class="com.qcadoo.mes.qualityControls.QualityControlService" method="clearQualityControlOnCopy" />
 	</model>
-</qcd:models>
+</models>

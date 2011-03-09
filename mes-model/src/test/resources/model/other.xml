@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<models plugin="other" xmlns="http://www.qcadoo.com/model">
+	<dictionary name="categories">
+		<value>category3</value>
+		<value>category4</value>
+	</dictionary>
+	<model name="firstEntity">
+		<string name="fieldString" />
+	</model>
+	<model name="secondEntity">
+		<string name="fieldString" />
+	</model>
+</models>

@@ -36,12 +36,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.internal.EntityTree;
-import com.qcadoo.mes.internal.EntityTreeNode;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.components.FieldComponentState;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.utils.ExpressionUtils;
 
 public final class TreeComponentState extends FieldComponentState {
 
@@ -262,8 +262,8 @@ public final class TreeComponentState extends FieldComponentState {
     }
 
     private TreeNode createNode(final EntityTreeNode entityTreeNode) {
-        TreeDataType entityType = dataTypes.get(entityTreeNode.getEntityType());
-        String nodeLabel = ExpressionUtil.getValue(entityTreeNode, entityType.getNodeLabelExpression(), getLocale());
+        TreeDataType entityType = dataTypes.get(entityTreeNode.getEntityNoteType());
+        String nodeLabel = ExpressionUtils.getValue(entityTreeNode, entityType.getNodeLabelExpression(), getLocale());
         TreeNode node = new TreeNode(entityTreeNode.getId(), nodeLabel, entityType);
 
         for (EntityTreeNode childEntityTreeNode : entityTreeNode.getChildren()) {

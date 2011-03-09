@@ -37,11 +37,10 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
+import com.qcadoo.model.api.Entity;
 
 public final class OrderPdfView extends ReportPdfView {
 
@@ -54,8 +53,8 @@ public final class OrderPdfView extends ReportPdfView {
         Entity entity = (Entity) model.get("value");
         String documentTitle = getTranslationService().translate("products.order.report.order", locale);
         String documentAuthor = getTranslationService().translate("products.order.report.author", locale);
-        UsersUser user = securityService.getCurrentUser();
-        PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documentTitle, documentAuthor, new Date(), user);
+        PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documentTitle, documentAuthor, new Date(),
+                securityService.getCurrentUserName());
         addMainTable(document, entity, locale);
         addDetailTable(document, entity, locale);
         String text = getTranslationService().translate("core.report.endOfReport", locale);

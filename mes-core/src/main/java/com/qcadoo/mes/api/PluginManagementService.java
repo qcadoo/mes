@@ -26,7 +26,7 @@ package com.qcadoo.mes.api;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.qcadoo.mes.beans.plugins.PluginsPlugin;
+import com.qcadoo.model.beans.plugins.PluginsPlugin;
 
 /**
  * Service for manipulating plugins.

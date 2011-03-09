@@ -45,12 +45,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerState;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -60,6 +55,12 @@ import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 import com.qcadoo.mes.view.states.AbstractContainerState;
 import com.qcadoo.mes.view.states.AbstractStateTest;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.ExpressionServiceImpl;
+import com.qcadoo.model.internal.types.StringType;
 
 public class FormComponentStateTest extends AbstractStateTest {
 
@@ -109,6 +110,8 @@ public class FormComponentStateTest extends AbstractStateTest {
         ((AbstractContainerState) form).setTranslationService(translationService);
         ((AbstractContainerState) form).addFieldEntityIdChangeListener("name", name);
         form.initialize(new JSONObject(ImmutableMap.of("components", new JSONObject())), Locale.ENGLISH);
+
+        new ExpressionServiceImpl().init();
     }
 
     @Test
@@ -237,8 +240,9 @@ public class FormComponentStateTest extends AbstractStateTest {
     @Test
     public void shouldSaveFormEntity() throws Exception {
         // given
-        Entity entity = new DefaultEntity("plugin", "name", null, Collections.singletonMap("name", (Object) "text"));
-        Entity savedEntity = new DefaultEntity("plugin", "name", 13L, Collections.singletonMap("name", (Object) "text2"));
+        Entity entity = new DefaultEntity(dataDefinition, null, Collections.singletonMap("name", (Object) "text"));
+        Entity savedEntity = new DefaultEntity(dataDefinition, 13L, Collections.singletonMap("name", (Object) "text2"));
+        given(dataDefinition.create(null)).willReturn(new DefaultEntity(dataDefinition));
         given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
         name.setFieldValue("text");
 
@@ -257,7 +261,7 @@ public class FormComponentStateTest extends AbstractStateTest {
     @Test
     public void shouldCopyFormEntity() throws Exception {
         // given
-        Entity copiedEntity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text(1)"));
+        Entity copiedEntity = new DefaultEntity(dataDefinition, 14L, Collections.singletonMap("name", (Object) "text(1)"));
         given(dataDefinition.copy(13L)).willReturn(copiedEntity);
         given(dataDefinition.get(14L)).willReturn(copiedEntity);
         name.setFieldValue("text");
@@ -276,8 +280,9 @@ public class FormComponentStateTest extends AbstractStateTest {
     @Test
     public void shouldUseContextWhileSaving() throws Exception {
         // given
-        Entity entity = new DefaultEntity("plugin", "name", 13L, Collections.singletonMap("name", (Object) "text2"));
-        Entity savedEntity = new DefaultEntity("plugin", "name", 13L, Collections.singletonMap("name", (Object) "text2"));
+        Entity entity = new DefaultEntity(dataDefinition, 13L, Collections.singletonMap("name", (Object) "text2"));
+        Entity savedEntity = new DefaultEntity(dataDefinition, 13L, Collections.singletonMap("name", (Object) "text2"));
+        given(dataDefinition.create(13L)).willReturn(new DefaultEntity(dataDefinition, 13L));
         given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
         given(dataDefinition.getFields().keySet()).willReturn(Collections.singleton("name"));
         name.setFieldValue("text");
@@ -307,13 +312,14 @@ public class FormComponentStateTest extends AbstractStateTest {
     @Test
     public void shouldHaveValidationErrors() throws Exception {
         // given
-        Entity entity = new DefaultEntity("plugin", "name", null, Collections.singletonMap("name", (Object) "text"));
-        Entity savedEntity = new DefaultEntity("plugin", "name", null, Collections.singletonMap("name", (Object) "text2"));
+        Entity entity = new DefaultEntity(dataDefinition, null, Collections.singletonMap("name", (Object) "text"));
+        Entity savedEntity = new DefaultEntity(dataDefinition, null, Collections.singletonMap("name", (Object) "text2"));
         savedEntity.addGlobalError("global.error");
         savedEntity.addError(fieldDefinition, "field.error");
 
         given(translationService.translate(eq("global.error"), any(Locale.class))).willReturn("translated global error");
         given(translationService.translate(eq("field.error"), any(Locale.class))).willReturn("translated field error");
+        given(dataDefinition.create(null)).willReturn(new DefaultEntity(dataDefinition));
         given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
         name.setFieldValue("text");
 

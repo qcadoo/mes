@@ -25,36 +25,26 @@
 
 -->
 
-<qcd:models plugin="products" xmlns:qcd="http://www.qcadoo.com/model">
+<models plugin="products" xmlns="http://www.qcadoo.com/model">
 	<model name="order">
-		<string name="number">
-			<validatesPresence />
-			<validatesUniqueness />
+		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
-			<validatesRegex regex="^[a-zA-Z0-9\\_\\.\\(\\)]+$" />
+			<validatesRegex pattern="^[a-zA-Z0-9\\_\\.\\(\\)]+$" />
 		</string>
-		<string name="name">
-			<validatesPresence />
-		</string>
-		<date name="dateFrom">
-			<validatesPresence />
-		</date>
-		<date name="dateTo">
-			<validatesPresence />
-		</date>
-		<enum name="state" values="01pending,02inProgress,03done">
-			<validatesPresence />
-		</enum>
-		<belongsTo name="product" model="product" lookupField="name" />
+		<string name="name" required="true" />
+		<date name="dateFrom" required="true" />
+		<date name="dateTo" required="true" />
+		<enum name="state" values="01pending,02inProgress,03done" required="true" />
+		<belongsTo name="product" model="product" />
 		<string name="defaultTechnology" persistent="false" />
-		<belongsTo name="technology" model="technology" lookupField="name" />
+		<belongsTo name="technology" model="technology" />
 		<decimal name="plannedQuantity">
-			<validatesRange from="0" inclusive="false" />
+			<validatesRange from="0" exclusively="true" />
 			<validatesPrecision max="8" />
 			<validatesScale max="3" />
 		</decimal>
 		<decimal name="doneQuantity">
-			<validatesRange from="0" inclusive="false" />
+			<validatesRange from="0" exclusively="true" />
 			<validatesPrecision max="8" />
 			<validatesScale max="3" />
 		</decimal>
@@ -62,16 +52,16 @@
 		<date name="effectiveDateTo" readonly="true" />
 		<string name="startWorker" readonly="true" />
 		<string name="endWorker" readonly="true" />
-		<hasMany name="materialRequirements" model="materialRequirementComponent" joinField="order" cascade="nullify" />
-		<hasMany name="workPlans" model="workPlanComponent" joinField="order" cascade="nullify" />
+		<hasMany name="materialRequirements" model="materialRequirementComponent" joinField="order" cascade="none" />
+		<hasMany name="workPlans" model="workPlanComponent" joinField="order" cascade="none" />
 		<hasMany name="genealogies" plugin="genealogies" model="genealogy" joinField="order" cascade="delete"/>
-		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkOrderDates" />
-		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkOrderPlannedQuantity" />
-		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkOrderTechnology" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfTechnologyIsNotRemoved" />
-		<onSave bean="com.qcadoo.mes.products.OrderService" method="fillOrderDatesAndWorkers" />
-		<onCopy bean="com.qcadoo.mes.products.OrderService" method="clearOrderDatesAndWorkersOnCopy" />
-		<identifierExpression value="#number + ' - ' + #name"/>
+		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkOrderDates" />
+		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkOrderPlannedQuantity" />
+		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkOrderTechnology" />
+		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
+		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfTechnologyIsNotRemoved" />
+		<onCopy class="com.qcadoo.mes.products.OrderService" method="fillOrderDatesAndWorkers" />
+		<onCopy class="com.qcadoo.mes.products.OrderService" method="clearOrderDatesAndWorkersOnCopy" />
+		<identifier expression="#number + ' - ' + #name"/>
 	</model>	
-</qcd:models>
+</models>

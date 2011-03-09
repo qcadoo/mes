@@ -25,48 +25,39 @@
 
 -->
 
-<qcd:models plugin="basic" xmlns:qcd="http://www.qcadoo.com/model">
+<models plugin="basic" xmlns="http://www.qcadoo.com/model">
+	<dictionary name="categories" />
+	<dictionary name="shifts" />
+	<dictionary name="posts" />
+	<dictionary name="units" />
 	<model name="machine" deletable="true">
-		<string name="name" >
-			<validatesPresence />
+		<string name="name" required="true">
 			<validatesLength max="2048"/>
 		</string>
-		<string name="number">
-			<validatesPresence />
-			<validatesUniqueness />
+		<string name="number" required="true" unique="true">
 			<validatesLength max="255"/>
 		</string>
 		<string name="description">
 			<validatesLength max="2048"/>
 		</string>
-		<identifierExpression value="#number + ' - ' + #name"/>
+		<identifier expression="#number + ' - ' + #name"/>
 	</model>
 	<model name="staff" deletable="true">
-		<string name="number">
-			<validatesPresence />
-			<validatesUniqueness />
+		<string name="number" required="true" unique="true">
 			<validatesLength max="255"/>
 		</string>
-		<string name="name" >
-			<validatesPresence />
+		<string name="name" required="true">
 			<validatesLength max="255"/>
 		</string>
-		<string name="surname" >
-			<validatesPresence />
+		<string name="surname" required="true">
 			<validatesLength max="255"/>
 		</string>
 		<string name="post"/>
-		<identifierExpression value="#number + ' - ' + #name"/>
+		<identifier expression="#number + ' - ' + #name"/>
 	</model>
 	<model name="parameter" deletable="false">
-		<boolean name="checkDoneOrderForQuality">
-			<validatesPresence />
-		</boolean>
-		<boolean name="autoGenerateQualityControl">
-			<validatesPresence />
-		</boolean>
-		<enum name="batchForDoneOrder" values="01none,02active,03lastUsed" default="01none">
-			<validatesPresence />
-		</enum>
+		<boolean name="checkDoneOrderForQuality" required="true" />
+		<boolean name="autoGenerateQualityControl" required="true" />
+		<enum name="batchForDoneOrder" values="01none,02active,03lastUsed" default="01none" required="true" />
 	</model>
-</qcd:models>
+</models>

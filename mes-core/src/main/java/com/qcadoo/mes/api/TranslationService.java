@@ -28,8 +28,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.validators.ErrorMessage;
+import org.springframework.context.event.ContextRefreshedEvent;
+
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 /**
  * Service for getting translations.
@@ -37,7 +39,7 @@ import com.qcadoo.mes.model.validators.ErrorMessage;
  * @apiviz.uses com.qcadoo.mes.model.DataDefinition
  * @apiviz.uses com.qcadoo.mes.model.validators.ErrorMessage
  */
-public interface TranslationService {
+public interface TranslationService extends com.qcadoo.model.api.localization.TranslationService {
 
     /**
      * Return all translations which message code starts with "commons.".
@@ -77,6 +79,7 @@ public interface TranslationService {
      *            message's args
      * @return the translation
      */
+    @Override
     String translate(String messageCode, Locale locale, Object... args);
 
     /**
@@ -113,4 +116,7 @@ public interface TranslationService {
      * @return the translation
      */
     String translateErrorMessage(ErrorMessage validationError, Locale locale);
+
+    void onApplicationEvent(final ContextRefreshedEvent event);
+
 }

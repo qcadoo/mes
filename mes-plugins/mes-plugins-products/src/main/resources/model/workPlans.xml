@@ -25,10 +25,9 @@
 
 -->
 
-<qcd:models plugin="products" xmlns:qcd="http://www.qcadoo.com/model">
+<models plugin="products" xmlns="http://www.qcadoo.com/model">
 	<model name="workPlan">	
-		<string name="name">
-			<validatesPresence />
+		<string name="name" required="true">
 			<validatesLength max="255"/>
 		</string>
 		<datetime name="date" />
@@ -36,19 +35,15 @@
 		<boolean name="generated" />
 		<string name="fileName" />
 		<hasMany name="orders" model="workPlanComponent" joinField="workPlan" cascade="delete" copyable="true" />
-		<onCopy bean="com.qcadoo.mes.products.WorkPlanService" method="clearGeneratedOnCopy" />
-		<identifierExpression value="#name"/>
+		<onCopy class="com.qcadoo.mes.products.WorkPlanService" method="clearGeneratedOnCopy" />
+		<identifier expression="#name"/>
 	</model>
 	<model name="workPlanComponent">
-		<belongsTo name="workPlan" model="workPlan" lookupField="name" lazy="false">
-			<validatesPresence /> 
-		</belongsTo>
-		<belongsTo name="order" model="order" lookupField="name" lazy="false">
-			<validatesPresence />			
-		</belongsTo>
-		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
-		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkIfOrderTechnologyHasOperations" />
-		<validatesWith bean="com.qcadoo.mes.products.WorkPlanService" method="checkWorkPlanComponentUniqueness" />	
-		<identifierExpression value="#order['number'] + ' - ' + #order['name']"/>		
+		<belongsTo name="workPlan" model="workPlan" lazy="false" required="true" />
+		<belongsTo name="order" model="order" lazy="false" required="true" />
+		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
+		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderTechnologyHasOperations" />
+		<validatesWith class="com.qcadoo.mes.products.WorkPlanService" method="checkWorkPlanComponentUniqueness" />	
+		<identifier expression="#order['number'] + ' - ' + #order['name']"/>		
 	</model>
-</qcd:models>
+</models>

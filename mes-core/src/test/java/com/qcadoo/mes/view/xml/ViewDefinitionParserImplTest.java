@@ -48,21 +48,13 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 import com.google.common.collect.ImmutableMap;
-import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
 import com.qcadoo.mes.internal.ViewDefinitionServiceImpl;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.HookDefinition;
-import com.qcadoo.mes.model.hooks.internal.HookFactory;
-import com.qcadoo.mes.model.types.BelongsToType;
-import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.view.ComponentPattern;
+import com.qcadoo.mes.view.HookDefinition;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.components.ButtonComponentPattern;
 import com.qcadoo.mes.view.components.CheckBoxComponentPattern;
@@ -70,10 +62,18 @@ import com.qcadoo.mes.view.components.TextAreaComponentPattern;
 import com.qcadoo.mes.view.components.TextInputComponentPattern;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.components.grid.GridComponentPattern;
-import com.qcadoo.mes.view.components.window.WindowComponentPattern;
+import com.qcadoo.mes.view.components.tabWindow.WindowComponentPattern;
+import com.qcadoo.mes.view.hooks.internal.HookFactory;
 import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.internal.ViewComponentsResolver;
 import com.qcadoo.mes.view.ribbon.RibbonActionItem;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.types.BelongsToType;
+import com.qcadoo.model.api.types.HasManyType;
+import com.qcadoo.model.beans.plugins.PluginsPlugin;
+import com.qcadoo.model.internal.types.StringType;
 
 public class ViewDefinitionParserImplTest {
 

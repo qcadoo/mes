@@ -27,8 +27,8 @@ package com.qcadoo.mes.products.util;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.utils.Pair;
+import com.qcadoo.model.api.Entity;
 
 public class EntityOperationInPairNumberComparator implements Comparator<Pair<Entity, Entity>>, Serializable {
 

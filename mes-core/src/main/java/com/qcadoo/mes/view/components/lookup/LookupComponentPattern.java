@@ -39,9 +39,6 @@ import org.json.JSONObject;
 
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
@@ -55,6 +52,9 @@ import com.qcadoo.mes.view.ribbon.Ribbon;
 import com.qcadoo.mes.view.ribbon.RibbonActionItem;
 import com.qcadoo.mes.view.ribbon.RibbonActionItem.Type;
 import com.qcadoo.mes.view.ribbon.RibbonGroup;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.types.HasManyType;
 
 @ViewComponent("lookup")
 public final class LookupComponentPattern extends FieldComponentPattern {
