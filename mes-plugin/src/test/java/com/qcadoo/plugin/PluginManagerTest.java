@@ -296,6 +296,7 @@ public class PluginManagerTest {
     public void shouldUninstallNotTemporaryPlugin() throws Exception {
         // given
         given(plugin.hasState(PluginState.TEMPORARY)).willReturn(false);
+        given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
 
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
         given(pluginDependencyManager.getDependenciesToDisable(singletonList(plugin))).willReturn(pluginDependencyResult);
@@ -307,6 +308,7 @@ public class PluginManagerTest {
         PluginOperationResult pluginOperationResult = pluginManager.uninstallPlugin("pluginname");
 
         // then
+        verify(plugin).changeStateTo(PluginState.DISABLED);
         verify(pluginDao).delete(plugin);
         verify(pluginServerManager).restart();
         assertTrue(pluginOperationResult.isSuccess());
@@ -329,6 +331,7 @@ public class PluginManagerTest {
         PluginOperationResult pluginOperationResult = pluginManager.uninstallPlugin("pluginname");
 
         // then
+        verify(plugin, never()).changeStateTo(PluginState.DISABLED);
         verify(pluginDao).delete(plugin);
         verify(pluginServerManager, never()).restart();
         assertTrue(pluginOperationResult.isSuccess());
@@ -350,6 +353,7 @@ public class PluginManagerTest {
         PluginOperationResult pluginOperationResult = pluginManager.uninstallPlugin("pluginname");
 
         // then
+        verify(plugin, never()).changeStateTo(PluginState.DISABLED);
         verify(pluginDao, never()).delete(plugin);
         verify(pluginServerManager, never()).restart();
         assertFalse(pluginOperationResult.isSuccess());
@@ -374,6 +378,7 @@ public class PluginManagerTest {
         PluginOperationResult pluginOperationResult = pluginManager.uninstallPlugin("anotherPluginname");
 
         // then
+        verify(plugin, never()).changeStateTo(PluginState.DISABLED);
         verify(pluginDao, never()).delete(anotherPlugin);
         verify(pluginServerManager, never()).restart();
         assertFalse(pluginOperationResult.isSuccess());
@@ -394,6 +399,7 @@ public class PluginManagerTest {
         PluginOperationResult pluginOperationResult = pluginManager.uninstallPlugin("pluginname");
 
         // then
+        verify(plugin, never()).changeStateTo(PluginState.DISABLED);
         verify(pluginDao, never()).delete(plugin);
         verify(pluginServerManager, never()).restart();
         assertFalse(pluginOperationResult.isSuccess());
@@ -405,9 +411,11 @@ public class PluginManagerTest {
     public void shouldUninstallMultiplePlugins() throws Exception {
         // given
         given(plugin.hasState(PluginState.TEMPORARY)).willReturn(false);
+        given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
         given(plugin.getFilename()).willReturn("filename");
 
         given(anotherPlugin.hasState(PluginState.TEMPORARY)).willReturn(true);
+        given(anotherPlugin.hasState(PluginState.ENABLED)).willReturn(false);
         given(anotherPlugin.getFilename()).willReturn("anotherFilename");
         given(pluginFileManager.uninstallPlugin(new String[] { "filename", "anotherFilename" })).willReturn(true);
 
@@ -419,6 +427,8 @@ public class PluginManagerTest {
         PluginOperationResult pluginOperationResult = pluginManager.uninstallPlugin("pluginname", "anotherPluginname");
 
         // then
+        verify(plugin).changeStateTo(PluginState.DISABLED);
+        verify(anotherPlugin, never()).changeStateTo(PluginState.DISABLED);
         verify(pluginDao).delete(plugin);
         verify(pluginDao).delete(anotherPlugin);
         verify(pluginServerManager).restart();
