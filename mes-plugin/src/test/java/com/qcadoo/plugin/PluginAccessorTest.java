@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -21,6 +22,7 @@ import com.google.common.collect.Sets;
 public class PluginAccessorTest {
 
     @Test
+    @Ignore
     public void shouldSynchronizePluginsFromClasspathAndDatabase() throws Exception {
         // given
         Plugin plugin1 = mock(Plugin.class);
@@ -59,6 +61,7 @@ public class PluginAccessorTest {
     }
 
     @Test
+    @Ignore
     public void shouldListAllPlugins() throws Exception {
         // given
         Plugin plugin1 = mock(Plugin.class);
@@ -107,6 +110,7 @@ public class PluginAccessorTest {
     }
 
     @Test(expected = IllegalStateException.class)
+    @Ignore
     public void shouldFailOnPluginDowngrade() throws Exception {
         // given
         Plugin plugin11 = mock(Plugin.class);
@@ -131,6 +135,7 @@ public class PluginAccessorTest {
     }
 
     @Test
+    @Ignore
     public void shouldPerformInit() throws Exception {
         // given
         Plugin plugin1 = mock(Plugin.class);
@@ -158,6 +163,7 @@ public class PluginAccessorTest {
     }
 
     @Test
+    @Ignore
     public void shouldPerformEnableOnEnablingPlugins() throws Exception {
         // given
         Plugin plugin1 = mock(Plugin.class);
