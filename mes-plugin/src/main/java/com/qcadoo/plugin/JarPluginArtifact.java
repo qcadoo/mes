@@ -1,19 +1,33 @@
 package com.qcadoo.plugin;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class JarPluginArtifact implements PluginArtifact {
 
+    private final File file;
+
+    public JarPluginArtifact(final File file) {
+        if (!file.exists() || !file.canRead()) {
+            throw new IllegalStateException("Cannot read file " + file.getAbsolutePath());
+        }
+        this.file = file;
+    }
+
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        return null;
+        return file.getName();
     }
 
     @Override
     public InputStream getInputStream() {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            return new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
     }
 
 }
