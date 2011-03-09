@@ -4,7 +4,7 @@ import java.io.File;
 
 public class PluginDescriptorParser {
 
-    public Plugin parse(final File file) throws PluginException {
+    public Plugin parse(final File file) {
         // TODO Auto-generated method stub
         return null;
     }
