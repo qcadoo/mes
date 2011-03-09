@@ -18,7 +18,7 @@ public interface Plugin {
 
     boolean hasState(PluginState state);
 
-    Object changeStateTo(PluginState disabled);
+    void changeStateTo(PluginState state);
 
     String getFilename();
 

@@ -19,9 +19,9 @@ public class PluginChangeStateToTest {
         assertOperationSupported(null, PluginState.ENABLED, false, false);
         assertOperationSupported(null, PluginState.DISABLED, false, false);
 
-        assertOperationNotSupported(PluginState.TEMPORARY, PluginState.DISABLED);
+        assertOperationNotSupported(PluginState.TEMPORARY, PluginState.UNKNOWN);
         assertOperationNotSupported(PluginState.TEMPORARY, PluginState.TEMPORARY);
-        assertOperationSupported(PluginState.TEMPORARY, PluginState.ENABLING, true, true);
+        assertOperationSupported(PluginState.TEMPORARY, PluginState.ENABLING, false, false);
         assertOperationNotSupported(PluginState.TEMPORARY, PluginState.ENABLED);
         assertOperationNotSupported(PluginState.TEMPORARY, PluginState.DISABLED);
 
@@ -31,7 +31,7 @@ public class PluginChangeStateToTest {
         assertOperationSupported(PluginState.ENABLING, PluginState.ENABLED, true, false);
         assertOperationNotSupported(PluginState.ENABLING, PluginState.DISABLED);
 
-        assertOperationNotSupported(PluginState.ENABLED, PluginState.DISABLED);
+        assertOperationNotSupported(PluginState.ENABLED, PluginState.UNKNOWN);
         assertOperationNotSupported(PluginState.ENABLED, PluginState.TEMPORARY);
         assertOperationNotSupported(PluginState.ENABLED, PluginState.ENABLING);
         assertOperationNotSupported(PluginState.ENABLED, PluginState.ENABLED);
@@ -46,7 +46,7 @@ public class PluginChangeStateToTest {
 
     private void assertOperationNotSupported(final PluginState from, final PluginState to) throws Exception {
         // given
-        DefaultPlugin plugin = new DefaultPlugin();
+        Plugin plugin = DefaultPlugin.Builder.identifier("identifier").build();
 
         if (from != null) {
             plugin.changeStateTo(from);
@@ -67,9 +67,7 @@ public class PluginChangeStateToTest {
         Module module1 = mock(Module.class);
         Module module2 = mock(Module.class);
 
-        DefaultPlugin plugin = new DefaultPlugin();
-        plugin.addModule(module1);
-        plugin.addModule(module2);
+        Plugin plugin = DefaultPlugin.Builder.identifier("identifier").withModule(module1).withModule(module2).build();
 
         if (from != null) {
             plugin.changeStateTo(from);

@@ -1,27 +1,56 @@
 package com.qcadoo.plugin;
 
+import static com.qcadoo.plugin.PluginState.DISABLED;
+import static com.qcadoo.plugin.PluginState.ENABLED;
+import static com.qcadoo.plugin.PluginState.ENABLING;
+import static com.qcadoo.plugin.PluginState.TEMPORARY;
+import static com.qcadoo.plugin.PluginState.UNKNOWN;
+import static java.util.Collections.unmodifiableSet;
+
+import java.util.HashSet;
 import java.util.Set;
 
 import com.qcadoo.plugin.dependency.PluginDependencyInformation;
 
 public class DefaultPlugin implements Plugin {
 
+    private PluginState state = UNKNOWN;
+
+    private final String identifier;
+
+    private final Set<Module> modules;
+
+    private final PluginInformation information;
+
+    private final Set<PluginDependencyInformation> dependencies;
+
+    private final boolean system;
+
+    private final String filename;
+
+    private DefaultPlugin(final String identifier, final String filename, final boolean system, final Set<Module> modules,
+            final PluginInformation information, final Set<PluginDependencyInformation> dependencies) {
+        this.identifier = identifier;
+        this.filename = filename;
+        this.modules = modules;
+        this.information = information;
+        this.dependencies = dependencies;
+        this.system = system;
+    }
+
     @Override
     public String getIdentifier() {
-        // TODO Auto-generated method stub
-        return null;
+        return identifier;
     }
 
     @Override
     public PluginInformation getPluginInformation() {
-        // TODO Auto-generated method stub
-        return null;
+        return information;
     }
 
     @Override
     public PluginState getPluginState() {
-        // TODO Auto-generated method stub
-        return null;
+        return state;
     }
 
     @Override
@@ -37,15 +66,55 @@ public class DefaultPlugin implements Plugin {
     }
 
     @Override
-    public boolean hasState(final PluginState state) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean hasState(final PluginState expectedState) {
+        return state.equals(expectedState);
     }
 
     @Override
-    public Object changeStateTo(final PluginState disabled) {
-        // TODO Auto-generated method stub
-        return null;
+    public void changeStateTo(final PluginState targetState) {
+        if (!isTransitionPossible(this.state, targetState)) {
+            throw new IllegalStateException("Cannot change state of plugin " + this + " from " + state + " to " + targetState);
+        }
+
+        if (!state.equals(UNKNOWN) && targetState.equals(ENABLED)) {
+            for (Module module : modules) {
+                module.enable();
+            }
+        } else if (!state.equals(UNKNOWN) && targetState.equals(DISABLED)) {
+            for (Module module : modules) {
+                module.disable();
+            }
+        }
+
+        state = targetState;
+    }
+
+    private boolean isTransitionPossible(final PluginState from, final PluginState to) {
+        if (from == null || to == null || to.equals(UNKNOWN) || to.equals(from)) {
+            return false;
+        }
+
+        if (from.equals(UNKNOWN)) {
+            return true;
+        }
+
+        if (to.equals(TEMPORARY)) {
+            return false;
+        }
+
+        if (from.equals(ENABLING) && to.equals(DISABLED)) {
+            return false;
+        }
+
+        if (from.equals(ENABLED) && to.equals(ENABLING)) {
+            return false;
+        }
+
+        if (from.equals(TEMPORARY) && !to.equals(ENABLING)) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -56,18 +125,71 @@ public class DefaultPlugin implements Plugin {
 
     @Override
     public int compareVersion(final Plugin plugin) {
-        // TODO Auto-generated method stub
-        return 0;
+        if (!identifier.equals(plugin.getIdentifier())) {
+            throw new IllegalStateException("Cannot compare versions of different plugins " + this + " and " + plugin);
+        }
+
+        if (information.getVersion().equals(plugin.getPluginInformation().getVersion())) {
+            return 0;
+        }
+
+        return -1;
     }
 
     @Override
     public void init() {
-        // TODO Auto-generated method stub
+        if (state.equals(PluginState.UNKNOWN)) {
+            throw new IllegalStateException("Plugin " + getIdentifier() + " is in unknown state, cannot be initialized");
+        }
 
+        for (Module module : modules) {
+            module.init();
+        }
     }
 
-    public void addModule(final Module module1) {
-        // TODO Auto-generated method stub
+    public static class Builder {
+
+        private final String identifier;
+
+        private String version;
+
+        private String filename;
+
+        private String description;
+
+        private String vendor;
+
+        private String vendorUrl;
+
+        private String name;
+
+        private final Set<Module> modules = new HashSet<Module>();
+
+        private final Set<PluginDependencyInformation> dependencyInformations = new HashSet<PluginDependencyInformation>();
+
+        public Builder(final String identifier) {
+            this.identifier = identifier;
+        }
+
+        public static Builder identifier(final String identifier) {
+            return new Builder(identifier);
+        }
+
+        public Builder withModule(final Module module) {
+            modules.add(module);
+            return this;
+        }
+
+        public Builder withVersion(final String version) {
+            this.version = version;
+            return this;
+        }
+
+        public Plugin build() {
+            PluginInformation pluginInformation = new PluginInformation(name, description, vendor, vendorUrl, version);
+            return new DefaultPlugin(identifier, filename, false, unmodifiableSet(modules), pluginInformation,
+                    unmodifiableSet(dependencyInformations));
+        }
 
     }
 

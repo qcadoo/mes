@@ -2,23 +2,20 @@ package com.qcadoo.plugin;
 
 public class PluginInformation {
 
-    private String description;
+    private final String description;
 
-    private String vendor;
+    private final String vendor;
 
-    private String vendorUrl;
+    private final String vendorUrl;
 
-    private String version;
+    private final String version;
 
     private final String name;
 
-    private final String fileName;
-
     public PluginInformation(final String name, final String description, final String vendor, final String vendorUrl,
-            final String version, final String fileName) {
+            final String version) {
         super();
         this.name = name;
-        this.fileName = fileName;
         this.description = description;
         this.vendor = vendor;
         this.vendorUrl = vendorUrl;
@@ -45,20 +42,11 @@ public class PluginInformation {
         return name;
     }
 
-    public String getFileName() {
-        return fileName;
-    }
-
-    public String getPluginKey() {
-        return name + ":" + vendor + ":" + version;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((description == null) ? 0 : description.hashCode());
-        result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((vendor == null) ? 0 : vendor.hashCode());
         result = prime * result + ((vendorUrl == null) ? 0 : vendorUrl.hashCode());
@@ -67,7 +55,7 @@ public class PluginInformation {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj)
             return true;
         if (obj == null)
@@ -79,11 +67,6 @@ public class PluginInformation {
             if (other.description != null)
                 return false;
         } else if (!description.equals(other.description))
-            return false;
-        if (fileName == null) {
-            if (other.fileName != null)
-                return false;
-        } else if (!fileName.equals(other.fileName))
             return false;
         if (name == null) {
             if (other.name != null)
