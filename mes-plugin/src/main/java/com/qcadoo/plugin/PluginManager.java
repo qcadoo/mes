@@ -6,9 +6,7 @@ public interface PluginManager {
 
     PluginOperationResult disablePlugin(final String... keys);
 
-    PluginOperationResult installPlugin(final PluginArtifact pluginArtifact);
-
     PluginOperationResult uninstallPlugin(final String... keys);
 
-    PluginOperationResult updatePlugin(final PluginArtifact pluginArtifact);
+    PluginOperationResult installPlugin(final PluginArtifact pluginArtifact);
 }
