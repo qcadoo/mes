@@ -19,7 +19,7 @@ import org.mockito.Mockito;
 
 import com.qcadoo.plugin.manager.DefaultPluginManager;
 
-public class PluginStateTest {
+public class PluginMangerTest {
 
     private Plugin plugin = mock(Plugin.class);
 

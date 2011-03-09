@@ -228,6 +228,8 @@ public class DefaultPluginManager implements PluginManager {
             if (!pluginDependencyResult.isDependenciesSatisfied()
                     && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
                 pluginFileManager.uninstallPlugin(databasePlugin.getFilename());
+                // TODO pluginDao.save(plugin) == pluginDao.save(databasePlugin)
+                // don't use setPluginInformation
                 databasePlugin.setPluginInformation(plugin.getPluginInformation());
                 pluginDao.save(databasePlugin);
                 return PluginOperationResult.successWithMissingDependencies(pluginDependencyResult);
@@ -259,6 +261,8 @@ public class DefaultPluginManager implements PluginManager {
             // TODO KRNA disable/enable
         }
         pluginFileManager.uninstallPlugin(databasePlugin.getFilename());
+        // TODO pluginDao.save(plugin) == pluginDao.save(databasePlugin)
+        // don't use setPluginInformation
         databasePlugin.setPluginInformation(plugin.getPluginInformation());
         pluginDao.save(databasePlugin);
         if (shouldRestart) {

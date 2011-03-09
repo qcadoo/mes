@@ -12,7 +12,4 @@ public interface PluginAccessor {
 
     Collection<Plugin> getPlugins();
 
-    boolean isPluginEnabled(String key);
-
-    boolean isSystemPlugin(String key);
 }
