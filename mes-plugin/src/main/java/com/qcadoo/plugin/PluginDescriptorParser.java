@@ -1,12 +1,12 @@
 package com.qcadoo.plugin;
 
 import java.io.File;
+import java.util.Set;
 
-public class PluginDescriptorParser {
+public interface PluginDescriptorParser {
 
-    public Plugin parse(final File file) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    Plugin parse(final File file);
+
+    Set<Plugin> loadPlugins();
 
 }

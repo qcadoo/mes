@@ -1,19 +1,16 @@
 package com.qcadoo.plugin;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Collection;
 import java.util.Set;
 
 public interface Plugin {
 
-    void addModule(final Module module);
+    // void addModule(final Module module);
 
-    Module getModule(final String key);
+    // Module getModule(final String key);
 
-    Collection<Module> getModules();
+    // Collection<Module> getModules();
 
-    String getName();
+    String getIdentifier();
 
     PluginInformation getPluginInformation();
 
@@ -23,26 +20,30 @@ public interface Plugin {
 
     Set<PluginInformation> getRequiredPlugins();
 
-    URL getResource(final String path);
-
-    InputStream getResourceAsStream(final String name);
-
     boolean isSystemPlugin();
 
-    void setSystemPlugin(final boolean system);
-
-    void enable();
-
-    void disable();
-
-    void install();
-
-    void uninstall();
+    // URL getResource(final String path);
+    //
+    // InputStream getResourceAsStream(final String name);
+    //
+    // void setSystemPlugin(final boolean system);
+    //
+    // void enable();
+    //
+    // void disable();
+    //
+    // void install();
+    //
+    // void uninstall();
 
     boolean hasState(PluginState state);
 
     Object changeStateTo(PluginState disabled);
 
     String getFilename();
+
+    int compareVersion(Plugin plugin);
+
+    void init();
 
 }
