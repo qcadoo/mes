@@ -261,6 +261,38 @@ public class PluginDependencyManagerTest {
     }
 
     @Test
+    public void shouldReturnDisabledDependenciesForMultiplePluginsHardExample() throws Exception {
+        // given
+
+        given(plugin1.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
+        given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo3));
+        given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo4));
+
+        given(plugin2.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin3.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin4.getPluginState()).willReturn(PluginState.TEMPORARY);
+
+        given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);
+        given(pluginAccessor.getPlugin("testPlugin3")).willReturn(plugin3);
+        given(pluginAccessor.getPlugin("testPlugin4")).willReturn(plugin4);
+
+        List<Plugin> plugins = new ArrayList<Plugin>();
+        plugins.add(plugin1);
+        plugins.add(plugin3);
+
+        // when
+        PluginDependencyResult result = manager.getDependenciesToEnable(plugins);
+
+        // then
+        assertFalse(result.isCyclic());
+        assertEquals(2, result.getDisabledDependencies().size());
+        assertTrue(result.getDisabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
+        assertTrue(result.getDisabledDependencies().contains(new PluginDependencyInformation("testPlugin4")));
+        assertEquals(0, result.getUnsatisfiedDependencies().size());
+        assertEquals(0, result.getEnabledDependencies().size());
+    }
+
+    @Test
     public void shouldReturnValidResultForCyclicDependencies() throws Exception {
         // given
         Set<PluginDependencyInformation> disabledRequiredPlugins1 = new HashSet<PluginDependencyInformation>();
@@ -388,235 +420,220 @@ public class PluginDependencyManagerTest {
         assertEquals(0, result.getEnabledDependencies().size());
     }
 
-    //
-    // @Test
-    // public void shouldReturnEmptyDependencyToDisableWhenNoDependenciesSpecifiedInOnePlugin() throws Exception {
-    // // given
-    // Plugin p = mock(Plugin.class);
-    // given(p.getRequiredPlugins()).willReturn(Collections.<PluginInformation> emptySet());
-    //
-    // PluginDependencyManager m = new DefaultPluginDependencyManager(pluginAccessor);
-    //
-    // // when
-    // PluginDependencyResult result = m.getDependenciesToDisable(singletonList(p));
-    //
-    // // then
-    // assertEquals(0, result.getDisabledDependencies().size());
-    // assertEquals(0, result.getUnsatisfiedDependencies().size());
-    // assertEquals(0, result.getEnabledDependencies().size());
-    // }
-    //
-    // @Test
-    // public void shouldReturnSingleEnabledDependencyForOnePlugin() throws Exception {
-    // // given
-    // Plugin p = mock(Plugin.class);
-    // Set<PluginInformation> disabledRequiredPlugins = Collections.singleton(dependencyPluginInformation1);
-    // given(p.getRequiredPlugins()).willReturn(disabledRequiredPlugins);
-    //
-    // PluginDependencyManager m = new DefaultPluginDependencyManager(pluginAccessor);
-    //
-    // given(dependencyPlugin1.getPluginState()).willReturn(PluginState.ENABLED);
-    //
-    // // when
-    // PluginDependencyResult result = m.getDependenciesToDisable(singletonList(p));
-    //
-    // // then
-    // assertEquals(0, result.getDisabledDependencies().size());
-    // assertEquals(0, result.getUnsatisfiedDependencies().size());
-    // assertEquals(1, result.getEnabledDependencies().size());
-    // assertEquals("defaultPlugin", result.getEnabledDependencies().get(0).getName());
-    // assertEquals("defaultPlugin_vendor", result.getEnabledDependencies().get(0).getVendor());
-    // assertEquals("defaultPlugin_version", result.getEnabledDependencies().get(0).getVersion());
-    // }
-    //
-    // @Test
-    // public void shouldReturnMultipleEnabledDependencyForOnePlugin() throws Exception {
-    // // given
-    // Plugin p = mock(Plugin.class);
-    // Set<PluginInformation> disabledRequiredPlugins = new HashSet<PluginInformation>();
-    // disabledRequiredPlugins.add(dependencyPluginInformation1);
-    // disabledRequiredPlugins.add(dependencyPluginInformation2);
-    // disabledRequiredPlugins.add(dependencyPluginInformation3);
-    // given(p.getRequiredPlugins()).willReturn(disabledRequiredPlugins);
-    //
-    // PluginDependencyManager m = new DefaultPluginDependencyManager(pluginAccessor);
-    //
-    // given(dependencyPlugin1.getPluginState()).willReturn(PluginState.ENABLED);
-    // given(dependencyPlugin2.getPluginState()).willReturn(PluginState.ENABLED);
-    // given(dependencyPlugin3.getPluginState()).willReturn(PluginState.ENABLED);
-    //
-    // // when
-    // PluginDependencyResult result = m.getDependenciesToDisable(singletonList(p));
-    //
-    // // then
-    // assertEquals(3, result.getEnabledDependencies().size());
-    //
-    // for (PluginInformation information : result.getEnabledDependencies()) {
-    // assertNotNull(dependencyPluginInformations.get(information.getName()));
-    //
-    // assertEquals(information.getName(), dependencyPluginInformations.get(information.getName()).getName());
-    // assertEquals(information.getName() + "_vendor", dependencyPluginInformations.get(information.getName()).getVendor());
-    // assertEquals(information.getName() + "_version", dependencyPluginInformations.get(information.getName()).getVersion());
-    //
-    // dependencyPluginInformations.remove(information.getName());
-    // }
-    //
-    // assertEquals(0, result.getUnsatisfiedDependencies().size());
-    // assertEquals(0, result.getDisabledDependencies().size());
-    // }
-    //
-    // @Test
-    // public void shouldReturnEnabledDependenciesForOnePluginWhenSomeAreSatisfied() throws Exception {
-    // // given
-    // Plugin p = mock(Plugin.class);
-    // Set<PluginInformation> disabledRequiredPlugins = new HashSet<PluginInformation>();
-    // disabledRequiredPlugins.add(dependencyPluginInformation1);
-    // disabledRequiredPlugins.add(dependencyPluginInformation2);
-    // disabledRequiredPlugins.add(dependencyPluginInformation3);
-    // given(p.getRequiredPlugins()).willReturn(disabledRequiredPlugins);
-    //
-    // PluginDependencyManager m = new DefaultPluginDependencyManager(pluginAccessor);
-    //
-    // given(dependencyPlugin1.getPluginState()).willReturn(PluginState.DISABLED);
-    // given(dependencyPlugin2.getPluginState()).willReturn(PluginState.ENABLED);
-    // given(dependencyPlugin3.getPluginState()).willReturn(PluginState.TEMPORARY);
-    //
-    // // when
-    // PluginDependencyResult result = m.getDependenciesToDisable(singletonList(p));
-    //
-    // // then
-    // assertEquals(0, result.getDisabledDependencies().size());
-    // assertEquals(0, result.getUnsatisfiedDependencies().size());
-    // assertEquals(1, result.getEnabledDependencies().size());
-    // assertEquals("defaultPlugin2", result.getEnabledDependencies().get(0).getName());
-    // assertEquals("defaultPlugin2_vendor", result.getEnabledDependencies().get(0).getVendor());
-    // assertEquals("defaultPlugin2_version", result.getEnabledDependencies().get(0).getVersion());
-    // }
-    //
-    // @Test
-    // public void shouldReturnEnabledDependenciesForMultiplePlugins() throws Exception {
-    // // given
-    // Plugin p = mock(Plugin.class);
-    // Set<PluginInformation> disabledRequiredPlugins = new HashSet<PluginInformation>();
-    // disabledRequiredPlugins.add(dependencyPluginInformation1);
-    // disabledRequiredPlugins.add(dependencyPluginInformation2);
-    // given(p.getRequiredPlugins()).willReturn(disabledRequiredPlugins);
-    //
-    // Plugin p2 = mock(Plugin.class);
-    // Set<PluginInformation> disabledRequiredPlugins2 = new HashSet<PluginInformation>();
-    // disabledRequiredPlugins2.add(dependencyPluginInformation2_2);
-    // disabledRequiredPlugins2.add(dependencyPluginInformation3);
-    // given(p2.getRequiredPlugins()).willReturn(disabledRequiredPlugins2);
-    //
-    // Plugin p3 = mock(Plugin.class);
-    // Set<PluginInformation> disabledRequiredPlugins3 = new HashSet<PluginInformation>();
-    // disabledRequiredPlugins3.add(dependencyPluginInformation1_2);
-    // disabledRequiredPlugins3.add(dependencyPluginInformation3_2);
-    // given(p3.getRequiredPlugins()).willReturn(disabledRequiredPlugins3);
-    //
-    // PluginDependencyManager m = new DefaultPluginDependencyManager(pluginAccessor);
-    //
-    // given(dependencyPlugin1.getPluginState()).willReturn(PluginState.ENABLED);
-    // given(dependencyPlugin2.getPluginState()).willReturn(PluginState.ENABLED);
-    // given(dependencyPlugin3.getPluginState()).willReturn(PluginState.TEMPORARY);
-    //
-    // List<Plugin> plugins = new ArrayList<Plugin>();
-    // plugins.add(p);
-    // plugins.add(p2);
-    // plugins.add(p3);
-    //
-    // // when
-    // PluginDependencyResult result = m.getDependenciesToDisable(plugins);
-    //
-    // // then
-    // assertEquals(0, result.getDisabledDependencies().size());
-    // assertEquals(0, result.getUnsatisfiedDependencies().size());
-    // assertEquals(2, result.getEnabledDependencies().size());
-    // dependencyPluginInformations.remove(dependencyPlugin3.getPluginInformation().getName());
-    // for (PluginInformation information : result.getEnabledDependencies()) {
-    // assertNotNull(dependencyPluginInformations.get(information.getName()));
-    //
-    // assertEquals(information.getName(), dependencyPluginInformations.get(information.getName()).getName());
-    // assertEquals(information.getName() + "_vendor", dependencyPluginInformations.get(information.getName()).getVendor());
-    // assertEquals(information.getName() + "_version", dependencyPluginInformations.get(information.getName()).getVersion());
-    //
-    // dependencyPluginInformations.remove(information.getName());
-    // }
-    // }
-    //
+    @Test
+    public void shouldReturnEmptyDependencyToDisableWhenNoDependenciesSpecifiedInOnePlugin() throws Exception {
+        // given
+        given(plugin1.getRequiredPlugins()).willReturn(Collections.<PluginDependencyInformation> emptySet());
 
-    //
-    // @Test
-    // public void shouldCheckDependenciesDependenciesAndReturnMultipleDependenciesForDisable() throws Exception {
-    // // given
-    // Plugin p = mock(Plugin.class);
-    // given(p.getPluginInformation()).willReturn(dependencyPluginInformation1);
-    // Set<PluginInformation> disabledRequiredPlugins = new HashSet<PluginInformation>();
-    // disabledRequiredPlugins.add(dependencyPluginInformation2);
-    // given(p.getRequiredPlugins()).willReturn(disabledRequiredPlugins);
-    //
-    // Plugin p2 = mock(Plugin.class);
-    // given(p2.getPluginInformation()).willReturn(dependencyPluginInformation2);
-    // Set<PluginInformation> disabledRequiredPlugins2 = new HashSet<PluginInformation>();
-    // disabledRequiredPlugins2.add(dependencyPluginInformation3);
-    // given(dependencyPlugin2.getRequiredPlugins()).willReturn(disabledRequiredPlugins2);
-    //
-    // given(dependencyPlugin1.getPluginState()).willReturn(PluginState.ENABLED);
-    // given(dependencyPlugin2.getPluginState()).willReturn(PluginState.ENABLED);
-    // given(dependencyPlugin3.getPluginState()).willReturn(PluginState.ENABLED);
-    //
-    // PluginDependencyManager m = new DefaultPluginDependencyManager(pluginAccessor);
-    //
-    // // when
-    // PluginDependencyResult result = m.getDependenciesToDisable(singletonList(p));
-    //
-    // // then
-    // assertEquals(2, result.getEnabledDependencies().size());
-    //
-    // for (PluginInformation information : result.getDisabledDependencies()) {
-    // assertNotNull(dependencyPluginInformations.get(information.getName()));
-    //
-    // assertEquals(information.getName(), dependencyPluginInformations.get(information.getName()).getName());
-    // assertEquals(information.getName() + "_vendor", dependencyPluginInformations.get(information.getName()).getVendor());
-    // assertEquals(information.getName() + "_version", dependencyPluginInformations.get(information.getName()).getVersion());
-    //
-    // dependencyPluginInformations.remove(information.getName());
-    // }
-    //
-    // assertEquals(0, result.getUnsatisfiedDependencies().size());
-    // assertEquals(0, result.getDisabledDependencies().size());
-    // }
-    //
-    // @Test
-    // public void shouldSetCyclicFlagOnCyclicDependencies() throws Exception {
-    // // given
-    // Plugin p = mock(Plugin.class);
-    // given(p.getPluginInformation()).willReturn(dependencyPluginInformation1);
-    // Set<PluginInformation> disabledRequiredPlugins = new HashSet<PluginInformation>();
-    // disabledRequiredPlugins.add(dependencyPluginInformation2);
-    // given(p.getRequiredPlugins()).willReturn(disabledRequiredPlugins);
-    //
-    // Plugin p2 = mock(Plugin.class);
-    // given(p2.getPluginInformation()).willReturn(dependencyPluginInformation2);
-    // Set<PluginInformation> disabledRequiredPlugins2 = new HashSet<PluginInformation>();
-    // disabledRequiredPlugins2.add(dependencyPluginInformation1);
-    // given(p2.getRequiredPlugins()).willReturn(disabledRequiredPlugins2);
-    //
-    // PluginDependencyManager m = new DefaultPluginDependencyManager(pluginAccessor);
-    //
-    // given(dependencyPlugin1.getPluginState()).willReturn(PluginState.TEMPORARY);
-    // given(dependencyPlugin2.getPluginState()).willReturn(PluginState.TEMPORARY);
-    //
-    // List<Plugin> plugins = new ArrayList<Plugin>();
-    // plugins.add(p);
-    // plugins.add(p2);
-    //
-    // // when
-    // PluginDependencyResult result = m.getDependenciesToEnable(plugins);
-    //
-    // // then
-    // assertTrue(result.isCyclic());
-    // }
-    //
+        // when
+        PluginDependencyResult result = manager.getDependenciesToDisable(singletonList(plugin1));
 
+        // then
+        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getUnsatisfiedDependencies().size());
+        assertEquals(0, result.getEnabledDependencies().size());
+    }
+
+    @Test
+    public void shouldReturnSingleEnabledDependencyForOnePlugin() throws Exception {
+        // given
+        given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
+        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+
+        Set<Plugin> plugins = new HashSet<Plugin>();
+        plugins.add(plugin1);
+        plugins.add(plugin2);
+        plugins.add(plugin3);
+        given(pluginAccessor.getPlugins()).willReturn(plugins);
+
+        // when
+        PluginDependencyResult result = manager.getDependenciesToDisable(singletonList(plugin1));
+
+        // then
+        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getUnsatisfiedDependencies().size());
+        assertEquals(1, result.getEnabledDependencies().size());
+        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
+    }
+
+    @Test
+    public void shouldReturnMultipleEnabledDependencyForOnePlugin() throws Exception {
+        // given
+        given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
+        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+
+        given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
+        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+
+        given(plugin4.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
+        given(plugin4.getPluginState()).willReturn(PluginState.ENABLED);
+
+        Set<Plugin> plugins = new HashSet<Plugin>();
+        plugins.add(plugin1);
+        plugins.add(plugin2);
+        plugins.add(plugin3);
+        plugins.add(plugin4);
+        given(pluginAccessor.getPlugins()).willReturn(plugins);
+
+        // when
+        PluginDependencyResult result = manager.getDependenciesToDisable(singletonList(plugin1));
+
+        // then
+        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getUnsatisfiedDependencies().size());
+        assertEquals(3, result.getEnabledDependencies().size());
+        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
+        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin3")));
+        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin4")));
+    }
+
+    @Test
+    public void shouldReturnEnabledDependenciesForOnePluginWhenSomeAreSatisfied() throws Exception {
+        // given
+        given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
+        given(plugin2.getPluginState()).willReturn(PluginState.DISABLED);
+
+        given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
+        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+
+        given(plugin4.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
+        given(plugin4.getPluginState()).willReturn(PluginState.TEMPORARY);
+
+        Set<Plugin> plugins = new HashSet<Plugin>();
+        plugins.add(plugin1);
+        plugins.add(plugin2);
+        plugins.add(plugin3);
+        plugins.add(plugin4);
+        given(pluginAccessor.getPlugins()).willReturn(plugins);
+
+        // when
+        PluginDependencyResult result = manager.getDependenciesToDisable(singletonList(plugin1));
+
+        // then
+        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getUnsatisfiedDependencies().size());
+        assertEquals(1, result.getEnabledDependencies().size());
+        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin3")));
+    }
+
+    @Test
+    public void shouldReturnEnabledDependenciesForMultiplePlugins() throws Exception {
+        // given
+        given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
+        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+
+        Set<Plugin> plugins = new HashSet<Plugin>();
+        plugins.add(plugin1);
+        plugins.add(plugin2);
+        plugins.add(plugin3);
+        plugins.add(plugin4);
+        given(pluginAccessor.getPlugins()).willReturn(plugins);
+
+        List<Plugin> argumentPlugins = new ArrayList<Plugin>();
+        argumentPlugins.add(plugin1);
+        argumentPlugins.add(plugin2);
+
+        // when
+        PluginDependencyResult result = manager.getDependenciesToDisable(argumentPlugins);
+
+        // then
+        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getUnsatisfiedDependencies().size());
+        assertEquals(0, result.getEnabledDependencies().size());
+    }
+
+    @Test
+    public void shouldCheckDependenciesDependenciesAndReturnMultipleDependenciesForDisable() throws Exception {
+        // given
+        given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
+        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+
+        given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
+        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+
+        given(plugin4.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo3));
+        given(plugin4.getPluginState()).willReturn(PluginState.ENABLED);
+
+        Set<Plugin> plugins = new HashSet<Plugin>();
+        plugins.add(plugin1);
+        plugins.add(plugin2);
+        plugins.add(plugin3);
+        plugins.add(plugin4);
+        given(pluginAccessor.getPlugins()).willReturn(plugins);
+
+        // when
+        PluginDependencyResult result = manager.getDependenciesToDisable(singletonList(plugin1));
+
+        // then
+        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getUnsatisfiedDependencies().size());
+        assertEquals(3, result.getEnabledDependencies().size());
+        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
+        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin3")));
+        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin4")));
+    }
+
+    @Test
+    public void shouldCheckDependenciesDependenciesAndReturnMultipleDependenciesForDisableWhenSomePluginDisabled()
+            throws Exception {
+        // given
+        given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
+        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+
+        given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
+        given(plugin3.getPluginState()).willReturn(PluginState.DISABLED);
+
+        given(plugin4.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo3));
+        given(plugin4.getPluginState()).willReturn(PluginState.ENABLED);
+
+        Set<Plugin> plugins = new HashSet<Plugin>();
+        plugins.add(plugin1);
+        plugins.add(plugin2);
+        plugins.add(plugin3);
+        plugins.add(plugin4);
+        given(pluginAccessor.getPlugins()).willReturn(plugins);
+
+        // when
+        PluginDependencyResult result = manager.getDependenciesToDisable(singletonList(plugin1));
+
+        // then
+        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getUnsatisfiedDependencies().size());
+        assertEquals(1, result.getEnabledDependencies().size());
+        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
+    }
+
+    @Test
+    public void shouldCheckDependenciesDependenciesAndReturnMultipleDependenciesForDisableWhenMultiplePlugins() throws Exception {
+        // given
+        given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
+        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+
+        given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
+        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+
+        given(plugin4.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo3));
+        given(plugin4.getPluginState()).willReturn(PluginState.ENABLED);
+
+        Set<Plugin> plugins = new HashSet<Plugin>();
+        plugins.add(plugin1);
+        plugins.add(plugin2);
+        plugins.add(plugin3);
+        plugins.add(plugin4);
+        given(pluginAccessor.getPlugins()).willReturn(plugins);
+
+        List<Plugin> argumentPlugins = new ArrayList<Plugin>();
+        argumentPlugins.add(plugin1);
+        argumentPlugins.add(plugin3);
+
+        // when
+        PluginDependencyResult result = manager.getDependenciesToDisable(argumentPlugins);
+
+        // then
+        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getUnsatisfiedDependencies().size());
+        assertEquals(2, result.getEnabledDependencies().size());
+        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
+        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin4")));
+    }
 }
