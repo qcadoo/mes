@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.qcadoo.plugin.manager.DefaultPluginManager;
 
 public class PluginManagerUpdateTest {
 
