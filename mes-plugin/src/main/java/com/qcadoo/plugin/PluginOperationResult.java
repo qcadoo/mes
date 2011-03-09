@@ -34,6 +34,10 @@ public class PluginOperationResult {
         return new PluginOperationResult(PluginOperationStatus.SYSTEM_PLUGIN_UNINSTALLING);
     }
 
+    public static PluginOperationResult systemPluginUpdating() {
+        return new PluginOperationResult(PluginOperationStatus.SYSTEM_PLUGIN_UPDATING);
+    }
+
     public static PluginOperationResult corruptedPlugin() {
         return new PluginOperationResult(PluginOperationStatus.CORRUPTED_PLUGIN);
     }

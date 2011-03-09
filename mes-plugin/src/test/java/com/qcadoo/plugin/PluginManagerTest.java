@@ -10,12 +10,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import java.io.File;
 import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.qcadoo.plugin.dependency.PluginDependencyInformation;
 import com.qcadoo.plugin.dependency.PluginDependencyResult;
@@ -38,11 +36,7 @@ public class PluginManagerTest {
 
     private PluginInformation pluginInformation = mock(PluginInformation.class);
 
-    private PluginArtifact pluginArtifact = mock(PluginArtifact.class);
-
     private PluginDescriptorParser pluginDescriptorParser = mock(PluginDescriptorParser.class);
-
-    private File file = mock(File.class);
 
     private DefaultPluginManager pluginManager;
 
@@ -296,81 +290,6 @@ public class PluginManagerTest {
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
         assertTrue(pluginOperationResult.getPluginDependencyResult().getEnabledDependencies()
                 .contains(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
-    }
-
-    @Test
-    public void shouldInstallPlugin() throws Exception {
-        // given
-        given(pluginDescriptorParser.parse(file)).willReturn(plugin);
-        given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
-
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
-        given(pluginDependencyManager.getDependenciesToEnable(newArrayList(plugin))).willReturn(pluginDependencyResult);
-
-        // when
-        PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
-
-        // then
-        verify(pluginDao).save(plugin);
-        assertTrue(pluginOperationResult.isSuccess());
-        assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
-    }
-
-    @Test
-    public void shouldInstallPluginAndNotifyAboutMissingDependencies() throws Exception {
-        // given
-        given(pluginDescriptorParser.parse(file)).willReturn(plugin);
-        given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
-
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.unsatisfiedDependencies(Collections
-                .singleton(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
-        given(pluginDependencyManager.getDependenciesToEnable(newArrayList(plugin))).willReturn(pluginDependencyResult);
-
-        // when
-        PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
-
-        // then
-        verify(pluginDao).save(plugin);
-        assertTrue(pluginOperationResult.isSuccess());
-        assertEquals(PluginOperationStatus.SUCCESS_WITH_MISSING_DEPENDENCIES, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
-        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
-        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
-        assertTrue(pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies()
-                .contains(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
-    }
-
-    @Test
-    public void shouldFailureWithCorruptedPluginOnInstall() throws Exception {
-        // given
-        given(pluginDescriptorParser.parse(file)).willThrow(new PluginException());
-        given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(file);
-        given(file.getName()).willReturn("filename");
-
-        // when
-        PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
-
-        // then
-        verify(pluginDao, never()).save(Mockito.any(Plugin.class));
-        verify(pluginFileManager).removePlugin("filename");
-        assertFalse(pluginOperationResult.isSuccess());
-        assertEquals(PluginOperationStatus.CORRUPTED_PLUGIN, pluginOperationResult.getStatus());
-    }
-
-    @Test
-    public void shouldFailureOnUploadingPluginOnInstall() throws Exception {
-        // given
-        given(pluginFileManager.uploadPlugin(pluginArtifact)).willThrow(new PluginException());
-
-        // when
-        PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
-
-        // then
-        verify(pluginDao, never()).save(Mockito.any(Plugin.class));
-        assertFalse(pluginOperationResult.isSuccess());
-        assertEquals(PluginOperationStatus.CANNOT_UPLOAD_PLUGIN, pluginOperationResult.getStatus());
     }
 
     @Test

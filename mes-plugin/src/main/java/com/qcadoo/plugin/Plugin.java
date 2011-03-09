@@ -16,8 +16,6 @@ public interface Plugin {
 
     PluginInformation getPluginInformation();
 
-    void setPluginInformation(final PluginInformation pluginInformation);
-
     PluginState getPluginState();
 
     Set<PluginDependencyInformation> getRequiredPlugins();
