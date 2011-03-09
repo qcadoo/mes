@@ -1,6 +1,7 @@
 package com.qcadoo.plugin.manager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
         this.pluginAccessor = pluginAccessor;
     }
 
+    @Override
     public PluginDependencyResult getDependenciesToEnable(final List<Plugin> plugins) {
         return getDependenciesToEnable(plugins, new HashSet<PluginInformation>());
     }
@@ -81,7 +83,8 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
         }
     }
 
-    public PluginDependencyResult getDependenciesToDisable(List<Plugin> plugins) {
+    @Override
+    public PluginDependencyResult getDependenciesToDisable(final List<Plugin> plugins) {
 
         List<PluginInformation> enabledDependencies = new ArrayList<PluginInformation>();
 
@@ -118,7 +121,7 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
         }
     }
 
-    private Set<PluginInformation> getArgumentPluginInformationsSet(List<Plugin> plugins) {
+    private Set<PluginInformation> getArgumentPluginInformationsSet(final List<Plugin> plugins) {
         Set<PluginInformation> argumentPluginInformationsSet = new HashSet<PluginInformation>();
         for (Plugin plugin : plugins) {
             argumentPluginInformationsSet.add(plugin.getPluginInformation());
@@ -134,5 +137,11 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
         if (!list.contains(element)) {
             list.add(element);
         }
+    }
+
+    @Override
+    public List<Plugin> sortPlugins(final Collection<Plugin> plugins) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

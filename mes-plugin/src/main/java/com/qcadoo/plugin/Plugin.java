@@ -10,11 +10,9 @@ public interface Plugin {
 
     // Collection<Module> getModules();
 
-    String getName();
+    String getIdentifier();
 
     PluginInformation getPluginInformation();
-
-    void setPluginInformation(final PluginInformation pluginInformation);
 
     PluginState getPluginState();
 

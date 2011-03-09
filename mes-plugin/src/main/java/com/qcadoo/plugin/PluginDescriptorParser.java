@@ -5,7 +5,7 @@ import java.util.Set;
 
 public interface PluginDescriptorParser {
 
-    Plugin parse(final File file) throws PluginException;
+    Plugin parse(final File file);
 
     Set<Plugin> loadPlugins();
 

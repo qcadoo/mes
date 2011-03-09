@@ -1,5 +1,6 @@
 package com.qcadoo.plugin;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface PluginDependencyManager {
@@ -22,5 +23,7 @@ public interface PluginDependencyManager {
      * @return PluginDependencyResult
      */
     PluginDependencyResult getDependenciesToDisable(List<Plugin> plugins);
+
+    List<Plugin> sortPlugins(Collection<Plugin> plugins);
 
 }

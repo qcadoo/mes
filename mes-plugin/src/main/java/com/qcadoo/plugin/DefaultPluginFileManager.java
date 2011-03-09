@@ -22,7 +22,7 @@ public class DefaultPluginFileManager implements PluginFileManager {
     private String pluginsTmpPath;
 
     @Override
-    public boolean installPlugin(final String... keys) throws PluginException {
+    public boolean installPlugin(final String... keys) {
         if (!checkFileRightsToWrite(pluginsPath)) {
             return false;
         }
@@ -37,14 +37,14 @@ public class DefaultPluginFileManager implements PluginFileManager {
                         false);
             } catch (IOException e) {
                 LOG.error("Problem with moving plugin file - " + e.getMessage());
-                throw new PluginException(e.getMessage(), e.getCause());
+                throw new PluginException(e.getMessage(), e);
             }
         }
         return true;
     }
 
     @Override
-    public File uploadPlugin(final PluginArtifact pluginArtifact) throws PluginException {
+    public File uploadPlugin(final PluginArtifact pluginArtifact) {
         InputStream input = pluginArtifact.getInputStream();
         File pluginFile = new File(pluginsTmpPath + getProperty("file.separator") + pluginArtifact.getName());
         OutputStream output = null;
@@ -55,7 +55,7 @@ public class DefaultPluginFileManager implements PluginFileManager {
             output.flush();
         } catch (IOException e) {
             LOG.error("Problem with upload plugin file - " + e.getMessage());
-            throw new PluginException(e.getMessage(), e.getCause());
+            throw new PluginException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(input);
             IOUtils.closeQuietly(output);
@@ -64,7 +64,7 @@ public class DefaultPluginFileManager implements PluginFileManager {
     }
 
     @Override
-    public boolean uninstallPlugin(final String... keys) throws PluginException {
+    public boolean uninstallPlugin(final String... keys) {
         for (String key : keys) {
             if (!checkFileRightsToRead(key, pluginsTmpPath) && !checkFileRightsToRead(key, pluginsPath)) {
                 return false;
@@ -84,7 +84,7 @@ public class DefaultPluginFileManager implements PluginFileManager {
                     LOG.info("Trying delete file after JVM stop");
                     file.deleteOnExit();
                 } else {
-                    throw new PluginException(e.getMessage(), e.getCause());
+                    throw new PluginException(e.getMessage(), e);
                 }
             }
         }
@@ -92,7 +92,7 @@ public class DefaultPluginFileManager implements PluginFileManager {
     }
 
     @Override
-    public void removePlugin(final String key) throws PluginException {
+    public void removePlugin(final String key) {
         File file = new File((pluginsTmpPath + getProperty("file.separator") + key));
         if (!file.exists()) {
             file = new File(pluginsPath + getProperty("file.separator") + key);
@@ -105,7 +105,7 @@ public class DefaultPluginFileManager implements PluginFileManager {
                 LOG.info("Trying delete file after JVM stop");
                 file.deleteOnExit();
             } else {
-                throw new PluginException(e.getMessage(), e.getCause());
+                throw new PluginException(e.getMessage(), e);
             }
         }
     }

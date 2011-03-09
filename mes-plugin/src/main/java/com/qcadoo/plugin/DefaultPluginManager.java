@@ -1,24 +1,10 @@
-package com.qcadoo.plugin.manager;
+package com.qcadoo.plugin;
 
 import static com.google.common.collect.Lists.newArrayList;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.qcadoo.plugin.Plugin;
-import com.qcadoo.plugin.PluginAccessor;
-import com.qcadoo.plugin.PluginArtifact;
-import com.qcadoo.plugin.PluginDao;
-import com.qcadoo.plugin.PluginDependencyManager;
-import com.qcadoo.plugin.PluginDependencyResult;
-import com.qcadoo.plugin.PluginDescriptorParser;
-import com.qcadoo.plugin.PluginException;
-import com.qcadoo.plugin.PluginFileManager;
-import com.qcadoo.plugin.PluginManager;
-import com.qcadoo.plugin.PluginOperationResult;
-import com.qcadoo.plugin.PluginServerManager;
-import com.qcadoo.plugin.PluginState;
 
 public class DefaultPluginManager implements PluginManager {
 
@@ -130,32 +116,6 @@ public class DefaultPluginManager implements PluginManager {
     }
 
     @Override
-    public PluginOperationResult installPlugin(final PluginArtifact pluginArtifact) {
-        File pluginFile = null;
-        try {
-            pluginFile = pluginFileManager.uploadPlugin(pluginArtifact);
-        } catch (PluginException e) {
-            return PluginOperationResult.cannotUploadPlugin();
-        }
-        Plugin plugin = null;
-        try {
-            plugin = pluginDescriptorParser.parse(pluginFile);
-        } catch (PluginException e) {
-            pluginFileManager.removePlugin(pluginFile.getName());
-            return PluginOperationResult.corruptedPlugin();
-        }
-
-        pluginDao.save(plugin);
-        PluginDependencyResult pluginDependencyResult = pluginDependencyManager.getDependenciesToEnable(newArrayList(plugin));
-
-        if (!pluginDependencyResult.isDependenciesSatisfied() && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
-            return PluginOperationResult.successWithMissingDependencies(pluginDependencyResult);
-        } else {
-            return PluginOperationResult.success();
-        }
-    }
-
-    @Override
     public PluginOperationResult uninstallPlugin(final String... keys) {
         List<Plugin> plugins = new ArrayList<Plugin>();
 
@@ -202,7 +162,7 @@ public class DefaultPluginManager implements PluginManager {
     }
 
     @Override
-    public PluginOperationResult updatePlugin(final PluginArtifact pluginArtifact) {
+    public PluginOperationResult installPlugin(final PluginArtifact pluginArtifact) {
         File pluginFile = null;
         try {
             pluginFile = pluginFileManager.uploadPlugin(pluginArtifact);
@@ -217,59 +177,68 @@ public class DefaultPluginManager implements PluginManager {
             return PluginOperationResult.corruptedPlugin();
         }
 
-        // TODO KRNA check system plugin
+        if (plugin.isSystemPlugin()) {
+            pluginFileManager.removePlugin(plugin.getFilename());
+            return PluginOperationResult.systemPluginUpdating();
+        }
+
         boolean shouldRestart = false;
 
         PluginDependencyResult pluginDependencyResult = pluginDependencyManager.getDependenciesToEnable(newArrayList(plugin));
 
-        // TODO KRNA get appropriate
-        Plugin databasePlugin = pluginAccessor.getPlugin(plugin.getName());
-        if (databasePlugin.hasState(PluginState.TEMPORARY)) {
+        Plugin existingPlugin = pluginAccessor.getPlugin(plugin.getIdentifier());
+        if (existingPlugin == null) {
+            pluginDao.save(plugin);
+
             if (!pluginDependencyResult.isDependenciesSatisfied()
                     && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
-                pluginFileManager.uninstallPlugin(databasePlugin.getFilename());
-                // TODO pluginDao.save(plugin) == pluginDao.save(databasePlugin)
-                // don't use setPluginInformation
-                databasePlugin.setPluginInformation(plugin.getPluginInformation());
-                pluginDao.save(databasePlugin);
                 return PluginOperationResult.successWithMissingDependencies(pluginDependencyResult);
+            } else {
+                return PluginOperationResult.success();
             }
-        } else if (databasePlugin.hasState(PluginState.DISABLED)) {
-            if (!pluginDependencyResult.isDependenciesSatisfied()
-                    && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
-                pluginFileManager.removePlugin(plugin.getFilename());
-                return PluginOperationResult.unsatisfiedDependencies(pluginDependencyResult);
-            }
-            if (!pluginFileManager.installPlugin(new String[] { plugin.getFilename() })) {
-                pluginFileManager.removePlugin(plugin.getFilename());
-                return PluginOperationResult.cannotInstallPlugin();
-            }
-            shouldRestart = true;
-            // TODO KRNA cyclic dependency
-        } else if (databasePlugin.hasState(PluginState.ENABLED)) {
-            if (!pluginDependencyResult.isDependenciesSatisfied()) {
-                if (!pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
+        } else {
+            if (existingPlugin.hasState(PluginState.TEMPORARY)) {
+                if (!pluginDependencyResult.isDependenciesSatisfied()
+                        && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
+                    pluginFileManager.uninstallPlugin(existingPlugin.getFilename());
+                    plugin.changeStateTo(existingPlugin.getPluginState());
+                    pluginDao.save(plugin);
+                    return PluginOperationResult.successWithMissingDependencies(pluginDependencyResult);
+                }
+            } else if (existingPlugin.hasState(PluginState.DISABLED)) {
+                if (!pluginDependencyResult.isDependenciesSatisfied()
+                        && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
                     pluginFileManager.removePlugin(plugin.getFilename());
                     return PluginOperationResult.unsatisfiedDependencies(pluginDependencyResult);
                 }
-
-                if (!pluginDependencyResult.getDisabledDependencies().isEmpty()) {
+                if (!pluginFileManager.installPlugin(new String[] { plugin.getFilename() })) {
                     pluginFileManager.removePlugin(plugin.getFilename());
-                    return PluginOperationResult.disabledDependencies(pluginDependencyResult);
+                    return PluginOperationResult.cannotInstallPlugin();
                 }
+                shouldRestart = true;
+            } else if (existingPlugin.hasState(PluginState.ENABLED)) {
+                if (!pluginDependencyResult.isDependenciesSatisfied()) {
+                    if (!pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
+                        pluginFileManager.removePlugin(plugin.getFilename());
+                        return PluginOperationResult.unsatisfiedDependencies(pluginDependencyResult);
+                    }
+
+                    if (!pluginDependencyResult.getDisabledDependencies().isEmpty()) {
+                        pluginFileManager.removePlugin(plugin.getFilename());
+                        return PluginOperationResult.disabledDependencies(pluginDependencyResult);
+                    }
+                }
+                // TODO KRNA disable/enable
             }
-            // TODO KRNA disable/enable
-        }
-        pluginFileManager.uninstallPlugin(databasePlugin.getFilename());
-        // TODO pluginDao.save(plugin) == pluginDao.save(databasePlugin)
-        // don't use setPluginInformation
-        databasePlugin.setPluginInformation(plugin.getPluginInformation());
-        pluginDao.save(databasePlugin);
-        if (shouldRestart) {
-            pluginServerManager.restart();
-            return PluginOperationResult.successWithRestart();
-        } else {
-            return PluginOperationResult.success();
+            pluginFileManager.uninstallPlugin(existingPlugin.getFilename());
+            plugin.changeStateTo(existingPlugin.getPluginState());
+            pluginDao.save(plugin);
+            if (shouldRestart) {
+                pluginServerManager.restart();
+                return PluginOperationResult.successWithRestart();
+            } else {
+                return PluginOperationResult.success();
+            }
         }
     }
 
