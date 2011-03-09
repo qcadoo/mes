@@ -11,7 +11,6 @@ import com.qcadoo.plugin.PluginAccessor;
 import com.qcadoo.plugin.PluginArtifact;
 import com.qcadoo.plugin.PluginDao;
 import com.qcadoo.plugin.PluginDependencyManager;
-import com.qcadoo.plugin.PluginDependencyResult;
 import com.qcadoo.plugin.PluginDescriptorParser;
 import com.qcadoo.plugin.PluginException;
 import com.qcadoo.plugin.PluginFileManager;
@@ -19,6 +18,7 @@ import com.qcadoo.plugin.PluginManager;
 import com.qcadoo.plugin.PluginOperationResult;
 import com.qcadoo.plugin.PluginServerManager;
 import com.qcadoo.plugin.PluginState;
+import com.qcadoo.plugin.dependency.PluginDependencyResult;
 
 public class DefaultPluginManager implements PluginManager {
 

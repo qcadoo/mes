@@ -1,7 +1,6 @@
 package com.qcadoo.plugin;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -11,11 +10,14 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.io.File;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.qcadoo.plugin.dependency.PluginDependencyInformation;
+import com.qcadoo.plugin.dependency.PluginDependencyResult;
 import com.qcadoo.plugin.manager.DefaultPluginManager;
 
 public class PluginUpdateTest {
@@ -128,8 +130,8 @@ public class PluginUpdateTest {
         given(anotherPlugin.getPluginInformation()).willReturn(pluginInformation);
         given(plugin.getFilename()).willReturn("filename");
 
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult
-                .unsatisfiedDependencies(singletonList(pluginInformation));
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.unsatisfiedDependencies(Collections
+                .singleton(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
         given(pluginDependencyManager.getDependenciesToEnable(newArrayList(anotherPlugin))).willReturn(pluginDependencyResult);
 
         // when
@@ -142,8 +144,9 @@ public class PluginUpdateTest {
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_MISSING_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
-        assertEquals("unknownplugin", pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().get(0)
-                .getName());
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
+        assertTrue(pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies()
+                .contains(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
     }
 
     @Test
@@ -185,8 +188,8 @@ public class PluginUpdateTest {
         given(anotherPlugin.getPluginInformation()).willReturn(pluginInformation);
         given(anotherPlugin.getFilename()).willReturn("filename");
 
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult
-                .unsatisfiedDependencies(singletonList(pluginInformation));
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.unsatisfiedDependencies(Collections
+                .singleton(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
         given(pluginDependencyManager.getDependenciesToEnable(newArrayList(anotherPlugin))).willReturn(pluginDependencyResult);
 
         // when
@@ -199,8 +202,9 @@ public class PluginUpdateTest {
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.UNSATISFIED_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
-        assertEquals("unknownplugin", pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().get(0)
-                .getName());
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
+        assertTrue(pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies()
+                .contains(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
     }
 
     @Test
@@ -240,8 +244,8 @@ public class PluginUpdateTest {
         given(anotherPlugin.getPluginInformation()).willReturn(pluginInformation);
         given(anotherPlugin.getFilename()).willReturn("filename");
 
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult
-                .unsatisfiedDependencies(singletonList(pluginInformation));
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.unsatisfiedDependencies(Collections
+                .singleton(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
         given(pluginDependencyManager.getDependenciesToEnable(newArrayList(anotherPlugin))).willReturn(pluginDependencyResult);
 
         // when
@@ -254,8 +258,9 @@ public class PluginUpdateTest {
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.UNSATISFIED_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
-        assertEquals("unknownplugin", pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().get(0)
-                .getName());
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
+        assertTrue(pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies()
+                .contains(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
     }
 
     @Test
@@ -268,8 +273,8 @@ public class PluginUpdateTest {
         given(anotherPlugin.getPluginInformation()).willReturn(pluginInformation);
         given(anotherPlugin.getFilename()).willReturn("filename");
 
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult
-                .disabledDependencies(singletonList(pluginInformation));
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.disabledDependencies(Collections
+                .singleton(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
         given(pluginDependencyManager.getDependenciesToEnable(newArrayList(anotherPlugin))).willReturn(pluginDependencyResult);
 
         // when
@@ -283,8 +288,9 @@ public class PluginUpdateTest {
         assertEquals(PluginOperationStatus.DISABLED_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
-        assertEquals("unknownplugin", pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().get(0)
-                .getName());
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
+        assertTrue(pluginOperationResult.getPluginDependencyResult().getDisabledDependencies()
+                .contains(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
     }
 
     @Test

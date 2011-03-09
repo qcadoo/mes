@@ -8,7 +8,7 @@ public interface PluginAccessor {
 
     Collection<Plugin> getEnabledPlugins();
 
-    Plugin getPlugin(String key);
+    Plugin getPlugin(String name);
 
     Collection<Plugin> getPlugins();
 
