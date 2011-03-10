@@ -86,8 +86,4 @@ public class PluginOperationResult {
     public static PluginOperationResult cannotInstallPlugin() {
         return new PluginOperationResult(PluginOperationStatus.CANNOT_INSTALL_PLUGIN);
     }
-
-    public static PluginOperationResult cannotUninstallPlugin() {
-        return new PluginOperationResult(PluginOperationStatus.CANNOT_UNINSTALL_PLUGIN);
-    }
 }

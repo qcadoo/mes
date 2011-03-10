@@ -8,7 +8,6 @@ public interface PluginFileManager {
 
     public File uploadPlugin(final PluginArtifact pluginArtifact);
 
-    public boolean uninstallPlugin(final String... keys);
+    public void uninstallPlugin(final String... keys);
 
-    public void removePlugin(final String key);
 }

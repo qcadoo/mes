@@ -76,6 +76,7 @@ public class PluginManagerTest {
         // given
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
         given(pluginDependencyManager.getDependenciesToEnable(singletonList(plugin))).willReturn(pluginDependencyResult);
+        given(pluginDependencyManager.sortPluginsInDependencyOrder(singletonList(plugin))).willReturn(singletonList(plugin));
 
         // when
         PluginOperationResult pluginOperationResult = pluginManager.enablePlugin("pluginname");
@@ -98,6 +99,8 @@ public class PluginManagerTest {
 
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
         given(pluginDependencyManager.getDependenciesToEnable(singletonList(anotherPlugin))).willReturn(pluginDependencyResult);
+        given(pluginDependencyManager.sortPluginsInDependencyOrder(singletonList(anotherPlugin))).willReturn(
+                singletonList(anotherPlugin));
 
         // when
         PluginOperationResult pluginOperationResult = pluginManager.enablePlugin("anotherPluginname");
@@ -194,6 +197,8 @@ public class PluginManagerTest {
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
         given(pluginDependencyManager.getDependenciesToEnable(newArrayList(plugin, anotherPlugin))).willReturn(
                 pluginDependencyResult);
+        given(pluginDependencyManager.sortPluginsInDependencyOrder(newArrayList(plugin, anotherPlugin))).willReturn(
+                newArrayList(plugin, anotherPlugin));
 
         // when
         PluginOperationResult pluginOperationResult = pluginManager.enablePlugin("pluginname", "anotherPluginname");
@@ -232,6 +237,7 @@ public class PluginManagerTest {
 
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
         given(pluginDependencyManager.getDependenciesToDisable(singletonList(plugin))).willReturn(pluginDependencyResult);
+        given(pluginDependencyManager.sortPluginsInDependencyOrder(singletonList(plugin))).willReturn(singletonList(plugin));
 
         // when
         PluginOperationResult pluginOperationResult = pluginManager.disablePlugin("pluginname");
@@ -300,9 +306,9 @@ public class PluginManagerTest {
 
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
         given(pluginDependencyManager.getDependenciesToDisable(singletonList(plugin))).willReturn(pluginDependencyResult);
+        given(pluginDependencyManager.sortPluginsInDependencyOrder(singletonList(plugin))).willReturn(singletonList(plugin));
 
         given(plugin.getFilename()).willReturn("filename");
-        given(pluginFileManager.uninstallPlugin("filename")).willReturn(true);
 
         // when
         PluginOperationResult pluginOperationResult = pluginManager.uninstallPlugin("pluginname");
@@ -311,6 +317,7 @@ public class PluginManagerTest {
         verify(plugin).changeStateTo(PluginState.DISABLED);
         verify(pluginDao).delete(plugin);
         verify(pluginServerManager).restart();
+        verify(pluginFileManager).uninstallPlugin("filename");
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
@@ -323,9 +330,9 @@ public class PluginManagerTest {
 
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
         given(pluginDependencyManager.getDependenciesToDisable(singletonList(plugin))).willReturn(pluginDependencyResult);
+        given(pluginDependencyManager.sortPluginsInDependencyOrder(singletonList(plugin))).willReturn(singletonList(plugin));
 
         given(plugin.getFilename()).willReturn("filename");
-        given(pluginFileManager.uninstallPlugin("filename")).willReturn(true);
 
         // when
         PluginOperationResult pluginOperationResult = pluginManager.uninstallPlugin("pluginname");
@@ -334,6 +341,7 @@ public class PluginManagerTest {
         verify(plugin, never()).changeStateTo(PluginState.DISABLED);
         verify(pluginDao).delete(plugin);
         verify(pluginServerManager, never()).restart();
+        verify(pluginFileManager).uninstallPlugin("filename");
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
@@ -347,7 +355,6 @@ public class PluginManagerTest {
         given(pluginDependencyManager.getDependenciesToDisable(singletonList(plugin))).willReturn(pluginDependencyResult);
 
         given(plugin.getFilename()).willReturn("filename");
-        given(pluginFileManager.uninstallPlugin("filename")).willReturn(true);
 
         // when
         PluginOperationResult pluginOperationResult = pluginManager.uninstallPlugin("pluginname");
@@ -356,34 +363,13 @@ public class PluginManagerTest {
         verify(plugin, never()).changeStateTo(PluginState.DISABLED);
         verify(pluginDao, never()).delete(plugin);
         verify(pluginServerManager, never()).restart();
+        verify(pluginFileManager, never()).uninstallPlugin("filename");
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.ENABLED_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
         assertTrue(pluginOperationResult.getPluginDependencyResult().getEnabledDependencies()
                 .contains(new PluginDependencyInformation("unknownplugin", null, false, null, false)));
-    }
-
-    @Test
-    public void shouldNotUninstallPluginIfCannotUninstall() throws Exception {
-        // given
-        given(anotherPlugin.hasState(PluginState.TEMPORARY)).willReturn(false);
-        given(anotherPlugin.getFilename()).willReturn("filename");
-        given(pluginFileManager.uninstallPlugin("filename")).willReturn(false);
-
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
-        given(pluginDependencyManager.getDependenciesToDisable(singletonList(anotherPlugin))).willReturn(pluginDependencyResult);
-
-        // when
-        PluginOperationResult pluginOperationResult = pluginManager.uninstallPlugin("anotherPluginname");
-
-        // then
-        verify(plugin, never()).changeStateTo(PluginState.DISABLED);
-        verify(pluginDao, never()).delete(anotherPlugin);
-        verify(pluginServerManager, never()).restart();
-        assertFalse(pluginOperationResult.isSuccess());
-        assertEquals(PluginOperationStatus.CANNOT_UNINSTALL_PLUGIN, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
     }
 
     @Test
@@ -417,11 +403,12 @@ public class PluginManagerTest {
         given(anotherPlugin.hasState(PluginState.TEMPORARY)).willReturn(true);
         given(anotherPlugin.hasState(PluginState.ENABLED)).willReturn(false);
         given(anotherPlugin.getFilename()).willReturn("anotherFilename");
-        given(pluginFileManager.uninstallPlugin(new String[] { "filename", "anotherFilename" })).willReturn(true);
 
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
         given(pluginDependencyManager.getDependenciesToDisable(newArrayList(plugin, anotherPlugin))).willReturn(
                 pluginDependencyResult);
+        given(pluginDependencyManager.sortPluginsInDependencyOrder(newArrayList(plugin, anotherPlugin))).willReturn(
+                newArrayList(plugin, anotherPlugin));
 
         // when
         PluginOperationResult pluginOperationResult = pluginManager.uninstallPlugin("pluginname", "anotherPluginname");
@@ -431,6 +418,7 @@ public class PluginManagerTest {
         verify(anotherPlugin, never()).changeStateTo(PluginState.DISABLED);
         verify(pluginDao).delete(plugin);
         verify(pluginDao).delete(anotherPlugin);
+        verify(pluginFileManager).uninstallPlugin("filename", "anotherFilename");
         verify(pluginServerManager).restart();
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
