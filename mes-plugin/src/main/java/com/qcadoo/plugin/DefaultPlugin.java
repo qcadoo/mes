@@ -129,11 +129,7 @@ public class DefaultPlugin implements Plugin {
             throw new IllegalStateException("Cannot compare versions of different plugins " + this + " and " + plugin);
         }
 
-        if (information.getVersion().equals(plugin.getPluginInformation().getVersion())) {
-            return 0;
-        }
-
-        return -1;
+        return VersionUtils.compare(information.getVersion(), plugin.getPluginInformation().getVersion());
     }
 
     @Override
@@ -151,7 +147,7 @@ public class DefaultPlugin implements Plugin {
 
         private final String identifier;
 
-        private String version;
+        private int[] version;
 
         private String filename;
 
@@ -181,7 +177,7 @@ public class DefaultPlugin implements Plugin {
         }
 
         public Builder withVersion(final String version) {
-            this.version = version;
+            this.version = VersionUtils.parse(version);
             return this;
         }
 

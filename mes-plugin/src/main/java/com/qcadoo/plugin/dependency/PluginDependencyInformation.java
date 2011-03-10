@@ -2,33 +2,34 @@ package com.qcadoo.plugin.dependency;
 
 import java.util.Arrays;
 
+import com.qcadoo.plugin.VersionUtils;
+
 public class PluginDependencyInformation {
 
-    private String key;
+    private final String key;
 
-    private int[] minimumVersion;
+    private final int[] minimumVersion;
 
-    private boolean includeMinimumVersion = true;
+    private final boolean includeMinimumVersion;
 
-    private int[] maximumVersion;
+    private final int[] maximumVersion;
 
-    private boolean includeMaximumVersion = true;
+    private final boolean includeMaximumVersion;
 
-    public PluginDependencyInformation(String key) {
+    public PluginDependencyInformation(final String key) {
         this(key, null, false, null, false);
     }
 
-    public PluginDependencyInformation(String key, String minimumVersion, boolean includeMinimumVersion, String maximumVersion,
-            boolean includeMaximumVersion) {
-        super();
+    public PluginDependencyInformation(final String key, final int[] minimumVersion, final boolean includeMinimumVersion,
+            final int[] maximumVersion, final boolean includeMaximumVersion) {
         this.key = key;
-        this.minimumVersion = convertVersion(minimumVersion);
+        this.minimumVersion = minimumVersion;
         this.includeMinimumVersion = includeMinimumVersion;
-        this.maximumVersion = convertVersion(maximumVersion);
+        this.maximumVersion = maximumVersion;
         this.includeMaximumVersion = includeMaximumVersion;
 
         if (this.minimumVersion != null && this.maximumVersion != null) {
-            int compareResult = compareVersions(this.minimumVersion, this.maximumVersion);
+            int compareResult = VersionUtils.compare(this.minimumVersion, this.maximumVersion);
             if (compareResult < 0) {
                 throw new IllegalStateException("Minimum version is larger than maximum version");
             } else if (compareResult == 0) {
@@ -40,49 +41,13 @@ public class PluginDependencyInformation {
 
     }
 
-    private int compareVersions(int[] version1, int[] version2) {
-        for (int i = 0; i < 3; i++) {
-            if (version1[i] > version2[i]) {
-                return -1;
-            } else if (version1[i] < version2[i]) {
-                return 1;
-            }
-        }
-        return 0;
-    }
-
-    private int[] convertVersion(String version) {
-        if (version == null) {
-            return null;
-        }
-
-        String[] splitVersion = version.split("\\.");
-
-        if (splitVersion.length > 3) {
-            throw new IllegalStateException("Version has too many elements");
-        }
-
-        int[] convertedVersion = new int[3];
-
-        for (int i = 0; i < 3; i++) {
-            if (i < splitVersion.length) {
-                convertedVersion[i] = Integer.parseInt(splitVersion[i]);
-            } else {
-                convertedVersion[i] = 0;
-            }
-        }
-
-        return convertedVersion;
-    }
-
     public String getKey() {
         return key;
     }
 
-    public boolean isVersionSattisfied(String version) {
-        int[] convertedVersion = convertVersion(version);
+    public boolean isVersionSattisfied(final int[] version) {
         if (minimumVersion != null) {
-            int minComparationResult = compareVersions(minimumVersion, convertedVersion);
+            int minComparationResult = VersionUtils.compare(minimumVersion, version);
             if (minComparationResult < 0) {
                 return false;
             } else if (minComparationResult == 0 && !includeMinimumVersion) {
@@ -91,7 +56,7 @@ public class PluginDependencyInformation {
         }
 
         if (maximumVersion != null) {
-            int maxComparationResult = compareVersions(maximumVersion, convertedVersion);
+            int maxComparationResult = VersionUtils.compare(maximumVersion, version);
             if (maxComparationResult > 0) {
                 return false;
             } else if (maxComparationResult == 0 && !includeMaximumVersion) {
@@ -115,7 +80,7 @@ public class PluginDependencyInformation {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj)
             return true;
         if (obj == null)
