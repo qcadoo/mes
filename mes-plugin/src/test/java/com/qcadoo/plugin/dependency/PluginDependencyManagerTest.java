@@ -21,6 +21,7 @@ import com.qcadoo.plugin.Plugin;
 import com.qcadoo.plugin.PluginAccessor;
 import com.qcadoo.plugin.PluginDependencyManager;
 import com.qcadoo.plugin.PluginState;
+import com.qcadoo.plugin.VersionUtils;
 
 public class PluginDependencyManagerTest {
 
@@ -48,19 +49,19 @@ public class PluginDependencyManagerTest {
     public void init() {
         plugin1 = mock(Plugin.class, RETURNS_DEEP_STUBS);
         given(plugin1.getIdentifier()).willReturn("testPlugin1");
-        given(plugin1.getPluginInformation().getVersion()).willReturn("1.1");
+        given(plugin1.getPluginInformation().getVersion()).willReturn(VersionUtils.parse("1.1"));
 
         plugin2 = mock(Plugin.class, RETURNS_DEEP_STUBS);
         given(plugin2.getIdentifier()).willReturn("testPlugin2");
-        given(plugin2.getPluginInformation().getVersion()).willReturn("1.1");
+        given(plugin2.getPluginInformation().getVersion()).willReturn(VersionUtils.parse("1.1"));
 
         plugin3 = mock(Plugin.class, RETURNS_DEEP_STUBS);
         given(plugin3.getIdentifier()).willReturn("testPlugin3");
-        given(plugin3.getPluginInformation().getVersion()).willReturn("1.1");
+        given(plugin3.getPluginInformation().getVersion()).willReturn(VersionUtils.parse("1.1"));
 
         plugin4 = mock(Plugin.class, RETURNS_DEEP_STUBS);
         given(plugin4.getIdentifier()).willReturn("testPlugin4");
-        given(plugin4.getPluginInformation().getVersion()).willReturn("1.1");
+        given(plugin4.getPluginInformation().getVersion()).willReturn(VersionUtils.parse("1.1"));
     }
 
     @Test
@@ -140,7 +141,7 @@ public class PluginDependencyManagerTest {
         given(pluginAccessor.getPlugin("testPlugin3")).willReturn(plugin3);
         given(pluginAccessor.getPlugin("testPlugin4")).willReturn(null);
 
-        dependencyInfo3 = new PluginDependencyInformation("testPlugin3", "2", true, null, false);
+        dependencyInfo3 = new PluginDependencyInformation("testPlugin3", VersionUtils.parse("2"), true, null, false);
 
         Plugin pluginToEnable = mock(Plugin.class);
         Set<PluginDependencyInformation> disabledRequiredPlugins = new HashSet<PluginDependencyInformation>();
@@ -158,7 +159,7 @@ public class PluginDependencyManagerTest {
         assertEquals(0, result.getDisabledDependencies().size());
         assertEquals(2, result.getUnsatisfiedDependencies().size());
         assertTrue(result.getUnsatisfiedDependencies().contains(
-                new PluginDependencyInformation("testPlugin3", "2", true, null, false)));
+                new PluginDependencyInformation("testPlugin3", VersionUtils.parse("2"), true, null, false)));
         assertTrue(result.getUnsatisfiedDependencies().contains(new PluginDependencyInformation("testPlugin4")));
         assertEquals(0, result.getEnabledDependencies().size());
     }

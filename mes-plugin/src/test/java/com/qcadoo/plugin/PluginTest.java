@@ -58,12 +58,12 @@ public class PluginTest {
         // then
         assertEquals(0, plugin1.compareVersion(plugin2));
         assertEquals(0, plugin2.compareVersion(plugin1));
-        // assertEquals(1, plugin1.compareVersion(plugin3));
-        // assertEquals(1, plugin1.compareVersion(plugin4));
-        // assertEquals(1, plugin1.compareVersion(plugin5));
-        // assertEquals(1, plugin3.compareVersion(plugin4));
-        // assertEquals(1, plugin3.compareVersion(plugin5));
-        // assertEquals(1, plugin4.compareVersion(plugin5));
+        assertEquals(1, plugin1.compareVersion(plugin3));
+        assertEquals(1, plugin1.compareVersion(plugin4));
+        assertEquals(1, plugin1.compareVersion(plugin5));
+        assertEquals(1, plugin3.compareVersion(plugin4));
+        assertEquals(1, plugin3.compareVersion(plugin5));
+        assertEquals(1, plugin4.compareVersion(plugin5));
         assertEquals(-1, plugin5.compareVersion(plugin1));
         assertEquals(-1, plugin5.compareVersion(plugin3));
         assertEquals(-1, plugin5.compareVersion(plugin4));
