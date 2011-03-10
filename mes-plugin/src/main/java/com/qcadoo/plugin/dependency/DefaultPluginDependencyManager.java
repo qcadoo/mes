@@ -1,12 +1,13 @@
 package com.qcadoo.plugin.dependency;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.qcadoo.plugin.Plugin;
@@ -144,53 +145,95 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
     }
 
     public List<Plugin> sortPluginsInDependencyOrder(final Collection<Plugin> plugins) {
-        List<Plugin> sortedPlugins = new LinkedList<Plugin>();
 
-        for (Plugin plugin : plugins) {
-            sortedPlugins.add(plugin);
-            Set<PluginDependencyInformation> requiredPlugins = plugin.getRequiredPlugins();
-            for (PluginDependencyInformation pluginDependencyInfo : requiredPlugins) {
-                Plugin requiredPlugin = pluginAccessor.getPlugin(pluginDependencyInfo.getKey());
-                Collection<Plugin> dependencyPlugins = getPluginsBasedOnDependencyInfo(requiredPlugin.getRequiredPlugins());
-                if (!dependencyPlugins.isEmpty()) {
-                    List<Plugin> recursivelySortedList = sortPluginsInDependencyOrder(dependencyPlugins);
-                    sortedPlugins.addAll(recursivelySortedList);
+        Map<String, Set<String>> notInitializedPlugins = createPluginsMapWithDependencies(plugins);
+
+        List<String> initializedPlugins = new LinkedList<String>();
+
+        while (!notInitializedPlugins.isEmpty()) {
+            Iterator<Map.Entry<String, Set<String>>> pluginsToInitializedIt = notInitializedPlugins.entrySet().iterator();
+            while (pluginsToInitializedIt.hasNext()) {
+                Map.Entry<String, Set<String>> pluginToInitializeEntry = pluginsToInitializedIt.next();
+                if (pluginToInitializeEntry.getValue().isEmpty()) {
+                    initializedPlugins.add(pluginToInitializeEntry.getKey());
+                    pluginsToInitializedIt.remove();
+                    for (Set<String> dependencies : notInitializedPlugins.values()) {
+                        dependencies.remove(pluginToInitializeEntry.getKey());
+                    }
                 }
             }
         }
 
-        // TODO: this one could be invoked only once at the very end to boost performance
-        removeDuplicateWithOrder(sortedPlugins);
-
-        return sortedPlugins;
+        return convertIdentifiersToPlugins(initializedPlugins);
     }
 
-    private void removeDuplicateWithOrder(List<Plugin> list) {
-
-        Collections.reverse(list);
-
-        Set<Plugin> set = new HashSet<Plugin>();
-        List<Plugin> sortedList = new LinkedList<Plugin>();
-
-        for (Plugin plugin : list) {
-            if (set.add(plugin)) {
-                sortedList.add(plugin);
+    private Map<String, Set<String>> createPluginsMapWithDependencies(final Collection<Plugin> plugins) {
+        Map<String, Set<String>> resultMap = new HashMap<String, Set<String>>();
+        for (Plugin plugin : plugins) {
+            Set<String> dependencyIdentifiers = new HashSet<String>();
+            for (PluginDependencyInformation dependency : plugin.getRequiredPlugins()) {
+                dependencyIdentifiers.add(dependency.getKey());
             }
+            resultMap.put(plugin.getIdentifier(), dependencyIdentifiers);
         }
-
-        list.clear();
-        list.addAll(sortedList);
+        return resultMap;
     }
 
-    private Collection<Plugin> getPluginsBasedOnDependencyInfo(Set<PluginDependencyInformation> requiredPlugins) {
-        List<Plugin> plugins = new ArrayList<Plugin>();
-
-        for (PluginDependencyInformation dependencyInfo : requiredPlugins) {
-            plugins.add(pluginAccessor.getPlugin(dependencyInfo.getKey()));
+    private List<Plugin> convertIdentifiersToPlugins(final Collection<String> pluginIdetifiers) {
+        List<Plugin> resultList = new LinkedList<Plugin>();
+        for (String pluginIdentifier : pluginIdetifiers) {
+            resultList.add(pluginAccessor.getPlugin(pluginIdentifier));
         }
-
-        return plugins;
+        return resultList;
     }
+
+    // public List<Plugin> sortPluginsInDependencyOrder(final Collection<Plugin> plugins) {
+    // List<Plugin> sortedPlugins = new LinkedList<Plugin>();
+    //
+    // for (Plugin plugin : plugins) {
+    // sortedPlugins.add(plugin);
+    // Collection<Plugin> requiredPlugins = getPluginsBasedOnDependencyInfo(plugin.getRequiredPlugins());
+    // for (Plugin requiredPlugin : requiredPlugins) {
+    // Collection<Plugin> dependencyPlugins = getPluginsBasedOnDependencyInfo(requiredPlugin.getRequiredPlugins());
+    // if (!dependencyPlugins.isEmpty()) {
+    // List<Plugin> recursivelySortedList = sortPluginsInDependencyOrder(dependencyPlugins);
+    // sortedPlugins.addAll(recursivelySortedList);
+    // }
+    // }
+    // }
+    //
+    // // TODO: this one could be invoked only once at the very end to boost performance
+    // removeDuplicateWithOrder(sortedPlugins);
+    //
+    // return sortedPlugins;
+    // }
+    //
+    // private void removeDuplicateWithOrder(List<Plugin> list) {
+    //
+    // Collections.reverse(list);
+    //
+    // Set<Plugin> set = new HashSet<Plugin>();
+    // List<Plugin> sortedList = new LinkedList<Plugin>();
+    //
+    // for (Plugin plugin : list) {
+    // if (set.add(plugin)) {
+    // sortedList.add(plugin);
+    // }
+    // }
+    //
+    // list.clear();
+    // list.addAll(sortedList);
+    // }
+    //
+    // private Collection<Plugin> getPluginsBasedOnDependencyInfo(Set<PluginDependencyInformation> requiredPlugins) {
+    // List<Plugin> plugins = new ArrayList<Plugin>();
+    //
+    // for (PluginDependencyInformation dependencyInfo : requiredPlugins) {
+    // plugins.add(pluginAccessor.getPlugin(dependencyInfo.getKey()));
+    // }
+    //
+    // return plugins;
+    // }
 
     private Set<String> getArgumentIdentifiersSet(final List<Plugin> plugins) {
         Set<String> argumentPluginInformationsSet = new HashSet<String>();

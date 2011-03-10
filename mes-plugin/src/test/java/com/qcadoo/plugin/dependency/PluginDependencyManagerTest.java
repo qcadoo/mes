@@ -49,18 +49,22 @@ public class PluginDependencyManagerTest {
         plugin1 = mock(Plugin.class, RETURNS_DEEP_STUBS);
         given(plugin1.getIdentifier()).willReturn("testPlugin1");
         given(plugin1.getPluginInformation().getVersion()).willReturn("1.1");
+        given(plugin1.toString()).willReturn("plugin1");
 
         plugin2 = mock(Plugin.class, RETURNS_DEEP_STUBS);
         given(plugin2.getIdentifier()).willReturn("testPlugin2");
         given(plugin2.getPluginInformation().getVersion()).willReturn("1.1");
+        given(plugin2.toString()).willReturn("plugin2");
 
         plugin3 = mock(Plugin.class, RETURNS_DEEP_STUBS);
         given(plugin3.getIdentifier()).willReturn("testPlugin3");
         given(plugin3.getPluginInformation().getVersion()).willReturn("1.1");
+        given(plugin3.toString()).willReturn("plugin3");
 
         plugin4 = mock(Plugin.class, RETURNS_DEEP_STUBS);
         given(plugin4.getIdentifier()).willReturn("testPlugin4");
         given(plugin4.getPluginInformation().getVersion()).willReturn("1.1");
+        given(plugin4.toString()).willReturn("plugin4");
     }
 
     @Test
@@ -638,7 +642,57 @@ public class PluginDependencyManagerTest {
     }
 
     @Test
-    public void shouldSortPlugins() {
+    public void shouldSortPluginsWithNoDependency() {
+        // given
+        given(pluginAccessor.getPlugin("testPlugin1")).willReturn(plugin1);
+        given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);
+        given(pluginAccessor.getPlugin("testPlugin3")).willReturn(plugin3);
+        given(pluginAccessor.getPlugin("testPlugin4")).willReturn(plugin4);
+
+        List<Plugin> argumentPlugins = new ArrayList<Plugin>();
+        argumentPlugins.add(plugin4);
+        argumentPlugins.add(plugin1);
+        argumentPlugins.add(plugin2);
+        argumentPlugins.add(plugin3);
+
+        // when
+        List<Plugin> sortedPlugins = manager.sortPluginsInDependencyOrder(argumentPlugins);
+
+        // then
+        assertEquals(4, sortedPlugins.size());
+    }
+
+    @Test
+    public void shouldSortPluginsWithOneDependency() {
+        // given
+        given(plugin1.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
+        given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo3));
+        given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo4));
+
+        given(pluginAccessor.getPlugin("testPlugin1")).willReturn(plugin1);
+        given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);
+        given(pluginAccessor.getPlugin("testPlugin3")).willReturn(plugin3);
+        given(pluginAccessor.getPlugin("testPlugin4")).willReturn(plugin4);
+
+        List<Plugin> argumentPlugins = new ArrayList<Plugin>();
+        argumentPlugins.add(plugin4);
+        argumentPlugins.add(plugin1);
+        argumentPlugins.add(plugin2);
+        argumentPlugins.add(plugin3);
+
+        // when
+        List<Plugin> sortedPlugins = manager.sortPluginsInDependencyOrder(argumentPlugins);
+
+        // then
+        assertEquals(4, sortedPlugins.size());
+        assertEquals(plugin4, sortedPlugins.get(0));
+        assertEquals(plugin3, sortedPlugins.get(1));
+        assertEquals(plugin2, sortedPlugins.get(2));
+        assertEquals(plugin1, sortedPlugins.get(3));
+    }
+
+    @Test
+    public void shouldSortPluginsWithMultipleDependencies() {
         // given
         Set<PluginDependencyInformation> requiredPlugins1 = new HashSet<PluginDependencyInformation>();
         requiredPlugins1.add(dependencyInfo2);
