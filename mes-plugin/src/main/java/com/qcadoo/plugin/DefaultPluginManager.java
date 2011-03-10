@@ -4,6 +4,7 @@ import static com.google.common.collect.Lists.newArrayList;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.qcadoo.plugin.dependency.PluginDependencyInformation;
@@ -66,6 +67,7 @@ public class DefaultPluginManager implements PluginManager {
             shouldRestart = true;
         }
 
+        plugins = pluginDependencyManager.sortPluginsInDependencyOrder(plugins);
         for (Plugin plugin : plugins) {
             if (plugin.hasState(PluginState.TEMPORARY)) {
                 plugin.changeStateTo(PluginState.ENABLING);
@@ -110,6 +112,8 @@ public class DefaultPluginManager implements PluginManager {
             return PluginOperationResult.enabledDependencies(pluginDependencyResult);
         }
 
+        plugins = pluginDependencyManager.sortPluginsInDependencyOrder(plugins);
+        Collections.reverse(plugins);
         for (Plugin plugin : plugins) {
             plugin.changeStateTo(PluginState.DISABLED);
             pluginDao.save(plugin);
@@ -148,10 +152,10 @@ public class DefaultPluginManager implements PluginManager {
             fileNames.add(plugin.getFilename());
         }
 
-        if (!pluginFileManager.uninstallPlugin(fileNames.toArray(new String[fileNames.size()]))) {
-            return PluginOperationResult.cannotUninstallPlugin();
-        }
+        pluginFileManager.uninstallPlugin(fileNames.toArray(new String[fileNames.size()]));
 
+        plugins = pluginDependencyManager.sortPluginsInDependencyOrder(plugins);
+        Collections.reverse(plugins);
         for (Plugin plugin : plugins) {
             if (plugin.hasState(PluginState.ENABLED)) {
                 plugin.changeStateTo(PluginState.DISABLED);
@@ -179,12 +183,12 @@ public class DefaultPluginManager implements PluginManager {
         try {
             plugin = pluginDescriptorParser.parse(pluginFile);
         } catch (PluginException e) {
-            pluginFileManager.removePlugin(pluginFile.getName());
+            pluginFileManager.uninstallPlugin(pluginFile.getName());
             return PluginOperationResult.corruptedPlugin();
         }
 
         if (plugin.isSystemPlugin()) {
-            pluginFileManager.removePlugin(plugin.getFilename());
+            pluginFileManager.uninstallPlugin(plugin.getFilename());
             return PluginOperationResult.systemPluginUpdating();
         }
 
@@ -216,11 +220,11 @@ public class DefaultPluginManager implements PluginManager {
             } else if (existingPlugin.hasState(PluginState.DISABLED)) {
                 if (!pluginDependencyResult.isDependenciesSatisfied()
                         && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
-                    pluginFileManager.removePlugin(plugin.getFilename());
+                    pluginFileManager.uninstallPlugin(plugin.getFilename());
                     return PluginOperationResult.unsatisfiedDependencies(pluginDependencyResult);
                 }
                 if (!pluginFileManager.installPlugin(plugin.getFilename())) {
-                    pluginFileManager.removePlugin(plugin.getFilename());
+                    pluginFileManager.uninstallPlugin(plugin.getFilename());
                     return PluginOperationResult.cannotInstallPlugin();
                 }
                 shouldRestart = true;
@@ -228,32 +232,41 @@ public class DefaultPluginManager implements PluginManager {
             } else if (existingPlugin.hasState(PluginState.ENABLED)) {
                 if (!pluginDependencyResult.isDependenciesSatisfied()) {
                     if (!pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
-                        pluginFileManager.removePlugin(plugin.getFilename());
+                        pluginFileManager.uninstallPlugin(plugin.getFilename());
                         return PluginOperationResult.unsatisfiedDependencies(pluginDependencyResult);
                     }
 
                     if (!pluginDependencyResult.getDisabledDependencies().isEmpty()) {
-                        pluginFileManager.removePlugin(plugin.getFilename());
+                        pluginFileManager.uninstallPlugin(plugin.getFilename());
                         return PluginOperationResult.disabledDependencies(pluginDependencyResult);
                     }
                 }
                 if (!pluginFileManager.installPlugin(plugin.getFilename())) {
-                    pluginFileManager.removePlugin(plugin.getFilename());
+                    pluginFileManager.uninstallPlugin(plugin.getFilename());
                     return PluginOperationResult.cannotInstallPlugin();
                 }
                 shouldRestart = true;
                 PluginDependencyResult installPluginDependencyResult = pluginDependencyManager
                         .getDependenciesToDisable(newArrayList(plugin));
-                existingPlugin.changeStateTo(PluginState.DISABLED);
-                plugin.changeStateTo(PluginState.ENABLING);
+                List<Plugin> dependencyPlugins = new ArrayList<Plugin>();
                 for (PluginDependencyInformation pluginDependencyInformation : installPluginDependencyResult
                         .getEnabledDependencies()) {
-                    Plugin dependency = pluginAccessor.getPlugin(pluginDependencyInformation.getDependencyPluginIdentifier());
-                    dependency.changeStateTo(PluginState.DISABLED);
-                    dependency.changeStateTo(PluginState.ENABLING);
-                    pluginDao.save(dependency);
+                    dependencyPlugins.add(pluginAccessor.getPlugin(pluginDependencyInformation.getDependencyPluginIdentifier()));
+                }
+                dependencyPlugins = pluginDependencyManager.sortPluginsInDependencyOrder(dependencyPlugins);
+                Collections.reverse(dependencyPlugins);
+                for (Plugin dependencyPlugin : dependencyPlugins) {
+                    dependencyPlugin.changeStateTo(PluginState.DISABLED);
+                }
+                existingPlugin.changeStateTo(PluginState.DISABLED);
+                plugin.changeStateTo(PluginState.ENABLING);
+                Collections.reverse(dependencyPlugins);
+                for (Plugin dependencyPlugin : dependencyPlugins) {
+                    dependencyPlugin.changeStateTo(PluginState.ENABLING);
+                    pluginDao.save(dependencyPlugin);
                 }
             }
+            // TODO order
             pluginFileManager.uninstallPlugin(existingPlugin.getFilename());
             pluginDao.save(plugin);
             if (shouldRestart) {
