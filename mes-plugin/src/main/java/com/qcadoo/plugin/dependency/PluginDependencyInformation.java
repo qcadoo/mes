@@ -6,7 +6,7 @@ import com.qcadoo.plugin.VersionUtils;
 
 public class PluginDependencyInformation {
 
-    private final String key;
+    private final String pluginIdentifier;
 
     private final int[] minimumVersion;
 
@@ -22,7 +22,7 @@ public class PluginDependencyInformation {
 
     public PluginDependencyInformation(final String key, final int[] minimumVersion, final boolean includeMinimumVersion,
             final int[] maximumVersion, final boolean includeMaximumVersion) {
-        this.key = key;
+        this.pluginIdentifier = key;
         this.minimumVersion = minimumVersion;
         this.includeMinimumVersion = includeMinimumVersion;
         this.maximumVersion = maximumVersion;
@@ -41,8 +41,8 @@ public class PluginDependencyInformation {
 
     }
 
-    public String getKey() {
-        return key;
+    public String getDependencyPluginIdentifier() {
+        return pluginIdentifier;
     }
 
     public boolean isVersionSattisfied(final int[] version) {
@@ -73,7 +73,7 @@ public class PluginDependencyInformation {
         int result = 1;
         result = prime * result + (includeMaximumVersion ? 1231 : 1237);
         result = prime * result + (includeMinimumVersion ? 1231 : 1237);
-        result = prime * result + ((key == null) ? 0 : key.hashCode());
+        result = prime * result + ((pluginIdentifier == null) ? 0 : pluginIdentifier.hashCode());
         result = prime * result + Arrays.hashCode(maximumVersion);
         result = prime * result + Arrays.hashCode(minimumVersion);
         return result;
@@ -92,10 +92,10 @@ public class PluginDependencyInformation {
             return false;
         if (includeMinimumVersion != other.includeMinimumVersion)
             return false;
-        if (key == null) {
-            if (other.key != null)
+        if (pluginIdentifier == null) {
+            if (other.pluginIdentifier != null)
                 return false;
-        } else if (!key.equals(other.key))
+        } else if (!pluginIdentifier.equals(other.pluginIdentifier))
             return false;
         if (!Arrays.equals(maximumVersion, other.maximumVersion))
             return false;

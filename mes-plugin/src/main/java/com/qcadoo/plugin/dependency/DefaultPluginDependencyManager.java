@@ -47,15 +47,15 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
             markedNodes.add(plugin.getIdentifier());
 
             for (PluginDependencyInformation dependencyInfo : plugin.getRequiredPlugins()) {
-                if (markedNodes.contains(dependencyInfo.getKey())) {
+                if (markedNodes.contains(dependencyInfo.getDependencyPluginIdentifier())) {
                     isCyclic = true;
                     continue;
                 }
 
-                Plugin requiredPlugin = pluginAccessor.getPlugin(dependencyInfo.getKey());
+                Plugin requiredPlugin = pluginAccessor.getPlugin(dependencyInfo.getDependencyPluginIdentifier());
 
                 if (requiredPlugin == null) {
-                    if (!argumentPluginIdentifiersSet.contains(dependencyInfo.getKey())) {
+                    if (!argumentPluginIdentifiersSet.contains(dependencyInfo.getDependencyPluginIdentifier())) {
                         unsatisfiedDependencies.add(dependencyInfo);
                     }
                     continue;
@@ -98,7 +98,7 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
 
         Iterator<PluginDependencyInformation> dependencyInfoIterator = disabledDependencies.iterator();
         while (dependencyInfoIterator.hasNext()) {
-            if (argumentPluginIdentifiersSet.contains(dependencyInfoIterator.next().getKey())) {
+            if (argumentPluginIdentifiersSet.contains(dependencyInfoIterator.next().getDependencyPluginIdentifier())) {
                 dependencyInfoIterator.remove();
             }
         }
@@ -139,7 +139,7 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
 
         Iterator<PluginDependencyInformation> dependencyInfoIterator = enabledDependencies.iterator();
         while (dependencyInfoIterator.hasNext()) {
-            if (argumentPluginIdentifiersSet.contains(dependencyInfoIterator.next().getKey())) {
+            if (argumentPluginIdentifiersSet.contains(dependencyInfoIterator.next().getDependencyPluginIdentifier())) {
                 dependencyInfoIterator.remove();
             }
         }
@@ -179,8 +179,8 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
         for (Plugin plugin : plugins) {
             Set<String> dependencyIdentifiers = new HashSet<String>();
             for (PluginDependencyInformation dependency : plugin.getRequiredPlugins()) {
-                if (resultMap.containsKey(dependency.getKey())) {
-                    dependencyIdentifiers.add(dependency.getKey());
+                if (resultMap.containsKey(dependency.getDependencyPluginIdentifier())) {
+                    dependencyIdentifiers.add(dependency.getDependencyPluginIdentifier());
                 }
             }
             resultMap.put(plugin.getIdentifier(), dependencyIdentifiers);
