@@ -1,5 +1,6 @@
 package com.qcadoo.plugin.dependency;
 
+import static com.qcadoo.plugin.VersionUtils.parse;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -20,6 +21,7 @@ import org.junit.Test;
 import com.qcadoo.plugin.Plugin;
 import com.qcadoo.plugin.PluginAccessor;
 import com.qcadoo.plugin.PluginDependencyManager;
+import com.qcadoo.plugin.PluginInformation;
 import com.qcadoo.plugin.PluginState;
 import com.qcadoo.plugin.VersionUtils;
 
@@ -727,5 +729,78 @@ public class PluginDependencyManagerTest {
         assertEquals(plugin3, sortedPlugins.get(1));
         assertEquals(plugin2, sortedPlugins.get(2));
         assertEquals(plugin1, sortedPlugins.get(3));
+    }
+
+    @Test
+    public void shouldSortPluginsWithMissingDependencies() {
+        // given
+        Set<PluginDependencyInformation> rp1 = new HashSet<PluginDependencyInformation>();
+        rp1.add(new PluginDependencyInformation("p2"));
+
+        Set<PluginDependencyInformation> rp2 = new HashSet<PluginDependencyInformation>();
+        rp2.add(new PluginDependencyInformation("p3"));
+
+        Set<PluginDependencyInformation> rp3 = new HashSet<PluginDependencyInformation>();
+
+        Set<PluginDependencyInformation> rp4 = new HashSet<PluginDependencyInformation>();
+        rp4.add(new PluginDependencyInformation("p2"));
+        rp4.add(new PluginDependencyInformation("p3"));
+
+        Set<PluginDependencyInformation> rp5 = new HashSet<PluginDependencyInformation>();
+        rp5.add(new PluginDependencyInformation("p1"));
+        rp5.add(new PluginDependencyInformation("p3"));
+
+        PluginInformation information = new PluginInformation("", "", "", "", parse("1.1"));
+
+        Plugin p1 = mock(Plugin.class, "p1");
+        given(p1.getIdentifier()).willReturn("p1");
+        given(p1.getPluginInformation()).willReturn(information);
+        given(p1.getRequiredPlugins()).willReturn(rp1);
+
+        Plugin p2 = mock(Plugin.class, "p2");
+        given(p2.getIdentifier()).willReturn("p2");
+        given(p2.getPluginInformation()).willReturn(information);
+        given(p2.getRequiredPlugins()).willReturn(rp2);
+
+        Plugin p3 = mock(Plugin.class, "p3");
+        given(p3.getIdentifier()).willReturn("p3");
+        given(p3.getPluginInformation()).willReturn(information);
+        given(p3.getRequiredPlugins()).willReturn(rp3);
+
+        Plugin p4 = mock(Plugin.class, "p4");
+        given(p4.getIdentifier()).willReturn("p4");
+        given(p4.getPluginInformation()).willReturn(information);
+        given(p4.getRequiredPlugins()).willReturn(rp4);
+
+        Plugin p5 = mock(Plugin.class, "p5");
+        given(p5.getIdentifier()).willReturn("p5");
+        given(p5.getPluginInformation()).willReturn(information);
+        given(p5.getRequiredPlugins()).willReturn(rp5);
+
+        given(pluginAccessor.getPlugin("p1")).willReturn(p1);
+        given(pluginAccessor.getPlugin("p2")).willReturn(p2);
+        given(pluginAccessor.getPlugin("p3")).willReturn(p3);
+        given(pluginAccessor.getPlugin("p4")).willReturn(p4);
+        given(pluginAccessor.getPlugin("p5")).willReturn(p5);
+
+        List<Plugin> argumentPlugins = new ArrayList<Plugin>();
+        argumentPlugins.add(p1);
+        argumentPlugins.add(p2);
+        argumentPlugins.add(p3);
+        argumentPlugins.add(p4);
+        argumentPlugins.add(p5);
+
+        // when
+        List<Plugin> sortedPlugins = manager.sortPluginsInDependencyOrder(argumentPlugins);
+
+        // then
+        System.out.println(sortedPlugins);
+
+        // assertEquals(5, sortedPlugins.size());
+        // assertEquals(p3, sortedPlugins.get(0));
+        // assertEquals(p2, sortedPlugins.get(1));
+        // assertEquals(p1, sortedPlugins.get(2));
+        // assertEquals(p5, sortedPlugins.get(3));
+        // assertEquals(p4, sortedPlugins.get(4));
     }
 }

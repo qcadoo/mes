@@ -23,6 +23,7 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
         this.pluginAccessor = pluginAccessor;
     }
 
+    @Override
     public PluginDependencyResult getDependenciesToEnable(final List<Plugin> plugins) {
         return getDependenciesToEnable(plugins, new HashSet<String>());
     }
@@ -104,6 +105,7 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
         return PluginDependencyResult.disabledDependencies(disabledDependencies);
     }
 
+    @Override
     public PluginDependencyResult getDependenciesToDisable(final List<Plugin> plugins) {
 
         Collection<Plugin> systemPlugins = pluginAccessor.getPlugins();
@@ -144,6 +146,7 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
         return PluginDependencyResult.enabledDependencies(enabledDependencies);
     }
 
+    @Override
     public List<Plugin> sortPluginsInDependencyOrder(final Collection<Plugin> plugins) {
 
         Map<String, Set<String>> notInitializedPlugins = createPluginsMapWithDependencies(plugins);
