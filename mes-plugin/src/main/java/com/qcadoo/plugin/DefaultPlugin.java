@@ -101,8 +101,7 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
 
     @Override
     public String getFilename() {
-        // TODO Auto-generated method stub
-        return null;
+        return getIdentifier() + "-" + getVersion()[0] + "." + getVersion()[1] + "." + getVersion()[2] + ".jar";
     }
 
     @Override
