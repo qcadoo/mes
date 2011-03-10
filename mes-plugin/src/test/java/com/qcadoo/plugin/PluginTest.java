@@ -1,6 +1,7 @@
 package com.qcadoo.plugin;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -80,6 +81,17 @@ public class PluginTest {
 
         // then
         plugin1.compareVersion(plugin2);
+    }
+
+    @Test
+    public void shouldHaveSystemFlag() throws Exception {
+        // given
+        Plugin plugin1 = DefaultPlugin.Builder.identifier("identifier1").asSystem().build();
+        Plugin plugin2 = DefaultPlugin.Builder.identifier("identifier1").build();
+
+        // then
+        assertTrue(plugin1.isSystemPlugin());
+        assertFalse(plugin2.isSystemPlugin());
     }
 
 }

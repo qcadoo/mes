@@ -17,6 +17,8 @@ public class DefaultPluginAccessor implements PluginAccessor {
 
     private PluginDependencyManager pluginDependencyManager;
 
+    private ModuleFactoryAccessor moduleFactoryAccessor;
+
     @Override
     public PersistentPlugin getEnabledPlugin(final String identifier) {
         return enabledPlugins.get(identifier);
@@ -82,13 +84,17 @@ public class DefaultPluginAccessor implements PluginAccessor {
         }
 
         for (Plugin plugin : pluginDependencyManager.sortPluginsInDependencyOrder(plugins.values())) {
+            plugin.init();
+        }
+
+        moduleFactoryAccessor.postInitialize();
+
+        for (Plugin plugin : pluginDependencyManager.sortPluginsInDependencyOrder(plugins.values())) {
             if (plugin.hasState(PluginState.ENABLING)) {
                 plugin.changeStateTo(PluginState.ENABLED);
                 pluginDao.save(plugin);
             }
-            plugin.init();
         }
-
     }
 
     public void setPluginDescriptorParser(final PluginDescriptorParser pluginDescriptorParser) {
@@ -101,5 +107,9 @@ public class DefaultPluginAccessor implements PluginAccessor {
 
     public void setPluginDependencyManager(final PluginDependencyManager pluginDependencyManager) {
         this.pluginDependencyManager = pluginDependencyManager;
+    }
+
+    public void setModuleFactoryAccessor(final ModuleFactoryAccessor moduleFactoryAccessor) {
+        this.moduleFactoryAccessor = moduleFactoryAccessor;
     }
 }

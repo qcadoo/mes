@@ -22,12 +22,9 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
 
     private final boolean system;
 
-    private final String filename;
-
-    private DefaultPlugin(final String identifier, final String filename, final boolean system, final int[] version,
-            final Set<Module> modules, final PluginInformation information, final Set<PluginDependencyInformation> dependencies) {
+    private DefaultPlugin(final String identifier, final boolean system, final int[] version, final Set<Module> modules,
+            final PluginInformation information, final Set<PluginDependencyInformation> dependencies) {
         super(identifier, UNKNOWN, version);
-        this.filename = filename;
         this.modules = modules;
         this.information = information;
         this.dependencies = dependencies;
@@ -41,14 +38,12 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
 
     @Override
     public Set<PluginDependencyInformation> getRequiredPlugins() {
-        // TODO Auto-generated method stub
-        return null;
+        return dependencies;
     }
 
     @Override
     public boolean isSystemPlugin() {
-        // TODO Auto-generated method stub
-        return false;
+        return system;
     }
 
     @Override
@@ -101,8 +96,7 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
 
     @Override
     public String getFilename() {
-        // TODO Auto-generated method stub
-        return null;
+        return getIdentifier() + "-" + getVersion()[0] + "." + getVersion()[1] + "." + getVersion()[2] + ".jar";
     }
 
     @Override
@@ -131,8 +125,6 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
 
         private int[] version;
 
-        private String filename;
-
         private String description;
 
         private String vendor;
@@ -140,6 +132,8 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
         private String vendorUrl;
 
         private String name;
+
+        private boolean system;
 
         private final Set<Module> modules = new HashSet<Module>();
 
@@ -163,9 +157,42 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
             return this;
         }
 
+        public Builder withDependency(final String identifier, final String version) {
+            int[][] versions = VersionUtils.parseDependency(version);
+            PluginDependencyInformation dependencyInformation = new PluginDependencyInformation(identifier, versions[0],
+                    versions[1][0] == 1, versions[2], versions[3][0] == 1);
+            dependencyInformations.add(dependencyInformation);
+            return this;
+        }
+
+        public Builder withName(final String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder withDescription(final String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder withVendor(final String vendor) {
+            this.vendor = vendor;
+            return this;
+        }
+
+        public Builder withVendorUrl(final String vendorUrl) {
+            this.vendorUrl = vendorUrl;
+            return this;
+        }
+
+        public Builder asSystem() {
+            this.system = true;
+            return this;
+        }
+
         public Plugin build() {
             PluginInformation pluginInformation = new PluginInformation(name, description, vendor, vendorUrl);
-            return new DefaultPlugin(identifier, filename, false, version, unmodifiableSet(modules), pluginInformation,
+            return new DefaultPlugin(identifier, system, version, unmodifiableSet(modules), pluginInformation,
                     unmodifiableSet(dependencyInformations));
         }
 

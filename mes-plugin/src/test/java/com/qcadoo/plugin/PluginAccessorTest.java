@@ -31,6 +31,8 @@ public class PluginAccessorTest {
 
     private final PluginDependencyManager pluginDependencyManager = mock(PluginDependencyManager.class);
 
+    private final ModuleFactoryAccessor moduleFactoryAccessor = mock(ModuleFactoryAccessor.class);
+
     private DefaultPluginAccessor pluginAccessor;
 
     @Before
@@ -39,6 +41,7 @@ public class PluginAccessorTest {
         pluginAccessor.setPluginDescriptorParser(pluginDescriptorParser);
         pluginAccessor.setPluginDao(pluginDao);
         pluginAccessor.setPluginDependencyManager(pluginDependencyManager);
+        pluginAccessor.setModuleFactoryAccessor(moduleFactoryAccessor);
     }
 
     @Test
@@ -190,9 +193,10 @@ public class PluginAccessorTest {
         pluginAccessor.init();
 
         // then
-        InOrder inOrder = inOrder(plugin2, plugin1);
+        InOrder inOrder = inOrder(plugin2, plugin1, moduleFactoryAccessor);
         inOrder.verify(plugin2).init();
         inOrder.verify(plugin1).init();
+        inOrder.verify(moduleFactoryAccessor).postInitialize();
     }
 
     @Test
@@ -230,7 +234,10 @@ public class PluginAccessorTest {
         pluginAccessor.init();
 
         // then
-        InOrder inOrder = inOrder(plugin2, plugin1);
+        InOrder inOrder = inOrder(plugin2, plugin1, moduleFactoryAccessor);
+        inOrder.verify(plugin2).init();
+        inOrder.verify(plugin1).init();
+        inOrder.verify(moduleFactoryAccessor).postInitialize();
         inOrder.verify(plugin2).changeStateTo(PluginState.ENABLED);
         inOrder.verify(plugin1).changeStateTo(PluginState.ENABLED);
         verify(plugin3, never()).changeStateTo(PluginState.ENABLED);
