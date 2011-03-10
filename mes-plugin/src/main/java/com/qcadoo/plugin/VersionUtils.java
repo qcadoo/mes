@@ -37,4 +37,8 @@ public class VersionUtils {
         return 0;
     }
 
+    public static int[][] parseDependency(final String version) {
+        return new int[][] { { 1, 0, 0 }, { 0 }, { 1, 0, 0 }, { 1 } };
+    }
+
 }
