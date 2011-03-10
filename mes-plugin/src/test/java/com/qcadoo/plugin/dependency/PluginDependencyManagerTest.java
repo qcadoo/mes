@@ -786,7 +786,6 @@ public class PluginDependencyManagerTest {
         List<Plugin> argumentPlugins = new ArrayList<Plugin>();
         argumentPlugins.add(p1);
         argumentPlugins.add(p2);
-        argumentPlugins.add(p3);
         argumentPlugins.add(p4);
         argumentPlugins.add(p5);
 
@@ -796,11 +795,10 @@ public class PluginDependencyManagerTest {
         // then
         System.out.println(sortedPlugins);
 
-        // assertEquals(5, sortedPlugins.size());
-        // assertEquals(p3, sortedPlugins.get(0));
-        // assertEquals(p2, sortedPlugins.get(1));
-        // assertEquals(p1, sortedPlugins.get(2));
-        // assertEquals(p5, sortedPlugins.get(3));
-        // assertEquals(p4, sortedPlugins.get(4));
+        assertEquals(4, sortedPlugins.size());
+        assertEquals(p2, sortedPlugins.get(0));
+        assertEquals(p1, sortedPlugins.get(1));
+        assertEquals(p5, sortedPlugins.get(2));
+        assertEquals(p4, sortedPlugins.get(3));
     }
 }
