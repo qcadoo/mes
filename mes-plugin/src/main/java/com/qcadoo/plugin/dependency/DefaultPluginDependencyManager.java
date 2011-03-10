@@ -170,9 +170,14 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
     private Map<String, Set<String>> createPluginsMapWithDependencies(final Collection<Plugin> plugins) {
         Map<String, Set<String>> resultMap = new HashMap<String, Set<String>>();
         for (Plugin plugin : plugins) {
+            resultMap.put(plugin.getIdentifier(), null);
+        }
+        for (Plugin plugin : plugins) {
             Set<String> dependencyIdentifiers = new HashSet<String>();
             for (PluginDependencyInformation dependency : plugin.getRequiredPlugins()) {
-                dependencyIdentifiers.add(dependency.getKey());
+                if (resultMap.containsKey(dependency.getKey())) {
+                    dependencyIdentifiers.add(dependency.getKey());
+                }
             }
             resultMap.put(plugin.getIdentifier(), dependencyIdentifiers);
         }
