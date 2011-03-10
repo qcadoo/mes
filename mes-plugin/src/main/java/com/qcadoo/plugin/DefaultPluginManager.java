@@ -248,7 +248,7 @@ public class DefaultPluginManager implements PluginManager {
                 plugin.changeStateTo(PluginState.ENABLING);
                 for (PluginDependencyInformation pluginDependencyInformation : installPluginDependencyResult
                         .getEnabledDependencies()) {
-                    Plugin dependency = pluginAccessor.getPlugin(pluginDependencyInformation.getKey());
+                    Plugin dependency = pluginAccessor.getPlugin(pluginDependencyInformation.getDependencyPluginIdentifier());
                     dependency.changeStateTo(PluginState.DISABLED);
                     dependency.changeStateTo(PluginState.ENABLING);
                     pluginDao.save(dependency);
