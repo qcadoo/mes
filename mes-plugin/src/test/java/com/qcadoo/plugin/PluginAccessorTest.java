@@ -25,11 +25,11 @@ import com.google.common.collect.Sets;
 
 public class PluginAccessorTest {
 
-    private PluginDescriptorParser pluginDescriptorParser = mock(PluginDescriptorParser.class);
+    private final PluginDescriptorParser pluginDescriptorParser = mock(PluginDescriptorParser.class);
 
-    private PluginDao pluginDao = Mockito.mock(PluginDao.class);
+    private final PluginDao pluginDao = Mockito.mock(PluginDao.class);
 
-    private PluginDependencyManager pluginDependencyManager = mock(PluginDependencyManager.class);
+    private final PluginDependencyManager pluginDependencyManager = mock(PluginDependencyManager.class);
 
     private DefaultPluginAccessor pluginAccessor;
 
@@ -45,23 +45,26 @@ public class PluginAccessorTest {
     public void shouldSynchronizePluginsFromClasspathAndDatabase() throws Exception {
         // given
         Plugin plugin1 = mock(Plugin.class);
+        PersistentPlugin persistentPlugin1 = mock(PersistentPlugin.class);
         given(plugin1.getIdentifier()).willReturn("identifier1");
-        given(plugin1.compareVersion(plugin1)).willReturn(0);
+        given(persistentPlugin1.getIdentifier()).willReturn("identifier1");
+        given(plugin1.compareVersion(persistentPlugin1)).willReturn(0);
 
-        Plugin plugin21 = mock(Plugin.class);
-        given(plugin21.getIdentifier()).willReturn("identifier21");
-        given(plugin21.getPluginState()).willReturn(PluginState.ENABLED);
+        PersistentPlugin persistentPlugin21 = mock(PersistentPlugin.class);
+        given(persistentPlugin21.getIdentifier()).willReturn("identifier21");
+        given(persistentPlugin21.getIdentifier()).willReturn("identifier21");
+        given(persistentPlugin21.getPluginState()).willReturn(PluginState.ENABLED);
         Plugin plugin22 = mock(Plugin.class);
         given(plugin22.getIdentifier()).willReturn("identifier21");
-        given(plugin22.compareVersion(plugin21)).willReturn(1);
+        given(plugin22.compareVersion(persistentPlugin21)).willReturn(1);
 
         Plugin plugin3 = mock(Plugin.class);
         given(plugin3.getIdentifier()).willReturn("identifier3");
-        Plugin plugin4 = mock(Plugin.class);
-        given(plugin4.getIdentifier()).willReturn("identifier4");
+        PersistentPlugin persistentPlugin4 = mock(PersistentPlugin.class);
+        given(persistentPlugin4.getIdentifier()).willReturn("identifier4");
 
         Set<Plugin> pluginsFromDescriptor = Sets.newHashSet(plugin1, plugin22, plugin3);
-        Set<Plugin> pluginsFromDatabase = Sets.newHashSet(plugin1, plugin21, plugin4);
+        Set<PersistentPlugin> pluginsFromDatabase = Sets.newHashSet(plugin1, persistentPlugin21, persistentPlugin4);
 
         given(pluginDescriptorParser.loadPlugins()).willReturn(pluginsFromDescriptor);
 
@@ -75,37 +78,41 @@ public class PluginAccessorTest {
         verify(plugin22).changeStateTo(PluginState.ENABLED);
         verify(pluginDao).save(plugin22);
         verify(pluginDao).save(plugin3);
-        verify(pluginDao).delete(plugin4);
+        verify(pluginDao).delete(persistentPlugin4);
     }
 
     @Test
     public void shouldListAllPlugins() throws Exception {
         // given
         Plugin plugin1 = mock(Plugin.class, "plugin1");
+        PersistentPlugin persistentPlugin1 = mock(PersistentPlugin.class, "plugin1");
         given(plugin1.getIdentifier()).willReturn("identifier1");
-        given(plugin1.compareVersion(plugin1)).willReturn(0);
+        given(persistentPlugin1.getIdentifier()).willReturn("identifier1");
+        given(plugin1.compareVersion(persistentPlugin1)).willReturn(0);
         given(plugin1.hasState(PluginState.ENABLED)).willReturn(false);
-        given(plugin1.getPluginState()).willReturn(PluginState.DISABLED);
+        given(persistentPlugin1.getPluginState()).willReturn(PluginState.DISABLED);
 
-        Plugin plugin21 = mock(Plugin.class, "plugin21");
-        given(plugin21.getIdentifier()).willReturn("identifier21");
-        given(plugin21.getPluginState()).willReturn(PluginState.ENABLED);
+        PersistentPlugin persistentPlugin21 = mock(PersistentPlugin.class, "plugin21");
+        given(persistentPlugin21.getIdentifier()).willReturn("identifier21");
+        given(persistentPlugin21.getPluginState()).willReturn(PluginState.ENABLED);
         Plugin plugin22 = mock(Plugin.class, "plugin22");
         given(plugin22.getIdentifier()).willReturn("identifier21");
         given(plugin22.hasState(PluginState.ENABLED)).willReturn(true);
-        given(plugin22.compareVersion(plugin21)).willReturn(1);
+        given(plugin22.compareVersion(persistentPlugin21)).willReturn(1);
 
         Plugin plugin3 = mock(Plugin.class, "plugin3");
+        PersistentPlugin persistentPlugin3 = mock(PersistentPlugin.class, "plugin3");
         given(plugin3.getIdentifier()).willReturn("identifier3");
+        given(persistentPlugin3.getIdentifier()).willReturn("identifier3");
         given(plugin3.hasState(PluginState.ENABLED)).willReturn(true);
-        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+        given(persistentPlugin3.getPluginState()).willReturn(PluginState.ENABLED);
 
         Plugin plugin4 = mock(Plugin.class, "plugin4");
         given(plugin4.getIdentifier()).willReturn("identifier4");
         given(plugin4.hasState(PluginState.ENABLED)).willReturn(false);
 
         Set<Plugin> pluginsFromDescriptor = Sets.newHashSet(plugin1, plugin22, plugin3, plugin4);
-        Set<Plugin> pluginsFromDatabase = Sets.newHashSet(plugin1, plugin21, plugin3);
+        Set<PersistentPlugin> pluginsFromDatabase = Sets.newHashSet(persistentPlugin1, persistentPlugin21, persistentPlugin3);
 
         given(pluginDescriptorParser.loadPlugins()).willReturn(pluginsFromDescriptor);
 
@@ -121,7 +128,6 @@ public class PluginAccessorTest {
         verify(plugin4).changeStateTo(PluginState.DISABLED);
 
         assertThat(pluginAccessor.getPlugins(), hasItems(plugin1, plugin22, plugin3, plugin4));
-        assertThat(pluginAccessor.getPlugins(), not(hasItem(plugin21)));
 
         assertThat(pluginAccessor.getEnabledPlugins(), hasItems(plugin22, plugin3));
         assertThat(pluginAccessor.getEnabledPlugins(), not(hasItem(plugin1)));
@@ -142,12 +148,12 @@ public class PluginAccessorTest {
         // given
         Plugin plugin11 = mock(Plugin.class);
         given(plugin11.getIdentifier()).willReturn("identifier11");
-        Plugin plugin12 = mock(Plugin.class);
-        given(plugin12.getIdentifier()).willReturn("identifier11");
-        given(plugin11.compareVersion(plugin12)).willReturn(-1);
+        PersistentPlugin persistentPlugin12 = mock(PersistentPlugin.class);
+        given(persistentPlugin12.getIdentifier()).willReturn("identifier11");
+        given(plugin11.compareVersion(persistentPlugin12)).willReturn(-1);
 
         Set<Plugin> pluginsFromDescriptor = Sets.newHashSet(plugin11);
-        Set<Plugin> pluginsFromDatabase = Sets.newHashSet(plugin12);
+        Set<PersistentPlugin> pluginsFromDatabase = Sets.newHashSet(persistentPlugin12);
 
         given(pluginDescriptorParser.loadPlugins()).willReturn(pluginsFromDescriptor);
 
@@ -161,12 +167,16 @@ public class PluginAccessorTest {
     public void shouldPerformInit() throws Exception {
         // given
         Plugin plugin1 = mock(Plugin.class, "plugin1");
+        PersistentPlugin persistentPlugin1 = mock(PersistentPlugin.class, "plugin1");
         given(plugin1.getIdentifier()).willReturn("identifier1");
+        given(persistentPlugin1.getIdentifier()).willReturn("identifier1");
         Plugin plugin2 = mock(Plugin.class, "plugin2");
+        PersistentPlugin persistentPlugin2 = mock(PersistentPlugin.class, "plugin2");
         given(plugin2.getIdentifier()).willReturn("identifier2");
+        given(persistentPlugin2.getIdentifier()).willReturn("identifier2");
 
         Set<Plugin> pluginsFromDescriptor = Sets.newHashSet(plugin1, plugin2);
-        Set<Plugin> pluginsFromDatabase = Sets.newHashSet(plugin1, plugin2);
+        Set<PersistentPlugin> pluginsFromDatabase = Sets.newHashSet(persistentPlugin1, persistentPlugin2);
         List<Plugin> sortedPluginsToInitialize = Lists.newArrayList(plugin2, plugin1);
 
         given(pluginDependencyManager.sortPluginsInDependencyOrder(Mockito.anyCollectionOf(Plugin.class))).willReturn(
@@ -189,16 +199,24 @@ public class PluginAccessorTest {
     public void shouldPerformEnableOnEnablingPlugins() throws Exception {
         // given
         Plugin plugin1 = mock(Plugin.class);
+        PersistentPlugin persistentPlugin1 = mock(PersistentPlugin.class);
         given(plugin1.getIdentifier()).willReturn("identifier1");
+        given(persistentPlugin1.getIdentifier()).willReturn("identifier1");
         given(plugin1.hasState(PluginState.ENABLING)).willReturn(true);
+        given(persistentPlugin1.hasState(PluginState.ENABLING)).willReturn(true);
         Plugin plugin2 = mock(Plugin.class);
+        PersistentPlugin persistentPlugin2 = mock(PersistentPlugin.class);
         given(plugin2.getIdentifier()).willReturn("identifier2");
+        given(persistentPlugin2.getIdentifier()).willReturn("identifier2");
         given(plugin2.hasState(PluginState.ENABLING)).willReturn(true);
+        given(persistentPlugin2.hasState(PluginState.ENABLING)).willReturn(true);
         Plugin plugin3 = mock(Plugin.class);
+        PersistentPlugin persistentPlugin3 = mock(PersistentPlugin.class);
+        given(persistentPlugin3.getIdentifier()).willReturn("identifier3");
         given(plugin3.getIdentifier()).willReturn("identifier3");
 
         Set<Plugin> pluginsFromDescriptor = Sets.newHashSet(plugin1, plugin2, plugin3);
-        Set<Plugin> pluginsFromDatabase = Sets.newHashSet(plugin1, plugin2, plugin3);
+        Set<PersistentPlugin> pluginsFromDatabase = Sets.newHashSet(persistentPlugin1, persistentPlugin2, persistentPlugin3);
         List<Plugin> sortedPluginsToInitialize = Lists.newArrayList(plugin2, plugin1);
 
         given(pluginDependencyManager.sortPluginsInDependencyOrder(Mockito.anyCollectionOf(Plugin.class))).willReturn(
@@ -224,13 +242,13 @@ public class PluginAccessorTest {
     @Test
     public void shouldNotDeleteTemporaryPlugins() throws Exception {
         // given
-        Plugin plugin1 = mock(Plugin.class);
-        given(plugin1.hasState(PluginState.TEMPORARY)).willReturn(true);
-        Plugin plugin2 = mock(Plugin.class);
-        given(plugin2.hasState(PluginState.TEMPORARY)).willReturn(false);
+        PersistentPlugin persistentPlugin1 = mock(PersistentPlugin.class);
+        given(persistentPlugin1.hasState(PluginState.TEMPORARY)).willReturn(true);
+        PersistentPlugin persistentPlugin2 = mock(PersistentPlugin.class);
+        given(persistentPlugin2.hasState(PluginState.TEMPORARY)).willReturn(false);
 
         Set<Plugin> pluginsFromDescriptor = Sets.newHashSet();
-        Set<Plugin> pluginsFromDatabase = Sets.newHashSet(plugin1, plugin2);
+        Set<PersistentPlugin> pluginsFromDatabase = Sets.newHashSet(persistentPlugin1, persistentPlugin2);
 
         given(pluginDescriptorParser.loadPlugins()).willReturn(pluginsFromDescriptor);
         given(pluginDao.list()).willReturn(pluginsFromDatabase);
@@ -238,8 +256,8 @@ public class PluginAccessorTest {
         // when
         pluginAccessor.init();
 
-        verify(pluginDao, never()).delete(plugin1);
-        verify(pluginDao).delete(plugin2);
+        verify(pluginDao, never()).delete(persistentPlugin1);
+        verify(pluginDao).delete(persistentPlugin2);
     }
 
 }

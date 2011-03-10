@@ -1,6 +1,5 @@
 package com.qcadoo.plugin;
 
-import java.util.Arrays;
 
 public class PluginInformation {
 
@@ -10,18 +9,14 @@ public class PluginInformation {
 
     private final String vendorUrl;
 
-    private final int[] version;
-
     private final String name;
 
-    public PluginInformation(final String name, final String description, final String vendor, final String vendorUrl,
-            final int[] version) {
+    public PluginInformation(final String name, final String description, final String vendor, final String vendorUrl) {
         super();
         this.name = name;
         this.description = description;
         this.vendor = vendor;
         this.vendorUrl = vendorUrl;
-        this.version = version;
     }
 
     public String getDescription() {
@@ -36,10 +31,6 @@ public class PluginInformation {
         return vendorUrl;
     }
 
-    public int[] getVersion() {
-        return version.clone();
-    }
-
     public String getName() {
         return name;
     }
@@ -52,7 +43,6 @@ public class PluginInformation {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((vendor == null) ? 0 : vendor.hashCode());
         result = prime * result + ((vendorUrl == null) ? 0 : vendorUrl.hashCode());
-        result = prime * result + ((version == null) ? 0 : Arrays.hashCode(version));
         return result;
     }
 
@@ -84,11 +74,6 @@ public class PluginInformation {
             if (other.vendorUrl != null)
                 return false;
         } else if (!vendorUrl.equals(other.vendorUrl))
-            return false;
-        if (version == null) {
-            if (other.version != null)
-                return false;
-        } else if (!Arrays.equals(version, other.version))
             return false;
         return true;
     }

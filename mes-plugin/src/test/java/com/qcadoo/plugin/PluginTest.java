@@ -76,7 +76,7 @@ public class PluginTest {
     public void shouldFailComparingVersionsOfDifferentPlugins() throws Exception {
         // given
         Plugin plugin1 = DefaultPlugin.Builder.identifier("identifier1").withVersion("2.3.4").build();
-        Plugin plugin2 = DefaultPlugin.Builder.identifier("identifier2").withVersion("2.3.4").build();
+        PersistentPlugin plugin2 = DefaultPlugin.Builder.identifier("identifier2").withVersion("2.3.4").build();
 
         // then
         plugin1.compareVersion(plugin2);

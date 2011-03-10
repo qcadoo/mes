@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.qcadoo.plugin.PersistentPlugin;
 import com.qcadoo.plugin.Plugin;
 import com.qcadoo.plugin.PluginAccessor;
 import com.qcadoo.plugin.PluginDependencyManager;
@@ -64,7 +65,7 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
                     continue;
                 }
 
-                if (!dependencyInfo.isVersionSattisfied(requiredPlugin.getPluginInformation().getVersion())) {
+                if (!dependencyInfo.isVersionSattisfied(requiredPlugin.getVersion())) {
                     unsatisfiedDependencies.add(dependencyInfo);
                 } else {
                     disabledDependencies.add(dependencyInfo);
@@ -118,7 +119,7 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
             if (!PluginState.ENABLED.equals(plugin.getPluginState())) {
                 continue;
             }
-            for (Plugin pluginToDisable : plugins) {
+            for (PersistentPlugin pluginToDisable : plugins) {
 
                 if (plugin.getRequiredPlugins().contains(new PluginDependencyInformation(pluginToDisable.getIdentifier()))) {
                     enabledDependencyPlugins.add(plugin);
@@ -127,7 +128,7 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
         }
 
         Set<PluginDependencyInformation> enabledDependencies = new HashSet<PluginDependencyInformation>();
-        for (Plugin plugin : enabledDependencyPlugins) {
+        for (PersistentPlugin plugin : enabledDependencyPlugins) {
             enabledDependencies.add(new PluginDependencyInformation(plugin.getIdentifier()));
         }
 
@@ -172,7 +173,7 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
 
     private Map<String, Set<String>> createPluginsMapWithDependencies(final Collection<Plugin> plugins) {
         Map<String, Set<String>> resultMap = new HashMap<String, Set<String>>();
-        for (Plugin plugin : plugins) {
+        for (PersistentPlugin plugin : plugins) {
             resultMap.put(plugin.getIdentifier(), null);
         }
         for (Plugin plugin : plugins) {
@@ -245,13 +246,13 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
 
     private Set<String> getArgumentIdentifiersSet(final List<Plugin> plugins) {
         Set<String> argumentPluginInformationsSet = new HashSet<String>();
-        for (Plugin plugin : plugins) {
+        for (PersistentPlugin plugin : plugins) {
             argumentPluginInformationsSet.add(plugin.getIdentifier());
         }
         return argumentPluginInformationsSet;
     }
 
-    private boolean isPluginDisabled(final Plugin plugin) {
+    private boolean isPluginDisabled(final PersistentPlugin plugin) {
         return PluginState.DISABLED.equals(plugin.getPluginState()) || PluginState.TEMPORARY.equals(plugin.getPluginState());
     }
 

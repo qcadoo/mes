@@ -11,14 +11,14 @@ public class DefaultPluginAccessor implements PluginAccessor {
 
     private PluginDao pluginDao;
 
-    private Map<String, Plugin> enabledPlugins = new HashMap<String, Plugin>();
+    private final Map<String, Plugin> enabledPlugins = new HashMap<String, Plugin>();
 
-    private Map<String, Plugin> plugins = new HashMap<String, Plugin>();
+    private final Map<String, Plugin> plugins = new HashMap<String, Plugin>();
 
     private PluginDependencyManager pluginDependencyManager;
 
     @Override
-    public Plugin getEnabledPlugin(final String identifier) {
+    public PersistentPlugin getEnabledPlugin(final String identifier) {
         return enabledPlugins.get(identifier);
     }
 
@@ -39,11 +39,11 @@ public class DefaultPluginAccessor implements PluginAccessor {
 
     public void init() {
         Set<Plugin> pluginsFromDescriptor = pluginDescriptorParser.loadPlugins();
-        Set<Plugin> pluginsFromDatabase = pluginDao.list();
+        Set<PersistentPlugin> pluginsFromDatabase = pluginDao.list();
 
         for (Plugin plugin : pluginsFromDescriptor) {
-            Plugin existingPlugin = null;
-            for (Plugin databasePlugin : pluginsFromDatabase) {
+            PersistentPlugin existingPlugin = null;
+            for (PersistentPlugin databasePlugin : pluginsFromDatabase) {
                 if (plugin.getIdentifier().equals(databasePlugin.getIdentifier())) {
                     existingPlugin = databasePlugin;
                     break;
@@ -64,13 +64,13 @@ public class DefaultPluginAccessor implements PluginAccessor {
                 enabledPlugins.put(plugin.getIdentifier(), plugin);
             }
         }
-        for (Plugin databasePlugin : pluginsFromDatabase) {
+        for (PersistentPlugin databasePlugin : pluginsFromDatabase) {
             if (databasePlugin.hasState(PluginState.TEMPORARY)) {
                 continue;
             }
 
-            Plugin existingPlugin = null;
-            for (Plugin plugin : pluginsFromDescriptor) {
+            PersistentPlugin existingPlugin = null;
+            for (PersistentPlugin plugin : pluginsFromDescriptor) {
                 if (databasePlugin.getIdentifier().equals(plugin.getIdentifier())) {
                     existingPlugin = plugin;
                     break;

@@ -10,6 +10,7 @@
 				<xs:any minOccurs="0" maxOccurs="unbounded"  />
 			</xs:sequence>	
 			<xs:attribute name="plugin" type="identifier" use="required" />
+			<xs:attribute name="version" type="version" use="required" />
 		</xs:complexType>
 	</xs:element>
 
@@ -19,7 +20,6 @@
 			<xs:element name="vendor" type="vendorType" minOccurs="0" maxOccurs="1" />
 		</xs:all>
 		<xs:attribute name="name" type="notEmptyString" use="required" />
-		<xs:attribute name="version" type="version" use="required" />
 	</xs:complexType>
 
 	<xs:complexType name="vendorType">

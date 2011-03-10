@@ -17,7 +17,7 @@ public class PluginDaoTest {
     @Test
     public void shouldSavePlugin() throws Exception {
         // given
-        Plugin plugin1 = mock(Plugin.class);
+        PersistentPlugin plugin1 = mock(Plugin.class);
 
         // when
         pluginDao.save(plugin1);

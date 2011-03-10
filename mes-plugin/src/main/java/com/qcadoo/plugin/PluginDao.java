@@ -1,23 +1,13 @@
 package com.qcadoo.plugin;
 
-import java.util.Map;
 import java.util.Set;
 
 public interface PluginDao {
 
-    void save(String identifier, PluginState state);
+    void save(PersistentPlugin plugin);
 
-    @Deprecated
-    void save(Plugin plugin);
+    void delete(PersistentPlugin plugin);
 
-    void delete(String identifier);
-
-    @Deprecated
-    void delete(Plugin plugin);
-
-    Map<String, PluginState> all();
-
-    @Deprecated
-    Set<Plugin> list();
+    Set<PersistentPlugin> list();
 
 }

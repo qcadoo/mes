@@ -12,11 +12,7 @@ import java.util.Set;
 
 import com.qcadoo.plugin.dependency.PluginDependencyInformation;
 
-public class DefaultPlugin implements Plugin {
-
-    private PluginState state = UNKNOWN;
-
-    private final String identifier;
+public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
 
     private final Set<Module> modules;
 
@@ -28,9 +24,9 @@ public class DefaultPlugin implements Plugin {
 
     private final String filename;
 
-    private DefaultPlugin(final String identifier, final String filename, final boolean system, final Set<Module> modules,
-            final PluginInformation information, final Set<PluginDependencyInformation> dependencies) {
-        this.identifier = identifier;
+    private DefaultPlugin(final String identifier, final String filename, final boolean system, final int[] version,
+            final Set<Module> modules, final PluginInformation information, final Set<PluginDependencyInformation> dependencies) {
+        super(identifier, UNKNOWN, version);
         this.filename = filename;
         this.modules = modules;
         this.information = information;
@@ -39,18 +35,8 @@ public class DefaultPlugin implements Plugin {
     }
 
     @Override
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    @Override
     public PluginInformation getPluginInformation() {
         return information;
-    }
-
-    @Override
-    public PluginState getPluginState() {
-        return state;
     }
 
     @Override
@@ -66,27 +52,23 @@ public class DefaultPlugin implements Plugin {
     }
 
     @Override
-    public boolean hasState(final PluginState expectedState) {
-        return state.equals(expectedState);
-    }
-
-    @Override
     public void changeStateTo(final PluginState targetState) {
-        if (!isTransitionPossible(this.state, targetState)) {
-            throw new IllegalStateException("Cannot change state of plugin " + this + " from " + state + " to " + targetState);
+        if (!isTransitionPossible(getPluginState(), targetState)) {
+            throw new IllegalStateException("Cannot change state of plugin " + this + " from " + getPluginState() + " to "
+                    + targetState);
         }
 
-        if (!state.equals(UNKNOWN) && targetState.equals(ENABLED)) {
+        if (!hasState(UNKNOWN) && targetState.equals(ENABLED)) {
             for (Module module : modules) {
                 module.enable();
             }
-        } else if (!state.equals(UNKNOWN) && targetState.equals(DISABLED)) {
+        } else if (!hasState(UNKNOWN) && targetState.equals(DISABLED)) {
             for (Module module : modules) {
                 module.disable();
             }
         }
 
-        state = targetState;
+        setPluginState(targetState);
     }
 
     private boolean isTransitionPossible(final PluginState from, final PluginState to) {
@@ -124,17 +106,17 @@ public class DefaultPlugin implements Plugin {
     }
 
     @Override
-    public int compareVersion(final Plugin plugin) {
-        if (!identifier.equals(plugin.getIdentifier())) {
+    public int compareVersion(final PersistentPlugin plugin) {
+        if (!getIdentifier().equals(plugin.getIdentifier())) {
             throw new IllegalStateException("Cannot compare versions of different plugins " + this + " and " + plugin);
         }
 
-        return VersionUtils.compare(information.getVersion(), plugin.getPluginInformation().getVersion());
+        return VersionUtils.compare(getVersion(), plugin.getVersion());
     }
 
     @Override
     public void init() {
-        if (state.equals(PluginState.UNKNOWN)) {
+        if (hasState(PluginState.UNKNOWN)) {
             throw new IllegalStateException("Plugin " + getIdentifier() + " is in unknown state, cannot be initialized");
         }
 
@@ -182,8 +164,8 @@ public class DefaultPlugin implements Plugin {
         }
 
         public Plugin build() {
-            PluginInformation pluginInformation = new PluginInformation(name, description, vendor, vendorUrl, version);
-            return new DefaultPlugin(identifier, filename, false, unmodifiableSet(modules), pluginInformation,
+            PluginInformation pluginInformation = new PluginInformation(name, description, vendor, vendorUrl);
+            return new DefaultPlugin(identifier, filename, false, version, unmodifiableSet(modules), pluginInformation,
                     unmodifiableSet(dependencyInformations));
         }
 

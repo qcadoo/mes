@@ -4,25 +4,19 @@ import java.util.Set;
 
 import com.qcadoo.plugin.dependency.PluginDependencyInformation;
 
-public interface Plugin {
-
-    String getIdentifier();
+public interface Plugin extends PersistentPlugin {
 
     PluginInformation getPluginInformation();
-
-    PluginState getPluginState();
 
     Set<PluginDependencyInformation> getRequiredPlugins();
 
     boolean isSystemPlugin();
 
-    boolean hasState(PluginState state);
-
     void changeStateTo(PluginState state);
 
     String getFilename();
 
-    int compareVersion(Plugin plugin);
+    int compareVersion(PersistentPlugin plugin);
 
     void init();
 
