@@ -11,20 +11,23 @@
 			</xs:sequence>	
 			<xs:attribute name="plugin" type="identifier" use="required" />
 			<xs:attribute name="version" type="version" use="required" />
+			<xs:attribute name="system" type="xs:boolean" use="optional" />
 		</xs:complexType>
 	</xs:element>
 
 	<xs:complexType name="information">
 		<xs:all>
+			<xs:element name="name" type="notEmptyString" minOccurs="1" maxOccurs="1" />
 			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="vendor" type="vendorType" minOccurs="0" maxOccurs="1" />
 		</xs:all>
-		<xs:attribute name="name" type="notEmptyString" use="required" />
 	</xs:complexType>
 
 	<xs:complexType name="vendorType">
-		<xs:attribute name="name" type="notEmptyString" use="required" />
-		<xs:attribute name="url" type="notEmptyString" use="optional" />
+		<xs:all>
+			<xs:element name="name" type="notEmptyString" minOccurs="1" maxOccurs="1" />
+			<xs:element name="url" type="xs:string" minOccurs="0" maxOccurs="1" />
+		</xs:all>
 	</xs:complexType>
 	
 	<xs:complexType name="dependencies">
@@ -34,8 +37,10 @@
 	</xs:complexType>
 	
 	<xs:complexType name="dependency">
-		<xs:attribute name="plugin" type="identifier" use="required" />
-		<xs:attribute name="version" type="dependencyVersion" use="optional" />
+		<xs:all>
+			<xs:element name="plugin" type="identifier" minOccurs="1" maxOccurs="1" />
+			<xs:element name="version" type="dependencyVersion" minOccurs="0" maxOccurs="1" />
+		</xs:all>
 	</xs:complexType>
 
 	<xs:simpleType name="identifier">
@@ -58,7 +63,7 @@
 	
 	<xs:simpleType name="notEmptyString">
 		<xs:restriction base="xs:string">
-			<xs:minLength value="1" />
+			<xs:minLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
 
