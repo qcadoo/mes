@@ -4,4 +4,5 @@
 	<information>
 		<name>testPlugin2Name</name>
 	</information>
+	<modules></modules>
 </plugin>

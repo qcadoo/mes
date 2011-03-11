@@ -7,7 +7,7 @@
 			<xs:sequence>
 				<xs:element name="information" type="information" minOccurs="1" maxOccurs="1" />
 				<xs:element name="dependencies" type="dependencies" minOccurs="0" maxOccurs="1" />
-				<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip" />
+				<xs:element name="modules" type="modules" minOccurs="1" maxOccurs="1" />
 			</xs:sequence>	
 			<xs:attribute name="plugin" type="identifier" use="required" />
 			<xs:attribute name="version" type="version" use="required" />
@@ -41,6 +41,12 @@
 			<xs:element name="plugin" type="identifier" minOccurs="1" maxOccurs="1" />
 			<xs:element name="version" type="dependencyVersion" minOccurs="0" maxOccurs="1" />
 		</xs:all>
+	</xs:complexType>
+	
+	<xs:complexType name="modules">
+		<xs:sequence>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:sequence>
 	</xs:complexType>
 
 	<xs:simpleType name="identifier">

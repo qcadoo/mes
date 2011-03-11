@@ -1,4 +1,4 @@
-package com.qcadoo.plugin.parser;
+package com.qcadoo.plugin.internal.descriptorparser;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.w3c.dom.Node;
@@ -24,24 +23,25 @@ import com.qcadoo.plugin.api.PluginDependencyInformation;
 import com.qcadoo.plugin.api.Version;
 import com.qcadoo.plugin.api.VersionOfDependency;
 import com.qcadoo.plugin.internal.DefaultPlugin;
+import com.qcadoo.plugin.internal.PluginException;
 import com.qcadoo.plugin.internal.api.Module;
 import com.qcadoo.plugin.internal.api.ModuleFactory;
 import com.qcadoo.plugin.internal.api.ModuleFactoryAccessor;
-import com.qcadoo.plugin.internal.api.PluginDescriptorParser;
 import com.qcadoo.plugin.internal.api.PluginDescriptorResolver;
-import com.qcadoo.plugin.internal.descriptorparser.DefaultPluginDescriptorParser;
 
 public class PluginDescriptorParserTest {
 
     private ModuleFactoryAccessor moduleFactoryAccessor;
 
-    private PluginDescriptorResolver resolver;
+    private PluginDescriptorResolver pluginDescriptorResolver;
 
-    private PluginDescriptorParser pareser;
+    private DefaultPluginDescriptorParser parser;
 
-    private final File xmlFile1 = new File("src/test/resources/xml/testPlugin.xml");
+    private final File xmlFile1 = new File("src/test/resources/xml/testPlugin1.xml");
 
     private final File xmlFile2 = new File("src/test/resources/xml/testPlugin2.xml");
+
+    private final File xmlFile3 = new File("src/test/resources/xml/testIncorrectPlugin.xml");
 
     private Module testModule1;
 
@@ -51,8 +51,11 @@ public class PluginDescriptorParserTest {
     @Before
     public void init() {
         moduleFactoryAccessor = mock(ModuleFactoryAccessor.class);
-        resolver = mock(PluginDescriptorResolver.class);
-        pareser = new DefaultPluginDescriptorParser(moduleFactoryAccessor, resolver);
+        pluginDescriptorResolver = mock(PluginDescriptorResolver.class);
+
+        parser = new DefaultPluginDescriptorParser();
+        parser.setModuleFactoryAccessor(moduleFactoryAccessor);
+        parser.setPluginDescriptorResolver(pluginDescriptorResolver);
 
         testModule1 = mock(Module.class);
         testModule2 = mock(Module.class);
@@ -72,7 +75,7 @@ public class PluginDescriptorParserTest {
         // given
 
         // when
-        Plugin result = pareser.parse(xmlFile1);
+        Plugin result = parser.parse(xmlFile1);
 
         // then
         assertNotNull(result);
@@ -83,10 +86,20 @@ public class PluginDescriptorParserTest {
         // given
 
         // when
-        Plugin result = pareser.parse(xmlFile2);
+        Plugin result = parser.parse(xmlFile2);
 
         // then
         assertNotNull(result);
+    }
+
+    @Test(expected = PluginException.class)
+    public void shouldNotParseXml3() {
+        // given
+
+        // when
+        parser.parse(xmlFile3);
+
+        // then
     }
 
     @Test
@@ -94,7 +107,7 @@ public class PluginDescriptorParserTest {
         // given
 
         // when
-        Plugin result = pareser.parse(xmlFile1);
+        Plugin result = parser.parse(xmlFile1);
 
         // then
         assertEquals("testPlugin", result.getIdentifier());
@@ -107,7 +120,7 @@ public class PluginDescriptorParserTest {
         // given
 
         // when
-        Plugin result = pareser.parse(xmlFile2);
+        Plugin result = parser.parse(xmlFile2);
 
         // then
         assertEquals("testPlugin2", result.getIdentifier());
@@ -120,7 +133,7 @@ public class PluginDescriptorParserTest {
         // given
 
         // when
-        Plugin result = pareser.parse(xmlFile1);
+        Plugin result = parser.parse(xmlFile1);
 
         // then
         assertEquals("testPluginName", result.getPluginInformation().getName());
@@ -134,7 +147,7 @@ public class PluginDescriptorParserTest {
         // given
 
         // when
-        Plugin result = pareser.parse(xmlFile2);
+        Plugin result = parser.parse(xmlFile2);
 
         // then
         assertEquals("testPlugin2Name", result.getPluginInformation().getName());
@@ -144,20 +157,19 @@ public class PluginDescriptorParserTest {
     }
 
     @Test
-    @Ignore
     public void shouldHavePluginDependenciesInformationsForXml1() {
         // given
 
         // when
-        Plugin result = pareser.parse(xmlFile1);
+        Plugin result = parser.parse(xmlFile1);
 
         // then
         Set<PluginDependencyInformation> dependencies = result.getRequiredPlugins();
         assertEquals(3, dependencies.size());
         assertTrue(dependencies.contains(new PluginDependencyInformation("testPluginDependency1", new VersionOfDependency(
                 "(1.2.3,2.3.4]"))));
-        assertTrue(dependencies.contains(new PluginDependencyInformation("testPluginDependency2", new VersionOfDependency(
-                "[1.1.1,1.1.1]"))));
+        assertTrue(dependencies.contains(new PluginDependencyInformation("testPluginDependency2",
+                new VersionOfDependency("1.1.1"))));
         assertTrue(dependencies.contains(new PluginDependencyInformation("testPluginDependency3", new VersionOfDependency(null))));
     }
 
@@ -166,7 +178,7 @@ public class PluginDescriptorParserTest {
         // given
 
         // when
-        Plugin result = pareser.parse(xmlFile2);
+        Plugin result = parser.parse(xmlFile2);
 
         // then
         assertEquals(0, result.getRequiredPlugins().size());
@@ -177,7 +189,7 @@ public class PluginDescriptorParserTest {
         // given
 
         // when
-        Plugin result = pareser.parse(xmlFile1);
+        Plugin result = parser.parse(xmlFile1);
 
         // then
         DefaultPlugin castedResult = (DefaultPlugin) result;
@@ -191,7 +203,7 @@ public class PluginDescriptorParserTest {
         // given
 
         // when
-        Plugin result = pareser.parse(xmlFile2);
+        Plugin result = parser.parse(xmlFile2);
 
         // then
         DefaultPlugin castedResult = (DefaultPlugin) result;
@@ -225,17 +237,33 @@ public class PluginDescriptorParserTest {
         testXmlsList.add(xmlFile1);
         testXmlsList.add(xmlFile2);
 
-        given(resolver.getDescriptors()).willReturn(testXmlsList);
+        given(pluginDescriptorResolver.getDescriptors()).willReturn(testXmlsList);
 
-        Plugin p1 = pareser.parse(xmlFile1);
-        Plugin p2 = pareser.parse(xmlFile2);
+        Plugin p1 = parser.parse(xmlFile1);
+        Plugin p2 = parser.parse(xmlFile2);
 
         // when
-        Set<Plugin> result = pareser.loadPlugins();
+        Set<Plugin> result = parser.loadPlugins();
 
         // then
         assertEquals(2, result.size());
         assertTrue(result.contains(p1));
         assertTrue(result.contains(p2));
+    }
+
+    @Test(expected = PluginException.class)
+    public void shouldNotParsePluginsWhenException() throws Exception {
+        // given
+        Set<File> testXmlsList = new HashSet<File>();
+        testXmlsList.add(xmlFile1);
+        testXmlsList.add(xmlFile2);
+        testXmlsList.add(xmlFile3);
+
+        given(pluginDescriptorResolver.getDescriptors()).willReturn(testXmlsList);
+
+        // when
+        parser.loadPlugins();
+
+        // then
     }
 }
