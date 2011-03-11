@@ -9,13 +9,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
 
 import com.qcadoo.plugin.api.Plugin;
@@ -38,11 +39,11 @@ public class PluginDescriptorParserTest {
 
     private PluginDescriptorParser pareser;
 
-    private final File xmlFile1 = new File("src/test/resources/xml/testPlugin1.xml");
+    private final Resource xmlFile1 = new FileSystemResource("src/test/resources/xml/testPlugin1.xml");
 
-    private final File xmlFile2 = new File("src/test/resources/xml/testPlugin2.xml");
+    private final Resource xmlFile2 = new FileSystemResource("src/test/resources/xml/testPlugin2.xml");
 
-    private final File xmlFile3 = new File("src/test/resources/xml/testIncorrectPlugin.xml");
+    private final Resource xmlFile3 = new FileSystemResource("src/test/resources/xml/testIncorrectPlugin.xml");
 
     private Module testModule1;
 
@@ -231,7 +232,7 @@ public class PluginDescriptorParserTest {
     @Test
     public void shouldParseAllPlugins() throws Exception {
         // given
-        Set<File> testXmlsList = new HashSet<File>();
+        Set<Resource> testXmlsList = new HashSet<Resource>();
         testXmlsList.add(xmlFile1);
         testXmlsList.add(xmlFile2);
 
@@ -252,7 +253,7 @@ public class PluginDescriptorParserTest {
     @Test(expected = PluginException.class)
     public void shouldNotParsePluginsWhenException() throws Exception {
         // given
-        Set<File> testXmlsList = new HashSet<File>();
+        Set<Resource> testXmlsList = new HashSet<Resource>();
         testXmlsList.add(xmlFile1);
         testXmlsList.add(xmlFile2);
         testXmlsList.add(xmlFile3);

@@ -16,6 +16,7 @@ import javax.xml.validation.SchemaFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -69,11 +70,12 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
     }
 
     @Override
-    public Plugin parse(final File file) throws PluginException {
+    public Plugin parse(final Resource resource) throws PluginException {
 
         try {
-            LOG.info("Parsing file: " + file);
-            Document document = documentBuilder.parse(file);
+            LOG.info("Parsing: " + resource);
+
+            Document document = documentBuilder.parse(resource.getInputStream());
 
             Node root = document.getDocumentElement();
 
@@ -95,8 +97,8 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
     @Override
     public Set<Plugin> loadPlugins() {
         Set<Plugin> loadedplugins = new HashSet<Plugin>();
-        for (File xmlFile : pluginXmlResolver.getPluginXmlFiles()) {
-            loadedplugins.add(parse(xmlFile));
+        for (Resource resource : pluginXmlResolver.getPluginXmlFiles()) {
+            loadedplugins.add(parse(resource));
         }
         return loadedplugins;
     }

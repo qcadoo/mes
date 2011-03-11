@@ -2,10 +2,14 @@ package com.qcadoo.plugin.internal.manager;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
@@ -23,6 +27,8 @@ import com.qcadoo.plugin.internal.api.PluginServerManager;
 import com.qcadoo.plugin.internal.dependencymanager.PluginDependencyResult;
 
 public class DefaultPluginManager implements PluginManager {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultPluginManager.class);
 
     private PluginAccessor pluginAccessor;
 
@@ -185,17 +191,21 @@ public class DefaultPluginManager implements PluginManager {
 
     @Override
     public PluginOperationResult installPlugin(final PluginArtifact pluginArtifact) {
-        File pluginFile = null;
+        Resource pluginResource = null;
         try {
-            pluginFile = pluginFileManager.uploadPlugin(pluginArtifact);
+            pluginResource = pluginFileManager.uploadPlugin(pluginArtifact);
         } catch (PluginException e) {
             return PluginOperationResult.cannotUploadPlugin();
         }
         Plugin plugin = null;
         try {
-            plugin = pluginDescriptorParser.parse(pluginFile);
+            plugin = pluginDescriptorParser.parse(pluginResource);
         } catch (PluginException e) {
-            pluginFileManager.uninstallPlugin(pluginFile.getName());
+            try {
+                pluginFileManager.uninstallPlugin(pluginResource.getFile().getAbsolutePath());
+            } catch (IOException e1) {
+                LOG.warn("error while uninstaling plugin: " + e1.getMessage());
+            }
             return PluginOperationResult.corruptedPlugin();
         }
 

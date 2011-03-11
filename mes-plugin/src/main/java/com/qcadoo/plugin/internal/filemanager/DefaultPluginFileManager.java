@@ -12,6 +12,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 import com.qcadoo.plugin.internal.PluginException;
 import com.qcadoo.plugin.internal.api.PluginArtifact;
@@ -48,7 +50,7 @@ public class DefaultPluginFileManager implements PluginFileManager {
     }
 
     @Override
-    public File uploadPlugin(final PluginArtifact pluginArtifact) {
+    public Resource uploadPlugin(final PluginArtifact pluginArtifact) {
         InputStream input = pluginArtifact.getInputStream();
         File pluginFile = new File(pluginsTmpPath + getProperty("file.separator") + pluginArtifact.getName());
         OutputStream output = null;
@@ -64,7 +66,7 @@ public class DefaultPluginFileManager implements PluginFileManager {
             IOUtils.closeQuietly(input);
             IOUtils.closeQuietly(output);
         }
-        return pluginFile;
+        return new FileSystemResource(pluginFile);
     }
 
     @Override

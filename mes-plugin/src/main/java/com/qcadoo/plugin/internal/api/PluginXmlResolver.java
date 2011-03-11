@@ -1,10 +1,11 @@
 package com.qcadoo.plugin.internal.api;
 
-import java.io.File;
 import java.util.Set;
+
+import org.springframework.core.io.Resource;
 
 public interface PluginXmlResolver {
 
-    Set<File> getPluginXmlFiles();
+    Set<Resource> getPluginXmlFiles();
 
 }
