@@ -9,7 +9,9 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
 
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
@@ -26,20 +28,27 @@ import com.qcadoo.plugin.internal.api.PluginOperationResult;
 import com.qcadoo.plugin.internal.api.PluginServerManager;
 import com.qcadoo.plugin.internal.dependencymanager.PluginDependencyResult;
 
-public class DefaultPluginManager implements PluginManager {
+@Service
+public final class DefaultPluginManager implements PluginManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPluginManager.class);
 
+    @Autowired
     private PluginAccessor pluginAccessor;
 
+    @Autowired
     private PluginDao pluginDao;
 
+    @Autowired
     private PluginFileManager pluginFileManager;
 
+    @Autowired
     private PluginServerManager pluginServerManager;
 
+    @Autowired
     private PluginDependencyManager pluginDependencyManager;
 
+    @Autowired
     private PluginDescriptorParser pluginDescriptorParser;
 
     @Override
@@ -299,30 +308,29 @@ public class DefaultPluginManager implements PluginManager {
         }
     }
 
-    public void setPluginAccessor(final PluginAccessor pluginAccessor) {
+    void setPluginAccessor(final PluginAccessor pluginAccessor) {
         this.pluginAccessor = pluginAccessor;
 
     }
 
-    public void setPluginDao(final PluginDao pluginDao) {
+    void setPluginDao(final PluginDao pluginDao) {
         this.pluginDao = pluginDao;
 
     }
 
-    public void setPluginFileManager(final PluginFileManager pluginFileManager) {
+    void setPluginFileManager(final PluginFileManager pluginFileManager) {
         this.pluginFileManager = pluginFileManager;
     }
 
-    public void setPluginServerManager(final PluginServerManager pluginServerManager) {
+    void setPluginServerManager(final PluginServerManager pluginServerManager) {
         this.pluginServerManager = pluginServerManager;
     }
 
-    public void setPluginDependencyManager(final PluginDependencyManager pluginDependencyManager) {
+    void setPluginDependencyManager(final PluginDependencyManager pluginDependencyManager) {
         this.pluginDependencyManager = pluginDependencyManager;
-
     }
 
-    public void setPluginDescriptorParser(final PluginDescriptorParser pluginDescriptorParser) {
+    void setPluginDescriptorParser(final PluginDescriptorParser pluginDescriptorParser) {
         this.pluginDescriptorParser = pluginDescriptorParser;
     }
 

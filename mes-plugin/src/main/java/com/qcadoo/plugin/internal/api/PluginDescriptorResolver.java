@@ -4,8 +4,8 @@ import java.util.Set;
 
 import org.springframework.core.io.Resource;
 
-public interface PluginXmlResolver {
+public interface PluginDescriptorResolver {
 
-    Set<Resource> getPluginXmlFiles();
+    Set<Resource> getDescriptors();
 
 }

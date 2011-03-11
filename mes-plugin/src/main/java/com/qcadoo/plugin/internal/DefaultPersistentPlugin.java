@@ -1,17 +1,30 @@
 package com.qcadoo.plugin.internal;
 
+import javax.persistence.Basic;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Entity;
+import org.hibernate.annotations.Table;
+
 import com.qcadoo.plugin.api.PersistentPlugin;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.api.Version;
 
-
+@Entity
+@Table(appliesTo = "plugins_plugin")
 public class DefaultPersistentPlugin implements PersistentPlugin {
 
-    private final String identifier;
+    private String identifier;
 
-    private final Version version;
+    @Transient
+    private Version version;
 
     private PluginState state;
+
+    public DefaultPersistentPlugin() {
+    }
 
     public DefaultPersistentPlugin(final String identifier, final PluginState state, final Version version) {
         this.identifier = identifier;
@@ -24,7 +37,12 @@ public class DefaultPersistentPlugin implements PersistentPlugin {
         return identifier;
     }
 
+    protected void setIdentifier(final String identifier) {
+        this.identifier = identifier;
+    }
+
     @Override
+    @Enumerated(EnumType.STRING)
     public PluginState getPluginState() {
         return state;
     }
@@ -41,6 +59,19 @@ public class DefaultPersistentPlugin implements PersistentPlugin {
     @Override
     public Version getVersion() {
         return version;
+    }
+
+    protected void setVersion(final Version version) {
+        this.version = version;
+    }
+
+    @Basic
+    public String getStringVersion() {
+        return version.toString();
+    }
+
+    public void setStringVersion(final String version) {
+        this.version = new Version(version);
     }
 
     @Override

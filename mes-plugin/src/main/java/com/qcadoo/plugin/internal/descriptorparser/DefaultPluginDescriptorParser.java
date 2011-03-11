@@ -1,6 +1,5 @@
 package com.qcadoo.plugin.internal.descriptorparser;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -11,12 +10,16 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -31,23 +34,22 @@ import com.qcadoo.plugin.internal.PluginException;
 import com.qcadoo.plugin.internal.api.ModuleFactory;
 import com.qcadoo.plugin.internal.api.ModuleFactoryAccessor;
 import com.qcadoo.plugin.internal.api.PluginDescriptorParser;
-import com.qcadoo.plugin.internal.api.PluginXmlResolver;
+import com.qcadoo.plugin.internal.api.PluginDescriptorResolver;
 
+@Service
 public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPluginDescriptorParser.class);
 
-    private final ModuleFactoryAccessor moduleFactoryAccessor;
+    @Autowired
+    private ModuleFactoryAccessor moduleFactoryAccessor;
 
-    private final PluginXmlResolver pluginXmlResolver;
+    @Autowired
+    private PluginDescriptorResolver pluginDescriptorResolver;
 
-    DocumentBuilder documentBuilder;
+    private DocumentBuilder documentBuilder;
 
-    public DefaultPluginDescriptorParser(final ModuleFactoryAccessor moduleFactoryAccessor,
-            final PluginXmlResolver pluginXmlResolver) {
-        this.moduleFactoryAccessor = moduleFactoryAccessor;
-        this.pluginXmlResolver = pluginXmlResolver;
-
+    public DefaultPluginDescriptorParser() {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setValidating(true);
@@ -55,7 +57,9 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
 
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             schemaFactory.setFeature("http://apache.org/xml/features/validation/schema-full-checking", false);
-            Schema schema = schemaFactory.newSchema(new File("src/main/resources/com/qcadoo/plugin/plugin.xsd"));
+
+            Schema schema = schemaFactory.newSchema(new StreamSource(new ClassPathResource("com/qcadoo/plugin/plugin.xsd")
+                    .getInputStream()));
             factory.setSchema(schema);
 
             documentBuilder = factory.newDocumentBuilder();
@@ -65,6 +69,8 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
         } catch (SAXException e) {
             throw new IllegalStateException("Error while parsing plugin xml schema", e);
         } catch (ParserConfigurationException e) {
+            throw new IllegalStateException("Error while parsing plugin xml schema", e);
+        } catch (IOException e) {
             throw new IllegalStateException("Error while parsing plugin xml schema", e);
         }
     }
@@ -97,7 +103,7 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
     @Override
     public Set<Plugin> loadPlugins() {
         Set<Plugin> loadedplugins = new HashSet<Plugin>();
-        for (Resource resource : pluginXmlResolver.getPluginXmlFiles()) {
+        for (Resource resource : pluginDescriptorResolver.getDescriptors()) {
             loadedplugins.add(parse(resource));
         }
         return loadedplugins;
@@ -232,17 +238,28 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
 
     private class ValidationErrorHandler implements ErrorHandler {
 
-        public void warning(SAXParseException e) throws SAXException {
+        @Override
+        public void warning(final SAXParseException e) throws SAXException {
             LOG.debug(e.getMessage());
         }
 
-        public void error(SAXParseException e) throws SAXException {
+        @Override
+        public void error(final SAXParseException e) throws SAXException {
             LOG.debug(e.getMessage());
         }
 
-        public void fatalError(SAXParseException e) throws SAXException {
+        @Override
+        public void fatalError(final SAXParseException e) throws SAXException {
             LOG.error(e.getMessage());
         }
+    }
+
+    public void setModuleFactoryAccessor(final ModuleFactoryAccessor moduleFactoryAccessor) {
+        this.moduleFactoryAccessor = moduleFactoryAccessor;
+    }
+
+    public void setPluginDescriptorResolver(final PluginDescriptorResolver pluginDescriptorResolver) {
+        this.pluginDescriptorResolver = pluginDescriptorResolver;
     }
 
 }
