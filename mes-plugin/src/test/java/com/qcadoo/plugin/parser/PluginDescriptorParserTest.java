@@ -28,14 +28,14 @@ import com.qcadoo.plugin.internal.api.Module;
 import com.qcadoo.plugin.internal.api.ModuleFactory;
 import com.qcadoo.plugin.internal.api.ModuleFactoryAccessor;
 import com.qcadoo.plugin.internal.api.PluginDescriptorParser;
-import com.qcadoo.plugin.internal.api.PluginXmlResolver;
+import com.qcadoo.plugin.internal.api.PluginDescriptorResolver;
 import com.qcadoo.plugin.internal.descriptorparser.DefaultPluginDescriptorParser;
 
 public class PluginDescriptorParserTest {
 
     private ModuleFactoryAccessor moduleFactoryAccessor;
 
-    private PluginXmlResolver resolver;
+    private PluginDescriptorResolver resolver;
 
     private PluginDescriptorParser pareser;
 
@@ -51,7 +51,7 @@ public class PluginDescriptorParserTest {
     @Before
     public void init() {
         moduleFactoryAccessor = mock(ModuleFactoryAccessor.class);
-        resolver = mock(PluginXmlResolver.class);
+        resolver = mock(PluginDescriptorResolver.class);
         pareser = new DefaultPluginDescriptorParser(moduleFactoryAccessor, resolver);
 
         testModule1 = mock(Module.class);
@@ -225,7 +225,7 @@ public class PluginDescriptorParserTest {
         testXmlsList.add(xmlFile1);
         testXmlsList.add(xmlFile2);
 
-        given(resolver.getPluginXmlFiles()).willReturn(testXmlsList);
+        given(resolver.getDescriptors()).willReturn(testXmlsList);
 
         Plugin p1 = pareser.parse(xmlFile1);
         Plugin p2 = pareser.parse(xmlFile2);

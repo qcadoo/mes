@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.plugin.api.PersistentPlugin;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
@@ -17,13 +20,11 @@ import com.qcadoo.plugin.api.PluginDependencyInformation;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.PluginDependencyManager;
 
-public class DefaultPluginDependencyManager implements PluginDependencyManager {
+@Service
+public final class DefaultPluginDependencyManager implements PluginDependencyManager {
 
-    private final PluginAccessor pluginAccessor;
-
-    public DefaultPluginDependencyManager(final PluginAccessor pluginAccessor) {
-        this.pluginAccessor = pluginAccessor;
-    }
+    @Autowired
+    private PluginAccessor pluginAccessor;
 
     @Override
     public PluginDependencyResult getDependenciesToEnable(final List<Plugin> plugins) {
@@ -255,6 +256,10 @@ public class DefaultPluginDependencyManager implements PluginDependencyManager {
 
     private boolean isPluginDisabled(final PersistentPlugin plugin) {
         return PluginState.DISABLED.equals(plugin.getPluginState()) || PluginState.TEMPORARY.equals(plugin.getPluginState());
+    }
+
+    void setPluginAccessor(final PluginAccessor pluginAccessor) {
+        this.pluginAccessor = pluginAccessor;
     }
 
 }

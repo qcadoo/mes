@@ -7,7 +7,7 @@ import java.util.Map;
 import com.qcadoo.plugin.internal.api.ModuleFactory;
 import com.qcadoo.plugin.internal.api.ModuleFactoryAccessor;
 
-public class DefaultModuleFactoryAccessor implements ModuleFactoryAccessor {
+public final class DefaultModuleFactoryAccessor implements ModuleFactoryAccessor {
 
     private final Map<String, ModuleFactory<?>> moduleFactoryRegistry = new LinkedHashMap<String, ModuleFactory<?>>();
 

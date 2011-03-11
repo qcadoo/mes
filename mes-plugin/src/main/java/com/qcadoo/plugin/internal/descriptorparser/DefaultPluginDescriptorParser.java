@@ -11,6 +11,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -22,16 +24,23 @@ import com.qcadoo.plugin.internal.DefaultPlugin.Builder;
 import com.qcadoo.plugin.internal.api.ModuleFactory;
 import com.qcadoo.plugin.internal.api.ModuleFactoryAccessor;
 import com.qcadoo.plugin.internal.api.PluginDescriptorParser;
-import com.qcadoo.plugin.internal.api.PluginXmlResolver;
+import com.qcadoo.plugin.internal.api.PluginDescriptorResolver;
 
+@Service
 public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
 
-    private final ModuleFactoryAccessor moduleFactoryAccessor;
+    @Autowired
+    private ModuleFactoryAccessor moduleFactoryAccessor;
 
-    private final PluginXmlResolver pluginXmlResolver;
+    @Autowired
+    private PluginDescriptorResolver pluginXmlResolver;
+
+    public DefaultPluginDescriptorParser() {
+        // remove me
+    }
 
     public DefaultPluginDescriptorParser(final ModuleFactoryAccessor moduleFactoryAccessor,
-            final PluginXmlResolver pluginXmlResolver) {
+            final PluginDescriptorResolver pluginXmlResolver) {
         this.moduleFactoryAccessor = moduleFactoryAccessor;
         this.pluginXmlResolver = pluginXmlResolver;
     }
@@ -167,7 +176,7 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
     @Override
     public Set<Plugin> loadPlugins() {
         Set<Plugin> loadedplugins = new HashSet<Plugin>();
-        for (File xmlFile : pluginXmlResolver.getPluginXmlFiles()) {
+        for (File xmlFile : pluginXmlResolver.getDescriptors()) {
             loadedplugins.add(parse(xmlFile));
         }
         return loadedplugins;

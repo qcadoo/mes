@@ -23,34 +23,34 @@ import com.qcadoo.plugin.api.PluginDependencyInformation;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.api.Version;
 import com.qcadoo.plugin.api.VersionOfDependency;
-import com.qcadoo.plugin.internal.api.PluginDependencyManager;
-import com.qcadoo.plugin.internal.dependencymanager.DefaultPluginDependencyManager;
-import com.qcadoo.plugin.internal.dependencymanager.PluginDependencyResult;
 
 public class PluginDependencyManagerTest {
 
-    PluginDependencyInformation dependencyInfo1 = new PluginDependencyInformation("testPlugin1");
+    private final PluginDependencyInformation dependencyInfo1 = new PluginDependencyInformation("testPlugin1");
 
-    PluginDependencyInformation dependencyInfo2 = new PluginDependencyInformation("testPlugin2");
+    private final PluginDependencyInformation dependencyInfo2 = new PluginDependencyInformation("testPlugin2");
 
-    PluginDependencyInformation dependencyInfo3 = new PluginDependencyInformation("testPlugin3");
+    private PluginDependencyInformation dependencyInfo3 = new PluginDependencyInformation("testPlugin3");
 
-    PluginDependencyInformation dependencyInfo4 = new PluginDependencyInformation("testPlugin4");
+    private final PluginDependencyInformation dependencyInfo4 = new PluginDependencyInformation("testPlugin4");
 
-    Plugin plugin1;
+    private Plugin plugin1;
 
-    Plugin plugin2;
+    private Plugin plugin2;
 
-    Plugin plugin3;
+    private Plugin plugin3;
 
-    Plugin plugin4;
+    private Plugin plugin4;
 
-    PluginAccessor pluginAccessor = mock(PluginAccessor.class);
+    private final PluginAccessor pluginAccessor = mock(PluginAccessor.class);
 
-    PluginDependencyManager manager = new DefaultPluginDependencyManager(pluginAccessor);
+    private DefaultPluginDependencyManager manager = null;
 
     @Before
     public void init() {
+        manager = new DefaultPluginDependencyManager();
+        manager.setPluginAccessor(pluginAccessor);
+
         plugin1 = mock(Plugin.class, RETURNS_DEEP_STUBS);
         given(plugin1.getIdentifier()).willReturn("testPlugin1");
         given(plugin1.getVersion()).willReturn(new Version("1.1"));

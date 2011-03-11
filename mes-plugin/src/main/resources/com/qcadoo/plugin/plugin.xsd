@@ -7,7 +7,7 @@
 			<xs:sequence>
 				<xs:element name="information" type="information" minOccurs="1" maxOccurs="1" />
 				<xs:element name="dependencies" type="dependencies" minOccurs="0" maxOccurs="1" />
-				<xs:any minOccurs="0" maxOccurs="unbounded"  />
+				<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip" />
 			</xs:sequence>	
 			<xs:attribute name="plugin" type="identifier" use="required" />
 			<xs:attribute name="version" type="version" use="required" />
