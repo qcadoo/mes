@@ -25,6 +25,7 @@ import com.qcadoo.plugin.ModuleFactory;
 import com.qcadoo.plugin.ModuleFactoryAccessor;
 import com.qcadoo.plugin.Plugin;
 import com.qcadoo.plugin.PluginDescriptorParser;
+import com.qcadoo.plugin.PluginException;
 import com.qcadoo.plugin.VersionUtils;
 import com.qcadoo.plugin.dependency.PluginDependencyInformation;
 
@@ -36,9 +37,11 @@ public class PluginDescriptorParserTest {
 
     private PluginDescriptorParser pareser;
 
-    private File xmlFile1 = new File("src/test/resources/xml/testPlugin.xml");
+    private File xmlFile1 = new File("src/test/resources/xml/testPlugin1.xml");
 
     private File xmlFile2 = new File("src/test/resources/xml/testPlugin2.xml");
+
+    private File xmlFile3 = new File("src/test/resources/xml/testIncorrectPlugin.xml");
 
     private Module testModule1;
 
@@ -84,6 +87,16 @@ public class PluginDescriptorParserTest {
 
         // then
         assertNotNull(result);
+    }
+
+    @Test(expected = PluginException.class)
+    public void shouldNotParseXml3() {
+        // given
+
+        // when
+        pareser.parse(xmlFile3);
+
+        // then
     }
 
     @Test

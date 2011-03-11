@@ -22,6 +22,7 @@ import com.qcadoo.plugin.ModuleFactory;
 import com.qcadoo.plugin.ModuleFactoryAccessor;
 import com.qcadoo.plugin.Plugin;
 import com.qcadoo.plugin.PluginDescriptorParser;
+import com.qcadoo.plugin.PluginException;
 
 public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
 
@@ -36,7 +37,7 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
     }
 
     @Override
-    public Plugin parse(final File file) {
+    public Plugin parse(final File file) throws PluginException {
 
         DocumentBuilder documentBuilder;
         try {
@@ -48,11 +49,13 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
             return parsePluginNode(root);
 
         } catch (ParserConfigurationException e) {
-            throw new IllegalStateException(e.getMessage(), e);
+            throw new PluginException(e.getMessage(), e);
         } catch (SAXException e) {
-            throw new IllegalStateException(e.getMessage(), e);
+            throw new PluginException(e.getMessage(), e);
         } catch (IOException e) {
-            throw new IllegalStateException(e.getMessage(), e);
+            throw new PluginException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new PluginException(e.getMessage(), e);
         }
     }
 
@@ -89,9 +92,9 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
     private void addPluginInformation(final Node informationsNode, final Builder pluginBuilder) {
         for (Node child : getChildNodes(informationsNode)) {
             if ("name".equals(child.getNodeName())) {
-                pluginBuilder.withName(child.getTextContent());
+                pluginBuilder.withName(getTextContent(child));
             } else if ("description".equals(child.getNodeName())) {
-                pluginBuilder.withDescription(child.getTextContent());
+                pluginBuilder.withDescription(getTextContent(child));
             } else if ("vendor".equals(child.getNodeName())) {
                 addPluginVendorInformation(child, pluginBuilder);
             } else {
@@ -103,9 +106,9 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
     private void addPluginVendorInformation(final Node vendorInformationsNode, final Builder pluginBuilder) {
         for (Node child : getChildNodes(vendorInformationsNode)) {
             if ("name".equals(child.getNodeName())) {
-                pluginBuilder.withVendor(child.getTextContent());
+                pluginBuilder.withVendor(getTextContent(child));
             } else if ("url".equals(child.getNodeName())) {
-                pluginBuilder.withVendorUrl(child.getTextContent());
+                pluginBuilder.withVendorUrl(getTextContent(child));
             } else {
                 throw new IllegalStateException("Wrong plugin vendor tag: " + child.getNodeName());
             }
@@ -128,9 +131,9 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
 
         for (Node child : getChildNodes(dependencyNode)) {
             if ("plugin".equals(child.getNodeName())) {
-                dependencyPluginIdentifier = child.getTextContent();
+                dependencyPluginIdentifier = getTextContent(child);
             } else if ("version".equals(child.getNodeName())) {
-                dependencyPluginVersion = child.getTextContent();
+                dependencyPluginVersion = getTextContent(child);
             } else {
                 throw new IllegalStateException("Wrong plugin dependency tag: " + child.getNodeName());
             }
@@ -151,6 +154,18 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
             result.add(child);
         }
         return result;
+    }
+
+    private String getTextContent(final Node node) {
+        String result = node.getTextContent();
+        if (result != null) {
+            result = result.trim();
+            if (result.isEmpty()) {
+                return null;
+            }
+            return result;
+        }
+        return null;
     }
 
     private String getStringAttribute(final Node node, final String name) {
