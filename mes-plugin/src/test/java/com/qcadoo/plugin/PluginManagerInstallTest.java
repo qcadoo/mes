@@ -1,10 +1,12 @@
 package com.qcadoo.plugin;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -14,6 +16,7 @@ import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import com.qcadoo.plugin.dependency.PluginDependencyInformation;
@@ -222,23 +225,34 @@ public class PluginManagerInstallTest {
         given(pluginAccessor.getPlugin("dependencyplugin")).willReturn(dependencyPlugin);
         given(dependencyPlugin.getIdentifier()).willReturn("dependencyplugin");
 
-        PluginDependencyResult installPluginDependencyResult = PluginDependencyResult.enabledDependencies(Collections
-                .singleton(new PluginDependencyInformation("dependencyplugin", new VersionOfDependency(""))));
+        Plugin dependencyPlugin2 = mock(Plugin.class);
+        given(pluginAccessor.getPlugin("dependencyplugin2")).willReturn(dependencyPlugin2);
+        given(dependencyPlugin2.getIdentifier()).willReturn("dependencyplugin2");
+
+        PluginDependencyResult installPluginDependencyResult = PluginDependencyResult.enabledDependencies(newHashSet(
+                new PluginDependencyInformation("dependencyplugin", new VersionOfDependency("")),
+                new PluginDependencyInformation("dependencyplugin2", new VersionOfDependency(""))));
+
         given(pluginDependencyManager.getDependenciesToDisable(newArrayList(anotherPlugin))).willReturn(
                 installPluginDependencyResult);
-        given(pluginDependencyManager.sortPluginsInDependencyOrder(newArrayList(dependencyPlugin))).willReturn(
-                newArrayList(dependencyPlugin));
+        given(pluginDependencyManager.sortPluginsInDependencyOrder(newArrayList(dependencyPlugin2, dependencyPlugin)))
+                .willReturn(newArrayList(dependencyPlugin, dependencyPlugin2));
 
         // when
         PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
 
         // then
-        verify(plugin).changeStateTo(PluginState.DISABLED);
-        verify(anotherPlugin).changeStateTo(PluginState.ENABLING);
-        verify(dependencyPlugin).changeStateTo(PluginState.DISABLED);
-        verify(dependencyPlugin).changeStateTo(PluginState.ENABLING);
+        InOrder inOrderDisable = inOrder(dependencyPlugin2, dependencyPlugin, plugin);
+        inOrderDisable.verify(dependencyPlugin2).changeStateTo(PluginState.DISABLED);
+        inOrderDisable.verify(dependencyPlugin).changeStateTo(PluginState.DISABLED);
+        inOrderDisable.verify(plugin).changeStateTo(PluginState.DISABLED);
+        InOrder inOrderEnabling = inOrder(anotherPlugin, dependencyPlugin, dependencyPlugin2);
+        inOrderEnabling.verify(anotherPlugin).changeStateTo(PluginState.ENABLING);
+        inOrderEnabling.verify(dependencyPlugin).changeStateTo(PluginState.ENABLING);
+        inOrderEnabling.verify(dependencyPlugin2).changeStateTo(PluginState.ENABLING);
         verify(pluginDao).save(anotherPlugin);
         verify(pluginDao).save(dependencyPlugin);
+        verify(pluginDao).save(dependencyPlugin2);
         verify(pluginFileManager).uninstallPlugin("filename");
         verify(pluginServerManager).restart();
         assertTrue(pluginOperationResult.isSuccess());
