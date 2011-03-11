@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.qcadoo.plugin.api.PluginDependencyInformation;
 
-public class PluginDependencyResult {
+public final class PluginDependencyResult {
 
     private final Set<PluginDependencyInformation> disabledDependencies;
 

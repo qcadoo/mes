@@ -7,7 +7,7 @@ import java.io.InputStream;
 
 import com.qcadoo.plugin.internal.api.PluginArtifact;
 
-public class JarPluginArtifact implements PluginArtifact {
+public final class JarPluginArtifact implements PluginArtifact {
 
     private final File file;
 

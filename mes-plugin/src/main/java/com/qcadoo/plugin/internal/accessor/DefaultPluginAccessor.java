@@ -5,6 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.plugin.api.PersistentPlugin;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
@@ -14,19 +21,26 @@ import com.qcadoo.plugin.internal.api.PluginDao;
 import com.qcadoo.plugin.internal.api.PluginDependencyManager;
 import com.qcadoo.plugin.internal.api.PluginDescriptorParser;
 
-public class DefaultPluginAccessor implements PluginAccessor {
+@Service
+public final class DefaultPluginAccessor implements PluginAccessor {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultPluginAccessor.class);
+
+    @Autowired
     private PluginDescriptorParser pluginDescriptorParser;
 
+    @Autowired
     private PluginDao pluginDao;
+
+    @Autowired
+    private PluginDependencyManager pluginDependencyManager;
+
+    @Autowired
+    private ModuleFactoryAccessor moduleFactoryAccessor;
 
     private final Map<String, Plugin> enabledPlugins = new HashMap<String, Plugin>();
 
     private final Map<String, Plugin> plugins = new HashMap<String, Plugin>();
-
-    private PluginDependencyManager pluginDependencyManager;
-
-    private ModuleFactoryAccessor moduleFactoryAccessor;
 
     @Override
     public PersistentPlugin getEnabledPlugin(final String identifier) {
@@ -48,7 +62,12 @@ public class DefaultPluginAccessor implements PluginAccessor {
         return plugins.values();
     }
 
+    @PostConstruct
     public void init() {
+        LOG.info("Plugin Framework initialization");
+
+        long time = System.currentTimeMillis();
+
         Set<Plugin> pluginsFromDescriptor = pluginDescriptorParser.loadPlugins();
         Set<PersistentPlugin> pluginsFromDatabase = pluginDao.list();
 
@@ -70,7 +89,11 @@ public class DefaultPluginAccessor implements PluginAccessor {
             } else if (plugin.compareVersion(existingPlugin) < 0) {
                 throw new IllegalStateException("Unsupported operation: downgrade, for plugin: " + plugin.getIdentifier());
             }
+
+            LOG.info("Registering plugin " + plugin);
+
             plugins.put(plugin.getIdentifier(), plugin);
+
             if (plugin.hasState(PluginState.ENABLED)) {
                 enabledPlugins.put(plugin.getIdentifier(), plugin);
             }
@@ -104,21 +127,23 @@ public class DefaultPluginAccessor implements PluginAccessor {
                 pluginDao.save(plugin);
             }
         }
+
+        LOG.info("Plugin Framework initialized in " + (System.currentTimeMillis() - time) + "ms");
     }
 
-    public void setPluginDescriptorParser(final PluginDescriptorParser pluginDescriptorParser) {
+    void setPluginDescriptorParser(final PluginDescriptorParser pluginDescriptorParser) {
         this.pluginDescriptorParser = pluginDescriptorParser;
     }
 
-    public void setPluginDao(final PluginDao pluginDao) {
+    void setPluginDao(final PluginDao pluginDao) {
         this.pluginDao = pluginDao;
     }
 
-    public void setPluginDependencyManager(final PluginDependencyManager pluginDependencyManager) {
+    void setPluginDependencyManager(final PluginDependencyManager pluginDependencyManager) {
         this.pluginDependencyManager = pluginDependencyManager;
     }
 
-    public void setModuleFactoryAccessor(final ModuleFactoryAccessor moduleFactoryAccessor) {
+    void setModuleFactoryAccessor(final ModuleFactoryAccessor moduleFactoryAccessor) {
         this.moduleFactoryAccessor = moduleFactoryAccessor;
     }
 }

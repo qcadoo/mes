@@ -12,17 +12,22 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import com.qcadoo.plugin.internal.PluginException;
 import com.qcadoo.plugin.internal.api.PluginArtifact;
 import com.qcadoo.plugin.internal.api.PluginFileManager;
 
-public class DefaultPluginFileManager implements PluginFileManager {
+@Service
+public final class DefaultPluginFileManager implements PluginFileManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPluginFileManager.class);
 
+    @Value("qcadoo.plugin.pluginsPath")
     private String pluginsPath;
 
+    @Value("qcadoo.plugin.pluginsTmpPath")
     private String pluginsTmpPath;
 
     @Override
@@ -102,11 +107,11 @@ public class DefaultPluginFileManager implements PluginFileManager {
         return true;
     }
 
-    public void setPluginsPath(final String pluginsPath) {
+    void setPluginsPath(final String pluginsPath) {
         this.pluginsPath = pluginsPath;
     }
 
-    public void setPluginsTmpPath(final String pluginsTmpPath) {
+    void setPluginsTmpPath(final String pluginsTmpPath) {
         this.pluginsTmpPath = pluginsTmpPath;
     }
 
