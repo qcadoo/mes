@@ -19,15 +19,17 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.w3c.dom.Node;
 
-import com.qcadoo.plugin.DefaultPlugin;
-import com.qcadoo.plugin.Module;
-import com.qcadoo.plugin.ModuleFactory;
-import com.qcadoo.plugin.ModuleFactoryAccessor;
-import com.qcadoo.plugin.Plugin;
-import com.qcadoo.plugin.PluginDescriptorParser;
-import com.qcadoo.plugin.Version;
-import com.qcadoo.plugin.VersionOfDependency;
-import com.qcadoo.plugin.dependency.PluginDependencyInformation;
+import com.qcadoo.plugin.api.Plugin;
+import com.qcadoo.plugin.api.PluginDependencyInformation;
+import com.qcadoo.plugin.api.Version;
+import com.qcadoo.plugin.api.VersionOfDependency;
+import com.qcadoo.plugin.internal.DefaultPlugin;
+import com.qcadoo.plugin.internal.api.Module;
+import com.qcadoo.plugin.internal.api.ModuleFactory;
+import com.qcadoo.plugin.internal.api.ModuleFactoryAccessor;
+import com.qcadoo.plugin.internal.api.PluginDescriptorParser;
+import com.qcadoo.plugin.internal.api.PluginXmlResolver;
+import com.qcadoo.plugin.internal.descriptorparser.DefaultPluginDescriptorParser;
 
 public class PluginDescriptorParserTest {
 
