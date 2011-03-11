@@ -119,6 +119,10 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
         }
     }
 
+    public Set<Module> getMdules() {
+        return modules;
+    }
+
     public static class Builder {
 
         private final String identifier;
@@ -197,5 +201,4 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
         }
 
     }
-
 }

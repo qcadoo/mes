@@ -8,6 +8,6 @@ public interface PersistentPlugin {
 
     int[] getVersion();
 
-    boolean hasState(PluginState temporary);
+    boolean hasState(PluginState expectedState);
 
 }
