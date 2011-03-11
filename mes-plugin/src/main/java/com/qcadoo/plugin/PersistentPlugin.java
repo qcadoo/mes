@@ -6,7 +6,7 @@ public interface PersistentPlugin {
 
     PluginState getPluginState();
 
-    int[] getVersion();
+    Version getVersion();
 
     boolean hasState(PluginState temporary);
 

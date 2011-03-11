@@ -1,6 +1,5 @@
 package com.qcadoo.plugin.dependency;
 
-import static com.qcadoo.plugin.VersionUtils.parse;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -22,7 +21,8 @@ import com.qcadoo.plugin.Plugin;
 import com.qcadoo.plugin.PluginAccessor;
 import com.qcadoo.plugin.PluginDependencyManager;
 import com.qcadoo.plugin.PluginState;
-import com.qcadoo.plugin.VersionUtils;
+import com.qcadoo.plugin.Version;
+import com.qcadoo.plugin.VersionOfDependency;
 
 public class PluginDependencyManagerTest {
 
@@ -50,22 +50,22 @@ public class PluginDependencyManagerTest {
     public void init() {
         plugin1 = mock(Plugin.class, RETURNS_DEEP_STUBS);
         given(plugin1.getIdentifier()).willReturn("testPlugin1");
-        given(plugin1.getVersion()).willReturn(VersionUtils.parse("1.1"));
+        given(plugin1.getVersion()).willReturn(new Version("1.1"));
         given(plugin1.toString()).willReturn("plugin1");
 
         plugin2 = mock(Plugin.class, RETURNS_DEEP_STUBS);
         given(plugin2.getIdentifier()).willReturn("testPlugin2");
-        given(plugin2.getVersion()).willReturn(VersionUtils.parse("1.1"));
+        given(plugin2.getVersion()).willReturn(new Version("1.1"));
         given(plugin2.toString()).willReturn("plugin2");
 
         plugin3 = mock(Plugin.class, RETURNS_DEEP_STUBS);
         given(plugin3.getIdentifier()).willReturn("testPlugin3");
-        given(plugin3.getVersion()).willReturn(VersionUtils.parse("1.1"));
+        given(plugin3.getVersion()).willReturn(new Version("1.1"));
         given(plugin3.toString()).willReturn("plugin3");
 
         plugin4 = mock(Plugin.class, RETURNS_DEEP_STUBS);
         given(plugin4.getIdentifier()).willReturn("testPlugin4");
-        given(plugin4.getVersion()).willReturn(VersionUtils.parse("1.1"));
+        given(plugin4.getVersion()).willReturn(new Version("1.1"));
         given(plugin4.toString()).willReturn("plugin4");
     }
 
@@ -146,7 +146,7 @@ public class PluginDependencyManagerTest {
         given(pluginAccessor.getPlugin("testPlugin3")).willReturn(plugin3);
         given(pluginAccessor.getPlugin("testPlugin4")).willReturn(null);
 
-        dependencyInfo3 = new PluginDependencyInformation("testPlugin3", VersionUtils.parse("2"), true, null, false);
+        dependencyInfo3 = new PluginDependencyInformation("testPlugin3", new VersionOfDependency("[2"));
 
         Plugin pluginToEnable = mock(Plugin.class);
         Set<PluginDependencyInformation> disabledRequiredPlugins = new HashSet<PluginDependencyInformation>();
@@ -164,7 +164,7 @@ public class PluginDependencyManagerTest {
         assertEquals(0, result.getDisabledDependencies().size());
         assertEquals(2, result.getUnsatisfiedDependencies().size());
         assertTrue(result.getUnsatisfiedDependencies().contains(
-                new PluginDependencyInformation("testPlugin3", VersionUtils.parse("2"), true, null, false)));
+                new PluginDependencyInformation("testPlugin3", new VersionOfDependency("[2"))));
         assertTrue(result.getUnsatisfiedDependencies().contains(new PluginDependencyInformation("testPlugin4")));
         assertEquals(0, result.getEnabledDependencies().size());
     }
@@ -751,27 +751,27 @@ public class PluginDependencyManagerTest {
 
         Plugin p1 = mock(Plugin.class, "p1");
         given(p1.getIdentifier()).willReturn("p1");
-        given(p1.getVersion()).willReturn(parse("1.1"));
+        given(p1.getVersion()).willReturn(new Version("1.1"));
         given(p1.getRequiredPlugins()).willReturn(rp1);
 
         Plugin p2 = mock(Plugin.class, "p2");
         given(p2.getIdentifier()).willReturn("p2");
-        given(p2.getVersion()).willReturn(parse("1.1"));
+        given(p2.getVersion()).willReturn(new Version("1.1"));
         given(p2.getRequiredPlugins()).willReturn(rp2);
 
         Plugin p3 = mock(Plugin.class, "p3");
         given(p3.getIdentifier()).willReturn("p3");
-        given(p3.getVersion()).willReturn(parse("1.1"));
+        given(p3.getVersion()).willReturn(new Version("1.1"));
         given(p3.getRequiredPlugins()).willReturn(rp3);
 
         Plugin p4 = mock(Plugin.class, "p4");
         given(p4.getIdentifier()).willReturn("p4");
-        given(p4.getVersion()).willReturn(parse("1.1"));
+        given(p4.getVersion()).willReturn(new Version("1.1"));
         given(p4.getRequiredPlugins()).willReturn(rp4);
 
         Plugin p5 = mock(Plugin.class, "p5");
         given(p5.getIdentifier()).willReturn("p5");
-        given(p5.getVersion()).willReturn(parse("1.1"));
+        given(p5.getVersion()).willReturn(new Version("1.1"));
         given(p5.getRequiredPlugins()).willReturn(rp5);
 
         given(pluginAccessor.getPlugin("p1")).willReturn(p1);

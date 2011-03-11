@@ -4,11 +4,11 @@ public class DefaultPersistentPlugin implements PersistentPlugin {
 
     private final String identifier;
 
-    private final int[] version;
+    private final Version version;
 
     private PluginState state;
 
-    public DefaultPersistentPlugin(final String identifier, final PluginState state, final int[] version) {
+    public DefaultPersistentPlugin(final String identifier, final PluginState state, final Version version) {
         this.identifier = identifier;
         this.version = version;
         this.state = state;
@@ -34,8 +34,8 @@ public class DefaultPersistentPlugin implements PersistentPlugin {
     }
 
     @Override
-    public int[] getVersion() {
-        return version.clone();
+    public Version getVersion() {
+        return version;
     }
 
 }

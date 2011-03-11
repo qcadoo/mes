@@ -4,7 +4,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.qcadoo.plugin.VersionUtils;
+import com.qcadoo.plugin.Version;
+import com.qcadoo.plugin.VersionOfDependency;
 
 public class PluginDependencyInformationTest {
 
@@ -20,16 +21,11 @@ public class PluginDependencyInformationTest {
 
     @Before
     public void init() {
-        dependencyInformation1 = new PluginDependencyInformation("testPlugin1", VersionUtils.parse("1"), true,
-                VersionUtils.parse("1.2.01"), false);
-        dependencyInformation2 = new PluginDependencyInformation("testPlugin2", null, true, VersionUtils.parse("2.2.01"),
-                true);
-        dependencyInformation3 = new PluginDependencyInformation("testPlugin3", VersionUtils.parse("1.2.10"), true, null,
-                false);
-        dependencyInformation4 = new PluginDependencyInformation("testPlugin4", VersionUtils.parse("3.0.1"), false,
-                VersionUtils.parse("4.2"), true);
-        dependencyInformation5 = new PluginDependencyInformation("testPlugin5", VersionUtils.parse("3.0.1"), true,
-                VersionUtils.parse("3.0.1"), true);
+        dependencyInformation1 = new PluginDependencyInformation("testPlugin1", new VersionOfDependency("[1,1.2.01)"));
+        dependencyInformation2 = new PluginDependencyInformation("testPlugin2", new VersionOfDependency("2.2.01]"));
+        dependencyInformation3 = new PluginDependencyInformation("testPlugin3", new VersionOfDependency("[1.2.10"));
+        dependencyInformation4 = new PluginDependencyInformation("testPlugin4", new VersionOfDependency("(3.0.1,4.2]"));
+        dependencyInformation5 = new PluginDependencyInformation("testPlugin5", new VersionOfDependency("[3.0.1,3.0.1]"));
     }
 
     @Test
@@ -38,34 +34,32 @@ public class PluginDependencyInformationTest {
 
         // when
         try {
-            new PluginDependencyInformation("", VersionUtils.parse("a1"), true, VersionUtils.parse("1"), false);
+            new PluginDependencyInformation("", new VersionOfDependency("[a1,1)"));
             Assert.fail();
         } catch (Exception e) {
         }
         try {
-            new PluginDependencyInformation("", VersionUtils.parse("1"), true, VersionUtils.parse("2s"), false);
+            new PluginDependencyInformation("", new VersionOfDependency("[1,2s)"));
             Assert.fail();
         } catch (Exception e) {
         }
         try {
-            new PluginDependencyInformation("", VersionUtils.parse("1.2.3.4"), true, VersionUtils.parse("2s"),
-                    false);
+            new PluginDependencyInformation("", new VersionOfDependency("[1.2.3.4,2s)"));
             Assert.fail();
         } catch (Exception e) {
         }
         try {
-            new PluginDependencyInformation("", VersionUtils.parse("2"), true, VersionUtils.parse("1.2.3.4"), false);
+            new PluginDependencyInformation("", new VersionOfDependency("[2,1.2.3.4)"));
             Assert.fail();
         } catch (Exception e) {
         }
         try {
-            new PluginDependencyInformation("", VersionUtils.parse("1.1.1"), true, VersionUtils.parse("1.1.0"),
-                    false);
+            new PluginDependencyInformation("", new VersionOfDependency("[1.1.1,1.1.0)"));
             Assert.fail();
         } catch (Exception e) {
         }
         try {
-            new PluginDependencyInformation("", VersionUtils.parse("1.0.0"), false, VersionUtils.parse("1"), true);
+            new PluginDependencyInformation("", new VersionOfDependency("(1.0.0,1]"));
             Assert.fail();
         } catch (Exception e) {
         }
@@ -76,11 +70,11 @@ public class PluginDependencyInformationTest {
     @Test
     public void shouldReturnTrueWhenVersionIsSattisfied() throws Exception {
         // given
-        int[] v1 = VersionUtils.parse("1.1");
-        int[] v2 = VersionUtils.parse("0.9");
-        int[] v3 = VersionUtils.parse("1.2.10");
-        int[] v4 = VersionUtils.parse("4.2.0");
-        int[] v5 = VersionUtils.parse("3.0.1");
+        Version v1 = new Version("1.1");
+        Version v2 = new Version("0.9");
+        Version v3 = new Version("1.2.10");
+        Version v4 = new Version("4.2.0");
+        Version v5 = new Version("3.0.1");
 
         // when
         boolean res1 = dependencyInformation1.isVersionSattisfied(v1);
@@ -100,11 +94,11 @@ public class PluginDependencyInformationTest {
     @Test
     public void shouldReturnTrueWhenVersionIsNotSattisfied() throws Exception {
         // given
-        int[] v1 = VersionUtils.parse("0.9");
-        int[] v2 = VersionUtils.parse("2.3");
-        int[] v3 = VersionUtils.parse("1.2.09");
-        int[] v4 = VersionUtils.parse("3.0.1");
-        int[] v5 = VersionUtils.parse("3.0.2");
+        Version v1 = new Version("0.9");
+        Version v2 = new Version("2.3");
+        Version v3 = new Version("1.2.09");
+        Version v4 = new Version("3.0.1");
+        Version v5 = new Version("3.0.2");
 
         // when
         boolean res1 = dependencyInformation1.isVersionSattisfied(v1);

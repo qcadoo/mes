@@ -22,7 +22,7 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
 
     private final boolean system;
 
-    private DefaultPlugin(final String identifier, final boolean system, final int[] version, final Set<Module> modules,
+    private DefaultPlugin(final String identifier, final boolean system, final Version version, final Set<Module> modules,
             final PluginInformation information, final Set<PluginDependencyInformation> dependencies) {
         super(identifier, UNKNOWN, version);
         this.modules = modules;
@@ -96,7 +96,7 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
 
     @Override
     public String getFilename() {
-        return getIdentifier() + "-" + getVersion()[0] + "." + getVersion()[1] + "." + getVersion()[2] + ".jar";
+        return getIdentifier() + "-" + getVersion() + ".jar";
     }
 
     @Override
@@ -105,7 +105,7 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
             throw new IllegalStateException("Cannot compare versions of different plugins " + this + " and " + plugin);
         }
 
-        return VersionUtils.compare(getVersion(), plugin.getVersion());
+        return getVersion().compareTo(plugin.getVersion());
     }
 
     @Override
@@ -123,7 +123,7 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
 
         private final String identifier;
 
-        private int[] version;
+        private Version version;
 
         private String description;
 
@@ -153,15 +153,12 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
         }
 
         public Builder withVersion(final String version) {
-            this.version = VersionUtils.parse(version);
+            this.version = new Version(version);
             return this;
         }
 
         public Builder withDependency(final String identifier, final String version) {
-            int[][] versions = VersionUtils.parseDependency(version);
-            PluginDependencyInformation dependencyInformation = new PluginDependencyInformation(identifier, versions[0],
-                    versions[1][0] == 1, versions[2], versions[3][0] == 1);
-            dependencyInformations.add(dependencyInformation);
+            dependencyInformations.add(new PluginDependencyInformation(identifier, new VersionOfDependency(version)));
             return this;
         }
 

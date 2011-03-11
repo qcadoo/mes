@@ -59,18 +59,18 @@ public class PluginTest {
         // then
         assertEquals(0, plugin1.compareVersion(plugin2));
         assertEquals(0, plugin2.compareVersion(plugin1));
-        assertEquals(1, plugin1.compareVersion(plugin3));
-        assertEquals(1, plugin1.compareVersion(plugin4));
-        assertEquals(1, plugin1.compareVersion(plugin5));
-        assertEquals(1, plugin3.compareVersion(plugin4));
-        assertEquals(1, plugin3.compareVersion(plugin5));
-        assertEquals(1, plugin4.compareVersion(plugin5));
-        assertEquals(-1, plugin5.compareVersion(plugin1));
-        assertEquals(-1, plugin5.compareVersion(plugin3));
-        assertEquals(-1, plugin5.compareVersion(plugin4));
-        assertEquals(-1, plugin4.compareVersion(plugin1));
-        assertEquals(-1, plugin4.compareVersion(plugin3));
-        assertEquals(-1, plugin3.compareVersion(plugin1));
+        assertEquals(-1, plugin1.compareVersion(plugin3));
+        assertEquals(-1, plugin1.compareVersion(plugin4));
+        assertEquals(-1, plugin1.compareVersion(plugin5));
+        assertEquals(-1, plugin3.compareVersion(plugin4));
+        assertEquals(-1, plugin3.compareVersion(plugin5));
+        assertEquals(-1, plugin4.compareVersion(plugin5));
+        assertEquals(1, plugin5.compareVersion(plugin1));
+        assertEquals(1, plugin5.compareVersion(plugin3));
+        assertEquals(1, plugin5.compareVersion(plugin4));
+        assertEquals(1, plugin4.compareVersion(plugin1));
+        assertEquals(1, plugin4.compareVersion(plugin3));
+        assertEquals(1, plugin3.compareVersion(plugin1));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -92,6 +92,28 @@ public class PluginTest {
         // then
         assertTrue(plugin1.isSystemPlugin());
         assertFalse(plugin2.isSystemPlugin());
+    }
+
+    @Test
+    public void shouldHaveVersion() throws Exception {
+        // given
+        Plugin plugin = DefaultPlugin.Builder.identifier("identifier1").withVersion("1.2.3").build();
+
+        // then
+        assertEquals(new Version("1.2.3"), plugin.getVersion());
+    }
+
+    @Test
+    public void shouldHaveInformation() throws Exception {
+        // given
+        Plugin plugin = DefaultPlugin.Builder.identifier("identifier1").withDescription("description").withName("name")
+                .withVendor("vendor").withVendorUrl("vendorUrl").build();
+
+        // then
+        assertEquals("description", plugin.getPluginInformation().getDescription());
+        assertEquals("name", plugin.getPluginInformation().getName());
+        assertEquals("vendor", plugin.getPluginInformation().getVendor());
+        assertEquals("vendorUrl", plugin.getPluginInformation().getVendorUrl());
     }
 
 }
