@@ -266,7 +266,6 @@ public class DefaultPluginManager implements PluginManager {
                     pluginDao.save(dependencyPlugin);
                 }
             }
-            // TODO order
             pluginFileManager.uninstallPlugin(existingPlugin.getFilename());
             pluginDao.save(plugin);
             if (shouldRestart) {

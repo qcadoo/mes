@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -14,6 +15,7 @@ import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import com.qcadoo.plugin.dependency.PluginDependencyInformation;
 import com.qcadoo.plugin.dependency.PluginDependencyResult;
@@ -34,8 +36,6 @@ public class PluginManagerTest {
 
     private PluginServerManager pluginServerManager = mock(PluginServerManager.class);
 
-    private PluginInformation pluginInformation = mock(PluginInformation.class);
-
     private PluginDescriptorParser pluginDescriptorParser = mock(PluginDescriptorParser.class);
 
     private DefaultPluginManager pluginManager;
@@ -44,8 +44,6 @@ public class PluginManagerTest {
     public void init() {
         given(pluginAccessor.getPlugin("pluginname")).willReturn(plugin);
         given(pluginAccessor.getPlugin("anotherPluginname")).willReturn(anotherPlugin);
-
-        given(pluginInformation.getName()).willReturn("unknownplugin");
 
         pluginManager = new DefaultPluginManager();
         pluginManager.setPluginAccessor(pluginAccessor);
@@ -190,23 +188,31 @@ public class PluginManagerTest {
         // given
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
 
+        Plugin nextPlugin = mock(Plugin.class, "nextPlugin");
+        given(nextPlugin.hasState(PluginState.DISABLED)).willReturn(true);
+        given(pluginAccessor.getPlugin("nextPluginname")).willReturn(nextPlugin);
+
         given(anotherPlugin.hasState(PluginState.TEMPORARY)).willReturn(true);
         given(anotherPlugin.getFilename()).willReturn("filename");
         given(pluginFileManager.installPlugin("filename")).willReturn(true);
 
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
-        given(pluginDependencyManager.getDependenciesToEnable(newArrayList(plugin, anotherPlugin))).willReturn(
+        given(pluginDependencyManager.getDependenciesToEnable(newArrayList(plugin, anotherPlugin, nextPlugin))).willReturn(
                 pluginDependencyResult);
-        given(pluginDependencyManager.sortPluginsInDependencyOrder(newArrayList(plugin, anotherPlugin))).willReturn(
-                newArrayList(plugin, anotherPlugin));
+        given(pluginDependencyManager.sortPluginsInDependencyOrder(newArrayList(plugin, anotherPlugin, nextPlugin))).willReturn(
+                newArrayList(plugin, anotherPlugin, nextPlugin));
 
         // when
-        PluginOperationResult pluginOperationResult = pluginManager.enablePlugin("pluginname", "anotherPluginname");
+        PluginOperationResult pluginOperationResult = pluginManager.enablePlugin("pluginname", "anotherPluginname",
+                "nextPluginname");
 
         // then
-        verify(plugin).changeStateTo(PluginState.ENABLED);
+        InOrder inOrder = inOrder(plugin, anotherPlugin, nextPlugin);
+        inOrder.verify(plugin).changeStateTo(PluginState.ENABLED);
+        inOrder.verify(anotherPlugin).changeStateTo(PluginState.ENABLING);
+        inOrder.verify(nextPlugin).changeStateTo(PluginState.ENABLED);
         verify(pluginDao).save(plugin);
-        verify(anotherPlugin).changeStateTo(PluginState.ENABLING);
+        verify(pluginDao).save(nextPlugin);
         verify(pluginDao).save(anotherPlugin);
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
@@ -394,6 +400,35 @@ public class PluginManagerTest {
     }
 
     @Test
+    public void shouldDisableMultipleEnabledPlugin() throws Exception {
+        // given
+        given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
+
+        Plugin nextPlugin = mock(Plugin.class, "nextPlugin");
+        given(nextPlugin.hasState(PluginState.ENABLED)).willReturn(true);
+        given(pluginAccessor.getPlugin("nextPluginname")).willReturn(nextPlugin);
+
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
+        given(pluginDependencyManager.getDependenciesToDisable(newArrayList(plugin, nextPlugin))).willReturn(
+                pluginDependencyResult);
+        given(pluginDependencyManager.sortPluginsInDependencyOrder(newArrayList(plugin, nextPlugin))).willReturn(
+                newArrayList(plugin, nextPlugin));
+
+        // when
+        PluginOperationResult pluginOperationResult = pluginManager.disablePlugin("pluginname", "nextPluginname");
+
+        // then
+        InOrder inOrder = inOrder(nextPlugin, plugin);
+        inOrder.verify(nextPlugin).changeStateTo(PluginState.DISABLED);
+        inOrder.verify(plugin).changeStateTo(PluginState.DISABLED);
+        verify(pluginDao).save(nextPlugin);
+        verify(pluginDao).save(plugin);
+        assertTrue(pluginOperationResult.isSuccess());
+        assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
+    }
+
+    @Test
     public void shouldUninstallMultiplePlugins() throws Exception {
         // given
         given(plugin.hasState(PluginState.TEMPORARY)).willReturn(false);
@@ -404,21 +439,31 @@ public class PluginManagerTest {
         given(anotherPlugin.hasState(PluginState.ENABLED)).willReturn(false);
         given(anotherPlugin.getFilename()).willReturn("anotherFilename");
 
+        Plugin nextPlugin = mock(Plugin.class, "nextPlugin");
+        given(nextPlugin.hasState(PluginState.TEMPORARY)).willReturn(false);
+        given(nextPlugin.hasState(PluginState.ENABLED)).willReturn(true);
+        given(nextPlugin.getFilename()).willReturn("nextPluginFilename");
+        given(pluginAccessor.getPlugin("nextPluginname")).willReturn(nextPlugin);
+
         PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
-        given(pluginDependencyManager.getDependenciesToDisable(newArrayList(plugin, anotherPlugin))).willReturn(
+        given(pluginDependencyManager.getDependenciesToDisable(newArrayList(plugin, anotherPlugin, nextPlugin))).willReturn(
                 pluginDependencyResult);
-        given(pluginDependencyManager.sortPluginsInDependencyOrder(newArrayList(plugin, anotherPlugin))).willReturn(
-                newArrayList(plugin, anotherPlugin));
+        given(pluginDependencyManager.sortPluginsInDependencyOrder(newArrayList(plugin, anotherPlugin, nextPlugin))).willReturn(
+                newArrayList(nextPlugin, plugin, anotherPlugin));
 
         // when
-        PluginOperationResult pluginOperationResult = pluginManager.uninstallPlugin("pluginname", "anotherPluginname");
+        PluginOperationResult pluginOperationResult = pluginManager.uninstallPlugin("pluginname", "anotherPluginname",
+                "nextPluginname");
 
         // then
-        verify(plugin).changeStateTo(PluginState.DISABLED);
+        InOrder inOrder = inOrder(plugin, nextPlugin);
+        inOrder.verify(plugin).changeStateTo(PluginState.DISABLED);
+        inOrder.verify(nextPlugin).changeStateTo(PluginState.DISABLED);
         verify(anotherPlugin, never()).changeStateTo(PluginState.DISABLED);
         verify(pluginDao).delete(plugin);
+        verify(pluginDao).delete(nextPlugin);
         verify(pluginDao).delete(anotherPlugin);
-        verify(pluginFileManager).uninstallPlugin("filename", "anotherFilename");
+        verify(pluginFileManager).uninstallPlugin("filename", "anotherFilename", "nextPluginFilename");
         verify(pluginServerManager).restart();
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
