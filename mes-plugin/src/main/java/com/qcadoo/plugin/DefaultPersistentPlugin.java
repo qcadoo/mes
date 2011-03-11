@@ -1,6 +1,5 @@
 package com.qcadoo.plugin;
 
-import java.util.Arrays;
 
 public class DefaultPersistentPlugin implements PersistentPlugin {
 
@@ -46,28 +45,40 @@ public class DefaultPersistentPlugin implements PersistentPlugin {
         int result = 1;
         result = prime * result + ((identifier == null) ? 0 : identifier.hashCode());
         result = prime * result + ((state == null) ? 0 : state.hashCode());
-        result = prime * result + Arrays.hashCode(version);
+        result = prime * result + ((version == null) ? 0 : version.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (!(obj instanceof DefaultPersistentPlugin)) {
             return false;
+        }
         DefaultPersistentPlugin other = (DefaultPersistentPlugin) obj;
         if (identifier == null) {
-            if (other.identifier != null)
+            if (other.identifier != null) {
                 return false;
-        } else if (!identifier.equals(other.identifier))
+            }
+        } else if (!identifier.equals(other.identifier)) {
             return false;
-        if (state != other.state)
+        }
+        if (state != other.state) {
             return false;
-        if (!Arrays.equals(version, other.version))
+        }
+        if (version == null) {
+            if (other.version != null) {
+                return false;
+            }
+        } else if (!version.equals(other.version)) {
             return false;
+        }
         return true;
     }
+
 }

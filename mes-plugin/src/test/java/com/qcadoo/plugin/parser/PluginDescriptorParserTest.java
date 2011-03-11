@@ -25,7 +25,8 @@ import com.qcadoo.plugin.ModuleFactory;
 import com.qcadoo.plugin.ModuleFactoryAccessor;
 import com.qcadoo.plugin.Plugin;
 import com.qcadoo.plugin.PluginDescriptorParser;
-import com.qcadoo.plugin.VersionUtils;
+import com.qcadoo.plugin.Version;
+import com.qcadoo.plugin.VersionOfDependency;
 import com.qcadoo.plugin.dependency.PluginDependencyInformation;
 
 public class PluginDescriptorParserTest {
@@ -36,9 +37,9 @@ public class PluginDescriptorParserTest {
 
     private PluginDescriptorParser pareser;
 
-    private File xmlFile1 = new File("src/test/resources/xml/testPlugin.xml");
+    private final File xmlFile1 = new File("src/test/resources/xml/testPlugin.xml");
 
-    private File xmlFile2 = new File("src/test/resources/xml/testPlugin2.xml");
+    private final File xmlFile2 = new File("src/test/resources/xml/testPlugin2.xml");
 
     private Module testModule1;
 
@@ -95,7 +96,7 @@ public class PluginDescriptorParserTest {
 
         // then
         assertEquals("testPlugin", result.getIdentifier());
-        assertEquals(0, VersionUtils.compare(VersionUtils.parse("1.2.3"), result.getVersion()));
+        assertEquals(new Version("1.2.3"), result.getVersion());
         assertTrue(result.isSystemPlugin());
     }
 
@@ -108,7 +109,7 @@ public class PluginDescriptorParserTest {
 
         // then
         assertEquals("testPlugin2", result.getIdentifier());
-        assertEquals(0, VersionUtils.compare(VersionUtils.parse("2.3.1"), result.getVersion()));
+        assertEquals(new Version("2.3.1"), result.getVersion());
         assertFalse(result.isSystemPlugin());
     }
 
@@ -151,11 +152,11 @@ public class PluginDescriptorParserTest {
         // then
         Set<PluginDependencyInformation> dependencies = result.getRequiredPlugins();
         assertEquals(3, dependencies.size());
-        assertTrue(dependencies.contains(new PluginDependencyInformation("testPluginDependency1", VersionUtils.parse("1.2.3"),
-                false, VersionUtils.parse("2.3.4"), true)));
-        assertTrue(dependencies.contains(new PluginDependencyInformation("testPluginDependency2", VersionUtils.parse("1.1.1"),
-                true, VersionUtils.parse("1.1.1"), true)));
-        assertTrue(dependencies.contains(new PluginDependencyInformation("testPluginDependency3", null, false, null, false)));
+        assertTrue(dependencies.contains(new PluginDependencyInformation("testPluginDependency1", new VersionOfDependency(
+                "(1.2.3,2.3.4]"))));
+        assertTrue(dependencies.contains(new PluginDependencyInformation("testPluginDependency2", new VersionOfDependency(
+                "[1.1.1,1.1.1]"))));
+        assertTrue(dependencies.contains(new PluginDependencyInformation("testPluginDependency3", new VersionOfDependency(null))));
     }
 
     @Test
@@ -206,7 +207,8 @@ public class PluginDescriptorParserTest {
             this.expectedNodeText = expectedNodeText;
         }
 
-        public boolean matches(Object node) {
+        @Override
+        public boolean matches(final Object node) {
             if (expectedNodeName.equals(((Node) node).getNodeName())) {
                 return expectedNodeText.equals(((Node) node).getTextContent());
             }
