@@ -29,4 +29,8 @@ public interface PluginDependencyManager {
 
     List<Plugin> sortPluginsInDependencyOrder(Collection<Plugin> plugins);
 
+    PluginDependencyResult getDependenciesToUninstall(List<Plugin> plugins);
+
+    PluginDependencyResult getDependenciesToUpdate(Plugin existingPlugin, Plugin newPlugin);
+
 }

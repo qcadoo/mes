@@ -96,7 +96,7 @@ public class PluginManagerTest {
         verify(pluginDao).save(plugin);
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
     }
 
@@ -121,7 +121,7 @@ public class PluginManagerTest {
         verify(pluginServerManager).restart();
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
     }
 
@@ -144,7 +144,7 @@ public class PluginManagerTest {
         verify(pluginServerManager, never()).restart();
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.CANNOT_INSTALL_PLUGIN, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
     }
 
@@ -153,7 +153,7 @@ public class PluginManagerTest {
         // given
         given(plugin.hasState(PluginState.DISABLED)).willReturn(true);
 
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.disabledDependencies(Collections
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.dependenciesToEnable(Collections
                 .singleton(new PluginDependencyInformation("unknownplugin", new VersionOfDependency(""))));
         given(pluginDependencyManager.getDependenciesToEnable(singletonList(plugin))).willReturn(pluginDependencyResult);
 
@@ -166,9 +166,9 @@ public class PluginManagerTest {
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.DISABLED_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
-        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
-        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
-        assertTrue(pluginOperationResult.getPluginDependencyResult().getDisabledDependencies()
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
+        assertTrue(pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable()
                 .contains(new PluginDependencyInformation("unknownplugin", new VersionOfDependency(""))));
     }
 
@@ -228,7 +228,7 @@ public class PluginManagerTest {
         verify(pluginDao).save(anotherPlugin);
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
         verify(pluginServerManager).restart();
     }
@@ -265,7 +265,7 @@ public class PluginManagerTest {
         verify(pluginDao).save(plugin);
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable().size());
     }
 
     @Test
@@ -290,7 +290,7 @@ public class PluginManagerTest {
         verify(pluginDao, never()).save(anotherPlugin);
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SYSTEM_PLUGIN_DISABLING, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable().size());
     }
 
     @Test
@@ -298,7 +298,7 @@ public class PluginManagerTest {
         // given
         given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
 
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.enabledDependencies(Collections
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.dependenciesToDisable(Collections
                 .singleton(new PluginDependencyInformation("unknownplugin", new VersionOfDependency(""))));
         given(pluginDependencyManager.getDependenciesToDisable(singletonList(plugin))).willReturn(pluginDependencyResult);
 
@@ -310,9 +310,9 @@ public class PluginManagerTest {
         verify(pluginDao, never()).save(plugin);
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.ENABLED_DEPENDENCIES, pluginOperationResult.getStatus());
-        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
-        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
-        assertTrue(pluginOperationResult.getPluginDependencyResult().getEnabledDependencies()
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable().size());
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable().size());
+        assertTrue(pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable()
                 .contains(new PluginDependencyInformation("unknownplugin", new VersionOfDependency(""))));
     }
 
@@ -338,7 +338,7 @@ public class PluginManagerTest {
         verify(pluginFileManager).uninstallPlugin("filename");
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable().size());
     }
 
     @Test
@@ -362,13 +362,13 @@ public class PluginManagerTest {
         verify(pluginFileManager).uninstallPlugin("filename");
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable().size());
     }
 
     @Test
     public void shouldNotUninstallPluginWithEnabledDependencies() throws Exception {
         // given
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.enabledDependencies(Collections
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.dependenciesToDisable(Collections
                 .singleton(new PluginDependencyInformation("unknownplugin", new VersionOfDependency(""))));
         given(pluginDependencyManager.getDependenciesToDisable(singletonList(plugin))).willReturn(pluginDependencyResult);
 
@@ -384,9 +384,9 @@ public class PluginManagerTest {
         verify(pluginFileManager, never()).uninstallPlugin("filename");
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.ENABLED_DEPENDENCIES, pluginOperationResult.getStatus());
-        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
-        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
-        assertTrue(pluginOperationResult.getPluginDependencyResult().getEnabledDependencies()
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable().size());
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable().size());
+        assertTrue(pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable()
                 .contains(new PluginDependencyInformation("unknownplugin", new VersionOfDependency(""))));
     }
 
@@ -408,7 +408,7 @@ public class PluginManagerTest {
         verify(pluginServerManager, never()).restart();
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SYSTEM_PLUGIN_UNINSTALLING, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable().size());
     }
 
     @Test
@@ -437,7 +437,7 @@ public class PluginManagerTest {
         verify(pluginDao).save(plugin);
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable().size());
     }
 
     @Test
@@ -479,7 +479,7 @@ public class PluginManagerTest {
         verify(pluginServerManager).restart();
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getEnabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable().size());
     }
 
 }

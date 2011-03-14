@@ -24,6 +24,7 @@ import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.plugin.api.PluginDependencyInformation;
 import com.qcadoo.plugin.api.PluginState;
+import com.qcadoo.plugin.api.Version;
 import com.qcadoo.plugin.api.VersionOfDependency;
 import com.qcadoo.plugin.internal.PluginException;
 import com.qcadoo.plugin.internal.api.PluginArtifact;
@@ -65,6 +66,8 @@ public class PluginManagerInstallTest {
         given(pluginAccessor.getPlugin("pluginname")).willReturn(plugin);
 
         given(anotherPlugin.getIdentifier()).willReturn("pluginname");
+        given(anotherPlugin.getVersion()).willReturn(new Version("1.2.5"));
+        given(plugin.getVersion()).willReturn(new Version("1.2.4"));
 
         pluginManager = new DefaultPluginManager();
         pluginManager.setPluginAccessor(pluginAccessor);
@@ -243,7 +246,7 @@ public class PluginManagerInstallTest {
         given(pluginAccessor.getPlugin("dependencyplugin2")).willReturn(dependencyPlugin2);
         given(dependencyPlugin2.getIdentifier()).willReturn("dependencyplugin2");
 
-        PluginDependencyResult installPluginDependencyResult = PluginDependencyResult.enabledDependencies(newHashSet(
+        PluginDependencyResult installPluginDependencyResult = PluginDependencyResult.dependenciesToDisable(newHashSet(
                 new PluginDependencyInformation("dependencyplugin", new VersionOfDependency("")),
                 new PluginDependencyInformation("dependencyplugin2", new VersionOfDependency(""))));
 
@@ -271,7 +274,7 @@ public class PluginManagerInstallTest {
         verify(pluginServerManager).restart();
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
     }
 
@@ -314,7 +317,7 @@ public class PluginManagerInstallTest {
 
         given(anotherPlugin.getFilename()).willReturn("filename");
 
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.disabledDependencies(Collections
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.dependenciesToEnable(Collections
                 .singleton(new PluginDependencyInformation("unknownplugin", new VersionOfDependency(""))));
         given(pluginDependencyManager.getDependenciesToEnable(newArrayList(anotherPlugin))).willReturn(pluginDependencyResult);
 
@@ -328,9 +331,9 @@ public class PluginManagerInstallTest {
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.DISABLED_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
-        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
-        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
-        assertTrue(pluginOperationResult.getPluginDependencyResult().getDisabledDependencies()
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
+        assertTrue(pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable()
                 .contains(new PluginDependencyInformation("unknownplugin", new VersionOfDependency(""))));
     }
 
@@ -429,7 +432,7 @@ public class PluginManagerInstallTest {
         verify(anotherPlugin).changeStateTo(PluginState.TEMPORARY);
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
     }
 
@@ -451,10 +454,29 @@ public class PluginManagerInstallTest {
         verify(pluginDao).save(anotherPlugin);
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_MISSING_DEPENDENCIES, pluginOperationResult.getStatus());
-        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDisabledDependencies().size());
+        assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
         assertTrue(pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies()
                 .contains(new PluginDependencyInformation("unknownplugin")));
+    }
+
+    @Test
+    public void shouldNotInstallPluginWithIncorrectVersion() throws Exception {
+        // given
+        given(pluginDescriptorParser.parse(resource)).willReturn(anotherPlugin);
+        given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(resource);
+        given(anotherPlugin.getVersion()).willReturn(new Version("1.2.0"));
+        given(anotherPlugin.getFilename()).willReturn("anotherFilename");
+
+        // when
+        PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
+
+        // then
+        verify(pluginDao, never()).save(anotherPlugin);
+        verify(pluginFileManager).uninstallPlugin("anotherFilename");
+        verify(pluginServerManager, never()).restart();
+        assertFalse(pluginOperationResult.isSuccess());
+        assertEquals(PluginOperationStatus.INCORRECT_VERSION_PLUGIN, pluginOperationResult.getStatus());
     }
 
 }
