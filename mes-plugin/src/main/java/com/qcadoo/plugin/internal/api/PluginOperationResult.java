@@ -46,6 +46,10 @@ public class PluginOperationResult {
         return new PluginOperationResult(PluginOperationStatus.CANNOT_UPLOAD_PLUGIN);
     }
 
+    public static PluginOperationResult incorrectVersionPlugin() {
+        return new PluginOperationResult(PluginOperationStatus.INCORRECT_VERSION_PLUGIN);
+    }
+
     public static PluginOperationResult disabledDependencies(final PluginDependencyResult pluginDependencyResult) {
         return new PluginOperationResult(PluginOperationStatus.DISABLED_DEPENDENCIES, pluginDependencyResult);
     }
