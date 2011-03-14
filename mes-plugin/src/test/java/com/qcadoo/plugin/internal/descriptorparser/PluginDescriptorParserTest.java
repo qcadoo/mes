@@ -9,7 +9,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
@@ -234,9 +233,7 @@ public class PluginDescriptorParserTest {
     @Test
     public void shouldParseAllPlugins() throws Exception {
         // given
-        Set<Resource> testXmlsList = new HashSet<Resource>();
-        testXmlsList.add(xmlFile1);
-        testXmlsList.add(xmlFile2);
+        Resource[] testXmlsList = new Resource[] { xmlFile1, xmlFile2 };
 
         given(pluginDescriptorResolver.getDescriptors()).willReturn(testXmlsList);
 
@@ -255,10 +252,7 @@ public class PluginDescriptorParserTest {
     @Test(expected = PluginException.class)
     public void shouldNotParsePluginsWhenException() throws Exception {
         // given
-        Set<Resource> testXmlsList = new HashSet<Resource>();
-        testXmlsList.add(xmlFile1);
-        testXmlsList.add(xmlFile2);
-        testXmlsList.add(xmlFile3);
+        Resource[] testXmlsList = new Resource[] { xmlFile1, xmlFile2, xmlFile3 };
 
         given(pluginDescriptorResolver.getDescriptors()).willReturn(testXmlsList);
 
