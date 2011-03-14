@@ -25,7 +25,6 @@ import com.google.common.collect.Sets;
 import com.qcadoo.plugin.api.PersistentPlugin;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginState;
-import com.qcadoo.plugin.internal.accessor.DefaultPluginAccessor;
 import com.qcadoo.plugin.internal.api.ModuleFactoryAccessor;
 import com.qcadoo.plugin.internal.api.PluginDao;
 import com.qcadoo.plugin.internal.api.PluginDependencyManager;
@@ -137,6 +136,7 @@ public class PluginAccessorTest {
         verify(plugin22).changeStateTo(PluginState.ENABLED);
         verify(plugin3).changeStateTo(PluginState.ENABLED);
         verify(plugin4).changeStateTo(PluginState.DISABLED);
+        verify(plugin4).changeStateTo(PluginState.ENABLED);
 
         assertThat(pluginAccessor.getPlugins(), hasItems(plugin1, plugin22, plugin3, plugin4));
 

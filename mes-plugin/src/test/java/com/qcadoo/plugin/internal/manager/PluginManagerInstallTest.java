@@ -250,8 +250,7 @@ public class PluginManagerInstallTest {
                 new PluginDependencyInformation("dependencyplugin", new VersionOfDependency("")),
                 new PluginDependencyInformation("dependencyplugin2", new VersionOfDependency(""))));
 
-        given(pluginDependencyManager.getDependenciesToDisable(newArrayList(anotherPlugin))).willReturn(
-                installPluginDependencyResult);
+        given(pluginDependencyManager.getDependenciesToUpdate(plugin, anotherPlugin)).willReturn(installPluginDependencyResult);
         given(pluginDependencyManager.sortPluginsInDependencyOrder(newArrayList(dependencyPlugin2, dependencyPlugin)))
                 .willReturn(newArrayList(dependencyPlugin, dependencyPlugin2));
 
@@ -279,6 +278,41 @@ public class PluginManagerInstallTest {
     }
 
     @Test
+    public void shouldFailureInstallEnabledPluginWithUnsatisfiedDependenciesAfterUpdate() throws Exception {
+        // given
+        given(plugin.hasState(PluginState.ENABLED)).willReturn(true);
+        given(plugin.getPluginState()).willReturn(PluginState.ENABLED);
+        given(pluginDescriptorParser.parse(resource)).willReturn(anotherPlugin);
+        given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(resource);
+
+        given(pluginFileManager.installPlugin("anotherFilename")).willReturn(true);
+        given(anotherPlugin.getFilename()).willReturn("anotherFilename");
+        given(plugin.getFilename()).willReturn("filename");
+
+        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.satisfiedDependencies();
+        given(pluginDependencyManager.getDependenciesToEnable(newArrayList(anotherPlugin))).willReturn(pluginDependencyResult);
+
+        PluginDependencyResult installPluginDependencyResult = PluginDependencyResult.dependenciesToUpdate(Collections
+                .<PluginDependencyInformation> emptySet(), newHashSet(new PluginDependencyInformation("dependencyplugin",
+                new VersionOfDependency(""))));
+
+        given(pluginDependencyManager.getDependenciesToUpdate(plugin, anotherPlugin)).willReturn(installPluginDependencyResult);
+
+        // when
+        PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
+
+        // then
+        verify(pluginDao, never()).save(anotherPlugin);
+        verify(anotherPlugin, never()).changeStateTo(plugin.getPluginState());
+        verify(pluginFileManager).uninstallPlugin("anotherFilename");
+        assertFalse(pluginOperationResult.isSuccess());
+        assertEquals(PluginOperationStatus.UNSATISFIED_DEPENDENCIES_AFTER_UPDATE, pluginOperationResult.getStatus());
+        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisableUnsatisfiedAfterUpdate().size());
+        assertTrue(pluginOperationResult.getPluginDependencyResult().getDependenciesToDisableUnsatisfiedAfterUpdate()
+                .contains(new PluginDependencyInformation("dependencyplugin", new VersionOfDependency(""))));
+    }
+
+    @Test
     public void shouldFailureInstallEnabledPluginWithUnsitisfiedDependencies() throws Exception {
         // given
 
@@ -301,7 +335,6 @@ public class PluginManagerInstallTest {
         verify(pluginFileManager).uninstallPlugin("filename");
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.UNSATISFIED_DEPENDENCIES, pluginOperationResult.getStatus());
-        assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
         assertTrue(pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies()
                 .contains(new PluginDependencyInformation("unknownplugin", new VersionOfDependency(""))));

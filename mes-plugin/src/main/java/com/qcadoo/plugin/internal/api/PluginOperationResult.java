@@ -74,6 +74,14 @@ public class PluginOperationResult {
         return new PluginOperationResult(PluginOperationStatus.ENABLED_DEPENDENCIES, pluginDependencyResult);
     }
 
+    public static PluginOperationResult dependenciesToUninstall(final PluginDependencyResult pluginDependencyResult) {
+        return new PluginOperationResult(PluginOperationStatus.DEPENDENCIES_TO_UNINSTALL, pluginDependencyResult);
+    }
+
+    public static PluginOperationResult unsatisfiedDependenciesAfterUpdate(final PluginDependencyResult pluginDependencyResult) {
+        return new PluginOperationResult(PluginOperationStatus.UNSATISFIED_DEPENDENCIES_AFTER_UPDATE, pluginDependencyResult);
+    }
+
     public boolean isSuccess() {
         switch (status) {
             case SUCCESS:
