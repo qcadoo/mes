@@ -1,26 +1,37 @@
 package com.qcadoo.plugin.internal;
 
-import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Transient;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import org.hibernate.annotations.Entity;
-import org.hibernate.annotations.Table;
+import org.hibernate.annotations.TypeDef;
 
 import com.qcadoo.plugin.api.PersistentPlugin;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.api.Version;
 
 @Entity
-@Table(appliesTo = "plugins_plugin")
+@Table(name = "plugins_plugin")
+@TypeDef(name = "version", defaultForType = Version.class, typeClass = VersionType.class)
 public class DefaultPersistentPlugin implements PersistentPlugin {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @Column
     private String identifier;
 
-    @Transient
+    @Column
     private Version version;
 
+    @Column
+    @Enumerated(EnumType.STRING)
     private PluginState state;
 
     public DefaultPersistentPlugin() {
@@ -42,7 +53,6 @@ public class DefaultPersistentPlugin implements PersistentPlugin {
     }
 
     @Override
-    @Enumerated(EnumType.STRING)
     public PluginState getPluginState() {
         return state;
     }
@@ -65,19 +75,19 @@ public class DefaultPersistentPlugin implements PersistentPlugin {
         this.version = version;
     }
 
-    @Basic
-    public String getStringVersion() {
-        return version.toString();
+    public void setId(final Long id) {
+        this.id = id;
     }
 
-    public void setStringVersion(final String version) {
-        this.version = new Version(version);
+    public Long getId() {
+        return id;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((identifier == null) ? 0 : identifier.hashCode());
         result = prime * result + ((state == null) ? 0 : state.hashCode());
         result = prime * result + ((version == null) ? 0 : version.hashCode());
@@ -96,6 +106,13 @@ public class DefaultPersistentPlugin implements PersistentPlugin {
             return false;
         }
         DefaultPersistentPlugin other = (DefaultPersistentPlugin) obj;
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
         if (identifier == null) {
             if (other.identifier != null) {
                 return false;

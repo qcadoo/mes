@@ -83,6 +83,10 @@ public class PluginOperationResult {
         }
     }
 
+    public boolean isRestartNeccessary() {
+        return PluginOperationStatus.SUCCESS_WITH_RESTART.equals(status);
+    }
+
     public static PluginOperationResult cannotInstallPlugin() {
         return new PluginOperationResult(PluginOperationStatus.CANNOT_INSTALL_PLUGIN);
     }
