@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.qcadoo.plugin.api.Plugin;
@@ -848,26 +847,24 @@ public class PluginDependencyManagerTest {
         given(pluginAccessor.getPlugins()).willReturn(plugins);
 
         given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin2.getPluginState()).willReturn(PluginState.DISABLED);
+        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
 
         given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
-        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin3.getPluginState()).willReturn(PluginState.DISABLED);
 
         // when
-        PluginDependencyResult result = manager.getDependenciesToUpdate(plugin1, null);
+        PluginDependencyResult result = manager.getDependenciesToUpdate(plugin1, plugin4);
 
         // then
         assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(2, result.getDependenciesToDisable().size());
+        assertEquals(1, result.getDependenciesToDisable().size());
         assertEquals(0, result.getDependenciesToDisableUnsatisfiedAfterUpdate().size());
         assertEquals(0, result.getDependenciesToUninstall().size());
         assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin2")));
-        assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin3")));
     }
 
     @Test
-    @Ignore
     public void shouldReturnValidListToDisableAndDisabeUnsatisfiedWhenUpdate() throws Exception {
         // given
         Set<Plugin> plugins = new HashSet<Plugin>();
@@ -877,14 +874,16 @@ public class PluginDependencyManagerTest {
         plugins.add(plugin4);
         given(pluginAccessor.getPlugins()).willReturn(plugins);
 
-        dependencyInfo1 = new PluginDependencyInformation("testPlugin1", new VersionOfDependency("[1.0.0,2.0.0]"));
-        given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin2.getPluginState()).willReturn(PluginState.DISABLED);
+        PluginDependencyInformation dependency = new PluginDependencyInformation("testPlugin1", new VersionOfDependency(
+                "[1.0.0,2.0.0]"));
+        given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependency));
+        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
 
         given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
         given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
 
-        given(plugin4.getVersion()).willReturn(new Version("2.1"));
+        given(plugin1.getVersion()).willReturn(new Version("1.1.0"));
+        given(plugin4.getVersion()).willReturn(new Version("2.1.0"));
 
         // when
         PluginDependencyResult result = manager.getDependenciesToUpdate(plugin1, plugin4);
@@ -893,13 +892,45 @@ public class PluginDependencyManagerTest {
         assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
         assertEquals(2, result.getDependenciesToDisable().size());
-        assertEquals(2, result.getDependenciesToDisableUnsatisfiedAfterUpdate().size());
+        assertEquals(1, result.getDependenciesToDisableUnsatisfiedAfterUpdate().size());
         assertEquals(0, result.getDependenciesToUninstall().size());
         assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin2")));
         assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin3")));
         assertTrue(result.getDependenciesToDisableUnsatisfiedAfterUpdate().contains(
                 new PluginDependencyInformation("testPlugin2")));
+    }
+
+    @Test
+    public void shouldReturnValidListToDisableAndDisabeUnsatisfiedWhenUpdateAndDependentPluginIsDisabled() throws Exception {
+        // given
+        Set<Plugin> plugins = new HashSet<Plugin>();
+        plugins.add(plugin1);
+        plugins.add(plugin2);
+        plugins.add(plugin3);
+        plugins.add(plugin4);
+        given(pluginAccessor.getPlugins()).willReturn(plugins);
+
+        PluginDependencyInformation dependency = new PluginDependencyInformation("testPlugin1", new VersionOfDependency(
+                "[1.0.0,2.0.0]"));
+        given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependency));
+        given(plugin2.getPluginState()).willReturn(PluginState.DISABLED);
+
+        given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
+        given(plugin3.getPluginState()).willReturn(PluginState.DISABLED);
+
+        given(plugin1.getVersion()).willReturn(new Version("1.1.0"));
+        given(plugin4.getVersion()).willReturn(new Version("2.1.0"));
+
+        // when
+        PluginDependencyResult result = manager.getDependenciesToUpdate(plugin1, plugin4);
+
+        // then
+        assertEquals(0, result.getDependenciesToEnable().size());
+        assertEquals(0, result.getUnsatisfiedDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
+        assertEquals(1, result.getDependenciesToDisableUnsatisfiedAfterUpdate().size());
+        assertEquals(0, result.getDependenciesToUninstall().size());
         assertTrue(result.getDependenciesToDisableUnsatisfiedAfterUpdate().contains(
-                new PluginDependencyInformation("testPlugin3")));
+                new PluginDependencyInformation("testPlugin2")));
     }
 }

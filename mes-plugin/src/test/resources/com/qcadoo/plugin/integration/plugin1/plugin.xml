@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="plugin1" version="1.2.3" system="true" xmlns="http://www.qcadoo.com/plugin">
+<plugin plugin="plugin1" version="1.2.3" xmlns="http://www.qcadoo.com/plugin">
 
 	<information>
 		<name>plugin1</name>
