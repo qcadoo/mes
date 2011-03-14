@@ -24,6 +24,7 @@ import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.plugin.api.PluginDependencyInformation;
 import com.qcadoo.plugin.api.PluginState;
+import com.qcadoo.plugin.api.Version;
 import com.qcadoo.plugin.api.VersionOfDependency;
 import com.qcadoo.plugin.internal.PluginException;
 import com.qcadoo.plugin.internal.api.PluginArtifact;
@@ -65,6 +66,8 @@ public class PluginManagerInstallTest {
         given(pluginAccessor.getPlugin("pluginname")).willReturn(plugin);
 
         given(anotherPlugin.getIdentifier()).willReturn("pluginname");
+        given(anotherPlugin.getVersion()).willReturn(new Version("1.2.5"));
+        given(plugin.getVersion()).willReturn(new Version("1.2.4"));
 
         pluginManager = new DefaultPluginManager();
         pluginManager.setPluginAccessor(pluginAccessor);
@@ -455,6 +458,25 @@ public class PluginManagerInstallTest {
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
         assertTrue(pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies()
                 .contains(new PluginDependencyInformation("unknownplugin")));
+    }
+
+    @Test
+    public void shouldNotInstallPluginWithIncorrectVersion() throws Exception {
+        // given
+        given(pluginDescriptorParser.parse(resource)).willReturn(anotherPlugin);
+        given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(resource);
+        given(anotherPlugin.getVersion()).willReturn(new Version("1.2.0"));
+        given(anotherPlugin.getFilename()).willReturn("anotherFilename");
+
+        // when
+        PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
+
+        // then
+        verify(pluginDao, never()).save(anotherPlugin);
+        verify(pluginFileManager).uninstallPlugin("anotherFilename");
+        verify(pluginServerManager, never()).restart();
+        assertFalse(pluginOperationResult.isSuccess());
+        assertEquals(PluginOperationStatus.INCORRECT_VERSION_PLUGIN, pluginOperationResult.getStatus());
     }
 
 }

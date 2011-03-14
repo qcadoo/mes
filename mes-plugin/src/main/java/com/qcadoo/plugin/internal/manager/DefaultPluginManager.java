@@ -239,6 +239,10 @@ public final class DefaultPluginManager implements PluginManager {
                 return PluginOperationResult.success();
             }
         } else {
+            if (existingPlugin.getVersion().compareTo(plugin.getVersion()) >= 0) {
+                pluginFileManager.uninstallPlugin(plugin.getFilename());
+                return PluginOperationResult.incorrectVersionPlugin();
+            }
             if (existingPlugin.hasState(PluginState.TEMPORARY)) {
                 if (!pluginDependencyResult.isDependenciesSatisfied()
                         && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
