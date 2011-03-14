@@ -6,12 +6,6 @@
 
 	<context:component-scan base-package="com.qcadoo.plugin" />
 	
-	<util:properties id="plugin">
-		<prop key="qcadoo.plugin.restartCommand"></prop>
-		<prop key="qcadoo.plugin.pluginsPath"></prop>
-		<prop key="qcadoo.plugin.pluginsTmpPath"></prop>
-	</util:properties>
-
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
@@ -41,10 +35,6 @@
 	</bean>
 	
 	<tx:annotation-driven />
-	
-	<bean class="com.qcadoo.plugin.internal.descriptorresolver.DefaultPluginDescriptorResolver">
-		<property name="descriptor" value="com/qcadoo/plugin/integration/*/plugin.xml" />
-	</bean>
 	
 	<bean class="com.qcadoo.plugin.internal.module.DefaultModuleFactoryAccessor">
 		<property name="moduleFactories">

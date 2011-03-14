@@ -5,10 +5,12 @@ import java.io.IOException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.stereotype.Component;
 
 import com.qcadoo.model.internal.api.Constants;
 import com.qcadoo.model.internal.api.ModelXmlResolver;
 
+@Component
 public final class ModelXmlResolverImpl implements ModelXmlResolver {
 
     private final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();

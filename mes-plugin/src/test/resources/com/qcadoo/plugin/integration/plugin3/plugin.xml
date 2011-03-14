@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="plugin3" version="1.2.3" system="true" xmlns="http://www.qcadoo.com/plugin">
+
+	<information>
+		<name>plugin3</name>
+		<description>plugin3 descriptor</description>
+		<vendor>
+			<name>plugin3 vendor</name>
+			<url>plugin3 url</url>
+		</vendor>
+	</information>
+	
+	<modules>
+		<mock />
+	</modules>
+	
+</plugin>

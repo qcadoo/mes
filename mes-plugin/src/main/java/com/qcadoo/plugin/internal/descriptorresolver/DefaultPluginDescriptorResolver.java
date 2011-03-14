@@ -5,16 +5,17 @@ import java.io.IOException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.stereotype.Service;
 
 import com.qcadoo.plugin.internal.api.PluginDescriptorResolver;
 
+@Service
 public class DefaultPluginDescriptorResolver implements PluginDescriptorResolver {
-
-    private final static String DEFAULT_DESCRIPTOR = "plugin.xml";
 
     private final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
-    private String descriptor = DEFAULT_DESCRIPTOR;
+    // @Value("#{ $qcadoo.plugin.restartCommand != null ? $qcadoo.plugin.restartCommand : 'plugin.xml' }")
+    private String descriptor = "com/qcadoo/plugin/integration/*/plugin.xml";
 
     @Override
     public Resource[] getDescriptors() {
