@@ -165,7 +165,9 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
 
     @Override
     public PluginDependencyResult getDependenciesToUpdate(final Plugin existingPlugin, final Plugin newPlugin) {
-        return null;
+        Set<PluginDependencyInformation> dependentPlugins = getDependentPlugins(Collections.singletonList(existingPlugin), true);
+        return PluginDependencyResult
+                .dependenciesToUpdate(dependentPlugins, Collections.<PluginDependencyInformation> emptySet());
     }
 
     @Override

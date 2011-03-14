@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.jar.JarFile;
 
 import com.qcadoo.plugin.api.PersistentPlugin;
 import com.qcadoo.plugin.api.Plugin;
@@ -216,13 +215,13 @@ public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
     }
 
     @Override
-    public URL getResource(String name) {
+    public URL getResource(final String name) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public InputStream getResourceAsStream(String name) {
+    public InputStream getResourceAsStream(final String name) {
         // TODO Auto-generated method stub
         return null;
     }

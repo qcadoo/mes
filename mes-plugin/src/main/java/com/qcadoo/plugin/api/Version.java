@@ -1,6 +1,10 @@
 package com.qcadoo.plugin.api;
 
-public class Version implements Comparable<Version> {
+import java.io.Serializable;
+
+public class Version implements Comparable<Version>, Serializable {
+
+    private static final long serialVersionUID = 2842201303893250557L;
 
     private final int major;
 

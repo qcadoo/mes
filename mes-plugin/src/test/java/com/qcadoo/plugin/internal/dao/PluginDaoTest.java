@@ -16,18 +16,19 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.plugin.api.PersistentPlugin;
+import com.qcadoo.plugin.internal.DefaultPersistentPlugin;
 
 public class PluginDaoTest {
 
     private DefaultPluginDao pluginDao;
 
-    private SessionFactory sessionFactory = mock(SessionFactory.class);
+    private final SessionFactory sessionFactory = mock(SessionFactory.class);
 
-    private PersistentPlugin plugin1 = mock(PersistentPlugin.class);
+    private final PersistentPlugin plugin1 = mock(PersistentPlugin.class);
 
-    private PersistentPlugin plugin2 = mock(PersistentPlugin.class);
+    private final PersistentPlugin plugin2 = mock(PersistentPlugin.class);
 
-    private Session session = mock(Session.class);
+    private final Session session = mock(Session.class);
 
     @Before
     public void init() {
@@ -45,7 +46,7 @@ public class PluginDaoTest {
         pluginDao.save(plugin1);
 
         // then
-        verify(session).save(plugin1);
+        verify(session).save(DefaultPersistentPlugin.class.getCanonicalName(), plugin1);
     }
 
     @Test
@@ -56,14 +57,14 @@ public class PluginDaoTest {
         pluginDao.delete(plugin1);
 
         // then
-        verify(session).delete(plugin1);
+        verify(session).delete(DefaultPersistentPlugin.class.getCanonicalName(), plugin1);
     }
 
     @Test
     public void shouldListPlugin() throws Exception {
         // given
         Criteria criteria = mock(Criteria.class);
-        given(session.createCriteria(PersistentPlugin.class)).willReturn(criteria);
+        given(session.createCriteria(DefaultPersistentPlugin.class)).willReturn(criteria);
         given(criteria.list()).willReturn(Lists.newArrayList(plugin1, plugin2));
 
         // when

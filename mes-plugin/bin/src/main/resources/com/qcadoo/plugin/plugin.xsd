@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.qcadoo.com/plugin" xmlns="http://www.qcadoo.com/plugin" elementFormDefault="qualified">
+
+	<xs:element name="plugin">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="information" type="information" minOccurs="1" maxOccurs="1" />
+				<xs:element name="dependencies" type="dependencies" minOccurs="0" maxOccurs="1" />
+				<xs:element name="modules" type="modules" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>	
+			<xs:attribute name="plugin" type="identifier" use="required" />
+			<xs:attribute name="version" type="version" use="required" />
+			<xs:attribute name="system" type="xs:boolean" use="optional" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="information">
+		<xs:all>
+			<xs:element name="name" type="notEmptyString" minOccurs="1" maxOccurs="1" />
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
+			<xs:element name="vendor" type="vendorType" minOccurs="0" maxOccurs="1" />
+		</xs:all>
+	</xs:complexType>
+
+	<xs:complexType name="vendorType">
+		<xs:all>
+			<xs:element name="name" type="notEmptyString" minOccurs="1" maxOccurs="1" />
+			<xs:element name="url" type="xs:string" minOccurs="0" maxOccurs="1" />
+		</xs:all>
+	</xs:complexType>
+	
+	<xs:complexType name="dependencies">
+		<xs:sequence>
+			<xs:element name="dependency" type="dependency" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="dependency">
+		<xs:all>
+			<xs:element name="plugin" type="identifier" minOccurs="1" maxOccurs="1" />
+			<xs:element name="version" type="dependencyVersion" minOccurs="0" maxOccurs="1" />
+		</xs:all>
+	</xs:complexType>
+	
+	<xs:complexType name="modules">
+		<xs:sequence>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="identifier">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-z][a-zA-Z0-9]*" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="version">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]+.[0-9]+.[0-9]+" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="dependencyVersion">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="([0-9]+.[0-9]+.[0-9]+)|((\[|\()[0-9]+.[0-9]+.[0-9]+)|([0-9]+.[0-9]+.[0-9]+(\)|\]))|((\[|\()[0-9]+.[0-9]+.[0-9]+,[0-9]+.[0-9]+.[0-9]+(\]|\)))" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="notEmptyString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>
