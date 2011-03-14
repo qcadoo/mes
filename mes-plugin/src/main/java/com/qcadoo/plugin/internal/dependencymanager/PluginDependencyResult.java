@@ -42,9 +42,9 @@ public final class PluginDependencyResult {
         return dependenciesToDisableUnsatisfiedAfterUpdate;
     }
 
-    public static PluginDependencyResult dependenciesToEnable(final Set<PluginDependencyInformation> disabledDependencies) {
+    public static PluginDependencyResult dependenciesToEnable(final Set<PluginDependencyInformation> dependenciesToEnable) {
         PluginDependencyResult result = new PluginDependencyResult();
-        result.setDisabledDependencies(disabledDependencies);
+        result.setDependenciesToEnable(dependenciesToEnable);
         return result;
     }
 
@@ -58,15 +58,23 @@ public final class PluginDependencyResult {
         return result;
     }
 
-    public static PluginDependencyResult dependenciesToDisable(final Set<PluginDependencyInformation> enabledDependencies) {
+    public static PluginDependencyResult dependenciesToDisable(final Set<PluginDependencyInformation> dependenciesToDisable) {
         PluginDependencyResult result = new PluginDependencyResult();
-        result.setEnabledDependencies(enabledDependencies);
+        result.setDependenciesToDisable(dependenciesToDisable);
         return result;
     }
 
-    public static PluginDependencyResult dependenciesToUninstall(final Set<PluginDependencyInformation> uninstallDependencies) {
+    public static PluginDependencyResult dependenciesToUninstall(final Set<PluginDependencyInformation> dependenciesToUninstall) {
         PluginDependencyResult result = new PluginDependencyResult();
-        result.setDependenciesToUninstall(uninstallDependencies);
+        result.setDependenciesToUninstall(dependenciesToUninstall);
+        return result;
+    }
+
+    public static PluginDependencyResult dependenciesToUpdate(final Set<PluginDependencyInformation> dependenciesToDisable,
+            final Set<PluginDependencyInformation> dependenciesToDisableUnsatisfiedAfterUpdate) {
+        PluginDependencyResult result = new PluginDependencyResult();
+        result.setDependenciesToDisable(dependenciesToDisable);
+        result.setDependenciesToDisableUnsatisfiedAfterUpdate(dependenciesToDisableUnsatisfiedAfterUpdate);
         return result;
     }
 
@@ -78,35 +86,35 @@ public final class PluginDependencyResult {
 
     public boolean isDependenciesSatisfied() {
         return dependenciesToEnable.isEmpty() && unsatisfiedDependencies.isEmpty() && dependenciesToDisable.isEmpty()
-                && !isCyclic();
+                && dependenciesToUninstall.isEmpty() && dependenciesToDisableUnsatisfiedAfterUpdate.isEmpty() && !isCyclic();
     }
 
     public boolean isCyclic() {
         return cycleExists;
     }
 
-    private void setDependenciesToUninstall(Set<PluginDependencyInformation> dependenciesToUninstall) {
+    private void setDependenciesToUninstall(final Set<PluginDependencyInformation> dependenciesToUninstall) {
         this.dependenciesToUninstall = dependenciesToUninstall;
     }
 
-    private void setCycleExists(boolean cycleExists) {
+    private void setCycleExists(final boolean cycleExists) {
         this.cycleExists = cycleExists;
     }
 
-    private void setDisabledDependencies(Set<PluginDependencyInformation> disabledDependencies) {
-        this.dependenciesToEnable = disabledDependencies;
+    private void setDependenciesToEnable(final Set<PluginDependencyInformation> dependenciesToEnable) {
+        this.dependenciesToEnable = dependenciesToEnable;
     }
 
-    private void setUnsatisfiedDependencies(Set<PluginDependencyInformation> unsatisfiedDependencies) {
+    private void setUnsatisfiedDependencies(final Set<PluginDependencyInformation> unsatisfiedDependencies) {
         this.unsatisfiedDependencies = unsatisfiedDependencies;
     }
 
-    private void setEnabledDependencies(Set<PluginDependencyInformation> enabledDependencies) {
-        this.dependenciesToDisable = enabledDependencies;
+    private void setDependenciesToDisable(final Set<PluginDependencyInformation> dependenciesToDisable) {
+        this.dependenciesToDisable = dependenciesToDisable;
     }
 
     private void setDependenciesToDisableUnsatisfiedAfterUpdate(
-            Set<PluginDependencyInformation> dependenciesToDisableUnsatisfiedAfterUpdate) {
+            final Set<PluginDependencyInformation> dependenciesToDisableUnsatisfiedAfterUpdate) {
         this.dependenciesToDisableUnsatisfiedAfterUpdate = dependenciesToDisableUnsatisfiedAfterUpdate;
     }
 }
