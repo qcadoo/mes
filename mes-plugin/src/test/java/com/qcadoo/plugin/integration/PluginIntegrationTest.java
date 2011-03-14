@@ -120,7 +120,7 @@ public class PluginIntegrationTest {
 
         // then
         assertFalse(result.isSuccess());
-        assertEquals(1, result.getPluginDependencyResult().getEnabledDependencies().size());
+        assertEquals(1, result.getPluginDependencyResult().getDependenciesToDisable().size());
     }
 
 }
