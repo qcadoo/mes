@@ -163,10 +163,10 @@ public final class DefaultPluginManager implements PluginManager {
             plugins.add(plugin);
         }
 
-        PluginDependencyResult pluginDependencyResult = pluginDependencyManager.getDependenciesToDisable(plugins);
+        PluginDependencyResult pluginDependencyResult = pluginDependencyManager.getDependenciesToUninstall(plugins);
 
-        if (!pluginDependencyResult.isDependenciesSatisfied() && !pluginDependencyResult.getDependenciesToDisable().isEmpty()) {
-            return PluginOperationResult.enabledDependencies(pluginDependencyResult);
+        if (!pluginDependencyResult.isDependenciesSatisfied() && !pluginDependencyResult.getDependenciesToUninstall().isEmpty()) {
+            return PluginOperationResult.dependenciesToUninstall(pluginDependencyResult);
         }
 
         boolean shouldRestart = false;

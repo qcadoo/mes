@@ -74,6 +74,10 @@ public class PluginOperationResult {
         return new PluginOperationResult(PluginOperationStatus.ENABLED_DEPENDENCIES, pluginDependencyResult);
     }
 
+    public static PluginOperationResult dependenciesToUninstall(final PluginDependencyResult pluginDependencyResult) {
+        return new PluginOperationResult(PluginOperationStatus.DEPENDENCIES_TO_UNINSTALL, pluginDependencyResult);
+    }
+
     public boolean isSuccess() {
         switch (status) {
             case SUCCESS:
