@@ -10,6 +10,7 @@ import java.io.File;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -64,24 +65,27 @@ public class PluginIntegrationTest {
     public void shouldHavePlugins() throws Exception {
         // then
         assertEquals(3, pluginAccessor.getPlugins().size());
-        assertEquals(0, pluginAccessor.getEnabledPlugins().size());
+        assertEquals(3, pluginAccessor.getEnabledPlugins().size());
         assertNotNull(pluginAccessor.getPlugin("plugin1"));
         assertNotNull(pluginAccessor.getPlugin("plugin2"));
         assertNotNull(pluginAccessor.getPlugin("plugin3"));
-        assertNull(pluginAccessor.getEnabledPlugin("plugin1"));
-        assertNull(pluginAccessor.getEnabledPlugin("plugin2"));
-        assertNull(pluginAccessor.getEnabledPlugin("plugin3"));
+        assertNotNull(pluginAccessor.getEnabledPlugin("plugin1"));
+        assertNotNull(pluginAccessor.getEnabledPlugin("plugin2"));
+        assertNotNull(pluginAccessor.getEnabledPlugin("plugin3"));
     }
 
     @Test
     public void shouldEnablePlugin() throws Exception {
+        // given
+        pluginManager.disablePlugin("plugin1", "plugin2");
+
         // when
         PluginOperationResult result = pluginManager.enablePlugin("plugin1");
 
         // then
         assertTrue(result.isSuccess());
         assertFalse(result.isRestartNeccessary());
-        assertEquals(1, pluginAccessor.getEnabledPlugins().size());
+        assertEquals(2, pluginAccessor.getEnabledPlugins().size());
         assertNotNull(pluginAccessor.getEnabledPlugin("plugin1"));
         assertNull(pluginAccessor.getEnabledPlugin("plugin2"));
     }
@@ -89,7 +93,7 @@ public class PluginIntegrationTest {
     @Test
     public void shouldNotEnablePluginWithDisabledDependencies() throws Exception {
         // given
-        System.out.println(pluginManager.disablePlugin("plugin1").getStatus());
+        pluginManager.disablePlugin("plugin1", "plugin2");
 
         // when
         PluginOperationResult result = pluginManager.enablePlugin("plugin2");
@@ -169,8 +173,9 @@ public class PluginIntegrationTest {
         assertEquals(PluginOperationStatus.SYSTEM_PLUGIN_DISABLING, result.getStatus());
     }
 
-    @Test
-    public void shouldname() throws Exception {
+    // @Test
+    @Ignore
+    public void shouldInstallPlugin() throws Exception {
         // given
         JarPluginArtifact artifact = new JarPluginArtifact(new File(
                 "src/test/resources/com/qcadoo/plugin/integration/plugin4.jar"));
