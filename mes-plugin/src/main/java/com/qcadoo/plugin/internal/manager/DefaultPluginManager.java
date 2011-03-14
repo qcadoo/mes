@@ -211,7 +211,7 @@ public final class DefaultPluginManager implements PluginManager {
             plugin = pluginDescriptorParser.parse(pluginResource);
         } catch (PluginException e) {
             try {
-                pluginFileManager.uninstallPlugin(pluginResource.getFile().getAbsolutePath());
+                pluginFileManager.uninstallPlugin(pluginResource.getFile().getName());
             } catch (IOException e1) {
                 LOG.warn("error while uninstaling plugin: " + e1.getMessage());
             }

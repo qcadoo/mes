@@ -5,13 +5,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.io.File;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -43,8 +41,8 @@ public class PluginIntegrationTest {
 
     @Before
     public void init() throws Exception {
-        File tmpPlugins = folder.newFolder("tmpPlugins");
-        File plugins = folder.newFolder("plugins");
+        new File("target/plugins").mkdir();
+        new File("target/tmpPlugins").mkdir();
 
         applicationContext = new ClassPathXmlApplicationContext("com/qcadoo/plugin/integration/spring.xml");
         applicationContext.registerShutdownHook();
@@ -53,13 +51,13 @@ public class PluginIntegrationTest {
         pluginAccessor = applicationContext.getBean(PluginAccessor.class);
         pluginManager = applicationContext.getBean(PluginManager.class);
         pluginFileManager = applicationContext.getBean(PluginFileManager.class);
-        setField(pluginFileManager, "pluginsPath", plugins.getAbsolutePath());
-        setField(pluginFileManager, "pluginsTmpPath", tmpPlugins.getAbsolutePath());
     }
 
     @After
     public void destroy() throws Exception {
         applicationContext.destroy();
+        // deleteDirectory(new File("target/plugins"));
+        // deleteDirectory(new File("target/tmpPlugins"));
     }
 
     @Test
@@ -171,12 +169,11 @@ public class PluginIntegrationTest {
         assertEquals(PluginOperationStatus.SYSTEM_PLUGIN_DISABLING, result.getStatus());
     }
 
-    // @Test
-    @Ignore
+    @Test
     public void shouldname() throws Exception {
         // given
         JarPluginArtifact artifact = new JarPluginArtifact(new File(
-                "src/test/resources/com/qcadoo/plugin/integration/plugin4.zip"));
+                "src/test/resources/com/qcadoo/plugin/integration/plugin4.jar"));
 
         // when
         PluginOperationResult result = pluginManager.installPlugin(artifact);
