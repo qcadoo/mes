@@ -2,6 +2,7 @@ package com.qcadoo.plugin.internal.accessor;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,18 +39,30 @@ public final class DefaultPluginAccessor implements PluginAccessor {
     @Autowired
     private ModuleFactoryAccessor moduleFactoryAccessor;
 
-    private final Map<String, Plugin> enabledPlugins = new HashMap<String, Plugin>();
-
     private final Map<String, Plugin> plugins = new HashMap<String, Plugin>();
 
     @Override
-    public PersistentPlugin getEnabledPlugin(final String identifier) {
-        return enabledPlugins.get(identifier);
+    public Plugin getEnabledPlugin(final String identifier) {
+        Plugin plugin = plugins.get(identifier);
+
+        if (plugin.hasState(PluginState.ENABLED)) {
+            return plugin;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Collection<Plugin> getEnabledPlugins() {
-        return enabledPlugins.values();
+        Set<Plugin> enabledPlugins = new HashSet<Plugin>();
+
+        for (Plugin plugin : plugins.values()) {
+            if (plugin.hasState(PluginState.ENABLED)) {
+                enabledPlugins.add(plugin);
+            }
+        }
+
+        return enabledPlugins;
     }
 
     @Override
@@ -84,6 +97,7 @@ public final class DefaultPluginAccessor implements PluginAccessor {
             } else {
                 plugin.changeStateTo(PluginState.DISABLED);
             }
+
             if (existingPlugin == null || plugin.compareVersion(existingPlugin) > 0) {
                 pluginDao.save(plugin);
             } else if (plugin.compareVersion(existingPlugin) < 0) {
@@ -93,10 +107,6 @@ public final class DefaultPluginAccessor implements PluginAccessor {
             LOG.info("Registering plugin " + plugin);
 
             plugins.put(plugin.getIdentifier(), plugin);
-
-            if (plugin.hasState(PluginState.ENABLED)) {
-                enabledPlugins.put(plugin.getIdentifier(), plugin);
-            }
         }
         for (PersistentPlugin databasePlugin : pluginsFromDatabase) {
             if (databasePlugin.hasState(PluginState.TEMPORARY)) {

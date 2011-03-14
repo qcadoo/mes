@@ -5,12 +5,10 @@ import java.io.IOException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.stereotype.Component;
 
 import com.qcadoo.model.internal.api.Constants;
 import com.qcadoo.model.internal.api.ModelXmlResolver;
 
-@Component
 public final class ModelXmlResolverImpl implements ModelXmlResolver {
 
     private final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
@@ -18,7 +16,6 @@ public final class ModelXmlResolverImpl implements ModelXmlResolver {
     @Override
     public Resource[] getResources() {
         try {
-            // TODO after implementing plugins - it should return model.xml after ALL plugin's modyfications
             return resolver.getResources(Constants.RESOURCE_PATTERN);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to find classpath resources for " + Constants.RESOURCE_PATTERN, e);

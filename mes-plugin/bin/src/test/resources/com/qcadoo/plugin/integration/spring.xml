@@ -42,10 +42,6 @@
 	
 	<tx:annotation-driven />
 	
-	<bean class="com.qcadoo.plugin.internal.descriptorresolver.DefaultPluginDescriptorResolver">
-		<property name="descriptor" value="com/qcadoo/plugin/integration/*/plugin.xml" />
-	</bean>
-	
 	<bean class="com.qcadoo.plugin.internal.module.DefaultModuleFactoryAccessor">
 		<property name="moduleFactories">
 			<list>
