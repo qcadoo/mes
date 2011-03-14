@@ -141,8 +141,7 @@ public class PluginIntegrationTest {
         assertEquals(PluginOperationStatus.SUCCESS, result.getStatus());
     }
 
-    // @Test
-    @Ignore
+    @Test
     public void shouldNotDisablePluginWithEnabledDependency() throws Exception {
         // given
         PluginOperationResult result1 = pluginManager.enablePlugin("plugin1", "plugin2");
