@@ -80,7 +80,7 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
                         return nextLevelDependencioesResult;
                     }
 
-                    disabledDependencies.addAll(nextLevelDependencioesResult.getDisabledDependencies());
+                    disabledDependencies.addAll(nextLevelDependencioesResult.getDependenciesToEnable());
                 }
 
             }
@@ -105,12 +105,15 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
             }
         }
 
-        return PluginDependencyResult.disabledDependencies(disabledDependencies);
+        return PluginDependencyResult.dependenciesToEnable(disabledDependencies);
     }
 
     @Override
     public PluginDependencyResult getDependenciesToDisable(final List<Plugin> plugins) {
+        return PluginDependencyResult.dependenciesToDisable(getDependentPlugins(plugins, false));
+    }
 
+    private Set<PluginDependencyInformation> getDependentPlugins(final List<Plugin> plugins, final boolean includeDisabled) {
         Collection<Plugin> systemPlugins = pluginAccessor.getPlugins();
 
         List<Plugin> enabledDependencyPlugins = new LinkedList<Plugin>();
@@ -118,8 +121,14 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
         Set<String> argumentPluginIdentifiersSet = getArgumentIdentifiersSet(plugins);
 
         for (Plugin plugin : systemPlugins) {
-            if (!PluginState.ENABLED.equals(plugin.getPluginState())) {
-                continue;
+            if (includeDisabled) {
+                if (PluginState.TEMPORARY.equals(plugin.getPluginState())) {
+                    continue;
+                }
+            } else {
+                if (!PluginState.ENABLED.equals(plugin.getPluginState())) {
+                    continue;
+                }
             }
             for (PersistentPlugin pluginToDisable : plugins) {
 
@@ -136,7 +145,7 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
 
         if (!enabledDependencyPlugins.isEmpty()) {
             PluginDependencyResult nextLevelDependencioesResult = getDependenciesToDisable(enabledDependencyPlugins);
-            enabledDependencies.addAll(nextLevelDependencioesResult.getEnabledDependencies());
+            enabledDependencies.addAll(nextLevelDependencioesResult.getDependenciesToDisable());
         }
 
         Iterator<PluginDependencyInformation> dependencyInfoIterator = enabledDependencies.iterator();
@@ -146,7 +155,17 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
             }
         }
 
-        return PluginDependencyResult.enabledDependencies(enabledDependencies);
+        return enabledDependencies;
+    }
+
+    @Override
+    public PluginDependencyResult getDependenciesToUninstall(final List<Plugin> plugins) {
+        return PluginDependencyResult.dependenciesToUninstall(getDependentPlugins(plugins, true));
+    }
+
+    @Override
+    public PluginDependencyResult getDependenciesToUpdate(final Plugin existingPlugin, final Plugin newPlugin) {
+        return null;
     }
 
     @Override

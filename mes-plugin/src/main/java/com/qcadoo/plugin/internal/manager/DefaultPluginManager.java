@@ -74,7 +74,7 @@ public final class DefaultPluginManager implements PluginManager {
                 return PluginOperationResult.unsatisfiedDependencies(pluginDependencyResult);
             }
 
-            if (!pluginDependencyResult.getDisabledDependencies().isEmpty()) {
+            if (!pluginDependencyResult.getDependenciesToEnable().isEmpty()) {
                 return PluginOperationResult.disabledDependencies(pluginDependencyResult);
             }
         }
@@ -135,7 +135,7 @@ public final class DefaultPluginManager implements PluginManager {
 
         PluginDependencyResult pluginDependencyResult = pluginDependencyManager.getDependenciesToDisable(plugins);
 
-        if (!pluginDependencyResult.isDependenciesSatisfied() && !pluginDependencyResult.getEnabledDependencies().isEmpty()) {
+        if (!pluginDependencyResult.isDependenciesSatisfied() && !pluginDependencyResult.getDependenciesToDisable().isEmpty()) {
             return PluginOperationResult.enabledDependencies(pluginDependencyResult);
         }
 
@@ -165,7 +165,7 @@ public final class DefaultPluginManager implements PluginManager {
 
         PluginDependencyResult pluginDependencyResult = pluginDependencyManager.getDependenciesToDisable(plugins);
 
-        if (!pluginDependencyResult.isDependenciesSatisfied() && !pluginDependencyResult.getEnabledDependencies().isEmpty()) {
+        if (!pluginDependencyResult.isDependenciesSatisfied() && !pluginDependencyResult.getDependenciesToDisable().isEmpty()) {
             return PluginOperationResult.enabledDependencies(pluginDependencyResult);
         }
 
@@ -267,7 +267,7 @@ public final class DefaultPluginManager implements PluginManager {
                         return PluginOperationResult.unsatisfiedDependencies(pluginDependencyResult);
                     }
 
-                    if (!pluginDependencyResult.getDisabledDependencies().isEmpty()) {
+                    if (!pluginDependencyResult.getDependenciesToEnable().isEmpty()) {
                         pluginFileManager.uninstallPlugin(plugin.getFilename());
                         return PluginOperationResult.disabledDependencies(pluginDependencyResult);
                     }
@@ -281,7 +281,7 @@ public final class DefaultPluginManager implements PluginManager {
                         .getDependenciesToDisable(newArrayList(plugin));
                 List<Plugin> dependencyPlugins = new ArrayList<Plugin>();
                 for (PluginDependencyInformation pluginDependencyInformation : installPluginDependencyResult
-                        .getEnabledDependencies()) {
+                        .getDependenciesToDisable()) {
                     dependencyPlugins.add(pluginAccessor.getPlugin(pluginDependencyInformation.getDependencyPluginIdentifier()));
                 }
                 dependencyPlugins = pluginDependencyManager.sortPluginsInDependencyOrder(dependencyPlugins);

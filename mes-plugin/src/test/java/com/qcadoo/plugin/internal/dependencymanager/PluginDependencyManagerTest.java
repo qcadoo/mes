@@ -82,9 +82,9 @@ public class PluginDependencyManagerTest {
 
         // then
         assertFalse(result.isCyclic());
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     @Test
@@ -101,10 +101,10 @@ public class PluginDependencyManagerTest {
 
         // then
         assertFalse(result.isCyclic());
-        assertEquals(1, result.getDisabledDependencies().size());
-        assertTrue(result.getDisabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
+        assertEquals(1, result.getDependenciesToEnable().size());
+        assertTrue(result.getDependenciesToEnable().contains(new PluginDependencyInformation("testPlugin2")));
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     @Test
@@ -130,11 +130,11 @@ public class PluginDependencyManagerTest {
 
         // then
         assertFalse(result.isCyclic());
-        assertEquals(2, result.getDisabledDependencies().size());
-        assertTrue(result.getDisabledDependencies().contains(new PluginDependencyInformation("testPlugin1")));
-        assertTrue(result.getDisabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
+        assertEquals(2, result.getDependenciesToEnable().size());
+        assertTrue(result.getDependenciesToEnable().contains(new PluginDependencyInformation("testPlugin1")));
+        assertTrue(result.getDependenciesToEnable().contains(new PluginDependencyInformation("testPlugin2")));
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     @Test
@@ -164,12 +164,12 @@ public class PluginDependencyManagerTest {
 
         // then
         assertFalse(result.isCyclic());
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(2, result.getUnsatisfiedDependencies().size());
         assertTrue(result.getUnsatisfiedDependencies().contains(
                 new PluginDependencyInformation("testPlugin3", new VersionOfDependency("[2"))));
         assertTrue(result.getUnsatisfiedDependencies().contains(new PluginDependencyInformation("testPlugin4")));
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     @Test
@@ -200,11 +200,11 @@ public class PluginDependencyManagerTest {
 
         // then
         assertFalse(result.isCyclic());
-        assertEquals(2, result.getDisabledDependencies().size());
-        assertTrue(result.getDisabledDependencies().contains(new PluginDependencyInformation("testPlugin3")));
-        assertTrue(result.getDisabledDependencies().contains(new PluginDependencyInformation("testPlugin4")));
+        assertEquals(2, result.getDependenciesToEnable().size());
+        assertTrue(result.getDependenciesToEnable().contains(new PluginDependencyInformation("testPlugin3")));
+        assertTrue(result.getDependenciesToEnable().contains(new PluginDependencyInformation("testPlugin4")));
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     @Test
@@ -234,10 +234,10 @@ public class PluginDependencyManagerTest {
 
         // then
         assertFalse(result.isCyclic());
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(1, result.getUnsatisfiedDependencies().size());
         assertTrue(result.getUnsatisfiedDependencies().contains(new PluginDependencyInformation("testPlugin4")));
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     @Test
@@ -262,11 +262,11 @@ public class PluginDependencyManagerTest {
 
         // then
         assertFalse(result.isCyclic());
-        assertEquals(2, result.getDisabledDependencies().size());
-        assertTrue(result.getDisabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
-        assertTrue(result.getDisabledDependencies().contains(new PluginDependencyInformation("testPlugin3")));
+        assertEquals(2, result.getDependenciesToEnable().size());
+        assertTrue(result.getDependenciesToEnable().contains(new PluginDependencyInformation("testPlugin2")));
+        assertTrue(result.getDependenciesToEnable().contains(new PluginDependencyInformation("testPlugin3")));
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     @Test
@@ -294,11 +294,11 @@ public class PluginDependencyManagerTest {
 
         // then
         assertFalse(result.isCyclic());
-        assertEquals(2, result.getDisabledDependencies().size());
-        assertTrue(result.getDisabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
-        assertTrue(result.getDisabledDependencies().contains(new PluginDependencyInformation("testPlugin4")));
+        assertEquals(2, result.getDependenciesToEnable().size());
+        assertTrue(result.getDependenciesToEnable().contains(new PluginDependencyInformation("testPlugin2")));
+        assertTrue(result.getDependenciesToEnable().contains(new PluginDependencyInformation("testPlugin4")));
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     @Test
@@ -327,9 +327,9 @@ public class PluginDependencyManagerTest {
 
         // then
         assertTrue(result.isCyclic());
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     @Test
@@ -357,9 +357,9 @@ public class PluginDependencyManagerTest {
 
         // then
         assertTrue(result.isCyclic());
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     //
@@ -388,9 +388,9 @@ public class PluginDependencyManagerTest {
 
         // then
         assertTrue(result.isCyclic());
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     @Test
@@ -424,9 +424,9 @@ public class PluginDependencyManagerTest {
 
         // then
         assertTrue(result.isCyclic());
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     @Test
@@ -438,9 +438,9 @@ public class PluginDependencyManagerTest {
         PluginDependencyResult result = manager.getDependenciesToDisable(singletonList(plugin1));
 
         // then
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     @Test
@@ -459,10 +459,10 @@ public class PluginDependencyManagerTest {
         PluginDependencyResult result = manager.getDependenciesToDisable(singletonList(plugin1));
 
         // then
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(1, result.getEnabledDependencies().size());
-        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
+        assertEquals(1, result.getDependenciesToDisable().size());
+        assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin2")));
     }
 
     @Test
@@ -488,12 +488,12 @@ public class PluginDependencyManagerTest {
         PluginDependencyResult result = manager.getDependenciesToDisable(singletonList(plugin1));
 
         // then
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(3, result.getEnabledDependencies().size());
-        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
-        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin3")));
-        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin4")));
+        assertEquals(3, result.getDependenciesToDisable().size());
+        assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin2")));
+        assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin3")));
+        assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin4")));
     }
 
     @Test
@@ -519,10 +519,10 @@ public class PluginDependencyManagerTest {
         PluginDependencyResult result = manager.getDependenciesToDisable(singletonList(plugin1));
 
         // then
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(1, result.getEnabledDependencies().size());
-        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin3")));
+        assertEquals(1, result.getDependenciesToDisable().size());
+        assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin3")));
     }
 
     @Test
@@ -546,9 +546,9 @@ public class PluginDependencyManagerTest {
         PluginDependencyResult result = manager.getDependenciesToDisable(argumentPlugins);
 
         // then
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(0, result.getEnabledDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
     }
 
     @Test
@@ -574,12 +574,12 @@ public class PluginDependencyManagerTest {
         PluginDependencyResult result = manager.getDependenciesToDisable(singletonList(plugin1));
 
         // then
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(3, result.getEnabledDependencies().size());
-        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
-        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin3")));
-        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin4")));
+        assertEquals(3, result.getDependenciesToDisable().size());
+        assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin2")));
+        assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin3")));
+        assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin4")));
     }
 
     @Test
@@ -606,10 +606,10 @@ public class PluginDependencyManagerTest {
         PluginDependencyResult result = manager.getDependenciesToDisable(singletonList(plugin1));
 
         // then
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(1, result.getEnabledDependencies().size());
-        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
+        assertEquals(1, result.getDependenciesToDisable().size());
+        assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin2")));
     }
 
     @Test
@@ -639,11 +639,11 @@ public class PluginDependencyManagerTest {
         PluginDependencyResult result = manager.getDependenciesToDisable(argumentPlugins);
 
         // then
-        assertEquals(0, result.getDisabledDependencies().size());
+        assertEquals(0, result.getDependenciesToEnable().size());
         assertEquals(0, result.getUnsatisfiedDependencies().size());
-        assertEquals(2, result.getEnabledDependencies().size());
-        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin2")));
-        assertTrue(result.getEnabledDependencies().contains(new PluginDependencyInformation("testPlugin4")));
+        assertEquals(2, result.getDependenciesToDisable().size());
+        assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin2")));
+        assertTrue(result.getDependenciesToDisable().contains(new PluginDependencyInformation("testPlugin4")));
     }
 
     @Test
@@ -798,5 +798,41 @@ public class PluginDependencyManagerTest {
         assertEquals(p1, sortedPlugins.get(1));
         assertEquals(p5, sortedPlugins.get(2));
         assertEquals(p4, sortedPlugins.get(3));
+    }
+
+    @Test
+    public void shouldCheckDependenciesDependenciesAndReturnMultipleDependenciesForUninstallWhenMultiplePlugins()
+            throws Exception {
+        // given
+        given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
+        given(plugin2.getPluginState()).willReturn(PluginState.DISABLED);
+
+        given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
+        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+
+        given(plugin4.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo3));
+        given(plugin4.getPluginState()).willReturn(PluginState.DISABLED);
+
+        Set<Plugin> plugins = new HashSet<Plugin>();
+        plugins.add(plugin1);
+        plugins.add(plugin2);
+        plugins.add(plugin3);
+        plugins.add(plugin4);
+        given(pluginAccessor.getPlugins()).willReturn(plugins);
+
+        List<Plugin> argumentPlugins = new ArrayList<Plugin>();
+        argumentPlugins.add(plugin1);
+        argumentPlugins.add(plugin3);
+
+        // when
+        PluginDependencyResult result = manager.getDependenciesToUninstall(argumentPlugins);
+
+        // then
+        assertEquals(0, result.getDependenciesToEnable().size());
+        assertEquals(0, result.getUnsatisfiedDependencies().size());
+        assertEquals(0, result.getDependenciesToDisable().size());
+        assertEquals(2, result.getDependenciesToUninstall().size());
+        assertTrue(result.getDependenciesToUninstall().contains(new PluginDependencyInformation("testPlugin2")));
+        assertTrue(result.getDependenciesToUninstall().contains(new PluginDependencyInformation("testPlugin4")));
     }
 }
