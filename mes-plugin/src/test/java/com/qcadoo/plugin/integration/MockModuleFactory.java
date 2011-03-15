@@ -6,9 +6,11 @@ import com.qcadoo.plugin.internal.api.ModuleFactory;
 
 public class MockModuleFactory implements ModuleFactory<MockModule> {
 
+    public static int postInitializeCallCount = 0;
+
     @Override
     public void postInitialize() {
-        System.out.println("ModuleFactory postInitialize()");
+        postInitializeCallCount++;
     }
 
     @Override
@@ -19,6 +21,10 @@ public class MockModuleFactory implements ModuleFactory<MockModule> {
     @Override
     public String getIdentifier() {
         return "mock";
+    }
+
+    public static int getPostInitializeCallCount() {
+        return postInitializeCallCount;
     }
 
 }
