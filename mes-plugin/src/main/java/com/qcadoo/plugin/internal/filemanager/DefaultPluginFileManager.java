@@ -13,8 +13,6 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.plugin.internal.PluginException;
@@ -26,10 +24,10 @@ public final class DefaultPluginFileManager implements PluginFileManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPluginFileManager.class);
 
-    @Value("${qcadoo.plugin.pluginsPath}")
+    @Value("#{plugin.pluginsPath}")
     private String pluginsPath;
 
-    @Value("${qcadoo.plugin.pluginsTmpPath}")
+    @Value("#{plugin.pluginsTmpPath}")
     private String pluginsTmpPath;
 
     @Override
@@ -55,7 +53,7 @@ public final class DefaultPluginFileManager implements PluginFileManager {
     }
 
     @Override
-    public Resource uploadPlugin(final PluginArtifact pluginArtifact) {
+    public File uploadPlugin(final PluginArtifact pluginArtifact) {
         InputStream input = pluginArtifact.getInputStream();
         File pluginFile = new File(pluginsTmpPath + getProperty("file.separator") + pluginArtifact.getName());
         OutputStream output = null;
@@ -71,7 +69,7 @@ public final class DefaultPluginFileManager implements PluginFileManager {
             IOUtils.closeQuietly(input);
             IOUtils.closeQuietly(output);
         }
-        return new FileSystemResource(pluginFile);
+        return pluginFile;
     }
 
     @Override
@@ -91,6 +89,18 @@ public final class DefaultPluginFileManager implements PluginFileManager {
                 }
             }
         }
+    }
+
+    @Override
+    public void renamePlugin(final String source, final String destination) {
+        try {
+            FileUtils.moveFile(new File(pluginsTmpPath + getProperty("file.separator") + source), new File(pluginsTmpPath
+                    + getProperty("file.separator") + destination));
+        } catch (IOException e) {
+            LOG.error("Problem with renaming plugin file - " + e.getMessage());
+            throw new PluginException(e.getMessage(), e);
+        }
+
     }
 
     private boolean checkFileExists(final String key, final String path) {

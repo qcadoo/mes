@@ -15,7 +15,7 @@ public class DefaultPluginServerManager implements PluginServerManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPluginServerManager.class);
 
-    @Value("${qcadoo.plugin.restartCommand}")
+    @Value("#{plugin.restartCommand}")
     private String restartCommand;
 
     @Override

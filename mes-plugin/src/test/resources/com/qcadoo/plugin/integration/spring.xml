@@ -4,7 +4,12 @@
 	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<context:property-placeholder location="classpath:com/qcadoo/plugin/integration/spring.properties" />
+	<util:properties id="plugin">
+		<prop key="restartCommand">cd</prop>
+		<prop key="pluginsPath">target/plugins</prop>
+		<prop key="pluginsTmpPath">target/tmpPlugins</prop>
+		<prop key="descriptors">com/qcadoo/plugin/integration/*/plugin.xml</prop>
+	</util:properties>
 
 	<context:component-scan base-package="com.qcadoo.plugin" />
 

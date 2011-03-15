@@ -50,8 +50,8 @@ public class PluginOperationResult {
         return new PluginOperationResult(PluginOperationStatus.INCORRECT_VERSION_PLUGIN);
     }
 
-    public static PluginOperationResult disabledDependencies(final PluginDependencyResult pluginDependencyResult) {
-        return new PluginOperationResult(PluginOperationStatus.DISABLED_DEPENDENCIES, pluginDependencyResult);
+    public static PluginOperationResult dependenciesToEnable(final PluginDependencyResult pluginDependencyResult) {
+        return new PluginOperationResult(PluginOperationStatus.DEPENDENCIES_TO_ENABLE, pluginDependencyResult);
     }
 
     public static PluginOperationResult unsatisfiedDependencies(final PluginDependencyResult pluginDependencyResult) {
@@ -70,8 +70,8 @@ public class PluginOperationResult {
         return pluginDependencyResult;
     }
 
-    public static PluginOperationResult enabledDependencies(final PluginDependencyResult pluginDependencyResult) {
-        return new PluginOperationResult(PluginOperationStatus.ENABLED_DEPENDENCIES, pluginDependencyResult);
+    public static PluginOperationResult dependenciesToDisable(final PluginDependencyResult pluginDependencyResult) {
+        return new PluginOperationResult(PluginOperationStatus.DEPENDENCIES_TO_DISABLE, pluginDependencyResult);
     }
 
     public static PluginOperationResult dependenciesToUninstall(final PluginDependencyResult pluginDependencyResult) {

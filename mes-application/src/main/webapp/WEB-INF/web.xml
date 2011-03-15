@@ -34,6 +34,7 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
+			/WEB-INF/plugin-context.xml
 			classpath:com/qcadoo/mes/core/root-context.xml
 			classpath*:root-context.xml
 			/WEB-INF/web-context.xml

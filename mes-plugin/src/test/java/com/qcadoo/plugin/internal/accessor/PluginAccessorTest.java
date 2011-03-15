@@ -275,4 +275,75 @@ public class PluginAccessorTest {
         verify(pluginDao).delete(persistentPlugin2);
     }
 
+    @Test
+    public void shouldRemovePlugin() throws Exception {
+        // given
+        Plugin plugin1 = mock(Plugin.class, "plugin1");
+
+        given(plugin1.getIdentifier()).willReturn("identifier1");
+
+        Plugin plugin2 = mock(Plugin.class);
+        given(plugin2.getIdentifier()).willReturn("identifier2");
+
+        given(pluginDescriptorParser.loadPlugins()).willReturn(Sets.newHashSet(plugin1, plugin2));
+
+        given(pluginDao.list()).willReturn(Sets.<PersistentPlugin> newHashSet(plugin1, plugin2));
+
+        pluginAccessor.init();
+
+        // when
+        pluginAccessor.removePlugin(plugin1);
+
+        // then
+        assertEquals(1, pluginAccessor.getPlugins().size());
+        assertThat(pluginAccessor.getPlugins(), hasItems(plugin2));
+    }
+
+    @Test
+    public void shouldSaveNewPlugin() throws Exception {
+        // given
+        Plugin plugin1 = mock(Plugin.class, "plugin1");
+
+        given(plugin1.getIdentifier()).willReturn("identifier1");
+
+        Plugin plugin2 = mock(Plugin.class);
+        given(plugin2.getIdentifier()).willReturn("identifier2");
+
+        given(pluginDescriptorParser.loadPlugins()).willReturn(Sets.newHashSet(plugin1));
+
+        given(pluginDao.list()).willReturn(Sets.<PersistentPlugin> newHashSet(plugin1));
+
+        pluginAccessor.init();
+
+        // when
+        pluginAccessor.savePlugin(plugin2);
+
+        // then
+        assertThat(pluginAccessor.getPlugins(), hasItems(plugin1, plugin2));
+    }
+
+    @Test
+    public void shouldSaveExistingPlugin() throws Exception {
+        // given
+        Plugin plugin1 = mock(Plugin.class, "plugin1");
+
+        given(plugin1.getIdentifier()).willReturn("identifier1");
+
+        Plugin plugin2 = mock(Plugin.class);
+        given(plugin2.getIdentifier()).willReturn("identifier1");
+
+        given(pluginDescriptorParser.loadPlugins()).willReturn(Sets.newHashSet(plugin1));
+
+        given(pluginDao.list()).willReturn(Sets.<PersistentPlugin> newHashSet(plugin1));
+
+        pluginAccessor.init();
+
+        // when
+        pluginAccessor.savePlugin(plugin2);
+
+        // then
+        assertEquals(1, pluginAccessor.getPlugins().size());
+        assertThat(pluginAccessor.getPlugins(), hasItems(plugin2));
+    }
+
 }

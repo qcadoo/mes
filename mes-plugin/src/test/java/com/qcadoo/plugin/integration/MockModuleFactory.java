@@ -8,7 +8,6 @@ public class MockModuleFactory implements ModuleFactory<MockModule> {
 
     @Override
     public void postInitialize() {
-        System.out.println("ModuleFactory postInitialize()");
     }
 
     @Override

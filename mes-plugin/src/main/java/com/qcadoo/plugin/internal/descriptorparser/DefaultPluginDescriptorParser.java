@@ -6,18 +6,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -55,23 +50,25 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
             factory.setValidating(true);
             factory.setNamespaceAware(true);
 
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            schemaFactory.setFeature("http://apache.org/xml/features/validation/schema-full-checking", false);
+            // TODOq
 
-            Schema schema = schemaFactory.newSchema(new StreamSource(new ClassPathResource("com/qcadoo/plugin/plugin.xsd")
-                    .getInputStream()));
-            factory.setSchema(schema);
+            // SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            // schemaFactory.setFeature("http://apache.org/xml/features/validation/schema-full-checking", false);
+            //
+            // Schema schema = schemaFactory.newSchema(new StreamSource(new ClassPathResource("com/qcadoo/plugin/plugin.xsd")
+            // .getInputStream()));
+            // factory.setSchema(schema);
 
             documentBuilder = factory.newDocumentBuilder();
 
             documentBuilder.setErrorHandler(new ValidationErrorHandler());
 
-        } catch (SAXException e) {
-            throw new IllegalStateException("Error while parsing plugin xml schema", e);
+            // } catch (SAXException e) {
+            // throw new IllegalStateException("Error while parsing plugin xml schema", e);
         } catch (ParserConfigurationException e) {
             throw new IllegalStateException("Error while parsing plugin xml schema", e);
-        } catch (IOException e) {
-            throw new IllegalStateException("Error while parsing plugin xml schema", e);
+            // } catch (IOException e) {
+            // throw new IllegalStateException("Error while parsing plugin xml schema", e);
         }
     }
 
