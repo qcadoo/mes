@@ -163,10 +163,10 @@ public final class DefaultPluginManager implements PluginManager {
             plugins.add(plugin);
         }
 
-        PluginDependencyResult pluginDependencyResult = pluginDependencyManager.getDependenciesToDisable(plugins);
+        PluginDependencyResult pluginDependencyResult = pluginDependencyManager.getDependenciesToUninstall(plugins);
 
-        if (!pluginDependencyResult.isDependenciesSatisfied() && !pluginDependencyResult.getDependenciesToDisable().isEmpty()) {
-            return PluginOperationResult.enabledDependencies(pluginDependencyResult);
+        if (!pluginDependencyResult.isDependenciesSatisfied() && !pluginDependencyResult.getDependenciesToUninstall().isEmpty()) {
+            return PluginOperationResult.dependenciesToUninstall(pluginDependencyResult);
         }
 
         boolean shouldRestart = false;
@@ -211,7 +211,7 @@ public final class DefaultPluginManager implements PluginManager {
             plugin = pluginDescriptorParser.parse(pluginResource);
         } catch (PluginException e) {
             try {
-                pluginFileManager.uninstallPlugin(pluginResource.getFile().getAbsolutePath());
+                pluginFileManager.uninstallPlugin(pluginResource.getFile().getName());
             } catch (IOException e1) {
                 LOG.warn("error while uninstaling plugin: " + e1.getMessage());
             }
@@ -281,8 +281,14 @@ public final class DefaultPluginManager implements PluginManager {
                     return PluginOperationResult.cannotInstallPlugin();
                 }
                 shouldRestart = true;
-                PluginDependencyResult installPluginDependencyResult = pluginDependencyManager
-                        .getDependenciesToDisable(newArrayList(plugin));
+                PluginDependencyResult installPluginDependencyResult = pluginDependencyManager.getDependenciesToUpdate(
+                        existingPlugin, plugin);
+
+                if (!installPluginDependencyResult.getDependenciesToDisableUnsatisfiedAfterUpdate().isEmpty()) {
+                    pluginFileManager.uninstallPlugin(plugin.getFilename());
+                    return PluginOperationResult.unsatisfiedDependenciesAfterUpdate(installPluginDependencyResult);
+                }
+
                 List<Plugin> dependencyPlugins = new ArrayList<Plugin>();
                 for (PluginDependencyInformation pluginDependencyInformation : installPluginDependencyResult
                         .getDependenciesToDisable()) {
@@ -293,8 +299,10 @@ public final class DefaultPluginManager implements PluginManager {
                 for (Plugin dependencyPlugin : dependencyPlugins) {
                     dependencyPlugin.changeStateTo(PluginState.DISABLED);
                 }
+
                 existingPlugin.changeStateTo(PluginState.DISABLED);
                 plugin.changeStateTo(PluginState.ENABLING);
+
                 Collections.reverse(dependencyPlugins);
                 for (Plugin dependencyPlugin : dependencyPlugins) {
                     dependencyPlugin.changeStateTo(PluginState.ENABLING);

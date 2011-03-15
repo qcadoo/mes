@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.io.File;
 
@@ -43,8 +42,8 @@ public class PluginIntegrationTest {
 
     @Before
     public void init() throws Exception {
-        File tmpPlugins = folder.newFolder("tmpPlugins");
-        File plugins = folder.newFolder("plugins");
+        new File("target/plugins").mkdir();
+        new File("target/tmpPlugins").mkdir();
 
         applicationContext = new ClassPathXmlApplicationContext("com/qcadoo/plugin/integration/spring.xml");
         applicationContext.registerShutdownHook();
@@ -53,37 +52,40 @@ public class PluginIntegrationTest {
         pluginAccessor = applicationContext.getBean(PluginAccessor.class);
         pluginManager = applicationContext.getBean(PluginManager.class);
         pluginFileManager = applicationContext.getBean(PluginFileManager.class);
-        setField(pluginFileManager, "pluginsPath", plugins.getAbsolutePath());
-        setField(pluginFileManager, "pluginsTmpPath", tmpPlugins.getAbsolutePath());
     }
 
     @After
     public void destroy() throws Exception {
         applicationContext.destroy();
+        // deleteDirectory(new File("target/plugins"));
+        // deleteDirectory(new File("target/tmpPlugins"));
     }
 
     @Test
     public void shouldHavePlugins() throws Exception {
         // then
         assertEquals(3, pluginAccessor.getPlugins().size());
-        assertEquals(0, pluginAccessor.getEnabledPlugins().size());
+        assertEquals(3, pluginAccessor.getEnabledPlugins().size());
         assertNotNull(pluginAccessor.getPlugin("plugin1"));
         assertNotNull(pluginAccessor.getPlugin("plugin2"));
         assertNotNull(pluginAccessor.getPlugin("plugin3"));
-        assertNull(pluginAccessor.getEnabledPlugin("plugin1"));
-        assertNull(pluginAccessor.getEnabledPlugin("plugin2"));
-        assertNull(pluginAccessor.getEnabledPlugin("plugin3"));
+        assertNotNull(pluginAccessor.getEnabledPlugin("plugin1"));
+        assertNotNull(pluginAccessor.getEnabledPlugin("plugin2"));
+        assertNotNull(pluginAccessor.getEnabledPlugin("plugin3"));
     }
 
     @Test
     public void shouldEnablePlugin() throws Exception {
+        // given
+        pluginManager.disablePlugin("plugin1", "plugin2");
+
         // when
         PluginOperationResult result = pluginManager.enablePlugin("plugin1");
 
         // then
         assertTrue(result.isSuccess());
         assertFalse(result.isRestartNeccessary());
-        assertEquals(1, pluginAccessor.getEnabledPlugins().size());
+        assertEquals(2, pluginAccessor.getEnabledPlugins().size());
         assertNotNull(pluginAccessor.getEnabledPlugin("plugin1"));
         assertNull(pluginAccessor.getEnabledPlugin("plugin2"));
     }
@@ -91,7 +93,7 @@ public class PluginIntegrationTest {
     @Test
     public void shouldNotEnablePluginWithDisabledDependencies() throws Exception {
         // given
-        System.out.println(pluginManager.disablePlugin("plugin1").getStatus());
+        pluginManager.disablePlugin("plugin1", "plugin2");
 
         // when
         PluginOperationResult result = pluginManager.enablePlugin("plugin2");
@@ -173,10 +175,10 @@ public class PluginIntegrationTest {
 
     // @Test
     @Ignore
-    public void shouldname() throws Exception {
+    public void shouldInstallPlugin() throws Exception {
         // given
         JarPluginArtifact artifact = new JarPluginArtifact(new File(
-                "src/test/resources/com/qcadoo/plugin/integration/plugin4.zip"));
+                "src/test/resources/com/qcadoo/plugin/integration/plugin4.jar"));
 
         // when
         PluginOperationResult result = pluginManager.installPlugin(artifact);
