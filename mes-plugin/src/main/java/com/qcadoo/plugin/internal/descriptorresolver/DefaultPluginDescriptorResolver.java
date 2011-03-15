@@ -37,6 +37,7 @@ public class DefaultPluginDescriptorResolver implements PluginDescriptorResolver
         try {
             JarFile jar = new JarFile(file);
 
+            // TODO use descriptor field
             JarEntry entry = jar.getJarEntry("plugin.xml");
 
             if (entry == null) {
