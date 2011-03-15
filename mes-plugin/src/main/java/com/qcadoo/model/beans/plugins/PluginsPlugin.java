@@ -1,4 +1,4 @@
-package com.qcadoo.plugin.internal;
+package com.qcadoo.model.beans.plugins;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,11 +14,12 @@ import org.hibernate.annotations.TypeDef;
 import com.qcadoo.plugin.api.PersistentPlugin;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.api.Version;
+import com.qcadoo.plugin.internal.VersionType;
 
 @Entity
 @Table(name = "plugins_plugin")
 @TypeDef(name = "version", defaultForType = Version.class, typeClass = VersionType.class)
-public class DefaultPersistentPlugin implements PersistentPlugin {
+public class PluginsPlugin implements PersistentPlugin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -34,10 +35,10 @@ public class DefaultPersistentPlugin implements PersistentPlugin {
     @Enumerated(EnumType.STRING)
     private PluginState state;
 
-    public DefaultPersistentPlugin() {
+    public PluginsPlugin() {
     }
 
-    public DefaultPersistentPlugin(final String identifier, final PluginState state, final Version version) {
+    public PluginsPlugin(final String identifier, final PluginState state, final Version version) {
         this.identifier = identifier;
         this.version = version;
         this.state = state;
@@ -102,10 +103,10 @@ public class DefaultPersistentPlugin implements PersistentPlugin {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof DefaultPersistentPlugin)) {
+        if (!(obj instanceof PluginsPlugin)) {
             return false;
         }
-        DefaultPersistentPlugin other = (DefaultPersistentPlugin) obj;
+        PluginsPlugin other = (PluginsPlugin) obj;
         if (id == null) {
             if (other.id != null) {
                 return false;

@@ -27,7 +27,7 @@
 		</property>
 		<property name="annotatedClasses">
 			<list>
-				<value>com.qcadoo.plugin.internal.DefaultPersistentPlugin</value>
+				<value>com.qcadoo.model.beans.plugins.PluginsPlugin</value>
 			</list>
 		</property>
 	</bean>

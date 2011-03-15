@@ -15,8 +15,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.model.beans.plugins.PluginsPlugin;
 import com.qcadoo.plugin.api.PersistentPlugin;
-import com.qcadoo.plugin.internal.DefaultPersistentPlugin;
 
 public class PluginDaoTest {
 
@@ -46,7 +46,7 @@ public class PluginDaoTest {
         pluginDao.save(plugin1);
 
         // then
-        verify(session).save(DefaultPersistentPlugin.class.getCanonicalName(), plugin1);
+        verify(session).save(PluginsPlugin.class.getCanonicalName(), plugin1);
     }
 
     @Test
@@ -57,14 +57,14 @@ public class PluginDaoTest {
         pluginDao.delete(plugin1);
 
         // then
-        verify(session).delete(DefaultPersistentPlugin.class.getCanonicalName(), plugin1);
+        verify(session).delete(PluginsPlugin.class.getCanonicalName(), plugin1);
     }
 
     @Test
     public void shouldListPlugin() throws Exception {
         // given
         Criteria criteria = mock(Criteria.class);
-        given(session.createCriteria(DefaultPersistentPlugin.class)).willReturn(criteria);
+        given(session.createCriteria(PluginsPlugin.class)).willReturn(criteria);
         given(criteria.list()).willReturn(Lists.newArrayList(plugin1, plugin2));
 
         // when

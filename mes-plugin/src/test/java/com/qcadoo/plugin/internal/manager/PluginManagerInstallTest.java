@@ -109,7 +109,7 @@ public class PluginManagerInstallTest {
         // given
         given(pluginDescriptorParser.parse(resource)).willThrow(new PluginException());
         given(pluginFileManager.uploadPlugin(pluginArtifact)).willReturn(resource);
-        given(resource.getFile().getAbsolutePath()).willReturn("filename");
+        given(resource.getFile().getName()).willReturn("filename");
 
         // when
         PluginOperationResult pluginOperationResult = pluginManager.installPlugin(pluginArtifact);
