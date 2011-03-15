@@ -2,7 +2,7 @@ package com.qcadoo.plugin.internal.manager;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +23,7 @@ import com.qcadoo.plugin.internal.api.PluginArtifact;
 import com.qcadoo.plugin.internal.api.PluginDao;
 import com.qcadoo.plugin.internal.api.PluginDependencyManager;
 import com.qcadoo.plugin.internal.api.PluginDescriptorParser;
+import com.qcadoo.plugin.internal.api.PluginDescriptorResolver;
 import com.qcadoo.plugin.internal.api.PluginFileManager;
 import com.qcadoo.plugin.internal.api.PluginOperationResult;
 import com.qcadoo.plugin.internal.api.PluginServerManager;
@@ -51,6 +52,9 @@ public final class DefaultPluginManager implements PluginManager {
     @Autowired
     private PluginDescriptorParser pluginDescriptorParser;
 
+    @Autowired
+    private PluginDescriptorResolver pluginDescriptorResolver;
+
     @Override
     public PluginOperationResult enablePlugin(final String... keys) {
         List<Plugin> plugins = new ArrayList<Plugin>();
@@ -75,7 +79,7 @@ public final class DefaultPluginManager implements PluginManager {
             }
 
             if (!pluginDependencyResult.getDependenciesToEnable().isEmpty()) {
-                return PluginOperationResult.disabledDependencies(pluginDependencyResult);
+                return PluginOperationResult.dependenciesToEnable(pluginDependencyResult);
             }
         }
 
@@ -102,6 +106,7 @@ public final class DefaultPluginManager implements PluginManager {
                 plugin.changeStateTo(PluginState.ENABLED);
             }
             pluginDao.save(plugin);
+            pluginAccessor.savePlugin(plugin);
         }
 
         if (shouldRestart) {
@@ -136,7 +141,7 @@ public final class DefaultPluginManager implements PluginManager {
         PluginDependencyResult pluginDependencyResult = pluginDependencyManager.getDependenciesToDisable(plugins);
 
         if (!pluginDependencyResult.isDependenciesSatisfied() && !pluginDependencyResult.getDependenciesToDisable().isEmpty()) {
-            return PluginOperationResult.enabledDependencies(pluginDependencyResult);
+            return PluginOperationResult.dependenciesToDisable(pluginDependencyResult);
         }
 
         plugins = pluginDependencyManager.sortPluginsInDependencyOrder(plugins);
@@ -144,6 +149,7 @@ public final class DefaultPluginManager implements PluginManager {
         for (Plugin plugin : plugins) {
             plugin.changeStateTo(PluginState.DISABLED);
             pluginDao.save(plugin);
+            pluginAccessor.savePlugin(plugin);
         }
 
         return PluginOperationResult.success();
@@ -188,6 +194,7 @@ public final class DefaultPluginManager implements PluginManager {
                 plugin.changeStateTo(PluginState.DISABLED);
             }
             pluginDao.delete(plugin);
+            pluginAccessor.removePlugin(plugin);
         }
 
         if (shouldRestart) {
@@ -200,23 +207,22 @@ public final class DefaultPluginManager implements PluginManager {
 
     @Override
     public PluginOperationResult installPlugin(final PluginArtifact pluginArtifact) {
-        Resource pluginResource = null;
+        File pluginFile = null;
         try {
-            pluginResource = pluginFileManager.uploadPlugin(pluginArtifact);
+            pluginFile = pluginFileManager.uploadPlugin(pluginArtifact);
         } catch (PluginException e) {
             return PluginOperationResult.cannotUploadPlugin();
         }
         Plugin plugin = null;
         try {
-            plugin = pluginDescriptorParser.parse(pluginResource);
+            Resource descriptor = pluginDescriptorResolver.getDescriptor(pluginFile);
+            plugin = pluginDescriptorParser.parse(descriptor);
         } catch (PluginException e) {
-            try {
-                pluginFileManager.uninstallPlugin(pluginResource.getFile().getName());
-            } catch (IOException e1) {
-                LOG.warn("error while uninstaling plugin: " + e1.getMessage());
-            }
+            pluginFileManager.uninstallPlugin(pluginFile.getName());
             return PluginOperationResult.corruptedPlugin();
         }
+
+        pluginFileManager.renamePlugin(pluginFile.getName(), plugin.getFilename());
 
         if (plugin.isSystemPlugin()) {
             pluginFileManager.uninstallPlugin(plugin.getFilename());
@@ -231,6 +237,7 @@ public final class DefaultPluginManager implements PluginManager {
         if (existingPlugin == null) {
             plugin.changeStateTo(PluginState.TEMPORARY);
             pluginDao.save(plugin);
+            pluginAccessor.savePlugin(plugin);
 
             if (!pluginDependencyResult.isDependenciesSatisfied()
                     && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
@@ -249,6 +256,7 @@ public final class DefaultPluginManager implements PluginManager {
                     pluginFileManager.uninstallPlugin(existingPlugin.getFilename());
                     plugin.changeStateTo(existingPlugin.getPluginState());
                     pluginDao.save(plugin);
+                    pluginAccessor.savePlugin(plugin);
                     return PluginOperationResult.successWithMissingDependencies(pluginDependencyResult);
                 }
                 plugin.changeStateTo(existingPlugin.getPluginState());
@@ -273,7 +281,7 @@ public final class DefaultPluginManager implements PluginManager {
 
                     if (!pluginDependencyResult.getDependenciesToEnable().isEmpty()) {
                         pluginFileManager.uninstallPlugin(plugin.getFilename());
-                        return PluginOperationResult.disabledDependencies(pluginDependencyResult);
+                        return PluginOperationResult.dependenciesToEnable(pluginDependencyResult);
                     }
                 }
                 if (!pluginFileManager.installPlugin(plugin.getFilename())) {
@@ -311,6 +319,7 @@ public final class DefaultPluginManager implements PluginManager {
             }
             pluginFileManager.uninstallPlugin(existingPlugin.getFilename());
             pluginDao.save(plugin);
+            pluginAccessor.savePlugin(plugin);
             if (shouldRestart) {
                 pluginServerManager.restart();
                 return PluginOperationResult.successWithRestart();
@@ -344,6 +353,10 @@ public final class DefaultPluginManager implements PluginManager {
 
     void setPluginDescriptorParser(final PluginDescriptorParser pluginDescriptorParser) {
         this.pluginDescriptorParser = pluginDescriptorParser;
+    }
+
+    void setPluginDescriptorResolver(final PluginDescriptorResolver pluginDescriptorResolver) {
+        this.pluginDescriptorResolver = pluginDescriptorResolver;
     }
 
 }

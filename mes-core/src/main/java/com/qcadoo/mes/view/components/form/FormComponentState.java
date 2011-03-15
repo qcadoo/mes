@@ -353,16 +353,11 @@ public class FormComponentState extends AbstractContainerState {
         public void save(final String[] args) {
             Entity databaseEntity = getFormEntity();
 
-            System.out.println(databaseEntity);
-
             if (databaseEntity == null && entityId != null) {
                 throw new IllegalStateException("Entity cannot be found");
             }
 
             Entity entity = getEntity();
-
-            System.out.println(entity);
-            System.out.println(entity.isValid());
 
             if (entity.isValid()) {
                 entity = getDataDefinition().save(entity);

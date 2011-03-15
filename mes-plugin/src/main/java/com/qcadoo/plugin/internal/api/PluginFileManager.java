@@ -1,13 +1,15 @@
 package com.qcadoo.plugin.internal.api;
 
-import org.springframework.core.io.Resource;
+import java.io.File;
 
 public interface PluginFileManager {
 
     public boolean installPlugin(final String... filename);
 
-    public Resource uploadPlugin(final PluginArtifact pluginArtifact);
+    public File uploadPlugin(final PluginArtifact pluginArtifact);
 
     public void uninstallPlugin(final String... filename);
+
+    public void renamePlugin(final String source, final String destination);
 
 }
