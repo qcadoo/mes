@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<models plugin="plugins" xmlns="http://www.qcadoo.com/model">
+	<model name="plugin">
+		<string name="identifier" />
+		<string name="version" />
+		<enum name="state" values="enabled,disabled,temporary" />
+		<string name="name" persistent="false" />
+		<boolean name="isSystem" persistent="false" />
+		<string name="description" persistent="false" />
+		<string name="vendor" persistent="false" />
+		<string name="vendorUrl" persistent="false" />
+	</model>
+</models>

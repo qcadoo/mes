@@ -4,19 +4,19 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import com.google.common.collect.Lists;
+import com.qcadoo.plugin.internal.api.Module;
 import com.qcadoo.plugin.internal.api.ModuleFactory;
-import com.qcadoo.plugin.internal.module.DefaultModuleFactoryAccessor;
 
 public class ModuleFactoryAccessorTest {
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldCallPostInitializeOnAllModuleFactories() throws Exception {
         // given
@@ -26,7 +26,10 @@ public class ModuleFactoryAccessorTest {
         given(moduleFactory2.getIdentifier()).willReturn("module2");
 
         DefaultModuleFactoryAccessor moduleFactoryAccessor = new DefaultModuleFactoryAccessor();
-        moduleFactoryAccessor.setModuleFactories(Lists.newArrayList(moduleFactory1, moduleFactory2));
+        List<ModuleFactory<?>> factoriesList = new ArrayList<ModuleFactory<?>>();
+        factoriesList.add(moduleFactory1);
+        factoriesList.add(moduleFactory2);
+        moduleFactoryAccessor.setModuleFactories(factoriesList);
 
         // when
         moduleFactoryAccessor.postInitialize();
@@ -47,7 +50,7 @@ public class ModuleFactoryAccessorTest {
         moduleFactoryAccessor.setModuleFactories(Collections.<ModuleFactory<?>> singletonList(moduleFactory));
 
         // when
-        ModuleFactory<?> mf = moduleFactoryAccessor.getModuleFactory("module");
+        ModuleFactory<? extends Module> mf = moduleFactoryAccessor.getModuleFactory("module");
 
         // then
         Assert.assertSame(moduleFactory, mf);
