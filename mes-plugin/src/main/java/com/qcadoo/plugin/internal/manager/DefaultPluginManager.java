@@ -102,6 +102,7 @@ public final class DefaultPluginManager implements PluginManager {
                 plugin.changeStateTo(PluginState.ENABLED);
             }
             pluginDao.save(plugin);
+            pluginAccessor.savePlugin(plugin);
         }
 
         if (shouldRestart) {
@@ -144,6 +145,7 @@ public final class DefaultPluginManager implements PluginManager {
         for (Plugin plugin : plugins) {
             plugin.changeStateTo(PluginState.DISABLED);
             pluginDao.save(plugin);
+            pluginAccessor.savePlugin(plugin);
         }
 
         return PluginOperationResult.success();
@@ -188,6 +190,7 @@ public final class DefaultPluginManager implements PluginManager {
                 plugin.changeStateTo(PluginState.DISABLED);
             }
             pluginDao.delete(plugin);
+            pluginAccessor.removePlugin(plugin);
         }
 
         if (shouldRestart) {
@@ -231,6 +234,7 @@ public final class DefaultPluginManager implements PluginManager {
         if (existingPlugin == null) {
             plugin.changeStateTo(PluginState.TEMPORARY);
             pluginDao.save(plugin);
+            pluginAccessor.savePlugin(plugin);
 
             if (!pluginDependencyResult.isDependenciesSatisfied()
                     && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
@@ -249,6 +253,7 @@ public final class DefaultPluginManager implements PluginManager {
                     pluginFileManager.uninstallPlugin(existingPlugin.getFilename());
                     plugin.changeStateTo(existingPlugin.getPluginState());
                     pluginDao.save(plugin);
+                    pluginAccessor.savePlugin(plugin);
                     return PluginOperationResult.successWithMissingDependencies(pluginDependencyResult);
                 }
                 plugin.changeStateTo(existingPlugin.getPluginState());
@@ -311,6 +316,7 @@ public final class DefaultPluginManager implements PluginManager {
             }
             pluginFileManager.uninstallPlugin(existingPlugin.getFilename());
             pluginDao.save(plugin);
+            pluginAccessor.savePlugin(plugin);
             if (shouldRestart) {
                 pluginServerManager.restart();
                 return PluginOperationResult.successWithRestart();

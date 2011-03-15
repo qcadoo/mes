@@ -157,4 +157,15 @@ public final class DefaultPluginAccessor implements PluginAccessor {
     void setModuleFactoryAccessor(final ModuleFactoryAccessor moduleFactoryAccessor) {
         this.moduleFactoryAccessor = moduleFactoryAccessor;
     }
+
+    @Override
+    public void savePlugin(final Plugin plugin) {
+        plugins.put(plugin.getIdentifier(), plugin);
+    }
+
+    @Override
+    public void removePlugin(final Plugin plugin) {
+        plugins.remove(plugin.getIdentifier());
+    }
+
 }

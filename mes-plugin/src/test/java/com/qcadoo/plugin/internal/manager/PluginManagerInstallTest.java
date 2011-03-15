@@ -97,6 +97,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao).save(anotherPlugin);
+        verify(pluginAccessor).savePlugin(anotherPlugin);
         verify(anotherPlugin).changeStateTo(plugin.getPluginState());
         verify(pluginFileManager).uninstallPlugin("filename");
         assertTrue(pluginOperationResult.isSuccess());
@@ -116,6 +117,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao, never()).save(Mockito.any(Plugin.class));
+        verify(pluginAccessor, never()).savePlugin(Mockito.any(Plugin.class));
         verify(pluginFileManager).uninstallPlugin("filename");
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.CORRUPTED_PLUGIN, pluginOperationResult.getStatus());
@@ -131,6 +133,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao, never()).save(Mockito.any(Plugin.class));
+        verify(pluginAccessor, never()).savePlugin(Mockito.any(Plugin.class));
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.CANNOT_UPLOAD_PLUGIN, pluginOperationResult.getStatus());
     }
@@ -155,6 +158,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao).save(anotherPlugin);
+        verify(pluginAccessor).savePlugin(anotherPlugin);
         verify(anotherPlugin).changeStateTo(plugin.getPluginState());
         verify(pluginFileManager).uninstallPlugin("filename");
         assertTrue(pluginOperationResult.isSuccess());
@@ -186,6 +190,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao).save(anotherPlugin);
+        verify(pluginAccessor).savePlugin(anotherPlugin);
         verify(anotherPlugin).changeStateTo(plugin.getPluginState());
         verify(pluginFileManager).uninstallPlugin("filename");
         verify(pluginServerManager).restart();
@@ -213,6 +218,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao, never()).save(anotherPlugin);
+        verify(pluginAccessor, never()).savePlugin(anotherPlugin);
         verify(anotherPlugin, never()).changeStateTo(plugin.getPluginState());
         verify(pluginFileManager).uninstallPlugin("filename");
         assertFalse(pluginOperationResult.isSuccess());
@@ -267,6 +273,7 @@ public class PluginManagerInstallTest {
         inOrderEnabling.verify(dependencyPlugin).changeStateTo(PluginState.ENABLING);
         inOrderEnabling.verify(dependencyPlugin2).changeStateTo(PluginState.ENABLING);
         verify(pluginDao).save(anotherPlugin);
+        verify(pluginAccessor).savePlugin(anotherPlugin);
         verify(pluginDao).save(dependencyPlugin);
         verify(pluginDao).save(dependencyPlugin2);
         verify(pluginFileManager).uninstallPlugin("filename");
@@ -303,6 +310,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao, never()).save(anotherPlugin);
+        verify(pluginAccessor, never()).savePlugin(anotherPlugin);
         verify(anotherPlugin, never()).changeStateTo(plugin.getPluginState());
         verify(pluginFileManager).uninstallPlugin("anotherFilename");
         assertFalse(pluginOperationResult.isSuccess());
@@ -331,6 +339,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao, never()).save(anotherPlugin);
+        verify(pluginAccessor, never()).savePlugin(anotherPlugin);
         verify(anotherPlugin, never()).changeStateTo(plugin.getPluginState());
         verify(pluginFileManager).uninstallPlugin("filename");
         assertFalse(pluginOperationResult.isSuccess());
@@ -359,6 +368,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao, never()).save(anotherPlugin);
+        verify(pluginAccessor, never()).savePlugin(anotherPlugin);
         verify(anotherPlugin, never()).changeStateTo(plugin.getPluginState());
         verify(pluginFileManager).uninstallPlugin("filename");
         assertFalse(pluginOperationResult.isSuccess());
@@ -390,6 +400,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao, never()).save(anotherPlugin);
+        verify(pluginAccessor, never()).savePlugin(anotherPlugin);
         verify(anotherPlugin, never()).changeStateTo(plugin.getPluginState());
         verify(pluginFileManager, never()).uninstallPlugin("filename");
         verify(pluginFileManager).uninstallPlugin("anotherFilename");
@@ -419,6 +430,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao, never()).save(anotherPlugin);
+        verify(pluginAccessor, never()).savePlugin(anotherPlugin);
         verify(anotherPlugin, never()).changeStateTo(plugin.getPluginState());
         verify(pluginFileManager, never()).uninstallPlugin("filename");
         verify(pluginFileManager).uninstallPlugin("anotherFilename");
@@ -441,6 +453,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao, never()).save(anotherPlugin);
+        verify(pluginAccessor, never()).savePlugin(anotherPlugin);
         verify(pluginFileManager).uninstallPlugin("anotherFilename");
         verify(pluginServerManager, never()).restart();
         assertFalse(pluginOperationResult.isSuccess());
@@ -462,6 +475,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao).save(anotherPlugin);
+        verify(pluginAccessor).savePlugin(anotherPlugin);
         verify(anotherPlugin).changeStateTo(PluginState.TEMPORARY);
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, pluginOperationResult.getStatus());
@@ -485,6 +499,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao).save(anotherPlugin);
+        verify(pluginAccessor).savePlugin(anotherPlugin);
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_MISSING_DEPENDENCIES, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
@@ -506,6 +521,7 @@ public class PluginManagerInstallTest {
 
         // then
         verify(pluginDao, never()).save(anotherPlugin);
+        verify(pluginAccessor, never()).savePlugin(anotherPlugin);
         verify(pluginFileManager).uninstallPlugin("anotherFilename");
         verify(pluginServerManager, never()).restart();
         assertFalse(pluginOperationResult.isSuccess());
