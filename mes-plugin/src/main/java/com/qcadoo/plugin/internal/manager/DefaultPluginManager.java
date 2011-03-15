@@ -2,7 +2,7 @@ package com.qcadoo.plugin.internal.manager;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +23,7 @@ import com.qcadoo.plugin.internal.api.PluginArtifact;
 import com.qcadoo.plugin.internal.api.PluginDao;
 import com.qcadoo.plugin.internal.api.PluginDependencyManager;
 import com.qcadoo.plugin.internal.api.PluginDescriptorParser;
+import com.qcadoo.plugin.internal.api.PluginDescriptorResolver;
 import com.qcadoo.plugin.internal.api.PluginFileManager;
 import com.qcadoo.plugin.internal.api.PluginOperationResult;
 import com.qcadoo.plugin.internal.api.PluginServerManager;
@@ -50,6 +51,9 @@ public final class DefaultPluginManager implements PluginManager {
 
     @Autowired
     private PluginDescriptorParser pluginDescriptorParser;
+
+    @Autowired
+    private PluginDescriptorResolver pluginDescriptorResolver;
 
     @Override
     public PluginOperationResult enablePlugin(final String... keys) {
@@ -200,21 +204,18 @@ public final class DefaultPluginManager implements PluginManager {
 
     @Override
     public PluginOperationResult installPlugin(final PluginArtifact pluginArtifact) {
-        Resource pluginResource = null;
+        File pluginFile = null;
         try {
-            pluginResource = pluginFileManager.uploadPlugin(pluginArtifact);
+            pluginFile = pluginFileManager.uploadPlugin(pluginArtifact);
         } catch (PluginException e) {
             return PluginOperationResult.cannotUploadPlugin();
         }
         Plugin plugin = null;
         try {
-            plugin = pluginDescriptorParser.parse(pluginResource);
+            Resource descriptor = pluginDescriptorResolver.getDescriptor(pluginFile);
+            plugin = pluginDescriptorParser.parse(descriptor);
         } catch (PluginException e) {
-            try {
-                pluginFileManager.uninstallPlugin(pluginResource.getFile().getName());
-            } catch (IOException e1) {
-                LOG.warn("error while uninstaling plugin: " + e1.getMessage());
-            }
+            pluginFileManager.uninstallPlugin(pluginFile.getName());
             return PluginOperationResult.corruptedPlugin();
         }
 
@@ -344,6 +345,10 @@ public final class DefaultPluginManager implements PluginManager {
 
     void setPluginDescriptorParser(final PluginDescriptorParser pluginDescriptorParser) {
         this.pluginDescriptorParser = pluginDescriptorParser;
+    }
+
+    void setPluginDescriptorResolver(final PluginDescriptorResolver pluginDescriptorResolver) {
+        this.pluginDescriptorResolver = pluginDescriptorResolver;
     }
 
 }

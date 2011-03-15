@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.core.io.Resource;
 
 import com.qcadoo.plugin.internal.PluginException;
 import com.qcadoo.plugin.internal.api.PluginArtifact;
@@ -139,10 +138,10 @@ public class PluginFileManagerTest {
         given(pluginArtifact.getName()).willReturn("uploadpluginname.jar");
 
         // when
-        Resource pluginResource = defaultPluginFileManager.uploadPlugin(pluginArtifact);
+        File pluginFile = defaultPluginFileManager.uploadPlugin(pluginArtifact);
 
         // then
-        assertTrue(pluginResource.exists());
+        assertTrue(pluginFile.exists());
     }
 
     @Test(expected = PluginException.class)

@@ -10,7 +10,6 @@ import java.io.File;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -170,8 +169,7 @@ public class PluginIntegrationTest {
         assertEquals(PluginOperationStatus.SYSTEM_PLUGIN_DISABLING, result.getStatus());
     }
 
-    // @Test
-    @Ignore
+    @Test
     public void shouldInstallPlugin() throws Exception {
         // given
         JarPluginArtifact artifact = new JarPluginArtifact(new File(
