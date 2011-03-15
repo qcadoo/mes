@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <models plugin="plugins" xmlns="http://www.qcadoo.com/model">
-	<model name="plugin">
+	<model name="plugin2">
 		<string name="identifier" />
 		<string name="version" />
 		<enum name="state" values="enabled,disabled,temporary" />
@@ -10,5 +10,6 @@
 		<string name="description" persistent="false" />
 		<string name="vendor" persistent="false" />
 		<string name="vendorUrl" persistent="false" />
+		<onView class="com.qcadoo.mes.plugins.controller.PluginManagmentDataHook" method="updatePluginData" />
 	</model>
 </models>

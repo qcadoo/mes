@@ -62,6 +62,8 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     private final List<EntityHookDefinition> validators = new ArrayList<EntityHookDefinition>();
 
+    private final List<EntityHookDefinition> viewHooks = new ArrayList<EntityHookDefinition>();
+
     private final List<EntityHookDefinition> createHooks = new ArrayList<EntityHookDefinition>();
 
     private final List<EntityHookDefinition> updateHooks = new ArrayList<EntityHookDefinition>();
@@ -185,6 +187,10 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
         return validators;
     }
 
+    public List<EntityHookDefinition> getViewHooks() {
+        return viewHooks;
+    }
+
     public List<EntityHookDefinition> getCopyHooks() {
         return copyHooks;
     }
@@ -203,6 +209,10 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     public void addValidatorHook(final EntityHookDefinition validator) {
         this.validators.add(validator);
+    }
+
+    public void addViewHook(final EntityHookDefinition viewHook) {
+        viewHooks.add(viewHook);
     }
 
     public void addCreateHook(final EntityHookDefinition createHook) {
@@ -228,6 +238,14 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     @Override
     public String getIdentifierExpression() {
         return identifierExpression;
+    }
+
+    @Override
+    public boolean callViewHook(final Entity entity) {
+        for (EntityHookDefinition hook : viewHooks) {
+            hook.call(entity);
+        }
+        return true;
     }
 
     @Override

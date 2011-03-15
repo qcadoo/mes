@@ -44,6 +44,8 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
 
     private boolean openInNewWindow;
 
+    private boolean openInModalWindow;
+
     private boolean shouldSerializeWindow;
 
     private final Map<String, ComponentState> registry = new HashMap<String, ComponentState>();
@@ -65,6 +67,7 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
             json.put("redirect", jsonRedirect);
             jsonRedirect.put("url", redirectToUrl);
             jsonRedirect.put("openInNewWindow", openInNewWindow);
+            jsonRedirect.put("openInModalWindow", openInModalWindow);
             jsonRedirect.put("shouldSerializeWindow", shouldSerializeWindow);
             return json;
         } else {
@@ -143,7 +146,16 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
     public void redirectTo(final String redirectToUrl, final boolean openInNewWindow, final boolean shouldSerialize) {
         this.redirectToUrl = redirectToUrl;
         this.openInNewWindow = openInNewWindow;
+        openInModalWindow = false;
         this.shouldSerializeWindow = shouldSerialize;
+    }
+
+    @Override
+    public void openModal(final String url) {
+        this.redirectToUrl = url;
+        this.openInNewWindow = false;
+        openInModalWindow = true;
+        this.shouldSerializeWindow = true;
     }
 
     @Override

@@ -37,7 +37,7 @@ import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 
 @Service
-public final class PluginManagementHook {
+public final class OLDPluginManagementHook {
 
     @Autowired
     private PluginManagementService pluginManagementService;
