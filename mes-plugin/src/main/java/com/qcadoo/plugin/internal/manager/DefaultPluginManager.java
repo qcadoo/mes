@@ -79,7 +79,7 @@ public final class DefaultPluginManager implements PluginManager {
             }
 
             if (!pluginDependencyResult.getDependenciesToEnable().isEmpty()) {
-                return PluginOperationResult.disabledDependencies(pluginDependencyResult);
+                return PluginOperationResult.dependenciesToEnable(pluginDependencyResult);
             }
         }
 
@@ -141,7 +141,7 @@ public final class DefaultPluginManager implements PluginManager {
         PluginDependencyResult pluginDependencyResult = pluginDependencyManager.getDependenciesToDisable(plugins);
 
         if (!pluginDependencyResult.isDependenciesSatisfied() && !pluginDependencyResult.getDependenciesToDisable().isEmpty()) {
-            return PluginOperationResult.enabledDependencies(pluginDependencyResult);
+            return PluginOperationResult.dependenciesToDisable(pluginDependencyResult);
         }
 
         plugins = pluginDependencyManager.sortPluginsInDependencyOrder(plugins);
@@ -281,7 +281,7 @@ public final class DefaultPluginManager implements PluginManager {
 
                     if (!pluginDependencyResult.getDependenciesToEnable().isEmpty()) {
                         pluginFileManager.uninstallPlugin(plugin.getFilename());
-                        return PluginOperationResult.disabledDependencies(pluginDependencyResult);
+                        return PluginOperationResult.dependenciesToEnable(pluginDependencyResult);
                     }
                 }
                 if (!pluginFileManager.installPlugin(plugin.getFilename())) {
