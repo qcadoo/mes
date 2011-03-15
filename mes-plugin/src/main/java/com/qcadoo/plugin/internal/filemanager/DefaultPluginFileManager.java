@@ -26,10 +26,10 @@ public final class DefaultPluginFileManager implements PluginFileManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPluginFileManager.class);
 
-    @Value("${qcadoo.plugin.pluginsPath}")
+    @Value("#{plugin.pluginsPath}")
     private String pluginsPath;
 
-    @Value("${qcadoo.plugin.pluginsTmpPath}")
+    @Value("#{plugin.pluginsTmpPath}")
     private String pluginsTmpPath;
 
     @Override

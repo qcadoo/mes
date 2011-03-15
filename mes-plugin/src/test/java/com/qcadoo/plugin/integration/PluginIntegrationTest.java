@@ -146,13 +146,10 @@ public class PluginIntegrationTest {
     @Test
     public void shouldNotDisablePluginWithEnabledDependency() throws Exception {
         // given
-        PluginOperationResult result1 = pluginManager.enablePlugin("plugin1", "plugin2");
-        System.out.println(result1.getStatus());
+        pluginManager.enablePlugin("plugin1", "plugin2");
 
         // when
         PluginOperationResult result = pluginManager.disablePlugin("plugin1");
-
-        System.out.println(result.getStatus());
 
         // then
         assertFalse(result.isSuccess());
@@ -182,8 +179,6 @@ public class PluginIntegrationTest {
 
         // when
         PluginOperationResult result = pluginManager.installPlugin(artifact);
-
-        System.out.println(result.getStatus());
 
         // then
         assertTrue(result.isSuccess());

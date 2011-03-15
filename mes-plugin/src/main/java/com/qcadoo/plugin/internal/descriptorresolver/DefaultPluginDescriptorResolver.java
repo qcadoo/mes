@@ -15,7 +15,7 @@ public class DefaultPluginDescriptorResolver implements PluginDescriptorResolver
 
     private final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
-    @Value("${qcadoo.plugin.descriptors}")
+    @Value("#{plugin.descriptors}")
     private String descriptor;
 
     @Override
