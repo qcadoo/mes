@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Sets;
+import com.qcadoo.model.beans.plugins.PluginsPlugin;
 import com.qcadoo.plugin.api.PersistentPlugin;
-import com.qcadoo.plugin.internal.DefaultPersistentPlugin;
 import com.qcadoo.plugin.internal.api.PluginDao;
 
 @Service
@@ -21,20 +21,20 @@ public class DefaultPluginDao implements PluginDao {
     @Override
     @Transactional
     public void save(final PersistentPlugin plugin) {
-        sessionFactory.getCurrentSession().save(DefaultPersistentPlugin.class.getCanonicalName(), plugin);
+        sessionFactory.getCurrentSession().save(PluginsPlugin.class.getCanonicalName(), plugin);
     }
 
     @Override
     @Transactional
     public void delete(final PersistentPlugin plugin) {
-        sessionFactory.getCurrentSession().delete(DefaultPersistentPlugin.class.getCanonicalName(), plugin);
+        sessionFactory.getCurrentSession().delete(PluginsPlugin.class.getCanonicalName(), plugin);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public Set<PersistentPlugin> list() {
-        return Sets.newHashSet(sessionFactory.getCurrentSession().createCriteria(DefaultPersistentPlugin.class).list());
+        return Sets.newHashSet(sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).list());
     }
 
     void setSessionFactory(final SessionFactory sessionFactory) {

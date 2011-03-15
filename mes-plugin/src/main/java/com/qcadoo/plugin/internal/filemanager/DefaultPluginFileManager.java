@@ -26,26 +26,26 @@ public final class DefaultPluginFileManager implements PluginFileManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPluginFileManager.class);
 
-    @Value("${qcadoo.plugin.pluginsPath}")
+    @Value("#{plugin.pluginsPath}")
     private String pluginsPath;
 
-    @Value("${qcadoo.plugin.pluginsTmpPath}")
+    @Value("#{plugin.pluginsTmpPath}")
     private String pluginsTmpPath;
 
     @Override
-    public boolean installPlugin(final String... keys) {
+    public boolean installPlugin(final String... filenames) {
         if (!checkFileRightsToWrite(pluginsPath)) {
             return false;
         }
-        for (String key : keys) {
-            if (!checkFileExists(key, pluginsTmpPath)) {
+        for (String filename : filenames) {
+            if (!checkFileExists(filename, pluginsTmpPath)) {
                 return false;
             }
         }
-        for (String key : keys) {
+        for (String filename : filenames) {
             try {
-                FileUtils.moveToDirectory(new File(pluginsTmpPath + getProperty("file.separator") + key), new File(pluginsPath),
-                        false);
+                FileUtils.moveToDirectory(new File(pluginsTmpPath + getProperty("file.separator") + filename), new File(
+                        pluginsPath), false);
             } catch (IOException e) {
                 LOG.error("Problem with moving plugin file - " + e.getMessage());
                 throw new PluginException(e.getMessage(), e);
@@ -75,11 +75,11 @@ public final class DefaultPluginFileManager implements PluginFileManager {
     }
 
     @Override
-    public void uninstallPlugin(final String... keys) {
-        for (String key : keys) {
-            File file = new File((pluginsTmpPath + getProperty("file.separator") + key));
+    public void uninstallPlugin(final String... filenames) {
+        for (String filename : filenames) {
+            File file = new File((pluginsTmpPath + getProperty("file.separator") + filename));
             if (!file.exists()) {
-                file = new File(pluginsPath + getProperty("file.separator") + key);
+                file = new File(pluginsPath + getProperty("file.separator") + filename);
             }
             try {
                 FileUtils.forceDelete(file);

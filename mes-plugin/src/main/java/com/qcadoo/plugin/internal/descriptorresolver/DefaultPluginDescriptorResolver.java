@@ -2,6 +2,7 @@ package com.qcadoo.plugin.internal.descriptorresolver;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -14,8 +15,8 @@ public class DefaultPluginDescriptorResolver implements PluginDescriptorResolver
 
     private final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
-    // @Value("#{ $qcadoo.plugin.restartCommand != null ? $qcadoo.plugin.restartCommand : 'plugin.xml' }")
-    private String descriptor = "com/qcadoo/plugin/integration/*/plugin.xml";
+    @Value("#{plugin.descriptors}")
+    private String descriptor;
 
     @Override
     public Resource[] getDescriptors() {

@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.qcadoo.model.beans.plugins.PluginsPlugin;
 import com.qcadoo.plugin.api.PersistentPlugin;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginDependencyInformation;
@@ -21,7 +22,7 @@ import com.qcadoo.plugin.api.Version;
 import com.qcadoo.plugin.api.VersionOfDependency;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class DefaultPlugin extends DefaultPersistentPlugin implements Plugin {
+public class DefaultPlugin extends PluginsPlugin implements Plugin {
 
     private final Set<Module> modules;
 
