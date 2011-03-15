@@ -168,7 +168,7 @@ public class PluginManagerTest {
         verify(pluginDao, never()).save(plugin);
         verify(pluginAccessor, never()).savePlugin(plugin);
         assertFalse(pluginOperationResult.isSuccess());
-        assertEquals(PluginOperationStatus.DISABLED_DEPENDENCIES, pluginOperationResult.getStatus());
+        assertEquals(PluginOperationStatus.DEPENDENCIES_TO_ENABLE, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
@@ -322,7 +322,7 @@ public class PluginManagerTest {
         verify(pluginDao, never()).save(plugin);
         verify(pluginAccessor, never()).savePlugin(plugin);
         assertFalse(pluginOperationResult.isSuccess());
-        assertEquals(PluginOperationStatus.ENABLED_DEPENDENCIES, pluginOperationResult.getStatus());
+        assertEquals(PluginOperationStatus.DEPENDENCIES_TO_DISABLE, pluginOperationResult.getStatus());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable().size());
         assertEquals(1, pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable().size());
         assertTrue(pluginOperationResult.getPluginDependencyResult().getDependenciesToDisable()

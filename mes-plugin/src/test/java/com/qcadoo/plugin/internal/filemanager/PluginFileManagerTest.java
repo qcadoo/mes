@@ -158,7 +158,32 @@ public class PluginFileManagerTest {
         // when
         defaultPluginFileManager.uploadPlugin(pluginArtifact);
 
+    }
+
+    @Test
+    public void shouldRenamePluginFile() throws Exception {
+        // given
+        File sourceFile = new File(source, "pluginnameSource.jar");
+        FileUtils.touch(sourceFile);
+        File destinationFile = new File(source, "pluginnameDestination.jar");
+
+        // when
+        defaultPluginFileManager.renamePlugin(sourceFile.getName(), destinationFile.getName());
+
         // then
+        assertFalse(sourceFile.exists());
+        assertTrue(destinationFile.exists());
+    }
+
+    @Test(expected = PluginException.class)
+    public void shouldThrowExceptionOnRenamingPluginFileWhenOperationFail() throws Exception {
+        // given
+        File sourceFile = new File(source, "pluginnameSource");
+        sourceFile.mkdir();
+        File destinationFile = new File(source, "pluginnameDestination.jar");
+
+        // when
+        defaultPluginFileManager.renamePlugin(sourceFile.getName(), destinationFile.getName());
     }
 
     @After

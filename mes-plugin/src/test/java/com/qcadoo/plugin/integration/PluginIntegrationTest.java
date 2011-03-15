@@ -117,7 +117,7 @@ public class PluginIntegrationTest {
         assertEquals(1, result.getPluginDependencyResult().getDependenciesToEnable().size());
         assertEquals("plugin1", result.getPluginDependencyResult().getDependenciesToEnable().iterator().next()
                 .getDependencyPluginIdentifier());
-        assertEquals(PluginOperationStatus.DISABLED_DEPENDENCIES, result.getStatus());
+        assertEquals(PluginOperationStatus.DEPENDENCIES_TO_ENABLE, result.getStatus());
     }
 
     @Test
@@ -169,7 +169,7 @@ public class PluginIntegrationTest {
         // then
         assertFalse(result.isSuccess());
         assertEquals(1, result.getPluginDependencyResult().getDependenciesToDisable().size());
-        assertEquals(PluginOperationStatus.ENABLED_DEPENDENCIES, result.getStatus());
+        assertEquals(PluginOperationStatus.DEPENDENCIES_TO_DISABLE, result.getStatus());
     }
 
     @Test
