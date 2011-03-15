@@ -91,6 +91,18 @@ public final class DefaultPluginFileManager implements PluginFileManager {
         }
     }
 
+    @Override
+    public void renamePlugin(final String source, final String destination) {
+        try {
+            FileUtils.moveFile(new File(pluginsTmpPath + getProperty("file.separator") + source), new File(pluginsTmpPath
+                    + getProperty("file.separator") + destination));
+        } catch (IOException e) {
+            LOG.error("Problem with renaming plugin file - " + e.getMessage());
+            throw new PluginException(e.getMessage(), e);
+        }
+
+    }
+
     private boolean checkFileExists(final String key, final String path) {
         File file = new File(path + getProperty("file.separator") + key);
         if (!file.exists()) {
