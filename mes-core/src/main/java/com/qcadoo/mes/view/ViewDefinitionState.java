@@ -32,6 +32,8 @@ public interface ViewDefinitionState extends ContainerState {
 
     void redirectTo(String redirectToUrl, boolean openInNewWindow, boolean shouldSerialize);
 
+    void openModal(String url);
+
     void registerComponent(String reference, String path, ComponentState state);
 
 }

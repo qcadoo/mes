@@ -126,6 +126,8 @@ public final class EntityService {
             }
         }
 
+        dataDefinition.callViewHook(genericEntity);
+
         return genericEntity;
     }
 
