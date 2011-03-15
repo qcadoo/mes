@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,6 +43,8 @@ public class PluginIntegrationTest {
 
     private PluginDescriptorResolver pluginResolver;
 
+    private SessionFactory sessionFactory;
+
     @Before
     public void init() throws Exception {
         new File("target/plugins").mkdir();
@@ -54,22 +57,21 @@ public class PluginIntegrationTest {
         pluginAccessor = applicationContext.getBean(PluginAccessor.class);
         pluginManager = applicationContext.getBean(PluginManager.class);
         pluginFileManager = applicationContext.getBean(PluginFileManager.class);
+        sessionFactory = applicationContext.getBean(SessionFactory.class);
     }
 
     @After
     public void destroy() throws Exception {
-        applicationContext.destroy();
+        sessionFactory.openSession().createSQLQuery("delete from plugins_plugin").executeUpdate();
+        pluginResolver = null;
+        pluginResolver = null;
+        pluginManager = null;
+        pluginFileManager = null;
+        sessionFactory.close();
+        sessionFactory = null;
+        applicationContext.close();
         deleteDirectory(new File("target/plugins"));
         deleteDirectory(new File("target/tmpPlugins"));
-    }
-
-    @Test
-    public void shouldCallInitialize() throws Exception {
-        // then
-        assertEquals(1, MockModuleFactory.getPostInitializeCallCount());
-        assertEquals(3, MockModule.getInitCallCount());
-        assertEquals(0, MockModule.getEnableCallCount());
-        assertEquals(0, MockModule.getDisableCallCount());
     }
 
     @Test
@@ -99,7 +101,6 @@ public class PluginIntegrationTest {
         assertEquals(2, pluginAccessor.getEnabledPlugins().size());
         assertNotNull(pluginAccessor.getEnabledPlugin("plugin1"));
         assertNull(pluginAccessor.getEnabledPlugin("plugin2"));
-        assertEquals(1, MockModule.getEnableCallCount());
     }
 
     @Test
@@ -117,21 +118,21 @@ public class PluginIntegrationTest {
         assertEquals("plugin1", result.getPluginDependencyResult().getDependenciesToEnable().iterator().next()
                 .getDependencyPluginIdentifier());
         assertEquals(PluginOperationStatus.DISABLED_DEPENDENCIES, result.getStatus());
-        assertEquals(0, MockModule.getEnableCallCount());
     }
 
     @Test
     public void shouldEnablePluginWithDependencies() throws Exception {
         // given
-        pluginManager.enablePlugin("plugin1");
+        pluginManager.disablePlugin("plugin2");
 
         // when
         PluginOperationResult result = pluginManager.enablePlugin("plugin2");
 
+        System.out.println(" -----> " + result.getStatus());
+
         // then
         assertTrue(result.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, result.getStatus());
-        assertEquals(2, MockModule.getEnableCallCount());
     }
 
     @Test
@@ -155,7 +156,6 @@ public class PluginIntegrationTest {
         // then
         assertTrue(result.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, result.getStatus());
-        assertEquals(1, MockModule.getDisableCallCount());
     }
 
     @Test
@@ -170,7 +170,6 @@ public class PluginIntegrationTest {
         assertFalse(result.isSuccess());
         assertEquals(1, result.getPluginDependencyResult().getDependenciesToDisable().size());
         assertEquals(PluginOperationStatus.ENABLED_DEPENDENCIES, result.getStatus());
-        assertEquals(0, MockModule.getDisableCallCount());
     }
 
     @Test
@@ -184,7 +183,6 @@ public class PluginIntegrationTest {
         // then
         assertFalse(result.isSuccess());
         assertEquals(PluginOperationStatus.SYSTEM_PLUGIN_DISABLING, result.getStatus());
-        assertEquals(0, MockModule.getDisableCallCount());
     }
 
     @Test
@@ -218,7 +216,6 @@ public class PluginIntegrationTest {
         assertTrue(result.isRestartNeccessary());
         assertNotNull(pluginAccessor.getPlugin("plugin4"));
         assertTrue(pluginAccessor.getPlugin("plugin4").hasState(PluginState.ENABLING));
-        assertEquals(0, MockModule.getEnableCallCount());
     }
 
     @Test
@@ -239,7 +236,7 @@ public class PluginIntegrationTest {
     }
 
     @Test
-    public void shouldUpdatePlugin() throws Exception {
+    public void shouldUpdateEnabledPlugin() throws Exception {
         // given
         JarPluginArtifact artifact = new JarPluginArtifact(new File(
                 "src/test/resources/com/qcadoo/plugin/integration/plugin4.jar"));
@@ -248,6 +245,7 @@ public class PluginIntegrationTest {
 
         pluginManager.installPlugin(artifact);
         pluginManager.enablePlugin("plugin4");
+        pluginAccessor.getPlugin("plugin4").changeStateTo(PluginState.ENABLED);
 
         // when
         PluginOperationResult result = pluginManager.installPlugin(artifact2);
@@ -255,9 +253,47 @@ public class PluginIntegrationTest {
         // then
         assertTrue(result.isSuccess());
         assertTrue(result.isRestartNeccessary());
-        assertNull(pluginAccessor.getPlugin("plugin4"));
+        assertNotNull(pluginAccessor.getPlugin("plugin4"));
         assertTrue(pluginAccessor.getPlugin("plugin4").hasState(PluginState.ENABLING));
         assertEquals(new Version("1.2.4"), pluginAccessor.getPlugin("plugin4").getVersion());
+    }
+
+    @Test
+    public void shouldUpdateTemporaryPlugin() throws Exception {
+        // given
+        JarPluginArtifact artifact = new JarPluginArtifact(new File(
+                "src/test/resources/com/qcadoo/plugin/integration/plugin4.jar"));
+        JarPluginArtifact artifact2 = new JarPluginArtifact(new File(
+                "src/test/resources/com/qcadoo/plugin/integration/plugin4.1.jar"));
+
+        pluginManager.installPlugin(artifact);
+
+        // when
+        PluginOperationResult result = pluginManager.installPlugin(artifact2);
+
+        // then
+        assertTrue(result.isSuccess());
+        assertFalse(result.isRestartNeccessary());
+        assertNotNull(pluginAccessor.getPlugin("plugin4"));
+        assertTrue(pluginAccessor.getPlugin("plugin4").hasState(PluginState.TEMPORARY));
+        assertEquals(new Version("1.2.4"), pluginAccessor.getPlugin("plugin4").getVersion());
+    }
+
+    @Test
+    public void shouldNotDisableTemporaryPlugin() throws Exception {
+        // given
+        JarPluginArtifact artifact = new JarPluginArtifact(new File(
+                "src/test/resources/com/qcadoo/plugin/integration/plugin4.jar"));
+
+        pluginManager.installPlugin(artifact);
+
+        // when
+        PluginOperationResult result = pluginManager.disablePlugin("plugin4");
+
+        // then
+        assertTrue(result.isSuccess());
+        assertNotNull(pluginAccessor.getPlugin("plugin4"));
+        assertTrue(pluginAccessor.getPlugin("plugin4").hasState(PluginState.TEMPORARY));
     }
 
     @Test
@@ -269,16 +305,15 @@ public class PluginIntegrationTest {
                 "src/test/resources/com/qcadoo/plugin/integration/plugin4.1.jar"));
 
         pluginManager.installPlugin(artifact2);
-        pluginManager.enablePlugin("plugin4");
 
         // when
         PluginOperationResult result = pluginManager.installPlugin(artifact);
 
         // then
         assertFalse(result.isSuccess());
-        assertEquals(PluginOperationStatus.CANNOT_UPLOAD_PLUGIN, result.getStatus());
-        assertNull(pluginAccessor.getPlugin("plugin4"));
-        assertTrue(pluginAccessor.getPlugin("plugin4").hasState(PluginState.ENABLED));
+        assertEquals(PluginOperationStatus.INCORRECT_VERSION_PLUGIN, result.getStatus());
+        assertNotNull(pluginAccessor.getPlugin("plugin4"));
+        assertTrue(pluginAccessor.getPlugin("plugin4").hasState(PluginState.TEMPORARY));
         assertEquals(new Version("1.2.4"), pluginAccessor.getPlugin("plugin4").getVersion());
     }
 
