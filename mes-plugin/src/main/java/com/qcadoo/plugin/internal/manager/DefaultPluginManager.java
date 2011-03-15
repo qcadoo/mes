@@ -222,6 +222,8 @@ public final class DefaultPluginManager implements PluginManager {
             return PluginOperationResult.corruptedPlugin();
         }
 
+        pluginFileManager.renamePlugin(pluginFile.getName(), plugin.getFilename());
+
         if (plugin.isSystemPlugin()) {
             pluginFileManager.uninstallPlugin(plugin.getFilename());
             return PluginOperationResult.systemPluginUpdating();

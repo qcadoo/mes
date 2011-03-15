@@ -10,4 +10,6 @@ public interface PluginFileManager {
 
     public void uninstallPlugin(final String... filename);
 
+    public void renamePlugin(final String source, final String destination);
+
 }
