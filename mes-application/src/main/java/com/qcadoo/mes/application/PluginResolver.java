@@ -50,7 +50,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.model.beans.plugins.PluginsPlugin;
 
 @Component
@@ -61,9 +60,6 @@ public final class PluginResolver implements ApplicationListener<ContextRefreshe
 
     @Autowired
     private SessionFactory sessionFactory;
-
-    @Autowired
-    private PluginManagementService pluginManagementService;
 
     private final Set<String> identifiers = new HashSet<String>();
 
@@ -177,10 +173,11 @@ public final class PluginResolver implements ApplicationListener<ContextRefreshe
         } else {
             LOG.info("Updating plugin \"" + identifier + "\"");
 
-            if (pluginManagementService.compareVersions(plugin.getVersion(), version) > 0) {
-                throw new IllegalStateException("Plugin cannot be automatically downgraded from " + plugin.getVersion() + " to "
-                        + version);
-            }
+            /*
+             * TODO KRNA reimplement after plugin implementation if (pluginManagementService.compareVersions(plugin.getVersion(),
+             * version) > 0) { throw new IllegalStateException("Plugin cannot be automatically downgraded from " +
+             * plugin.getVersion() + " to " + version); }
+             */
         }
 
         plugin.setDescription(description);
