@@ -185,6 +185,10 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
             addModelElement(reader, pluginIdentifier, dataDefinition, tag);
         }
 
+        for (EntityHookDefinition hook : dataDefinition.getViewHooks()) {
+            hook.initialize(dataDefinition);
+        }
+
         for (EntityHookDefinition hook : dataDefinition.getCopyHooks()) {
             hook.initialize(dataDefinition);
         }
@@ -202,10 +206,6 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
         }
 
         for (EntityHookDefinition hook : dataDefinition.getValidators()) {
-            hook.initialize(dataDefinition);
-        }
-
-        for (EntityHookDefinition hook : dataDefinition.getCopyHooks()) {
             hook.initialize(dataDefinition);
         }
 
@@ -227,6 +227,9 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
         switch (modelTag) {
             case PRIORITY:
                 dataDefinition.addPriorityField(getPriorityFieldDefinition(reader, dataDefinition));
+                break;
+            case ONVIEW:
+                dataDefinition.addViewHook(getHookDefinition(reader));
                 break;
             case ONCREATE:
                 dataDefinition.addCreateHook(getHookDefinition(reader));

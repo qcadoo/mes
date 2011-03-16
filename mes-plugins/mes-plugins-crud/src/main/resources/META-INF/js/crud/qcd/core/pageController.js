@@ -152,6 +152,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 			if (response.redirect) {
 				if (response.redirect.openInNewWindow) {
 					window.open(response.redirect.url);
+				} else if (response.redirect.openInModalWindow) {
+					openModal(response.redirect.url, response.redirect.url);
 				} else {
 					goToPage(response.redirect.url, false, response.redirect.shouldSerializeWindow);
 					return;
@@ -330,9 +332,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	}
 	var goToPage = this.goToPage;
 	
-	this.openModal = function(id, url) {
+	function openModal(id, url) {
 		window.parent.openModal(id, url, getSerializationObject());
 	}
+	this.openModal = openModal
 	
 	this.goBack = function() {
 		if(canClose()) {

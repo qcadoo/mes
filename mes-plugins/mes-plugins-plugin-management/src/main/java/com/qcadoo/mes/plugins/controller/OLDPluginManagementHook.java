@@ -26,24 +26,19 @@ package com.qcadoo.mes.plugins.controller;
 
 import java.util.Locale;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.api.PluginManagementOperationStatus;
-import com.qcadoo.mes.api.PluginManagementService;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 
 @Service
-public final class PluginManagementHook {
+public final class OLDPluginManagementHook {
 
-    @Autowired
-    private PluginManagementService pluginManagementService;
+    // @Autowired
+    // private PluginManagementService pluginManagementService;
 
-    @Autowired
-    private TranslationService translationService;
+    // @Autowired
+    // private TranslationService translationService;
 
     public void onPluginDownloadClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
@@ -62,8 +57,9 @@ public final class PluginManagementHook {
             final String[] args) {
         Long pluginId = getPluginId(triggerState);
         if (pluginId != null) {
-            PluginManagementOperationStatus operationStatus = pluginManagementService.enablePlugin(pluginId);
-            updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus, triggerState.getLocale());
+            // PluginManagementOperationStatus operationStatus = pluginManagementService.enablePlugin(pluginId);
+            // updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus,
+            // triggerState.getLocale());
         }
     }
 
@@ -71,8 +67,9 @@ public final class PluginManagementHook {
             final String[] args) {
         Long pluginId = getPluginId(triggerState);
         if (pluginId != null) {
-            PluginManagementOperationStatus operationStatus = pluginManagementService.disablePlugin(pluginId);
-            updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus, triggerState.getLocale());
+            // PluginManagementOperationStatus operationStatus = pluginManagementService.disablePlugin(pluginId);
+            // updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus,
+            // triggerState.getLocale());
         }
     }
 
@@ -80,8 +77,9 @@ public final class PluginManagementHook {
             final String[] args) {
         Long pluginId = getPluginId(triggerState);
         if (pluginId != null) {
-            PluginManagementOperationStatus operationStatus = pluginManagementService.removePlugin(pluginId);
-            updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus, triggerState.getLocale());
+            // PluginManagementOperationStatus operationStatus = pluginManagementService.removePlugin(pluginId);
+            // updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus,
+            // triggerState.getLocale());
         }
     }
 
@@ -89,27 +87,30 @@ public final class PluginManagementHook {
         if (triggerState.getFieldValue() instanceof Long) {
             return (Long) triggerState.getFieldValue();
         } else {
-            triggerState.addMessage(
-                    translationService.translate("plugins.messages.error.pluginNotFound", triggerState.getLocale()),
-                    MessageType.FAILURE);
+            // triggerState.addMessage(
+            // translationService.translate("plugins.messages.error.pluginNotFound", triggerState.getLocale()),
+            // MessageType.FAILURE);
             return null;
         }
     }
 
     private void updatePluginManagementOperationStatus(final ViewDefinitionState viewDefinitionState,
-            final ComponentState triggerState, final PluginManagementOperationStatus operationStatus, final Locale locale) {
+            final ComponentState triggerState, final String operationStatus, final Locale locale) {
 
-        if (operationStatus.isRestartRequired()) {
-            String message = translationService.translate("plugins.messages.success.restartSucces", triggerState.getLocale());
-            viewDefinitionState.redirectTo("../pluginPages/restart.html?message=" + message, false, false);
-            return;
-        }
+        // private void updatePluginManagementOperationStatus(final ViewDefinitionState viewDefinitionState,
+        // final ComponentState triggerState, final PluginManagementOperationStatus operationStatus, final Locale locale) {
 
-        if (operationStatus.isError()) {
-            triggerState.addMessage(translationService.translate(operationStatus.getMessage(), locale), MessageType.FAILURE);
-        } else {
-            triggerState.addMessage(translationService.translate(operationStatus.getMessage(), locale), MessageType.SUCCESS);
-        }
+        // if (operationStatus.isRestartRequired()) {
+        // String message = translationService.translate("plugins.messages.success.restartSucces", triggerState.getLocale());
+        // viewDefinitionState.redirectTo("../pluginPages/restart.html?message=" + message, false, false);
+        // return;
+        // }
+
+        // if (operationStatus.isError()) {
+        // triggerState.addMessage(translationService.translate(operationStatus.getMessage(), locale), MessageType.FAILURE);
+        // } else {
+        // triggerState.addMessage(translationService.translate(operationStatus.getMessage(), locale), MessageType.SUCCESS);
+        // }
 
     }
 }

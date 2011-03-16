@@ -56,6 +56,14 @@ public interface InternalDataDefinition extends DataDefinition {
     String getFullyQualifiedClassName();
 
     /**
+     * Call view hooks on given entity.
+     * 
+     * @param entity
+     *            entity
+     */
+    boolean callViewHook(final Entity entity);
+
+    /**
      * Call create hooks on given entity.
      * 
      * @param entity
