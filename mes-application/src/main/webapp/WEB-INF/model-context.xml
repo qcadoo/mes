@@ -39,37 +39,20 @@
        http://www.springframework.org/schema/context 
        http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<util:properties id="plugin">
-		<prop key="restartCommand">${QCADOO_RESTART_CMD}</prop>
-		<prop key="pluginsPath">${QCADOO_PLUGINS_PATH}</prop>
-		<prop key="pluginsTmpPath">${QCADOO_PLUGINS_TMP_PATH}</prop>
-		<prop key="descriptors">new-plugin.xml</prop>
-	</util:properties>
+	<context:component-scan base-package="com.qcadoo.model" />
 
-	<context:component-scan base-package="com.qcadoo.plugin" />
-
-	<bean id="pluginSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-		<qualifier value="plugin"/>
+	<bean id="sessionFactory" class="com.qcadoo.model.internal.sessionfactory.DynamicSessionFactoryBeanImpl">
 		<property name="dataSource" ref="dataSource" />
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">${hibernateDialect}</prop>
 				<prop key="hibernate.show_sql">${hibernateShowSql}</prop>
 				<prop key="hibernate.hbm2ddl.auto">${hibernateHbm2ddlAuto}</prop>
+				<!-- prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.region.factory_class">net.sf.ehcache.hibernate.EhCacheRegionFactory</prop -->
+            	<prop key="hibernate.bytecode.use_reflection_optimizer">true</prop>
 			</props>
-		</property>
-		<property name="annotatedClasses">
-			<list>
-				<value>com.qcadoo.model.beans.plugins.PluginsPlugin</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean class="com.qcadoo.plugin.internal.module.DefaultModuleFactoryAccessor">
-		<property name="moduleFactories">
-			<list>
-				<bean class="com.qcadoo.model.internal.module.ModelModuleFactory" />
-			</list>
 		</property>
 	</bean>
 	

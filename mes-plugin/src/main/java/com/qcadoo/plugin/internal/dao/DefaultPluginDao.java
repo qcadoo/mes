@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import com.qcadoo.plugin.internal.api.PluginDao;
 public class DefaultPluginDao implements PluginDao {
 
     @Autowired
+    @Qualifier("plugin")
     private SessionFactory sessionFactory;
 
     @Override

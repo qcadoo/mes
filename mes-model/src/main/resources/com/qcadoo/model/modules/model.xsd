@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.qcadoo.com/modules/model" xmlns="http://www.qcadoo.com/modules/model" elementFormDefault="qualified">
+
+	<xs:element name="model">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:normalizedString" use="required" />
+			<xs:attribute name="resource" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="field" />
+	
+	<xs:element name="hook" />
+	
+	<xs:element name="validator" />
+
+</xs:schema>

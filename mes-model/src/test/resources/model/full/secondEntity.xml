@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model plugin="full" name="secondEntity" updatable="false" xmlns="http://www.qcadoo.com/model">
+	<belongsTo name="fieldFirstEntity" model="firstEntity" />
+	<belongsTo name="parent" model="secondEntity" />
+	<hasMany name="children" model="secondEntity" joinField="parent" />
+</model>

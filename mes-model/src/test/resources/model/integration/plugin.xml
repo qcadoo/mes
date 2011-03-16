@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="products" version="1.0.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/plugin">
+
+	<information>
+		<name>products</name>
+	</information>
+
+	<modules>
+		<model:model name="product" resource="model/integration/product.xml" />
+		<model:model name="component" resource="model/integration/component.xml" />
+		<model:model name="machine" resource="model/integration/machine.xml" />
+	</modules>
+	
+</plugin>

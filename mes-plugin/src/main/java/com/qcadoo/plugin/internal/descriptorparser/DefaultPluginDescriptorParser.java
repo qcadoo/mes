@@ -128,7 +128,7 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
             } else if ("dependencies".equals(child.getNodeName())) {
                 addDependenciesInformation(child, pluginBuilder);
             } else if ("modules".equals(child.getNodeName())) {
-                addModules(child, pluginBuilder);
+                addModules(child, pluginBuilder, pluginIdentifier);
             } else {
                 throw new IllegalStateException("Wrong plugin tag: " + child.getNodeName());
             }
@@ -191,10 +191,10 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
         pluginBuilder.withDependency(dependencyPluginIdentifier, dependencyPluginVersion);
     }
 
-    private void addModules(final Node modulesNode, final Builder pluginBuilder) {
+    private void addModules(final Node modulesNode, final Builder pluginBuilder, final String pluginIdentifier) {
         for (Node child : getChildNodes(modulesNode)) {
-            ModuleFactory<?> moduleFactory = moduleFactoryAccessor.getModuleFactory(child.getNodeName());
-            pluginBuilder.withModule(moduleFactory.parse(child));
+            ModuleFactory<?> moduleFactory = moduleFactoryAccessor.getModuleFactory(child.getLocalName());
+            pluginBuilder.withModule(moduleFactory.parse(pluginIdentifier, child));
         }
     }
 

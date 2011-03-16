@@ -14,6 +14,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
@@ -63,8 +64,10 @@ public class PluginDescriptorParserTest {
         ModuleFactory testModule1Factory = mock(ModuleFactory.class);
         ModuleFactory testModule2Factory = mock(ModuleFactory.class);
 
-        given(testModule1Factory.parse(argThat(new HasNodeName("testModule1", "testModule1Content")))).willReturn(testModule1);
-        given(testModule2Factory.parse(argThat(new HasNodeName("testModule2", "testModule2Content")))).willReturn(testModule2);
+        given(testModule1Factory.parse(Mockito.eq("testPlugin"), argThat(new HasNodeName("testModule1", "testModule1Content"))))
+                .willReturn(testModule1);
+        given(testModule2Factory.parse(Mockito.eq("testPlugin"), argThat(new HasNodeName("testModule2", "testModule2Content"))))
+                .willReturn(testModule2);
 
         given(moduleFactoryAccessor.getModuleFactory("testModule1")).willReturn(testModule1Factory);
         given(moduleFactoryAccessor.getModuleFactory("testModule2")).willReturn(testModule2Factory);

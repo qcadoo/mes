@@ -26,75 +26,14 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:security="http://www.springframework.org/schema/security"
-	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="
        http://www.springframework.org/schema/beans 
        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.springframework.org/schema/tx 
-       http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-       http://www.springframework.org/schema/util 
-       http://www.springframework.org/schema/util/spring-util-3.0.xsd
-       http://www.springframework.org/schema/context 
-       http://www.springframework.org/schema/context/spring-context-3.0.xsd
        http://www.springframework.org/schema/security 
-       http://www.springframework.org/schema/security/spring-security-3.0.xsd
-       http://www.springframework.org/schema/aop 
-       http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+       http://www.springframework.org/schema/security/spring-security-3.0.xsd">
 
-	<context:property-placeholder location="file:${QCADOO_CONF}/db.properties,file:${QCADOO_CONF}/mes.properties,file:${QCADOO_CONF}/report.properties,classpath*:hibernate.properties" />
-
-	<context:component-scan base-package="com.qcadoo.mes">
-		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-	</context:component-scan>
-
-	<bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetClass">
-			<value>org.springframework.util.Log4jConfigurer</value>
-		</property>
-		<property name="targetMethod">
-			<value>initLogging</value>
-		</property>
-		<property name="arguments">
-			<list>
-				<value>file:${QCADOO_CONF}/log4j.xml</value>
-			</list>
-		</property>
-	</bean>
-	
-	<context:component-scan base-package="com.qcadoo.model" />
-
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
-		destroy-method="close">
-		<property name="driverClass" value="${dbDriverClass}" />
-		<property name="jdbcUrl" value="${dbJdbcUrl}" />
-		<property name="user" value="${dbUsername}" />
-		<property name="password" value="${dbPassword}" />
-	</bean>
-
-	<bean id="sessionFactory" class="com.qcadoo.model.internal.sessionfactory.DynamicSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="hibernateProperties">
-			<props>
-				<prop key="hibernate.dialect">${hibernateDialect}</prop>
-				<prop key="hibernate.show_sql">${hibernateShowSql}</prop>
-				<prop key="hibernate.hbm2ddl.auto">${hibernateHbm2ddlAuto}</prop>
-				<!-- prop key="hibernate.cache.use_query_cache">true</prop>
-				<prop key="hibernate.cache.use_second_level_cache">true</prop>
-				<prop key="hibernate.cache.region.factory_class">net.sf.ehcache.hibernate.EhCacheRegionFactory</prop -->
-            	<prop key="hibernate.bytecode.use_reflection_optimizer">true</prop>
-			</props>
-		</property>
-	</bean>
-
-	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
-	
-	<tx:annotation-driven />
-	
 	<security:global-method-security
 		pre-post-annotations="enabled">
 		<security:expression-handler ref="methodSecurityExpressionHandler" />
@@ -227,5 +166,5 @@
 		class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
 		<property name="defaultFailureUrl" value="/login.html?login_error=error" />
 	</bean>
-
+	
 </beans>

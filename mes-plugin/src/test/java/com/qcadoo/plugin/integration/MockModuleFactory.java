@@ -11,7 +11,7 @@ public class MockModuleFactory implements ModuleFactory<MockModule> {
     }
 
     @Override
-    public MockModule parse(final Node node) {
+    public MockModule parse(final String pluginIdentifier, final Node node) {
         return new MockModule();
     }
 

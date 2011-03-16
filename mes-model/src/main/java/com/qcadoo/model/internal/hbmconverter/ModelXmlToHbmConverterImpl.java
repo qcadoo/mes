@@ -3,9 +3,7 @@ package com.qcadoo.model.internal.hbmconverter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.xml.transform.Transformer;
@@ -18,6 +16,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
@@ -47,13 +46,13 @@ public final class ModelXmlToHbmConverterImpl implements ModelXmlToHbmConverter 
     }
 
     @Override
-    public Collection<InputStream> convert(final Resource... resources) {
+    public Resource[] convert(final Resource... resources) {
         try {
-            List<InputStream> streams = new ArrayList<InputStream>();
+            List<Resource> hbms = new ArrayList<Resource>();
 
             for (Resource resource : resources) {
                 if (resource.isReadable()) {
-                    LOG.info("Converting " + resource.getURI().toString() + " to hbm.xml");
+                    LOG.info("Converting " + resource + " to hbm.xml");
 
                     ByteArrayOutputStream hbm = new ByteArrayOutputStream();
 
@@ -63,11 +62,11 @@ public final class ModelXmlToHbmConverterImpl implements ModelXmlToHbmConverter 
                         LOG.debug(new String(hbm.toByteArray()));
                     }
 
-                    streams.add(new ByteArrayInputStream(hbm.toByteArray()));
+                    hbms.add(new InputStreamResource(new ByteArrayInputStream(hbm.toByteArray())));
                 }
             }
 
-            return streams;
+            return hbms.toArray(new Resource[hbms.size()]);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to convert model.xml to hbm.xml", e);
         } catch (TransformerException e) {

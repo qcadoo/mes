@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import com.qcadoo.mes.internal.MenuService;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 import com.qcadoo.mes.view.xml.ViewDefinitionParserImpl;
-import com.qcadoo.model.internal.api.ModelXmlToDefinitionConverter;
 
 @Component
 public class Application implements ApplicationListener<ContextRefreshedEvent> {
@@ -17,15 +16,11 @@ public class Application implements ApplicationListener<ContextRefreshedEvent> {
     private ViewDefinitionParser viewDefinitionParser;
 
     @Autowired
-    private ModelXmlToDefinitionConverter modelXmlToDefinitionConverter;
-
-    @Autowired
     private MenuService menuService;
 
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {
         // TODO after implementing plugins - move it to proper place
-        modelXmlToDefinitionConverter.onApplicationEvent(event);
         ((ViewDefinitionParserImpl) viewDefinitionParser).onApplicationEvent(event);
         menuService.onApplicationEvent(event);
 

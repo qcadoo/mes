@@ -26,8 +26,9 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:security="http://www.springframework.org/schema/security"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="
        http://www.springframework.org/schema/beans 
@@ -37,40 +38,30 @@
        http://www.springframework.org/schema/util 
        http://www.springframework.org/schema/util/spring-util-3.0.xsd
        http://www.springframework.org/schema/context 
-       http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/security 
+       http://www.springframework.org/schema/security/spring-security-3.0.xsd
+       http://www.springframework.org/schema/aop 
+       http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<util:properties id="plugin">
-		<prop key="restartCommand">${QCADOO_RESTART_CMD}</prop>
-		<prop key="pluginsPath">${QCADOO_PLUGINS_PATH}</prop>
-		<prop key="pluginsTmpPath">${QCADOO_PLUGINS_TMP_PATH}</prop>
-		<prop key="descriptors">new-plugin.xml</prop>
-	</util:properties>
+	<context:property-placeholder location="file:${QCADOO_CONF}/db.properties,file:${QCADOO_CONF}/report.properties,file:${QCADOO_CONF}/mes.properties,classpath*:hibernate.properties,classpath*:build.properties" />
 
-	<context:component-scan base-package="com.qcadoo.plugin" />
+	<context:component-scan base-package="com.qcadoo.mes">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
 
-	<bean id="pluginSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-		<qualifier value="plugin"/>
-		<property name="dataSource" ref="dataSource" />
-		<property name="hibernateProperties">
-			<props>
-				<prop key="hibernate.dialect">${hibernateDialect}</prop>
-				<prop key="hibernate.show_sql">${hibernateShowSql}</prop>
-				<prop key="hibernate.hbm2ddl.auto">${hibernateHbm2ddlAuto}</prop>
-			</props>
+	<bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetClass">
+			<value>org.springframework.util.Log4jConfigurer</value>
 		</property>
-		<property name="annotatedClasses">
+		<property name="targetMethod">
+			<value>initLogging</value>
+		</property>
+		<property name="arguments">
 			<list>
-				<value>com.qcadoo.model.beans.plugins.PluginsPlugin</value>
+				<value>file:${QCADOO_CONF}/log4j.xml</value>
 			</list>
 		</property>
 	</bean>
 
-	<bean class="com.qcadoo.plugin.internal.module.DefaultModuleFactoryAccessor">
-		<property name="moduleFactories">
-			<list>
-				<bean class="com.qcadoo.model.internal.module.ModelModuleFactory" />
-			</list>
-		</property>
-	</bean>
-	
 </beans>

@@ -43,12 +43,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +62,6 @@ import com.qcadoo.model.api.types.FieldType;
 import com.qcadoo.model.api.types.HasManyType;
 import com.qcadoo.model.api.types.TreeType;
 import com.qcadoo.model.api.utils.DateUtils;
-import com.qcadoo.model.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.model.internal.AbstractModelXmlConverter;
 import com.qcadoo.model.internal.DataDefinitionImpl;
 import com.qcadoo.model.internal.FieldDefinitionImpl;
@@ -72,7 +69,6 @@ import com.qcadoo.model.internal.api.DataAccessService;
 import com.qcadoo.model.internal.api.EntityHookDefinition;
 import com.qcadoo.model.internal.api.ErrorMessageDefinition;
 import com.qcadoo.model.internal.api.FieldHookDefinition;
-import com.qcadoo.model.internal.api.ModelXmlResolver;
 import com.qcadoo.model.internal.api.ModelXmlToDefinitionConverter;
 import com.qcadoo.model.internal.hooks.EntityHookDefinitionImpl;
 import com.qcadoo.model.internal.hooks.FieldHookDefinitionImpl;
@@ -102,10 +98,7 @@ import com.qcadoo.model.internal.validators.ScaleValidator;
 import com.qcadoo.model.internal.validators.UniqueValidator;
 
 @Service
-public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlConverter implements ModelXmlToDefinitionConverter { // ,
-
-    // ApplicationListener<ContextRefreshedEvent>
-    // {
+public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlConverter implements ModelXmlToDefinitionConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelXmlToDefinitionConverterImpl.class);
 
@@ -128,17 +121,9 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
     private ApplicationContext applicationContext;
 
     @Autowired
-    private ModelXmlResolver modelXmlResolver;
-
-    @Autowired
     private TranslationService translationService;
 
-    @Override
     @Transactional
-    public void onApplicationEvent(final ContextRefreshedEvent event) {
-        convert(modelXmlResolver.getResources());
-    }
-
     @Override
     public Collection<DataDefinition> convert(final Resource... resources) {
         try {
@@ -146,9 +131,9 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
 
             for (Resource resource : resources) {
                 if (resource.isReadable()) {
-                    LOG.info("Creating dataDefinition from " + resource.getURI().toString());
+                    LOG.info("Creating dataDefinition from " + resource);
 
-                    dataDefinitions.addAll(parse(resource.getInputStream()));
+                    dataDefinitions.add(parse(resource.getInputStream()));
                 }
             }
 
@@ -158,63 +143,25 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
         }
     }
 
-    private Collection<DataDefinition> parse(final InputStream stream) {
+    private DataDefinition parse(final InputStream stream) {
         try {
             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(stream);
-            List<DataDefinition> dataDefinitions = new ArrayList<DataDefinition>();
-
-            String pluginIdentifier = null;
+            DataDefinition dataDefinition = null;
 
             while (reader.hasNext() && reader.next() > 0) {
-                if (isTagStarted(reader, TAG_MODELS)) {
-                    pluginIdentifier = getPluginIdentifier(reader);
-                } else if (isTagStarted(reader, TAG_DICTIONARY)) {
-                    getDictionary(reader, pluginIdentifier);
-                } else if (isTagStarted(reader, TAG_MODEL)) {
-                    dataDefinitions.add(getDataDefinition(reader, pluginIdentifier));
+                if (isTagStarted(reader, TAG_MODEL)) {
+                    dataDefinition = getDataDefinition(reader, getPluginIdentifier(reader));
+                    break;
                 }
             }
 
             reader.close();
 
-            return dataDefinitions;
+            return dataDefinition;
         } catch (XMLStreamException e) {
             throw new IllegalStateException(e.getMessage(), e);
         } catch (FactoryConfigurationError e) {
             throw new IllegalStateException(e.getMessage(), e);
-        }
-    }
-
-    private void getDictionary(final XMLStreamReader reader, final String pluginIdentifier) throws XMLStreamException {
-        String name = getStringAttribute(reader, "name");
-
-        DictionariesDictionary dictionary = (DictionariesDictionary) sessionFactory.getCurrentSession()
-                .createCriteria(DictionariesDictionary.class).add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult();
-
-        if (dictionary != null) {
-            return;
-        }
-
-        // getBooleanAttribute(reader, "modificable", true);
-
-        dictionary = new DictionariesDictionary();
-        dictionary.setName(name);
-
-        // TODO dictionary label
-        dictionary.setLabel(name);
-
-        sessionFactory.getCurrentSession().save(dictionary);
-
-        // TODO dictionary values
-
-        while (reader.hasNext() && reader.next() > 0) {
-            if (isTagEnded(reader, TAG_DICTIONARY)) {
-                break;
-            }
-
-            if (isTagStarted(reader, "value")) {
-                // System.out.println(" ----> " + reader.getElementText());
-            }
         }
     }
 
