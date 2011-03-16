@@ -24,7 +24,6 @@
 
 package com.qcadoo.mes.plugins.controller;
 
-import java.util.HashMap;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +32,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.api.PluginManagementOperationStatus;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.crud.CrudController;
-import com.qcadoo.mes.internal.PluginManagementOperationStatusImpl;
 
 //@Controller
 public final class OLDPluginManagementController {
@@ -92,7 +89,8 @@ public final class OLDPluginManagementController {
 
     // @RequestMapping(value = "pluginPages/restartInfo", method = RequestMethod.GET)
     public ModelAndView getRestartInfoView(@RequestParam("message") final String message, final Locale locale) {
-        return getInfoMessageView(new PluginManagementOperationStatusImpl(false, message), locale);
+        // return getInfoMessageView(new PluginManagementOperationStatusImpl(false, message), locale);
+        return null;
     }
 
     private ModelAndView getDownloadPageView(final String downloadAction, final Long entityId, final Locale locale) {
@@ -131,22 +129,24 @@ public final class OLDPluginManagementController {
         return null;
     }
 
-    private ModelAndView getInfoMessageView(final PluginManagementOperationStatus operationStatus, final Locale locale) {
-        if (operationStatus.isRestartRequired()) {
-            return getRestartPagePageView(operationStatus.getMessage(), locale);
-        }
-        ModelAndView mav = crudController.prepareView("plugins", "pluginInfo", new HashMap<String, String>(), locale);
-        String message = translationService.translate(operationStatus.getMessage(), locale);
-        mav.addObject("pluginStatusMessage", message);
-        if (operationStatus.isError()) {
-            mav.addObject("pluginStatusError", true);
-            mav.addObject("pluginStatusMessageHeader", translationService.translate("plugins.messages.error.header", locale));
-        } else {
-            mav.addObject("pluginStatusError", false);
-            mav.addObject("pluginStatusMessageHeader", translationService.translate("plugins.messages.success.header", locale));
-        }
+    private ModelAndView getInfoMessageView(final String operationStatus, final Locale locale) {
+        // private ModelAndView getInfoMessageView(final PluginManagementOperationStatus operationStatus, final Locale locale) {
+        // if (operationStatus.isRestartRequired()) {
+        // return getRestartPagePageView(operationStatus.getMessage(), locale);
+        // }
+        // ModelAndView mav = crudController.prepareView("plugins", "pluginInfo", new HashMap<String, String>(), locale);
+        // String message = translationService.translate(operationStatus.getMessage(), locale);
+        // mav.addObject("pluginStatusMessage", message);
+        // if (operationStatus.isError()) {
+        // mav.addObject("pluginStatusError", true);
+        // mav.addObject("pluginStatusMessageHeader", translationService.translate("plugins.messages.error.header", locale));
+        // } else {
+        // mav.addObject("pluginStatusError", false);
+        // mav.addObject("pluginStatusMessageHeader", translationService.translate("plugins.messages.success.header", locale));
+        // }
 
-        return mav;
+        // return mav;
+        return null;
     }
 
 }

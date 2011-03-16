@@ -28,7 +28,6 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.api.PluginManagementOperationStatus;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 
@@ -96,19 +95,22 @@ public final class OLDPluginManagementHook {
     }
 
     private void updatePluginManagementOperationStatus(final ViewDefinitionState viewDefinitionState,
-            final ComponentState triggerState, final PluginManagementOperationStatus operationStatus, final Locale locale) {
+            final ComponentState triggerState, final String operationStatus, final Locale locale) {
 
-        if (operationStatus.isRestartRequired()) {
-            // String message = translationService.translate("plugins.messages.success.restartSucces", triggerState.getLocale());
-            // viewDefinitionState.redirectTo("../pluginPages/restart.html?message=" + message, false, false);
-            return;
-        }
+        // private void updatePluginManagementOperationStatus(final ViewDefinitionState viewDefinitionState,
+        // final ComponentState triggerState, final PluginManagementOperationStatus operationStatus, final Locale locale) {
 
-        if (operationStatus.isError()) {
-            // triggerState.addMessage(translationService.translate(operationStatus.getMessage(), locale), MessageType.FAILURE);
-        } else {
-            // triggerState.addMessage(translationService.translate(operationStatus.getMessage(), locale), MessageType.SUCCESS);
-        }
+        // if (operationStatus.isRestartRequired()) {
+        // String message = translationService.translate("plugins.messages.success.restartSucces", triggerState.getLocale());
+        // viewDefinitionState.redirectTo("../pluginPages/restart.html?message=" + message, false, false);
+        // return;
+        // }
+
+        // if (operationStatus.isError()) {
+        // triggerState.addMessage(translationService.translate(operationStatus.getMessage(), locale), MessageType.FAILURE);
+        // } else {
+        // triggerState.addMessage(translationService.translate(operationStatus.getMessage(), locale), MessageType.SUCCESS);
+        // }
 
     }
 }

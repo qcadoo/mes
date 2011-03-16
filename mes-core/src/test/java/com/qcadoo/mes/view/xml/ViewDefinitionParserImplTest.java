@@ -48,7 +48,6 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 import com.google.common.collect.ImmutableMap;
-import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
@@ -72,7 +71,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.types.BelongsToType;
 import com.qcadoo.model.api.types.HasManyType;
-import com.qcadoo.model.beans.plugins.PluginsPlugin;
 import com.qcadoo.model.internal.types.StringType;
 
 public class ViewDefinitionParserImplTest {
@@ -86,8 +84,6 @@ public class ViewDefinitionParserImplTest {
     private HookFactory hookFactory;
 
     private ApplicationContext applicationContext;
-
-    private PluginManagementService pluginManagementService;
 
     private InputStream xml;
 
@@ -110,8 +106,6 @@ public class ViewDefinitionParserImplTest {
         applicationContext = mock(ApplicationContext.class);
         dataDefinitionService = mock(DataDefinitionService.class);
 
-        pluginManagementService = mock(PluginManagementService.class);
-
         translationService = mock(TranslationService.class);
 
         viewDefinitionService = new ViewDefinitionServiceImpl();
@@ -128,10 +122,6 @@ public class ViewDefinitionParserImplTest {
 
         xml = new FileInputStream(new File("src/test/resources/view/test.xml"));
 
-        PluginsPlugin plugin = new PluginsPlugin();
-        plugin.setIdentifier("sample");
-
-        given(pluginManagementService.getByIdentifierAndStatus("sample", "03active")).willReturn(plugin);
         given(applicationContext.getBean(CustomEntityService.class)).willReturn(new CustomEntityService());
 
         dataDefinitionA = mock(DataDefinition.class);
