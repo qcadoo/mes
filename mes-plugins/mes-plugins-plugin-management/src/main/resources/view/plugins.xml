@@ -5,22 +5,23 @@
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group name="plugins">
-					<bigButton name="download" icon="downloadIcon24.png" action="#{grid}.fireEvent(download);" message="plugins2.ribbon.messages.download"/>
+					<bigButton name="downloadPlugin" icon="downloadIcon24.png" action="#{grid}.fireEvent(download);" message="plugins2.ribbon.messages.download"/>
 				</group>
 				<group name="actions">
 					<bigButton name="changeStatus" icon="enableIcon16.png" state="disabled">
 						<script>
 							<![CDATA[
 								this.element.width(100);
+								this.removeOnChangeListeners();
 								this.addOnChangeListener({
 									onClick: function() {
 										if (this.state == "enable") {
 											if (window.confirm("#{translate(plugins2.ribbon.confirms.enable)}")) {
-												#{grid}.performEvent('enable', []);
+												#{grid}.performEvent('enablePlugin', []);
 											};
 										} else if (this.state == "disable") {
 											if (window.confirm("#{translate(plugins2.ribbon.confirms.disable)}")) {
-												#{grid}.performEvent('disable', []);
+												#{grid}.performEvent('disablePlugin', []);
 											};
 										}
 									}
@@ -31,10 +32,11 @@
 					<smallButton name="remove" icon="deleteIcon16.png" state="disabled">
 						<script>
 							<![CDATA[
+								this.removeOnChangeListeners();
 								this.addOnChangeListener({
 									onClick: function() {
 										if (window.confirm("#{translate(plugins2.ribbon.confirms.remove)}")) {
-											#{grid}.performEvent('remove', []);
+											#{grid}.performEvent('removePlugin', []);
 										}
 									}
 								});
@@ -61,15 +63,16 @@
 				<option type="creatable" value="false" />
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
-				<listener event="download" bean="com.qcadoo.mes.plugins.controller.PluginManagmentViewHook" method="onDownloadButtonClick" />
-				<listener event="enable" bean="com.qcadoo.mes.plugins.controller.PluginManagmentViewHook" method="onEnableButtonClick" />
-				<listener event="disable" bean="com.qcadoo.mes.plugins.controller.PluginManagmentViewHook" method="onDisableButtonClick" />
-				<listener event="remove" bean="com.qcadoo.mes.plugins.controller.PluginManagmentViewHook" method="onRemoveButtonClick" />
+				<listener event="downloadPlugin" bean="com.qcadoo.mes.plugins.controller.PluginManagmentViewHook" method="onDownloadButtonClick" />
+				<listener event="enablePlugin" bean="com.qcadoo.mes.plugins.controller.PluginManagmentViewHook" method="onEnableButtonClick" />
+				<listener event="disablePlugin" bean="com.qcadoo.mes.plugins.controller.PluginManagmentViewHook" method="onDisableButtonClick" />
+				<listener event="removePlugin" bean="com.qcadoo.mes.plugins.controller.PluginManagmentViewHook" method="onRemoveButtonClick" />
 				<script>
 					<![CDATA[
 						var downloadRibbonItem = #{window}.getRibbonItem("plugins.download");
 						var changeStatusRibbonItem = #{window}.getRibbonItem("actions.changeStatus");
 						var removeRibbonItem = #{window}.getRibbonItem("actions.remove");
+						this.removeOnChangeListeners();
 						this.addOnChangeListener({
 							onChange: function(selectedEntitiesArray) {
 								if (selectedEntitiesArray.length == 0) {
@@ -171,6 +174,22 @@
 				<layoutElement column="1" row="1">
 					<component type="staticPage" name="pluginDownload">
 						<option type="page" value="plugins/pluginDownload.jsp" />
+					</component>
+				</layoutElement>
+			</component>
+			<option type="header" value="true" />
+		</component>
+	</view>
+	
+	<view name="pluginError">
+		<component type="window" name="window">
+			<ribbon>
+				<group template="navigation"/>
+			</ribbon>
+			<component type="gridLayout" name="gridLayout" columns="1" rows="1" fixedRowHeight="false">
+				<layoutElement column="1" row="1">
+					<component type="staticPage" name="pluginError">
+						<option type="page" value="plugins/pluginError.jsp" />
 					</component>
 				</layoutElement>
 			</component>
