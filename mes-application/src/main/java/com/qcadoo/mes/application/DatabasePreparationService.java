@@ -104,7 +104,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         Entity menuCategoryGridView = getMenuViewDefinition("menuCategories");
         Entity technologyGridView = getMenuViewDefinition("technologies");
         Entity orderGridView = getMenuViewDefinition("orders");
-        Entity pluginGridView = getMenuViewDefinition("plugins");
+        // Entity pluginGridView = getMenuViewDefinition("plugins");
         Entity userGridView = getMenuViewDefinition("users");
         Entity dictionaryGridView = getMenuViewDefinition("dictionaries");
         Entity materialRequirementGridView = getMenuViewDefinition("materialRequirements");
@@ -162,8 +162,8 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         if (addAdministrationMenuToDatabase) {
             addMenuViewDefinitionItem("users", "users.menu.administration.users", menuCategoryAdministration, userGridView, 2);
             addMenuViewDefinitionItem("groups", "users.menu.administration.groups", menuCategoryAdministration, groupGridView, 3);
-            addMenuViewDefinitionItem("plugins", "plugins.menu.administration.plugins", menuCategoryAdministration,
-                    pluginGridView, 3);
+            // addMenuViewDefinitionItem("plugins", "plugins.menu.administration.plugins", menuCategoryAdministration,
+            // pluginGridView, 3);
             addMenuViewDefinitionItem("menu", "menu.menu.administration.menu", menuCategoryAdministration, menuCategoryGridView,
                     4);
         }

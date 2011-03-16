@@ -85,9 +85,7 @@ public class PluginOperationResult {
     public boolean isSuccess() {
         switch (status) {
             case SUCCESS:
-                return true;
             case SUCCESS_WITH_RESTART:
-                return true;
             case SUCCESS_WITH_MISSING_DEPENDENCIES:
                 return true;
             default:

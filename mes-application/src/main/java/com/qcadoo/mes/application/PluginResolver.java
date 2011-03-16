@@ -24,7 +24,6 @@
 
 package com.qcadoo.mes.application;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -36,7 +35,7 @@ public final class PluginResolver implements ApplicationListener<ContextRefreshe
 
     // private static final Logger LOG = LoggerFactory.getLogger(PluginResolver.class);
 
-    @Autowired
+    // @Autowired
     // private SessionFactory sessionFactory;
     // private final Set<String> identifiers = new HashSet<String>();
     // private static final Pattern PATTERN = Pattern.compile(".*/([^/]+\\.jar).*");
