@@ -1,11 +1,14 @@
 package com.qcadoo.model.internal.module;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 import com.qcadoo.model.api.DataDefinitionService;
@@ -69,7 +72,13 @@ public class ModelModuleFactory implements ModuleFactory<ModelModule> {
         String name = nodeName.getNodeValue();
 
         if (resourceName != null) {
-            modelXmlHolder.put(pluginIdentifier, name, ClassLoader.getSystemResourceAsStream(resourceName.getNodeValue()));
+            try {
+                modelXmlHolder.put(pluginIdentifier, name, new ClassPathResource(resourceName.getNodeValue()).getInputStream());
+            } catch (DOMException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            } catch (IOException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            }
         } else {
             modelXmlHolder.put(pluginIdentifier, name, new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8"))));
         }

@@ -79,21 +79,22 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     @Override
     @Transactional
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-        if (databaseHasToBePrepared()) {
-            LOG.info("Database has to be prepared ...");
+        // TODO
+        // if (databaseHasToBePrepared()) {
+        // LOG.info("Database has to be prepared ...");
 
-            createPersistenceLogins();
-            addMenus();
-            addGroups();
-            addUsers();
-            addParameters();
-
-            if (addTestData) {
-                testDataLoader.loadTestData();
-            }
-        } else {
-            LOG.info("Database has been already prepared, skipping");
-        }
+        // createPersistenceLogins();
+        // addMenus();
+        // addGroups();
+        // addUsers();
+        // addParameters();
+        //
+        // if (addTestData) {
+        // testDataLoader.loadTestData();
+        // }
+        // } else {
+        // LOG.info("Database has been already prepared, skipping");
+        // }
     }
 
     private void createPersistenceLogins() {

@@ -35,21 +35,10 @@ public class DynamicSessionFactory implements SessionFactory {
 
     private SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
-            System.out.println(" ---- 1");
             synchronized (this) {
-                System.out.println(" ---- 2");
                 if (sessionFactory == null) {
-                    System.out.println(" ---- 3");
                     try {
                         sessionFactory = sessionFactoryBean.getObject();
-                        System.out.println(" ---- 4 " + sessionFactoryBean.isSingleton());
-                        System.out.println(" ---- 4 " + sessionFactoryBean.getObjectType());
-                        System.out.println(" ---- 4 " + sessionFactoryBean.getObject());
-                        System.out.println(" ---- 4 " + sessionFactory);
-
-                        if (sessionFactory == null) {
-                            throw new IllegalStateException();
-                        }
                     } catch (Exception e) {
                         throw new IllegalStateException(e.getMessage(), e);
                     }

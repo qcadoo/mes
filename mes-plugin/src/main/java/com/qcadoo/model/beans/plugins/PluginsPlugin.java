@@ -54,11 +54,11 @@ public class PluginsPlugin implements PersistentPlugin {
     }
 
     @Override
-    public PluginState getPluginState() {
+    public PluginState getState() {
         return state;
     }
 
-    protected void setPluginState(final PluginState state) {
+    protected void setState(final PluginState state) {
         this.state = state;
     }
 

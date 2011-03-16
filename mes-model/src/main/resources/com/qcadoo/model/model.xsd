@@ -29,6 +29,7 @@
 					<xs:element name="onUpdate" type="hookType" />
 					<xs:element name="onCreate" type="hookType" />
 					<xs:element name="onCopy" type="hookType" />
+					<xs:element name="onView" type="hookType" />
 				</xs:choice>
 				<xs:element name="identifier" type="identifierExpressionType"
 					minOccurs="0" maxOccurs="1" />

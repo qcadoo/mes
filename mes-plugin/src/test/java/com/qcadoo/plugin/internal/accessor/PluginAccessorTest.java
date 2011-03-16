@@ -63,7 +63,7 @@ public class PluginAccessorTest {
         PersistentPlugin persistentPlugin21 = mock(PersistentPlugin.class);
         given(persistentPlugin21.getIdentifier()).willReturn("identifier21");
         given(persistentPlugin21.getIdentifier()).willReturn("identifier21");
-        given(persistentPlugin21.getPluginState()).willReturn(PluginState.ENABLED);
+        given(persistentPlugin21.getState()).willReturn(PluginState.ENABLED);
         Plugin plugin22 = mock(Plugin.class);
         given(plugin22.getIdentifier()).willReturn("identifier21");
         given(plugin22.compareVersion(persistentPlugin21)).willReturn(1);
@@ -100,11 +100,11 @@ public class PluginAccessorTest {
         given(persistentPlugin1.getIdentifier()).willReturn("identifier1");
         given(plugin1.compareVersion(persistentPlugin1)).willReturn(0);
         given(plugin1.hasState(PluginState.ENABLED)).willReturn(false);
-        given(persistentPlugin1.getPluginState()).willReturn(PluginState.DISABLED);
+        given(persistentPlugin1.getState()).willReturn(PluginState.DISABLED);
 
         PersistentPlugin persistentPlugin21 = mock(PersistentPlugin.class, "plugin21");
         given(persistentPlugin21.getIdentifier()).willReturn("identifier21");
-        given(persistentPlugin21.getPluginState()).willReturn(PluginState.ENABLED);
+        given(persistentPlugin21.getState()).willReturn(PluginState.ENABLED);
         Plugin plugin22 = mock(Plugin.class, "plugin22");
         given(plugin22.getIdentifier()).willReturn("identifier21");
         given(plugin22.hasState(PluginState.ENABLED)).willReturn(true);
@@ -115,7 +115,7 @@ public class PluginAccessorTest {
         given(plugin3.getIdentifier()).willReturn("identifier3");
         given(persistentPlugin3.getIdentifier()).willReturn("identifier3");
         given(plugin3.hasState(PluginState.ENABLED)).willReturn(true);
-        given(persistentPlugin3.getPluginState()).willReturn(PluginState.ENABLED);
+        given(persistentPlugin3.getState()).willReturn(PluginState.ENABLED);
 
         Plugin plugin4 = mock(Plugin.class, "plugin4");
         given(plugin4.getIdentifier()).willReturn("identifier4");

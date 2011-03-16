@@ -254,12 +254,12 @@ public final class DefaultPluginManager implements PluginManager {
                 if (!pluginDependencyResult.isDependenciesSatisfied()
                         && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
                     pluginFileManager.uninstallPlugin(existingPlugin.getFilename());
-                    plugin.changeStateTo(existingPlugin.getPluginState());
+                    plugin.changeStateTo(existingPlugin.getState());
                     pluginDao.save(plugin);
                     pluginAccessor.savePlugin(plugin);
                     return PluginOperationResult.successWithMissingDependencies(pluginDependencyResult);
                 }
-                plugin.changeStateTo(existingPlugin.getPluginState());
+                plugin.changeStateTo(existingPlugin.getState());
             } else if (existingPlugin.hasState(PluginState.DISABLED)) {
                 if (!pluginDependencyResult.isDependenciesSatisfied()
                         && !pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {
@@ -271,7 +271,7 @@ public final class DefaultPluginManager implements PluginManager {
                     return PluginOperationResult.cannotInstallPlugin();
                 }
                 shouldRestart = true;
-                plugin.changeStateTo(existingPlugin.getPluginState());
+                plugin.changeStateTo(existingPlugin.getState());
             } else if (existingPlugin.hasState(PluginState.ENABLED)) {
                 if (!pluginDependencyResult.isDependenciesSatisfied()) {
                     if (!pluginDependencyResult.getUnsatisfiedDependencies().isEmpty()) {

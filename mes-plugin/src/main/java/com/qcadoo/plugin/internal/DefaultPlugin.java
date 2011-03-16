@@ -58,8 +58,8 @@ public class DefaultPlugin extends PluginsPlugin implements Plugin {
 
     @Override
     public void changeStateTo(final PluginState targetState) {
-        if (!isTransitionPossible(getPluginState(), targetState)) {
-            throw new IllegalStateException("Cannot change state of plugin " + this + " from " + getPluginState() + " to "
+        if (!isTransitionPossible(getState(), targetState)) {
+            throw new IllegalStateException("Cannot change state of plugin " + this + " from " + getState() + " to "
                     + targetState);
         }
 
@@ -73,7 +73,7 @@ public class DefaultPlugin extends PluginsPlugin implements Plugin {
             }
         }
 
-        setPluginState(targetState);
+        setState(targetState);
     }
 
     private boolean isTransitionPossible(final PluginState from, final PluginState to) {

@@ -43,7 +43,7 @@
 		<prop key="restartCommand">${QCADOO_RESTART_CMD}</prop>
 		<prop key="pluginsPath">${QCADOO_PLUGINS_PATH}</prop>
 		<prop key="pluginsTmpPath">${QCADOO_PLUGINS_TMP_PATH}</prop>
-		<prop key="descriptors">new-plugin.xml</prop>
+		<prop key="descriptors">qcadoo-plugin.xml</prop>
 	</util:properties>
 
 	<context:component-scan base-package="com.qcadoo.plugin" />
@@ -69,6 +69,10 @@
 		<property name="moduleFactories">
 			<list>
 				<bean class="com.qcadoo.model.internal.module.ModelModuleFactory" />
+				<bean class="com.qcadoo.model.internal.module.DictionaryModuleFactory" />
+				<bean class="com.qcadoo.mes.localization.internal.module.TranslationModuleFactory" />
+				<bean class="com.qcadoo.mes.view.internal.module.ViewModuleFactory" />
+				<bean class="com.qcadoo.mes.view.internal.module.MenuModuleFactory" />
 			</list>
 		</property>
 	</bean>

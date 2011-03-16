@@ -4,7 +4,7 @@
 
 	<xs:element name="model">
 		<xs:complexType>
-			<xs:attribute name="name" type="xs:normalizedString" use="required" />
+			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="resource" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>
@@ -14,5 +14,7 @@
 	<xs:element name="hook" />
 	
 	<xs:element name="validator" />
+	
+	<xs:element name="dictionary" />
 
 </xs:schema>

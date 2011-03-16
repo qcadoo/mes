@@ -5,7 +5,7 @@ public interface PersistentPlugin {
 
     String getIdentifier();
 
-    PluginState getPluginState();
+    PluginState getState();
 
     Version getVersion();
 

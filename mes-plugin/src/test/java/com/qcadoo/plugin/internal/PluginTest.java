@@ -51,7 +51,7 @@ public class PluginTest {
 
         // then
         assertTrue(plugin.hasState(PluginState.UNKNOWN));
-        assertEquals(PluginState.UNKNOWN, plugin.getPluginState());
+        assertEquals(PluginState.UNKNOWN, plugin.getState());
     }
 
     @Test

@@ -124,7 +124,7 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
 
         Set<PluginDependencyInformation> dependenciesToDisableUnsatisfiedAfterUpdate = new HashSet<PluginDependencyInformation>();
         for (Plugin plugin : pluginAccessor.getPlugins()) {
-            if (PluginState.TEMPORARY.equals(plugin.getPluginState())) {
+            if (PluginState.TEMPORARY.equals(plugin.getState())) {
                 continue;
             }
             for (PluginDependencyInformation dependencyInfo : plugin.getRequiredPlugins()) {
@@ -172,11 +172,11 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
 
         for (Plugin plugin : pluginAccessor.getPlugins()) {
             if (includeDisabled) {
-                if (PluginState.TEMPORARY.equals(plugin.getPluginState())) {
+                if (PluginState.TEMPORARY.equals(plugin.getState())) {
                     continue;
                 }
             } else {
-                if (!PluginState.ENABLED.equals(plugin.getPluginState())) {
+                if (!PluginState.ENABLED.equals(plugin.getState())) {
                     continue;
                 }
             }
@@ -292,7 +292,7 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
     }
 
     private boolean isPluginDisabled(final PersistentPlugin plugin) {
-        return PluginState.DISABLED.equals(plugin.getPluginState()) || PluginState.TEMPORARY.equals(plugin.getPluginState());
+        return PluginState.DISABLED.equals(plugin.getState()) || PluginState.TEMPORARY.equals(plugin.getState());
     }
 
     void setPluginAccessor(final PluginAccessor pluginAccessor) {

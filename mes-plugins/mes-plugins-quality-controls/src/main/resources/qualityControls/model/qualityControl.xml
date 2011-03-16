@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.3.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+
+<model name="qualityControl" xmlns="http://www.qcadoo.com/model">
+	<belongsTo name="order" model="order" plugin="products" required="true" />
+	<belongsTo name="operation" model="operation" plugin="products" />
+	<string name="number" required="true" unique="true" />
+	<enum name="controlResult" values="01correct,02incorrect,03objection"/>
+	<string name="batchNr" />
+	<string name="comment" />
+	<string name="controlInstruction" />
+	<decimal name="controlledQuantity" />
+	<decimal name="takenForControlQuantity" />
+	<decimal name="rejectedQuantity" />
+	<decimal name="acceptedDefectsQuantity" />		
+	<string name="staff" />
+	<date name="date" />
+	<date name="dateFrom" persistent="false"/>
+	<date name="dateTo" persistent="false"/>
+	<boolean name="closed"/>
+	<enum name="qualityControlType" values="qualityControlsForOrder,qualityControlsForUnit,qualityControlsForBatch,qualityControlsForOperation"/>
+	<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentForResultOrQuantityIsReq" />
+	<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfOperationIsRequired" />
+	<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfQuantitiesAreCorrect" />
+	<onCopy class="com.qcadoo.mes.qualityControls.QualityControlService" method="clearQualityControlOnCopy" />
+</model>
