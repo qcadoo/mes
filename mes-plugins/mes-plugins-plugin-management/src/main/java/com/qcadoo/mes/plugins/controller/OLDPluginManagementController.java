@@ -34,7 +34,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.api.PluginManagementOperationStatus;
-import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.crud.CrudController;
 import com.qcadoo.mes.internal.PluginManagementOperationStatusImpl;
@@ -42,8 +41,8 @@ import com.qcadoo.mes.internal.PluginManagementOperationStatusImpl;
 //@Controller
 public final class OLDPluginManagementController {
 
-    @Autowired
-    private PluginManagementService pluginManagementService;
+    // @Autowired
+    // private PluginManagementService pluginManagementService;
 
     @Autowired
     private TranslationService translationService;
@@ -64,7 +63,7 @@ public final class OLDPluginManagementController {
     // @RequestMapping(value = "pluginPages/handleRestart", method = RequestMethod.POST)
     @ResponseBody
     public String handleRestart() {
-        pluginManagementService.restartServer();
+        // pluginManagementService.restartServer();
         return "ok";
     }
 
@@ -80,13 +79,15 @@ public final class OLDPluginManagementController {
 
     // @RequestMapping(value = "download", method = RequestMethod.POST)
     public ModelAndView handleDownload(@RequestParam("file") final MultipartFile file, final Locale locale) {
-        return getInfoMessageView(pluginManagementService.downloadPlugin(file), locale);
+        // return getInfoMessageView(pluginManagementService.downloadPlugin(file), locale);
+        return null;
     }
 
     // @RequestMapping(value = "pluginPages/update", method = RequestMethod.POST)
     public ModelAndView handleUpdate(@RequestParam("entityId") final String entityId,
             @RequestParam("file") final MultipartFile file, final Locale locale) {
-        return getInfoMessageView(pluginManagementService.updatePlugin(Long.parseLong(entityId), file), locale);
+        // return getInfoMessageView(pluginManagementService.updatePlugin(Long.parseLong(entityId), file), locale);
+        return null;
     }
 
     // @RequestMapping(value = "pluginPages/restartInfo", method = RequestMethod.GET)
@@ -96,37 +97,38 @@ public final class OLDPluginManagementController {
 
     private ModelAndView getDownloadPageView(final String downloadAction, final Long entityId, final Locale locale) {
 
-        if (entityId != null && !pluginManagementService.pluginIsInstalled(entityId)) {
-            return getInfoMessageView(
-                    new PluginManagementOperationStatusImpl(true, "plugins.messages.error.wrongStatusToUpdate"), locale);
-
-        }
-
-        ModelAndView mav = crudController.prepareView("plugins", "pluginDownload", new HashMap<String, String>(), locale);
-
-        String headerLabel = translationService.translate("plugins.downloadView.header", locale);
-        if (entityId != null) {
-            String pluginName = pluginManagementService.get(entityId).getName();
-            headerLabel = translationService.translate("plugins.downloadView.update.header", locale) + ": <span class='grey'>"
-                    + pluginName + "</span>";
-        }
-
-        String buttonLabel = translationService.translate("plugins.downloadView.button", locale);
-        String chooseFileLabel = translationService.translate("plugins.downloadView.chooseFileLabel", locale);
-        String firstCheckExtensionMessage = translationService.translate("plugins.downloadView.checkExtensionMessage.first",
-                locale);
-        String lastCheckExtensionMessage = translationService
-                .translate("plugins.downloadView.checkExtensionMessage.last", locale);
-
-        mav.addObject("headerLabel", headerLabel);
-        mav.addObject("buttonLabel", buttonLabel);
-        mav.addObject("chooseFileLabel", chooseFileLabel);
-        mav.addObject("downloadAction", downloadAction);
-        mav.addObject("entityId", entityId);
-        mav.addObject("firstCheckExtensionMessage", firstCheckExtensionMessage);
-        mav.addObject("lastCheckExtensionMessage", lastCheckExtensionMessage);
-
-        return mav;
+        // if (entityId != null && !pluginManagementService.pluginIsInstalled(entityId)) {
+        // return getInfoMessageView(
+        // new PluginManagementOperationStatusImpl(true, "plugins.messages.error.wrongStatusToUpdate"), locale);
+        //
+        // }
+        //
+        // ModelAndView mav = crudController.prepareView("plugins", "pluginDownload", new HashMap<String, String>(), locale);
+        //
+        // String headerLabel = translationService.translate("plugins.downloadView.header", locale);
+        // if (entityId != null) {
+        // String pluginName = pluginManagementService.get(entityId).getName();
+        // headerLabel = translationService.translate("plugins.downloadView.update.header", locale) + ": <span class='grey'>"
+        // + pluginName + "</span>";
+        // }
+        //
+        // String buttonLabel = translationService.translate("plugins.downloadView.button", locale);
+        // String chooseFileLabel = translationService.translate("plugins.downloadView.chooseFileLabel", locale);
+        // String firstCheckExtensionMessage = translationService.translate("plugins.downloadView.checkExtensionMessage.first",
+        // locale);
+        // String lastCheckExtensionMessage = translationService
+        // .translate("plugins.downloadView.checkExtensionMessage.last", locale);
+        //
+        // mav.addObject("headerLabel", headerLabel);
+        // mav.addObject("buttonLabel", buttonLabel);
+        // mav.addObject("chooseFileLabel", chooseFileLabel);
+        // mav.addObject("downloadAction", downloadAction);
+        // mav.addObject("entityId", entityId);
+        // mav.addObject("firstCheckExtensionMessage", firstCheckExtensionMessage);
+        // mav.addObject("lastCheckExtensionMessage", lastCheckExtensionMessage);
+        //
+        // return mav;
+        return null;
     }
 
     private ModelAndView getInfoMessageView(final PluginManagementOperationStatus operationStatus, final Locale locale) {

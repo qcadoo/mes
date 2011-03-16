@@ -1,6 +1,5 @@
 package com.qcadoo.mes.plugins.controller;
 
-import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
@@ -14,7 +13,8 @@ public class PluginManagmentDataHook {
         String pluginIdentifier = entity.getStringField("identifier");
 
         entity.setField("name", pluginIdentifier + " name");
-        entity.setField("isSystem", "" + RandomUtils.nextInt(2));
+        // entity.setField("isSystem", "" + RandomUtils.nextInt(2));
+        entity.setField("isSystem", "0");
         entity.setField("description", pluginIdentifier + " description");
         entity.setField("vendor", pluginIdentifier + " vendor");
         entity.setField("vendorUrl", pluginIdentifier + " vendor url");

@@ -1,6 +1,5 @@
 package com.qcadoo.plugin.api;
 
-
 public class PluginDependencyInformation {
 
     private final String identifier;
@@ -18,6 +17,10 @@ public class PluginDependencyInformation {
 
     public String getDependencyPluginIdentifier() {
         return identifier;
+    }
+
+    public VersionOfDependency getDependencyPluginVersion() {
+        return version;
     }
 
     public boolean isVersionSattisfied(final Version version) {
