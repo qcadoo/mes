@@ -14,8 +14,6 @@ String ctx = request.getContextPath();
 
 </script>
 
-
 <div>
-	${content}
+${restartMessage}
 </div>
-

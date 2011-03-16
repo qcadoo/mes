@@ -1,19 +1,27 @@
 package com.qcadoo.mes.plugins.controller;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Preconditions;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.plugin.api.PluginDependencyInformation;
-import com.qcadoo.plugin.api.VersionOfDependency;
-import com.qcadoo.plugin.internal.api.PluginOperationResult;
-import com.qcadoo.plugin.internal.dependencymanager.PluginDependencyResult;
+import com.qcadoo.mes.view.components.grid.GridComponentState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class PluginManagmentViewHook {
+
+    @Autowired
+    private PluginManagmentPerformer pluginManagmentPerformer;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void onDownloadButtonClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
@@ -22,41 +30,33 @@ public class PluginManagmentViewHook {
 
     public void onEnableButtonClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
-        System.out.println("ENABLE");
-
-        Set<PluginDependencyInformation> unsatisfiedDependencies = new HashSet<PluginDependencyInformation>();
-        unsatisfiedDependencies.add(new PluginDependencyInformation("test1"));
-        unsatisfiedDependencies.add(new PluginDependencyInformation("test2", new VersionOfDependency("(1.1.1, 2.3.4)")));
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.unsatisfiedDependencies(unsatisfiedDependencies);
-        PluginOperationResult result = PluginOperationResult.unsatisfiedDependencies(pluginDependencyResult);
-
-        if (result.isSuccess()) {
-            // TODO
-        } else {
-            String url = "../pluginPages/errorPage.html?status=" + result.getStatus();
-            if (result.getPluginDependencyResult() != null) {
-                for (PluginDependencyInformation dependencyInfo : result.getPluginDependencyResult().getUnsatisfiedDependencies()) {
-                    dependencyInfo.getDependencyPluginIdentifier();
-                    dependencyInfo.getDependencyPluginVersion().toString();
-                }
-            }
-            viewDefinitionState.openModal(url);
-        }
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        viewDefinitionState.openModal(pluginManagmentPerformer.performEnable(getPluginIdentifiersFromView(viewDefinitionState)));
     }
 
     public void onDisableButtonClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
-        System.out.println("DISABLE");
+        viewDefinitionState.openModal(pluginManagmentPerformer.performDisable(getPluginIdentifiersFromView(viewDefinitionState)));
     }
 
     public void onRemoveButtonClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
-        System.out.println("REMOVE");
+        viewDefinitionState.openModal(pluginManagmentPerformer.performRemove(getPluginIdentifiersFromView(viewDefinitionState)));
     }
+
+    private List<String> getPluginIdentifiersFromView(final ViewDefinitionState viewDefinitionState) {
+
+        List<String> pluginIdentifiers = new LinkedList<String>();
+        GridComponentState grid = (GridComponentState) viewDefinitionState.getComponentByReference("grid");
+
+        Preconditions.checkState(grid.getSelectedEntitiesId().size() > 0, "No record selected");
+
+        DataDefinition pluginDataDefinition = dataDefinitionService.get("plugins", "plugin2");
+        for (Long entityId : grid.getSelectedEntitiesId()) {
+            Entity pluginEntity = pluginDataDefinition.get(entityId);
+            pluginIdentifiers.add(pluginEntity.getStringField("identifier"));
+        }
+
+        return pluginIdentifiers;
+    }
+
 }
