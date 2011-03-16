@@ -33,7 +33,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.utils.Pair;
@@ -57,9 +56,6 @@ public final class MenuServiceImpl implements MenuService { // , ApplicationList
 
     @Autowired
     private TranslationService translationService;
-
-    @Autowired
-    private PluginManagementService pluginManagementService;
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;

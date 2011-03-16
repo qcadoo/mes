@@ -212,9 +212,9 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
                 break;
             }
 
-            if (isTagStarted(reader, "value")) {
-                // System.out.println(" ----> " + reader.getElementText());
-            }
+            // if (isTagStarted(reader, "value")) {
+            // System.out.println(" ----> " + reader.getElementText());
+            // }
         }
     }
 
