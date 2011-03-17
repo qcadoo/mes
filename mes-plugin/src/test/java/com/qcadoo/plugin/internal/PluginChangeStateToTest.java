@@ -82,7 +82,7 @@ public class PluginChangeStateToTest {
         plugin.changeStateTo(to);
 
         // then
-        assertEquals(to, plugin.getPluginState());
+        assertEquals(to, plugin.getState());
         assertTrue(plugin.hasState(to));
 
         if (callEnable) {

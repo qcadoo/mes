@@ -1,10 +1,14 @@
 package com.qcadoo.plugin.api;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.Set;
 
-public interface Plugin extends PersistentPlugin {
+public interface Plugin {
+
+    String getIdentifier();
+
+    Version getVersion();
+
+    PluginState getState();
 
     PluginInformation getPluginInformation();
 
@@ -16,13 +20,9 @@ public interface Plugin extends PersistentPlugin {
 
     String getFilename();
 
-    int compareVersion(PersistentPlugin plugin);
+    int compareVersion(Version version);
 
-    ClassLoader getClassLoader();
-
-    URL getResource(String name);
-
-    InputStream getResourceAsStream(String name);
+    boolean hasState(PluginState expectedState);
 
     void init();
 

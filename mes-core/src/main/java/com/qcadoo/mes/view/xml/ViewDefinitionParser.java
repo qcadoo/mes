@@ -51,4 +51,6 @@ public interface ViewDefinitionParser {
 
     ViewDefinition parseViewDefinition(Node node, String pluginIdentifier, String name);
 
+    void init();
+
 }

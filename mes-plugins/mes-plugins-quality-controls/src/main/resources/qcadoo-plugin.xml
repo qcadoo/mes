@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="qualityControls" version="0.4.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/modules/model">
+
+	<information>
+		<name>MES - Quality Controls</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+	
+	<dependencies>
+		<dependency>
+			<plugin>basic</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+		<dependency>
+			<plugin>products</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+	
+	<modules>
+		<model:model name="qualityControl" resource="qualityControls/model/qualityControl.xml"/>
+	</modules>
+
+</plugin>

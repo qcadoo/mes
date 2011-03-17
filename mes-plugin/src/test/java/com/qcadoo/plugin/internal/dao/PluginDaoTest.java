@@ -16,7 +16,6 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.model.beans.plugins.PluginsPlugin;
-import com.qcadoo.plugin.api.PersistentPlugin;
 
 public class PluginDaoTest {
 
@@ -24,14 +23,17 @@ public class PluginDaoTest {
 
     private final SessionFactory sessionFactory = mock(SessionFactory.class);
 
-    private final PersistentPlugin plugin1 = mock(PersistentPlugin.class);
+    private final PluginsPlugin plugin1 = new PluginsPlugin();
 
-    private final PersistentPlugin plugin2 = mock(PersistentPlugin.class);
+    private final PluginsPlugin plugin2 = new PluginsPlugin();
 
     private final Session session = mock(Session.class);
 
     @Before
     public void init() {
+        plugin1.setIdentifier("plugin1");
+        plugin2.setIdentifier("plugin2");
+
         given(sessionFactory.getCurrentSession()).willReturn(session);
 
         pluginDao = new DefaultPluginDao();
@@ -46,7 +48,7 @@ public class PluginDaoTest {
         pluginDao.save(plugin1);
 
         // then
-        verify(session).save(PluginsPlugin.class.getCanonicalName(), plugin1);
+        verify(session).save(plugin1);
     }
 
     @Test
@@ -57,7 +59,7 @@ public class PluginDaoTest {
         pluginDao.delete(plugin1);
 
         // then
-        verify(session).delete(PluginsPlugin.class.getCanonicalName(), plugin1);
+        verify(session).delete(plugin1);
     }
 
     @Test
@@ -68,7 +70,7 @@ public class PluginDaoTest {
         given(criteria.list()).willReturn(Lists.newArrayList(plugin1, plugin2));
 
         // when
-        Set<PersistentPlugin> plugins = pluginDao.list();
+        Set<PluginsPlugin> plugins = pluginDao.list();
 
         // then
         assertEquals(2, plugins.size());

@@ -128,9 +128,13 @@ public class ModelXmlToDefinitionConverterTest {
 
         ModelXmlToClassConverter modelXmlToClassConverter = new ModelXmlToClassConverterImpl();
         ((ModelXmlToClassConverterImpl) modelXmlToClassConverter).setBeanClassLoader(ClassLoader.getSystemClassLoader());
-        modelXmlToClassConverter.convert(Utils.FULL_XML_RESOURCE, Utils.OTHER_XML_RESOURCE);
+        modelXmlToClassConverter.convert(Utils.FULL_FIRST_ENTITY_XML_RESOURCE, Utils.FULL_SECOND_ENTITY_XML_RESOURCE,
+                Utils.FULL_THIRD_ENTITY_XML_RESOURCE, Utils.OTHER_FIRST_ENTITY_XML_RESOURCE,
+                Utils.OTHER_SECOND_ENTITY_XML_RESOURCE);
 
-        dataDefinitions = modelXmlToDefinitionConverter.convert(Utils.FULL_XML_RESOURCE, Utils.OTHER_XML_RESOURCE);
+        dataDefinitions = modelXmlToDefinitionConverter.convert(Utils.FULL_FIRST_ENTITY_XML_RESOURCE,
+                Utils.FULL_SECOND_ENTITY_XML_RESOURCE, Utils.FULL_THIRD_ENTITY_XML_RESOURCE,
+                Utils.OTHER_FIRST_ENTITY_XML_RESOURCE, Utils.OTHER_SECOND_ENTITY_XML_RESOURCE);
 
         for (DataDefinition dd : dataDefinitions.toArray(new DataDefinition[dataDefinitions.size()])) {
             if (dd.getName().equals("firstEntity") && dd.getPluginIdentifier().equals("full")) {

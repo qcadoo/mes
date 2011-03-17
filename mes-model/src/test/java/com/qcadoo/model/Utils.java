@@ -9,7 +9,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
-import com.qcadoo.model.internal.sessionfactory.DynamicSessionFactoryBean;
+import com.qcadoo.model.internal.sessionfactory.DynamicSessionFactoryBeanImpl;
 
 public class Utils {
 
@@ -17,9 +17,20 @@ public class Utils {
 
     public static final String SPRING_CONTEXT_PATH = "spring.xml";
 
-    public static final Resource FULL_XML_RESOURCE = new FileSystemResource("src/test/resources/model/full.xml");
+    public static final Resource FULL_FIRST_ENTITY_XML_RESOURCE = new FileSystemResource(
+            "src/test/resources/model/full/firstEntity.xml");
 
-    public static final Resource OTHER_XML_RESOURCE = new FileSystemResource("src/test/resources/model/other.xml");
+    public static final Resource FULL_SECOND_ENTITY_XML_RESOURCE = new FileSystemResource(
+            "src/test/resources/model/full/secondEntity.xml");
+
+    public static final Resource FULL_THIRD_ENTITY_XML_RESOURCE = new FileSystemResource(
+            "src/test/resources/model/full/thirdEntity.xml");
+
+    public static final Resource OTHER_FIRST_ENTITY_XML_RESOURCE = new FileSystemResource(
+            "src/test/resources/model/other/firstEntity.xml");
+
+    public static final Resource OTHER_SECOND_ENTITY_XML_RESOURCE = new FileSystemResource(
+            "src/test/resources/model/other/secondEntity.xml");
 
     public static final Resource MODEL_XML_INVALID_RESOURCE = new FileSystemResource("src/test/resources/log4j.xml");
 
@@ -36,10 +47,10 @@ public class Utils {
         return dataSource;
     }
 
-    public static DynamicSessionFactoryBean createNewSessionFactory() {
+    public static DynamicSessionFactoryBeanImpl createNewSessionFactory() {
         Properties hibernateProperties = new Properties();
         hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-        DynamicSessionFactoryBean sessionFactory = new DynamicSessionFactoryBean();
+        DynamicSessionFactoryBeanImpl sessionFactory = new DynamicSessionFactoryBeanImpl();
         sessionFactory.setDataSource(createDataSource());
         sessionFactory.setHibernateProperties(hibernateProperties);
         return sessionFactory;

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="genealogies" version="0.4.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/modules/model">
+
+	<information>
+		<name>MES - Genealogies</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+	
+	<dependencies>
+		<dependency>
+			<plugin>basic</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+		<dependency>
+			<plugin>products</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+	
+	<modules>
+		<model:model name="currentAttribute" resource="genealogies/model/currentAttribute.xml"/>
+		<model:model name="genealogy" resource="genealogies/model/genealogy.xml"/>
+		<model:model name="genealogyInBatch" resource="genealogies/model/genealogyInBatch.xml"/>
+		<model:model name="genealogyProductInComponent" resource="genealogies/model/genealogyProductInComponent.xml"/>
+		<model:model name="otherFeature" resource="genealogies/model/otherFeature.xml"/>
+		<model:model name="postFeature" resource="genealogies/model/postFeature.xml"/>
+		<model:model name="shiftFeature" resource="genealogies/model/shiftFeature.xml"/>
+	</modules>
+
+</plugin>
