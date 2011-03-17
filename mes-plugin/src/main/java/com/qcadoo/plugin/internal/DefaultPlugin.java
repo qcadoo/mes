@@ -5,15 +5,14 @@ import static com.qcadoo.plugin.api.PluginState.ENABLED;
 import static com.qcadoo.plugin.api.PluginState.ENABLING;
 import static com.qcadoo.plugin.api.PluginState.TEMPORARY;
 import static com.qcadoo.plugin.api.PluginState.UNKNOWN;
+import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
 
-import java.io.InputStream;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import com.qcadoo.model.beans.plugins.PluginsPlugin;
-import com.qcadoo.plugin.api.PersistentPlugin;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginDependencyInformation;
 import com.qcadoo.plugin.api.PluginInformation;
@@ -22,9 +21,9 @@ import com.qcadoo.plugin.api.Version;
 import com.qcadoo.plugin.api.VersionOfDependency;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class DefaultPlugin extends PluginsPlugin implements Plugin {
+public class DefaultPlugin implements Plugin {
 
-    private final Set<Module> modules;
+    private final List<Module> modules;
 
     private final PluginInformation information;
 
@@ -32,9 +31,17 @@ public class DefaultPlugin extends PluginsPlugin implements Plugin {
 
     private final boolean system;
 
-    private DefaultPlugin(final String identifier, final boolean system, final Version version, final Set<Module> modules,
+    private final String identifier;
+
+    private final Version version;
+
+    private PluginState state;
+
+    private DefaultPlugin(final String identifier, final boolean system, final Version version, final List<Module> modules,
             final PluginInformation information, final Set<PluginDependencyInformation> dependencies) {
-        super(identifier, UNKNOWN, version);
+        this.state = UNKNOWN;
+        this.identifier = identifier;
+        this.version = version;
         this.modules = modules;
         this.information = information;
         this.dependencies = dependencies;
@@ -73,7 +80,7 @@ public class DefaultPlugin extends PluginsPlugin implements Plugin {
             }
         }
 
-        setState(targetState);
+        state = targetState;
     }
 
     private boolean isTransitionPossible(final PluginState from, final PluginState to) {
@@ -106,16 +113,12 @@ public class DefaultPlugin extends PluginsPlugin implements Plugin {
 
     @Override
     public String getFilename() {
-        return getIdentifier() + "-" + getVersion() + ".jar";
+        return identifier + "-" + version + ".jar";
     }
 
     @Override
-    public int compareVersion(final PersistentPlugin plugin) {
-        if (!getIdentifier().equals(plugin.getIdentifier())) {
-            throw new IllegalStateException("Cannot compare versions of different plugins " + this + " and " + plugin);
-        }
-
-        return getVersion().compareTo(plugin.getVersion());
+    public int compareVersion(final Version version) {
+        return this.version.compareTo(version);
     }
 
     @Override
@@ -129,7 +132,7 @@ public class DefaultPlugin extends PluginsPlugin implements Plugin {
         }
     }
 
-    public Set<Module> getMdules() {
+    public List<Module> getModules() {
         return modules;
     }
 
@@ -149,7 +152,7 @@ public class DefaultPlugin extends PluginsPlugin implements Plugin {
 
         private boolean system;
 
-        private final Set<Module> modules = new HashSet<Module>();
+        private final List<Module> modules = new ArrayList<Module>();
 
         private final Set<PluginDependencyInformation> dependencyInformations = new HashSet<PluginDependencyInformation>();
 
@@ -203,27 +206,72 @@ public class DefaultPlugin extends PluginsPlugin implements Plugin {
 
         public Plugin build() {
             PluginInformation pluginInformation = new PluginInformation(name, description, vendor, vendorUrl);
-            return new DefaultPlugin(identifier, system, version, unmodifiableSet(modules), pluginInformation,
+            return new DefaultPlugin(identifier, system, version, unmodifiableList(modules), pluginInformation,
                     unmodifiableSet(dependencyInformations));
         }
 
     }
 
     @Override
-    public ClassLoader getClassLoader() {
-        // TODO Auto-generated method stub
-        return null;
+    public String getIdentifier() {
+        return identifier;
     }
 
     @Override
-    public URL getResource(final String name) {
-        // TODO Auto-generated method stub
-        return null;
+    public Version getVersion() {
+        return version;
     }
 
     @Override
-    public InputStream getResourceAsStream(final String name) {
-        // TODO Auto-generated method stub
-        return null;
+    public PluginState getState() {
+        return state;
     }
+
+    @Override
+    public boolean hasState(final PluginState expectedState) {
+        return state.equals(expectedState);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((identifier == null) ? 0 : identifier.hashCode());
+        result = prime * result + ((state == null) ? 0 : state.hashCode());
+        result = prime * result + ((version == null) ? 0 : version.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof DefaultPlugin)) {
+            return false;
+        }
+        DefaultPlugin other = (DefaultPlugin) obj;
+        if (identifier == null) {
+            if (other.identifier != null) {
+                return false;
+            }
+        } else if (!identifier.equals(other.identifier)) {
+            return false;
+        }
+        if (state != other.state) {
+            return false;
+        }
+        if (version == null) {
+            if (other.version != null) {
+                return false;
+            }
+        } else if (!version.equals(other.version)) {
+            return false;
+        }
+        return true;
+    }
+
 }

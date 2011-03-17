@@ -50,7 +50,7 @@ public class PluginManagmentViewHook {
 
         Preconditions.checkState(grid.getSelectedEntitiesId().size() > 0, "No record selected");
 
-        DataDefinition pluginDataDefinition = dataDefinitionService.get("plugins", "plugin2");
+        DataDefinition pluginDataDefinition = dataDefinitionService.get("plugins", "plugin");
         for (Long entityId : grid.getSelectedEntitiesId()) {
             Entity pluginEntity = pluginDataDefinition.get(entityId);
             pluginIdentifiers.add(pluginEntity.getStringField("identifier"));

@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.application;
+package com.qcadoo.mes.internal.module;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,21 +33,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.Node;
 
+import com.qcadoo.mes.application.TestDataLoader;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.plugin.internal.api.Module;
+import com.qcadoo.plugin.internal.api.ModuleFactory;
 
 @Component
-public final class DatabasePreparationService implements ApplicationListener<ContextRefreshedEvent> {
+public final class DatabasePreparationModuleFactory implements ModuleFactory<Module> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DatabasePreparationService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DatabasePreparationModuleFactory.class);
 
     @Autowired
     private DataSource dataSource;
@@ -78,23 +80,33 @@ public final class DatabasePreparationService implements ApplicationListener<Con
 
     @Override
     @Transactional
-    public void onApplicationEvent(final ContextRefreshedEvent event) {
-        // TODO
-        // if (databaseHasToBePrepared()) {
-        // LOG.info("Database has to be prepared ...");
+    public void postInitialize() {
+        if (databaseHasToBePrepared()) {
+            LOG.info("Database has to be prepared ...");
 
-        // createPersistenceLogins();
-        // addMenus();
-        // addGroups();
-        // addUsers();
-        // addParameters();
-        //
-        // if (addTestData) {
-        // testDataLoader.loadTestData();
-        // }
-        // } else {
-        // LOG.info("Database has been already prepared, skipping");
-        // }
+            createPersistenceLogins();
+
+            addMenus();
+            addGroups();
+            addUsers();
+            addParameters();
+
+            if (addTestData) {
+                testDataLoader.loadTestData();
+            }
+        } else {
+            LOG.info("Database has been already prepared, skipping");
+        }
+    }
+
+    @Override
+    public Module parse(final String pluginIdentifier, final Node node) {
+        throw new IllegalStateException("Cannot create module for databasePreparation");
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "#databasePreparation";
     }
 
     private void createPersistenceLogins() {

@@ -24,7 +24,7 @@ public class MenuModuleFactory implements ModuleFactory<MenuModule> {
 
     @Override
     public String getIdentifier() {
-        return "view";
+        return "menu";
     }
 
 }

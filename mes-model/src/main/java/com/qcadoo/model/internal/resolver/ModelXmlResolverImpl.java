@@ -52,6 +52,8 @@ public final class ModelXmlResolverImpl implements ModelXmlResolver, ModelXmlHol
                 resources.add(new ByteArrayResource(out.toByteArray()));
             }
 
+            documents.clear(); // TODO sure?
+
             return resources.toArray(new Resource[resources.size()]);
         } catch (TransformerConfigurationException e) {
             throw new IllegalStateException(e.getMessage(), e);
@@ -67,7 +69,7 @@ public final class ModelXmlResolverImpl implements ModelXmlResolver, ModelXmlHol
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(stream);
 
-            ((Element) document.getChildNodes().item(0)).setAttribute("plugin", pluginIdentifier);
+            ((Element) document.getElementsByTagName("model").item(0)).setAttribute("plugin", pluginIdentifier);
 
             documents.put(pluginIdentifier + "." + name, document);
         } catch (ParserConfigurationException e) {

@@ -196,9 +196,9 @@ public class PluginDescriptorParserTest {
 
         // then
         DefaultPlugin castedResult = (DefaultPlugin) result;
-        assertEquals(2, castedResult.getMdules().size());
-        assertTrue(castedResult.getMdules().contains(testModule1));
-        assertTrue(castedResult.getMdules().contains(testModule2));
+        assertEquals(2, castedResult.getModules().size());
+        assertTrue(castedResult.getModules().contains(testModule1));
+        assertTrue(castedResult.getModules().contains(testModule2));
     }
 
     @Test
@@ -210,7 +210,7 @@ public class PluginDescriptorParserTest {
 
         // then
         DefaultPlugin castedResult = (DefaultPlugin) result;
-        assertEquals(0, castedResult.getMdules().size());
+        assertEquals(0, castedResult.getModules().size());
     }
 
     private class HasNodeName extends ArgumentMatcher<Node> {

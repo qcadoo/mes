@@ -2,24 +2,16 @@ package com.qcadoo.model.beans.plugins;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.TypeDef;
-
-import com.qcadoo.plugin.api.PersistentPlugin;
-import com.qcadoo.plugin.api.PluginState;
-import com.qcadoo.plugin.api.Version;
-import com.qcadoo.plugin.internal.VersionType;
+import com.qcadoo.plugin.api.Plugin;
 
 @Entity
 @Table(name = "plugins_plugin")
-@TypeDef(name = "version", defaultForType = Version.class, typeClass = VersionType.class)
-public class PluginsPlugin implements PersistentPlugin {
+public class PluginsPlugin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,50 +21,42 @@ public class PluginsPlugin implements PersistentPlugin {
     private String identifier;
 
     @Column
-    private Version version;
+    private String version;
 
     @Column
-    @Enumerated(EnumType.STRING)
-    private PluginState state;
+    private String state;
 
     public PluginsPlugin() {
+        // empty
     }
 
-    public PluginsPlugin(final String identifier, final PluginState state, final Version version) {
-        this.identifier = identifier;
-        this.version = version;
-        this.state = state;
+    public PluginsPlugin(final Plugin plugin) {
+        identifier = plugin.getIdentifier();
+        version = plugin.getVersion().toString();
+        state = plugin.getState().toString();
     }
 
-    @Override
     public String getIdentifier() {
         return identifier;
     }
 
-    protected void setIdentifier(final String identifier) {
+    public void setIdentifier(final String identifier) {
         this.identifier = identifier;
     }
 
-    @Override
-    public PluginState getState() {
+    public String getState() {
         return state;
     }
 
-    protected void setState(final PluginState state) {
+    public void setState(final String state) {
         this.state = state;
     }
 
-    @Override
-    public boolean hasState(final PluginState expectedState) {
-        return state.equals(expectedState);
-    }
-
-    @Override
-    public Version getVersion() {
+    public String getVersion() {
         return version;
     }
 
-    protected void setVersion(final Version version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 

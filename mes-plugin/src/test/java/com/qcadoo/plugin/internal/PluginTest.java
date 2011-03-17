@@ -8,11 +8,9 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
-import com.qcadoo.plugin.api.PersistentPlugin;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.api.Version;
-import com.qcadoo.plugin.internal.DefaultPlugin;
 import com.qcadoo.plugin.internal.api.Module;
 
 public class PluginTest {
@@ -64,30 +62,20 @@ public class PluginTest {
         Plugin plugin5 = DefaultPlugin.Builder.identifier("identifier").withVersion("3.3.4").build();
 
         // then
-        assertEquals(0, plugin1.compareVersion(plugin2));
-        assertEquals(0, plugin2.compareVersion(plugin1));
-        assertEquals(-1, plugin1.compareVersion(plugin3));
-        assertEquals(-1, plugin1.compareVersion(plugin4));
-        assertEquals(-1, plugin1.compareVersion(plugin5));
-        assertEquals(-1, plugin3.compareVersion(plugin4));
-        assertEquals(-1, plugin3.compareVersion(plugin5));
-        assertEquals(-1, plugin4.compareVersion(plugin5));
-        assertEquals(1, plugin5.compareVersion(plugin1));
-        assertEquals(1, plugin5.compareVersion(plugin3));
-        assertEquals(1, plugin5.compareVersion(plugin4));
-        assertEquals(1, plugin4.compareVersion(plugin1));
-        assertEquals(1, plugin4.compareVersion(plugin3));
-        assertEquals(1, plugin3.compareVersion(plugin1));
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldFailComparingVersionsOfDifferentPlugins() throws Exception {
-        // given
-        Plugin plugin1 = DefaultPlugin.Builder.identifier("identifier1").withVersion("2.3.4").build();
-        PersistentPlugin plugin2 = DefaultPlugin.Builder.identifier("identifier2").withVersion("2.3.4").build();
-
-        // then
-        plugin1.compareVersion(plugin2);
+        assertEquals(0, plugin1.compareVersion(plugin2.getVersion()));
+        assertEquals(0, plugin2.compareVersion(plugin1.getVersion()));
+        assertEquals(-1, plugin1.compareVersion(plugin3.getVersion()));
+        assertEquals(-1, plugin1.compareVersion(plugin4.getVersion()));
+        assertEquals(-1, plugin1.compareVersion(plugin5.getVersion()));
+        assertEquals(-1, plugin3.compareVersion(plugin4.getVersion()));
+        assertEquals(-1, plugin3.compareVersion(plugin5.getVersion()));
+        assertEquals(-1, plugin4.compareVersion(plugin5.getVersion()));
+        assertEquals(1, plugin5.compareVersion(plugin1.getVersion()));
+        assertEquals(1, plugin5.compareVersion(plugin3.getVersion()));
+        assertEquals(1, plugin5.compareVersion(plugin4.getVersion()));
+        assertEquals(1, plugin4.compareVersion(plugin1.getVersion()));
+        assertEquals(1, plugin4.compareVersion(plugin3.getVersion()));
+        assertEquals(1, plugin3.compareVersion(plugin1.getVersion()));
     }
 
     @Test

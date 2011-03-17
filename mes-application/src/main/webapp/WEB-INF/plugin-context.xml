@@ -73,6 +73,7 @@
 				<bean class="com.qcadoo.mes.localization.internal.module.TranslationModuleFactory" />
 				<bean class="com.qcadoo.mes.view.internal.module.ViewModuleFactory" />
 				<bean class="com.qcadoo.mes.view.internal.module.MenuModuleFactory" />
+				<bean class="com.qcadoo.mes.internal.module.DatabasePreparationModuleFactory" />
 			</list>
 		</property>
 	</bean>

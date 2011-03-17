@@ -9,13 +9,12 @@ public class DictionaryModuleFactory implements ModuleFactory<DictionaryModule> 
     @Override
     public void postInitialize() {
         // TODO Auto-generated method stub
-
     }
 
     @Override
     public DictionaryModule parse(final String pluginIdentifier, final Node node) {
         // TODO Auto-generated method stub
-        return null;
+        return new DictionaryModule();
     }
 
     @Override

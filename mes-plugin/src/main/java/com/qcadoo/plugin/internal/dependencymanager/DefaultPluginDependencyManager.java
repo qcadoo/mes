@@ -13,7 +13,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.plugin.api.PersistentPlugin;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.plugin.api.PluginDependencyInformation;
@@ -180,7 +179,7 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
                     continue;
                 }
             }
-            for (PersistentPlugin pluginToDisable : plugins) {
+            for (Plugin pluginToDisable : plugins) {
                 for (PluginDependencyInformation dependencyInfo : plugin.getRequiredPlugins()) {
                     if (dependencyInfo.getDependencyPluginIdentifier().equals(pluginToDisable.getIdentifier())) {
                         enabledDependencyPlugins.add(plugin);
@@ -191,7 +190,7 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
         }
 
         Set<PluginDependencyInformation> enabledDependencies = new HashSet<PluginDependencyInformation>();
-        for (PersistentPlugin plugin : enabledDependencyPlugins) {
+        for (Plugin plugin : enabledDependencyPlugins) {
             enabledDependencies.add(new PluginDependencyInformation(plugin.getIdentifier()));
         }
 
@@ -212,7 +211,7 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
 
     private Map<String, Set<String>> createPluginsMapWithDependencies(final Collection<Plugin> plugins) {
         Map<String, Set<String>> resultMap = new HashMap<String, Set<String>>();
-        for (PersistentPlugin plugin : plugins) {
+        for (Plugin plugin : plugins) {
             resultMap.put(plugin.getIdentifier(), null);
         }
         for (Plugin plugin : plugins) {
@@ -285,13 +284,13 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
 
     private Set<String> getArgumentIdentifiersSet(final List<Plugin> plugins) {
         Set<String> argumentPluginInformationsSet = new HashSet<String>();
-        for (PersistentPlugin plugin : plugins) {
+        for (Plugin plugin : plugins) {
             argumentPluginInformationsSet.add(plugin.getIdentifier());
         }
         return argumentPluginInformationsSet;
     }
 
-    private boolean isPluginDisabled(final PersistentPlugin plugin) {
+    private boolean isPluginDisabled(final Plugin plugin) {
         return PluginState.DISABLED.equals(plugin.getState()) || PluginState.TEMPORARY.equals(plugin.getState());
     }
 

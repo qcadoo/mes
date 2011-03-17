@@ -1,5 +1,7 @@
 package com.qcadoo.plugin.internal.descriptorparser;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,6 +28,7 @@ import com.google.common.base.Preconditions;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.internal.DefaultPlugin.Builder;
 import com.qcadoo.plugin.internal.PluginException;
+import com.qcadoo.plugin.internal.api.Module;
 import com.qcadoo.plugin.internal.api.ModuleFactory;
 import com.qcadoo.plugin.internal.api.ModuleFactoryAccessor;
 import com.qcadoo.plugin.internal.api.PluginDescriptorParser;
@@ -111,6 +114,9 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
 
         String pluginIdentifier = getStringAttribute(pluginNode, "plugin");
         Preconditions.checkNotNull(pluginIdentifier, "No plugin identifier");
+
+        LOG.info("Parsing plugin " + pluginIdentifier);
+
         Builder pluginBuilder = new Builder(pluginIdentifier);
 
         String pluginVersionStr = getStringAttribute(pluginNode, "version");
@@ -194,7 +200,10 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
     private void addModules(final Node modulesNode, final Builder pluginBuilder, final String pluginIdentifier) {
         for (Node child : getChildNodes(modulesNode)) {
             ModuleFactory<?> moduleFactory = moduleFactoryAccessor.getModuleFactory(child.getLocalName());
-            pluginBuilder.withModule(moduleFactory.parse(pluginIdentifier, child));
+            LOG.info("Parsing module " + child.getLocalName() + " for plugin " + pluginIdentifier);
+            Module module = moduleFactory.parse(pluginIdentifier, child);
+            checkNotNull(module, "Module for " + child.getLocalName() + " is null");
+            pluginBuilder.withModule(module);
         }
     }
 
