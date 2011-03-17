@@ -17,6 +17,7 @@ import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.plugin.api.PluginDependencyInformation;
 import com.qcadoo.plugin.api.PluginManager;
+import com.qcadoo.plugin.api.PluginServerManager;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.PluginException;
 import com.qcadoo.plugin.internal.api.PluginArtifact;
@@ -26,7 +27,6 @@ import com.qcadoo.plugin.internal.api.PluginDescriptorParser;
 import com.qcadoo.plugin.internal.api.PluginDescriptorResolver;
 import com.qcadoo.plugin.internal.api.PluginFileManager;
 import com.qcadoo.plugin.internal.api.PluginOperationResult;
-import com.qcadoo.plugin.internal.api.PluginServerManager;
 import com.qcadoo.plugin.internal.dependencymanager.PluginDependencyResult;
 
 @Service

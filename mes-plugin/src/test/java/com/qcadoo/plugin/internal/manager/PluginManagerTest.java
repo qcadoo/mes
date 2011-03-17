@@ -20,6 +20,7 @@ import org.mockito.InOrder;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.plugin.api.PluginDependencyInformation;
+import com.qcadoo.plugin.api.PluginServerManager;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.api.VersionOfDependency;
 import com.qcadoo.plugin.internal.api.PluginDao;
@@ -28,7 +29,6 @@ import com.qcadoo.plugin.internal.api.PluginDescriptorParser;
 import com.qcadoo.plugin.internal.api.PluginFileManager;
 import com.qcadoo.plugin.internal.api.PluginOperationResult;
 import com.qcadoo.plugin.internal.api.PluginOperationStatus;
-import com.qcadoo.plugin.internal.api.PluginServerManager;
 import com.qcadoo.plugin.internal.dependencymanager.PluginDependencyResult;
 
 public class PluginManagerTest {

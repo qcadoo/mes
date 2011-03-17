@@ -2,31 +2,25 @@ package com.qcadoo.mes.plugins.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.plugin.api.PluginDependencyInformation;
-import com.qcadoo.plugin.api.VersionOfDependency;
 import com.qcadoo.plugin.internal.api.PluginArtifact;
 import com.qcadoo.plugin.internal.api.PluginOperationResult;
-import com.qcadoo.plugin.internal.dependencymanager.PluginDependencyResult;
 
 @Service
 public class PluginManagmentPerformer {
 
+    @Autowired
+    private PluginManagmentConnector pluginManagmentConnector;
+
     public String performInstall(final PluginArtifact artifact) {
 
-        // TODO mina get result
-        // PluginOperationResult result = PluginOperationResult.success();
-
-        Set<PluginDependencyInformation> unsatisfiedDependencies = new HashSet<PluginDependencyInformation>();
-        unsatisfiedDependencies.add(new PluginDependencyInformation("test1"));
-        unsatisfiedDependencies.add(new PluginDependencyInformation("test2", new VersionOfDependency("(1.1.1,2.3.4)")));
-        PluginDependencyResult pluginDependencyResult = PluginDependencyResult.unsatisfiedDependencies(unsatisfiedDependencies);
-        PluginOperationResult result = PluginOperationResult.unsatisfiedDependencies(pluginDependencyResult);
+        PluginOperationResult result = pluginManagmentConnector.performInstall(artifact);
 
         String url = null;
 
@@ -76,25 +70,8 @@ public class PluginManagmentPerformer {
     }
 
     public String performEnable(final List<String> pluginIdentifiers) {
-        //
-        // Set<PluginDependencyInformation> unsatisfiedDependencies = new HashSet<PluginDependencyInformation>();
-        // unsatisfiedDependencies.add(new PluginDependencyInformation("test1"));
-        // unsatisfiedDependencies.add(new PluginDependencyInformation("test2", new VersionOfDependency("(1.1.1,2.3.4)")));
-        // PluginDependencyResult pluginDependencyResult =
-        // PluginDependencyResult.unsatisfiedDependencies(unsatisfiedDependencies);
-        // PluginOperationResult result = PluginOperationResult.unsatisfiedDependencies(pluginDependencyResult);
 
-        // PluginOperationResult result = PluginOperationResult.success();
-
-        // Set<PluginDependencyInformation> dependenciesToEnable = new HashSet<PluginDependencyInformation>();
-        // dependenciesToEnable.add(new PluginDependencyInformation("test1"));
-        // dependenciesToEnable.add(new PluginDependencyInformation("test2", new VersionOfDependency("(1.1.1,2.3.4)")));
-        // PluginDependencyResult pluginDependencyResult = PluginDependencyResult.dependenciesToEnable(dependenciesToEnable);
-        // PluginOperationResult result = PluginOperationResult.dependenciesToEnable(pluginDependencyResult);
-
-        PluginOperationResult result = PluginOperationResult.successWithRestart();
-
-        // TODO mina get result
+        PluginOperationResult result = pluginManagmentConnector.performEnable(pluginIdentifiers);
 
         String url = null;
 
@@ -126,8 +103,7 @@ public class PluginManagmentPerformer {
 
     public String performDisable(final List<String> pluginIdentifiers) {
 
-        // TODO mina get result
-        PluginOperationResult result = PluginOperationResult.success();
+        PluginOperationResult result = pluginManagmentConnector.performDisable(pluginIdentifiers);
 
         String url = null;
 
@@ -152,8 +128,7 @@ public class PluginManagmentPerformer {
 
     public String performRemove(final List<String> pluginIdentifiers) {
 
-        // TODO mina get result
-        PluginOperationResult result = PluginOperationResult.success();
+        PluginOperationResult result = pluginManagmentConnector.performRemove(pluginIdentifiers);
 
         String url = null;
 
@@ -180,8 +155,7 @@ public class PluginManagmentPerformer {
     }
 
     public void performRestart() {
-        // TODO mina
-        System.out.println("--- PERFORMING RESTART ---");
+        pluginManagmentConnector.performRestart();
     }
 
     private String createSuccessPageUrl(final String statusKey) {

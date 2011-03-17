@@ -88,7 +88,7 @@
 											break;
 										}
 										var state = selectedEntitiesArray[i].fields.state;
-										if (state == 'enabled') {
+										if (state == 'ENABLED') {
 											noneEnabled = false;
 										} else {
 											allEnabled = false;
@@ -102,14 +102,14 @@
 										removeRibbonItem.enable("#{translate(plugins.ribbon.messages.remove)}");
 										if (allEnabled) {
 											changeStatusRibbonItem.enable();
-											changeStatusRibbonItem.state = "enable";
-											changeStatusRibbonItem.setLabel("#{translate(plugins.plugins.window.ribbon.actions.changeStatus)}");
-											changeStatusRibbonItem.setIcon('enableIcon24.png');
-										} else if (noneEnabled) {
-											changeStatusRibbonItem.enable();
 											changeStatusRibbonItem.state = "disable";
 											changeStatusRibbonItem.setLabel("#{translate(plugins.plugins.window.ribbon.actions.disable)}");
 											changeStatusRibbonItem.setIcon('disableIcon24.png');
+										} else if (noneEnabled) {
+											changeStatusRibbonItem.enable();
+											changeStatusRibbonItem.state = "enable";
+											changeStatusRibbonItem.setLabel("#{translate(plugins.plugins.window.ribbon.actions.changeStatus)}");
+											changeStatusRibbonItem.setIcon('enableIcon24.png');
 										} else {
 											changeStatusRibbonItem.disable("#{translate(plugins.ribbon.messages.mixedStatus)}");
 										}
