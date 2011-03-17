@@ -1,7 +1,7 @@
 package com.qcadoo.mes.view.internal.module;
 
+import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.w3c.dom.Node;
 
 import com.qcadoo.mes.internal.MenuService;
 import com.qcadoo.plugin.internal.api.ModuleFactory;
@@ -17,7 +17,7 @@ public class MenuModuleFactory implements ModuleFactory<MenuModule> {
     }
 
     @Override
-    public MenuModule parse(final String pluginIdentifier, final Node node) {
+    public MenuModule parse(final String pluginIdentifier, final Element element) {
         // TODO Auto-generated method stub
         return new MenuModule();
     }

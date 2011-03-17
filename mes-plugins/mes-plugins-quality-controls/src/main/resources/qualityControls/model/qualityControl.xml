@@ -26,25 +26,29 @@
 -->
 
 <model name="qualityControl" xmlns="http://www.qcadoo.com/model">
-	<belongsTo name="order" model="order" plugin="products" required="true" />
-	<belongsTo name="operation" model="operation" plugin="products" />
-	<string name="number" required="true" unique="true" />
-	<enum name="controlResult" values="01correct,02incorrect,03objection"/>
-	<string name="batchNr" />
-	<string name="comment" />
-	<string name="controlInstruction" />
-	<decimal name="controlledQuantity" />
-	<decimal name="takenForControlQuantity" />
-	<decimal name="rejectedQuantity" />
-	<decimal name="acceptedDefectsQuantity" />		
-	<string name="staff" />
-	<date name="date" />
-	<date name="dateFrom" persistent="false"/>
-	<date name="dateTo" persistent="false"/>
-	<boolean name="closed"/>
-	<enum name="qualityControlType" values="qualityControlsForOrder,qualityControlsForUnit,qualityControlsForBatch,qualityControlsForOperation"/>
-	<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentForResultOrQuantityIsReq" />
-	<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfOperationIsRequired" />
-	<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfQuantitiesAreCorrect" />
-	<onCopy class="com.qcadoo.mes.qualityControls.QualityControlService" method="clearQualityControlOnCopy" />
+	<fields>
+		<belongsTo name="order" model="order" plugin="products" required="true" />
+		<belongsTo name="operation" model="operation" plugin="products" />
+		<string name="number" required="true" unique="true" />
+		<enum name="controlResult" values="01correct,02incorrect,03objection"/>
+		<string name="batchNr" />
+		<string name="comment" />
+		<string name="controlInstruction" />
+		<decimal name="controlledQuantity" />
+		<decimal name="takenForControlQuantity" />
+		<decimal name="rejectedQuantity" />
+		<decimal name="acceptedDefectsQuantity" />		
+		<string name="staff" />
+		<date name="date" />
+		<date name="dateFrom" persistent="false"/>
+		<date name="dateTo" persistent="false"/>
+		<boolean name="closed"/>
+		<enum name="qualityControlType" values="qualityControlsForOrder,qualityControlsForUnit,qualityControlsForBatch,qualityControlsForOperation"/>
+	</fields>
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfCommentForResultOrQuantityIsReq" />
+		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfOperationIsRequired" />
+		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkIfQuantitiesAreCorrect" />
+		<onCopy class="com.qcadoo.mes.qualityControls.QualityControlService" method="clearQualityControlOnCopy" />
+	</hooks>
 </model>

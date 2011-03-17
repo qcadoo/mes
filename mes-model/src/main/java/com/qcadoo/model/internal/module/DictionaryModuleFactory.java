@@ -1,6 +1,6 @@
 package com.qcadoo.model.internal.module;
 
-import org.w3c.dom.Node;
+import org.jdom.Element;
 
 import com.qcadoo.plugin.internal.api.ModuleFactory;
 
@@ -12,8 +12,15 @@ public class DictionaryModuleFactory implements ModuleFactory<DictionaryModule> 
     }
 
     @Override
-    public DictionaryModule parse(final String pluginIdentifier, final Node node) {
-        // TODO Auto-generated method stub
+    public DictionaryModule parse(final String pluginIdentifier, final Element element) {
+        String name = element.getAttributeValue("name");
+
+        if (name == null) {
+            throw new IllegalStateException("Missing name attribute of dictionary module");
+        }
+
+        // TODO
+
         return new DictionaryModule();
     }
 

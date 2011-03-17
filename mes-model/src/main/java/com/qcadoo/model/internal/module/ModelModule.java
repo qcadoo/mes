@@ -1,38 +1,39 @@
 package com.qcadoo.model.internal.module;
 
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.internal.api.InternalDataDefinitionService;
 import com.qcadoo.plugin.internal.api.Module;
 
 public class ModelModule implements Module {
 
     private final String pluginIdentifier;
 
-    private final String name;
+    private final String modelName;
 
-    private final DataDefinitionService dataDefinitionService;
+    private final InternalDataDefinitionService dataDefinitionService;
 
-    public ModelModule(final String pluginIdentifier, final String name, final DataDefinitionService dataDefinitionService) {
+    public ModelModule(final String pluginIdentifier, final String modelName,
+            final InternalDataDefinitionService dataDefinitionService) {
         this.pluginIdentifier = pluginIdentifier;
-        this.name = name;
+        this.modelName = modelName;
         this.dataDefinitionService = dataDefinitionService;
     }
 
     @Override
     public void init() {
-        // ignore
+        // TODO
+        // if (PluginState.ENABLED.equals(state)) {
+        dataDefinitionService.enable(pluginIdentifier, modelName);
+        // }
     }
 
     @Override
     public void enable() {
-        // TODO
-        // włącza model w dataDefinitionService
+        dataDefinitionService.enable(pluginIdentifier, modelName);
     }
 
     @Override
     public void disable() {
-        // TODO
-        // wyłącza model w dataDefinitionService
-
+        dataDefinitionService.disable(pluginIdentifier, modelName);
     }
 
 }

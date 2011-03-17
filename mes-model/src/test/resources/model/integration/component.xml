@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model name="component" xmlns="http://www.qcadoo.com/model">
-	<string name="name" required="true" />
-	<belongsTo name="product" model="product" required="false" lazy="false" />
-	<belongsTo name="machine" model="machine" required="false" />				
+	<fields>
+		<string name="name" required="true" />
+		<belongsTo name="product" model="product" required="false" lazy="false" />
+		<belongsTo name="machine" model="machine" required="false" />
+	</fields>				
 </model>

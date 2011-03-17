@@ -25,10 +25,14 @@
 
 -->
 
-<model name="materialRequirementComponent" xmlns="http://www.qcadoo.com/model">	
-	<belongsTo name="materialRequirement" model="materialRequirement" lazy="false" required="true" />
-	<belongsTo name="order" model="order" lazy="false" required="true" />
-	<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
-	<validatesWith class="com.qcadoo.mes.products.MaterialRequirementService" method="checkMaterialRequirementComponentUniqueness" />
+<model name="materialRequirementComponent" xmlns="http://www.qcadoo.com/model">
+	<fields>	
+		<belongsTo name="materialRequirement" model="materialRequirement" lazy="false" required="true" />
+		<belongsTo name="order" model="order" lazy="false" required="true" />
+	</fields>
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
+		<validatesWith class="com.qcadoo.mes.products.MaterialRequirementService" method="checkMaterialRequirementComponentUniqueness" />
+	</hooks>
 	<identifier expression="#order['number'] + ' - ' + #order['name']"/>		
 </model>	

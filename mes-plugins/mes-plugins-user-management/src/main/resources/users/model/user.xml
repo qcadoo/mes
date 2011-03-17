@@ -26,21 +26,25 @@
 -->
 
 <model name="user" xmlns="http://www.qcadoo.com/model">
-	<string name="userName" required="true" unique="true">
-		<validatesRegex pattern="^[a-zA-Z0-9\\.]+$" message="users.validate.global.error.loginIllegalCharacters" />
-	</string>
-	<belongsTo name="userGroup" model="group" lazy="false" required="true" />
-	<string name="email" />
-	<string name="firstName" />
-	<string name="lastName" />
-	<boolean name="enabled" default="true" />
-	<string name="description" >
-		<validatesLength max="255"/>
-	</string>
-	<password name="password" /><!-- TODO validatesPresenceOnCreate -->
-	<password name="passwordConfirmation" persistent="false" /><!-- TODO validatesPresenceOnCreate -->
-	<password name="oldPassword" persistent="false" />
-	<string name="viewIdentifier" persistent="false" />
-	<validatesWith class="com.qcadoo.mes.users.UserService" method="checkPassword" />
+	<fields>
+		<string name="userName" required="true" unique="true">
+			<validatesRegex pattern="^[a-zA-Z0-9\\.]+$" message="users.validate.global.error.loginIllegalCharacters" />
+		</string>
+		<belongsTo name="userGroup" model="group" lazy="false" required="true" />
+		<string name="email" />
+		<string name="firstName" />
+		<string name="lastName" />
+		<boolean name="enabled" default="true" />
+		<string name="description" >
+			<validatesLength max="255"/>
+		</string>
+		<password name="password" /><!-- TODO validatesPresenceOnCreate -->
+		<password name="passwordConfirmation" persistent="false" /><!-- TODO validatesPresenceOnCreate -->
+		<password name="oldPassword" persistent="false" />
+		<string name="viewIdentifier" persistent="false" />
+	</fields>
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.users.UserService" method="checkPassword" />
+	</hooks>
 	<identifier expression="#userName"/>
 </model>

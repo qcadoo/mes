@@ -26,10 +26,13 @@
 -->
 
 <model name="menuViewDefinitionItem" xmlns="http://www.qcadoo.com/model">
-	<string name="name" required="true" unique="true" />
-	<boolean name="active" readonly="false" default="true" />
-	<string name="translationName" />
-	<belongsTo name="menuCategory" model="menuCategory" lazy="false" required="true" />
-	<belongsTo name="viewDefinition" model="viewDefinition" lazy="false" required="true" />
-	<priority name="itemOrder" scope="menuCategory" />
+	<fields>
+		<string name="name" required="true" unique="true" />
+		<boolean name="active" readonly="false" default="true" />
+		<string name="translationName" />
+		<belongsTo name="menuCategory" model="menuCategory" lazy="false" required="true" />
+		<belongsTo name="viewDefinition" model="viewDefinition" lazy="false" required="true" />
+		<priority name="itemOrder" scope="menuCategory" />
+	</fields>
+	<hooks />
 </model>

@@ -26,10 +26,14 @@
 -->
 
 <model name="workPlanComponent" xmlns="http://www.qcadoo.com/model">
-	<belongsTo name="workPlan" model="workPlan" lazy="false" required="true" />
-	<belongsTo name="order" model="order" lazy="false" required="true" />
-	<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
-	<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderTechnologyHasOperations" />
-	<validatesWith class="com.qcadoo.mes.products.WorkPlanService" method="checkWorkPlanComponentUniqueness" />	
+	<fields>
+		<belongsTo name="workPlan" model="workPlan" lazy="false" required="true" />
+		<belongsTo name="order" model="order" lazy="false" required="true" />
+	</fields>
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
+		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderTechnologyHasOperations" />
+		<validatesWith class="com.qcadoo.mes.products.WorkPlanService" method="checkWorkPlanComponentUniqueness" />	
+	</hooks>
 	<identifier expression="#order['number'] + ' - ' + #order['name']"/>		
 </model>

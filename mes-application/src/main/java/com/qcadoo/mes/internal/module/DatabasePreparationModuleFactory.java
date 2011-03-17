@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.jdom.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Node;
 
 import com.qcadoo.mes.application.TestDataLoader;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -100,7 +100,7 @@ public final class DatabasePreparationModuleFactory implements ModuleFactory<Mod
     }
 
     @Override
-    public Module parse(final String pluginIdentifier, final Node node) {
+    public Module parse(final String pluginIdentifier, final Element element) {
         throw new IllegalStateException("Cannot create module for databasePreparation");
     }
 

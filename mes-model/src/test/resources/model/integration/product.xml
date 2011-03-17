@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model name="product" xmlns="http://www.qcadoo.com/model">
-	<string name="number" required="true" unique="true" />
-	<string name="name" required="true" />
-	<integer name="quantity">
-		<validatesRange from="0" exclusively="true" />
-	</integer>
-	<dictionary name="category" dictionary="categories" />
-	<hasMany name="components" model="component" joinField="product" cascade="none" />
+	<fields>
+		<string name="number" required="true" unique="true" />
+		<string name="name" required="true" />
+		<integer name="quantity">
+			<validatesRange from="0" exclusively="true" />
+		</integer>
+		<dictionary name="category" dictionary="categories" />
+		<hasMany name="components" model="component" joinField="product" cascade="none" />
+	</fields>
 </model>

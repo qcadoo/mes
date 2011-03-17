@@ -2,12 +2,12 @@ package com.qcadoo.model.internal.module;
 
 import java.io.InputStream;
 
-import org.w3c.dom.Document;
+import org.jdom.Document;
 
 public interface ModelXmlHolder {
 
-    void put(String plugin, String name, InputStream stream);
+    void put(String pluginIdentifier, String modelName, InputStream stream);
 
-    Document get(String plugin, String name);
+    Document get(String pluginIdentifier, String modelName);
 
 }

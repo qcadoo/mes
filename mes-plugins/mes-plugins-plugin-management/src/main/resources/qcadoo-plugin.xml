@@ -10,7 +10,7 @@
 	</information>
 	
 	<modules>
-		<model:model name="plugin" resource="plugins/model/plugin.xml"/>
+		<model:model model="plugin" resource="plugins/model/plugin.xml"/>
 	</modules>
 
 </plugin>

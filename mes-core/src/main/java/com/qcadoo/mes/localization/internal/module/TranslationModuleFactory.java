@@ -1,6 +1,6 @@
 package com.qcadoo.mes.localization.internal.module;
 
-import org.w3c.dom.Node;
+import org.jdom.Element;
 
 import com.qcadoo.plugin.internal.api.ModuleFactory;
 
@@ -12,7 +12,7 @@ public class TranslationModuleFactory implements ModuleFactory<TranslationModule
     }
 
     @Override
-    public TranslationModule parse(final String pluginIdentifier, final Node node) {
+    public TranslationModule parse(final String pluginIdentifier, final Element element) {
         // TODO Auto-generated method stub
         return new TranslationModule();
     }

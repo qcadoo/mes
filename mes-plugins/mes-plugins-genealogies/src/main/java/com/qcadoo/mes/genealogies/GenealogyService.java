@@ -37,6 +37,7 @@ import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.awesomeDynamicList.AwesomeDynamicListState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
@@ -179,6 +180,18 @@ public final class GenealogyService {
                 addOperationsFromSubtechnologiesToList(
                         operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents"),
                         operationComponents);
+            }
+        }
+    }
+
+    public void fillBatchRequiredForTechnology(final DataDefinition dataDefinition, final Entity entity) {
+        if ((Boolean) entity.getField("batchRequired")) {
+            Entity technology = entity.getBelongsToField("operationComponent").getBelongsToField("technology");
+            DataDefinition technologyInDef = dataDefinitionService.get("products", "technology");
+            Entity technologyEntity = technologyInDef.get(technology.getId());
+            if (!(Boolean) technologyEntity.getField("batchRequired")) {
+                technologyEntity.setField("batchRequired", true);
+                technologyInDef.save(technologyEntity);
             }
         }
     }

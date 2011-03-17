@@ -22,35 +22,23 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.model.api;
+package com.qcadoo.model.internal.api;
 
 import java.util.List;
 
-/**
- * Service for manipulating data definitions.
- * 
- * @apiviz.uses com.qcadoo.mes.model.DataDefinition
- */
-public interface DataDefinitionService {
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 
-    /**
-     * Return the data definition matching the given plugin's identifier and model's name.
-     * 
-     * @param pluginIdentifier
-     *            plugin's identifier
-     * @param modelName
-     *            model's name
-     * @return the data definition
-     * @throws NullPointerException
-     *             if data definition is not found
-     */
-    DataDefinition get(String pluginIdentifier, String modelName);
+public interface InternalDataDefinitionService extends DataDefinitionService {
 
-    /**
-     * Return all defined data definitions.
-     * 
-     * @return the data definitions
-     */
-    List<DataDefinition> list();
+    DataDefinition getAll(String pluginIdentifier, String modelName);
+
+    List<DataDefinition> listAll();
+
+    void save(DataDefinition dataDefinition);
+
+    void disable(String pluginIdentifier, String modelName);
+
+    void enable(String pluginIdentifier, String modelName);
 
 }
