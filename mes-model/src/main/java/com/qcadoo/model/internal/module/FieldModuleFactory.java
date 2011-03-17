@@ -54,7 +54,13 @@ public class FieldModuleFactory implements ModuleFactory<FieldModule> {
 
         Document document = modelXmlHolder.get(targetPluginIdentifier, targetModelName);
 
-        document.getRootElement().getChild("fields").addContent(elements.get(0));
+        System.out.println(" 4 ---------> " + document);
+        System.out.println(" 5 ---------> " + document.getRootElement());
+        System.out.println(" 6 ---------> " + document.getRootElement().getChildren().size());
+        System.out.println(" 7 ---------> " + document.getRootElement().getChildren().get(0));
+        System.out.println(" 8 ---------> " + document.getRootElement().getChildren().get(1));
+
+        ((Element) document.getRootElement().getChildren("fields").get(0)).addContent(elements.get(0));
 
         return new FieldModule(targetPluginIdentifier, targetModelName, fieldName, dataDefinitionService);
     }
