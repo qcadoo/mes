@@ -4,7 +4,7 @@ import java.util.Collection;
 
 public interface PluginAccessor {
 
-    PersistentPlugin getEnabledPlugin(String pluginKey);
+    Plugin getEnabledPlugin(String pluginKey);
 
     Collection<Plugin> getEnabledPlugins();
 

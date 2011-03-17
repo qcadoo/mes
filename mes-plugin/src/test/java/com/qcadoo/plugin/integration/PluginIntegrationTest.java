@@ -128,8 +128,6 @@ public class PluginIntegrationTest {
         // when
         PluginOperationResult result = pluginManager.enablePlugin("plugin2");
 
-        System.out.println(" -----> " + result.getStatus());
-
         // then
         assertTrue(result.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, result.getStatus());

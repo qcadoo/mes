@@ -13,10 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.plugin.api.PersistentPlugin;
+import com.qcadoo.model.beans.plugins.PluginsPlugin;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.plugin.api.PluginState;
+import com.qcadoo.plugin.api.Version;
 import com.qcadoo.plugin.internal.api.ModuleFactoryAccessor;
 import com.qcadoo.plugin.internal.api.PluginDao;
 import com.qcadoo.plugin.internal.api.PluginDependencyManager;
@@ -82,26 +83,26 @@ public final class DefaultPluginAccessor implements PluginAccessor {
         long time = System.currentTimeMillis();
 
         Set<Plugin> pluginsFromDescriptor = pluginDescriptorParser.loadPlugins();
-        Set<PersistentPlugin> pluginsFromDatabase = pluginDao.list();
+        Set<PluginsPlugin> pluginsFromDatabase = pluginDao.list();
 
         for (Plugin plugin : pluginsFromDescriptor) {
-            PersistentPlugin existingPlugin = null;
-            for (PersistentPlugin databasePlugin : pluginsFromDatabase) {
+            PluginsPlugin existingPlugin = null;
+            for (PluginsPlugin databasePlugin : pluginsFromDatabase) {
                 if (plugin.getIdentifier().equals(databasePlugin.getIdentifier())) {
                     existingPlugin = databasePlugin;
                     break;
                 }
             }
             if (existingPlugin != null) {
-                plugin.changeStateTo(existingPlugin.getPluginState());
+                plugin.changeStateTo(PluginState.valueOf(existingPlugin.getState()));
             } else {
                 plugin.changeStateTo(PluginState.DISABLED);
                 plugin.changeStateTo(PluginState.ENABLED);
             }
 
-            if (existingPlugin == null || plugin.compareVersion(existingPlugin) > 0) {
+            if (existingPlugin == null || plugin.compareVersion(new Version(existingPlugin.getVersion())) > 0) {
                 pluginDao.save(plugin);
-            } else if (plugin.compareVersion(existingPlugin) < 0) {
+            } else if (plugin.compareVersion(new Version(existingPlugin.getVersion())) < 0) {
                 throw new IllegalStateException("Unsupported operation: downgrade, for plugin: " + plugin.getIdentifier());
             }
 
@@ -109,13 +110,13 @@ public final class DefaultPluginAccessor implements PluginAccessor {
 
             plugins.put(plugin.getIdentifier(), plugin);
         }
-        for (PersistentPlugin databasePlugin : pluginsFromDatabase) {
-            if (databasePlugin.hasState(PluginState.TEMPORARY)) {
+        for (PluginsPlugin databasePlugin : pluginsFromDatabase) {
+            if (databasePlugin.getState().equals(PluginState.TEMPORARY.toString())) {
                 continue;
             }
 
-            PersistentPlugin existingPlugin = null;
-            for (PersistentPlugin plugin : pluginsFromDescriptor) {
+            Plugin existingPlugin = null;
+            for (Plugin plugin : pluginsFromDescriptor) {
                 if (databasePlugin.getIdentifier().equals(plugin.getIdentifier())) {
                     existingPlugin = plugin;
                     break;

@@ -8,12 +8,6 @@
 		doctype-system="http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
 		doctype-public="-//Hibernate/Hibernate Mapping DTD 3.0//EN" />
 
-	<xsl:template match="/qcd:models">
-		<hibernate-mapping>
-			<xsl:apply-templates select="qcd:model" />
-		</hibernate-mapping>
-	</xsl:template>
-	
 	<xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'" />
 	<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
 
@@ -26,39 +20,41 @@
 	</xsl:template>
 
 	<xsl:template match="//qcd:model">
-		<class>
-			<xsl:variable name="table_name">
-				<xsl:value-of select="concat(/qcd:models/@plugin, '_', @name)" />
-			</xsl:variable>
-			<xsl:attribute name="table">
-			    <xsl:value-of select="$table_name" />
-			</xsl:attribute>
-			<xsl:attribute name="name">
-				<xsl:value-of select="concat('com.qcadoo.model.beans.', /qcd:models/@plugin, '.', translate(substring(/qcd:models/@plugin, 1, 1),  $smallcase, $uppercase), substring(/qcd:models/@plugin, 2), translate(substring(@name, 1, 1),  $smallcase, $uppercase), substring(@name, 2))" />
-			</xsl:attribute>
-			<id column="id" name="id" type="long">
-				<generator class="increment" />
-			</id>
-			<xsl:apply-templates />
-			<xsl:if test="@insertable='false'">
-				<sql-insert>
-					<xsl:value-of
-						select="concat('insert must not be executed on ', $table_name)" />
-				</sql-insert>
-			</xsl:if>
-			<xsl:if test="@updatable='false'">
-				<sql-update>
-					<xsl:value-of
-						select="concat('update must not be executed on ', $table_name)" />
-				</sql-update>
-			</xsl:if>
-			<xsl:if test="@deletable='false'">
-				<sql-delete>
-					<xsl:value-of
-						select="concat('delete must not be executed on ', $table_name)" />
-				</sql-delete>
-			</xsl:if>
-		</class>
+		<hibernate-mapping>
+			<class>
+				<xsl:variable name="table_name">
+					<xsl:value-of select="concat(/qcd:model/@plugin, '_', @name)" />
+				</xsl:variable>
+				<xsl:attribute name="table">
+				    <xsl:value-of select="$table_name" />
+				</xsl:attribute>
+				<xsl:attribute name="name">
+					<xsl:value-of select="concat('com.qcadoo.model.beans.', @plugin, '.', translate(substring(@plugin, 1, 1),  $smallcase, $uppercase), substring(@plugin, 2), translate(substring(@name, 1, 1),  $smallcase, $uppercase), substring(@name, 2))" />
+				</xsl:attribute>
+				<id column="id" name="id" type="long">
+					<generator class="increment" />
+				</id>
+				<xsl:apply-templates />
+				<xsl:if test="@insertable='false'">
+					<sql-insert>
+						<xsl:value-of
+							select="concat('insert must not be executed on ', $table_name)" />
+					</sql-insert>
+				</xsl:if>
+				<xsl:if test="@updatable='false'">
+					<sql-update>
+						<xsl:value-of
+							select="concat('update must not be executed on ', $table_name)" />
+					</sql-update>
+				</xsl:if>
+				<xsl:if test="@deletable='false'">
+					<sql-delete>
+						<xsl:value-of
+							select="concat('delete must not be executed on ', $table_name)" />
+					</sql-delete>
+				</xsl:if>
+			</class>
+		</hibernate-mapping>
 	</xsl:template>
 
 	<xsl:template name="property">
@@ -269,7 +265,7 @@
 					<xsl:otherwise>
 						<xsl:call-template name="entityName">
 							<xsl:with-param name="modelName" select="@model" />
-							<xsl:with-param name="pluginName" select="/qcd:models/@plugin" />
+							<xsl:with-param name="pluginName" select="/qcd:model/@plugin" />
 						</xsl:call-template>
 					</xsl:otherwise>
 				</xsl:choose>
@@ -289,7 +285,7 @@
 				<xsl:otherwise>
 					<xsl:call-template name="entityName">
 						<xsl:with-param name="modelName" select="@model" />
-						<xsl:with-param name="pluginName" select="/qcd:models/@plugin" />
+						<xsl:with-param name="pluginName" select="/qcd:model/@plugin" />
 					</xsl:call-template>
 				</xsl:otherwise>
 			</xsl:choose>

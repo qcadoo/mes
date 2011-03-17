@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -66,7 +65,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 
 @Service
-public final class ViewDefinitionParserImpl implements ViewDefinitionParser { // , ApplicationListener<ContextRefreshedEvent> {
+public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(ViewDefinitionParserImpl.class);
 
@@ -93,8 +92,8 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser { //
 
     private int currentIndexOrder;
 
-    // @Override
-    public void onApplicationEvent(final ContextRefreshedEvent event) {
+    @Override
+    public void init() {
         viewComponentResolver.refreshAvaliebleComponentsList();
 
         LOG.info("Reading view definitions ...");

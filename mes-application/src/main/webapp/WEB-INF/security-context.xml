@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.3.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/security 
+       http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+
+	<security:global-method-security
+		pre-post-annotations="enabled">
+		<security:expression-handler ref="methodSecurityExpressionHandler" />
+	</security:global-method-security>
+
+	<security:http use-expressions="true" auto-config="false"
+		entry-point-ref="loginUrlAuthenticationEntryPoint">
+		<security:intercept-url pattern="/login.html"
+			filters="none" requires-channel="any" />
+		<!-- <security:intercept-url pattern="/j_spring_security_check" requires-channel="https" 
+			/> -->
+		<security:intercept-url pattern="/css/**"
+			filters="none" requires-channel="any" />
+		<security:intercept-url pattern="/js/**"
+			filters="none" requires-channel="any" />
+		<security:intercept-url pattern="/**"
+			access="isAuthenticated()" /> <!-- requires-channel="https" -->
+			
+		<security:logout logout-success-url="/login.html?logout=true" />
+
+		<security:session-management
+			invalid-session-url="/login.html?timeout=true">
+			<!--<security:concurrency-control
+				max-sessions="5" error-if-maximum-exceeded="true" />-->
+		</security:session-management>
+
+		<security:custom-filter ref="mySessionExpirationFilter"
+			before="FIRST" />
+
+		<security:custom-filter ref="deletedUserFilter"
+			before="SESSION_MANAGEMENT_FILTER" />
+
+		<security:custom-filter ref="customAuthenticationFilter"
+			position="FORM_LOGIN_FILTER" />
+
+		<security:access-denied-handler ref="accessDeniedHandler" />
+
+		<security:port-mappings>
+			<security:port-mapping http="8282" https="8443" />
+		</security:port-mappings>
+		
+		<security:remember-me user-service-ref="userDetailsService" data-source-ref="dataSource" services-alias="rememberMeServices" key="qcd01" />
+		
+	</security:http>
+
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider
+			user-service-ref="userDetailsService">
+			<security:password-encoder ref="passwordEncoder" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+	<bean id="userDetailsService"
+		class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+		<property name="usersByUsernameQuery">
+			<value>
+				SELECT USERNAME, PASSWORD, enabled FROM
+				Users_User WHERE
+				USERNAME like ? and enabled=true
+            </value>
+		</property>
+		<property name="authoritiesByUsernameQuery">
+			<value>SELECT U.username, G.role as authority FROM Users_User U JOIN
+				Users_Group G ON u.usergroup_id = G.id WHERE U.username like ?</value>
+		</property>
+	</bean>
+
+	<bean id="delegatePasswordEncoder"
+		class="com.qcadoo.mes.security.internal.DelegatePasswordEncoder">
+		<constructor-arg ref="passwordEncoder" />
+	</bean>
+	
+	<bean id="passwordEncoder"
+		class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
+		<constructor-arg value="256" />
+	</bean>
+
+	<bean id="methodSecurityExpressionHandler"
+		class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+		<property name="roleHierarchy" ref="roleHierarchy" />
+	</bean>
+
+	<bean id="roleHierarchy"
+		class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
+		<property name="hierarchy">
+			<value>
+				ROLE_ADMIN > ROLE_SUPERVISOR
+				ROLE_SUPERVISOR > ROLE_USER
+			</value>
+		</property>
+	</bean>
+
+	<bean id="loginUrlAuthenticationEntryPoint"
+		class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+		<property name="loginFormUrl" value="/login.html" />
+	</bean>
+
+	<bean id="accessDeniedHandler"
+		class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+		<property name="errorPage" value="/error.html?code=403" />
+	</bean>
+
+	<bean id="mySessionExpirationFilter"
+		class="com.qcadoo.mes.security.internal.SessionExpirationFilter" />
+
+	<bean id="deletedUserFilter"
+		class="com.qcadoo.mes.security.internal.DeletedUserFilter">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="staticResourcesFilter" class="com.qcadoo.mes.application.StaticResourcesFilter">
+		<property name="compressStaticResources" value="${compressStaticResources}" />
+	</bean>
+
+	<bean id="customAuthenticationFilter"
+		class="com.qcadoo.mes.security.internal.CustomAuthenticationFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="authenticationFailureHandler" ref="failureHandler" />
+		<property name="authenticationSuccessHandler" ref="successHandler" />
+		<property name="rememberMeServices" ref="rememberMeServices" />
+	</bean>
+
+	<bean id="successHandler"
+		class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+		<property name="defaultTargetUrl" value="/login.html" />
+	</bean>
+
+	<bean id="failureHandler"
+		class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+		<property name="defaultFailureUrl" value="/login.html?login_error=error" />
+	</bean>
+	
+</beans>

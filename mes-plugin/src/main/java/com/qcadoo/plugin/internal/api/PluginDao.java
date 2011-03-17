@@ -2,14 +2,19 @@ package com.qcadoo.plugin.internal.api;
 
 import java.util.Set;
 
-import com.qcadoo.plugin.api.PersistentPlugin;
+import com.qcadoo.model.beans.plugins.PluginsPlugin;
+import com.qcadoo.plugin.api.Plugin;
 
 public interface PluginDao {
 
-    void save(PersistentPlugin plugin);
+    void save(PluginsPlugin plugin);
 
-    void delete(PersistentPlugin plugin);
+    void save(Plugin plugin);
 
-    Set<PersistentPlugin> list();
+    void delete(PluginsPlugin plugin);
+
+    void delete(Plugin plugin);
+
+    Set<PluginsPlugin> list();
 
 }

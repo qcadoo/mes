@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.3.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+
+<model name="workPlanComponent" xmlns="http://www.qcadoo.com/model">
+	<belongsTo name="workPlan" model="workPlan" lazy="false" required="true" />
+	<belongsTo name="order" model="order" lazy="false" required="true" />
+	<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
+	<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkIfOrderTechnologyHasOperations" />
+	<validatesWith class="com.qcadoo.mes.products.WorkPlanService" method="checkWorkPlanComponentUniqueness" />	
+	<identifier expression="#order['number'] + ' - ' + #order['name']"/>		
+</model>

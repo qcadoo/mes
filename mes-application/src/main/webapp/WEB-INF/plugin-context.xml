@@ -43,20 +43,13 @@
 		<prop key="restartCommand">${QCADOO_RESTART_CMD}</prop>
 		<prop key="pluginsPath">${QCADOO_PLUGINS_PATH}</prop>
 		<prop key="pluginsTmpPath">${QCADOO_PLUGINS_TMP_PATH}</prop>
-		<prop key="descriptors">new-plugin.xml</prop>
+		<prop key="descriptors">qcadoo-plugin.xml</prop>
 	</util:properties>
 
 	<context:component-scan base-package="com.qcadoo.plugin" />
 
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
-		destroy-method="close">
-		<property name="driverClass" value="${dbDriverClass}" />
-		<property name="jdbcUrl" value="${dbJdbcUrl}" />
-		<property name="user" value="${dbUsername}" />
-		<property name="password" value="${dbPassword}" />
-	</bean>
-
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+	<bean id="pluginSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<qualifier value="plugin"/>
 		<property name="dataSource" ref="dataSource" />
 		<property name="hibernateProperties">
 			<props>
@@ -72,15 +65,15 @@
 		</property>
 	</bean>
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
-	
-	<tx:annotation-driven />
-	
 	<bean class="com.qcadoo.plugin.internal.module.DefaultModuleFactoryAccessor">
 		<property name="moduleFactories">
 			<list>
+				<bean class="com.qcadoo.model.internal.module.ModelModuleFactory" />
+				<bean class="com.qcadoo.model.internal.module.DictionaryModuleFactory" />
+				<bean class="com.qcadoo.mes.localization.internal.module.TranslationModuleFactory" />
+				<bean class="com.qcadoo.mes.view.internal.module.ViewModuleFactory" />
+				<bean class="com.qcadoo.mes.view.internal.module.MenuModuleFactory" />
+				<bean class="com.qcadoo.mes.internal.module.DatabasePreparationModuleFactory" />
 			</list>
 		</property>
 	</bean>

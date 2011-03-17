@@ -6,7 +6,7 @@ public interface ModuleFactory<T extends Module> {
 
     void postInitialize();
 
-    T parse(final Node node);
+    T parse(String pluginIdentifier, Node node);
 
     String getIdentifier();
 

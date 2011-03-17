@@ -28,6 +28,10 @@ public final class DefaultModuleFactoryAccessor implements ModuleFactoryAccessor
 
     public void setModuleFactories(final List<ModuleFactory<?>> moduleFactories) {
         for (ModuleFactory<?> moduleFactory : moduleFactories) {
+            if (moduleFactoryRegistry.containsKey(moduleFactory.getIdentifier())) {
+                throw new IllegalStateException("ModuleFactory " + moduleFactory.getClass().getCanonicalName()
+                        + " try to overwrite existing module with identifier " + moduleFactory.getIdentifier());
+            }
             moduleFactoryRegistry.put(moduleFactory.getIdentifier(), moduleFactory);
         }
     }
