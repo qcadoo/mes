@@ -123,6 +123,7 @@ public final class DatabasePreparationModuleFactory implements ModuleFactory<Mod
         Entity materialRequirementGridView = getMenuViewDefinition("materialRequirements");
         Entity productGridView = getMenuViewDefinition("products");
         Entity groupGridView = getMenuViewDefinition("groups");
+        Entity pluginGridView = getMenuViewDefinition("plugins");
         Entity machineGridView = getMenuViewDefinition("machines");
         Entity staffGridView = getMenuViewDefinition("staffs");
         Entity workPlanGridView = getMenuViewDefinition("workPlans");
@@ -175,8 +176,8 @@ public final class DatabasePreparationModuleFactory implements ModuleFactory<Mod
         if (addAdministrationMenuToDatabase) {
             addMenuViewDefinitionItem("users", "users.menu.administration.users", menuCategoryAdministration, userGridView, 2);
             addMenuViewDefinitionItem("groups", "users.menu.administration.groups", menuCategoryAdministration, groupGridView, 3);
-            // addMenuViewDefinitionItem("plugins", "plugins.menu.administration.plugins", menuCategoryAdministration,
-            // pluginGridView, 3);
+            addMenuViewDefinitionItem("plugins", "plugins.menu.administration.plugins", menuCategoryAdministration,
+                    pluginGridView, 3);
             addMenuViewDefinitionItem("menu", "menu.menu.administration.menu", menuCategoryAdministration, menuCategoryGridView,
                     4);
         }
