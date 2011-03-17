@@ -211,7 +211,7 @@ public class PluginManagerInstallTest {
         verify(anotherPlugin).changeStateTo(plugin.getState());
         verify(pluginFileManager).uninstallPlugin("filename");
         verify(pluginFileManager).renamePlugin("tempFileName", "anotherFilename");
-        verify(pluginServerManager).restart();
+
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
@@ -299,7 +299,7 @@ public class PluginManagerInstallTest {
         verify(pluginDao).save(dependencyPlugin2);
         verify(pluginFileManager).uninstallPlugin("filename");
         verify(pluginFileManager).renamePlugin("tempFileName", "anotherFilename");
-        verify(pluginServerManager).restart();
+
         assertTrue(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS_WITH_RESTART, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getDependenciesToEnable().size());
@@ -434,7 +434,7 @@ public class PluginManagerInstallTest {
         verify(pluginFileManager, never()).uninstallPlugin("filename");
         verify(pluginFileManager).uninstallPlugin("anotherFilename");
         verify(pluginFileManager).renamePlugin("tempFileName", "anotherFilename");
-        verify(pluginServerManager, never()).restart();
+
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.CANNOT_INSTALL_PLUGIN, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
@@ -466,7 +466,7 @@ public class PluginManagerInstallTest {
         verify(pluginFileManager, never()).uninstallPlugin("filename");
         verify(pluginFileManager).uninstallPlugin("anotherFilename");
         verify(pluginFileManager).renamePlugin("tempFileName", "anotherFilename");
-        verify(pluginServerManager, never()).restart();
+
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.CANNOT_INSTALL_PLUGIN, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
@@ -489,7 +489,7 @@ public class PluginManagerInstallTest {
         verify(pluginAccessor, never()).savePlugin(anotherPlugin);
         verify(pluginFileManager).uninstallPlugin("anotherFilename");
         verify(pluginFileManager).renamePlugin("tempFileName", "anotherFilename");
-        verify(pluginServerManager, never()).restart();
+
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.SYSTEM_PLUGIN_UPDATING, pluginOperationResult.getStatus());
     }
@@ -565,7 +565,7 @@ public class PluginManagerInstallTest {
         verify(pluginAccessor, never()).savePlugin(anotherPlugin);
         verify(pluginFileManager).uninstallPlugin("anotherFilename");
         verify(pluginFileManager).renamePlugin("tempFileName", "anotherFilename");
-        verify(pluginServerManager, never()).restart();
+
         assertFalse(pluginOperationResult.isSuccess());
         assertEquals(PluginOperationStatus.INCORRECT_VERSION_PLUGIN, pluginOperationResult.getStatus());
     }

@@ -110,7 +110,6 @@ public final class DefaultPluginManager implements PluginManager {
         }
 
         if (shouldRestart) {
-            pluginServerManager.restart();
             return PluginOperationResult.successWithRestart();
         } else {
             return PluginOperationResult.success();
@@ -198,7 +197,6 @@ public final class DefaultPluginManager implements PluginManager {
         }
 
         if (shouldRestart) {
-            pluginServerManager.restart();
             return PluginOperationResult.successWithRestart();
         } else {
             return PluginOperationResult.success();
@@ -321,7 +319,6 @@ public final class DefaultPluginManager implements PluginManager {
             pluginDao.save(plugin);
             pluginAccessor.savePlugin(plugin);
             if (shouldRestart) {
-                pluginServerManager.restart();
                 return PluginOperationResult.successWithRestart();
             } else {
                 return PluginOperationResult.success();
