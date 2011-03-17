@@ -3,6 +3,7 @@ package com.qcadoo.plugin.internal.dao;
 import java.util.Set;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,14 @@ public class DefaultPluginDao implements PluginDao {
     @Override
     @Transactional
     public void save(final Plugin plugin) {
-        save(new PluginsPlugin(plugin));
+        PluginsPlugin existingPlugin = get(plugin.getIdentifier());
+        if (existingPlugin != null) {
+            existingPlugin.setState(plugin.getState().toString());
+            existingPlugin.setVersion(plugin.getVersion().toString());
+        } else {
+            existingPlugin = new PluginsPlugin(plugin);
+        }
+        save(existingPlugin);
     }
 
     @Override
@@ -41,7 +49,10 @@ public class DefaultPluginDao implements PluginDao {
     @Override
     @Transactional
     public void delete(final Plugin plugin) {
-        delete(new PluginsPlugin(plugin));
+        PluginsPlugin existingPlugin = get(plugin.getIdentifier());
+        if (existingPlugin != null) {
+            delete(existingPlugin);
+        }
     }
 
     @Override
@@ -49,6 +60,11 @@ public class DefaultPluginDao implements PluginDao {
     @Transactional(readOnly = true)
     public Set<PluginsPlugin> list() {
         return Sets.newHashSet(sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).list());
+    }
+
+    private PluginsPlugin get(final String identifier) {
+        return (PluginsPlugin) sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class)
+                .add(Restrictions.eq("identifier", identifier)).uniqueResult();
     }
 
     void setSessionFactory(final SessionFactory sessionFactory) {
