@@ -5,12 +5,16 @@
 <%
 String ctx = request.getContextPath();
 %>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/plugins/jquery.form.js"></script>
 
 <script type="text/JavaScript">
-	var buttonActive = true;
+	var buttonActive = false;
 
 	jQuery(document).ready(function(){
 		window.mainController.setWindowHeader("${headerLabel}");	
+		$('#form').ajaxForm(function(response) {
+			window.location = Encoder.htmlDecode(response);
+	    }); 
 	});
 
 	function checkExtension(fileName, submitName, fileTypes) {
@@ -31,6 +35,7 @@ String ctx = request.getContextPath();
 	        return false;
 		}
 	}
+
 </script>
 
 
@@ -44,8 +49,8 @@ String ctx = request.getContextPath();
 		<input type="file" name="file" size="50" onChange="checkExtension(this.value, this.form.upload, ['jar']);"/>
 	</div>
 		            
-	<div class="linkButton activeButton" style="width: 200px; margin-left: 10px;" id="submit">
-		<a href="#" onclick="if (buttonActive) {$('#form').submit();}">
+	<div class="linkButton" style="width: 200px; margin-left: 10px;" id="submit">
+		<a href="#" onclick="if (buttonActive) {QCD.components.elements.utils.LoadingIndicator.blockElement($('body')); $('#form').submit();}">
 			<span>
 				<div id="labelDiv">${buttonLabel}</div>
 			</span>
