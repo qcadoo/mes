@@ -1,6 +1,7 @@
 package com.qcadoo.model.internal.module;
 
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
 public class ModelModule implements Module {
@@ -18,7 +19,7 @@ public class ModelModule implements Module {
     }
 
     @Override
-    public void init() {
+    public void init(final PluginState state) {
         // ignore
     }
 

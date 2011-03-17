@@ -29,8 +29,8 @@ public class PluginTest {
         plugin.init();
 
         // then
-        verify(module1).init();
-        verify(module2).init();
+        verify(module1).init(plugin.getState());
+        verify(module2).init(plugin.getState());
     }
 
     @Test(expected = IllegalStateException.class)

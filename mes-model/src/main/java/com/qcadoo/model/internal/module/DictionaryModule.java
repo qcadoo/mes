@@ -1,11 +1,12 @@
 package com.qcadoo.model.internal.module;
 
+import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
 public class DictionaryModule implements Module {
 
     @Override
-    public void init() {
+    public void init(final PluginState state) {
         // ignore
     }
 

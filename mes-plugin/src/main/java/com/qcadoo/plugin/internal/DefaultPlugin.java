@@ -128,7 +128,7 @@ public class DefaultPlugin implements Plugin {
         }
 
         for (Module module : modules) {
-            module.init();
+            module.init(getState());
         }
     }
 
