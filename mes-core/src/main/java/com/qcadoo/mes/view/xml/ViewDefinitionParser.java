@@ -52,10 +52,6 @@ public interface ViewDefinitionParser {
 
     Boolean getBooleanAttribute(Node node, String name, boolean defaultValue);
 
-    // ViewDefinition parseViewDefinition(Node node, String pluginIdentifier, String name);
-
-    // void init();
-
     List<ViewDefinition> parseViewXml(final Resource viewXml);
 
 }

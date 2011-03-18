@@ -1,7 +1,12 @@
 package com.qcadoo.mes.view.internal.module;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
@@ -17,17 +22,20 @@ public class ViewModuleFactory implements ModuleFactory<ViewModule> {
 
     @Override
     public void init() {
-        // viewDefinitionParser.init();
     }
 
     @Override
     public ViewModule parse(final String pluginIdentifier, final Element element) {
-        // TODO parse 'view' tag:
+        List<Resource> xmlFiles = new ArrayList<Resource>();
+        for (Element resourceElement : element.getChildren()) {
+            String resource = resourceElement.getText();
+            if (resource == null) {
+                throw new IllegalStateException("Missing resource element of view module");
+            }
+            xmlFiles.add(new ClassPathResource(resource));
+        }
 
-        // <view>
-        // <resource> - wiele tagow, content to sciezka do xml
-
-        return new ViewModule(null, viewDefinitionParser, viewDefinitionService);
+        return new ViewModule(xmlFiles, viewDefinitionParser, viewDefinitionService);
 
     }
 

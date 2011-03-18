@@ -27,13 +27,13 @@ public class ViewModule implements Module {
 
     @Override
     public void init(final PluginState state) {
-        // do nothing
+        if (!PluginState.ENABLED.equals(state)) {
+            disable();
+        }
     }
 
     @Override
     public void enable() {
-        // parse all xml resources, add to VDS
-
         for (Resource xmlFile : xmlFiles) {
             List<ViewDefinition> viewDefinitions = viewDefinitionParser.parseViewXml(xmlFile);
             for (ViewDefinition viewDefinition : viewDefinitions) {
@@ -44,8 +44,6 @@ public class ViewModule implements Module {
 
     @Override
     public void disable() {
-        // parse all xml resources, remove from VDS
-
         for (Resource xmlFile : xmlFiles) {
             List<ViewDefinition> viewDefinitions = viewDefinitionParser.parseViewXml(xmlFile);
             for (ViewDefinition viewDefinition : viewDefinitions) {

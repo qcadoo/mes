@@ -98,7 +98,7 @@ public class ViewDefinitionParserImplTest {
     @BeforeClass
     public static void initClass() throws Exception {
         viewComponentsResolver = new ViewComponentsResolver();
-        viewComponentsResolver.refreshAvaliebleComponentsList();
+        viewComponentsResolver.refreshAvailableComponentsList();
     }
 
     @Before

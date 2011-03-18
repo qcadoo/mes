@@ -86,17 +86,14 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
     @Autowired
     private HookFactory hookFactory;
 
-    // @Autowired
-    // private ApplicationContext applicationContext;
-
     @Autowired
     private ViewComponentsResolver viewComponentResolver;
 
     private int currentIndexOrder;
 
     @PostConstruct
-    public void initializeService() {
-        viewComponentResolver.refreshAvaliebleComponentsList();
+    public void init() {
+        viewComponentResolver.refreshAvailableComponentsList();
     }
 
     @Override
@@ -107,22 +104,6 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
             throw new IllegalStateException("Error while reading view resource", e);
         }
     }
-
-    // @Override
-    // public void init() {
-    // viewComponentResolver.refreshAvaliebleComponentsList();
-    //
-    // LOG.info("Reading view definitions ...");
-    //
-    // try {
-    // Resource[] resources = applicationContext.getResources("classpath*:view/*.xml");
-    // for (Resource resource : resources) {
-    // parse(resource.getInputStream());
-    // }
-    // } catch (IOException e) {
-    // LOG.error("Cannot read view definition", e);
-    // }
-    // }
 
     private List<ViewDefinition> parse(final InputStream dataDefinitionInputStream) {
         try {
@@ -206,19 +187,6 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
 
         return viewDefinition;
     }
-
-    // private void parseView(final Node viewNode, final String pluginIdentifier) {
-    // String name = getStringAttribute(viewNode, "name");
-    //
-    // boolean menuAccessible = getBooleanAttribute(viewNode, "menuAccessible", false);
-    // boolean dynamic = getBooleanAttribute(viewNode, "dynamic", false);
-    //
-    // if (dynamic) {
-    // viewDefinitionService.saveDynamic(pluginIdentifier, name, menuAccessible, viewNode);
-    // } else {
-    // viewDefinitionService.save(parseViewDefinition(viewNode, pluginIdentifier, name));
-    // }
-    // }
 
     private String getPluginIdentifier(final Node node) {
         return getStringAttribute(node, "plugin");

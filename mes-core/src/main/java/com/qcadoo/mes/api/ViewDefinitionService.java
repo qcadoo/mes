@@ -91,14 +91,6 @@ public interface ViewDefinitionService {
     void save(ViewDefinition viewDefinition);
 
     /**
-     * Save the data definition.
-     * 
-     * @param viewDefinition
-     *            view definition
-     */
-    // void saveDynamic(String pluginIdentifier, String viewName, boolean isMenuAccessible, Node viewNode);
-
-    /**
      * Delete the data definition.
      * 
      * @param viewDefinition

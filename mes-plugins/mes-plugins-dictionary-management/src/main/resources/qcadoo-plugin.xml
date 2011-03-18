@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="dictionaries" version="0.4.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/modules/model">
+<plugin plugin="dictionaries" version="0.4.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/modules/model" xmlns:view="http://www.qcadoo.com/modules/view">
 
 	<information>
 		<name>Dictionaries Management</name>
@@ -14,7 +14,7 @@
 		<model:model name="dictionaryItem" resource="dictionaries/model/dictionaryItem.xml" />
 		
 		<view:view>
-			<resource value="dictionaries/view/dictionaries.xml"/>
+			<resource>dictionaries/view/dictionaries.xml</resource>
 		</view:view>
 	</modules>
 
