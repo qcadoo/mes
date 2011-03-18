@@ -222,9 +222,9 @@ public class PluginAccessorTest {
 
         // then
         InOrder inOrder = inOrder(plugin2, plugin1, moduleFactoryAccessor);
+        inOrder.verify(moduleFactoryAccessor).init();
         inOrder.verify(plugin2).init();
         inOrder.verify(plugin1).init();
-        inOrder.verify(moduleFactoryAccessor).postInitialize();
     }
 
     @Test
@@ -267,9 +267,9 @@ public class PluginAccessorTest {
 
         // then
         InOrder inOrder = inOrder(plugin2, plugin1, moduleFactoryAccessor);
+        inOrder.verify(moduleFactoryAccessor).init();
         inOrder.verify(plugin2).init();
         inOrder.verify(plugin1).init();
-        inOrder.verify(moduleFactoryAccessor).postInitialize();
         inOrder.verify(plugin2).changeStateTo(PluginState.ENABLED);
         inOrder.verify(plugin1).changeStateTo(PluginState.ENABLED);
         verify(plugin3, never()).changeStateTo(PluginState.ENABLED);

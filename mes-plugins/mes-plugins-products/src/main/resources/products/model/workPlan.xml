@@ -26,14 +26,18 @@
 -->
 
 <model name="workPlan" xmlns="http://www.qcadoo.com/model">	
-	<string name="name" required="true">
-		<validatesLength max="255"/>
-	</string>
-	<datetime name="date" />
-	<string name="worker" />
-	<boolean name="generated" />
-	<string name="fileName" />
-	<hasMany name="orders" model="workPlanComponent" joinField="workPlan" cascade="delete" copyable="true" />
-	<onCopy class="com.qcadoo.mes.products.WorkPlanService" method="clearGeneratedOnCopy" />
+	<fields>
+		<string name="name" required="true">
+			<validatesLength max="255"/>
+		</string>
+		<datetime name="date" />
+		<string name="worker" />
+		<boolean name="generated" />
+		<string name="fileName" />
+		<hasMany name="orders" model="workPlanComponent" joinField="workPlan" cascade="delete" copyable="true" />
+	</fields>
+	<hooks>
+		<onCopy class="com.qcadoo.mes.products.WorkPlanService" method="clearGeneratedOnCopy" />
+	</hooks>
 	<identifier expression="#name"/>
 </model>

@@ -26,7 +26,10 @@
 -->
 
 <model name="dictionary" deletable="false" xmlns="http://www.qcadoo.com/model">
-	<string name="name" required="true" unique="true" />
-	<string name="label" required="true" unique="true" />
-	<hasMany name="dictionaryItems" model="dictionaryItem" joinField="dictionary" cascade="delete" />
+	<fields>
+		<string name="name" required="true" unique="true" />
+		<string name="label" required="true" unique="true" />
+		<hasMany name="dictionaryItems" model="dictionaryItem" joinField="dictionary" cascade="delete" />
+	</fields>
+	<hooks />
 </model>

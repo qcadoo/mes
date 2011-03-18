@@ -86,6 +86,19 @@ public class QualityControlService {
 
     }
 
+    public void setQualityControlTypeForTechnology(final DataDefinition dataDefinition, final Entity entity) {
+        if (entity.getField("qualityControlRequired") != null && (Boolean) entity.getField("qualityControlRequired")) {
+            Entity technology = entity.getBelongsToField("technology");
+            DataDefinition technologyInDef = dataDefinitionService.get("products", "technology");
+            Entity technologyEntity = technologyInDef.get(technology.getId());
+            if (technologyEntity.getField("qualityControlType") == null
+                    || !technologyEntity.getField("qualityControlType").equals("04forOperation")) {
+                technologyEntity.setField("qualityControlType", "04forOperation");
+                technologyInDef.save(technologyEntity);
+            }
+        }
+    }
+
     public void checkIfCommentIsRequiredBasedOnDefects(final ViewDefinitionState state, final Locale locale) {
         FieldComponentState comment = (FieldComponentState) state.getComponentByReference("comment");
 

@@ -26,13 +26,16 @@
 -->
 
 <model name="currentAttribute" xmlns="http://www.qcadoo.com/model">
-	<dictionary name="shift" dictionary="shifts" />
-	<boolean name="shiftReq" />
-	<dictionary name="post" dictionary="posts" />
-	<boolean name="postReq" />
-	<string name="other"/>
-	<boolean name="otherReq" />
-	<dictionary name="lastUsedShift" dictionary="shifts" />
-	<dictionary name="lastUsedPost" dictionary="posts" />
-	<string name="lastUsedOther" />
+	<fields>
+		<dictionary name="shift" dictionary="shifts" />
+		<boolean name="shiftReq" />
+		<dictionary name="post" dictionary="posts" />
+		<boolean name="postReq" />
+		<string name="other"/>
+		<boolean name="otherReq" />
+		<dictionary name="lastUsedShift" dictionary="shifts" />
+		<dictionary name="lastUsedPost" dictionary="posts" />
+		<string name="lastUsedOther" />
+	</fields>
+	<hooks />
 </model>

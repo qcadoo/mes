@@ -17,20 +17,20 @@
 	</dependencies>
 	
 	<modules>
-		<model:model name="materialRequirement" resource="products/model/materialRequirement.xml"/>
-		<model:model name="materialRequirementComponent" resource="products/model/materialRequirementComponent.xml"/>
-		<model:model name="operation" resource="products/model/operation.xml"/>
-		<model:model name="operationProductOutComponent" resource="products/model/operationProductOutComponent.xml"/>
-		<model:model name="operationProductInComponent" resource="products/model/operationProductInComponent.xml"/>
-		<model:model name="order" resource="products/model/order.xml"/>
-		<model:model name="product" resource="products/model/product.xml"/>
-		<model:model name="substitute" resource="products/model/substitute.xml"/>
-		<model:model name="substituteComponent" resource="products/model/substituteComponent.xml"/>
-		<model:model name="technology" resource="products/model/technology.xml"/>
-		<model:model name="technologyOperationComponent" resource="products/model/technologyOperationComponent.xml"/>
-		<model:model name="workPlan" resource="products/model/workPlan.xml"/>
-		<model:model name="workPlanComponent" resource="products/model/workPlanComponent.xml"/>
-		
+		<model:model model="materialRequirement" resource="products/model/materialRequirement.xml"/>
+		<model:model model="materialRequirementComponent" resource="products/model/materialRequirementComponent.xml"/>
+		<model:model model="operation" resource="products/model/operation.xml"/>
+		<model:model model="operationProductOutComponent" resource="products/model/operationProductOutComponent.xml"/>
+		<model:model model="operationProductInComponent" resource="products/model/operationProductInComponent.xml"/>
+		<model:model model="order" resource="products/model/order.xml"/>
+		<model:model model="product" resource="products/model/product.xml"/>
+		<model:model model="substitute" resource="products/model/substitute.xml"/>
+		<model:model model="substituteComponent" resource="products/model/substituteComponent.xml"/>
+		<model:model model="technology" resource="products/model/technology.xml"/>
+		<model:model model="technologyOperationComponent" resource="products/model/technologyOperationComponent.xml"/>
+		<model:model model="workPlan" resource="products/model/workPlan.xml"/>
+		<model:model model="workPlanComponent" resource="products/model/workPlanComponent.xml"/>
+
 		<view:view>
 			<resource value="products/view/materialRequirements.xml"/>
 			<resource value="products/view/orders.xml"/>

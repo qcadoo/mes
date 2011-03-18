@@ -26,12 +26,16 @@
 -->
 
 <model name="postFeature" xmlns="http://www.qcadoo.com/model">
-	<dictionary name="value" dictionary="posts" required="true">
-		<validatesLength max="255" />
-	</dictionary>
-	<date name="date" readonly="true" />
-	<string name="worker" readonly="true" />
-	<string name="workerAndDate" expression="#worker + ' (' + #date + ')'" default="-" />
-	<belongsTo name="genealogy" model="genealogy" />
-	<onSave class="com.qcadoo.mes.genealogies.AutoGenealogyService" method="fillLastUsedPostFeature" />
+	<fields>
+		<dictionary name="value" dictionary="posts" required="true">
+			<validatesLength max="255" />
+		</dictionary>
+		<date name="date" readonly="true" />
+		<string name="worker" readonly="true" />
+		<string name="workerAndDate" expression="#worker + ' (' + #date + ')'" default="-" />
+		<belongsTo name="genealogy" model="genealogy" />
+	</fields>
+	<hooks>
+		<onSave class="com.qcadoo.mes.genealogies.AutoGenealogyService" method="fillLastUsedPostFeature" />
+	</hooks>
 </model>

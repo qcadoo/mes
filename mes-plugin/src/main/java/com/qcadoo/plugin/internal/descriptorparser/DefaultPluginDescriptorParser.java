@@ -12,6 +12,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.jdom.Element;
+import org.jdom.input.DOMBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -201,10 +203,15 @@ public class DefaultPluginDescriptorParser implements PluginDescriptorParser {
         for (Node child : getChildNodes(modulesNode)) {
             ModuleFactory<?> moduleFactory = moduleFactoryAccessor.getModuleFactory(child.getLocalName());
             LOG.info("Parsing module " + child.getLocalName() + " for plugin " + pluginIdentifier);
-            Module module = moduleFactory.parse(pluginIdentifier, child);
+            Module module = moduleFactory.parse(pluginIdentifier, convertNodeToJdomElement(child));
             checkNotNull(module, "Module for " + child.getLocalName() + " is null");
             pluginBuilder.withModule(module);
         }
+    }
+
+    // TODO use jdom instead of w3 dom
+    private Element convertNodeToJdomElement(final Node child) {
+        return new DOMBuilder().build((org.w3c.dom.Element) child);
     }
 
     private List<Node> getChildNodes(final Node node) {

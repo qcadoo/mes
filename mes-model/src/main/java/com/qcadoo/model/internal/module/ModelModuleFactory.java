@@ -4,15 +4,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Node;
 
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.internal.api.DynamicSessionFactoryBean;
+import com.qcadoo.model.internal.api.InternalDataDefinitionService;
 import com.qcadoo.model.internal.api.ModelXmlResolver;
 import com.qcadoo.model.internal.api.ModelXmlToClassConverter;
 import com.qcadoo.model.internal.api.ModelXmlToDefinitionConverter;
@@ -37,13 +36,13 @@ public class ModelModuleFactory implements ModuleFactory<ModelModule> {
     private ModelXmlResolver modelXmlResolver;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private InternalDataDefinitionService dataDefinitionService;
 
     @Autowired
     private DynamicSessionFactoryBean sessionFactoryBean;
 
     @Override
-    public void postInitialize() {
+    public void init() {
         Resource[] resources = modelXmlResolver.getResources();
 
         modelXmlToClassConverter.convert(resources);
@@ -54,36 +53,32 @@ public class ModelModuleFactory implements ModuleFactory<ModelModule> {
     }
 
     @Override
-    public ModelModule parse(final String pluginIdentifier, final Node node) {
-        Node nodeName = node.getAttributes().getNamedItem("name");
+    public ModelModule parse(final String pluginIdentifier, final Element element) {
+        String modelName = element.getAttributeValue("model");
 
-        if (nodeName == null) {
-            throw new IllegalStateException("Missing name attribute of model module");
+        if (modelName == null) {
+            throw new IllegalStateException("Missing model attribute of model module");
         }
 
-        String content = node.getTextContent();
+        String content = element.getText();
 
-        Node resourceName = node.getAttributes().getNamedItem("resource");
+        String resource = element.getAttributeValue("resource");
 
-        if (resourceName == null && !StringUtils.hasText(content)) {
-            throw new IllegalStateException("Missing resource attribute or text content of model module");
+        if (resource == null && !StringUtils.hasText(content)) {
+            throw new IllegalStateException("Missing resource attribute or content of model module");
         }
 
-        String name = nodeName.getNodeValue();
-
-        if (resourceName != null) {
+        if (resource != null) {
             try {
-                modelXmlHolder.put(pluginIdentifier, name, new ClassPathResource(resourceName.getNodeValue()).getInputStream());
-            } catch (DOMException e) {
-                throw new IllegalStateException(e.getMessage(), e);
+                modelXmlHolder.put(pluginIdentifier, modelName, new ClassPathResource(resource).getInputStream());
             } catch (IOException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
         } else {
-            modelXmlHolder.put(pluginIdentifier, name, new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8"))));
+            modelXmlHolder.put(pluginIdentifier, modelName, new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8"))));
         }
 
-        return new ModelModule(pluginIdentifier, name, dataDefinitionService);
+        return new ModelModule(pluginIdentifier, modelName, dataDefinitionService);
 
     }
 

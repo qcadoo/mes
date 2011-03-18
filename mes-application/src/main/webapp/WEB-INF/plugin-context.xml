@@ -69,6 +69,8 @@
 		<property name="moduleFactories">
 			<list>
 				<bean class="com.qcadoo.model.internal.module.ModelModuleFactory" />
+				<bean class="com.qcadoo.model.internal.module.FieldModuleFactory" />
+				<bean class="com.qcadoo.model.internal.module.HookModuleFactory" />
 				<bean class="com.qcadoo.model.internal.module.DictionaryModuleFactory" />
 				<bean class="com.qcadoo.mes.localization.internal.module.TranslationModuleFactory" />
 				<bean class="com.qcadoo.mes.view.internal.module.ViewModuleFactory" />

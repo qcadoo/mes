@@ -177,13 +177,22 @@ public final class ModelXmlToClassConverterImpl extends AbstractModelXmlConverte
                 break;
             }
 
-            String tag = getTagStarted(reader);
+            if (TAG_FIELDS.equals(getTagStarted(reader))) {
+                while (reader.hasNext() && reader.next() > 0) {
+                    if (isTagEnded(reader, TAG_FIELDS)) {
+                        break;
+                    }
 
-            if (tag == null) {
-                continue;
+                    String tag = getTagStarted(reader);
+
+                    if (tag == null) {
+                        continue;
+                    }
+
+                    parseField(reader, pluginIdentifier, ctClass, tag);
+                }
+                break;
             }
-
-            parseField(reader, pluginIdentifier, ctClass, tag);
         }
 
         // TODO - toString, equals, hashCode
@@ -191,7 +200,7 @@ public final class ModelXmlToClassConverterImpl extends AbstractModelXmlConverte
 
     private void parseField(final XMLStreamReader reader, final String pluginIdentifier, final CtClass ctClass, final String tag)
             throws XMLStreamException {
-        ModelTag modelTag = ModelTag.valueOf(tag.toUpperCase(Locale.ENGLISH));
+        FieldsTag modelTag = FieldsTag.valueOf(tag.toUpperCase(Locale.ENGLISH));
 
         if (!getBooleanAttribute(reader, "persistent", true)) {
             return;

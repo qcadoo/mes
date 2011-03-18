@@ -26,18 +26,20 @@
 -->
 
 <model name="technologyOperationComponent" xmlns="http://www.qcadoo.com/model">
-	<boolean name="qualityControlRequired" />
-	<belongsTo name="technology" model="technology" required="true" />
-	<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" copyable="true" />
-	<belongsTo name="parent" model="technologyOperationComponent" />
-	<enum name="entityType" values="operation,referenceTechnology" required="true" />
-	<belongsTo name="operation" model="operation" />
-	<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="operationComponent" cascade="delete" copyable="true" />
-	<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="operationComponent" cascade="delete" copyable="true" />
-	<belongsTo name="referenceTechnology" model="technology" />
-	<enum name="referenceMode" values="01reference,02copy" default="01reference" persistent="false" />
-	<priority name="priority" scope="parent" />
-	<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="validateTechnologyOperationComponent" />
-	<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="copyReferencedTechnology" />
-	<onSave class="com.qcadoo.mes.products.TechnologyService" method="setQualityControlTypeForTechnology" />
+	<fields>
+		<belongsTo name="technology" model="technology" required="true" />
+		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" copyable="true" />
+		<belongsTo name="parent" model="technologyOperationComponent" />
+		<enum name="entityType" values="operation,referenceTechnology" required="true" />
+		<belongsTo name="operation" model="operation" />
+		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="operationComponent" cascade="delete" copyable="true" />
+		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="operationComponent" cascade="delete" copyable="true" />
+		<belongsTo name="referenceTechnology" model="technology" />
+		<enum name="referenceMode" values="01reference,02copy" default="01reference" persistent="false" />
+		<priority name="priority" scope="parent" />
+	</fields>
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="validateTechnologyOperationComponent" />
+		<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="copyReferencedTechnology" />
+	</hooks>
 </model>

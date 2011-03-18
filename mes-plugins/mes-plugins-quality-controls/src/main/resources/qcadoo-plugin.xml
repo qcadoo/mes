@@ -18,11 +18,41 @@
 			<plugin>products</plugin>
 			<version>[0.4.0</version>
 		</dependency>
+		<dependency>
+			<plugin>genealogies</plugin>
+			<version>[0.4.0</version>
+		</dependency>
 	</dependencies>
 	
 	<modules>
-		<model:model name="qualityControl" resource="qualityControls/model/qualityControl.xml"/>
-		
+		<model:model model="qualityControl" resource="qualityControls/model/qualityControl.xml"/>
+		<model:field plugin="products" model="technology">
+			<enum name="qualityControlType" values="01forBatch,02forUnit,03forOrder,04forOperation" />
+		</model:field>
+		<model:field plugin="products" model="technology">
+			<decimal name="unitSamplingNr" />
+		</model:field>
+		<model:field plugin="products" model="technology">
+			<string name="qualityControlInstruction">
+				<validatesLength max="255" />
+			</string>
+		</model:field>
+		<model:field plugin="products" model="technologyOperationComponent">
+			<boolean name="qualityControlRequired" />
+		</model:field>
+		<model:field plugin="basic" model="parameter">
+			<boolean name="checkDoneOrderForQuality" required="true" />
+		</model:field>
+		<model:field plugin="basic" model="parameter">
+			<boolean name="autoGenerateQualityControl" required="true" />
+		</model:field>
+		<model:hook plugin="products" model="technologyOperationComponent">
+			<onSave class="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlTypeForTechnology" />
+		</model:hook>
+		<model:hook plugin="genealogies" model="genealogy">
+			<onSave class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateOnSaveQualityControl" />
+		</model:hook>
+
 		<view:view>
 			<resource value="qualityControls/view/qualityControls.xml"/>
 			<resource value="qualityControls/view/qualityControlsTest.xml"/>

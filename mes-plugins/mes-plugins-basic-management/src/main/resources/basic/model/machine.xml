@@ -26,14 +26,17 @@
 -->
 
 <model name="machine" deletable="true" xmlns="http://www.qcadoo.com/model">
-	<string name="name" required="true">
-		<validatesLength max="2048"/>
-	</string>
-	<string name="number" required="true" unique="true">
-		<validatesLength max="255"/>
-	</string>
-	<string name="description">
-		<validatesLength max="2048"/>
-	</string>
+	<fields>
+		<string name="name" required="true">
+			<validatesLength max="2048"/>
+		</string>
+		<string name="number" required="true" unique="true">
+			<validatesLength max="255"/>
+		</string>
+		<string name="description">
+			<validatesLength max="2048"/>
+		</string>
+	</fields>
+	<hooks />
 	<identifier expression="#number + ' - ' + #name"/>
 </model>

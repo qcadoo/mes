@@ -42,13 +42,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.aop.Monitorable;
 import com.qcadoo.model.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.model.beans.dictionaries.DictionariesDictionaryItem;
+import com.qcadoo.model.internal.api.InternalDictionaryService;
 
 @Service
-public final class DictionaryServiceImpl implements DictionaryService {
+public final class DictionaryServiceImpl implements InternalDictionaryService {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -111,4 +111,28 @@ public final class DictionaryServiceImpl implements DictionaryService {
         return names;
     }
 
+    @Override
+    @Transactional
+    @Monitorable
+    public void createIfNotExists(final String name, final String... values) {
+        if (sessionFactory.getCurrentSession().createCriteria(DictionariesDictionary.class).add(Restrictions.eq("name", name))
+                .list().size() > 0) {
+            return;
+        }
+
+        DictionariesDictionary dictionary = new DictionariesDictionary();
+        dictionary.setName(name);
+        dictionary.setLabel(name);
+
+        sessionFactory.getCurrentSession().save(dictionary);
+
+        for (String value : values) {
+            DictionariesDictionaryItem item = new DictionariesDictionaryItem();
+            item.setDictionary(dictionary);
+            item.setDescription("");
+            item.setName(value);
+
+            sessionFactory.getCurrentSession().save(item);
+        }
+    }
 }

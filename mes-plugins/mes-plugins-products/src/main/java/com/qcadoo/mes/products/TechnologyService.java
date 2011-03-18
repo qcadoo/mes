@@ -285,18 +285,6 @@ public final class TechnologyService {
         }
     }
 
-    public void fillBatchRequiredForTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if ((Boolean) entity.getField("batchRequired")) {
-            Entity technology = entity.getBelongsToField("operationComponent").getBelongsToField("technology");
-            DataDefinition technologyInDef = dataDefinitionService.get("products", "technology");
-            Entity technologyEntity = technologyInDef.get(technology.getId());
-            if (!(Boolean) technologyEntity.getField("batchRequired")) {
-                technologyEntity.setField("batchRequired", true);
-                technologyInDef.save(technologyEntity);
-            }
-        }
-    }
-
     public boolean copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
         if (!"referenceTechnology".equals(entity.getField("entityType")) && entity.getField("referenceTechnology") == null) {
             return true;
@@ -385,19 +373,6 @@ public final class TechnologyService {
             copies.add(copyReferencedTechnologyOperations(entity, technology));
         }
         return copies;
-    }
-
-    public void setQualityControlTypeForTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getField("qualityControlRequired") != null && (Boolean) entity.getField("qualityControlRequired")) {
-            Entity technology = entity.getBelongsToField("technology");
-            DataDefinition technologyInDef = dataDefinitionService.get("products", "technology");
-            Entity technologyEntity = technologyInDef.get(technology.getId());
-            if (technologyEntity.getField("qualityControlType") == null
-                    || !technologyEntity.getField("qualityControlType").equals("04forOperation")) {
-                technologyEntity.setField("qualityControlType", "04forOperation");
-                technologyInDef.save(technologyEntity);
-            }
-        }
     }
 
     public void disableBatchRequiredForTechnology(final ViewDefinitionState state, final Locale locale) {

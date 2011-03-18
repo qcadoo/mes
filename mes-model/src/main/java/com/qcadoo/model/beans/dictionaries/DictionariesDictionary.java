@@ -8,6 +8,7 @@ public class DictionariesDictionary {
 
     private String name;
 
+    // TODO take me from properties file
     private String label;
 
     private Set<DictionariesDictionaryItem> dictionaryItems;

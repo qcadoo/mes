@@ -4,17 +4,38 @@
 
 	<xs:element name="model">
 		<xs:complexType>
-			<xs:attribute name="name" type="xs:string" use="required" />
+			<xs:sequence>
+				<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+			</xs:sequence>
+			<xs:attribute name="model" type="xs:string" use="required" />
 			<xs:attribute name="resource" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>
 	
-	<xs:element name="field" />
+	<xs:element name="field">
+		<xs:complexType>	
+			<xs:sequence>
+				<xs:any minOccurs="1" maxOccurs="unbounded" processContents="skip"/>
+			</xs:sequence>
+			<xs:attribute name="plugin" type="xs:string" use="optional" />
+			<xs:attribute name="model" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
 	
-	<xs:element name="hook" />
+	<xs:element name="hook">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any minOccurs="1" maxOccurs="unbounded" processContents="skip"/>
+			</xs:sequence>
+			<xs:attribute name="plugin" type="xs:string" use="optional" />
+			<xs:attribute name="model" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
 	
-	<xs:element name="validator" />
-	
-	<xs:element name="dictionary" />
+	<xs:element name="dictionary">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
 
 </xs:schema>

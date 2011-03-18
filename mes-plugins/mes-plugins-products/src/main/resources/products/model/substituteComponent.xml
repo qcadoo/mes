@@ -26,14 +26,18 @@
 -->
 
 <model name="substituteComponent" xmlns="http://www.qcadoo.com/model">
-	<belongsTo name="product" model="product" required="true" />
-	<belongsTo name="substitute" model="substitute" required="true" />
-	<decimal name="quantity" required="true">
-		<validatesRange from="0" exclusively="true" />
-		<validatesPrecision max="7" />
-		<validatesScale max="3" />
-	</decimal>
-	<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfSubstituteIsNotRemoved" />
-	<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkSubstituteComponentUniqueness" />
+	<fields>
+		<belongsTo name="product" model="product" required="true" />
+		<belongsTo name="substitute" model="substitute" required="true" />
+		<decimal name="quantity" required="true">
+			<validatesRange from="0" exclusively="true" />
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+	</fields>
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfSubstituteIsNotRemoved" />
+		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkSubstituteComponentUniqueness" />
+	</hooks>
 	<identifier expression="#product['number'] + ' - ' + #product['name']"/>
 </model>

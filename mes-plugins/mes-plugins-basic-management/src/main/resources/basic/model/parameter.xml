@@ -26,7 +26,6 @@
 -->
 
 <model name="parameter" deletable="false" xmlns="http://www.qcadoo.com/model">
-	<boolean name="checkDoneOrderForQuality" required="true" />
-	<boolean name="autoGenerateQualityControl" required="true" />
-	<enum name="batchForDoneOrder" values="01none,02active,03lastUsed" default="01none" required="true" />
+	<fields />
+	<hooks />
 </model>

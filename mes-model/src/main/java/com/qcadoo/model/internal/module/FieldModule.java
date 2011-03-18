@@ -1,21 +1,24 @@
 package com.qcadoo.model.internal.module;
 
-import com.qcadoo.model.internal.api.InternalDataDefinitionService;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class ModelModule implements Module {
+public class FieldModule implements Module {
 
     private final String pluginIdentifier;
 
     private final String modelName;
 
-    private final InternalDataDefinitionService dataDefinitionService;
+    private final String fieldName;
 
-    public ModelModule(final String pluginIdentifier, final String modelName,
-            final InternalDataDefinitionService dataDefinitionService) {
+    private final DataDefinitionService dataDefinitionService;
+
+    public FieldModule(final String pluginIdentifier, final String modelName, final String fieldName,
+            final DataDefinitionService dataDefinitionService) {
         this.pluginIdentifier = pluginIdentifier;
         this.modelName = modelName;
+        this.fieldName = fieldName;
         this.dataDefinitionService = dataDefinitionService;
     }
 
@@ -28,12 +31,15 @@ public class ModelModule implements Module {
 
     @Override
     public void enable() {
-        dataDefinitionService.enable(pluginIdentifier, modelName);
+        // TODO
+        // włącza pole w dataDefinitionService
     }
 
     @Override
     public void disable() {
-        dataDefinitionService.disable(pluginIdentifier, modelName);
+        // TODO
+        // wyłącza pole w dataDefinitionService
+
     }
 
 }

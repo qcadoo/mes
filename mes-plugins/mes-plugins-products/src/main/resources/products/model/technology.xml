@@ -26,29 +26,23 @@
 -->
 
 <model name="technology" xmlns="http://www.qcadoo.com/model">
-	<string name="number" required="true" unique="true">
-		<validatesLength max="40" />
-	</string>
-	<string name="name" required="true" />
-	<belongsTo name="product" model="product" lazy="false" required="true" />
-	<boolean name="master" default="true" />
-	<string name="description" />
-	<boolean name="batchRequired" />
-	<boolean name="shiftFeatureRequired" />
-	<boolean name="postFeatureRequired" />
-	<boolean name="otherFeatureRequired" />
-	<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology" default="01perProductOut" required="true" />
-	<enum name="qualityControlType" values="01forBatch,02forUnit,03forOrder,04forOperation" />
-	<decimal name="unitSamplingNr" />
-	<string name="qualityControlInstruction">
-		<validatesLength max="255" />
-	</string>
-	<tree name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />
-	<hasMany name="orders" model="order" joinField="technology" cascade="none"/>
-	<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="checkTechnologyDefault" />
-	<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
-	<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="checkIfUnitSampligNrIsReq" />
-	<onCopy class="com.qcadoo.mes.products.TechnologyService" method="clearMasterOnCopy" />
-	<onSave class="com.qcadoo.mes.products.TechnologyService" method="setFirstTechnologyAsDefault" />
+	<fields>
+		<string name="number" required="true" unique="true">
+			<validatesLength max="40" />
+		</string>
+		<string name="name" required="true" />
+		<belongsTo name="product" model="product" lazy="false" required="true" />
+		<boolean name="master" default="true" />
+		<string name="description" />
+		<tree name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />
+		<hasMany name="orders" model="order" joinField="technology" cascade="none"/>
+	</fields>
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="checkTechnologyDefault" />
+		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
+		<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="checkIfUnitSampligNrIsReq" />
+		<onCopy class="com.qcadoo.mes.products.TechnologyService" method="clearMasterOnCopy" />
+		<onSave class="com.qcadoo.mes.products.TechnologyService" method="setFirstTechnologyAsDefault" />
+	</hooks>
 	<identifier expression="#number + ' - ' + #name"/>
 </model>

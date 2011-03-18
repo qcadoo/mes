@@ -10,8 +10,8 @@
 	</information>
 	
 	<modules>
-		<model:model name="plugin" resource="plugins/model/plugin.xml"/>
-		
+		<model:model model="plugin" resource="plugins/model/plugin.xml"/>
+
 		<view:view>
 			<resource value="plugins/view/plugins.xml"/>
 		</view:view>

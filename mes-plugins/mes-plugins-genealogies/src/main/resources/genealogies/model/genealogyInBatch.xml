@@ -26,12 +26,16 @@
 -->
 
 <model name="productInBatch" xmlns="http://www.qcadoo.com/model">
-	<string name="batch" required="true">
-		<validatesLength max="255" />
-	</string>
-	<date name="date" readonly="true" />
-	<string name="worker" readonly="true" />
-	<string name="workerAndDate" expression="#worker + ' (' + #date + ')'" default="-" />
-	<belongsTo name="productInComponent" model="genealogyProductInComponent" />
-	<onSave class="com.qcadoo.mes.genealogies.AutoGenealogyService" method="fillLastUsedBatchForProduct" />
+	<fields>
+		<string name="batch" required="true">
+			<validatesLength max="255" />
+		</string>
+		<date name="date" readonly="true" />
+		<string name="worker" readonly="true" />
+		<string name="workerAndDate" expression="#worker + ' (' + #date + ')'" default="-" />
+		<belongsTo name="productInComponent" model="genealogyProductInComponent" />
+	</fields>
+	<hooks>
+		<onSave class="com.qcadoo.mes.genealogies.AutoGenealogyService" method="fillLastUsedBatchForProduct" />
+	</hooks>
 </model>

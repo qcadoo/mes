@@ -11,13 +11,13 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Set;
 
+import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.w3c.dom.Node;
 
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginDependencyInformation;
@@ -213,7 +213,7 @@ public class PluginDescriptorParserTest {
         assertEquals(0, castedResult.getModules().size());
     }
 
-    private class HasNodeName extends ArgumentMatcher<Node> {
+    private class HasNodeName extends ArgumentMatcher<Element> {
 
         private final String expectedNodeName;
 
@@ -225,9 +225,9 @@ public class PluginDescriptorParserTest {
         }
 
         @Override
-        public boolean matches(final Object node) {
-            if (expectedNodeName.equals(((Node) node).getNodeName())) {
-                return expectedNodeText.equals(((Node) node).getTextContent());
+        public boolean matches(final Object element) {
+            if (expectedNodeName.equals(((Element) element).getName())) {
+                return expectedNodeText.equals(((Element) element).getText());
             }
             return false;
         }

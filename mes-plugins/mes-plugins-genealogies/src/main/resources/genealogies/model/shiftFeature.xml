@@ -26,12 +26,16 @@
 -->
 
 <model name="shiftFeature" xmlns="http://www.qcadoo.com/model">
-	<dictionary name="value" dictionary="shifts" required="true">
-		<validatesLength max="255" />
-	</dictionary>
-	<date name="date" readonly="true" />
-	<string name="worker" readonly="true" />
-	<string name="workerAndDate" expression="#worker + ' (' + #date + ')'" default="-" />		
-	<belongsTo name="genealogy" model="genealogy" />
-	<onSave class="com.qcadoo.mes.genealogies.AutoGenealogyService" method="fillLastUsedShiftFeature" />
+	<fields>
+		<dictionary name="value" dictionary="shifts" required="true">
+			<validatesLength max="255" />
+		</dictionary>
+		<date name="date" readonly="true" />
+		<string name="worker" readonly="true" />
+		<string name="workerAndDate" expression="#worker + ' (' + #date + ')'" default="-" />		
+		<belongsTo name="genealogy" model="genealogy" />
+	</fields>
+	<hooks>
+		<onSave class="com.qcadoo.mes.genealogies.AutoGenealogyService" method="fillLastUsedShiftFeature" />
+	</hooks>
 </model>

@@ -26,17 +26,20 @@
 -->
 
 <model name="operation" xmlns="http://www.qcadoo.com/model">
-	<string name="number" required="true" unique="true">
-		<validatesLength max="255"/>
-	</string>
-	<string name="name" required="true" unique="true">
-		<validatesLength max="2048"/>
-	</string>
-	<string name="comment">	
-		<validatesLength max="2048"/>
-	</string>
-	<belongsTo name="staff" plugin="basic" model="staff" lazy="false" />
-	<belongsTo name="machine" plugin="basic" model="machine" lazy="false" />
-	<hasMany name="operationComponents" model="technologyOperationComponent" joinField="operation" cascade="none" />
+	<fields>
+		<string name="number" required="true" unique="true">
+			<validatesLength max="255"/>
+		</string>
+		<string name="name" required="true" unique="true">
+			<validatesLength max="2048"/>
+		</string>
+		<string name="comment">	
+			<validatesLength max="2048"/>
+		</string>
+		<belongsTo name="staff" plugin="basic" model="staff" lazy="false" />
+		<belongsTo name="machine" plugin="basic" model="machine" lazy="false" />
+		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="operation" cascade="none" />
+	</fields>
+	<hooks />
 	<identifier expression="#number + ' - ' + #name"/>
 </model>
