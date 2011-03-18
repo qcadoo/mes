@@ -1,6 +1,8 @@
 package com.qcadoo.mes.plugins.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -9,11 +11,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.crud.CrudController;
+import com.qcadoo.plugin.internal.api.PluginArtifact;
+import com.qcadoo.plugin.internal.artifact.InputStreamPluginArtifact;
 
 @Controller
 public class PluginManagementUrlController {
@@ -31,76 +36,86 @@ public class PluginManagementUrlController {
     public ModelAndView getDownloadPageView(final Locale locale) {
         ModelAndView mav = getCrudPopupView("pluginDownload", locale);
 
-        mav.addObject("headerLabel", translationService.translate("plugins2.downloadView.header", locale));
-        mav.addObject("buttonLabel", translationService.translate("plugins2.downloadView.button", locale));
-        mav.addObject("chooseFileLabel", translationService.translate("plugins2.downloadView.chooseFileLabel", locale));
+        mav.addObject("headerLabel", translationService.translate("plugins.downloadView.header", locale));
+        mav.addObject("buttonLabel", translationService.translate("plugins.downloadView.button", locale));
+        mav.addObject("chooseFileLabel", translationService.translate("plugins.downloadView.chooseFileLabel", locale));
 
         return mav;
     }
 
     @RequestMapping(value = "performDownload.html", method = RequestMethod.POST)
-    public ModelAndView handleDownload(@RequestParam("file") final MultipartFile file, final Locale locale) {
-        // return getInfoMessageView(pluginManagementService.downloadPlugin(file), locale);
-        return new ModelAndView();
+    @ResponseBody
+    public String handleDownload(@RequestParam("file") final MultipartFile file, final Locale locale) {
+        try {
+            PluginArtifact artifact = new InputStreamPluginArtifact(file.getOriginalFilename(), file.getInputStream());
+            return pluginManagmentPerformer.performInstall(artifact);
+        } catch (IOException e) {
+            throw new IllegalStateException("Error while reading file", e);
+        }
     }
 
     @RequestMapping(value = "pluginPages/infoPage", method = RequestMethod.GET)
     public ModelAndView getInfoPageView(@RequestParam final Map<String, String> arguments, final Locale locale) {
         ModelAndView mav = getCrudPopupView("pluginInfo", locale);
 
-        mav.addObject("type", arguments.get("type"));
-        mav.addObject("content", "CONTENT: " + arguments.get("status"));
+        if ("success".equals(arguments.get("type"))) {
+            mav.addObject("headerClass", "successHeader");
+            mav.addObject("headerLabel", translationService.translate("plugins.pluginInfo.successHeader", locale));
+
+        } else if ("error".equals(arguments.get("type"))) {
+            mav.addObject("headerClass", "errorHeader");
+            mav.addObject("headerLabel", translationService.translate("plugins.pluginInfo.errorHeader", locale));
+
+        } else if ("confirm".equals(arguments.get("type"))) {
+            mav.addObject("headerLabel", translationService.translate("plugins.pluginInfo.confirmHeader", locale));
+            mav.addObject("isConfirm", true);
+            mav.addObject("cancelButtonLabel",
+                    translationService.translate("plugins.pluginInfo.buttons." + arguments.get("cancelLabel"), locale));
+            mav.addObject("acceptButtonLabel",
+                    translationService.translate("plugins.pluginInfo.buttons." + arguments.get("acceptLabel"), locale));
+            mav.addObject("acceptRedirect", arguments.get("acceptRedirect"));
+
+        } else {
+            throw new IllegalStateException("Unsuported plugin info type: " + arguments.get("type"));
+        }
+        mav.addObject("content", translationService.translate("plugins.pluginInfo.content." + arguments.get("status"), locale));
         mav.addObject("dependencies", createDependenciesMap(arguments));
-        mav.addObject("headerLabel", translationService.translate("plugins2.errorView.header", locale));
-        mav.addObject("inVersion", "ver");
-
-        return mav;
-    }
-
-    @RequestMapping(value = "pluginPages/confirmPage", method = RequestMethod.GET)
-    public ModelAndView getConfirmPageView(@RequestParam final Map<String, String> arguments, final Locale locale) {
-        ModelAndView mav = getCrudPopupView("confirm", locale);
-
-        mav.addObject("headerLabel", "CONFIRM");
-        mav.addObject("content", "CONTENT: " + arguments.get("status"));
-        mav.addObject("cancelButtonLabel", arguments.get("cancelLabel"));
-        mav.addObject("acceptButtonLabel", arguments.get("acceptLabel"));
-        mav.addObject("acceptRedirect", arguments.get("acceptRedirect"));
-        mav.addObject("dependencies", createDependenciesMap(arguments));
+        mav.addObject("inVersion", translationService.translate("plugins.pluginInfo.inVersion", locale));
 
         return mav;
     }
 
     @RequestMapping(value = "pluginPages/restartPage", method = RequestMethod.GET)
     public ModelAndView getRestartPageView(@RequestParam final Map<String, String> arguments, final Locale locale) {
-        ModelAndView mav = getCrudPopupView("restart", locale);
+        ModelAndView mav = getCrudPopupView("restartView", locale);
 
-        mav.addObject("headerLabel", "RESTART");
-        mav.addObject("restartMessage", "RESTART MESSAGE");
+        mav.addObject("headerLabel", translationService.translate("plugins.restartView.header", locale));
+        mav.addObject("restartMessage", translationService.translate("plugins.restartView.message", locale));
         mav.addObject("redirectPage", arguments.get("redirect"));
 
         return mav;
     }
 
-    @RequestMapping(value = "pluginPages/performEnablingMultiplePlugins", method = RequestMethod.GET)
-    public String performEnablingMultiplePlugins(@RequestParam final Map<String, String> arguments, final Locale locale) {
+    @RequestMapping(value = "pluginPages/performRestart", method = RequestMethod.POST)
+    @ResponseBody
+    public String handleRestart() {
+        pluginManagmentPerformer.performRestart();
+        return "ok";
+    }
 
-        // TODO mina parse args to list
-        return "redirect:" + pluginManagmentPerformer.performEnable(null);
+    @RequestMapping(value = "pluginPages/performEnablingMultiplePlugins", method = RequestMethod.GET)
+    public String performEnablingMultiplePlugins(@RequestParam("plugin") final List<String> plugins, final Locale locale) {
+        return "redirect:" + pluginManagmentPerformer.performEnable(plugins);
     }
 
     @RequestMapping(value = "pluginPages/performDisablingMultiplePlugins", method = RequestMethod.GET)
-    public String performDisablingMultiplePlugins(@RequestParam final Map<String, String> arguments, final Locale locale) {
-
-        // TODO mina parse args to list
-        return "redirect:" + pluginManagmentPerformer.performDisable(null);
+    public String performDisablingMultiplePlugins(@RequestParam("plugin") final List<String> plugins, final Locale locale) {
+        return "redirect:" + pluginManagmentPerformer.performDisable(plugins);
     }
 
     @RequestMapping(value = "pluginPages/performUninstallingMultiplePlugins", method = RequestMethod.GET)
-    public String performUnonstallMultiplePlugins(@RequestParam final Map<String, String> arguments, final Locale locale) {
-
-        // TODO mina parse args to list
-        return "redirect:" + pluginManagmentPerformer.performRemove(null);
+    public String performUnonstallMultiplePlugins(@RequestParam("plugin") final List<String> plugins, final Locale locale) {
+        return "redirect:" + pluginManagmentPerformer.performRemove(plugins);
     }
 
     private ModelAndView getCrudPopupView(final String viewName, final Locale locale) {

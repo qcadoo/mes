@@ -6,34 +6,53 @@
 String ctx = request.getContextPath();
 %>
 
+<link rel="stylesheet" href="${ctx}/css/plugins/pluginInfo.css" type="text/css" />
+
 <script type="text/JavaScript">
 
 	jQuery(document).ready(function(){
-		window.mainController.setWindowHeader("${headerLabel}");	
+		window.mainController.setWindowHeader("<div class='${headerClass}'>${headerLabel}</div>");	
 	});
 
 </script>
 
-<div>
-	<div>
-		${type}
-	</div>
+<div class="pluginInfoPage">
 
 	<div>
 		${content}
 	</div>
 	
 	<c:if test="${dependencies != null}">
-		<div>
+		<div class="dependencies">
 			<c:forEach var="dependency" items="${dependencies}">
-				<div>
-					<span>${dependency.key}</span>
+				<div class="dependency">
+					- <span class="dependencyKey">${dependency.key}</span>
 					<c:if test="${dependency.value != null}">
-						<span>${inVersion}</span>
-						<span>${dependency.value}</span>
+						<span class="dependencyInVersion">${inVersion}</span>
+						<span class="dependencyVersion">${dependency.value}</span>
 					</c:if>
 				</div>
 			</c:forEach>
 		</div>
 	</c:if> 
+	
+	<c:if test="${isConfirm != null}">
+		<div class="confirmButtons">
+			<div class="linkButton activeButton confirmButton">
+				<a href="#" onclick="window.mainController.goBack()">
+					<span>
+						<div>${cancelButtonLabel}</div>
+					</span>
+				</a>
+			</div>
+			
+			<div class="linkButton activeButton confirmButton">
+				<a href="#" onclick="QCD.components.elements.utils.LoadingIndicator.blockElement($('body')); window.location='${acceptRedirect}'">
+					<span>
+						<div>${acceptButtonLabel}</div>
+					</span>
+				</a>
+			</div>
+		</div>
+	</c:if>
 </div>

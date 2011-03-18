@@ -1,4 +1,4 @@
-package com.qcadoo.plugin.internal.api;
+package com.qcadoo.plugin.api;
 
 public interface PluginServerManager {
 
