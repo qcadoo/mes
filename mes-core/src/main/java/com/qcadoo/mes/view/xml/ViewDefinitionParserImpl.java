@@ -143,7 +143,6 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         LOG.info("Reading view " + name + " for plugin " + pluginIdentifier);
 
         boolean menuAccessible = getBooleanAttribute(viewNode, "menuAccessible", false);
-        boolean dynamic = getBooleanAttribute(viewNode, "dynamic", false);
 
         String windowWidthStr = getStringAttribute(viewNode, "windowWidth");
         String windowHeightStr = getStringAttribute(viewNode, "windowHeight");
@@ -180,11 +179,6 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
                 root = parseComponent(child, viewDefinition, null, pluginIdentifier);
             } else if ("preInitializeHook".equals(child.getNodeName())) {
                 viewDefinition.addPreInitializeHook(parseHook(child));
-            } else if ("postConstructHook".equals(child.getNodeName())) {
-                if (!dynamic) {
-                    throw new IllegalStateException("PostConstructHook can be used only with dynamic views");
-                }
-                viewDefinition.addPostConstructHook(parseHook(child));
             } else if ("postInitializeHook".equals(child.getNodeName())) {
                 viewDefinition.addPostInitializeHook(parseHook(child));
             } else if ("preRenderHook".equals(child.getNodeName())) {

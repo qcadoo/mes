@@ -17,6 +17,8 @@
 		<view:view>
 			<resource>menu/view/menu.xml</resource>
 		</view:view>
+		
+		<view:menu></view:menu>
 	</modules>
 
 </plugin>

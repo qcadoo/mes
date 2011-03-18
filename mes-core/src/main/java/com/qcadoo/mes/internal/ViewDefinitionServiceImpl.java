@@ -67,6 +67,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     @Monitorable
     public List<Pair<String, String>> listForMenu() {
+        System.out.println("LIST FOR MENU");
+        System.out.println(menuViews);
         return menuViews;
     }
 

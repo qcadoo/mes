@@ -24,17 +24,34 @@
 
 package com.qcadoo.mes.view.xml;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.springframework.context.ApplicationContext;
 
+import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.beans.sample.CustomEntityService;
+import com.qcadoo.mes.internal.ViewDefinitionServiceImpl;
 import com.qcadoo.mes.view.hooks.internal.HookFactory;
 import com.qcadoo.mes.view.internal.ViewComponentsResolver;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.types.BelongsToType;
+import com.qcadoo.model.api.types.HasManyType;
+import com.qcadoo.model.internal.types.StringType;
 
+@Ignore
 public class ViewDefinitionParserImplTest {
 
     private ViewDefinitionParserImpl viewDefinitionParser;
@@ -57,64 +74,64 @@ public class ViewDefinitionParserImplTest {
 
     private static ViewComponentsResolver viewComponentsResolver;
 
-    // @BeforeClass
-    // public static void initClass() throws Exception {
-    // viewComponentsResolver = new ViewComponentsResolver();
-    // viewComponentsResolver.refreshAvailableComponentsList();
-    // }
-    //
-    // @Before
-    // public void init() throws Exception {
-    // applicationContext = mock(ApplicationContext.class);
-    // dataDefinitionService = mock(DataDefinitionService.class);
-    //
-    // translationService = mock(TranslationService.class);
-    //
-    // viewDefinitionService = new ViewDefinitionServiceImpl();
-    //
-    // hookFactory = new HookFactory();
-    // setField(hookFactory, "applicationContext", applicationContext);
-    //
-    // viewDefinitionParser = new ViewDefinitionParserImpl();
-    // setField(viewDefinitionParser, "dataDefinitionService", dataDefinitionService);
-    // setField(viewDefinitionParser, "viewDefinitionService", viewDefinitionService);
-    // setField(viewDefinitionParser, "hookFactory", hookFactory);
-    // setField(viewDefinitionParser, "translationService", translationService);
-    // setField(viewDefinitionParser, "viewComponentsResolver", viewComponentsResolver);
-    //
-    // xml = new FileInputStream(new File("src/test/resources/view/test.xml"));
-    //
-    // given(applicationContext.getBean(CustomEntityService.class)).willReturn(new CustomEntityService());
-    //
-    // dataDefinitionA = mock(DataDefinition.class);
-    // dataDefinitionB = mock(DataDefinition.class);
-    // FieldDefinition nameA = mock(FieldDefinition.class);
-    // FieldDefinition nameB = mock(FieldDefinition.class);
-    // FieldDefinition hasManyB = mock(FieldDefinition.class);
-    // FieldDefinition belongToA = mock(FieldDefinition.class);
-    // HasManyType hasManyBType = mock(HasManyType.class);
-    // BelongsToType belongToAType = mock(BelongsToType.class);
-    //
-    // given(nameA.getType()).willReturn(new StringType());
-    // given(nameB.getType()).willReturn(new StringType());
-    // given(hasManyB.getType()).willReturn(hasManyBType);
-    // given(belongToA.getType()).willReturn(belongToAType);
-    // given(hasManyBType.getDataDefinition()).willReturn(dataDefinitionB);
-    // given(belongToAType.getDataDefinition()).willReturn(dataDefinitionA);
-    // given(dataDefinitionA.getField("beansB")).willReturn(hasManyB);
-    // given(dataDefinitionA.getField("name")).willReturn(nameA);
-    // given(dataDefinitionB.getField("active")).willReturn(nameA);
-    // given(dataDefinitionB.getField("beanA")).willReturn(belongToA);
-    // given(dataDefinitionB.getField("beanM")).willReturn(belongToA);
-    // given(dataDefinitionB.getField("beanB")).willReturn(belongToA);
-    // given(dataDefinitionB.getField("name")).willReturn(nameB);
-    // given(dataDefinitionA.getName()).willReturn("beanA");
-    // given(dataDefinitionB.getName()).willReturn("beanB");
-    // given(dataDefinitionA.getFields()).willReturn(ImmutableMap.of("name", nameA, "beansB", hasManyB));
-    // given(dataDefinitionB.getFields()).willReturn(ImmutableMap.of("name", nameB, "beanA", belongToA));
-    // given(dataDefinitionService.get("sample", "beanA")).willReturn(dataDefinitionA);
-    // given(dataDefinitionService.get("sample", "beanB")).willReturn(dataDefinitionB);
-    // }
+    @BeforeClass
+    public static void initClass() throws Exception {
+        viewComponentsResolver = new ViewComponentsResolver();
+        viewComponentsResolver.refreshAvailableComponentsList();
+    }
+
+    @Before
+    public void init() throws Exception {
+        applicationContext = mock(ApplicationContext.class);
+        dataDefinitionService = mock(DataDefinitionService.class);
+
+        translationService = mock(TranslationService.class);
+
+        viewDefinitionService = new ViewDefinitionServiceImpl();
+
+        hookFactory = new HookFactory();
+        setField(hookFactory, "applicationContext", applicationContext);
+
+        viewDefinitionParser = new ViewDefinitionParserImpl();
+        setField(viewDefinitionParser, "dataDefinitionService", dataDefinitionService);
+        setField(viewDefinitionParser, "viewDefinitionService", viewDefinitionService);
+        setField(viewDefinitionParser, "hookFactory", hookFactory);
+        setField(viewDefinitionParser, "translationService", translationService);
+        setField(viewDefinitionParser, "viewComponentsResolver", viewComponentsResolver);
+
+        xml = new FileInputStream(new File("src/test/resources/view/test.xml"));
+
+        given(applicationContext.getBean(CustomEntityService.class)).willReturn(new CustomEntityService());
+
+        dataDefinitionA = mock(DataDefinition.class);
+        dataDefinitionB = mock(DataDefinition.class);
+        FieldDefinition nameA = mock(FieldDefinition.class);
+        FieldDefinition nameB = mock(FieldDefinition.class);
+        FieldDefinition hasManyB = mock(FieldDefinition.class);
+        FieldDefinition belongToA = mock(FieldDefinition.class);
+        HasManyType hasManyBType = mock(HasManyType.class);
+        BelongsToType belongToAType = mock(BelongsToType.class);
+
+        given(nameA.getType()).willReturn(new StringType());
+        given(nameB.getType()).willReturn(new StringType());
+        given(hasManyB.getType()).willReturn(hasManyBType);
+        given(belongToA.getType()).willReturn(belongToAType);
+        given(hasManyBType.getDataDefinition()).willReturn(dataDefinitionB);
+        given(belongToAType.getDataDefinition()).willReturn(dataDefinitionA);
+        given(dataDefinitionA.getField("beansB")).willReturn(hasManyB);
+        given(dataDefinitionA.getField("name")).willReturn(nameA);
+        given(dataDefinitionB.getField("active")).willReturn(nameA);
+        given(dataDefinitionB.getField("beanA")).willReturn(belongToA);
+        given(dataDefinitionB.getField("beanM")).willReturn(belongToA);
+        given(dataDefinitionB.getField("beanB")).willReturn(belongToA);
+        given(dataDefinitionB.getField("name")).willReturn(nameB);
+        given(dataDefinitionA.getName()).willReturn("beanA");
+        given(dataDefinitionB.getName()).willReturn("beanB");
+        given(dataDefinitionA.getFields()).willReturn(ImmutableMap.of("name", nameA, "beansB", hasManyB));
+        given(dataDefinitionB.getFields()).willReturn(ImmutableMap.of("name", nameB, "beanA", belongToA));
+        given(dataDefinitionService.get("sample", "beanA")).willReturn(dataDefinitionA);
+        given(dataDefinitionService.get("sample", "beanB")).willReturn(dataDefinitionB);
+    }
     //
     // @Test
     // public void shouldParseXml() {
