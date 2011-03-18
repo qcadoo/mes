@@ -28,19 +28,8 @@ public class ViewModuleFactory implements ModuleFactory<ViewModule> {
     @Override
     public ViewModule parse(final String pluginIdentifier, final Element element) {
         List<Resource> xmlFiles = new ArrayList<Resource>();
-
-        System.out.println("PARSING");
-
-        System.out.println(element.toString());
-        System.out.println("---");
-        System.out.println(element.getChildren());
-        System.out.println("---");
-        System.out.println(element.getChildren("resource"));
-        System.out.println("---");
-
         for (Element resourceElement : (List<Element>) element.getChildren()) {
             String resource = resourceElement.getText();
-            System.out.println("FIND RESOURCE - " + resource);
             if (resource == null) {
                 throw new IllegalStateException("Missing resource element of view module");
             }

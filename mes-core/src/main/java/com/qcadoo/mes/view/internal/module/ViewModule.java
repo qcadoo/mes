@@ -27,7 +27,6 @@ public class ViewModule implements Module {
 
     @Override
     public void init(final PluginState state) {
-        System.out.println("INIT");
         if (PluginState.ENABLED.equals(state)) {
             enable();
         }
@@ -35,14 +34,9 @@ public class ViewModule implements Module {
 
     @Override
     public void enable() {
-        System.out.println("ENABLING");
-
-        System.out.println("with files " + xmlFiles);
-
         for (Resource xmlFile : xmlFiles) {
             List<ViewDefinition> viewDefinitions = viewDefinitionParser.parseViewXml(xmlFile);
             for (ViewDefinition viewDefinition : viewDefinitions) {
-                System.out.println("add VD " + viewDefinition);
                 viewDefinitionService.save(viewDefinition);
             }
         }
