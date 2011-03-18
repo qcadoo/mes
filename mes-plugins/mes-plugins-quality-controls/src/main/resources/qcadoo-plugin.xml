@@ -46,7 +46,7 @@
 		<model:field plugin="basic" model="parameter">
 			<boolean name="autoGenerateQualityControl" required="true" />
 		</model:field>
-		<model:hook plugin="product" model="technologyOperationComponent">
+		<model:hook plugin="products" model="technologyOperationComponent">
 			<onSave class="com.qcadoo.mes.qualityControls.QualityControlService" method="setQualityControlTypeForTechnology" />
 		</model:hook>
 		<model:hook plugin="genealogies" model="genealogy">
