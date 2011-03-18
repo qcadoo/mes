@@ -24,12 +24,14 @@
 
 package com.qcadoo.model.internal;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -189,7 +191,10 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     @Override
     public EntityHookDefinition getHook(final String type, final String className, final String methodName) {
-        return hooks.get(type + "." + className + "." + methodName);
+        EntityHookDefinition hook = hooks.get(type.toUpperCase(Locale.ENGLISH) + "." + className + "." + methodName);
+        checkNotNull(hook, "Cannot find hook " + type.toUpperCase(Locale.ENGLISH) + "." + className + "." + methodName
+                + " for dataDefinition " + this);
+        return hook;
     }
 
     public List<EntityHookDefinition> getValidators() {

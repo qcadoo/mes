@@ -9,10 +9,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.internal.api.InternalDataDefinitionService;
+import com.qcadoo.plugin.api.PluginManager;
 
 public abstract class IntegrationTest {
 
-    protected static String PLUGIN_NAME = "products";
+    protected static String PLUGIN_PRODUCTS_NAME = "products";
+
+    protected static String PLUGIN_MACHINES_NAME = "machines";
 
     protected static String ENTITY_NAME_PRODUCT = "product";
 
@@ -20,11 +23,11 @@ public abstract class IntegrationTest {
 
     protected static String ENTITY_NAME_COMPONENT = "component";
 
-    protected static String TABLE_NAME_PRODUCT = PLUGIN_NAME + "_" + ENTITY_NAME_PRODUCT;
+    protected static String TABLE_NAME_PRODUCT = PLUGIN_PRODUCTS_NAME + "_" + ENTITY_NAME_PRODUCT;
 
-    protected static String TABLE_NAME_MACHINE = PLUGIN_NAME + "_" + ENTITY_NAME_MACHINE;
+    protected static String TABLE_NAME_MACHINE = PLUGIN_MACHINES_NAME + "_" + ENTITY_NAME_MACHINE;
 
-    protected static String TABLE_NAME_COMPONENT = PLUGIN_NAME + "_" + ENTITY_NAME_COMPONENT;
+    protected static String TABLE_NAME_COMPONENT = PLUGIN_PRODUCTS_NAME + "_" + ENTITY_NAME_COMPONENT;
 
     protected static InternalDataDefinitionService dataDefinitionService;
 
@@ -47,10 +50,11 @@ public abstract class IntegrationTest {
         jdbcTemplate.execute("delete from " + TABLE_NAME_COMPONENT);
         jdbcTemplate.execute("delete from " + TABLE_NAME_MACHINE);
         jdbcTemplate.execute("delete from " + TABLE_NAME_PRODUCT);
+        applicationContext.getBean(PluginManager.class).enablePlugin("machines");
     }
 
     protected Entity createComponent(final String name, final Object product, final Object machine) {
-        Entity entity = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_COMPONENT).create();
+        Entity entity = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_COMPONENT).create();
         entity.setField("name", name);
         entity.setField("product", product);
         entity.setField("machine", machine);
@@ -58,13 +62,13 @@ public abstract class IntegrationTest {
     }
 
     protected Entity createMachine(final String name) {
-        Entity entity = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE).create();
+        Entity entity = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE).create();
         entity.setField("name", name);
         return entity;
     }
 
     protected Entity createProduct(final String name, final String number) {
-        Entity entity = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_PRODUCT).create();
+        Entity entity = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_PRODUCT).create();
         entity.setField("name", name);
         entity.setField("number", number);
         return entity;

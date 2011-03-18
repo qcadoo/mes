@@ -15,9 +15,9 @@ public class BelongsToIntegrationTest extends IntegrationTest {
     @Test
     public void shouldSaveBelongsToField() throws Exception {
         // given
-        DataDefinition productDao = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_PRODUCT);
-        DataDefinition machineDao = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
-        DataDefinition componentDao = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_COMPONENT);
+        DataDefinition productDao = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_PRODUCT);
+        DataDefinition machineDao = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition componentDao = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_COMPONENT);
 
         Entity machine = machineDao.save(createMachine("asd"));
         Entity product = productDao.save(createProduct("asd", "asd"));
@@ -40,9 +40,9 @@ public class BelongsToIntegrationTest extends IntegrationTest {
     @Test
     public void shouldSaveBelongsToFieldWithId() throws Exception {
         // given
-        DataDefinition productDao = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_PRODUCT);
-        DataDefinition machineDao = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
-        DataDefinition componentDao = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_COMPONENT);
+        DataDefinition productDao = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_PRODUCT);
+        DataDefinition machineDao = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition componentDao = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_COMPONENT);
 
         Entity machine = machineDao.save(createMachine("asd"));
         Entity product = productDao.save(createProduct("asd", "asd"));
@@ -65,9 +65,9 @@ public class BelongsToIntegrationTest extends IntegrationTest {
     @Test
     public void shouldGetEagerBelongsToField() throws Exception {
         // given
-        DataDefinition productDao = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_PRODUCT);
-        DataDefinition machineDao = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
-        DataDefinition componentDao = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_COMPONENT);
+        DataDefinition productDao = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_PRODUCT);
+        DataDefinition machineDao = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition componentDao = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_COMPONENT);
 
         Entity machine = machineDao.save(createMachine("asd"));
         Entity product = productDao.save(createProduct("asd", "asd"));
@@ -84,9 +84,9 @@ public class BelongsToIntegrationTest extends IntegrationTest {
     @Test
     public void shouldGetLazyBelongsToField() throws Exception {
         // given
-        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_PRODUCT);
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
-        DataDefinition componentDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_COMPONENT);
+        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_PRODUCT);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition componentDataDefinition = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_COMPONENT);
 
         Entity machine = machineDataDefinition.save(createMachine("asd"));
         Entity product = productDataDefinition.save(createProduct("asd", "asd"));
