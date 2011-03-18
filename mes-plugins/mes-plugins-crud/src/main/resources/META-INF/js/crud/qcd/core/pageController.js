@@ -52,12 +52,19 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	var serializationObjectToInsert;
 	
 	function constructor(_this) {
+		
 		QCDConnector.windowName = "/page/"+pluginIdentifier+"/"+viewName;
 		QCDConnector.mainController = _this;
 		
 		var pageOptionsElement = $("#pageOptions");
 		pageOptions = JSON.parse($.trim(pageOptionsElement.html()));
 		pageOptionsElement.remove();
+		
+		if (isPopup) {
+			var modalWidth = pageOptions.windowWidth ? pageOptions.windowWidth : 600;
+			var modalHeight = pageOptions.windowHeight ? pageOptions.windowHeight : 400;
+			window.parent.changeModalSize(modalWidth, modalHeight);
+		}
 		
 		var contentElement = $("body");
 		pageComponents = QCDPageConstructor.getChildrenComponents(contentElement.children(), _this);

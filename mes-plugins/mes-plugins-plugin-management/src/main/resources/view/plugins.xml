@@ -46,12 +46,12 @@
 				</group>
 			</ribbon>
 			<component type="grid" name="plugins" reference="grid">
-				<option type="column" name="identifier" fields="identifier" link="true" width="100"/>
-				<option type="column" name="version" fields="version" />
-				<option type="column" name="state" fields="state" />
-				<option type="column" name="name" fields="name" />
-				<option type="column" name="isSystem" fields="isSystem" />
-				<option type="column" name="vendor" fields="vendor" />
+				<option type="column" name="name" fields="name" link="true" width="100" />
+				<option type="column" name="identifier" fields="identifier" link="true" width="80"/>
+				<option type="column" name="vendor" fields="vendor" width="100" />
+				<option type="column" name="version" fields="version" width="40" />
+				<option type="column" name="state" fields="state" width="60" />
+				<option type="column" name="isSystem" fields="isSystem" width="40" />
 				<option type="order" column="identifier" direction="asc"/>
 				<option type="correspondingView" value="plugins/plugin" />
 				<option type="correspondingComponent" value="form" />
@@ -124,7 +124,7 @@
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="plugin" model="plugin">
+	<view name="plugin" model="plugin" windowHeight="450">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
@@ -162,7 +162,7 @@
 		</component>
 	</view>
 	
-	<view name="pluginDownload">
+	<view name="pluginDownload" windowWidth="520" windowHeight="260">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
@@ -194,10 +194,8 @@
 		</component>
 	</view>
 	
-	<view name="restartView">
-		<component type="window" name="window">
-			<ribbon>
-			</ribbon>
+	<view name="restartView" windowWidth="500" windowHeight="140">
+		<component type="window" name="window" ribbon="false">
 			<component type="gridLayout" name="gridLayout" columns="1" rows="1" fixedRowHeight="false">
 				<layoutElement column="1" row="1">
 					<component type="staticPage" name="restart">

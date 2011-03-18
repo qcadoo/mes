@@ -105,6 +105,14 @@ QCD.WindowController = function(_menuStructure) {
 		});
 	}
 	
+	window.changeModalSize = function(width, height) {
+		if (modalsStack.length == 0) {
+			return;
+		}
+		var modal = modalsStack[modalsStack.length-1];
+		modal.changeSize(width, height);
+	}
+	
 	this.onLoginSuccess = function() {
 			this.goToLastPage();
 	}
