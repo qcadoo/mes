@@ -38,15 +38,19 @@ public class DefaultPluginDescriptorResolver implements PluginDescriptorResolver
             JarFile jar = new JarFile(file);
 
             // TODO use descriptor field
-            JarEntry entry = jar.getJarEntry("plugin.xml");
+            JarEntry entry = jar.getJarEntry(descriptor);
 
             if (entry == null) {
-                throw new IllegalStateException("Plugin descriptor plugin.xml not found in " + file.getAbsolutePath());
+                entry = jar.getJarEntry(descriptor.split("/")[descriptor.split("/").length - 1]);
+
+                if (entry == null) {
+                    throw new IllegalStateException("Plugin descriptor " + descriptor + " not found in " + file.getAbsolutePath());
+                }
             }
 
             return new InputStreamResource(jar.getInputStream(entry));
         } catch (IOException e) {
-            throw new IllegalStateException("Plugin descriptor plugin.xml not found in " + file.getAbsolutePath(), e);
+            throw new IllegalStateException("Plugin descriptor " + descriptor + " not found in " + file.getAbsolutePath(), e);
         }
     }
 

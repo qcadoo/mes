@@ -22,7 +22,7 @@ public class ModelModule implements Module {
     @Override
     public void init(final PluginState state) {
         if (PluginState.ENABLED.equals(state)) {
-            dataDefinitionService.enable(pluginIdentifier, modelName);
+            enable();
         }
     }
 

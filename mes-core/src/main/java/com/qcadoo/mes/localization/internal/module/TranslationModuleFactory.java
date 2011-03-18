@@ -7,7 +7,7 @@ import com.qcadoo.plugin.internal.api.ModuleFactory;
 public class TranslationModuleFactory implements ModuleFactory<TranslationModule> {
 
     @Override
-    public void postInitialize() {
+    public void init() {
         // TODO Auto-generated method stub
     }
 

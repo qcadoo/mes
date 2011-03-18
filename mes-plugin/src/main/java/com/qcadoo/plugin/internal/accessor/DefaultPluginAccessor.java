@@ -127,11 +127,11 @@ public final class DefaultPluginAccessor implements PluginAccessor {
             }
         }
 
+        moduleFactoryAccessor.init();
+
         for (Plugin plugin : pluginDependencyManager.sortPluginsInDependencyOrder(plugins.values())) {
             plugin.init();
         }
-
-        moduleFactoryAccessor.postInitialize();
 
         for (Plugin plugin : pluginDependencyManager.sortPluginsInDependencyOrder(plugins.values())) {
             if (plugin.hasState(PluginState.ENABLING)) {

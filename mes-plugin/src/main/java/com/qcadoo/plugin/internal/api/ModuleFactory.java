@@ -4,7 +4,7 @@ import org.jdom.Element;
 
 public interface ModuleFactory<T extends Module> {
 
-    void postInitialize();
+    void init();
 
     T parse(String pluginIdentifier, Element node);
 

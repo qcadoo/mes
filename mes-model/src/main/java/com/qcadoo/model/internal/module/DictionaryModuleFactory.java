@@ -1,14 +1,19 @@
 package com.qcadoo.model.internal.module;
 
 import org.jdom.Element;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.qcadoo.model.internal.api.InternalDictionaryService;
 import com.qcadoo.plugin.internal.api.ModuleFactory;
 
 public class DictionaryModuleFactory implements ModuleFactory<DictionaryModule> {
 
+    @Autowired
+    private InternalDictionaryService dictionaryService;
+
     @Override
-    public void postInitialize() {
-        // TODO Auto-generated method stub
+    public void init() {
+        // ignore
     }
 
     @Override
@@ -19,9 +24,7 @@ public class DictionaryModuleFactory implements ModuleFactory<DictionaryModule> 
             throw new IllegalStateException("Missing name attribute of dictionary module");
         }
 
-        // TODO
-
-        return new DictionaryModule();
+        return new DictionaryModule(name, dictionaryService);
     }
 
     @Override

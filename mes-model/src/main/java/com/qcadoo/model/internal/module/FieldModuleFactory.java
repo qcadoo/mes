@@ -19,7 +19,7 @@ public class FieldModuleFactory implements ModuleFactory<FieldModule> {
     private InternalDataDefinitionService dataDefinitionService;
 
     @Override
-    public void postInitialize() {
+    public void init() {
         // empty
     }
 

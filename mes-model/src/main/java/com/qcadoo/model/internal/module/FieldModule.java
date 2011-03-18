@@ -24,8 +24,9 @@ public class FieldModule implements Module {
 
     @Override
     public void init(final PluginState state) {
-        // TODO
-        // domyślnie włączone
+        if (!PluginState.ENABLED.equals(state)) {
+            disable();
+        }
     }
 
     @Override

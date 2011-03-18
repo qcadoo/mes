@@ -12,9 +12,9 @@ public final class DefaultModuleFactoryAccessor implements ModuleFactoryAccessor
     private final Map<String, ModuleFactory<?>> moduleFactoryRegistry = new LinkedHashMap<String, ModuleFactory<?>>();
 
     @Override
-    public void postInitialize() {
+    public void init() {
         for (ModuleFactory<?> moduleFactory : moduleFactoryRegistry.values()) {
-            moduleFactory.postInitialize();
+            moduleFactory.init();
         }
     }
 

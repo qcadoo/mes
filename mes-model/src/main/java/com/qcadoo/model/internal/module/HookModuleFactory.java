@@ -19,7 +19,7 @@ public class HookModuleFactory implements ModuleFactory<HookModule> {
     private InternalDataDefinitionService dataDefinitionService;
 
     @Override
-    public void postInitialize() {
+    public void init() {
         // empty
     }
 

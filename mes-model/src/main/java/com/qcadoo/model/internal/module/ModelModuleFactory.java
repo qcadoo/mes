@@ -42,7 +42,7 @@ public class ModelModuleFactory implements ModuleFactory<ModelModule> {
     private DynamicSessionFactoryBean sessionFactoryBean;
 
     @Override
-    public void postInitialize() {
+    public void init() {
         Resource[] resources = modelXmlResolver.getResources();
 
         modelXmlToClassConverter.convert(resources);

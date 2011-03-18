@@ -80,7 +80,7 @@ public final class DatabasePreparationModuleFactory implements ModuleFactory<Mod
 
     @Override
     @Transactional
-    public void postInitialize() {
+    public void init() {
         if (databaseHasToBePrepared()) {
             LOG.info("Database has to be prepared ...");
 

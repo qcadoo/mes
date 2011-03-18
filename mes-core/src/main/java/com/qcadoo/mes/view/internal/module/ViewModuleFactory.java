@@ -12,7 +12,7 @@ public class ViewModuleFactory implements ModuleFactory<ViewModule> {
     private ViewDefinitionParser viewDefinitionParser;
 
     @Override
-    public void postInitialize() {
+    public void init() {
         viewDefinitionParser.init();
     }
 

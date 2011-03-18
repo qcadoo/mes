@@ -7,7 +7,7 @@ import com.qcadoo.plugin.internal.api.ModuleFactory;
 public class MockModuleFactory implements ModuleFactory<MockModule> {
 
     @Override
-    public void postInitialize() {
+    public void init() {
     }
 
     @Override

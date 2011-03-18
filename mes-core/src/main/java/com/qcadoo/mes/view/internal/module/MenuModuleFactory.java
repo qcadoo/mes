@@ -12,7 +12,7 @@ public class MenuModuleFactory implements ModuleFactory<MenuModule> {
     private MenuService menuService;
 
     @Override
-    public void postInitialize() {
+    public void init() {
         menuService.init();
     }
 

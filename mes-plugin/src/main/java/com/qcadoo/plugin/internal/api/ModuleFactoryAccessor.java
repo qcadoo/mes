@@ -2,7 +2,7 @@ package com.qcadoo.plugin.internal.api;
 
 public interface ModuleFactoryAccessor {
 
-    void postInitialize();
+    void init();
 
     ModuleFactory<?> getModuleFactory(String identifier);
 
