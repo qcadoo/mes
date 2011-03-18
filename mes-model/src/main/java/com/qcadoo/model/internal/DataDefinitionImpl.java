@@ -24,11 +24,14 @@
 
 package com.qcadoo.model.internal;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,6 +63,8 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     private FieldDefinition priorityField;
 
+    private final Map<String, EntityHookDefinition> hooks = new HashMap<String, EntityHookDefinition>();
+
     private final List<EntityHookDefinition> validators = new ArrayList<EntityHookDefinition>();
 
     private final List<EntityHookDefinition> viewHooks = new ArrayList<EntityHookDefinition>();
@@ -77,6 +82,8 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     private boolean creatable = true;
 
     private boolean updatable = true;
+
+    private boolean enabled = true;
 
     private String identifierExpression = "#number";
 
@@ -183,6 +190,13 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     }
 
     @Override
+    public EntityHookDefinition getHook(final String type, final String className, final String methodName) {
+        EntityHookDefinition hook = hooks.get(type.toUpperCase(Locale.ENGLISH) + "." + className + "." + methodName);
+        checkNotNull(hook, "Cannot find hook " + type.toUpperCase(Locale.ENGLISH) + "." + className + "." + methodName
+                + " for dataDefinition " + this);
+        return hook;
+    }
+
     public List<EntityHookDefinition> getValidators() {
         return validators;
     }
@@ -208,26 +222,32 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     }
 
     public void addValidatorHook(final EntityHookDefinition validator) {
-        this.validators.add(validator);
+        hooks.put(AbstractModelXmlConverter.HooksTag.VALIDATESWITH.toString() + "." + validator.getName(), validator);
+        validators.add(validator);
     }
 
     public void addViewHook(final EntityHookDefinition viewHook) {
+        hooks.put(AbstractModelXmlConverter.HooksTag.ONVIEW.toString() + "." + viewHook.getName(), viewHook);
         viewHooks.add(viewHook);
     }
 
     public void addCreateHook(final EntityHookDefinition createHook) {
+        hooks.put(AbstractModelXmlConverter.HooksTag.ONCREATE.toString() + "." + createHook.getName(), createHook);
         createHooks.add(createHook);
     }
 
     public void addUpdateHook(final EntityHookDefinition updateHook) {
+        hooks.put(AbstractModelXmlConverter.HooksTag.ONUPDATE.toString() + "." + updateHook.getName(), updateHook);
         updateHooks.add(updateHook);
     }
 
     public void addSaveHook(final EntityHookDefinition saveHook) {
+        hooks.put(AbstractModelXmlConverter.HooksTag.ONSAVE.toString() + "." + saveHook.getName(), saveHook);
         saveHooks.add(saveHook);
     }
 
     public void addCopyHook(final EntityHookDefinition copyHook) {
+        hooks.put(AbstractModelXmlConverter.HooksTag.ONCOPY.toString() + "." + copyHook.getName(), copyHook);
         copyHooks.add(copyHook);
     }
 
@@ -243,7 +263,9 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     @Override
     public boolean callViewHook(final Entity entity) {
         for (EntityHookDefinition hook : viewHooks) {
-            hook.call(entity);
+            if (hook.isEnabled()) {
+                hook.call(entity);
+            }
         }
         return true;
     }
@@ -251,12 +273,12 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     @Override
     public boolean callCreateHook(final Entity entity) {
         for (EntityHookDefinition hook : createHooks) {
-            if (!hook.call(entity)) {
+            if (hook.isEnabled() && !hook.call(entity)) {
                 return false;
             }
         }
         for (EntityHookDefinition hook : saveHooks) {
-            if (!hook.call(entity)) {
+            if (hook.isEnabled() && !hook.call(entity)) {
                 return false;
             }
         }
@@ -266,12 +288,12 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     @Override
     public boolean callUpdateHook(final Entity entity) {
         for (EntityHookDefinition hook : updateHooks) {
-            if (!hook.call(entity)) {
+            if (hook.isEnabled() && !hook.call(entity)) {
                 return false;
             }
         }
         for (EntityHookDefinition hook : saveHooks) {
-            if (!hook.call(entity)) {
+            if (hook.isEnabled() && !hook.call(entity)) {
                 return false;
             }
         }
@@ -281,7 +303,7 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     @Override
     public boolean callCopyHook(final Entity entity) {
         for (EntityHookDefinition hook : copyHooks) {
-            if (!hook.call(entity)) {
+            if (hook.isEnabled() && !hook.call(entity)) {
                 return false;
             }
         }
@@ -291,7 +313,7 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     @Override
     public boolean callValidators(final Entity entity) {
         for (EntityHookDefinition hook : validators) {
-            if (!hook.call(entity)) {
+            if (hook.isEnabled() && !hook.call(entity)) {
                 return false;
             }
         }
@@ -398,6 +420,21 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
         }
         DataDefinitionImpl other = (DataDefinitionImpl) obj;
         return new EqualsBuilder().append(name, other.name).append(pluginIdentifier, other.pluginIdentifier).isEquals();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void enable() {
+        enabled = true;
+    }
+
+    @Override
+    public void disable() {
+        enabled = false;
     }
 
 }

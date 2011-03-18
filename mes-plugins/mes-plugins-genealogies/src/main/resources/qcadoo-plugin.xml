@@ -23,7 +23,7 @@
 	<modules>
 		<model:model model="currentAttribute" resource="genealogies/model/currentAttribute.xml"/>
 		<model:model model="genealogy" resource="genealogies/model/genealogy.xml"/>
-		<model:model model="genealogyInBatch" resource="genealogies/model/genealogyInBatch.xml"/>
+		<model:model model="productInBatch" resource="genealogies/model/productInBatch.xml"/>
 		<model:model model="genealogyProductInComponent" resource="genealogies/model/genealogyProductInComponent.xml"/>
 		<model:model model="otherFeature" resource="genealogies/model/otherFeature.xml"/>
 		<model:model model="postFeature" resource="genealogies/model/postFeature.xml"/>

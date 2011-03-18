@@ -66,4 +66,24 @@ public final class CustomEntityValidator implements EntityHookDefinition, ErrorM
         this.errorMessage = errorMessage;
     }
 
+    @Override
+    public String getName() {
+        return entityHook.getName();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return entityHook.isEnabled();
+    }
+
+    @Override
+    public void enable() {
+        entityHook.enable();
+    }
+
+    @Override
+    public void disable() {
+        entityHook.disable();
+    }
+
 }

@@ -20,7 +20,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldSaveEntity() throws Exception {
         // given
-        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_PRODUCT);
+        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_PRODUCT);
 
         Entity product = createProduct("asd", "def");
 
@@ -46,7 +46,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldNotSaveInvalidEntity() throws Exception {
         // given
-        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_PRODUCT);
+        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_PRODUCT);
 
         Entity product = createProduct(null, "asd");
 
@@ -67,7 +67,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldNotUpdateInvalidEntity() throws Exception {
         // given
-        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_PRODUCT);
+        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_PRODUCT);
 
         Entity product = createProduct("asd", "asd");
         product.setField("quantity", "2");
@@ -91,7 +91,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldHardDeleteEntity() throws Exception {
         // given
-        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_PRODUCT);
+        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_PRODUCT);
 
         Entity product = productDataDefinition.save(createProduct("asd", "asd"));
 
@@ -107,7 +107,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldGetEntity() throws Exception {
         // given
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
 
         Entity savedMachine = machineDataDefinition.save(createMachine("asd"));
 
@@ -122,7 +122,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldReturnNullForGettingNotExistedEntity() throws Exception {
         // given
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
 
         // then
         Entity machine = machineDataDefinition.get(1L);
@@ -134,7 +134,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldFindAllEntities() throws Exception {
         // given
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
 
         Entity machine1 = machineDataDefinition.save(createMachine("asd"));
         Entity machine2 = machineDataDefinition.save(createMachine("def"));
@@ -152,7 +152,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldNotFindSoftDeletedEntities() throws Exception {
         // given
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
 
         Entity machine1 = machineDataDefinition.save(createMachine("asd"));
         Entity machine2 = machineDataDefinition.save(createMachine("def"));
@@ -171,7 +171,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldLimitEntities() throws Exception {
         // given
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
 
         Entity machine1 = machineDataDefinition.save(createMachine("asd"));
         machineDataDefinition.save(createMachine("def"));
@@ -188,7 +188,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldOffsetEntities() throws Exception {
         // given
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
 
         machineDataDefinition.save(createMachine("asd"));
         Entity machine2 = machineDataDefinition.save(createMachine("def"));
@@ -205,7 +205,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldOrderAscEntities() throws Exception {
         // given
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
 
         Entity machine1 = machineDataDefinition.save(createMachine("asd"));
         Entity machine2 = machineDataDefinition.save(createMachine("def"));
@@ -223,7 +223,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldOrderDescEntities() throws Exception {
         // given
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
 
         Entity machine1 = machineDataDefinition.save(createMachine("asd"));
         Entity machine2 = machineDataDefinition.save(createMachine("def"));
@@ -241,7 +241,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldOrderEntitiesByMultipleFields() throws Exception {
         // given
-        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_PRODUCT);
+        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_PRODUCT);
 
         Entity product1 = productDataDefinition.save(createProduct("asd", "asd"));
         Entity product2 = productDataDefinition.save(createProduct("def", "asd"));
@@ -261,7 +261,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldUseEqualsRestriction() throws Exception {
         // given
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
 
         machineDataDefinition.save(createMachine("asd"));
         Entity machine2 = machineDataDefinition.save(createMachine("def"));
@@ -278,7 +278,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test
     public void shouldUseOrRestriction() throws Exception {
         // given
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
 
         machineDataDefinition.save(createMachine("asd"));
         machineDataDefinition.save(createMachine("def"));
@@ -296,7 +296,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test(expected = IllegalStateException.class)
     public void shouldFailWhileSavingIncompatibleType() throws Exception {
         // given
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
         Entity product = createProduct("name", "number");
 
         // when
@@ -306,7 +306,7 @@ public class CrudIntegrationTest extends IntegrationTest {
     @Test(expected = NullPointerException.class)
     public void shouldFailWhileSavingNullEntity() throws Exception {
         // given
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
 
         // when
         machineDataDefinition.save(null);

@@ -19,9 +19,9 @@ public class HasManyToIntegrationTest extends IntegrationTest {
     @SuppressWarnings("unchecked")
     public void shouldSaveBelongsToField() throws Exception {
         // given
-        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_PRODUCT);
-        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_MACHINE);
-        DataDefinition componentDataDefinition = dataDefinitionService.get(PLUGIN_NAME, ENTITY_NAME_COMPONENT);
+        DataDefinition productDataDefinition = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_PRODUCT);
+        DataDefinition machineDataDefinition = dataDefinitionService.get(PLUGIN_MACHINES_NAME, ENTITY_NAME_MACHINE);
+        DataDefinition componentDataDefinition = dataDefinitionService.get(PLUGIN_PRODUCTS_NAME, ENTITY_NAME_COMPONENT);
 
         Entity product = productDataDefinition.save(createProduct("asd", "asd"));
         Entity machine = machineDataDefinition.save(createMachine("asd"));

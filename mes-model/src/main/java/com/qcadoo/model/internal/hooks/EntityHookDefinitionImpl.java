@@ -8,8 +8,15 @@ import com.qcadoo.model.internal.api.EntityHookDefinition;
 
 public final class EntityHookDefinitionImpl extends HookDefinitionImpl implements EntityHookDefinition {
 
+    private boolean enabled = true;
+
     public EntityHookDefinitionImpl(final String className, final String methodName, final ApplicationContext applicationContext) {
         super(className, methodName, applicationContext);
+    }
+
+    @Override
+    public String getName() {
+        return getBean().getClass().getCanonicalName() + "." + getMethod().getName();
     }
 
     @Override
@@ -20,6 +27,21 @@ public final class EntityHookDefinitionImpl extends HookDefinitionImpl implement
     @Override
     public Class<?>[] getParameterTypes() {
         return new Class[] { DataDefinition.class, Entity.class };
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void enable() {
+        enabled = true;
+    }
+
+    @Override
+    public void disable() {
+        enabled = false;
     }
 
 }

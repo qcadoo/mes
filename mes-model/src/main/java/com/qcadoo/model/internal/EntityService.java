@@ -40,6 +40,7 @@ import com.qcadoo.model.api.types.BelongsToType;
 import com.qcadoo.model.api.types.HasManyType;
 import com.qcadoo.model.api.types.TreeType;
 import com.qcadoo.model.internal.api.InternalDataDefinition;
+import com.qcadoo.model.internal.api.InternalFieldDefinition;
 import com.qcadoo.model.internal.types.PasswordType;
 
 @Service
@@ -62,10 +63,11 @@ public final class EntityService {
     }
 
     public void setField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
-        if (fieldDefinition.getType() instanceof PasswordType && value == null) {
+        if (!((InternalFieldDefinition) fieldDefinition).isEnabled()) {
             return;
-        }
-        if (fieldDefinition.getType() instanceof BelongsToType && value != null) {
+        } else if (fieldDefinition.getType() instanceof PasswordType && value == null) {
+            return;
+        } else if (fieldDefinition.getType() instanceof BelongsToType && value != null) {
             Object belongsToValue = getBelongsToFieldValue(
                     (InternalDataDefinition) ((BelongsToType) fieldDefinition.getType()).getDataDefinition(), value);
             setField(databaseEntity, fieldDefinition.getName(), belongsToValue);
@@ -94,7 +96,9 @@ public final class EntityService {
     }
 
     public Object getField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
-        if (fieldDefinition.getType() instanceof BelongsToType) {
+        if (!((InternalFieldDefinition) fieldDefinition).isEnabled()) {
+            return null;
+        } else if (fieldDefinition.getType() instanceof BelongsToType) {
             return getBelongsToField(databaseEntity, fieldDefinition);
         } else if (fieldDefinition.getType() instanceof HasManyType) {
             return getHasManyField(databaseEntity, fieldDefinition);
@@ -109,7 +113,8 @@ public final class EntityService {
         Entity genericEntity = dataDefinition.create(getId(databaseEntity));
 
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
-            if (fieldDefinitionEntry.getValue().isPersistent()) {
+            if (fieldDefinitionEntry.getValue().isPersistent()
+                    && ((InternalFieldDefinition) fieldDefinitionEntry.getValue()).isEnabled()) {
                 genericEntity.setField(fieldDefinitionEntry.getKey(), getField(databaseEntity, fieldDefinitionEntry.getValue()));
             }
         }
@@ -120,7 +125,8 @@ public final class EntityService {
         }
 
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
-            if (fieldDefinitionEntry.getValue().getExpression() != null) {
+            if (fieldDefinitionEntry.getValue().getExpression() != null
+                    && ((InternalFieldDefinition) fieldDefinitionEntry.getValue()).isEnabled()) {
                 genericEntity.setField(fieldDefinitionEntry.getKey(), expressionService.getValue(genericEntity,
                         fieldDefinitionEntry.getValue().getExpression(), Locale.ENGLISH));
             }
@@ -136,7 +142,8 @@ public final class EntityService {
         Object databaseEntity = getDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
 
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
-            if (fieldDefinitionEntry.getValue().isPersistent()) {
+            if (fieldDefinitionEntry.getValue().isPersistent()
+                    && ((InternalFieldDefinition) fieldDefinitionEntry.getValue()).isEnabled()) {
                 setField(databaseEntity, fieldDefinitionEntry.getValue(), genericEntity.getField(fieldDefinitionEntry.getKey()));
             }
         }
