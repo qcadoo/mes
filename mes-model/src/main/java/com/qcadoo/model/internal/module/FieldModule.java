@@ -1,6 +1,7 @@
 package com.qcadoo.model.internal.module;
 
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
 public class FieldModule implements Module {
@@ -22,8 +23,9 @@ public class FieldModule implements Module {
     }
 
     @Override
-    public void init() {
-        // ignore
+    public void init(final PluginState state) {
+        // TODO
+        // domyślnie włączone
     }
 
     @Override

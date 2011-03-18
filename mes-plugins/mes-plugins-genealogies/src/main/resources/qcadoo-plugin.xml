@@ -46,17 +46,17 @@
 		<model:field plugin="products" model="operationProductInComponent">
 			<boolean name="batchRequired" />
 		</model:field>
-		<model:field plugin="products" model="plugin">
+		<model:field plugin="products" model="product">
 			<string name="batch">
 				<validatesLength max="255" />
 			</string>
 		</model:field>
-		<model:field plugin="products" model="plugin">
+		<model:field plugin="products" model="product">
 			<string name="lastUsedBatch">
 				<validatesLength max="255" />
 			</string>
 		</model:field>
-		<model:field plugin="products" model="plugin">
+		<model:field plugin="products" model="product">
 			<boolean name="genealogyBatchReq" />
 		</model:field>
 		<model:field plugin="products" model="order">

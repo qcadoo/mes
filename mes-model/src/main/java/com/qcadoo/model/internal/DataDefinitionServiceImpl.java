@@ -47,7 +47,7 @@ public final class DataDefinitionServiceImpl implements InternalDataDefinitionSe
     @Override
     @Monitorable
     public DataDefinition get(final String pluginIdentifier, final String modelName) {
-        DataDefinition dataDefinition = enabledDataDefinitions.get(pluginIdentifier + "." + modelName);
+        DataDefinition dataDefinition = dataDefinitions.get(pluginIdentifier + "." + modelName);
         checkNotNull(dataDefinition, "data definition for %s#%s cannot be found", pluginIdentifier, modelName);
         return dataDefinition;
     }
@@ -55,7 +55,7 @@ public final class DataDefinitionServiceImpl implements InternalDataDefinitionSe
     @Override
     @Monitorable
     public List<DataDefinition> list() {
-        return new ArrayList<DataDefinition>(enabledDataDefinitions.values());
+        return new ArrayList<DataDefinition>(dataDefinitions.values());
     }
 
     @Override
