@@ -60,7 +60,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 		pageOptions = JSON.parse($.trim(pageOptionsElement.html()));
 		pageOptionsElement.remove();
 		
-		if (isPopup) {
+		if (isPopup && window.parent.changeModalSize) {
 			var modalWidth = pageOptions.windowWidth ? pageOptions.windowWidth : 600;
 			var modalHeight = pageOptions.windowHeight ? pageOptions.windowHeight : 400;
 			window.parent.changeModalSize(modalWidth, modalHeight);
