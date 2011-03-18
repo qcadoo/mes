@@ -3,10 +3,12 @@
 	<fields>
 		<string name="number" required="true" unique="true" />
 		<string name="name" required="true" />
+		<string name="changeableName" />
 		<integer name="quantity">
 			<validatesRange from="0" exclusively="true" />
 		</integer>
 		<dictionary name="category" dictionary="categories" />
 		<hasMany name="components" model="component" joinField="product" cascade="none" />
 	</fields>
+	<hooks />
 </model>

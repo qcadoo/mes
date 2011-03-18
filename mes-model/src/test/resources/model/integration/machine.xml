@@ -2,6 +2,7 @@
 <model name="machine" xmlns="http://www.qcadoo.com/model">
 	<fields>
 		<string name="name" required="true" />
-		<hasMany name="components" model="component" joinField="product" cascade="delete" />
+		<hasMany name="components" plugin="products" model="component" joinField="product" cascade="delete" />
 	</fields>
+	<hooks />
 </model>

@@ -24,8 +24,6 @@
 
 package com.qcadoo.model.internal.api;
 
-import java.util.List;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteria;
@@ -126,8 +124,14 @@ public interface InternalDataDefinition extends DataDefinition {
 
     boolean callValidators(Entity targetEntity);
 
-    List<EntityHookDefinition> getValidators();
+    EntityHookDefinition getHook(String type, String className, String methodName);
 
     String getIdentifierExpression();
+
+    boolean isEnabled();
+
+    void enable();
+
+    void disable();
 
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="products" version="0.4.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/modules/model">
+<plugin plugin="products" version="0.4.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/modules/model" xmlns:view="http://www.qcadoo.com/modules/view">
 
 	<information>
 		<name>MES - Products</name>
@@ -30,6 +30,15 @@
 		<model:model model="technologyOperationComponent" resource="products/model/technologyOperationComponent.xml"/>
 		<model:model model="workPlan" resource="products/model/workPlan.xml"/>
 		<model:model model="workPlanComponent" resource="products/model/workPlanComponent.xml"/>
+
+		<view:view>
+			<resource>products/view/materialRequirements.xml</resource>
+			<resource>products/view/orders.xml</resource>
+			<resource>products/view/products.xml</resource>
+			<resource>products/view/tabWindowTest.xml</resource>
+			<resource>products/view/technologies.xml</resource>
+			<resource>products/view/workPlans.xml</resource>
+		</view:view>
 	</modules>
 
 </plugin>

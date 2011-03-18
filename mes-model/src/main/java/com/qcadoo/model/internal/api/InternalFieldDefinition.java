@@ -24,8 +24,6 @@
 
 package com.qcadoo.model.internal.api;
 
-import java.util.List;
-
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 
@@ -33,6 +31,10 @@ public interface InternalFieldDefinition extends FieldDefinition {
 
     boolean callValidators(final Entity entity, final Object oldValue, final Object newValue);
 
-    List<FieldHookDefinition> getValidators();
+    boolean isEnabled();
+
+    void enable();
+
+    void disable();
 
 }

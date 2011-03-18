@@ -29,28 +29,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Node;
 
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.ViewDefinition;
-import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 import com.qcadoo.model.api.aop.Monitorable;
 
 @Service
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
-    @Autowired
-    private ViewDefinitionParser viewDefinitionParser;
-
     private final List<Pair<String, String>> menuViews = new ArrayList<Pair<String, String>>();
 
     private final Map<String, ViewDefinition> viewDefinitions = new HashMap<String, ViewDefinition>();
-
-    private final Map<String, Node> dynamicViewDefinitions = new HashMap<String, Node>();
 
     @Override
     @Transactional(readOnly = true)
@@ -66,8 +58,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         String key = pluginIdentifier + "." + viewName;
         if (viewDefinitions.containsKey(key)) {
             return viewDefinitions.get(key);
-        } else if (dynamicViewDefinitions.containsKey(key)) {
-            return viewDefinitionParser.parseViewDefinition(dynamicViewDefinitions.get(key), pluginIdentifier, viewName);
         } else {
             return null;
         }
@@ -94,16 +84,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinitions.put(viewDefinition.getPluginIdentifier() + "." + viewDefinition.getName(), viewDefinition);
         if (viewDefinition.isMenuAccessible()) {
             menuViews.add(new Pair<String, String>(viewDefinition.getPluginIdentifier(), viewDefinition.getName()));
-        }
-    }
-
-    @Override
-    @Monitorable
-    public void saveDynamic(final String pluginIdentifier, final String viewName, final boolean isMenuAccessible,
-            final Node viewNode) {
-        dynamicViewDefinitions.put(pluginIdentifier + "." + viewName, viewNode);
-        if (isMenuAccessible) {
-            menuViews.add(new Pair<String, String>(pluginIdentifier, viewName));
         }
     }
 

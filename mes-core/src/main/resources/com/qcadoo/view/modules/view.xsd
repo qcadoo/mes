@@ -4,11 +4,14 @@
 
 	<xs:element name="view">
 		<xs:complexType>
-			<xs:attribute name="name" type="xs:string" use="required" />
-			<xs:attribute name="resource" type="xs:string" use="required" />
+			<xs:sequence>
+				<xs:element name="resource" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	
 	<xs:element name="menu" />
+	
+
 	
 </xs:schema>

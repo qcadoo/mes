@@ -10,7 +10,7 @@
 		<prop key="restartCommand"></prop>
 		<prop key="pluginsPath"></prop>
 		<prop key="pluginsTmpPath"></prop>
-		<prop key="descriptors">model/integration/plugin.xml</prop>
+		<prop key="descriptors">model/integration/*/plugin.xml</prop>
 	</util:properties>
 
 	<context:component-scan base-package="com.qcadoo.plugin" />
@@ -20,6 +20,8 @@
 	<bean class="com.qcadoo.model.integration.MockPasswordEncoder" />
 	
 	<bean class="com.qcadoo.model.integration.MockTranslationService" />
+	
+	<bean class="com.qcadoo.model.integration.MockHook" />
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
@@ -67,6 +69,9 @@
 		<property name="moduleFactories">
 			<list>
 				<bean class="com.qcadoo.model.internal.module.ModelModuleFactory" />
+				<bean class="com.qcadoo.model.internal.module.FieldModuleFactory" />
+				<bean class="com.qcadoo.model.internal.module.HookModuleFactory" />
+				<bean class="com.qcadoo.model.internal.module.DictionaryModuleFactory" />
 			</list>
 		</property>
 	</bean>

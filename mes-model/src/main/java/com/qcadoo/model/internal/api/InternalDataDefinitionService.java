@@ -31,8 +31,4 @@ public interface InternalDataDefinitionService extends DataDefinitionService {
 
     void save(DataDefinition dataDefinition);
 
-    void disable(String pluginIdentifier, String modelName);
-
-    void enable(String pluginIdentifier, String modelName);
-
 }

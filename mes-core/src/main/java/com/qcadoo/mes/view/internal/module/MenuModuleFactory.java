@@ -13,13 +13,12 @@ public class MenuModuleFactory implements ModuleFactory<MenuModule> {
 
     @Override
     public void init() {
-        menuService.init();
     }
 
     @Override
     public MenuModule parse(final String pluginIdentifier, final Element element) {
         // TODO Auto-generated method stub
-        return new MenuModule();
+        return new MenuModule(menuService);
     }
 
     @Override
