@@ -145,6 +145,17 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         boolean menuAccessible = getBooleanAttribute(viewNode, "menuAccessible", false);
         boolean dynamic = getBooleanAttribute(viewNode, "dynamic", false);
 
+        String windowWidthStr = getStringAttribute(viewNode, "windowWidth");
+        String windowHeightStr = getStringAttribute(viewNode, "windowHeight");
+        Integer windowWidth = null;
+        Integer windowHeight = null;
+        if (windowWidthStr != null) {
+            windowWidth = Integer.parseInt(windowWidthStr);
+        }
+        if (windowHeightStr != null) {
+            windowHeight = Integer.parseInt(windowHeightStr);
+        }
+
         DataDefinition dataDefinition = null;
 
         if (getStringAttribute(viewNode, "model") != null) {
@@ -155,6 +166,8 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl(name, pluginIdentifier, dataDefinition, menuAccessible,
                 translationService);
+
+        viewDefinition.setWindowDimmension(windowWidth, windowHeight);
 
         ComponentPattern root = null;
 

@@ -49,7 +49,7 @@ String ctx = request.getContextPath();
 		<input type="file" name="file" size="50" onChange="checkExtension(this.value, this.form.upload, ['jar']);"/>
 	</div>
 		            
-	<div class="linkButton" style="width: 200px; margin-left: 10px;" id="submit">
+	<div class="linkButton" style="width: 200px; margin-left: 10px; margin-bottom: 5px;" id="submit">
 		<a href="#" onclick="if (buttonActive) {QCD.components.elements.utils.LoadingIndicator.blockElement($('body')); $('#form').submit();}">
 			<span>
 				<div id="labelDiv">${buttonLabel}</div>
