@@ -46,8 +46,8 @@ public class PluginOperationResult {
         return new PluginOperationResult(PluginOperationStatus.CANNOT_UPLOAD_PLUGIN);
     }
 
-    public static PluginOperationResult incorrectVersionPlugin() {
-        return new PluginOperationResult(PluginOperationStatus.INCORRECT_VERSION_PLUGIN);
+    public static PluginOperationResult cannotDowngradePlugin() {
+        return new PluginOperationResult(PluginOperationStatus.CANNOT_DOWNGRADE_PLUGIN);
     }
 
     public static PluginOperationResult dependenciesToEnable(final PluginDependencyResult pluginDependencyResult) {
@@ -97,7 +97,7 @@ public class PluginOperationResult {
         return PluginOperationStatus.SUCCESS_WITH_RESTART.equals(status);
     }
 
-    public static PluginOperationResult cannotInstallPlugin() {
-        return new PluginOperationResult(PluginOperationStatus.CANNOT_INSTALL_PLUGIN);
+    public static PluginOperationResult cannotInstallPluginFile() {
+        return new PluginOperationResult(PluginOperationStatus.CANNOT_INSTALL_PLUGIN_FILE);
     }
 }

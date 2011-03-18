@@ -436,7 +436,7 @@ public class PluginManagerInstallTest {
         verify(pluginFileManager).renamePlugin("tempFileName", "anotherFilename");
 
         assertFalse(pluginOperationResult.isSuccess());
-        assertEquals(PluginOperationStatus.CANNOT_INSTALL_PLUGIN, pluginOperationResult.getStatus());
+        assertEquals(PluginOperationStatus.CANNOT_INSTALL_PLUGIN_FILE, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
     }
 
@@ -468,7 +468,7 @@ public class PluginManagerInstallTest {
         verify(pluginFileManager).renamePlugin("tempFileName", "anotherFilename");
 
         assertFalse(pluginOperationResult.isSuccess());
-        assertEquals(PluginOperationStatus.CANNOT_INSTALL_PLUGIN, pluginOperationResult.getStatus());
+        assertEquals(PluginOperationStatus.CANNOT_INSTALL_PLUGIN_FILE, pluginOperationResult.getStatus());
         assertEquals(0, pluginOperationResult.getPluginDependencyResult().getUnsatisfiedDependencies().size());
     }
 
@@ -567,7 +567,7 @@ public class PluginManagerInstallTest {
         verify(pluginFileManager).renamePlugin("tempFileName", "anotherFilename");
 
         assertFalse(pluginOperationResult.isSuccess());
-        assertEquals(PluginOperationStatus.INCORRECT_VERSION_PLUGIN, pluginOperationResult.getStatus());
+        assertEquals(PluginOperationStatus.CANNOT_DOWNGRADE_PLUGIN, pluginOperationResult.getStatus());
     }
 
 }

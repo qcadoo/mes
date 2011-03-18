@@ -93,7 +93,7 @@ public final class DefaultPluginManager implements PluginManager {
         }
         if (!fileNames.isEmpty()) {
             if (!pluginFileManager.installPlugin(fileNames.toArray(new String[fileNames.size()]))) {
-                return PluginOperationResult.cannotInstallPlugin();
+                return PluginOperationResult.cannotInstallPluginFile();
             }
             shouldRestart = true;
         }
@@ -246,7 +246,7 @@ public final class DefaultPluginManager implements PluginManager {
         } else {
             if (existingPlugin.getVersion().compareTo(plugin.getVersion()) >= 0) {
                 pluginFileManager.uninstallPlugin(plugin.getFilename());
-                return PluginOperationResult.incorrectVersionPlugin();
+                return PluginOperationResult.cannotDowngradePlugin();
             }
             if (existingPlugin.hasState(PluginState.TEMPORARY)) {
                 if (!pluginDependencyResult.isDependenciesSatisfied()
@@ -266,7 +266,7 @@ public final class DefaultPluginManager implements PluginManager {
                 }
                 if (!pluginFileManager.installPlugin(plugin.getFilename())) {
                     pluginFileManager.uninstallPlugin(plugin.getFilename());
-                    return PluginOperationResult.cannotInstallPlugin();
+                    return PluginOperationResult.cannotInstallPluginFile();
                 }
                 shouldRestart = true;
                 plugin.changeStateTo(existingPlugin.getState());
@@ -284,7 +284,7 @@ public final class DefaultPluginManager implements PluginManager {
                 }
                 if (!pluginFileManager.installPlugin(plugin.getFilename())) {
                     pluginFileManager.uninstallPlugin(plugin.getFilename());
-                    return PluginOperationResult.cannotInstallPlugin();
+                    return PluginOperationResult.cannotInstallPluginFile();
                 }
                 shouldRestart = true;
                 PluginDependencyResult installPluginDependencyResult = pluginDependencyManager.getDependenciesToUpdate(

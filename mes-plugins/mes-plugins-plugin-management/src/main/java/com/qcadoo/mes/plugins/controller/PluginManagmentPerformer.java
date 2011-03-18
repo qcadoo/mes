@@ -44,10 +44,10 @@ public class PluginManagmentPerformer {
             case SYSTEM_PLUGIN_UPDATING:
                 url = createErrorPageUrl("install.systemPlugin");
                 break;
-            case INCORRECT_VERSION_PLUGIN:
+            case CANNOT_DOWNGRADE_PLUGIN:
                 url = createErrorPageUrl("install.incorrectVersion");
                 break;
-            case CANNOT_INSTALL_PLUGIN:
+            case CANNOT_INSTALL_PLUGIN_FILE:
                 url = createErrorPageUrl("install.cannotInstallPlugin");
                 break;
             case DEPENDENCIES_TO_ENABLE:
@@ -91,7 +91,7 @@ public class PluginManagmentPerformer {
                         "enable.dependenciesToEnableAcceptLabel", "performEnablingMultiplePlugins", result
                                 .getPluginDependencyResult().getDependenciesToEnable(), pluginIdentifiers);
                 break;
-            case CANNOT_INSTALL_PLUGIN:
+            case CANNOT_INSTALL_PLUGIN_FILE:
                 url = createErrorPageUrl("cannotInstall");
                 break;
             default:
