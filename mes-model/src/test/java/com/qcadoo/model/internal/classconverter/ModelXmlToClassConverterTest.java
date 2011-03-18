@@ -30,7 +30,9 @@ public class ModelXmlToClassConverterTest {
     public static void init() throws Exception {
         modelXmlToClassConverter.setBeanClassLoader(ClassLoader.getSystemClassLoader());
 
-        for (Class<?> clazz : modelXmlToClassConverter.convert(Utils.FULL_XML_RESOURCE, Utils.OTHER_XML_RESOURCE)) {
+        for (Class<?> clazz : modelXmlToClassConverter.convert(Utils.FULL_FIRST_ENTITY_XML_RESOURCE,
+                Utils.FULL_SECOND_ENTITY_XML_RESOURCE, Utils.FULL_THIRD_ENTITY_XML_RESOURCE,
+                Utils.OTHER_FIRST_ENTITY_XML_RESOURCE, Utils.OTHER_SECOND_ENTITY_XML_RESOURCE)) {
             classes.put(clazz.getCanonicalName(), clazz);
         }
 

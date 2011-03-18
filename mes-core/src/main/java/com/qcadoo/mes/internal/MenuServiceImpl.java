@@ -29,11 +29,9 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.utils.Pair;
@@ -59,9 +57,6 @@ public final class MenuServiceImpl implements MenuService { // , ApplicationList
     private TranslationService translationService;
 
     @Autowired
-    private PluginManagementService pluginManagementService;
-
-    @Autowired
     private ViewDefinitionService viewDefinitionService;
 
     @Autowired
@@ -73,7 +68,7 @@ public final class MenuServiceImpl implements MenuService { // , ApplicationList
     @Override
     @Transactional
     @Monitorable
-    public void onApplicationEvent(final ContextRefreshedEvent event) {
+    public void init() {
         DataDefinition viewDefinitionDD = dataDefinitionService.get("menu", "viewDefinition");
 
         List<Pair<String, String>> menuViews = viewDefinitionService.listForMenu();

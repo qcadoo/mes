@@ -46,8 +46,8 @@ public class PluginOperationResult {
         return new PluginOperationResult(PluginOperationStatus.CANNOT_UPLOAD_PLUGIN);
     }
 
-    public static PluginOperationResult incorrectVersionPlugin() {
-        return new PluginOperationResult(PluginOperationStatus.INCORRECT_VERSION_PLUGIN);
+    public static PluginOperationResult cannotDowngradePlugin() {
+        return new PluginOperationResult(PluginOperationStatus.CANNOT_DOWNGRADE_PLUGIN);
     }
 
     public static PluginOperationResult dependenciesToEnable(final PluginDependencyResult pluginDependencyResult) {
@@ -85,9 +85,7 @@ public class PluginOperationResult {
     public boolean isSuccess() {
         switch (status) {
             case SUCCESS:
-                return true;
             case SUCCESS_WITH_RESTART:
-                return true;
             case SUCCESS_WITH_MISSING_DEPENDENCIES:
                 return true;
             default:
@@ -99,7 +97,7 @@ public class PluginOperationResult {
         return PluginOperationStatus.SUCCESS_WITH_RESTART.equals(status);
     }
 
-    public static PluginOperationResult cannotInstallPlugin() {
-        return new PluginOperationResult(PluginOperationStatus.CANNOT_INSTALL_PLUGIN);
+    public static PluginOperationResult cannotInstallPluginFile() {
+        return new PluginOperationResult(PluginOperationStatus.CANNOT_INSTALL_PLUGIN_FILE);
     }
 }

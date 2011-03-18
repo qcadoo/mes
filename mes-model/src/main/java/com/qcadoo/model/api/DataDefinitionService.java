@@ -53,22 +53,4 @@ public interface DataDefinitionService {
      */
     List<DataDefinition> list();
 
-    /**
-     * Save the data definition.
-     * 
-     * @param dataDefinition
-     *            data definition
-     */
-    // TODO not public API
-    void save(DataDefinition dataDefinition);
-
-    /**
-     * Delete the data definition.
-     * 
-     * @param dataDefinition
-     *            data definition
-     */
-    // TODO not public API
-    void delete(DataDefinition dataDefinition);
-
 }

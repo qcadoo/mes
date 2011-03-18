@@ -34,11 +34,13 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
+			/WEB-INF/database-context.xml
 			/WEB-INF/plugin-context.xml
-			classpath:com/qcadoo/mes/core/root-context.xml
+			/WEB-INF/model-context.xml
+			/WEB-INF/root-context.xml
+			/WEB-INF/security-context.xml
 			classpath*:root-context.xml
 			/WEB-INF/web-context.xml
-			classpath:com/qcadoo/mes/core/web-context.xml
 			classpath*:web-context.xml
 		</param-value>
 	</context-param>

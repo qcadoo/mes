@@ -32,12 +32,12 @@ public class ModuleFactoryAccessorTest {
         moduleFactoryAccessor.setModuleFactories(factoriesList);
 
         // when
-        moduleFactoryAccessor.postInitialize();
+        moduleFactoryAccessor.init();
 
         // then
         InOrder inOrder = inOrder(moduleFactory1, moduleFactory2);
-        inOrder.verify(moduleFactory1).postInitialize();
-        inOrder.verify(moduleFactory2).postInitialize();
+        inOrder.verify(moduleFactory1).init();
+        inOrder.verify(moduleFactory2).init();
     }
 
     @Test

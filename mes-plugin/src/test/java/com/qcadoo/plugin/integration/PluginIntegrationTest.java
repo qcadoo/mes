@@ -128,8 +128,6 @@ public class PluginIntegrationTest {
         // when
         PluginOperationResult result = pluginManager.enablePlugin("plugin2");
 
-        System.out.println(" -----> " + result.getStatus());
-
         // then
         assertTrue(result.isSuccess());
         assertEquals(PluginOperationStatus.SUCCESS, result.getStatus());
@@ -311,7 +309,7 @@ public class PluginIntegrationTest {
 
         // then
         assertFalse(result.isSuccess());
-        assertEquals(PluginOperationStatus.INCORRECT_VERSION_PLUGIN, result.getStatus());
+        assertEquals(PluginOperationStatus.CANNOT_DOWNGRADE_PLUGIN, result.getStatus());
         assertNotNull(pluginAccessor.getPlugin("plugin4"));
         assertTrue(pluginAccessor.getPlugin("plugin4").hasState(PluginState.TEMPORARY));
         assertEquals(new Version("1.2.4"), pluginAccessor.getPlugin("plugin4").getVersion());

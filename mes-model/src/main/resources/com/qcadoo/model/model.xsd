@@ -2,62 +2,49 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://www.qcadoo.com/model" xmlns="http://www.qcadoo.com/model" elementFormDefault="qualified">
 
-	<xs:element name="models">
+	<xs:element name="model">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:choice minOccurs="0" maxOccurs="unbounded">
-					<xs:element name="dictionary" type="dictionaryType" />
-				</xs:choice>
-				<xs:choice minOccurs="0" maxOccurs="unbounded">
-					<xs:element name="model" type="modelType" />
-				</xs:choice>
-			</xs:sequence>			
-			<xs:attribute name="plugin" type="identifierType" use="required" />			
+				<xs:element name="fields" type="fieldsType" minOccurs="1" maxOccurs="1" />
+				<xs:element name="hooks" type="hooksType" minOccurs="1" maxOccurs="1" />
+				<xs:element name="identifier" type="identifierExpressionType" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+			<xs:attribute name="name" type="identifierType" use="required" />
+			<xs:attribute name="plugin" type="identifierType" use="optional" />
+			<xs:attribute name="deletable" type="xs:boolean" />
+			<xs:attribute name="insertable" type="xs:boolean" />
+			<xs:attribute name="updatable" type="xs:boolean" />
 		</xs:complexType>
 	</xs:element>
 
-	<xs:complexType name="dictionaryType">
+	<xs:complexType name="hooksType">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="value" type="identifierType" />
+			<xs:element name="validatesWith" type="hookType" />
+			<xs:element name="onSave" type="hookType" />
+			<xs:element name="onUpdate" type="hookType" />
+			<xs:element name="onCreate" type="hookType" />
+			<xs:element name="onCopy" type="hookType" />
+			<xs:element name="onView" type="hookType" />
 		</xs:choice>
-		<xs:attribute name="name" type="identifierType" use="required" />
-		<xs:attribute name="modificable" type="xs:boolean" default="true" />
 	</xs:complexType>
 
-	<xs:complexType name="modelType">
-		<xs:sequence>
-			<xs:choice minOccurs="1" maxOccurs="unbounded">
-				<xs:element name="integer" type="fieldType" />
-				<xs:element name="string" type="stringFieldType" />
-				<xs:element name="text" type="fieldType" />
-				<xs:element name="decimal" type="fieldType" />
-				<xs:element name="datetime" type="fieldType" />
-				<xs:element name="date" type="fieldType" />
-				<xs:element name="boolean" type="fieldType" />
-				<xs:element name="belongsTo" type="belongsToFieldType" />
-				<xs:element name="hasMany" type="hasManyFieldType" />
-				<xs:element name="tree" type="treeFieldType" />
-				<xs:element name="enum" type="enumFieldType" />
-				<xs:element name="dictionary" type="dictionaryFieldType" />
-				<xs:element name="password" type="fieldType" />
-			</xs:choice>
-			<xs:element name="priority" type="priorityFieldType"
-				minOccurs="0" maxOccurs="1" />
-			<xs:element name="validatesWith" type="hookType"
-				minOccurs="0" maxOccurs="unbounded" />
-			<xs:choice minOccurs="0" maxOccurs="unbounded">
-				<xs:element name="onSave" type="hookType" />
-				<xs:element name="onUpdate" type="hookType" />
-				<xs:element name="onCreate" type="hookType" />
-				<xs:element name="onCopy" type="hookType" />
-			</xs:choice>
-			<xs:element name="identifier" type="identifierExpressionType"
-				minOccurs="0" maxOccurs="1" />
-		</xs:sequence>
-		<xs:attribute name="name" type="identifierType" use="required" />
-		<xs:attribute name="deletable" type="xs:boolean" />
-		<xs:attribute name="insertable" type="xs:boolean" />
-		<xs:attribute name="updatable" type="xs:boolean" />
+	<xs:complexType name="fieldsType">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="integer" type="fieldType" />
+			<xs:element name="string" type="stringFieldType" />
+			<xs:element name="text" type="fieldType" />
+			<xs:element name="decimal" type="fieldType" />
+			<xs:element name="datetime" type="fieldType" />
+			<xs:element name="date" type="fieldType" />
+			<xs:element name="boolean" type="fieldType" />
+			<xs:element name="belongsTo" type="belongsToFieldType" />
+			<xs:element name="hasMany" type="hasManyFieldType" />
+			<xs:element name="tree" type="treeFieldType" />
+			<xs:element name="enum" type="enumFieldType" />
+			<xs:element name="dictionary" type="dictionaryFieldType" />
+			<xs:element name="password" type="fieldType" />
+			<xs:element name="priority" type="priorityFieldType" minOccurs="0" maxOccurs="1" />
+		</xs:choice>
 	</xs:complexType>
 
 	<xs:complexType name="identifierExpressionType">

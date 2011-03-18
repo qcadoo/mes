@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="plugin"  xmlns="http://www.qcadoo.com/model">
+	<fields>
+		<string name="identifier" />
+		<string name="version" />
+		<enum name="state" values="ENABLED,DISABLED,TEMPORARY" />
+		<string name="name" persistent="false" />
+		<boolean name="isSystem" persistent="false" />
+		<string name="description" persistent="false" />
+		<string name="vendor" persistent="false" />
+		<string name="vendorUrl" persistent="false" />
+	</fields>
+	<hooks>
+		<onView class="com.qcadoo.mes.plugins.controller.PluginManagmentDataHook" method="updatePluginData" />
+	</hooks>
+</model>

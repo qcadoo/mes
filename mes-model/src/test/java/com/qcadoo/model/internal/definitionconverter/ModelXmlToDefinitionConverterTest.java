@@ -51,7 +51,6 @@ import org.springframework.context.ApplicationContext;
 import com.qcadoo.model.CustomHook;
 import com.qcadoo.model.Utils;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.types.BelongsToType;
 import com.qcadoo.model.api.types.HasManyType;
@@ -62,6 +61,7 @@ import com.qcadoo.model.internal.api.DataAccessService;
 import com.qcadoo.model.internal.api.EntityHookDefinition;
 import com.qcadoo.model.internal.api.FieldHookDefinition;
 import com.qcadoo.model.internal.api.InternalDataDefinition;
+import com.qcadoo.model.internal.api.InternalDataDefinitionService;
 import com.qcadoo.model.internal.api.InternalFieldDefinition;
 import com.qcadoo.model.internal.api.ModelXmlToClassConverter;
 import com.qcadoo.model.internal.classconverter.ModelXmlToClassConverterImpl;
@@ -92,7 +92,7 @@ public class ModelXmlToDefinitionConverterTest {
 
     private static ModelXmlToDefinitionConverterImpl modelXmlToDefinitionConverter;
 
-    private static DataDefinitionService dataDefinitionService;
+    private static InternalDataDefinitionService dataDefinitionService;
 
     private static DataAccessService dataAccessService;
 
@@ -128,9 +128,13 @@ public class ModelXmlToDefinitionConverterTest {
 
         ModelXmlToClassConverter modelXmlToClassConverter = new ModelXmlToClassConverterImpl();
         ((ModelXmlToClassConverterImpl) modelXmlToClassConverter).setBeanClassLoader(ClassLoader.getSystemClassLoader());
-        modelXmlToClassConverter.convert(Utils.FULL_XML_RESOURCE, Utils.OTHER_XML_RESOURCE);
+        modelXmlToClassConverter.convert(Utils.FULL_FIRST_ENTITY_XML_RESOURCE, Utils.FULL_SECOND_ENTITY_XML_RESOURCE,
+                Utils.FULL_THIRD_ENTITY_XML_RESOURCE, Utils.OTHER_FIRST_ENTITY_XML_RESOURCE,
+                Utils.OTHER_SECOND_ENTITY_XML_RESOURCE);
 
-        dataDefinitions = modelXmlToDefinitionConverter.convert(Utils.FULL_XML_RESOURCE, Utils.OTHER_XML_RESOURCE);
+        dataDefinitions = modelXmlToDefinitionConverter.convert(Utils.FULL_FIRST_ENTITY_XML_RESOURCE,
+                Utils.FULL_SECOND_ENTITY_XML_RESOURCE, Utils.FULL_THIRD_ENTITY_XML_RESOURCE,
+                Utils.OTHER_FIRST_ENTITY_XML_RESOURCE, Utils.OTHER_SECOND_ENTITY_XML_RESOURCE);
 
         for (DataDefinition dd : dataDefinitions.toArray(new DataDefinition[dataDefinitions.size()])) {
             if (dd.getName().equals("firstEntity") && dd.getPluginIdentifier().equals("full")) {
@@ -138,6 +142,11 @@ public class ModelXmlToDefinitionConverterTest {
             }
         }
 
+        dataDefinitionService.enable("full", "firstEntity");
+        dataDefinitionService.enable("full", "secondEntity");
+        dataDefinitionService.enable("full", "thirdEntity");
+        dataDefinitionService.enable("other", "firstEntity");
+        dataDefinitionService.enable("other", "secondEntity");
     }
 
     @Test

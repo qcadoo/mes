@@ -359,6 +359,9 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 					this.element.onChangeListeners = new Array();
 				}
 				this.element.onChangeListeners.push(listener);
+			},
+			removeOnChangeListeners: function() {
+				this.element.onChangeListeners = new Array();
 			}
 		};
 		jsObjects[item.group+"-"+item.name] = jsObject;

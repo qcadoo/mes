@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model plugin="full" name="firstEntity" insertable="false" deletable="false" xmlns="http://www.qcadoo.com/model">
+	<fields>
+		<integer name="fieldInteger" required="true" unique="true">		
+			<validatesWith class="com.qcadoo.model.CustomHook" method="validateField" />
+			<validatesLength min="1" max="3" />						
+			<validatesPrecision min="2" max="4" />								
+			<validatesRange from="18" exclusively="true" />			
+		</integer>
+		<string name="fieldString" default="ala" required="true" unique="false">
+			<validatesLength is="2" />	 
+			<validatesRange from="daap" to="dzzp" />
+			<validatesRegex pattern="d??p" />
+		</string>
+		<text name="fieldText" readonly="true" />
+		<string name="fieldStringNotPersistent" persistent="false" />
+		<string name="fieldStringWithExpression" expression="#fString" />
+		<decimal name="fieldDecimal">
+			<validatesScale min="2" max="4" />
+			<validatesPrecision is="2" />
+		</decimal>
+		<datetime name="fieldDatetime" required="false" />
+		<date name="fieldDate" />
+		<boolean name="fieldBoolean" />
+		<belongsTo name="fieldSecondEntity" plugin="other" model="secondEntity" lazy="false" />		
+		<belongsTo name="fieldSecondEntity2" plugin="other" model="secondEntity" lazy="true" required="true" />		
+		<tree name="fieldTree" model="secondEntity" cascade="delete" joinField="fieldFirstEntity" />
+		<hasMany name="fieldHasMany" model="thirdEntity" cascade="none" joinField="fieldFirstEntity" />
+		<dictionary name="fieldDictionary" dictionary="categories" />
+		<dictionary name="fieldOtherDictionary" plugin="other" dictionary="categories" />
+		<enum name="fieldEnum" values="one,two,three" />
+		<password name="fieldPassword" />
+		<priority name="fieldPriority" scope="fieldInteger" />
+	</fields>
+	<hooks>	
+		<validatesWith class="com.qcadoo.model.CustomHook" method="validate" />
+		<onSave class="com.qcadoo.model.CustomHook" method="hook" />
+		<onUpdate class="com.qcadoo.model.CustomHook" method="updateHook" />
+		<onCreate class="com.qcadoo.model.CustomHook" method="createHook" />
+		<onCopy class="com.qcadoo.model.CustomHook" method="copyHook" />
+	</hooks>
+	<identifier expression="#fieldString" />
+</model>	

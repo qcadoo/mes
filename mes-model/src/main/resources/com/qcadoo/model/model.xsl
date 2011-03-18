@@ -8,12 +8,6 @@
 		doctype-system="http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
 		doctype-public="-//Hibernate/Hibernate Mapping DTD 3.0//EN" />
 
-	<xsl:template match="/qcd:models">
-		<hibernate-mapping>
-			<xsl:apply-templates select="qcd:model" />
-		</hibernate-mapping>
-	</xsl:template>
-	
 	<xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'" />
 	<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
 
@@ -26,39 +20,41 @@
 	</xsl:template>
 
 	<xsl:template match="//qcd:model">
-		<class>
-			<xsl:variable name="table_name">
-				<xsl:value-of select="concat(/qcd:models/@plugin, '_', @name)" />
-			</xsl:variable>
-			<xsl:attribute name="table">
-			    <xsl:value-of select="$table_name" />
-			</xsl:attribute>
-			<xsl:attribute name="name">
-				<xsl:value-of select="concat('com.qcadoo.model.beans.', /qcd:models/@plugin, '.', translate(substring(/qcd:models/@plugin, 1, 1),  $smallcase, $uppercase), substring(/qcd:models/@plugin, 2), translate(substring(@name, 1, 1),  $smallcase, $uppercase), substring(@name, 2))" />
-			</xsl:attribute>
-			<id column="id" name="id" type="long">
-				<generator class="increment" />
-			</id>
-			<xsl:apply-templates />
-			<xsl:if test="@insertable='false'">
-				<sql-insert>
-					<xsl:value-of
-						select="concat('insert must not be executed on ', $table_name)" />
-				</sql-insert>
-			</xsl:if>
-			<xsl:if test="@updatable='false'">
-				<sql-update>
-					<xsl:value-of
-						select="concat('update must not be executed on ', $table_name)" />
-				</sql-update>
-			</xsl:if>
-			<xsl:if test="@deletable='false'">
-				<sql-delete>
-					<xsl:value-of
-						select="concat('delete must not be executed on ', $table_name)" />
-				</sql-delete>
-			</xsl:if>
-		</class>
+		<hibernate-mapping>
+			<class>
+				<xsl:variable name="table_name">
+					<xsl:value-of select="concat(/qcd:model/@plugin, '_', @name)" />
+				</xsl:variable>
+				<xsl:attribute name="table">
+				    <xsl:value-of select="$table_name" />
+				</xsl:attribute>
+				<xsl:attribute name="name">
+					<xsl:value-of select="concat('com.qcadoo.model.beans.', @plugin, '.', translate(substring(@plugin, 1, 1),  $smallcase, $uppercase), substring(@plugin, 2), translate(substring(@name, 1, 1),  $smallcase, $uppercase), substring(@name, 2))" />
+				</xsl:attribute>
+				<id column="id" name="id" type="long">
+					<generator class="increment" />
+				</id>
+				<xsl:apply-templates />
+				<xsl:if test="@insertable='false'">
+					<sql-insert>
+						<xsl:value-of
+							select="concat('insert must not be executed on ', $table_name)" />
+					</sql-insert>
+				</xsl:if>
+				<xsl:if test="@updatable='false'">
+					<sql-update>
+						<xsl:value-of
+							select="concat('update must not be executed on ', $table_name)" />
+					</sql-update>
+				</xsl:if>
+				<xsl:if test="@deletable='false'">
+					<sql-delete>
+						<xsl:value-of
+							select="concat('delete must not be executed on ', $table_name)" />
+					</sql-delete>
+				</xsl:if>
+			</class>
+		</hibernate-mapping>
 	</xsl:template>
 
 	<xsl:template name="property">
@@ -136,112 +132,112 @@
 		</column>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:integer[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:integer[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">integer</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:priority">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:priority">
 		<property>
 			<xsl:attribute name="type">integer</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:string[not(@expression) and not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:string[not(@expression) and not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">string</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:password[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:password[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">string</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:text[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:text[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">text</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:decimal[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:decimal[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">big_decimal</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:datetime[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:datetime[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">timestamp</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:date[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:date[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">date</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:boolean[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:boolean[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">boolean</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:enum[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:enum[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">string</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:dictionary[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:dictionary[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">string</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:long[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:long[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">long</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:short[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:short[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">short</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:float[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:float[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">float</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:double[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:double[not(@persistent='false')]">
 		<property>
 			<xsl:attribute name="type">double</xsl:attribute>
 			<xsl:call-template name="property" />
 		</property>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:hasMany[not(@persistent='false')] | //qcd:model/qcd:tree[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:hasMany[not(@persistent='false')] | //qcd:model/qcd:fields/qcd:tree[not(@persistent='false')]">
 		<set>
 			<xsl:attribute name="cascade">
 			<xsl:choose>
@@ -269,7 +265,7 @@
 					<xsl:otherwise>
 						<xsl:call-template name="entityName">
 							<xsl:with-param name="modelName" select="@model" />
-							<xsl:with-param name="pluginName" select="/qcd:models/@plugin" />
+							<xsl:with-param name="pluginName" select="/qcd:model/@plugin" />
 						</xsl:call-template>
 					</xsl:otherwise>
 				</xsl:choose>
@@ -277,7 +273,7 @@
 		</set>
 	</xsl:template>
 
-	<xsl:template match="//qcd:model/qcd:belongsTo[not(@persistent='false')]">
+	<xsl:template match="//qcd:model/qcd:fields/qcd:belongsTo[not(@persistent='false')]">
 		<many-to-one>
 			<xsl:choose>
 				<xsl:when test="@plugin">
@@ -289,7 +285,7 @@
 				<xsl:otherwise>
 					<xsl:call-template name="entityName">
 						<xsl:with-param name="modelName" select="@model" />
-						<xsl:with-param name="pluginName" select="/qcd:models/@plugin" />
+						<xsl:with-param name="pluginName" select="/qcd:model/@plugin" />
 					</xsl:call-template>
 				</xsl:otherwise>
 			</xsl:choose>

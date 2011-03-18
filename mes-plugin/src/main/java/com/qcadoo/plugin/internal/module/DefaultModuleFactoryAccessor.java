@@ -12,9 +12,9 @@ public final class DefaultModuleFactoryAccessor implements ModuleFactoryAccessor
     private final Map<String, ModuleFactory<?>> moduleFactoryRegistry = new LinkedHashMap<String, ModuleFactory<?>>();
 
     @Override
-    public void postInitialize() {
+    public void init() {
         for (ModuleFactory<?> moduleFactory : moduleFactoryRegistry.values()) {
-            moduleFactory.postInitialize();
+            moduleFactory.init();
         }
     }
 
@@ -28,6 +28,10 @@ public final class DefaultModuleFactoryAccessor implements ModuleFactoryAccessor
 
     public void setModuleFactories(final List<ModuleFactory<?>> moduleFactories) {
         for (ModuleFactory<?> moduleFactory : moduleFactories) {
+            if (moduleFactoryRegistry.containsKey(moduleFactory.getIdentifier())) {
+                throw new IllegalStateException("ModuleFactory " + moduleFactory.getClass().getCanonicalName()
+                        + " try to overwrite existing module with identifier " + moduleFactory.getIdentifier());
+            }
             moduleFactoryRegistry.put(moduleFactory.getIdentifier(), moduleFactory);
         }
     }

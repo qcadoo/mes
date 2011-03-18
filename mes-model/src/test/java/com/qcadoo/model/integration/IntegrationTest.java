@@ -7,9 +7,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.internal.api.ModelXmlToDefinitionConverter;
+import com.qcadoo.model.internal.api.InternalDataDefinitionService;
 
 public abstract class IntegrationTest {
 
@@ -27,7 +26,7 @@ public abstract class IntegrationTest {
 
     protected static String TABLE_NAME_COMPONENT = PLUGIN_NAME + "_" + ENTITY_NAME_COMPONENT;
 
-    protected static DataDefinitionService dataDefinitionService;
+    protected static InternalDataDefinitionService dataDefinitionService;
 
     protected static SessionFactory sessionFactory;
 
@@ -38,11 +37,13 @@ public abstract class IntegrationTest {
     @BeforeClass
     public static void classInit() throws Exception {
         applicationContext = new ClassPathXmlApplicationContext("spring.xml");
-        dataDefinitionService = applicationContext.getBean(DataDefinitionService.class);
-        sessionFactory = applicationContext.getBean(SessionFactory.class);
+        dataDefinitionService = applicationContext.getBean(InternalDataDefinitionService.class);
+        sessionFactory = applicationContext.getBean("sessionFactory", SessionFactory.class);
         jdbcTemplate = applicationContext.getBean(JdbcTemplate.class);
 
-        (applicationContext.getBean(ModelXmlToDefinitionConverter.class)).onApplicationEvent(null);
+        dataDefinitionService.enable("products", "product");
+        dataDefinitionService.enable("products", "component");
+        dataDefinitionService.enable("products", "machine");
     }
 
     @Before

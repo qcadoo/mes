@@ -45,7 +45,7 @@
 
 	<build>
 		<plugins>
-			<plugin>
+			<!-- plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
@@ -95,7 +95,7 @@
 						<version>1.6.5</version>
 					</dependency>
 				</dependencies>
-			</plugin>
+			</plugin -->
 		</plugins>
 	</build>
 

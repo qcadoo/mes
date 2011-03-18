@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="products" version="0.4.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/modules/model">
+
+	<information>
+		<name>MES - Products</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+	
+	<dependencies>
+		<dependency>
+			<plugin>basic</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+	
+	<modules>
+		<model:model model="materialRequirement" resource="products/model/materialRequirement.xml"/>
+		<model:model model="materialRequirementComponent" resource="products/model/materialRequirementComponent.xml"/>
+		<model:model model="operation" resource="products/model/operation.xml"/>
+		<model:model model="operationProductOutComponent" resource="products/model/operationProductOutComponent.xml"/>
+		<model:model model="operationProductInComponent" resource="products/model/operationProductInComponent.xml"/>
+		<model:model model="order" resource="products/model/order.xml"/>
+		<model:model model="product" resource="products/model/product.xml"/>
+		<model:model model="substitute" resource="products/model/substitute.xml"/>
+		<model:model model="substituteComponent" resource="products/model/substituteComponent.xml"/>
+		<model:model model="technology" resource="products/model/technology.xml"/>
+		<model:model model="technologyOperationComponent" resource="products/model/technologyOperationComponent.xml"/>
+		<model:model model="workPlan" resource="products/model/workPlan.xml"/>
+		<model:model model="workPlanComponent" resource="products/model/workPlanComponent.xml"/>
+	</modules>
+
+</plugin>

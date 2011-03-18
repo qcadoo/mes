@@ -1,12 +1,12 @@
 package com.qcadoo.plugin.internal.api;
 
-import org.w3c.dom.Node;
+import org.jdom.Element;
 
 public interface ModuleFactory<T extends Module> {
 
-    void postInitialize();
+    void init();
 
-    T parse(final Node node);
+    T parse(String pluginIdentifier, Element node);
 
     String getIdentifier();
 

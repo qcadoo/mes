@@ -203,6 +203,10 @@ QCD.components.Component = function(_element, _mainController) {
 		onChangeListeners.push(listener);
 	}
 	
+	this.removeOnChangeListeners = function(listener) {
+		onChangeListeners = new Array();
+	}
+	
 	this.fireOnChangeListeners = function(method, args) {
 		for (var i in onChangeListeners) {
 			var func = onChangeListeners[i][method];

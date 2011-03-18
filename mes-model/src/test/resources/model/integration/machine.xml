@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="machine" xmlns="http://www.qcadoo.com/model">
+	<fields>
+		<string name="name" required="true" />
+		<hasMany name="components" model="component" joinField="product" cascade="delete" />
+	</fields>
+</model>

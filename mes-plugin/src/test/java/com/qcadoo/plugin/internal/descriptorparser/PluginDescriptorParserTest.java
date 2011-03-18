@@ -11,12 +11,13 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Set;
 
+import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.w3c.dom.Node;
 
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginDependencyInformation;
@@ -63,8 +64,10 @@ public class PluginDescriptorParserTest {
         ModuleFactory testModule1Factory = mock(ModuleFactory.class);
         ModuleFactory testModule2Factory = mock(ModuleFactory.class);
 
-        given(testModule1Factory.parse(argThat(new HasNodeName("testModule1", "testModule1Content")))).willReturn(testModule1);
-        given(testModule2Factory.parse(argThat(new HasNodeName("testModule2", "testModule2Content")))).willReturn(testModule2);
+        given(testModule1Factory.parse(Mockito.eq("testPlugin"), argThat(new HasNodeName("testModule1", "testModule1Content"))))
+                .willReturn(testModule1);
+        given(testModule2Factory.parse(Mockito.eq("testPlugin"), argThat(new HasNodeName("testModule2", "testModule2Content"))))
+                .willReturn(testModule2);
 
         given(moduleFactoryAccessor.getModuleFactory("testModule1")).willReturn(testModule1Factory);
         given(moduleFactoryAccessor.getModuleFactory("testModule2")).willReturn(testModule2Factory);
@@ -193,9 +196,9 @@ public class PluginDescriptorParserTest {
 
         // then
         DefaultPlugin castedResult = (DefaultPlugin) result;
-        assertEquals(2, castedResult.getMdules().size());
-        assertTrue(castedResult.getMdules().contains(testModule1));
-        assertTrue(castedResult.getMdules().contains(testModule2));
+        assertEquals(2, castedResult.getModules().size());
+        assertTrue(castedResult.getModules().contains(testModule1));
+        assertTrue(castedResult.getModules().contains(testModule2));
     }
 
     @Test
@@ -207,10 +210,10 @@ public class PluginDescriptorParserTest {
 
         // then
         DefaultPlugin castedResult = (DefaultPlugin) result;
-        assertEquals(0, castedResult.getMdules().size());
+        assertEquals(0, castedResult.getModules().size());
     }
 
-    private class HasNodeName extends ArgumentMatcher<Node> {
+    private class HasNodeName extends ArgumentMatcher<Element> {
 
         private final String expectedNodeName;
 
@@ -222,9 +225,9 @@ public class PluginDescriptorParserTest {
         }
 
         @Override
-        public boolean matches(final Object node) {
-            if (expectedNodeName.equals(((Node) node).getNodeName())) {
-                return expectedNodeText.equals(((Node) node).getTextContent());
+        public boolean matches(final Object element) {
+            if (expectedNodeName.equals(((Element) element).getName())) {
+                return expectedNodeText.equals(((Element) element).getText());
             }
             return false;
         }

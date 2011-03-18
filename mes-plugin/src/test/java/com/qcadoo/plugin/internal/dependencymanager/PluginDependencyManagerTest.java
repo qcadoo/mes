@@ -90,7 +90,7 @@ public class PluginDependencyManagerTest {
     @Test
     public void shouldReturnSingleDisabledDependencyForOnePlugin() throws Exception {
         // given
-        given(plugin2.getPluginState()).willReturn(PluginState.DISABLED);
+        given(plugin2.getState()).willReturn(PluginState.DISABLED);
 
         given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);
 
@@ -110,9 +110,9 @@ public class PluginDependencyManagerTest {
     @Test
     public void shouldReturnMultipleDisabledDependencyForOnePlugin() throws Exception {
         // given
-        given(plugin1.getPluginState()).willReturn(PluginState.DISABLED);
-        given(plugin2.getPluginState()).willReturn(PluginState.TEMPORARY);
-        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin1.getState()).willReturn(PluginState.DISABLED);
+        given(plugin2.getState()).willReturn(PluginState.TEMPORARY);
+        given(plugin3.getState()).willReturn(PluginState.ENABLED);
 
         given(pluginAccessor.getPlugin("testPlugin1")).willReturn(plugin1);
         given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);
@@ -140,9 +140,9 @@ public class PluginDependencyManagerTest {
     @Test
     public void shouldReturnUnsatisfiedDependenciesForOnePluginWhenNoDependencyPluginFoundOrVersionIsNotMet() throws Exception {
         // given
-        given(plugin1.getPluginState()).willReturn(PluginState.DISABLED);
-        given(plugin2.getPluginState()).willReturn(PluginState.TEMPORARY);
-        given(plugin3.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin1.getState()).willReturn(PluginState.DISABLED);
+        given(plugin2.getState()).willReturn(PluginState.TEMPORARY);
+        given(plugin3.getState()).willReturn(PluginState.TEMPORARY);
 
         given(pluginAccessor.getPlugin("testPlugin1")).willReturn(plugin1);
         given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);
@@ -184,9 +184,9 @@ public class PluginDependencyManagerTest {
         disabledRequiredPlugins2.add(dependencyInfo3);
         given(plugin2.getRequiredPlugins()).willReturn(disabledRequiredPlugins2);
 
-        given(plugin3.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin3.getState()).willReturn(PluginState.TEMPORARY);
 
-        given(plugin4.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin4.getState()).willReturn(PluginState.TEMPORARY);
 
         given(pluginAccessor.getPlugin("testPlugin3")).willReturn(plugin3);
         given(pluginAccessor.getPlugin("testPlugin4")).willReturn(plugin4);
@@ -219,9 +219,9 @@ public class PluginDependencyManagerTest {
         disabledRequiredPlugins2.add(dependencyInfo3);
         given(plugin2.getRequiredPlugins()).willReturn(disabledRequiredPlugins2);
 
-        given(plugin3.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin3.getState()).willReturn(PluginState.TEMPORARY);
 
-        given(plugin4.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin4.getState()).willReturn(PluginState.TEMPORARY);
 
         given(pluginAccessor.getPlugin("testPlugin3")).willReturn(plugin3);
 
@@ -247,12 +247,12 @@ public class PluginDependencyManagerTest {
         disabledRequiredPlugins.add(dependencyInfo2);
         given(plugin1.getRequiredPlugins()).willReturn(disabledRequiredPlugins);
 
-        given(plugin2.getPluginState()).willReturn(PluginState.DISABLED);
+        given(plugin2.getState()).willReturn(PluginState.DISABLED);
         Set<PluginDependencyInformation> disabledRequiredPlugins2 = new HashSet<PluginDependencyInformation>();
         disabledRequiredPlugins2.add(dependencyInfo3);
         given(plugin2.getRequiredPlugins()).willReturn(disabledRequiredPlugins2);
 
-        given(plugin3.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin3.getState()).willReturn(PluginState.TEMPORARY);
 
         given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);
         given(pluginAccessor.getPlugin("testPlugin3")).willReturn(plugin3);
@@ -277,9 +277,9 @@ public class PluginDependencyManagerTest {
         given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo3));
         given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo4));
 
-        given(plugin2.getPluginState()).willReturn(PluginState.TEMPORARY);
-        given(plugin3.getPluginState()).willReturn(PluginState.TEMPORARY);
-        given(plugin4.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin2.getState()).willReturn(PluginState.TEMPORARY);
+        given(plugin3.getState()).willReturn(PluginState.TEMPORARY);
+        given(plugin4.getState()).willReturn(PluginState.TEMPORARY);
 
         given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);
         given(pluginAccessor.getPlugin("testPlugin3")).willReturn(plugin3);
@@ -341,12 +341,12 @@ public class PluginDependencyManagerTest {
 
         Set<PluginDependencyInformation> disabledRequiredPlugins2 = new HashSet<PluginDependencyInformation>();
         disabledRequiredPlugins2.add(dependencyInfo3);
-        given(plugin2.getPluginState()).willReturn(PluginState.DISABLED);
+        given(plugin2.getState()).willReturn(PluginState.DISABLED);
         given(plugin2.getRequiredPlugins()).willReturn(disabledRequiredPlugins2);
 
         Set<PluginDependencyInformation> disabledRequiredPlugins3 = new HashSet<PluginDependencyInformation>();
         disabledRequiredPlugins3.add(dependencyInfo1);
-        given(plugin3.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin3.getState()).willReturn(PluginState.TEMPORARY);
         given(plugin3.getRequiredPlugins()).willReturn(disabledRequiredPlugins3);
 
         given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);
@@ -372,12 +372,12 @@ public class PluginDependencyManagerTest {
 
         Set<PluginDependencyInformation> disabledRequiredPlugins2 = new HashSet<PluginDependencyInformation>();
         disabledRequiredPlugins2.add(dependencyInfo3);
-        given(plugin2.getPluginState()).willReturn(PluginState.DISABLED);
+        given(plugin2.getState()).willReturn(PluginState.DISABLED);
         given(plugin2.getRequiredPlugins()).willReturn(disabledRequiredPlugins2);
 
         Set<PluginDependencyInformation> disabledRequiredPlugins3 = new HashSet<PluginDependencyInformation>();
         disabledRequiredPlugins3.add(dependencyInfo2);
-        given(plugin3.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin3.getState()).willReturn(PluginState.TEMPORARY);
         given(plugin3.getRequiredPlugins()).willReturn(disabledRequiredPlugins3);
 
         given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);
@@ -402,17 +402,17 @@ public class PluginDependencyManagerTest {
 
         Set<PluginDependencyInformation> disabledRequiredPlugins2 = new HashSet<PluginDependencyInformation>();
         disabledRequiredPlugins2.add(dependencyInfo3);
-        given(plugin2.getPluginState()).willReturn(PluginState.DISABLED);
+        given(plugin2.getState()).willReturn(PluginState.DISABLED);
         given(plugin2.getRequiredPlugins()).willReturn(disabledRequiredPlugins2);
 
         Set<PluginDependencyInformation> disabledRequiredPlugins3 = new HashSet<PluginDependencyInformation>();
         disabledRequiredPlugins3.add(dependencyInfo4);
-        given(plugin3.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin3.getState()).willReturn(PluginState.TEMPORARY);
         given(plugin3.getRequiredPlugins()).willReturn(disabledRequiredPlugins3);
 
         Set<PluginDependencyInformation> disabledRequiredPlugins4 = new HashSet<PluginDependencyInformation>();
         disabledRequiredPlugins4.add(dependencyInfo2);
-        given(plugin4.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin4.getState()).willReturn(PluginState.TEMPORARY);
         given(plugin4.getRequiredPlugins()).willReturn(disabledRequiredPlugins4);
 
         given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);
@@ -447,7 +447,7 @@ public class PluginDependencyManagerTest {
     public void shouldReturnSingleEnabledDependencyForOnePlugin() throws Exception {
         // given
         given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin2.getState()).willReturn(PluginState.ENABLED);
 
         Set<Plugin> plugins = new HashSet<Plugin>();
         plugins.add(plugin1);
@@ -469,13 +469,13 @@ public class PluginDependencyManagerTest {
     public void shouldReturnMultipleEnabledDependencyForOnePlugin() throws Exception {
         // given
         given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin2.getState()).willReturn(PluginState.ENABLED);
 
         given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin3.getState()).willReturn(PluginState.ENABLED);
 
         given(plugin4.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin4.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin4.getState()).willReturn(PluginState.ENABLED);
 
         Set<Plugin> plugins = new HashSet<Plugin>();
         plugins.add(plugin1);
@@ -500,13 +500,13 @@ public class PluginDependencyManagerTest {
     public void shouldReturnEnabledDependenciesForOnePluginWhenSomeAreSatisfied() throws Exception {
         // given
         given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin2.getPluginState()).willReturn(PluginState.DISABLED);
+        given(plugin2.getState()).willReturn(PluginState.DISABLED);
 
         given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin3.getState()).willReturn(PluginState.ENABLED);
 
         given(plugin4.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin4.getPluginState()).willReturn(PluginState.TEMPORARY);
+        given(plugin4.getState()).willReturn(PluginState.TEMPORARY);
 
         Set<Plugin> plugins = new HashSet<Plugin>();
         plugins.add(plugin1);
@@ -529,7 +529,7 @@ public class PluginDependencyManagerTest {
     public void shouldReturnEnabledDependenciesForMultiplePlugins() throws Exception {
         // given
         given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin2.getState()).willReturn(PluginState.ENABLED);
 
         Set<Plugin> plugins = new HashSet<Plugin>();
         plugins.add(plugin1);
@@ -555,13 +555,13 @@ public class PluginDependencyManagerTest {
     public void shouldCheckDependenciesDependenciesAndReturnMultipleDependenciesForDisable() throws Exception {
         // given
         given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin2.getState()).willReturn(PluginState.ENABLED);
 
         given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
-        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin3.getState()).willReturn(PluginState.ENABLED);
 
         given(plugin4.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo3));
-        given(plugin4.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin4.getState()).willReturn(PluginState.ENABLED);
 
         Set<Plugin> plugins = new HashSet<Plugin>();
         plugins.add(plugin1);
@@ -587,13 +587,13 @@ public class PluginDependencyManagerTest {
             throws Exception {
         // given
         given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin2.getState()).willReturn(PluginState.ENABLED);
 
         given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
-        given(plugin3.getPluginState()).willReturn(PluginState.DISABLED);
+        given(plugin3.getState()).willReturn(PluginState.DISABLED);
 
         given(plugin4.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo3));
-        given(plugin4.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin4.getState()).willReturn(PluginState.ENABLED);
 
         Set<Plugin> plugins = new HashSet<Plugin>();
         plugins.add(plugin1);
@@ -616,13 +616,13 @@ public class PluginDependencyManagerTest {
     public void shouldCheckDependenciesDependenciesAndReturnMultipleDependenciesForDisableWhenMultiplePlugins() throws Exception {
         // given
         given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin2.getState()).willReturn(PluginState.ENABLED);
 
         given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
-        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin3.getState()).willReturn(PluginState.ENABLED);
 
         given(plugin4.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo3));
-        given(plugin4.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin4.getState()).willReturn(PluginState.ENABLED);
 
         Set<Plugin> plugins = new HashSet<Plugin>();
         plugins.add(plugin1);
@@ -805,13 +805,13 @@ public class PluginDependencyManagerTest {
             throws Exception {
         // given
         given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin2.getPluginState()).willReturn(PluginState.DISABLED);
+        given(plugin2.getState()).willReturn(PluginState.DISABLED);
 
         given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
-        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin3.getState()).willReturn(PluginState.ENABLED);
 
         given(plugin4.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo3));
-        given(plugin4.getPluginState()).willReturn(PluginState.DISABLED);
+        given(plugin4.getState()).willReturn(PluginState.DISABLED);
 
         Set<Plugin> plugins = new HashSet<Plugin>();
         plugins.add(plugin1);
@@ -847,10 +847,10 @@ public class PluginDependencyManagerTest {
         given(pluginAccessor.getPlugins()).willReturn(plugins);
 
         given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo1));
-        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin2.getState()).willReturn(PluginState.ENABLED);
 
         given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
-        given(plugin3.getPluginState()).willReturn(PluginState.DISABLED);
+        given(plugin3.getState()).willReturn(PluginState.DISABLED);
 
         // when
         PluginDependencyResult result = manager.getDependenciesToUpdate(plugin1, plugin4);
@@ -877,10 +877,10 @@ public class PluginDependencyManagerTest {
         PluginDependencyInformation dependency = new PluginDependencyInformation("testPlugin1", new VersionOfDependency(
                 "[1.0.0,2.0.0]"));
         given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependency));
-        given(plugin2.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin2.getState()).willReturn(PluginState.ENABLED);
 
         given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
-        given(plugin3.getPluginState()).willReturn(PluginState.ENABLED);
+        given(plugin3.getState()).willReturn(PluginState.ENABLED);
 
         given(plugin1.getVersion()).willReturn(new Version("1.1.0"));
         given(plugin4.getVersion()).willReturn(new Version("2.1.0"));
@@ -913,10 +913,10 @@ public class PluginDependencyManagerTest {
         PluginDependencyInformation dependency = new PluginDependencyInformation("testPlugin1", new VersionOfDependency(
                 "[1.0.0,2.0.0]"));
         given(plugin2.getRequiredPlugins()).willReturn(Collections.singleton(dependency));
-        given(plugin2.getPluginState()).willReturn(PluginState.DISABLED);
+        given(plugin2.getState()).willReturn(PluginState.DISABLED);
 
         given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
-        given(plugin3.getPluginState()).willReturn(PluginState.DISABLED);
+        given(plugin3.getState()).willReturn(PluginState.DISABLED);
 
         given(plugin1.getVersion()).willReturn(new Version("1.1.0"));
         given(plugin4.getVersion()).willReturn(new Version("2.1.0"));

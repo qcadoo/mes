@@ -56,21 +56,21 @@ public final class ModelXmlToClassConverterImpl extends AbstractModelXmlConverte
 
             for (Resource resource : resources) {
                 if (resource.isReadable()) {
-                    LOG.info("Getting existing classes from " + resource.getURI().toString());
+                    LOG.info("Getting existing classes from " + resource);
                     existingClasses.putAll(findExistingClasses(resource.getInputStream()));
                 }
             }
 
             for (Resource resource : resources) {
                 if (resource.isReadable()) {
-                    LOG.info("Creating classes from " + resource.getURI().toString());
+                    LOG.info("Creating classes from " + resource);
                     ctClasses.putAll(createClasses(existingClasses, resource.getInputStream()));
                 }
             }
 
             for (Resource resource : resources) {
                 if (resource.isReadable()) {
-                    LOG.info("Defining classes from " + resource.getURI().toString() + " to classes");
+                    LOG.info("Defining classes from " + resource + " to classes");
                     defineClasses(ctClasses, resource.getInputStream());
                 }
             }
@@ -99,12 +99,9 @@ public final class ModelXmlToClassConverterImpl extends AbstractModelXmlConverte
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(stream);
         Map<String, Class<?>> existingClasses = new HashMap<String, Class<?>>();
 
-        String pluginIdentifier = null;
-
         while (reader.hasNext() && reader.next() > 0) {
-            if (isTagStarted(reader, TAG_MODELS)) {
-                pluginIdentifier = getPluginIdentifier(reader);
-            } else if (isTagStarted(reader, TAG_MODEL)) {
+            if (isTagStarted(reader, TAG_MODEL)) {
+                String pluginIdentifier = getPluginIdentifier(reader);
                 String modelName = getStringAttribute(reader, "name");
                 String className = ClassNameUtils.getFullyQualifiedClassName(pluginIdentifier, modelName);
 
@@ -114,6 +111,8 @@ public final class ModelXmlToClassConverterImpl extends AbstractModelXmlConverte
                 } catch (ClassNotFoundException e) {
                     // ignoring
                 }
+
+                break;
             }
         }
 
@@ -127,12 +126,9 @@ public final class ModelXmlToClassConverterImpl extends AbstractModelXmlConverte
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(stream);
         Map<String, CtClass> ctClasses = new HashMap<String, CtClass>();
 
-        String pluginIdentifier = null;
-
         while (reader.hasNext() && reader.next() > 0) {
-            if (isTagStarted(reader, TAG_MODELS)) {
-                pluginIdentifier = getPluginIdentifier(reader);
-            } else if (isTagStarted(reader, TAG_MODEL)) {
+            if (isTagStarted(reader, TAG_MODEL)) {
+                String pluginIdentifier = getPluginIdentifier(reader);
                 String modelName = getStringAttribute(reader, "name");
                 String className = ClassNameUtils.getFullyQualifiedClassName(pluginIdentifier, modelName);
 
@@ -142,6 +138,8 @@ public final class ModelXmlToClassConverterImpl extends AbstractModelXmlConverte
                     LOG.info("Creating class " + className);
                     ctClasses.put(className, classPool.makeClass(className));
                 }
+
+                break;
             }
         }
 
@@ -153,12 +151,9 @@ public final class ModelXmlToClassConverterImpl extends AbstractModelXmlConverte
     private void defineClasses(final Map<String, CtClass> ctClasses, final InputStream stream) throws XMLStreamException {
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(stream);
 
-        String pluginIdentifier = null;
-
         while (reader.hasNext() && reader.next() > 0) {
-            if (isTagStarted(reader, TAG_MODELS)) {
-                pluginIdentifier = getPluginIdentifier(reader);
-            } else if (isTagStarted(reader, TAG_MODEL)) {
+            if (isTagStarted(reader, TAG_MODEL)) {
+                String pluginIdentifier = getPluginIdentifier(reader);
                 String modelName = getStringAttribute(reader, "name");
                 String className = ClassNameUtils.getFullyQualifiedClassName(pluginIdentifier, modelName);
 
@@ -182,13 +177,22 @@ public final class ModelXmlToClassConverterImpl extends AbstractModelXmlConverte
                 break;
             }
 
-            String tag = getTagStarted(reader);
+            if (TAG_FIELDS.equals(getTagStarted(reader))) {
+                while (reader.hasNext() && reader.next() > 0) {
+                    if (isTagEnded(reader, TAG_FIELDS)) {
+                        break;
+                    }
 
-            if (tag == null) {
-                continue;
+                    String tag = getTagStarted(reader);
+
+                    if (tag == null) {
+                        continue;
+                    }
+
+                    parseField(reader, pluginIdentifier, ctClass, tag);
+                }
+                break;
             }
-
-            parseField(reader, pluginIdentifier, ctClass, tag);
         }
 
         // TODO - toString, equals, hashCode
@@ -196,7 +200,7 @@ public final class ModelXmlToClassConverterImpl extends AbstractModelXmlConverte
 
     private void parseField(final XMLStreamReader reader, final String pluginIdentifier, final CtClass ctClass, final String tag)
             throws XMLStreamException {
-        ModelTag modelTag = ModelTag.valueOf(tag.toUpperCase(Locale.ENGLISH));
+        FieldsTag modelTag = FieldsTag.valueOf(tag.toUpperCase(Locale.ENGLISH));
 
         if (!getBooleanAttribute(reader, "persistent", true)) {
             return;

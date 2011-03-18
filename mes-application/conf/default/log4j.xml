@@ -14,6 +14,22 @@
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
 	</appender>
+	<appender name="model-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/model.log" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
+		</layout>
+	</appender>
+	<appender name="plugin-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/plugin.log" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
+		</layout>
+	</appender>
 	<appender name="warn-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/warn.log" />
 		<param name="MaxFileSize" value="100MB" />
@@ -71,6 +87,16 @@
 	</logger>
 	<logger name="com.qcadoo.mes.internal">
 		<level value="error" />
+	</logger>
+	
+	<logger name="com.qcadoo.model">
+		<level value="debug" />
+		<appender-ref ref="model-log" />
+	</logger>
+	
+	<logger name="com.qcadoo.plugin">
+		<level value="debug" />
+		<appender-ref ref="plugin-log" />
 	</logger>
 	
 	<logger name="org.hibernate.SQL" additivity="false">

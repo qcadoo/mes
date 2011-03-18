@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model plugin="other" name="firstEntity" xmlns="http://www.qcadoo.com/model">
+	<fields>
+		<string name="fieldString" />
+	</fields>
+</model>
