@@ -9,10 +9,12 @@
 <tiles:useAttribute name="component" />
 
 <div class="windowContainer">
-	<div class="windowContainerRibbon tabWindowRibbon">
-		<div id="${component['path']}_windowContainerRibbon">
+	<c:if test="${component.jspOptions['hasRibbon']}">
+		<div class="windowContainerRibbon tabWindowRibbon">
+			<div id="${component['path']}_windowContainerRibbon">
+			</div>
 		</div>
-	</div>
+	</c:if>
 	<div class="windowContainerContentBody" id="${component['path']}_windowContainerContentBody">
 		<div id="${component['path']}_windowContainerContentBodyWidthMarker" style=" z-index: 5000;"></div>
 		<div class="windowContent" id="${component['path']}_windowContent">
