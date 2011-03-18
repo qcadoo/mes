@@ -235,54 +235,6 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
         return resultList;
     }
 
-    // public List<Plugin> sortPluginsInDependencyOrder(final Collection<Plugin> plugins) {
-    // List<Plugin> sortedPlugins = new LinkedList<Plugin>();
-    //
-    // for (Plugin plugin : plugins) {
-    // sortedPlugins.add(plugin);
-    // Collection<Plugin> requiredPlugins = getPluginsBasedOnDependencyInfo(plugin.getRequiredPlugins());
-    // for (Plugin requiredPlugin : requiredPlugins) {
-    // Collection<Plugin> dependencyPlugins = getPluginsBasedOnDependencyInfo(requiredPlugin.getRequiredPlugins());
-    // if (!dependencyPlugins.isEmpty()) {
-    // List<Plugin> recursivelySortedList = sortPluginsInDependencyOrder(dependencyPlugins);
-    // sortedPlugins.addAll(recursivelySortedList);
-    // }
-    // }
-    // }
-    //
-    // // TODO MADY: this one could be invoked only once at the very end to boost performance
-    // removeDuplicateWithOrder(sortedPlugins);
-    //
-    // return sortedPlugins;
-    // }
-    //
-    // private void removeDuplicateWithOrder(List<Plugin> list) {
-    //
-    // Collections.reverse(list);
-    //
-    // Set<Plugin> set = new HashSet<Plugin>();
-    // List<Plugin> sortedList = new LinkedList<Plugin>();
-    //
-    // for (Plugin plugin : list) {
-    // if (set.add(plugin)) {
-    // sortedList.add(plugin);
-    // }
-    // }
-    //
-    // list.clear();
-    // list.addAll(sortedList);
-    // }
-    //
-    // private Collection<Plugin> getPluginsBasedOnDependencyInfo(Set<PluginDependencyInformation> requiredPlugins) {
-    // List<Plugin> plugins = new ArrayList<Plugin>();
-    //
-    // for (PluginDependencyInformation dependencyInfo : requiredPlugins) {
-    // plugins.add(pluginAccessor.getPlugin(dependencyInfo.getKey()));
-    // }
-    //
-    // return plugins;
-    // }
-
     private Set<String> getArgumentIdentifiersSet(final List<Plugin> plugins) {
         Set<String> argumentPluginInformationsSet = new HashSet<String>();
         for (PersistentPlugin plugin : plugins) {
