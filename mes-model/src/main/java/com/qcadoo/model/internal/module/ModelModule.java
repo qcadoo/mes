@@ -21,8 +21,8 @@ public class ModelModule implements Module {
 
     @Override
     public void init(final PluginState state) {
-        if (PluginState.ENABLED.equals(state)) {
-            enable();
+        if (!PluginState.ENABLED.equals(state)) {
+            disable();
         }
     }
 

@@ -24,16 +24,10 @@
 
 package com.qcadoo.model.internal.api;
 
-import java.util.List;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 
 public interface InternalDataDefinitionService extends DataDefinitionService {
-
-    DataDefinition getAll(String pluginIdentifier, String modelName);
-
-    List<DataDefinition> listAll();
 
     void save(DataDefinition dataDefinition);
 

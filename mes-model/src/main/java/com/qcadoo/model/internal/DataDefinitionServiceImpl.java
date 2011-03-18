@@ -47,7 +47,7 @@ public final class DataDefinitionServiceImpl implements InternalDataDefinitionSe
     @Override
     @Monitorable
     public DataDefinition get(final String pluginIdentifier, final String modelName) {
-        DataDefinition dataDefinition = dataDefinitions.get(pluginIdentifier + "." + modelName);
+        DataDefinition dataDefinition = enabledDataDefinitions.get(pluginIdentifier + "." + modelName);
         checkNotNull(dataDefinition, "data definition for %s#%s cannot be found", pluginIdentifier, modelName);
         return dataDefinition;
     }
@@ -55,28 +55,17 @@ public final class DataDefinitionServiceImpl implements InternalDataDefinitionSe
     @Override
     @Monitorable
     public List<DataDefinition> list() {
-        return new ArrayList<DataDefinition>(dataDefinitions.values());
+        return new ArrayList<DataDefinition>(enabledDataDefinitions.values());
     }
 
     @Override
     @Monitorable
     public void save(final DataDefinition dataDefinition) {
-        dataDefinitions.put(dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName(), dataDefinition);
-        if (enabledDataDefinitions.containsKey(dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName())) {
-            enabledDataDefinitions.put(dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName(), dataDefinition);
+        String name = dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName();
+        if (!dataDefinitions.containsKey(name) || enabledDataDefinitions.containsKey(name)) {
+            enabledDataDefinitions.put(name, dataDefinition);
         }
-    }
-
-    @Override
-    public DataDefinition getAll(final String pluginIdentifier, final String modelName) {
-        DataDefinition dataDefinition = dataDefinitions.get(pluginIdentifier + "." + modelName);
-        checkNotNull(dataDefinition, "data definition for %s#%s cannot be found", pluginIdentifier, modelName);
-        return dataDefinition;
-    }
-
-    @Override
-    public List<DataDefinition> listAll() {
-        return new ArrayList<DataDefinition>(dataDefinitions.values());
+        dataDefinitions.put(name, dataDefinition);
     }
 
     @Override
