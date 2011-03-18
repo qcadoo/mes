@@ -92,7 +92,7 @@ public class PluginManagmentPerformer {
                                 .getPluginDependencyResult().getDependenciesToEnable(), pluginIdentifiers);
                 break;
             case CANNOT_INSTALL_PLUGIN_FILE:
-                url = createErrorPageUrl("cannotInstall");
+                url = createErrorPageUrl("enable.cannotInstall");
                 break;
             default:
                 throw new IllegalStateException("Wrong status");

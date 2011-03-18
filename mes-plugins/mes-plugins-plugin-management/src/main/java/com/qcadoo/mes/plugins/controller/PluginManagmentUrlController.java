@@ -21,7 +21,7 @@ import com.qcadoo.plugin.internal.api.PluginArtifact;
 import com.qcadoo.plugin.internal.artifact.InputStreamPluginArtifact;
 
 @Controller
-public class PluginManagementUrlController {
+public class PluginManagmentUrlController {
 
     @Autowired
     private PluginManagmentPerformer pluginManagmentPerformer;
