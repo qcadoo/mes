@@ -24,10 +24,12 @@ public class ViewModuleFactory implements ModuleFactory<ViewModule> {
     public void init() {
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public ViewModule parse(final String pluginIdentifier, final Element element) {
         List<Resource> xmlFiles = new ArrayList<Resource>();
-        for (Element resourceElement : element.getChildren()) {
+
+        for (Element resourceElement : (List<Element>) element.getChildren("resource")) {
             String resource = resourceElement.getText();
             if (resource == null) {
                 throw new IllegalStateException("Missing resource element of view module");
