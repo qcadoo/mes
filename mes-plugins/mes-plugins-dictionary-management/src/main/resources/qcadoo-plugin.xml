@@ -12,6 +12,10 @@
 	<modules>
 		<model:model name="dictionary" resource="dictionaries/model/dictionary.xml" />
 		<model:model name="dictionaryItem" resource="dictionaries/model/dictionaryItem.xml" />
+		
+		<view:view>
+			<resource value="dictionaries/view/dictionaries.xml"/>
+		</view:view>
 	</modules>
 
 </plugin>

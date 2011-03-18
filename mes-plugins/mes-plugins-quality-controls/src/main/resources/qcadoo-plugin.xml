@@ -22,6 +22,11 @@
 	
 	<modules>
 		<model:model name="qualityControl" resource="qualityControls/model/qualityControl.xml"/>
+		
+		<view:view>
+			<resource value="qualityControls/view/qualityControls.xml"/>
+			<resource value="qualityControls/view/qualityControlsTest.xml"/>
+		</view:view>
 	</modules>
 
 </plugin>

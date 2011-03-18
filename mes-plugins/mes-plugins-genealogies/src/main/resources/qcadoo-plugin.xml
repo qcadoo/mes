@@ -28,6 +28,11 @@
 		<model:model name="otherFeature" resource="genealogies/model/otherFeature.xml"/>
 		<model:model name="postFeature" resource="genealogies/model/postFeature.xml"/>
 		<model:model name="shiftFeature" resource="genealogies/model/shiftFeature.xml"/>
+		
+		<view:view>
+			<resource value="genealogies/view/genealogies.xml"/>
+			<resource value="genealogies/view/orderGenealogies.xml"/>
+		</view:view>
 	</modules>
 
 </plugin>

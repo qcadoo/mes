@@ -12,6 +12,10 @@
 	<modules>
 		<model:model name="user" resource="users/model/user.xml"/>
 		<model:model name="group" resource="users/model/group.xml"/>
+		
+		<view:view>
+			<resource value="users/view/users.xml"/>
+		</view:view>
 	</modules>
 
 </plugin>

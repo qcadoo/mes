@@ -24,6 +24,9 @@
 
 package com.qcadoo.mes.view.xml;
 
+import java.util.List;
+
+import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
 
 import com.qcadoo.mes.view.ComponentDefinition;
@@ -49,8 +52,10 @@ public interface ViewDefinitionParser {
 
     Boolean getBooleanAttribute(Node node, String name, boolean defaultValue);
 
-    ViewDefinition parseViewDefinition(Node node, String pluginIdentifier, String name);
+    // ViewDefinition parseViewDefinition(Node node, String pluginIdentifier, String name);
 
-    void init();
+    // void init();
+
+    List<ViewDefinition> parseViewXml(final Resource viewXml);
 
 }

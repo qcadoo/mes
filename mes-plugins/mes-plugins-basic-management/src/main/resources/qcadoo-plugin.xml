@@ -17,6 +17,10 @@
 		<model:dictionary name="shifts" />
 		<model:dictionary name="posts" />
 		<model:dictionary name="units" />
+		
+		<view:view>
+			<resource value="basic/view/basic.xml"/>
+		</view:view>
 	</modules>
 
 </plugin>

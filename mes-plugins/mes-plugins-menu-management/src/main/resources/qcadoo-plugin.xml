@@ -13,6 +13,10 @@
 		<model:model name="menuCategory" resource="menu/model/menuCategory.xml" />
 		<model:model name="menuViewDefinitionItem" resource="menu/model/menuViewDefinitionItem.xml" />
 		<model:model name="viewDefinition" resource="menu/model/viewDefinition.xml" />
+		
+		<view:view>
+			<resource value="menu/view/menu.xml"/>
+		</view:view>
 	</modules>
 
 </plugin>

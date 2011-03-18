@@ -30,6 +30,15 @@
 		<model:model name="technologyOperationComponent" resource="products/model/technologyOperationComponent.xml"/>
 		<model:model name="workPlan" resource="products/model/workPlan.xml"/>
 		<model:model name="workPlanComponent" resource="products/model/workPlanComponent.xml"/>
+		
+		<view:view>
+			<resource value="products/view/materialRequirements.xml"/>
+			<resource value="products/view/orders.xml"/>
+			<resource value="products/view/products.xml"/>
+			<resource value="products/view/tabWindowTest.xml"/>
+			<resource value="products/view/technologies.xml"/>
+			<resource value="products/view/workPlans.xml"/>
+		</view:view>
 	</modules>
 
 </plugin>

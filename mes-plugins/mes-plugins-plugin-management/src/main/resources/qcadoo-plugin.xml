@@ -11,6 +11,10 @@
 	
 	<modules>
 		<model:model name="plugin" resource="plugins/model/plugin.xml"/>
+		
+		<view:view>
+			<resource value="plugins/view/plugins.xml"/>
+		</view:view>
 	</modules>
 
 </plugin>
