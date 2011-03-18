@@ -1,7 +1,7 @@
 package com.qcadoo.mes.view.internal.module;
 
+import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.w3c.dom.Node;
 
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 import com.qcadoo.plugin.internal.api.ModuleFactory;
@@ -12,12 +12,12 @@ public class ViewModuleFactory implements ModuleFactory<ViewModule> {
     private ViewDefinitionParser viewDefinitionParser;
 
     @Override
-    public void postInitialize() {
+    public void init() {
         viewDefinitionParser.init();
     }
 
     @Override
-    public ViewModule parse(final String pluginIdentifier, final Node node) {
+    public ViewModule parse(final String pluginIdentifier, final Element element) {
         // TODO Auto-generated method stub
         return new ViewModule();
     }

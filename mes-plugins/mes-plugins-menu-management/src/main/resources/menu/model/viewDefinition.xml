@@ -26,9 +26,12 @@
 -->
 
 <model name="viewDefinition" xmlns="http://www.qcadoo.com/model">
-	<string name="menuName" required="true" />
-	<string name="viewName" required="true" />
-	<string name="pluginIdentifier" required="true" />
-	<boolean name="url"/>
-	<hasMany name="menuViewDefinitionItems" model="menuViewDefinitionItem" joinField="viewDefinition" cascade="delete" />
+	<fields>
+		<string name="menuName" required="true" />
+		<string name="viewName" required="true" />
+		<string name="pluginIdentifier" required="true" />
+		<boolean name="url"/>
+		<hasMany name="menuViewDefinitionItems" model="menuViewDefinitionItem" joinField="viewDefinition" cascade="delete" />
+	</fields>
+	<hooks />
 </model>

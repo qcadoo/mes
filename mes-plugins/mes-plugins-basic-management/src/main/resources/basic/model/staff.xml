@@ -26,15 +26,18 @@
 -->
 
 <model name="staff" deletable="true" xmlns="http://www.qcadoo.com/model">
-	<string name="number" required="true" unique="true">
-		<validatesLength max="255"/>
-	</string>
-	<string name="name" required="true">
-		<validatesLength max="255"/>
-	</string>
-	<string name="surname" required="true">
-		<validatesLength max="255"/>
-	</string>
-	<string name="post"/>
+	<fields>
+		<string name="number" required="true" unique="true">
+			<validatesLength max="255"/>
+		</string>
+		<string name="name" required="true">
+			<validatesLength max="255"/>
+		</string>
+		<string name="surname" required="true">
+			<validatesLength max="255"/>
+		</string>
+		<string name="post"/>
+	</fields>
+	<hooks />
 	<identifier expression="#number + ' - ' + #name"/>
 </model>

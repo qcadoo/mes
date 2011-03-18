@@ -26,8 +26,11 @@
 -->
 
 <model name="group"  xmlns="http://www.qcadoo.com/model">
-	<string name="name" required="true" unique="true" />
-	<string name="description" />
-	<string name="role" required="true" />
+	<fields>
+		<string name="name" required="true" unique="true" />
+		<string name="description" />
+		<string name="role" required="true" />
+	</fields>
+	<hooks />
 	<identifier expression="#name"/>
 </model>

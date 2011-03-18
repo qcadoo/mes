@@ -26,40 +26,43 @@
 -->
 
 <model name="order" xmlns="http://www.qcadoo.com/model">
-	<string name="number" required="true" unique="true">
-		<validatesLength max="40" />
-		<validatesRegex pattern="^[a-zA-Z0-9\\_\\.\\(\\)]+$" />
-	</string>
-	<string name="name" required="true" />
-	<date name="dateFrom" required="true" />
-	<date name="dateTo" required="true" />
-	<enum name="state" values="01pending,02inProgress,03done" required="true" />
-	<belongsTo name="product" model="product" />
-	<string name="defaultTechnology" persistent="false" />
-	<belongsTo name="technology" model="technology" />
-	<decimal name="plannedQuantity">
-		<validatesRange from="0" exclusively="true" />
-		<validatesPrecision max="8" />
-		<validatesScale max="3" />
-	</decimal>
-	<decimal name="doneQuantity">
-		<validatesRange from="0" exclusively="true" />
-		<validatesPrecision max="8" />
-		<validatesScale max="3" />
-	</decimal>
-	<date name="effectiveDateFrom" readonly="true" />
-	<date name="effectiveDateTo" readonly="true" />
-	<string name="startWorker" readonly="true" />
-	<string name="endWorker" readonly="true" />
-	<hasMany name="materialRequirements" model="materialRequirementComponent" joinField="order" cascade="none" />
-	<hasMany name="workPlans" model="workPlanComponent" joinField="order" cascade="none" />
-	<hasMany name="genealogies" plugin="genealogies" model="genealogy" joinField="order" cascade="delete"/>
-	<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkOrderDates" />
-	<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkOrderPlannedQuantity" />
-	<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkOrderTechnology" />
-	<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
-	<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfTechnologyIsNotRemoved" />
-	<onCopy class="com.qcadoo.mes.products.OrderService" method="fillOrderDatesAndWorkers" />
-	<onCopy class="com.qcadoo.mes.products.OrderService" method="clearOrderDatesAndWorkersOnCopy" />
+	<fields>
+		<string name="number" required="true" unique="true">
+			<validatesLength max="40" />
+			<validatesRegex pattern="^[a-zA-Z0-9\\_\\.\\(\\)]+$" />
+		</string>
+		<string name="name" required="true" />
+		<date name="dateFrom" required="true" />
+		<date name="dateTo" required="true" />
+		<enum name="state" values="01pending,02inProgress,03done" required="true" />
+		<belongsTo name="product" model="product" />
+		<string name="defaultTechnology" persistent="false" />
+		<belongsTo name="technology" model="technology" />
+		<decimal name="plannedQuantity">
+			<validatesRange from="0" exclusively="true" />
+			<validatesPrecision max="8" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="doneQuantity">
+			<validatesRange from="0" exclusively="true" />
+			<validatesPrecision max="8" />
+			<validatesScale max="3" />
+		</decimal>
+		<date name="effectiveDateFrom" readonly="true" />
+		<date name="effectiveDateTo" readonly="true" />
+		<string name="startWorker" readonly="true" />
+		<string name="endWorker" readonly="true" />
+		<hasMany name="materialRequirements" model="materialRequirementComponent" joinField="order" cascade="none" />
+		<hasMany name="workPlans" model="workPlanComponent" joinField="order" cascade="none" />
+	</fields>
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkOrderDates" />
+		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkOrderPlannedQuantity" />
+		<validatesWith class="com.qcadoo.mes.products.OrderService" method="checkOrderTechnology" />
+		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
+		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfTechnologyIsNotRemoved" />
+		<onCopy class="com.qcadoo.mes.products.OrderService" method="fillOrderDatesAndWorkers" />
+		<onCopy class="com.qcadoo.mes.products.OrderService" method="clearOrderDatesAndWorkersOnCopy" />
+	</hooks>
 	<identifier expression="#number + ' - ' + #name"/>
 </model>

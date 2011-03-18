@@ -10,8 +10,8 @@
 	</information>
 	
 	<modules>
-		<model:model name="dictionary" resource="dictionaries/model/dictionary.xml" />
-		<model:model name="dictionaryItem" resource="dictionaries/model/dictionaryItem.xml" />
+		<model:model model="dictionary" resource="dictionaries/model/dictionary.xml" />
+		<model:model model="dictionaryItem" resource="dictionaries/model/dictionaryItem.xml" />
 	</modules>
 
 </plugin>

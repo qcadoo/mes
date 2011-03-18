@@ -26,12 +26,16 @@
 -->
 
 <model name="otherFeature" xmlns="http://www.qcadoo.com/model">
-	<string name="value" required="true">
-		<validatesLength max="255" />
-	</string>
-	<date name="date" readonly="true" />
-	<string name="worker" readonly="true" />
-	<string name="workerAndDate" expression="#worker + ' (' + #date + ')'" default="-" />
-	<belongsTo name="genealogy" model="genealogy" />
-	<onSave class="com.qcadoo.mes.genealogies.AutoGenealogyService" method="fillLastUsedOtherFeature" />
+	<fields>
+		<string name="value" required="true">
+			<validatesLength max="255" />
+		</string>
+		<date name="date" readonly="true" />
+		<string name="worker" readonly="true" />
+		<string name="workerAndDate" expression="#worker + ' (' + #date + ')'" default="-" />
+		<belongsTo name="genealogy" model="genealogy" />
+	</fields>
+	<hooks>
+		<onSave class="com.qcadoo.mes.genealogies.AutoGenealogyService" method="fillLastUsedOtherFeature" />
+	</hooks>
 </model>

@@ -53,7 +53,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.localization.TranslationService;
@@ -69,6 +68,7 @@ import com.qcadoo.model.internal.api.DataAccessService;
 import com.qcadoo.model.internal.api.EntityHookDefinition;
 import com.qcadoo.model.internal.api.ErrorMessageDefinition;
 import com.qcadoo.model.internal.api.FieldHookDefinition;
+import com.qcadoo.model.internal.api.InternalDataDefinitionService;
 import com.qcadoo.model.internal.api.ModelXmlToDefinitionConverter;
 import com.qcadoo.model.internal.hooks.EntityHookDefinitionImpl;
 import com.qcadoo.model.internal.hooks.FieldHookDefinitionImpl;
@@ -109,7 +109,7 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
     private DictionaryService dictionaryService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private InternalDataDefinitionService dataDefinitionService;
 
     @Autowired
     private DataAccessService dataAccessService;
@@ -176,13 +176,45 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
                 break;
             }
 
+            if (TAG_FIELDS.equals(getTagStarted(reader))) {
+                while (reader.hasNext() && reader.next() > 0) {
+                    if (isTagEnded(reader, TAG_FIELDS)) {
+                        break;
+                    }
+
+                    String tag = getTagStarted(reader);
+
+                    if (tag == null) {
+                        continue;
+                    }
+
+                    addFieldElement(reader, pluginIdentifier, dataDefinition, tag);
+                }
+            }
+
+            if (TAG_HOOKS.equals(getTagStarted(reader))) {
+                while (reader.hasNext() && reader.next() > 0) {
+                    if (isTagEnded(reader, TAG_HOOKS)) {
+                        break;
+                    }
+
+                    String tag = getTagStarted(reader);
+
+                    if (tag == null) {
+                        continue;
+                    }
+
+                    addHookElement(reader, pluginIdentifier, dataDefinition, tag);
+                }
+            }
+
             String tag = getTagStarted(reader);
 
             if (tag == null) {
                 continue;
             }
 
-            addModelElement(reader, pluginIdentifier, dataDefinition, tag);
+            addOtherElement(reader, pluginIdentifier, dataDefinition, tag);
         }
 
         for (EntityHookDefinition hook : dataDefinition.getViewHooks()) {
@@ -220,14 +252,11 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
         return dataDefinition;
     }
 
-    private void addModelElement(final XMLStreamReader reader, final String pluginIdentifier,
+    private void addHookElement(final XMLStreamReader reader, final String pluginIdentifier,
             final DataDefinitionImpl dataDefinition, final String tag) throws XMLStreamException {
-        ModelTag modelTag = ModelTag.valueOf(tag.toUpperCase(Locale.ENGLISH));
+        HooksTag hooksTag = HooksTag.valueOf(tag.toUpperCase(Locale.ENGLISH));
 
-        switch (modelTag) {
-            case PRIORITY:
-                dataDefinition.addPriorityField(getPriorityFieldDefinition(reader, dataDefinition));
-                break;
+        switch (hooksTag) {
             case ONVIEW:
                 dataDefinition.addViewHook(getHookDefinition(reader));
                 break;
@@ -246,11 +275,34 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
             case VALIDATESWITH:
                 dataDefinition.addValidatorHook(new CustomEntityValidator(getHookDefinition(reader)));
                 break;
+            default:
+                break;
+        }
+    }
+
+    private void addOtherElement(final XMLStreamReader reader, final String pluginIdentifier,
+            final DataDefinitionImpl dataDefinition, final String tag) throws XMLStreamException {
+        OtherTag otherTag = OtherTag.valueOf(tag.toUpperCase(Locale.ENGLISH));
+
+        switch (otherTag) {
             case IDENTIFIER:
                 dataDefinition.setIdentifierExpression(getIdentifierExpression(reader));
                 break;
             default:
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier, dataDefinition, modelTag));
+                break;
+        }
+    }
+
+    private void addFieldElement(final XMLStreamReader reader, final String pluginIdentifier,
+            final DataDefinitionImpl dataDefinition, final String tag) throws XMLStreamException {
+        FieldsTag fieldTag = FieldsTag.valueOf(tag.toUpperCase(Locale.ENGLISH));
+
+        switch (fieldTag) {
+            case PRIORITY:
+                dataDefinition.addPriorityField(getPriorityFieldDefinition(reader, dataDefinition));
+                break;
+            default:
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier, dataDefinition, fieldTag));
                 break;
         }
     }
@@ -309,7 +361,7 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
     }
 
     private FieldDefinition getFieldDefinition(final XMLStreamReader reader, final String pluginIdentifier,
-            final DataDefinitionImpl dataDefinition, final ModelTag modelTag) throws XMLStreamException {
+            final DataDefinitionImpl dataDefinition, final FieldsTag fieldTag) throws XMLStreamException {
         String fieldType = reader.getLocalName();
         String name = getStringAttribute(reader, "name");
         FieldDefinitionImpl fieldDefinition = new FieldDefinitionImpl(dataDefinition, name);
@@ -317,7 +369,7 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
         fieldDefinition.withDefaultValue(getStringAttribute(reader, "default"));
         fieldDefinition.setPersistent(getBooleanAttribute(reader, "persistent", true));
         fieldDefinition.setExpression(getStringAttribute(reader, "expression"));
-        FieldType type = getFieldType(reader, dataDefinition, name, modelTag, fieldType);
+        FieldType type = getFieldType(reader, dataDefinition, name, fieldTag, fieldType);
         fieldDefinition.withType(type);
 
         if (getBooleanAttribute(reader, "required", false)) {
@@ -383,8 +435,8 @@ public final class ModelXmlToDefinitionConverterImpl extends AbstractModelXmlCon
     }
 
     private FieldType getFieldType(final XMLStreamReader reader, final DataDefinition dataDefinition, final String fieldName,
-            final ModelTag modelTag, final String fieldType) throws XMLStreamException {
-        switch (modelTag) {
+            final FieldsTag fieldTag, final String fieldType) throws XMLStreamException {
+        switch (fieldTag) {
             case INTEGER:
                 return new IntegerType();
             case STRING:

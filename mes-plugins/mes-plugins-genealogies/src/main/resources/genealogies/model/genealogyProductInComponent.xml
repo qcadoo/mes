@@ -26,7 +26,10 @@
 -->
 
 <model name="genealogyProductInComponent" xmlns="http://www.qcadoo.com/model">
-	<belongsTo name="genealogy" model="genealogy" />
-	<belongsTo name="productInComponent" plugin="products" model="operationProductInComponent" />
-	<hasMany name="batch" model="productInBatch" joinField="productInComponent" cascade="delete" copyable="true" required="true" />
+	<fields>
+		<belongsTo name="genealogy" model="genealogy" />
+		<belongsTo name="productInComponent" plugin="products" model="operationProductInComponent" />
+		<hasMany name="batch" model="productInBatch" joinField="productInComponent" cascade="delete" copyable="true" required="true" />
+	</fields>
+	<hooks />
 </model>

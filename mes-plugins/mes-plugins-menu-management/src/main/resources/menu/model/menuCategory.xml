@@ -26,9 +26,12 @@
 -->
 
 <model name="menuCategory" xmlns="http://www.qcadoo.com/model">
-	<string name="name" required="true" unique="true" />
-	<boolean name="active" readonly="false" default="true" required="true" />
-	<string name="translationName" />
-	<hasMany name="viewDefinitionItems" model="menuViewDefinitionItem" joinField="menuCategory" cascade="delete" />
-	<priority name="categoryOrder" />
+	<fields>
+		<string name="name" required="true" unique="true" />
+		<boolean name="active" readonly="false" default="true" required="true" />
+		<string name="translationName" />
+		<hasMany name="viewDefinitionItems" model="menuViewDefinitionItem" joinField="menuCategory" cascade="delete" />
+		<priority name="categoryOrder" />
+	</fields>
+	<hooks />
 </model>
