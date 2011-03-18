@@ -5,15 +5,15 @@ import javax.xml.stream.XMLStreamReader;
 
 public abstract class AbstractModelXmlConverter {
 
-    protected static enum FieldsTag {
+    public static enum FieldsTag {
         PRIORITY, INTEGER, STRING, TEXT, DECIMAL, DATETIME, DATE, BOOLEAN, BELONGSTO, HASMANY, TREE, ENUM, DICTIONARY, PASSWORD
     }
 
-    protected static enum HooksTag {
+    public static enum HooksTag {
         ONVIEW, ONCREATE, ONUPDATE, ONSAVE, ONCOPY, VALIDATESWITH
     }
 
-    protected static enum OtherTag {
+    public static enum OtherTag {
         IDENTIFIER
     }
 

@@ -40,10 +40,6 @@ public abstract class IntegrationTest {
         dataDefinitionService = applicationContext.getBean(InternalDataDefinitionService.class);
         sessionFactory = applicationContext.getBean("sessionFactory", SessionFactory.class);
         jdbcTemplate = applicationContext.getBean(JdbcTemplate.class);
-
-        dataDefinitionService.enable("products", "product");
-        dataDefinitionService.enable("products", "component");
-        dataDefinitionService.enable("products", "machine");
     }
 
     @Before

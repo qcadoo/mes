@@ -118,6 +118,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
             final Set<Entity> alreadySavedEntities, final Set<Entity> newlySavedEntities) {
 
         checkNotNull(dataDefinition, "DataDefinition must be given");
+        checkState(dataDefinition.isEnabled(), "DataDefinition belongs to disabled plugin");
         checkNotNull(genericEntity, "Entity must be given");
 
         if (alreadySavedEntities.contains(genericEntity)) {
@@ -428,6 +429,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Monitorable
     public Entity get(final InternalDataDefinition dataDefinition, final Long entityId) {
         checkNotNull(dataDefinition, "DataDefinition must be given");
+        checkState(dataDefinition.isEnabled(), "DataDefinition belongs to disabled plugin");
         checkNotNull(entityId, "EntityId must be given");
 
         Object databaseEntity = getDatabaseEntity(dataDefinition, entityId);
@@ -452,6 +454,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     public void delete(final InternalDataDefinition dataDefinition, final Long... entityIds) {
         checkNotNull(dataDefinition, "DataDefinition must be given");
         checkState(dataDefinition.isDeletable(), "Entity must be deletable");
+        checkState(dataDefinition.isEnabled(), "DataDefinition belongs to disabled plugin");
         checkState(entityIds.length > 0, "EntityIds must be given");
 
         for (Long entityId : entityIds) {
@@ -466,6 +469,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
         checkArgument(searchCriteria != null, "SearchCriteria must be given");
 
         InternalDataDefinition dataDefinition = (InternalDataDefinition) searchCriteria.getDataDefinition();
+
+        checkState(dataDefinition.isEnabled(), "DataDefinition belongs to disabled plugin");
 
         int totalNumberOfEntities = getTotalNumberOfEntities(getCriteria(searchCriteria));
 
@@ -526,6 +531,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     public void moveTo(final InternalDataDefinition dataDefinition, final Long entityId, final int position) {
         checkNotNull(dataDefinition, "DataDefinition must be given");
         checkState(dataDefinition.isPrioritizable(), "Entity must be prioritizable");
+        checkState(dataDefinition.isEnabled(), "DataDefinition belongs to disabled plugin");
         checkNotNull(entityId, "EntityId must be given");
         checkState(position > 0, "Position must be greaten than 0");
 
@@ -549,6 +555,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     public void move(final InternalDataDefinition dataDefinition, final Long entityId, final int offset) {
         checkNotNull(dataDefinition, "DataDefinition must be given");
         checkState(dataDefinition.isPrioritizable(), "Entity must be prioritizable");
+        checkState(dataDefinition.isEnabled(), "DataDefinition belongs to disabled plugin");
         checkNotNull(entityId, "EntityId must be given");
         checkState(offset != 0, "Offset must be different than 0");
 
