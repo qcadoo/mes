@@ -8,7 +8,6 @@
 	<modules>
 		<model:model model="product" resource="model/integration/product.xml" />
 		<model:model model="component" resource="model/integration/component.xml" />
-		<model:model model="machine" resource="model/integration/machine.xml" />
 	</modules>
 	
 </plugin>

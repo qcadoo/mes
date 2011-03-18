@@ -96,8 +96,7 @@ public final class DefaultPluginAccessor implements PluginAccessor {
             if (existingPlugin != null) {
                 plugin.changeStateTo(PluginState.valueOf(existingPlugin.getState()));
             } else {
-                plugin.changeStateTo(PluginState.DISABLED);
-                plugin.changeStateTo(PluginState.ENABLED);
+                plugin.changeStateTo(PluginState.ENABLING);
             }
 
             if (existingPlugin == null || plugin.compareVersion(new Version(existingPlugin.getVersion())) > 0) {

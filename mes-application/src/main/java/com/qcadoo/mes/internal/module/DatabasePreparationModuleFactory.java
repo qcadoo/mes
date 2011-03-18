@@ -25,6 +25,7 @@
 package com.qcadoo.mes.internal.module;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -211,8 +212,12 @@ public final class DatabasePreparationModuleFactory implements ModuleFactory<Mod
     }
 
     private Entity getMenuViewDefinition(final String name) {
-        return dataDefinitionService.get("menu", "viewDefinition").find().restrictedWith(Restrictions.eq("menuName", name))
-                .withMaxResults(1).list().getEntities().get(0);
+        List<Entity> menuList = dataDefinitionService.get("menu", "viewDefinition").find()
+                .restrictedWith(Restrictions.eq("menuName", name)).withMaxResults(1).list().getEntities();
+        if (menuList.isEmpty()) {
+            return null;
+        }
+        return menuList.get(0);
     }
 
     private Entity addMenuCategory(final String name, final String translation, final int order) {

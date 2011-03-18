@@ -495,7 +495,6 @@ public class GenealogyServiceTest {
 
     private Entity craeteOperationProductInComponent(final Long id, final boolean batchRequired) {
         Entity operationProductInComponent = new DefaultEntity(null, id);
-        System.out.println(operationProductInComponent);
         operationProductInComponent.setField("batchRequired", batchRequired);
         return operationProductInComponent;
     }

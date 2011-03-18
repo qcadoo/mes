@@ -40,14 +40,12 @@ import com.qcadoo.model.internal.api.InternalDataDefinitionService;
 @Service
 public final class DataDefinitionServiceImpl implements InternalDataDefinitionService {
 
-    private final Map<String, DataDefinition> enabledDataDefinitions = new HashMap<String, DataDefinition>();
-
     private final Map<String, DataDefinition> dataDefinitions = new HashMap<String, DataDefinition>();
 
     @Override
     @Monitorable
     public DataDefinition get(final String pluginIdentifier, final String modelName) {
-        DataDefinition dataDefinition = enabledDataDefinitions.get(pluginIdentifier + "." + modelName);
+        DataDefinition dataDefinition = dataDefinitions.get(pluginIdentifier + "." + modelName);
         checkNotNull(dataDefinition, "data definition for %s#%s cannot be found", pluginIdentifier, modelName);
         return dataDefinition;
     }
@@ -55,30 +53,14 @@ public final class DataDefinitionServiceImpl implements InternalDataDefinitionSe
     @Override
     @Monitorable
     public List<DataDefinition> list() {
-        return new ArrayList<DataDefinition>(enabledDataDefinitions.values());
+        return new ArrayList<DataDefinition>(dataDefinitions.values());
     }
 
     @Override
     @Monitorable
     public void save(final DataDefinition dataDefinition) {
-        String name = dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName();
-        if (!dataDefinitions.containsKey(name) || enabledDataDefinitions.containsKey(name)) {
-            enabledDataDefinitions.put(name, dataDefinition);
-        }
-        dataDefinitions.put(name, dataDefinition);
+        System.out.println("  ------ " + dataDefinition.getPluginIdentifier() + "#" + dataDefinition.getName() + " - "
+                + dataDefinition);
+        dataDefinitions.put(dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName(), dataDefinition);
     }
-
-    @Override
-    public void disable(final String pluginIdentifier, final String modelName) {
-        enabledDataDefinitions.remove(pluginIdentifier + "." + modelName);
-    }
-
-    @Override
-    public void enable(final String pluginIdentifier, final String modelName) {
-        if (dataDefinitions.containsKey(pluginIdentifier + "." + modelName)) {
-            enabledDataDefinitions.put(pluginIdentifier + "." + modelName,
-                    dataDefinitions.get(pluginIdentifier + "." + modelName));
-        }
-    }
-
 }

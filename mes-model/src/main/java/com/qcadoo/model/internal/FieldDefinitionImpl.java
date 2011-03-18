@@ -62,6 +62,8 @@ public final class FieldDefinitionImpl implements InternalFieldDefinition {
 
     private String expression;
 
+    private boolean enabled = true;
+
     public FieldDefinitionImpl(final DataDefinition dataDefinition, final String name) {
         this.dataDefinition = dataDefinition;
         this.name = name;
@@ -91,7 +93,6 @@ public final class FieldDefinitionImpl implements InternalFieldDefinition {
         return this;
     }
 
-    @Override
     public List<FieldHookDefinition> getValidators() {
         return validators;
     }
@@ -197,6 +198,21 @@ public final class FieldDefinitionImpl implements InternalFieldDefinition {
     @Override
     public String toString() {
         return "FieldDefinition: " + name;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void enable() {
+        enabled = true;
+    }
+
+    @Override
+    public void disable() {
+        enabled = false;
     }
 
 }

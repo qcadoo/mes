@@ -149,8 +149,7 @@ public class PluginAccessorTest {
         verify(plugin1).changeStateTo(PluginState.DISABLED);
         verify(plugin22).changeStateTo(PluginState.ENABLED);
         verify(plugin3).changeStateTo(PluginState.ENABLED);
-        verify(plugin4).changeStateTo(PluginState.DISABLED);
-        verify(plugin4).changeStateTo(PluginState.ENABLED);
+        verify(plugin4).changeStateTo(PluginState.ENABLING);
 
         assertThat(pluginAccessor.getPlugins(), hasItems(plugin1, plugin22, plugin3, plugin4));
 

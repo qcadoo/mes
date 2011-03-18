@@ -53,7 +53,7 @@ public final class ViewComponentsResolver {
     private final Map<String, Class<? extends ComponentPattern>> viewComponentClasses = new HashMap<String, Class<? extends ComponentPattern>>();
 
     @SuppressWarnings("unchecked")
-    public void refreshAvaliebleComponentsList() {
+    public void refreshAvailableComponentsList() {
 
         LOG.info("Scan for view components...");
 

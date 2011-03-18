@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="machines" version="1.0.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/plugin">
+
+	<information>
+		<name>machines</name>
+	</information>
+	
+	<dependencies>
+		<dependency>
+			<plugin>products</plugin>
+			<version>1.0.0</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<model:model model="machine" resource="model/integration/machine.xml" />
+		<model:field plugin="products" model="component">
+			<belongsTo plugin="machines" name="machine" model="machine" required="false" />
+		</model:field>
+		<model:field plugin="products" model="component">
+			<string name="machineName" required="true" />
+		</model:field>
+		<model:hook plugin="products" model="product">
+			<onSave class="com.qcadoo.model.integration.MockHook" method="changeName"/>
+		</model:hook>
+		<model:dictionary name="categories" />
+	</modules>
+	
+</plugin>
