@@ -12,6 +12,14 @@
 	
 	<xs:element name="menu" />
 	
-
+	<xs:element name="viewHookExtension">
+		<xs:complexType>
+			<xs:attribute name="plugin" type="xs:string" use="required" />
+			<xs:attribute name="view" type="xs:string" use="required" />
+			<xs:attribute name="hookType" type="xs:string" use="required" />
+			<xs:attribute name="bean" type="xs:string" use="required" />
+			<xs:attribute name="method" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
 	
 </xs:schema>

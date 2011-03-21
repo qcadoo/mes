@@ -244,6 +244,42 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         jsFilePaths.add(jsFilePath);
     }
 
+    @Override
+    public void addHook(final HookType type, final HookDefinition hookDefinition) {
+        switch (type) {
+            case PRE_INITIALIZE:
+                addPreInitializeHook(hookDefinition);
+                break;
+            case PRE_RENDER:
+                addPreRenderHook(hookDefinition);
+                break;
+            case POST_INITIALIZE:
+                addPostInitializeHook(hookDefinition);
+                break;
+            case POST_CONSTRUCT:
+                addPostConstructHook(hookDefinition);
+                break;
+        }
+    }
+
+    @Override
+    public void removeHook(HookType type, HookDefinition hookDefinition) {
+        switch (type) {
+            case PRE_INITIALIZE:
+                preInitializeHooks.remove(hookDefinition);
+                break;
+            case PRE_RENDER:
+                preRenderHooks.remove(hookDefinition);
+                break;
+            case POST_INITIALIZE:
+                postInitializeHooks.remove(hookDefinition);
+                break;
+            case POST_CONSTRUCT:
+                postConstructHooks.remove(hookDefinition);
+                break;
+        }
+    }
+
     public void addPostInitializeHook(final HookDefinition hookDefinition) {
         postInitializeHooks.add(hookDefinition);
     }

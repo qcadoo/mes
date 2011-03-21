@@ -499,8 +499,14 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         }
     }
 
+    @Override
     public void addCustomEvent(final ComponentCustomEvent customEvent) {
         customEvents.add(customEvent);
+    }
+
+    @Override
+    public void removeCustomEvent(final ComponentCustomEvent customEvent) {
+        customEvents.remove(customEvent);
     }
 
     @Override

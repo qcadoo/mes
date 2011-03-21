@@ -30,6 +30,7 @@ import java.util.Map;
 import org.w3c.dom.Node;
 
 import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
 public interface ComponentPattern {
@@ -51,5 +52,9 @@ public interface ComponentPattern {
     String getFunctionalPath();
 
     void parse(Node componentNode, ViewDefinitionParser parser);
+
+    void addCustomEvent(final ComponentCustomEvent customEvent);
+
+    void removeCustomEvent(final ComponentCustomEvent customEvent);
 
 }

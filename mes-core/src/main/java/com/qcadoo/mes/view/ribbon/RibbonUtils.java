@@ -88,7 +88,7 @@ public class RibbonUtils {
         return Arrays.asList(new String[] { pattern.getTranslationPath() + ".ribbon." + key, "core.ribbon." + key });
     }
 
-    private static RibbonGroup parseRibbonGroup(final Node groupNode, final ViewDefinitionParser parser,
+    public static RibbonGroup parseRibbonGroup(final Node groupNode, final ViewDefinitionParser parser,
             final ViewDefinition viewDefinition) {
         String template = parser.getStringAttribute(groupNode, "template");
 

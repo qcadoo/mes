@@ -156,6 +156,10 @@ public class WindowComponentPattern extends AbstractContainerPattern {
         this.ribbon = ribbon;
     }
 
+    public Ribbon getRibbon() {
+        return ribbon;
+    }
+
     @Override
     public String getJspFilePath() {
         return JSP_PATH;

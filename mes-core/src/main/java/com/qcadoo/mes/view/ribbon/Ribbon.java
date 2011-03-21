@@ -92,6 +92,10 @@ public final class Ribbon {
         this.groups.add(group);
     }
 
+    public void removeGroup(final RibbonGroup group) {
+        this.groups.remove(group);
+    }
+
     /**
      * generates JSON string that contains all ribbon definition
      * 

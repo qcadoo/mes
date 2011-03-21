@@ -76,6 +76,15 @@
 			<resource>genealogies/view/genealogies.xml</resource>
 			<resource>genealogies/view/orderGenealogies.xml</resource>
 		</view:view>
+		
+		<view:viewHookExtension plugin="products" view="products" hookType="preRenderHook" bean="com.qcadoo.mes.genealogies.GenealogyService" method="testPreRenderHook" />
+		
+		<view:viewListenerExtension plugin="products" view="products" component="grid" event="testEvent" bean="com.qcadoo.mes.genealogies.GenealogyService" method="testListener" />
+		
+		<view:viewRibbonExtension>
+			<resource>genealogies/view/productsRibbon.xml</resource>
+		</view:viewRibbonExtension>
+		
 	</modules>
 
 </plugin>
