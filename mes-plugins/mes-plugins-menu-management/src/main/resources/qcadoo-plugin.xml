@@ -14,6 +14,8 @@
 		<model:model model="menuViewDefinitionItem" resource="menu/model/menuViewDefinitionItem.xml" />
 		<model:model model="viewDefinition" resource="menu/model/viewDefinition.xml" />
 
+		<view:menu-item name="menu" category="administration" view="menuCategories" />
+
 		<view:view>
 			<resource>menu/view/menu.xml</resource>
 		</view:view>

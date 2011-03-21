@@ -32,6 +32,4 @@ public interface MenuService {
 
     MenuDefinition getMenu(final Locale locale);
 
-    void init();
-
 }

@@ -25,7 +25,6 @@
 package com.qcadoo.mes.internal.module;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -43,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qcadoo.mes.application.TestDataLoader;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.plugin.internal.api.Module;
 import com.qcadoo.plugin.internal.api.ModuleFactory;
 
@@ -87,7 +85,6 @@ public final class DatabasePreparationModuleFactory implements ModuleFactory<Mod
 
             createPersistenceLogins();
 
-            addMenus();
             addGroups();
             addUsers();
             addParameters();
@@ -112,128 +109,6 @@ public final class DatabasePreparationModuleFactory implements ModuleFactory<Mod
 
     private void createPersistenceLogins() {
         new JdbcTemplate(dataSource).execute(JdbcTokenRepositoryImpl.CREATE_TABLE_SQL);
-    }
-
-    private void addMenus() {
-        Entity menuCategoryGridView = getMenuViewDefinition("menuCategories");
-        Entity technologyGridView = getMenuViewDefinition("technologies");
-        Entity orderGridView = getMenuViewDefinition("orders");
-        // Entity pluginGridView = getMenuViewDefinition("plugins");
-        Entity userGridView = getMenuViewDefinition("users");
-        Entity dictionaryGridView = getMenuViewDefinition("dictionaries");
-        Entity materialRequirementGridView = getMenuViewDefinition("materialRequirements");
-        Entity productGridView = getMenuViewDefinition("products");
-        Entity groupGridView = getMenuViewDefinition("groups");
-        Entity pluginGridView = getMenuViewDefinition("plugins");
-        Entity machineGridView = getMenuViewDefinition("machines");
-        Entity staffGridView = getMenuViewDefinition("staffs");
-        Entity workPlanGridView = getMenuViewDefinition("workPlans");
-        Entity operationGridView = getMenuViewDefinition("operations");
-        Entity genealogyForComponentFormView = getMenuViewDefinition("genealogyForComponent");
-        Entity genealogyForProductFormView = getMenuViewDefinition("genealogyForProduct");
-        Entity qualityControlForOrderFormView = getMenuViewDefinition("qualityControlsForOrder");
-        Entity qualityControlForUnitFormView = getMenuViewDefinition("qualityControlsForUnit");
-        Entity qualityControlForBatchFormView = getMenuViewDefinition("qualityControlsForBatch");
-        Entity qualityControlForOperationFormView = getMenuViewDefinition("qualityControlsForOperation");
-        Entity qualityControlReportFormView = getMenuViewDefinition("qualityControlReport");
-
-        Entity menuCategoryHome = addMenuCategory("home", "core.menu.home", 1);
-        Entity menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 2);
-        Entity menuCategoryTechnology = addMenuCategory("technology", "core.menu.technology", 3);
-        Entity menuCategoryOrders = addMenuCategory("orders", "core.menu.orders", 4);
-        Entity menuCategoryReports = addMenuCategory("reports", "core.menu.reports", 5);
-        Entity menuCategoryQuality = addMenuCategory("quality", "core.menu.quality", 6);
-        Entity menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 7);
-
-        addMenuViewDefinitionItem("home", "core.menu.home", menuCategoryHome, getMenuViewDefinition("homePage"), 1);
-        addMenuViewDefinitionItem("profile", "core.menu.profile", menuCategoryHome, getMenuViewDefinition("profile"), 2);
-
-        if (showSystemInfo) {
-            addMenuViewDefinitionItem("systemInfo", "core.menu.systemInfo", menuCategoryHome,
-                    getMenuViewDefinition("systemInfoView"), 3);
-        }
-
-        addMenuViewDefinitionItem("technologies", "products.menu.products.technologies", menuCategoryTechnology,
-                technologyGridView, 2);
-        addMenuViewDefinitionItem("products", "products.menu.products.products", menuCategoryBasicData, productGridView, 4);
-
-        addMenuViewDefinitionItem("productionOrders", "products.menu.products.productionOrders", menuCategoryOrders,
-                orderGridView, 1);
-        addMenuViewDefinitionItem("materialRequirements", "products.menu.products.materialRequirements", menuCategoryReports,
-                materialRequirementGridView, 1);
-        addMenuViewDefinitionItem("operations", "products.menu.products.operations", menuCategoryTechnology, operationGridView, 1);
-        addMenuViewDefinitionItem("workPlans", "products.menu.products.workPlans", menuCategoryReports, workPlanGridView, 2);
-        addMenuViewDefinitionItem("genealogyForComponent", "genealogies.menu.reports.genealogyForComponent", menuCategoryReports,
-                genealogyForComponentFormView, 3);
-        addMenuViewDefinitionItem("genealogyForProduct", "genealogies.menu.reports.genealogyForProduct", menuCategoryReports,
-                genealogyForProductFormView, 4);
-        addMenuViewDefinitionItem("qualityControlReport", "qualityControls.menu.reports.qualityControlReport",
-                menuCategoryReports, qualityControlReportFormView, 5);
-        addMenuViewDefinitionItem("systemParameters", "basic.menu.systemParameters", menuCategoryBasicData,
-                getMenuViewDefinition("systemParameters"), 4);
-        addMenuViewDefinitionItem("genealogyAttributes", "genealogy.menu.genealogyAttributes", menuCategoryBasicData,
-                getMenuViewDefinition("genealogyAttributes"), 5);
-
-        if (addAdministrationMenuToDatabase) {
-            addMenuViewDefinitionItem("users", "users.menu.administration.users", menuCategoryAdministration, userGridView, 2);
-            addMenuViewDefinitionItem("groups", "users.menu.administration.groups", menuCategoryAdministration, groupGridView, 3);
-            addMenuViewDefinitionItem("plugins", "plugins.menu.administration.plugins", menuCategoryAdministration,
-                    pluginGridView, 3);
-            addMenuViewDefinitionItem("menu", "menu.menu.administration.menu", menuCategoryAdministration, menuCategoryGridView,
-                    4);
-        }
-
-        addMenuViewDefinitionItem("dictionaries", "dictionaries.menu.administration.dictionaries", menuCategoryBasicData,
-                dictionaryGridView, 1);
-        addMenuViewDefinitionItem("machines", "basic.menu.machines", menuCategoryBasicData, machineGridView, 2);
-        addMenuViewDefinitionItem("staff", "basic.menu.staff", menuCategoryBasicData, staffGridView, 3);
-
-        addMenuViewDefinitionItem("forOrder", "products.menu.quality.forOrder", menuCategoryQuality,
-                qualityControlForOrderFormView, 1);
-        addMenuViewDefinitionItem("forUnits", "products.menu.quality.forUnits", menuCategoryQuality,
-                qualityControlForUnitFormView, 2);
-        addMenuViewDefinitionItem("forBatch", "products.menu.quality.forBatch", menuCategoryQuality,
-                qualityControlForBatchFormView, 3);
-        addMenuViewDefinitionItem("forOperation", "products.menu.quality.forOperation", menuCategoryQuality,
-                qualityControlForOperationFormView, 4);
-    }
-
-    private void addMenuViewDefinitionItem(final String name, final String translation, final Entity menuCategory,
-            final Entity menuViewDefinition, final int order) {
-        LOG.info("Adding menu view item \"" + name + "\"");
-        Entity menuItem = dataDefinitionService.get("menu", "menuViewDefinitionItem").create();
-        menuItem.setField("itemOrder", order);
-        menuItem.setField("menuCategory", menuCategory);
-        menuItem.setField("name", name);
-        menuItem.setField("active", true);
-        menuItem.setField("translationName", translation);
-        menuItem.setField("viewDefinition", menuViewDefinition);
-        dataDefinitionService.get("menu", "menuViewDefinitionItem").save(menuItem);
-    }
-
-    private Entity getMenuViewDefinition(final String name) {
-        List<Entity> menuList = dataDefinitionService.get("menu", "viewDefinition").find()
-                .restrictedWith(Restrictions.eq("menuName", name)).withMaxResults(1).list().getEntities();
-        if (menuList.isEmpty()) {
-            return null;
-        }
-        return menuList.get(0);
-    }
-
-    private Entity addMenuCategory(final String name, final String translation, final int order) {
-        if (menuCategories.containsKey(name)) {
-            return menuCategories.get(name);
-        }
-
-        LOG.info("Adding menu category \"" + name + "\"");
-        Entity category = dataDefinitionService.get("menu", "menuCategory").create();
-        category.setField("name", name);
-        category.setField("active", true);
-        category.setField("translationName", translation);
-        category.setField("categoryOrder", order);
-        category = dataDefinitionService.get("menu", "menuCategory").save(category);
-        menuCategories.put(name, category);
-        return category;
     }
 
     private void addGroups() {

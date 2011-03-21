@@ -13,10 +13,21 @@
 		<model:model model="machine" resource="basic/model/machine.xml" />
 		<model:model model="staff" resource="basic/model/staff.xml" />
 		<model:model model="parameter" resource="basic/model/parameter.xml" />
+		
 		<model:dictionary name="categories" />
 		<model:dictionary name="shifts" />
 		<model:dictionary name="posts" />
 		<model:dictionary name="units" />
+		
+		<view:menu-category name="home" />
+		<view:menu-category name="basic" />
+		<view:menu-category name="administration" admin="true" />
+		
+		<!-- view:menu-item name="home" category="home" view="homePage" / TODO -->
+		<view:menu-item name="machines" category="basic" view="machines" />
+		<view:menu-item name="staff" category="basic" view="staffs" />
+		<!-- view:menu-item name="systemParameters" category="basic" view="parameter" / TODO -->
+		<view:menu-item name="systemInfo" category="administration" view="systemInfo" />
 		
 		<view:view>
 			<resource>basic/view/basic.xml</resource>

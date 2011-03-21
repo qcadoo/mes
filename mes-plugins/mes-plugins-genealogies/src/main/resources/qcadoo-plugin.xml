@@ -71,6 +71,10 @@
 		<model:hook plugin="products" model="operationProductInComponent">
 			<onSave class="com.qcadoo.mes.genealogies.GenealogyService" method="fillBatchRequiredForTechnology" />
 		</model:hook>
+		
+		<!-- view:menu-item name="genealogyAttributes" category="basic" view="genealogyAttributes" / -->
+		<view:menu-item name="genealogyForComponent" category="reports" view="genealogyForComponent" />
+		<view:menu-item name="genealogyForProduct" category="reports" view=genealogyForProduct />
 
 		<view:view>
 			<resource>genealogies/view/genealogies.xml</resource>

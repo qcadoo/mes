@@ -52,7 +52,15 @@
 		<model:hook plugin="genealogies" model="genealogy">
 			<onSave class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateOnSaveQualityControl" />
 		</model:hook>
-
+		
+		<view:menu-category name="quality" />
+		
+		<view:menu-item name="qualityControlReport" category="quality" view="qualityControlReport" />
+		<view:menu-item name="forOrder" category="quality" view="qualityControlsForOrder" />
+		<view:menu-item name="forUnits" category="quality" view="qualityControlsForUnit" />
+		<view:menu-item name="forBatch" category="quality" view="qualityControlsForBatch" />
+		<view:menu-item name="forOperation" category="quality" view="qualityControlsForOperation" />
+		
 		<view:view>
 			<resource>qualityControls/view/qualityControls.xml</resource>
 			<resource>qualityControls/view/qualityControlsTest.xml</resource>

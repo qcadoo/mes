@@ -33,9 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.utils.Pair;
-import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.menu.MenuDefinition;
 import com.qcadoo.mes.view.menu.MenuItem;
 import com.qcadoo.mes.view.menu.MenulItemsGroup;
@@ -45,79 +42,22 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.aop.Monitorable;
-import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.plugin.api.PluginAccessor;
 
 @Service
-// TODO after implementing plugins, reimplement it
-public final class MenuServiceImpl implements MenuService { // , ApplicationListener<ContextRefreshedEvent> {
+public final class MenuServiceImpl implements MenuService {
 
-    // private static final Logger LOG = LoggerFactory.getLogger(MenuServiceImpl.class);
+    @Autowired
+    private PluginAccessor pluginAccessor;
 
     @Autowired
     private TranslationService translationService;
-
-    @Autowired
-    private ViewDefinitionService viewDefinitionService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Value("${showAdministrationMenu}")
     private boolean showAdministrationMenu;
-
-    @Override
-    @Transactional
-    @Monitorable
-    public void init() {
-        DataDefinition viewDefinitionDD = dataDefinitionService.get("menu", "viewDefinition");
-
-        List<Pair<String, String>> menuViews = viewDefinitionService.listForMenu();
-        for (Pair<String, String> view : menuViews) {
-            int existingViewsNumber = viewDefinitionDD.find().restrictedWith(Restrictions.eq("pluginIdentifier", view.getKey()))
-                    .restrictedWith(Restrictions.eq("viewName", view.getValue())).list().getTotalNumberOfEntities();
-            if (existingViewsNumber == 0) {
-                Entity viewDefinitionEntity = viewDefinitionDD.create();
-                viewDefinitionEntity.setField("menuName", view.getValue());
-                viewDefinitionEntity.setField("viewName", view.getValue());
-                viewDefinitionEntity.setField("pluginIdentifier", view.getKey());
-                viewDefinitionEntity.setField("url", false);
-                viewDefinitionDD.save(viewDefinitionEntity);
-            }
-        }
-
-        for (Entity viewDefinitionEntity : viewDefinitionDD.find().list().getEntities()) {
-            if ((Boolean) viewDefinitionEntity.getField("url")) {
-                continue;
-            }
-            ViewDefinition vd = viewDefinitionService.getWithoutSession(viewDefinitionEntity.getStringField("pluginIdentifier"),
-                    viewDefinitionEntity.getStringField("viewName"));
-            if (vd == null || !vd.isMenuAccessible()) {
-                viewDefinitionDD.delete(viewDefinitionEntity.getId());
-            }
-        }
-
-        addUrlItem("homePage", "homePage.html", "crud");
-        addUrlItem("profile", "userProfile.html", "crud");
-        addUrlItem("systemInfoView", "systemInfo.html", "crud");
-
-        addUrlItem("systemParameters", "parameter.html", "basic");
-        addUrlItem("genealogyAttributes", "genealogyAttribute.html", "genealogies");
-    }
-
-    private void addUrlItem(final String name, final String url, final String pluginIdentifier) {
-        DataDefinition viewDefinitionDD = dataDefinitionService.get("menu", "viewDefinition");
-
-        int existingViewsNumber = viewDefinitionDD.find().restrictedWith(Restrictions.eq("pluginIdentifier", pluginIdentifier))
-                .restrictedWith(Restrictions.eq("viewName", url)).list().getTotalNumberOfEntities();
-        if (existingViewsNumber == 0) {
-            Entity viewDefinitionEntity = viewDefinitionDD.create();
-            viewDefinitionEntity.setField("menuName", name);
-            viewDefinitionEntity.setField("viewName", url);
-            viewDefinitionEntity.setField("pluginIdentifier", pluginIdentifier);
-            viewDefinitionEntity.setField("url", true);
-            viewDefinitionDD.save(viewDefinitionEntity);
-        }
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -200,9 +140,7 @@ public final class MenuServiceImpl implements MenuService { // , ApplicationList
     }
 
     private boolean belongsToActivePlugin(final String pluginIdentifier) {
-        return true;
-        // TODO after implementing plugins it should not be neccessary
-        // return pluginManagementService.getByIdentifierAndStatus(pluginIdentifier, PluginStatus.ACTIVE.getValue()) != null;
+        return pluginAccessor.getEnabledPlugin(pluginIdentifier) != null;
     }
 
 }
