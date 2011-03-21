@@ -19,7 +19,7 @@ public class MenuModule implements Module {
 
     @Override
     public void enable() {
-        // TODO Auto-generated method stub
+
     }
 
     @Override

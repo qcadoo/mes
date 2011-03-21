@@ -57,6 +57,9 @@
 			<resource>qualityControls/view/qualityControls.xml</resource>
 			<resource>qualityControls/view/qualityControlsTest.xml</resource>
 		</view:view>
+		
+		<view:menu></view:menu>
+		<databasePreparation></databasePreparation>
 	</modules>
 
 </plugin>
