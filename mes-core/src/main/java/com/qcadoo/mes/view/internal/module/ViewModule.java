@@ -34,9 +34,12 @@ public class ViewModule implements Module {
 
     @Override
     public void enable() {
+        System.out.println("ENABLING VIEW MODULE");
+        System.out.println(xmlFiles);
         for (Resource xmlFile : xmlFiles) {
             List<ViewDefinition> viewDefinitions = viewDefinitionParser.parseViewXml(xmlFile);
             for (ViewDefinition viewDefinition : viewDefinitions) {
+                System.out.println("ADDING VIEW " + viewDefinition.getName());
                 viewDefinitionService.save(viewDefinition);
             }
         }

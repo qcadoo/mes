@@ -24,9 +24,6 @@
 
 package com.qcadoo.mes.internal.module;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.sql.DataSource;
 
 import org.jdom.Element;
@@ -62,17 +59,9 @@ public final class DatabasePreparationModuleFactory implements ModuleFactory<Mod
     @Value("${loadTestData}")
     private boolean addTestData;
 
-    @Value("${showSystemInfo}")
-    private boolean showSystemInfo;
-
-    private final Map<String, Entity> menuCategories = new HashMap<String, Entity>();
-
     private Entity adminGroup;
 
     private Entity supervisorsGroup;
-
-    @Value("${addAdministrationMenuToDatabase}")
-    private boolean addAdministrationMenuToDatabase;
 
     @Value("${addHardAdminPass}")
     private boolean addHardAdminPass;

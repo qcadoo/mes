@@ -35,7 +35,6 @@ public class ViewModuleFactory implements ModuleFactory<ViewModule> {
             }
             xmlFiles.add(new ClassPathResource(resource));
         }
-
         return new ViewModule(xmlFiles, viewDefinitionParser, viewDefinitionService);
 
     }
