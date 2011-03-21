@@ -56,13 +56,14 @@ import com.qcadoo.model.api.types.BelongsToType;
 import com.qcadoo.model.api.types.HasManyType;
 import com.qcadoo.model.api.types.TreeType;
 import com.qcadoo.model.beans.dictionaries.DictionariesDictionary;
+import com.qcadoo.model.internal.DataDefinitionImpl;
 import com.qcadoo.model.internal.DataDefinitionServiceImpl;
+import com.qcadoo.model.internal.FieldDefinitionImpl;
 import com.qcadoo.model.internal.api.DataAccessService;
 import com.qcadoo.model.internal.api.EntityHookDefinition;
 import com.qcadoo.model.internal.api.FieldHookDefinition;
 import com.qcadoo.model.internal.api.InternalDataDefinition;
 import com.qcadoo.model.internal.api.InternalDataDefinitionService;
-import com.qcadoo.model.internal.api.InternalFieldDefinition;
 import com.qcadoo.model.internal.api.ModelXmlToClassConverter;
 import com.qcadoo.model.internal.classconverter.ModelXmlToClassConverterImpl;
 import com.qcadoo.model.internal.types.BelongsToEntityType;
@@ -141,12 +142,6 @@ public class ModelXmlToDefinitionConverterTest {
                 dataDefinition = (InternalDataDefinition) dd;
             }
         }
-
-        dataDefinitionService.enable("full", "firstEntity");
-        dataDefinitionService.enable("full", "secondEntity");
-        dataDefinitionService.enable("full", "thirdEntity");
-        dataDefinitionService.enable("other", "firstEntity");
-        dataDefinitionService.enable("other", "secondEntity");
     }
 
     @Test
@@ -170,9 +165,9 @@ public class ModelXmlToDefinitionConverterTest {
 
     @Test
     public void shouldSetEntityValidators() {
-        assertEquals(1, (dataDefinition).getValidators().size());
+        assertEquals(1, ((DataDefinitionImpl) dataDefinition).getValidators().size());
 
-        EntityHookDefinition validator = (dataDefinition).getValidators().get(0);
+        EntityHookDefinition validator = ((DataDefinitionImpl) dataDefinition).getValidators().get(0);
 
         assertThat(validator, instanceOf(CustomEntityValidator.class));
 
@@ -255,12 +250,11 @@ public class ModelXmlToDefinitionConverterTest {
         assertTrue(dataDefinition.getField("fieldInteger").isRequired());
         assertTrue(dataDefinition.getField("fieldInteger").isUnique());
 
-        assertEquals(0, ((InternalFieldDefinition) dataDefinition.getField("fieldDatetime")).getValidators().size());
+        assertEquals(0, ((FieldDefinitionImpl) dataDefinition.getField("fieldDatetime")).getValidators().size());
 
-        assertEquals(6, ((InternalFieldDefinition) dataDefinition.getField("fieldInteger")).getValidators().size());
+        assertEquals(6, ((FieldDefinitionImpl) dataDefinition.getField("fieldInteger")).getValidators().size());
 
-        List<FieldHookDefinition> validators = ((InternalFieldDefinition) dataDefinition.getField("fieldInteger"))
-                .getValidators();
+        List<FieldHookDefinition> validators = ((FieldDefinitionImpl) dataDefinition.getField("fieldInteger")).getValidators();
 
         assertThat(validators.get(0), instanceOf(RequiredValidator.class));
         assertThat(validators.get(1), instanceOf(UniqueValidator.class));
@@ -279,12 +273,12 @@ public class ModelXmlToDefinitionConverterTest {
         assertEquals(null, getField(validators.get(5), "to"));
         assertEquals(false, getField(validators.get(5), "inclusively"));
 
-        validators = ((InternalFieldDefinition) dataDefinition.getField("fieldString")).getValidators();
+        validators = ((FieldDefinitionImpl) dataDefinition.getField("fieldString")).getValidators();
 
         assertThat(validators.get(3), instanceOf(RegexValidator.class));
         assertEquals("d??p", getField(validators.get(3), "regex"));
 
-        validators = ((InternalFieldDefinition) dataDefinition.getField("fieldDecimal")).getValidators();
+        validators = ((FieldDefinitionImpl) dataDefinition.getField("fieldDecimal")).getValidators();
 
         assertThat(validators.get(0), instanceOf(ScaleValidator.class));
         assertEquals(2, getField(validators.get(0), "min"));

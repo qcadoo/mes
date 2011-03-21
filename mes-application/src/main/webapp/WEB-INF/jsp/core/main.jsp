@@ -91,6 +91,10 @@
 			windowController.openModal(id, url, serializationObject);
 		}
 
+		window.changeModalSize = function(width, height) {
+			windowController.changeModalSize(width, height);
+		}
+
 		window.goBack = function(pageController) {
 			windowController.goBack(pageController);
 		}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="menu" version="0.4.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/modules/model">
+<plugin plugin="menu" version="0.4.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/modules/model" xmlns:view="http://www.qcadoo.com/modules/view">
 
 	<information>
 		<name>Menu Management</name>
@@ -13,6 +13,11 @@
 		<model:model model="menuCategory" resource="menu/model/menuCategory.xml" />
 		<model:model model="menuViewDefinitionItem" resource="menu/model/menuViewDefinitionItem.xml" />
 		<model:model model="viewDefinition" resource="menu/model/viewDefinition.xml" />
+
+		<view:view>
+			<resource>menu/view/menu.xml</resource>
+		</view:view>
+		
 	</modules>
 
 </plugin>

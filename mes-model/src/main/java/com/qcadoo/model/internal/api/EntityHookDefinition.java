@@ -36,4 +36,12 @@ public interface EntityHookDefinition {
 
     boolean call(final Entity entity);
 
+    String getName();
+
+    boolean isEnabled();
+
+    void enable();
+
+    void disable();
+
 }

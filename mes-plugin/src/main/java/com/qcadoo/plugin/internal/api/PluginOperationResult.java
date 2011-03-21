@@ -97,7 +97,7 @@ public class PluginOperationResult {
         return PluginOperationStatus.SUCCESS_WITH_RESTART.equals(status);
     }
 
-    public static PluginOperationResult cannotInstallPluginFile() {
+    public static PluginOperationResult cannotInstallPlugin() {
         return new PluginOperationResult(PluginOperationStatus.CANNOT_INSTALL_PLUGIN_FILE);
     }
 }

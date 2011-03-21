@@ -47,44 +47,49 @@ QCD.components.containers.TabWindow = function(_element, _mainController) {
 			}
 		}
 		
-		if (_this.options.ribbon) {
-			ribbon = new QCD.components.Ribbon(_this.options.ribbon, _this.elementName, mainController, _this.options.translations);
-		}
+		if (_this.options.hasRibbon) {
+		
+			if (_this.options.ribbon) {
+				ribbon = new QCD.components.Ribbon(_this.options.ribbon, _this.elementName, mainController, _this.options.translations);
+			}
+				
+			element = $("<div>");
 			
-		element = $("<div>");
-		
-		var row3Element =  $("<div>").attr("id", "q_row3_out_container");
-		element.append(row3Element);
-		
-		ribbonLeftElement = $("<div>").attr("id", "q_row3_out_left");
-		row3Element.append(ribbonLeftElement);
-		
-		ribbonMainElement = $("<div>").attr("id", "q_row3_out_main");
-		row3Element.append(ribbonMainElement);
-		if (ribbon) {
-			ribbonMainElement.append(ribbon.constructElementContent());
-		}
-		
-		if (_this.options.tabMode) {
-			tabsLeftElement = $("<div>").attr("id", "q_row3_out_tabs_left");
-			tabsLeftElement.append($("<div>"));
-			row3Element.append(tabsLeftElement);
+			var row3Element =  $("<div>").attr("id", "q_row3_out_container");
+			element.append(row3Element);
 			
-			var tabsElement = $("<div>").attr("id", "q_row3_out_tabs");
-			row3Element.append(tabsElement);
+			ribbonLeftElement = $("<div>").attr("id", "q_row3_out_left");
+			row3Element.append(ribbonLeftElement);
 			
-			tabsRightElement = $("<div>").attr("id", "q_row3_out_tabs_right");
-			tabsRightElement.append($("<div>"));
-			row3Element.append(tabsRightElement);
+			ribbonMainElement = $("<div>").attr("id", "q_row3_out_main");
+			row3Element.append(ribbonMainElement);
+			if (ribbon) {
+				ribbonMainElement.append(ribbon.constructElementContent());
+			}
+			
+			if (_this.options.tabMode) {
+				tabsLeftElement = $("<div>").attr("id", "q_row3_out_tabs_left");
+				tabsLeftElement.append($("<div>"));
+				row3Element.append(tabsLeftElement);
+				
+				var tabsElement = $("<div>").attr("id", "q_row3_out_tabs");
+				row3Element.append(tabsElement);
+				
+				tabsRightElement = $("<div>").attr("id", "q_row3_out_tabs_right");
+				tabsRightElement.append($("<div>"));
+				row3Element.append(tabsRightElement);
+			}
+			
+			ribbonShadowElement = $("<div>").attr("id", "q_row4_out");
+			element.append(ribbonShadowElement);
+			
+			tabRibbonDiv = tabsElement;
+			
+			var ribbonDiv = $("#"+_this.elementPath+"_windowContainerRibbon");
+			ribbonDiv.append(element);
+		} else {
+			$("#"+_this.elementPath+"_windowContainerContentBody").css("top","5px");
 		}
-		
-		ribbonShadowElement = $("<div>").attr("id", "q_row4_out");
-		element.append(ribbonShadowElement);
-		
-		tabRibbonDiv = tabsElement;
-		
-		var ribbonDiv = $("#"+_this.elementPath+"_windowContainerRibbon");
-		ribbonDiv.append(element);
 		
 		if (_this.options.tabMode && _this.options.firstTabName) {
 			showTab(_this.options.firstTabName);
@@ -216,11 +221,13 @@ QCD.components.containers.TabWindow = function(_element, _mainController) {
 			}
 		}
 		
-		ribbonLeftElement.width(margin);
-		ribbonShadowElement.width(innerWidth);
-		if (tabRibbonDiv) {
-			var tabRibbonWidth = width - ribbonMainElement.width() - 16; // TODO
-			tabRibbonDiv.width(tabRibbonWidth);
+		if (this.options.hasRibbon) {
+			ribbonLeftElement.width(margin);
+			ribbonShadowElement.width(innerWidth);
+			if (tabRibbonDiv) {
+				var tabRibbonWidth = width - ribbonMainElement.width() - 16; // TODO
+				tabRibbonDiv.width(tabRibbonWidth);
+			}
 		}
 	}
 	

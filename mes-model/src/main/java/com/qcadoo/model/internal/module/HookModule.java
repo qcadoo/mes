@@ -1,5 +1,6 @@
 package com.qcadoo.model.internal.module;
 
+import com.qcadoo.model.internal.api.InternalDataDefinition;
 import com.qcadoo.model.internal.api.InternalDataDefinitionService;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
@@ -12,19 +13,19 @@ public class HookModule implements Module {
 
     private final String hookType;
 
-    private final String hookClass;
+    private final String hookClassName;
 
-    private final String hookMethod;
+    private final String hookMethodName;
 
     private final InternalDataDefinitionService dataDefinitionService;
 
-    public HookModule(final String pluginIdentifier, final String modelName, final String hookType, final String hookClass,
-            final String hookMethod, final InternalDataDefinitionService dataDefinitionService) {
+    public HookModule(final String pluginIdentifier, final String modelName, final String hookType, final String hookClassName,
+            final String hookMethodName, final InternalDataDefinitionService dataDefinitionService) {
         this.pluginIdentifier = pluginIdentifier;
         this.modelName = modelName;
         this.hookType = hookType;
-        this.hookClass = hookClass;
-        this.hookMethod = hookMethod;
+        this.hookClassName = hookClassName;
+        this.hookMethodName = hookMethodName;
         this.dataDefinitionService = dataDefinitionService;
     }
 
@@ -37,15 +38,14 @@ public class HookModule implements Module {
 
     @Override
     public void enable() {
-        // TODO
-        // włącza hook w dataDefinitionService
+        ((InternalDataDefinition) dataDefinitionService.get(pluginIdentifier, modelName)).getHook(hookType, hookClassName,
+                hookMethodName).enable();
     }
 
     @Override
     public void disable() {
-        // TODO
-        // wyłącza hook w dataDefinitionService
-
+        ((InternalDataDefinition) dataDefinitionService.get(pluginIdentifier, modelName)).getHook(hookType, hookClassName,
+                hookMethodName).disable();
     }
 
 }

@@ -37,8 +37,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,8 +61,6 @@ import com.qcadoo.model.api.utils.DateUtils;
 
 @Service
 public class ReportDataService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ReportDataService.class);
 
     private static final SimpleDateFormat D_F = new SimpleDateFormat(DateUtils.DATE_FORMAT);
 

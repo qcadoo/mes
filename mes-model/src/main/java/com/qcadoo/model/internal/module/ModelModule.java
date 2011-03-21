@@ -1,5 +1,6 @@
 package com.qcadoo.model.internal.module;
 
+import com.qcadoo.model.internal.api.InternalDataDefinition;
 import com.qcadoo.model.internal.api.InternalDataDefinitionService;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
@@ -28,12 +29,12 @@ public class ModelModule implements Module {
 
     @Override
     public void enable() {
-        dataDefinitionService.enable(pluginIdentifier, modelName);
+        ((InternalDataDefinition) dataDefinitionService.get(pluginIdentifier, modelName)).enable();
     }
 
     @Override
     public void disable() {
-        dataDefinitionService.disable(pluginIdentifier, modelName);
+        ((InternalDataDefinition) dataDefinitionService.get(pluginIdentifier, modelName)).disable();
     }
 
 }

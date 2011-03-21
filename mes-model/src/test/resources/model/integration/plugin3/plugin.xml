@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="dictionaries" version="1.0.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/plugin">
+
+	<information>
+		<name>dictionaries</name>
+	</information>
+
+	<modules>
+		<model:model model="dictionary" resource="model/integration/dictionary.xml" />
+		<model:model model="dictionaryItem" resource="model/integration/dictionaryItem.xml" />
+	</modules>
+	
+</plugin>

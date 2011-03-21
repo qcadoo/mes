@@ -1,6 +1,7 @@
 package com.qcadoo.model.internal.module;
 
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.internal.api.InternalFieldDefinition;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
@@ -31,14 +32,12 @@ public class FieldModule implements Module {
 
     @Override
     public void enable() {
-        // TODO
-        // włącza pole w dataDefinitionService
+        ((InternalFieldDefinition) dataDefinitionService.get(pluginIdentifier, modelName).getField(fieldName)).enable();
     }
 
     @Override
     public void disable() {
-        // TODO
-        // wyłącza pole w dataDefinitionService
+        ((InternalFieldDefinition) dataDefinitionService.get(pluginIdentifier, modelName).getField(fieldName)).disable();
 
     }
 

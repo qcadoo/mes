@@ -27,7 +27,6 @@ package com.qcadoo.mes.api;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.w3c.dom.Node;
 
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.ViewDefinition;
@@ -90,14 +89,6 @@ public interface ViewDefinitionService {
      *            view definition
      */
     void save(ViewDefinition viewDefinition);
-
-    /**
-     * Save the data definition.
-     * 
-     * @param viewDefinition
-     *            view definition
-     */
-    void saveDynamic(String pluginIdentifier, String viewName, boolean isMenuAccessible, Node viewNode);
 
     /**
      * Delete the data definition.

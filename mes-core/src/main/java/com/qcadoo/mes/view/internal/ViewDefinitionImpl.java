@@ -60,6 +60,10 @@ public final class ViewDefinitionImpl implements ViewDefinition {
 
     private final boolean menuAccessible;
 
+    private Integer windowWidth;
+
+    private Integer windowHeight;
+
     private final List<HookDefinition> postConstructHooks = new ArrayList<HookDefinition>();
 
     private final List<HookDefinition> postInitializeHooks = new ArrayList<HookDefinition>();
@@ -83,6 +87,11 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         this.pluginIdentifier = pluginIdentifier;
         this.menuAccessible = menuAccessible;
         this.translationService = translationService;
+    }
+
+    public void setWindowDimmension(final Integer windowWidth, final Integer windowHeight) {
+        this.windowWidth = windowWidth;
+        this.windowHeight = windowHeight;
     }
 
     public void initialize() {
@@ -133,6 +142,12 @@ public final class ViewDefinitionImpl implements ViewDefinition {
             translations.put("backWithChangesConfirmation",
                     translationService.translate("commons.backWithChangesConfirmation", locale));
             json.put("translations", translations);
+            if (windowWidth != null) {
+                json.put("windowWidth", windowWidth);
+            }
+            if (windowHeight != null) {
+                json.put("windowHeight", windowHeight);
+            }
             model.put("jsOptions", json);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);

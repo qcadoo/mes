@@ -43,7 +43,6 @@ public final class DefaultPluginManager implements PluginManager {
     @Autowired
     private PluginFileManager pluginFileManager;
 
-    @Autowired
     private PluginServerManager pluginServerManager;
 
     @Autowired
@@ -93,7 +92,7 @@ public final class DefaultPluginManager implements PluginManager {
         }
         if (!fileNames.isEmpty()) {
             if (!pluginFileManager.installPlugin(fileNames.toArray(new String[fileNames.size()]))) {
-                return PluginOperationResult.cannotInstallPluginFile();
+                return PluginOperationResult.cannotInstallPlugin();
             }
             shouldRestart = true;
         }
@@ -266,7 +265,7 @@ public final class DefaultPluginManager implements PluginManager {
                 }
                 if (!pluginFileManager.installPlugin(plugin.getFilename())) {
                     pluginFileManager.uninstallPlugin(plugin.getFilename());
-                    return PluginOperationResult.cannotInstallPluginFile();
+                    return PluginOperationResult.cannotInstallPlugin();
                 }
                 shouldRestart = true;
                 plugin.changeStateTo(existingPlugin.getState());
@@ -284,7 +283,7 @@ public final class DefaultPluginManager implements PluginManager {
                 }
                 if (!pluginFileManager.installPlugin(plugin.getFilename())) {
                     pluginFileManager.uninstallPlugin(plugin.getFilename());
-                    return PluginOperationResult.cannotInstallPluginFile();
+                    return PluginOperationResult.cannotInstallPlugin();
                 }
                 shouldRestart = true;
                 PluginDependencyResult installPluginDependencyResult = pluginDependencyManager.getDependenciesToUpdate(

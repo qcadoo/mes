@@ -57,6 +57,7 @@ public class FieldModuleFactory implements ModuleFactory<FieldModule> {
             throw new IllegalStateException("Expected element fields, found " + fields.getName());
         }
 
+        field.setAttribute("required", "false");
         fields.addContent(field.detach());
 
         return new FieldModule(targetPluginIdentifier, targetModelName, fieldName, dataDefinitionService);

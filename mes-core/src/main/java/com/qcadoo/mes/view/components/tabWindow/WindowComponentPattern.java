@@ -33,6 +33,8 @@ public class WindowComponentPattern extends AbstractContainerPattern {
 
     private Ribbon ribbon;
 
+    private boolean hasRibbon = true;
+
     private String firstTabName;
 
     public WindowComponentPattern(final ComponentDefinition componentDefinition) {
@@ -112,6 +114,8 @@ public class WindowComponentPattern extends AbstractContainerPattern {
             fixedHeight = parser.getBooleanAttribute(componentNode, "fixedHeight", false);
         }
 
+        hasRibbon = parser.getBooleanAttribute(componentNode, "ribbon", true);
+
         if (ribbonNode != null) {
             setRibbon(RibbonUtils.parseRibbon(ribbonNode, parser, getViewDefinition()));
         }
@@ -122,6 +126,7 @@ public class WindowComponentPattern extends AbstractContainerPattern {
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("header", header);
         options.put("tabMode", tabMode);
+        options.put("hasRibbon", hasRibbon);
         return options;
     }
 
@@ -131,6 +136,7 @@ public class WindowComponentPattern extends AbstractContainerPattern {
         json.put("fixedHeight", fixedHeight);
         json.put("header", header);
         json.put("tabMode", tabMode);
+        json.put("hasRibbon", hasRibbon);
         if (ribbon != null) {
             json.put("ribbon", RibbonUtils.translateRibbon(ribbon, locale, this));
         }

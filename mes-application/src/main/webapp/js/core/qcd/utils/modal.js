@@ -43,6 +43,7 @@ QCD.utils.Modal.createModal = function() {
 	
 	return {
 		dialog: dialog,
+		container: container,
 		iframe: iframe,
 		
 		show: function(src, onLoadFunction) {
@@ -64,6 +65,15 @@ QCD.utils.Modal.createModal = function() {
 		hide: function() {
 			this.iframe.unbind("load");
 			this.dialog.jqmHide();
+		},
+		
+		changeSize: function(width, height) {
+			this.dialog.css("marginLeft", "-"+(width/2)+"px");	
+			this.dialog.width(width);
+			this.container.width(width);
+			this.container.height(height);
+			this.iframe.width(width);
+			this.iframe.height(height);
 		}
 	};
 }

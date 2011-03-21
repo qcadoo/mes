@@ -27,8 +27,11 @@ package com.qcadoo.mes.view.xml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,7 +39,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -85,30 +87,25 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
     private HookFactory hookFactory;
 
     @Autowired
-    private ApplicationContext applicationContext;
-
-    @Autowired
     private ViewComponentsResolver viewComponentResolver;
 
     private int currentIndexOrder;
 
-    @Override
+    @PostConstruct
     public void init() {
-        viewComponentResolver.refreshAvaliebleComponentsList();
+        viewComponentResolver.refreshAvailableComponentsList();
+    }
 
-        LOG.info("Reading view definitions ...");
-
+    @Override
+    public List<ViewDefinition> parseViewXml(final Resource viewXml) {
         try {
-            Resource[] resources = applicationContext.getResources("classpath*:view/*.xml");
-            for (Resource resource : resources) {
-                parse(resource.getInputStream());
-            }
+            return parse(viewXml.getInputStream());
         } catch (IOException e) {
-            LOG.error("Cannot read view definition", e);
+            throw new IllegalStateException("Error while reading view resource", e);
         }
     }
 
-    public void parse(final InputStream dataDefinitionInputStream) {
+    private List<ViewDefinition> parse(final InputStream dataDefinitionInputStream) {
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = documentBuilder.parse(dataDefinitionInputStream);
@@ -119,13 +116,18 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
 
             NodeList childNodes = root.getChildNodes();
 
+            List<ViewDefinition> views = new LinkedList<ViewDefinition>();
+
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node child = childNodes.item(i);
 
                 if ("view".equals(child.getNodeName())) {
-                    parseView(child, pluginIdentifier);
+                    String name = getStringAttribute(child, "name");
+                    views.add(parseViewDefinition(child, pluginIdentifier, name));
                 }
             }
+
+            return views;
         } catch (ParserConfigurationException e) {
             throw new IllegalStateException(e.getMessage(), e);
         } catch (SAXException e) {
@@ -135,14 +137,23 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         }
     }
 
-    @Override
-    public ViewDefinition parseViewDefinition(final Node viewNode, final String pluginIdentifier, final String name) {
+    private ViewDefinition parseViewDefinition(final Node viewNode, final String pluginIdentifier, final String name) {
         currentIndexOrder = 1;
 
         LOG.info("Reading view " + name + " for plugin " + pluginIdentifier);
 
         boolean menuAccessible = getBooleanAttribute(viewNode, "menuAccessible", false);
-        boolean dynamic = getBooleanAttribute(viewNode, "dynamic", false);
+
+        String windowWidthStr = getStringAttribute(viewNode, "windowWidth");
+        String windowHeightStr = getStringAttribute(viewNode, "windowHeight");
+        Integer windowWidth = null;
+        Integer windowHeight = null;
+        if (windowWidthStr != null) {
+            windowWidth = Integer.parseInt(windowWidthStr);
+        }
+        if (windowHeightStr != null) {
+            windowHeight = Integer.parseInt(windowHeightStr);
+        }
 
         DataDefinition dataDefinition = null;
 
@@ -155,6 +166,8 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl(name, pluginIdentifier, dataDefinition, menuAccessible,
                 translationService);
 
+        viewDefinition.setWindowDimmension(windowWidth, windowHeight);
+
         ComponentPattern root = null;
 
         NodeList childNodes = viewNode.getChildNodes();
@@ -166,11 +179,6 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
                 root = parseComponent(child, viewDefinition, null, pluginIdentifier);
             } else if ("preInitializeHook".equals(child.getNodeName())) {
                 viewDefinition.addPreInitializeHook(parseHook(child));
-            } else if ("postConstructHook".equals(child.getNodeName())) {
-                if (!dynamic) {
-                    throw new IllegalStateException("PostConstructHook can be used only with dynamic views");
-                }
-                viewDefinition.addPostConstructHook(parseHook(child));
             } else if ("postInitializeHook".equals(child.getNodeName())) {
                 viewDefinition.addPostInitializeHook(parseHook(child));
             } else if ("preRenderHook".equals(child.getNodeName())) {
@@ -185,19 +193,6 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         viewDefinition.registerViews(viewDefinitionService);
 
         return viewDefinition;
-    }
-
-    private void parseView(final Node viewNode, final String pluginIdentifier) {
-        String name = getStringAttribute(viewNode, "name");
-
-        boolean menuAccessible = getBooleanAttribute(viewNode, "menuAccessible", false);
-        boolean dynamic = getBooleanAttribute(viewNode, "dynamic", false);
-
-        if (dynamic) {
-            viewDefinitionService.saveDynamic(pluginIdentifier, name, menuAccessible, viewNode);
-        } else {
-            viewDefinitionService.save(parseViewDefinition(viewNode, pluginIdentifier, name));
-        }
     }
 
     private String getPluginIdentifier(final Node node) {
