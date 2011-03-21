@@ -17,6 +17,7 @@
 		<view:view>
 			<resource>plugins/view/plugins.xml</resource>
 		</view:view>
+		
 	</modules>
 
 </plugin>

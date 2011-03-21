@@ -34,6 +34,10 @@ import com.qcadoo.model.api.DataDefinition;
 
 public interface ViewDefinition {
 
+    enum HookType {
+        POST_INITIALIZE, PRE_RENDER, PRE_INITIALIZE, POST_CONSTRUCT
+    }
+
     String JSON_EVENT = "event";
 
     String JSON_EVENT_NAME = "name";
@@ -66,4 +70,7 @@ public interface ViewDefinition {
 
     String translateContextReferences(String context);
 
+    void addHook(HookType type, HookDefinition hookDefinition);
+
+    void removeHook(HookType type, HookDefinition hookDefinition);
 }

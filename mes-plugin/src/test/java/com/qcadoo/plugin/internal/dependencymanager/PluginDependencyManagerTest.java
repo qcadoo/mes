@@ -668,6 +668,34 @@ public class PluginDependencyManagerTest {
     }
 
     @Test
+    public void shouldSortPluginsWithNoDependencyAndSystemPlugin() {
+        // given
+        given(pluginAccessor.getPlugin("testPlugin1")).willReturn(plugin1);
+        given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);
+        given(pluginAccessor.getPlugin("testPlugin3")).willReturn(plugin3);
+        given(pluginAccessor.getPlugin("testPlugin4")).willReturn(plugin4);
+
+        given(plugin2.isSystemPlugin()).willReturn(true);
+        given(plugin3.isSystemPlugin()).willReturn(true);
+
+        given(plugin3.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
+
+        List<Plugin> argumentPlugins = new ArrayList<Plugin>();
+        argumentPlugins.add(plugin4);
+        argumentPlugins.add(plugin3);
+        argumentPlugins.add(plugin2);
+        argumentPlugins.add(plugin1);
+
+        // when
+        List<Plugin> sortedPlugins = manager.sortPluginsInDependencyOrder(argumentPlugins);
+
+        // then
+        assertEquals(4, sortedPlugins.size());
+        assertEquals(plugin2, sortedPlugins.get(0));
+        assertEquals(plugin3, sortedPlugins.get(1));
+    }
+
+    @Test
     public void shouldSortPluginsWithOneDependency() {
         // given
         given(plugin1.getRequiredPlugins()).willReturn(Collections.singleton(dependencyInfo2));
