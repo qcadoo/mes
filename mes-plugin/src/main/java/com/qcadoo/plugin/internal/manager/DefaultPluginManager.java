@@ -43,7 +43,6 @@ public final class DefaultPluginManager implements PluginManager {
     @Autowired
     private PluginFileManager pluginFileManager;
 
-    @Autowired
     private PluginServerManager pluginServerManager;
 
     @Autowired
