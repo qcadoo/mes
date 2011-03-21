@@ -59,8 +59,6 @@ public final class DataDefinitionServiceImpl implements InternalDataDefinitionSe
     @Override
     @Monitorable
     public void save(final DataDefinition dataDefinition) {
-        System.out.println("  ------ " + dataDefinition.getPluginIdentifier() + "#" + dataDefinition.getName() + " - "
-                + dataDefinition);
         dataDefinitions.put(dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName(), dataDefinition);
     }
 }

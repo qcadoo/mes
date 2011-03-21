@@ -13,7 +13,7 @@
 		<model:model model="dictionary" resource="dictionaries/model/dictionary.xml" />
 		<model:model model="dictionaryItem" resource="dictionaries/model/dictionaryItem.xml" />
 		
-		<view:menu-item name="dictionaries" category="basic" view="dictionaries" />
+		<view:menu-item name="dictionaries" category="administration" view="dictionaries" />
 		
 		<view:view>
 			<resource>dictionaries/view/dictionaries.xml</resource>

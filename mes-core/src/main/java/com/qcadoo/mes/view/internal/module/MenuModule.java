@@ -2,7 +2,6 @@ package com.qcadoo.mes.view.internal.module;
 
 import java.util.List;
 
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
@@ -11,11 +10,7 @@ import com.qcadoo.plugin.internal.api.Module;
 
 public class MenuModule implements Module {
 
-    private final DataDefinition viewDataDefinition;
-
-    private final DataDefinition categoryDataDefinition;
-
-    private final DataDefinition itemDataDefinition;
+    private final DataDefinitionService dataDefinitionService;
 
     private final String menuName;
 
@@ -31,19 +26,17 @@ public class MenuModule implements Module {
 
     public MenuModule(final DataDefinitionService dataDefinitionService, final String pluginIdentifier, final String menuName,
             final String menuCategory, final String menuView, final String menuUrl) {
+        this.dataDefinitionService = dataDefinitionService;
         this.pluginIdentifier = pluginIdentifier;
         this.menuName = menuName;
         this.menuCategory = menuCategory;
         this.menuView = menuView;
         this.menuUrl = menuUrl;
-        this.viewDataDefinition = dataDefinitionService.get("menu", "viewDefinition");
-        this.categoryDataDefinition = dataDefinitionService.get("menu", "menuCategory");
-        this.itemDataDefinition = dataDefinitionService.get("menu", "menuViewDefinitionItem");
     }
 
     @Override
     public void init(final PluginState state) {
-        Entity view = viewDataDefinition.create();
+        Entity view = dataDefinitionService.get("menu", "viewDefinition").create();
         view.setField("menuName", menuName);
         view.setField("pluginIdentifier", pluginIdentifier);
         if (menuView != null) {
@@ -54,7 +47,7 @@ public class MenuModule implements Module {
             view.setField("url", true);
         }
 
-        viewDataDefinition.save(view);
+        dataDefinitionService.get("menu", "viewDefinition").save(view);
 
         item = createItem(view);
     }
@@ -62,30 +55,30 @@ public class MenuModule implements Module {
     @Override
     public void enable() {
         item.setField("active", true);
-        item = itemDataDefinition.save(item);
+        item = dataDefinitionService.get("menu", "menuViewDefinitionItem").save(item);
     }
 
     @Override
     public void disable() {
         item.setField("active", false);
-        item = itemDataDefinition.save(item);
+        item = dataDefinitionService.get("menu", "menuViewDefinitionItem").save(item);
     }
 
     private Entity createItem(final Entity view) {
         Entity category = getCategory();
-        Entity item = itemDataDefinition.create();
+        Entity item = dataDefinitionService.get("menu", "menuViewDefinitionItem").create();
         item.setField("itemOrder", getOrder(category));
         item.setField("menuCategory", category);
         item.setField("name", menuName);
         item.setField("active", true);
         item.setField("translationName", pluginIdentifier + ".menu." + menuCategory + "." + menuName);
         item.setField("viewDefinition", view);
-        return itemDataDefinition.save(item);
+        return dataDefinitionService.get("menu", "menuViewDefinitionItem").save(item);
     }
 
     private Entity getCategory() {
-        List<Entity> entities = categoryDataDefinition.find().restrictedWith(Restrictions.eq("name", menuCategory))
-                .withMaxResults(1).list().getEntities();
+        List<Entity> entities = dataDefinitionService.get("menu", "menuCategory").find()
+                .restrictedWith(Restrictions.eq("name", menuCategory)).withMaxResults(1).list().getEntities();
 
         if (entities.size() == 1) {
             return entities.get(0);
@@ -95,9 +88,13 @@ public class MenuModule implements Module {
     }
 
     private Object getOrder(final Entity category) {
-        return itemDataDefinition.find()
-                .restrictedWith(Restrictions.belongsTo(itemDataDefinition.getField("menuCategory"), category)).list()
-                .getTotalNumberOfEntities();
+        return dataDefinitionService
+                .get("menu", "menuViewDefinitionItem")
+                .find()
+                .restrictedWith(
+                        Restrictions.belongsTo(
+                                dataDefinitionService.get("menu", "menuViewDefinitionItem").getField("menuCategory"), category))
+                .list().getTotalNumberOfEntities();
     }
 
 }

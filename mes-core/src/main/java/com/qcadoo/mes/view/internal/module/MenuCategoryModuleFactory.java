@@ -23,14 +23,14 @@ public class MenuCategoryModuleFactory implements ModuleFactory<MenuCategoryModu
     @Override
     public MenuCategoryModule parse(final String pluginIdentifier, final Element element) {
         String menuCategoryName = element.getAttributeValue("name");
-        String admin = element.getAttributeValue("admin");
+        String isAdministrationMenu = element.getAttributeValue("admin");
 
         if (menuCategoryName == null) {
             throw new IllegalStateException("Missing name attribute of menu-category module");
         }
 
-        return new MenuCategoryModule(dataDefinitionService.get("menu", "menuCategory"), pluginIdentifier, menuCategoryName,
-                "true".equals(admin), showAdministrationMenu);
+        return new MenuCategoryModule(dataDefinitionService, pluginIdentifier, menuCategoryName,
+                !"true".equals(isAdministrationMenu) || showAdministrationMenu);
     }
 
     @Override

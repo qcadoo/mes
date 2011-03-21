@@ -10,8 +10,19 @@
 		</xs:complexType>
 	</xs:element>
 	
-	<xs:element name="menu" />
+	<xs:element name="menu-item">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required" />
+			<xs:attribute name="category" type="xs:string" use="required" />
+			<xs:attribute name="view" type="xs:string" use="optional" />
+			<xs:attribute name="url" type="xs:string" use="optional" />
+		</xs:complexType>
+	</xs:element>
 	
-
+	<xs:element name="menu-category">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
 	
 </xs:schema>

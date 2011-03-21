@@ -163,8 +163,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
             priorityService.prioritizeEntity(dataDefinition, databaseEntity);
         }
 
-        System.out.println(" --> " + databaseEntity);
-
         getCurrentSession().save(databaseEntity);
 
         Entity savedEntity = entityService.convertToGenericEntity(dataDefinition, databaseEntity);

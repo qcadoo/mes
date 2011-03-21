@@ -31,7 +31,7 @@ public class MenuModuleFactory implements ModuleFactory<MenuModule> {
             throw new IllegalStateException("Missing category attribute of menu-item module");
         }
 
-        if (menuView == null || menuUrl == null) {
+        if (menuView == null && menuUrl == null) {
             throw new IllegalStateException("Missing view and url attribute of menu-item module");
         }
 
