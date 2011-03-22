@@ -47,6 +47,7 @@ import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.HookDefinition;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.components.tabWindow.WindowComponentPattern;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 import com.qcadoo.model.api.DataDefinition;
 
@@ -216,6 +217,11 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     }
 
     @Override
+    public void unregisterComponent(final String reference, final String path) {
+        registry.remove(reference);
+    }
+
+    @Override
     public String getName() {
         return name;
     }
@@ -242,6 +248,42 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     @Override
     public void addJsFilePath(final String jsFilePath) {
         jsFilePaths.add(jsFilePath);
+    }
+
+    @Override
+    public void addHook(final HookType type, final HookDefinition hookDefinition) {
+        switch (type) {
+            case PRE_INITIALIZE:
+                addPreInitializeHook(hookDefinition);
+                break;
+            case PRE_RENDER:
+                addPreRenderHook(hookDefinition);
+                break;
+            case POST_INITIALIZE:
+                addPostInitializeHook(hookDefinition);
+                break;
+            case POST_CONSTRUCT:
+                addPostConstructHook(hookDefinition);
+                break;
+        }
+    }
+
+    @Override
+    public void removeHook(HookType type, HookDefinition hookDefinition) {
+        switch (type) {
+            case PRE_INITIALIZE:
+                preInitializeHooks.remove(hookDefinition);
+                break;
+            case PRE_RENDER:
+                preRenderHooks.remove(hookDefinition);
+                break;
+            case POST_INITIALIZE:
+                postInitializeHooks.remove(hookDefinition);
+                break;
+            case POST_CONSTRUCT:
+                postConstructHooks.remove(hookDefinition);
+                break;
+        }
     }
 
     public void addPostInitializeHook(final HookDefinition hookDefinition) {
@@ -281,6 +323,18 @@ public final class ViewDefinitionImpl implements ViewDefinition {
             }
         }
         return list;
+    }
+
+    @Override
+    public WindowComponentPattern getRootWindow() {
+        if (patterns.size() != 1) {
+            return null;
+        }
+        ComponentPattern rootPattern = patterns.values().iterator().next();
+        if (rootPattern instanceof WindowComponentPattern) {
+            return (WindowComponentPattern) rootPattern;
+        }
+        return null;
     }
 
     @Override

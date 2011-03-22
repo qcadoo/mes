@@ -112,6 +112,10 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     private int indexOrder;
 
+    private AbstractComponentPattern fieldComponent;
+
+    private AbstractComponentPattern scopeFieldComponent;
+
     public AbstractComponentPattern(final ComponentDefinition componentDefinition) {
         checkArgument(hasText(componentDefinition.getName()), "Component name must be specified");
         this.name = componentDefinition.getName();
@@ -155,6 +159,10 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         // implement me if you want
     }
 
+    protected void unregisterComponentViews(final ViewDefinitionService viewDefinitionService) {
+        // implement me if you want
+    }
+
     protected ComponentPattern getParent() {
         return parent;
     }
@@ -162,6 +170,20 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     @Override
     public void registerViews(final ViewDefinitionService viewDefinitionService) {
         registerComponentViews(viewDefinitionService);
+    }
+
+    @Override
+    public void unregisterComponent(final ViewDefinitionService viewDefinitionService) {
+        viewDefinition.unregisterComponent(getReference(), getPath());
+        unregisterComponentViews(viewDefinitionService);
+
+        if (fieldComponent != null) {
+            fieldComponent.removeFieldEntityIdChangeListener(fieldDefinition.getName());
+        }
+
+        if (scopeFieldComponent != null) {
+            scopeFieldComponent.removeScopeEntityIdChangeListener(scopeFieldDefinition.getName());
+        }
     }
 
     @Override
@@ -269,6 +291,11 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     }
 
     @Override
+    public void initializeAll() {
+        initialize();
+    }
+
+    @Override
     public boolean initialize() {
         if (initialized) {
             return true;
@@ -278,8 +305,6 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
         String[] field = null;
         String[] scopeField = null;
-        AbstractComponentPattern fieldComponent = null;
-        AbstractComponentPattern scopeFieldComponent = null;
 
         if (dataDefinition == null) {
             if (fieldPath != null) {
@@ -326,6 +351,14 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     public void addScopeEntityIdChangeListener(final String field, final ComponentPattern listener) {
         scopeEntityIdChangeListeners.put(field, listener);
+    }
+
+    public void removeFieldEntityIdChangeListener(final String field) {
+        fieldEntityIdChangeListeners.remove(field);
+    }
+
+    public void removeScopeEntityIdChangeListener(final String field) {
+        scopeEntityIdChangeListeners.remove(field);
     }
 
     public void updateComponentStateListeners(final ViewDefinitionState viewDefinitionState) {
@@ -499,8 +532,14 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         }
     }
 
+    @Override
     public void addCustomEvent(final ComponentCustomEvent customEvent) {
         customEvents.add(customEvent);
+    }
+
+    @Override
+    public void removeCustomEvent(final ComponentCustomEvent customEvent) {
+        customEvents.remove(customEvent);
     }
 
     @Override

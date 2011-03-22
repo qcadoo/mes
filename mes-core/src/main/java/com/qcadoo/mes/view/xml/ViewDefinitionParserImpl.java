@@ -63,6 +63,8 @@ import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.internal.ViewComponentsResolver;
 import com.qcadoo.mes.view.internal.ViewDefinitionImpl;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
+import com.qcadoo.mes.view.ribbon.RibbonGroup;
+import com.qcadoo.mes.view.ribbon.RibbonUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 
@@ -326,4 +328,58 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         return currentIndexOrder++;
     }
 
+    @Override
+    public List<Node> geElementChildren(final Node node) {
+        List<Node> result = new LinkedList<Node>();
+        NodeList childNodes = node.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+            if (child.getNodeType() == Node.ELEMENT_NODE) {
+                result.add(child);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<ViewExtension> getViewExtensionNodes(final InputStream resource, final String tagType) {
+        try {
+            DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = documentBuilder.parse(resource);
+
+            Node root = document.getDocumentElement();
+
+            NodeList childNodes = root.getChildNodes();
+
+            List<ViewExtension> extensions = new LinkedList<ViewExtension>();
+
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                Node child = childNodes.item(i);
+
+                if (tagType.equals(child.getNodeName())) {
+                    String plugin = getStringAttribute(child, "plugin");
+                    String view = getStringAttribute(child, "view");
+
+                    Preconditions.checkNotNull(plugin, "View extension error: plugin not defined");
+                    Preconditions.checkNotNull(view, "View extension error: view not defined");
+
+                    extensions.add(new ViewExtension(plugin, view, child));
+                }
+            }
+
+            return extensions;
+
+        } catch (ParserConfigurationException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        } catch (SAXException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public RibbonGroup parseRibbonGroup(final Node groupNode, final ViewDefinition viewDefinition) {
+        return RibbonUtils.getInstance().parseRibbonGroup(groupNode, this, viewDefinition);
+    }
 }

@@ -3,7 +3,7 @@ package com.qcadoo.plugin.integration;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class MockModule implements Module {
+public class MockModule extends Module {
 
     @Override
     public void init(final PluginState state) {

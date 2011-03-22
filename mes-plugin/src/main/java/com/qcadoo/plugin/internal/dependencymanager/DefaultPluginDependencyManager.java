@@ -2,6 +2,7 @@ package com.qcadoo.plugin.internal.dependencymanager;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -160,7 +161,21 @@ public final class DefaultPluginDependencyManager implements PluginDependencyMan
             }
         }
 
-        return convertIdentifiersToPlugins(initializedPlugins);
+        List<Plugin> sortedPlugins = convertIdentifiersToPlugins(initializedPlugins);
+
+        Collections.sort(sortedPlugins, new Comparator<Plugin>() {
+
+            public int compare(Plugin o1, Plugin o2) {
+                if (o1.isSystemPlugin() && !o2.isSystemPlugin()) {
+                    return -1;
+                } else if (!o1.isSystemPlugin() && o2.isSystemPlugin()) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+
+        return sortedPlugins;
     }
 
     private Set<PluginDependencyInformation> getDependentPlugins(final List<Plugin> plugins, final boolean includeDisabled) {

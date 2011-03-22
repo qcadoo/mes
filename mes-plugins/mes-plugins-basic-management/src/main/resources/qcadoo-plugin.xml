@@ -21,6 +21,7 @@
 		<view:view>
 			<resource>basic/view/basic.xml</resource>
 		</view:view>
+		
 	</modules>
 
 </plugin>

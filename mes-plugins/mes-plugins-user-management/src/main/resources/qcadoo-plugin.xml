@@ -16,6 +16,7 @@
 		<view:view>
 			<resource>users/view/users.xml</resource>
 		</view:view>
+		
 	</modules>
 
 </plugin>

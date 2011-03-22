@@ -5,7 +5,7 @@ import com.qcadoo.model.internal.api.InternalDataDefinitionService;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class HookModule implements Module {
+public class HookModule extends Module {
 
     private final String pluginIdentifier;
 

@@ -5,7 +5,7 @@ import com.qcadoo.model.internal.api.InternalFieldDefinition;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class FieldModule implements Module {
+public class FieldModule extends Module {
 
     private final String pluginIdentifier;
 

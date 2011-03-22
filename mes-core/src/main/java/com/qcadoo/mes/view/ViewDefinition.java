@@ -30,9 +30,14 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.qcadoo.mes.view.components.tabWindow.WindowComponentPattern;
 import com.qcadoo.model.api.DataDefinition;
 
 public interface ViewDefinition {
+
+    enum HookType {
+        POST_INITIALIZE, PRE_RENDER, PRE_INITIALIZE, POST_CONSTRUCT
+    }
 
     String JSON_EVENT = "event";
 
@@ -64,6 +69,13 @@ public interface ViewDefinition {
 
     void registerComponent(String reference, String path, ComponentPattern pattern);
 
+    void unregisterComponent(String reference, String path);
+
     String translateContextReferences(String context);
 
+    void addHook(HookType type, HookDefinition hookDefinition);
+
+    void removeHook(HookType type, HookDefinition hookDefinition);
+
+    WindowComponentPattern getRootWindow();
 }

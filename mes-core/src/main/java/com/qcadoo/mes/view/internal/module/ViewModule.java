@@ -10,7 +10,7 @@ import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class ViewModule implements Module {
+public class ViewModule extends Module {
 
     private final ViewDefinitionParser viewDefinitionParser;
 
@@ -34,12 +34,9 @@ public class ViewModule implements Module {
 
     @Override
     public void enable() {
-        System.out.println("ENABLING VIEW MODULE");
-        System.out.println(xmlFiles);
         for (Resource xmlFile : xmlFiles) {
             List<ViewDefinition> viewDefinitions = viewDefinitionParser.parseViewXml(xmlFile);
             for (ViewDefinition viewDefinition : viewDefinitions) {
-                System.out.println("ADDING VIEW " + viewDefinition.getName());
                 viewDefinitionService.save(viewDefinition);
             }
         }

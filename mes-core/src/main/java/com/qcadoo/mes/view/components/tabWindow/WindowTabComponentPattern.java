@@ -39,7 +39,7 @@ public class WindowTabComponentPattern extends AbstractContainerPattern {
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node child = childNodes.item(i);
             if ("ribbon".equals(child.getNodeName())) {
-                setRibbon(RibbonUtils.parseRibbon(child, parser, getViewDefinition()));
+                setRibbon(RibbonUtils.getInstance().parseRibbon(child, parser, getViewDefinition()));
                 break;
             }
         }
@@ -49,7 +49,7 @@ public class WindowTabComponentPattern extends AbstractContainerPattern {
     protected JSONObject getJsOptions(final Locale locale) throws JSONException {
         JSONObject json = new JSONObject();
         if (ribbon != null) {
-            json.put("ribbon", RibbonUtils.translateRibbon(ribbon, locale, this));
+            json.put("ribbon", RibbonUtils.getInstance().translateRibbon(ribbon, locale, this));
         }
         return json;
     }

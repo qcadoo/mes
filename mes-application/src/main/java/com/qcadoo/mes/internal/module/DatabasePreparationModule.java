@@ -21,7 +21,7 @@ import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class DatabasePreparationModule implements Module {
+public class DatabasePreparationModule extends Module {
 
     private static final Logger LOG = LoggerFactory.getLogger(DatabasePreparationModule.class);
 
