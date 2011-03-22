@@ -4,13 +4,13 @@ import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.internal.InternalMenuService;
 import com.qcadoo.plugin.internal.api.ModuleFactory;
 
 public class MenuCategoryModuleFactory implements ModuleFactory<MenuCategoryModule> {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private InternalMenuService menuService;
 
     @Value("${showAdministrationMenu}")
     private boolean showAdministrationMenu;
@@ -29,8 +29,8 @@ public class MenuCategoryModuleFactory implements ModuleFactory<MenuCategoryModu
             throw new IllegalStateException("Missing name attribute of menu-category module");
         }
 
-        return new MenuCategoryModule(dataDefinitionService, pluginIdentifier, menuCategoryName,
-                !"true".equals(isAdministrationMenu) || showAdministrationMenu);
+        return new MenuCategoryModule(menuService, pluginIdentifier, menuCategoryName, !"true".equals(isAdministrationMenu)
+                || showAdministrationMenu);
     }
 
     @Override
