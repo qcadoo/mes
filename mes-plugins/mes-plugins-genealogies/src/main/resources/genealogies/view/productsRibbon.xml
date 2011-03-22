@@ -1,7 +1,0 @@
-<viewExtensions>
-	<ribbonExtension plugin="products" view="products">
-		<group name="testGroup">
-			<bigButton name="testButton" state="enabled" action="#{grid}.fireEvent(testEvent);" />
-		</group>
-	</ribbonExtension>
-</viewExtensions>

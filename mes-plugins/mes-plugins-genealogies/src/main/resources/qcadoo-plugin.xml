@@ -86,8 +86,12 @@
 		<view:viewListenerExtension plugin="products" view="products" component="grid" event="testEvent" bean="com.qcadoo.mes.genealogies.GenealogyService" method="testListener" />
 		
 		<view:viewRibbonExtension>
-			<resource>genealogies/view/productsRibbon.xml</resource>
+			<resource>genealogies/view/productsExtension.xml</resource>
 		</view:viewRibbonExtension>
+		
+		<view:viewWindowTabExtension>
+			<resource>genealogies/view/productsExtension.xml</resource>
+		</view:viewWindowTabExtension>
 		
 	</modules>
 

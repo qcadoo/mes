@@ -24,6 +24,8 @@ QCD.components.containers.TabWindow = function(_element, _mainController) {
 	var tabs;
 	var tabHeaders = new Object();
 	
+	var oneTab = this.options.oneTab;
+	
 	var currentTabName;
 	
 	var innerWidthMarker = $("#"+this.elementSearchName+"_windowContainerContentBodyWidthMarker");
@@ -34,17 +36,15 @@ QCD.components.containers.TabWindow = function(_element, _mainController) {
 		
 		mainController.setWindowHeaderComponent(_this);
 		
-		if (_this.options.tabMode) {
-			tabs =  _this.getChildren();
-			var tabsElement = $("#"+_this.elementSearchName+"_windowTabs > div");
-			for (var tabName in tabs) {
-				var tabElement = $("<a href='#'>").html(_this.options.translations["tab."+tabName]).bind('click', {tabName: tabName}, function(e) {
-					e.target.blur();
-					showTab(e.data.tabName);
-				});
-				tabHeaders[tabName] = tabElement;
-				tabsElement.append(tabElement);
-			}
+		tabs =  _this.getChildren();
+		var tabsElement = $("#"+_this.elementSearchName+"_windowTabs > div");
+		for (var tabName in tabs) {
+			var tabElement = $("<a href='#'>").html(_this.options.translations["tab."+tabName]).bind('click', {tabName: tabName}, function(e) {
+				e.target.blur();
+				showTab(e.data.tabName);
+			});
+			tabHeaders[tabName] = tabElement;
+			tabsElement.append(tabElement);
 		}
 		
 		if (_this.options.hasRibbon) {
@@ -67,7 +67,7 @@ QCD.components.containers.TabWindow = function(_element, _mainController) {
 				ribbonMainElement.append(ribbon.constructElementContent());
 			}
 			
-			if (_this.options.tabMode) {
+			if (! oneTab) {
 				tabsLeftElement = $("<div>").attr("id", "q_row3_out_tabs_left");
 				tabsLeftElement.append($("<div>"));
 				row3Element.append(tabsLeftElement);
@@ -78,12 +78,12 @@ QCD.components.containers.TabWindow = function(_element, _mainController) {
 				tabsRightElement = $("<div>").attr("id", "q_row3_out_tabs_right");
 				tabsRightElement.append($("<div>"));
 				row3Element.append(tabsRightElement);
+				
+				tabRibbonDiv = tabsElement;
 			}
 			
 			ribbonShadowElement = $("<div>").attr("id", "q_row4_out");
 			element.append(ribbonShadowElement);
-			
-			tabRibbonDiv = tabsElement;
 			
 			var ribbonDiv = $("#"+_this.elementPath+"_windowContainerRibbon");
 			ribbonDiv.append(element);
@@ -91,7 +91,7 @@ QCD.components.containers.TabWindow = function(_element, _mainController) {
 			$("#"+_this.elementPath+"_windowContainerContentBody").css("top","5px");
 		}
 		
-		if (_this.options.tabMode && _this.options.firstTabName) {
+		if (_this.options.firstTabName) {
 			showTab(_this.options.firstTabName);
 		}
 		
@@ -106,7 +106,9 @@ QCD.components.containers.TabWindow = function(_element, _mainController) {
 			tabHeaders[currentTabName].removeClass("activeTab");
 		}
 		currentTabName = tabName;
-		tabHeaders[tabName].addClass("activeTab");
+		if (! oneTab) {
+			tabHeaders[tabName].addClass("activeTab");
+		}
 		tabs[tabName].element.children().show();
 		
 		if (tabRibbonDiv) {
@@ -207,7 +209,7 @@ QCD.components.containers.TabWindow = function(_element, _mainController) {
 			childrenElement.height(containerHeight);
 		}
 		
-		if (this.options.tabMode) {
+		if (! oneTab) {
 			//var componentsHeight = height ? height-30 : null;
 			var componentsHeight = height ? height-35 : null;
 			for (var i in this.components) {
@@ -215,7 +217,8 @@ QCD.components.containers.TabWindow = function(_element, _mainController) {
 			}
 		} else {
 			//var componentsHeight = height ? height-20 : null;
-			var componentsHeight = height ? height-18 : null;
+			//var componentsHeight = height ? height-18 : null;
+			var componentsHeight = height;
 			for (var i in this.components) {
 				this.components[i].updateSize(width-20, componentsHeight);
 			}

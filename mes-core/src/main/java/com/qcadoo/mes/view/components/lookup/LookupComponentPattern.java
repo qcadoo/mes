@@ -221,6 +221,11 @@ public final class LookupComponentPattern extends FieldComponentPattern {
         viewDefinitionService.save(lookupViewDefinition);
     }
 
+    @Override
+    protected void unregisterComponentViews(final ViewDefinitionService viewDefinitionService) {
+        viewDefinitionService.delete(lookupViewDefinition);
+    }
+
     private GridComponentPattern createGridComponentPattern(final ViewDefinition lookupViewDefinition,
             final WindowComponentPattern window) {
         ComponentDefinition gridComponentDefinition = new ComponentDefinition();

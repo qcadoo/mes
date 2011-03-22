@@ -69,12 +69,32 @@ public abstract class AbstractContainerPattern extends AbstractComponentPattern 
     }
 
     @Override
+    public void initializeAll() {
+        super.initializeAll();
+        for (ComponentPattern componentPattern : children.values()) {
+            componentPattern.initializeAll();
+        }
+    }
+
+    @Override
+    public final void unregisterComponent(final ViewDefinitionService viewDefinitionService) {
+        super.unregisterComponent(viewDefinitionService);
+        for (ComponentPattern componentPattern : children.values()) {
+            componentPattern.unregisterComponent(viewDefinitionService);
+        }
+    }
+
+    @Override
     public final Map<String, ComponentPattern> getChildren() {
         return children;
     }
 
     public final void addChild(final ComponentPattern child) {
         children.put(child.getName(), child);
+    }
+
+    public final void removeChild(final String childName) {
+        children.remove(childName);
     }
 
     @Override
