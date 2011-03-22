@@ -72,7 +72,7 @@
 			<onSave class="com.qcadoo.mes.genealogies.GenealogyService" method="fillBatchRequiredForTechnology" />
 		</model:hook>
 		
-		<!-- view:menu-item name="genealogyAttributes" category="basic" view="genealogyAttributes" / -->
+		<view:menu-item-url name="genealogyAttributes" category="basic" url="genealogyAttribute.html" />
 		<view:menu-item name="genealogyForComponent" category="reports" view="genealogyForComponent" />
 		<view:menu-item name="genealogyForProduct" category="reports" view="genealogyForProduct" />
 
