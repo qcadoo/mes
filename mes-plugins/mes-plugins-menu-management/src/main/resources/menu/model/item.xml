@@ -25,14 +25,14 @@
 
 -->
 
-<model name="menuViewDefinitionItem" xmlns="http://www.qcadoo.com/model">
+<model name="item" xmlns="http://www.qcadoo.com/model">
 	<fields>
+		<string name="pluginIdentifier" />
 		<string name="name" required="true" unique="true" />
 		<boolean name="active" readonly="false" default="true" />
-		<string name="translationName" />
-		<belongsTo name="menuCategory" model="menuCategory" lazy="false" required="true" />
-		<belongsTo name="viewDefinition" model="viewDefinition" lazy="false" required="true" />
-		<priority name="itemOrder" scope="menuCategory" />
+		<belongsTo name="category" model="category" lazy="false" required="true" />
+		<belongsTo name="view" model="view" lazy="false" required="true" />
+		<priority name="succession" scope="category" />
 	</fields>
 	<hooks />
 </model>

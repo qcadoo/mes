@@ -25,13 +25,12 @@
 
 -->
 
-<model name="menuCategory" xmlns="http://www.qcadoo.com/model">
+<model name="view" xmlns="http://www.qcadoo.com/model">
 	<fields>
-		<string name="name" required="true" unique="true" />
-		<boolean name="active" readonly="false" default="true" required="true" />
-		<string name="translationName" />
-		<hasMany name="viewDefinitionItems" model="menuViewDefinitionItem" joinField="menuCategory" cascade="delete" />
-		<priority name="categoryOrder" />
+		<string name="pluginIdentifier" required="true" />
+		<string name="name" required="true" />
+		<string name="view" />
+		<boolean name="url" />
 	</fields>
 	<hooks />
 </model>

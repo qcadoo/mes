@@ -38,6 +38,8 @@ public class MenuModule extends Module {
             menuService.createItemIfNotExists(pluginIdentifier, pluginIdentifier + "." + menuName, menuCategory,
                     pluginIdentifier, menuName);
         } else {
+            // TODO menu view be created in ViewModule
+            menuService.createViewIfNotExists(menuViewPluginIdentifier, menuName, menuViewName, null);
             menuService.createItemIfNotExists(pluginIdentifier, pluginIdentifier + "." + menuName, menuCategory,
                     menuViewPluginIdentifier, menuViewName);
         }
