@@ -10,7 +10,7 @@ import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class ViewModule implements Module {
+public class ViewModule extends Module {
 
     private final ViewDefinitionParser viewDefinitionParser;
 

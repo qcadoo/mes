@@ -4,7 +4,7 @@ import com.qcadoo.model.internal.api.InternalDictionaryService;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class DictionaryModule implements Module {
+public class DictionaryModule extends Module {
 
     private final String name;
 

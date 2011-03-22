@@ -3,7 +3,7 @@ package com.qcadoo.mes.localization.internal.module;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class TranslationModule implements Module {
+public class TranslationModule extends Module {
 
     @Override
     public void init(final PluginState state) {

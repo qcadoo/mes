@@ -4,7 +4,7 @@ import com.qcadoo.mes.internal.MenuService;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class MenuModule implements Module {
+public class MenuModule extends Module {
 
     private final MenuService menuService;
 

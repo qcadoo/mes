@@ -8,7 +8,7 @@ import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class ViewListenerModule implements Module {
+public class ViewListenerModule extends Module {
 
     private final ViewDefinitionService viewDefinitionService;
 
