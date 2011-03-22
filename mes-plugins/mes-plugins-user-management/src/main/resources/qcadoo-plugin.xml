@@ -15,7 +15,7 @@
 		
 		<view:menu-item name="users" category="administration" view="users" />
 		<view:menu-item name="groups" category="administration" view="groups" />
-		<!-- view:menu-item name="profile" category="home" view="profile" / TODO -->
+		<view:menu-item-url name="profile" category="home" url="/userProfile.html" />
 		
 		<view:view>
 			<resource>users/view/users.xml</resource>

@@ -55,7 +55,7 @@
 		
 		<view:menu-category name="quality" />
 		
-		<view:menu-item name="qualityControlReport" category="quality" view="qualityControlReport" />
+		<view:menu-item name="qualityControlReport" category="reports" view="qualityControlReport" />
 		<view:menu-item name="forOrder" category="quality" view="qualityControlsForOrder" />
 		<view:menu-item name="forUnits" category="quality" view="qualityControlsForUnit" />
 		<view:menu-item name="forBatch" category="quality" view="qualityControlsForBatch" />

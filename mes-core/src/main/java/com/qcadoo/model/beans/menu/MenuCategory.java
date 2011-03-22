@@ -1,6 +1,6 @@
 package com.qcadoo.model.beans.menu;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,7 +31,7 @@ public class MenuCategory {
     private int succession;
 
     @OneToMany(mappedBy = "category")
-    public List<MenuItem> items;
+    public Set<MenuItem> items;
 
     public Long getId() {
         return id;
@@ -73,11 +73,11 @@ public class MenuCategory {
         this.pluginIdentifier = pluginIdentifier;
     }
 
-    public List<MenuItem> getItems() {
+    public Set<MenuItem> getItems() {
         return items;
     }
 
-    public void setItems(final List<MenuItem> items) {
+    public void setItems(final Set<MenuItem> items) {
         this.items = items;
     }
 

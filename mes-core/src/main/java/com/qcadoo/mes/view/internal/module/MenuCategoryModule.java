@@ -16,6 +16,7 @@ public class MenuCategoryModule extends Module {
 
     public MenuCategoryModule(final InternalMenuService menuService, final String pluginIdentifier,
             final String menuCategoryName, final boolean canBeEnabled) {
+        System.out.println(" ------> " + menuCategoryName + " : " + canBeEnabled);
         this.menuService = menuService;
         this.pluginIdentifier = pluginIdentifier;
         this.menuCategoryName = menuCategoryName;

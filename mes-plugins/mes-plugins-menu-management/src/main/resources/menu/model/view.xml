@@ -30,7 +30,7 @@
 		<string name="pluginIdentifier" required="true" />
 		<string name="name" required="true" />
 		<string name="view" />
-		<boolean name="url" />
+		<string name="url" />
 	</fields>
 	<hooks />
 </model>

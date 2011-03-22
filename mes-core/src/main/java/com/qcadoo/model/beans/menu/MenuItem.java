@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -23,11 +24,11 @@ public class MenuItem {
     private String name;
 
     @ManyToOne
-    @Column(name = "category_id")
+    @JoinColumn(name = "category_id")
     private MenuCategory category;
 
     @ManyToOne
-    @Column(name = "view_id")
+    @JoinColumn(name = "view_id")
     private MenuView view;
 
     @Column

@@ -10,9 +10,9 @@
 	</information>
 	
 	<modules>
-		<model:model model="menuCategory" resource="menu/model/category.xml" />
-		<model:model model="menuViewDefinitionItem" resource="menu/model/item.xml" />
-		<model:model model="viewDefinition" resource="menu/model/view.xml" />
+		<model:model model="category" resource="menu/model/category.xml" />
+		<model:model model="item" resource="menu/model/item.xml" />
+		<model:model model="view" resource="menu/model/view.xml" />
 
 		<view:menu-item name="menu" category="administration" view="menuCategories" />
 

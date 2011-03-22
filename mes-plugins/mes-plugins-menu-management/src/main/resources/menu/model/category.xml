@@ -30,7 +30,6 @@
 		<string name="pluginIdentifier" />
 		<string name="name" required="true" unique="true" />
 		<boolean name="active" readonly="false" default="true" required="true" />
-		<string name="translationName" />
 		<hasMany name="items" model="item" joinField="category" cascade="delete" />
 		<priority name="succession" />
 	</fields>

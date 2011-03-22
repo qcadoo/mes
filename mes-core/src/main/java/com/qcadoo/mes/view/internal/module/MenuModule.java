@@ -35,13 +35,11 @@ public class MenuModule extends Module {
     public void init(final PluginState state) {
         if (menuUrl != null) {
             menuService.createViewIfNotExists(pluginIdentifier, menuName, null, menuUrl);
-            menuService.createItemIfNotExists(pluginIdentifier, pluginIdentifier + "." + menuName, menuCategory,
-                    pluginIdentifier, menuName);
+            menuService.createItemIfNotExists(pluginIdentifier, menuName, menuCategory, pluginIdentifier, menuName);
         } else {
-            // TODO menu view be created in ViewModule
-            menuService.createViewIfNotExists(menuViewPluginIdentifier, menuName, menuViewName, null);
-            menuService.createItemIfNotExists(pluginIdentifier, pluginIdentifier + "." + menuName, menuCategory,
-                    menuViewPluginIdentifier, menuViewName);
+            // TODO menu view be created in ViewModule?
+            menuService.createViewIfNotExists(menuViewPluginIdentifier, menuViewName, menuViewName, null);
+            menuService.createItemIfNotExists(pluginIdentifier, menuName, menuCategory, menuViewPluginIdentifier, menuViewName);
         }
 
     }

@@ -23,10 +23,10 @@
 		<view:menu-category name="basic" />
 		<view:menu-category name="administration" admin="true" />
 		
-		<!-- view:menu-item name="home" category="home" view="homePage" / TODO -->
+		<view:menu-item-url name="home" category="home" url="/homePage.html" />
 		<view:menu-item name="machines" category="basic" view="machines" />
 		<view:menu-item name="staff" category="basic" view="staffs" />
-		<!-- view:menu-item name="systemParameters" category="basic" view="parameter" / TODO -->
+		<view:menu-item-url name="systemParameters" category="basic" url="/parameter.html" />
 		<view:menu-item name="systemInfo" category="administration" view="systemInfo" />
 		
 		<view:view>

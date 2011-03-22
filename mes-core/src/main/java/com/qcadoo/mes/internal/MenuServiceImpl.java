@@ -31,6 +31,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,8 +58,8 @@ public final class MenuServiceImpl implements InternalMenuService {
     @Autowired
     private SessionFactory sessionFactory;
 
-    // @Value("${showAdministrationMenu}")
-    // private boolean showAdministrationMenu;
+    @Value("${showAdministrationMenu}")
+    private boolean showAdministrationMenu;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -71,16 +72,19 @@ public final class MenuServiceImpl implements InternalMenuService {
         List<MenuCategory> menuCategories = sessionFactory.getCurrentSession().createCriteria(MenuCategory.class)
                 .add(Restrictions.eq("active", true)).list();
 
-        // MenulItemsGroup administrationCategory = null;
-        // boolean hasMenuCategoryGridView = false;
+        MenulItemsGroup administrationCategory = null;
+
+        boolean hasMenuManagement = false;
 
         for (MenuCategory menuCategory : menuCategories) {
-            MenulItemsGroup category = new MenulItemsGroup(menuCategory.getName(), getLabel(menuCategory.getPluginIdentifier(),
-                    menuCategory.getName(), locale));
+            String label = menuCategory.getName();
 
-            // if ("administration".equals(menuCategory.getName())) {
-            // administrationCategory = category;
-            // }
+            if (menuCategory.getPluginIdentifier() != null) {
+                label = translationService.translate(menuCategory.getPluginIdentifier() + ".menu." + menuCategory.getName(),
+                        locale);
+            }
+
+            MenulItemsGroup category = new MenulItemsGroup(menuCategory.getName(), label);
 
             for (MenuItem menuItem : menuCategory.getItems()) {
                 if (!menuItem.isActive()) {
@@ -89,7 +93,13 @@ public final class MenuServiceImpl implements InternalMenuService {
 
                 MenuView menuView = menuItem.getView();
 
-                String itemLabel = getLabel(menuItem.getPluginIdentifier(), menuItem.getName(), locale);
+                String itemLabel = menuItem.getName();
+
+                if (menuItem.getPluginIdentifier() != null) {
+                    itemLabel = translationService.translate(menuItem.getPluginIdentifier() + ".menu." + menuCategory.getName()
+                            + "." + menuItem.getName(), locale);
+                }
+
                 if (menuView.getUrl() != null) {
                     category.addItem(new UrlMenuItem(menuItem.getName(), itemLabel, null, menuView.getUrl()));
                 } else if (belongsToActivePlugin(menuView.getPluginIdentifier())) {
@@ -97,39 +107,32 @@ public final class MenuServiceImpl implements InternalMenuService {
                             menuView.getPluginIdentifier(), menuView.getName()));
                 }
 
-                // if ("menu".equals(pluginIdentifier) && "menuCategories".equals(viewName)) {
-                // hasMenuCategoryGridView = true;
-                // }
+                if ("menu".equals(menuView.getPluginIdentifier()) && "menuCategories".equals(menuView.getView())) {
+                    hasMenuManagement = true;
+                }
             }
 
-            menuDefinition.addItem(category);
+            if ("administration".equals(menuCategory.getName())) {
+                administrationCategory = category;
+            } else {
+                menuDefinition.addItem(category);
+            }
         }
 
-        // if (!hasMenuCategoryGridView && showAdministrationMenu) {
-        // if (administrationCategory == null) {
-        // administrationCategory = new MenulItemsGroup("administration", getLabel("administration",
-        // "core.menu.administration", locale));
-        // menuDef.addItem(administrationCategory);
-        // }
-        // administrationCategory.addItem(new ViewDefinitionMenuItemItem("menuCategories", getLabel("menuCategories",
-        // "menu.menu.administration.menu", locale), "menu", "menuCategories"));
-        // }
+        if (!hasMenuManagement && showAdministrationMenu) {
+            if (administrationCategory == null) {
+                administrationCategory = new MenulItemsGroup("administration", translationService.translate(
+                        "basic.menu.administration", locale));
+            }
+            administrationCategory.addItem(new ViewDefinitionMenuItemItem("menuCategories", translationService.translate(
+                    "menu.menu.administration.menu", locale), "menu", "menuCategories"));
+        }
+
+        if (administrationCategory != null) {
+            menuDefinition.addItem(administrationCategory);
+        }
 
         return menuDefinition;
-    }
-
-    private String getLabel(final String name, final String translationName, final Locale locale) {
-        if (translationName == null) {
-            return name;
-        } else {
-            String[] translationNameParts = translationName.split("\\.");
-            String lastPart = translationNameParts[translationNameParts.length - 1];
-            if (name.equals(lastPart)) {
-                return translationService.translate(translationName, locale);
-            } else {
-                return name;
-            }
-        }
     }
 
     private boolean belongsToActivePlugin(final String pluginIdentifier) {
@@ -137,34 +140,49 @@ public final class MenuServiceImpl implements InternalMenuService {
     }
 
     @Override
+    @Transactional
     public void createViewIfNotExists(final String pluginIdentifier, final String viewName, final String view, final String url) {
+
+        System.out.println(" ----> 1");
+
         MenuView menuView = getView(pluginIdentifier, viewName);
+
+        System.out.println(" ----> 2");
 
         if (menuView != null) {
             return;
         }
 
+        System.out.println(" ----> " + pluginIdentifier + "." + viewName + "." + view + "." + url);
+
         menuView = new MenuView();
         menuView.setPluginIdentifier(pluginIdentifier);
+        System.out.println(" ----> 3");
         menuView.setName(viewName);
+        System.out.println(" ----> 4");
         menuView.setUrl(url);
+        System.out.println(" ----> 5");
         menuView.setView(view);
+        System.out.println(" ----> 6");
         sessionFactory.getCurrentSession().save(menuView);
+        System.out.println(" ----> 7");
     }
 
     @Override
+    @Transactional
     public void enableView(final String pluginIdentifier, final String viewName) {
-        // TODO Auto-generated method stub
+        // ignore
 
     }
 
     @Override
+    @Transactional
     public void disableView(final String pluginIdentifier, final String viewName) {
-        // TODO Auto-generated method stub
-
+        // ignore
     }
 
     @Override
+    @Transactional
     public void createCategoryIfNotExists(final String pluginIdentifier, final String categoryName) {
         MenuCategory menuCategory = getCategory(pluginIdentifier, categoryName);
 
@@ -181,18 +199,29 @@ public final class MenuServiceImpl implements InternalMenuService {
     }
 
     @Override
+    @Transactional
     public void enableCategory(final String pluginIdentifier, final String categoryName) {
-        // TODO Auto-generated method stub
+        MenuCategory menuCategory = getCategory(pluginIdentifier, categoryName);
 
+        if (menuCategory != null) {
+            menuCategory.setActive(true);
+            sessionFactory.getCurrentSession().save(menuCategory);
+        }
     }
 
     @Override
+    @Transactional
     public void disableCategory(final String pluginIdentifier, final String categoryName) {
-        // TODO Auto-generated method stub
+        MenuCategory menuCategory = getCategory(pluginIdentifier, categoryName);
 
+        if (menuCategory != null) {
+            menuCategory.setActive(false);
+            sessionFactory.getCurrentSession().save(menuCategory);
+        }
     }
 
     @Override
+    @Transactional
     public void createItemIfNotExists(final String pluginIdentifier, final String name, final String category,
             final String viewPluginIdentifier, final String viewName) {
         MenuItem menuItem = getItem(pluginIdentifier, name);
@@ -225,25 +254,35 @@ public final class MenuServiceImpl implements InternalMenuService {
     }
 
     @Override
+    @Transactional
     public void enableItem(final String pluginIdentifier, final String name) {
-        // TODO Auto-generated method stub
+        MenuItem menuItem = getItem(pluginIdentifier, name);
 
+        if (menuItem != null) {
+            menuItem.setActive(true);
+            sessionFactory.getCurrentSession().save(menuItem);
+        }
     }
 
     @Override
+    @Transactional
     public void disableItem(final String pluginIdentifier, final String name) {
-        // TODO Auto-generated method stub
+        MenuItem menuItem = getItem(pluginIdentifier, name);
 
+        if (menuItem != null) {
+            menuItem.setActive(false);
+            sessionFactory.getCurrentSession().save(menuItem);
+        }
     }
 
     private int getTotalNumberOfItems(final MenuCategory category) {
         return ((Number) sessionFactory.getCurrentSession().createCriteria(MenuItem.class).setProjection(Projections.rowCount())
-                .add(Restrictions.eq("category", category)).uniqueResult()).intValue();
+                .add(Restrictions.eq("category", category)).uniqueResult()).intValue() + 1;
     }
 
     private int getTotalNumberOfCategories() {
         return ((Number) sessionFactory.getCurrentSession().createCriteria(MenuCategory.class)
-                .setProjection(Projections.rowCount()).uniqueResult()).intValue();
+                .setProjection(Projections.rowCount()).uniqueResult()).intValue() + 1;
     }
 
     private MenuCategory getCategory(final String pluginIdentifier, final String categoryName) {
