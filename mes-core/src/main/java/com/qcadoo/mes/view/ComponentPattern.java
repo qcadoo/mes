@@ -37,7 +37,11 @@ public interface ComponentPattern {
 
     boolean initialize();
 
+    void initializeAll();
+
     void registerViews(ViewDefinitionService viewDefinitionService);
+
+    void unregisterComponent(ViewDefinitionService viewDefinitionService);
 
     ComponentState createComponentState(ViewDefinitionState viewDefinitionState);
 

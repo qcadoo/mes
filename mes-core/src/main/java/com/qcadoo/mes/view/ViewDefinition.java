@@ -69,6 +69,8 @@ public interface ViewDefinition {
 
     void registerComponent(String reference, String path, ComponentPattern pattern);
 
+    void unregisterComponent(String reference, String path);
+
     String translateContextReferences(String context);
 
     void addHook(HookType type, HookDefinition hookDefinition);

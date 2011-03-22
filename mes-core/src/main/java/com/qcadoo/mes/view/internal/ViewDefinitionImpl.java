@@ -217,6 +217,11 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     }
 
     @Override
+    public void unregisterComponent(final String reference, final String path) {
+        registry.remove(reference);
+    }
+
+    @Override
     public String getName() {
         return name;
     }
