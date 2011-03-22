@@ -8,7 +8,7 @@ import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class MenuCategoryModule implements Module {
+public class MenuCategoryModule extends Module {
 
     private final DataDefinitionService dataDefinitionService;
 

@@ -668,7 +668,7 @@ public class PluginDependencyManagerTest {
     }
 
     @Test
-    public void shouldSortPluginsWithNoDependencyAndSystemPlugin() {
+    public void shouldSortPluginsWithSystemPlugin() {
         // given
         given(pluginAccessor.getPlugin("testPlugin1")).willReturn(plugin1);
         given(pluginAccessor.getPlugin("testPlugin2")).willReturn(plugin2);

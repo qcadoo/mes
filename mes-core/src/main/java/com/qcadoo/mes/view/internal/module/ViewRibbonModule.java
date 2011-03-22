@@ -25,7 +25,7 @@ import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class ViewRibbonModule implements Module {
+public class ViewRibbonModule extends Module {
 
     private final ViewDefinitionService viewDefinitionService;
 

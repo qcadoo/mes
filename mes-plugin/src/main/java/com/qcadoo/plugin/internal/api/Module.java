@@ -2,12 +2,12 @@ package com.qcadoo.plugin.internal.api;
 
 import com.qcadoo.plugin.api.PluginState;
 
-public interface Module {
+public abstract class Module {
 
-    void init(PluginState state);
+    public abstract void init(PluginState state);
 
-    void enable();
+    public abstract void enable();
 
-    void disable();
+    public abstract void disable();
 
 }

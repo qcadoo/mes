@@ -7,7 +7,7 @@ import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class ViewHookModule implements Module {
+public class ViewHookModule extends Module {
 
     private final ViewDefinitionService viewDefinitionService;
 
