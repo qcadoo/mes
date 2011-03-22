@@ -18,11 +18,22 @@ import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
 public class RibbonUtils {
 
-    private RibbonUtils() {
+    private RibbonTemplates ribbonTemplates;
 
+    private static RibbonUtils instance;
+
+    private RibbonUtils() {
+        ribbonTemplates = new RibbonTemplates();
     }
 
-    public static Ribbon parseRibbon(final Node ribbonNode, final ViewDefinitionParser parser, final ViewDefinition viewDefinition) {
+    public static RibbonUtils getInstance() {
+        if (instance == null) {
+            instance = new RibbonUtils();
+        }
+        return instance;
+    }
+
+    public Ribbon parseRibbon(final Node ribbonNode, final ViewDefinitionParser parser, final ViewDefinition viewDefinition) {
         Ribbon ribbon = new Ribbon();
 
         NodeList childNodes = ribbonNode.getChildNodes();
@@ -38,7 +49,7 @@ public class RibbonUtils {
         return ribbon;
     }
 
-    public static JSONObject translateRibbon(final Ribbon ribbon, final Locale locale, final AbstractComponentPattern pattern)
+    public JSONObject translateRibbon(final Ribbon ribbon, final Locale locale, final AbstractComponentPattern pattern)
             throws JSONException {
         JSONObject json = ribbon.getAsJson();
 
@@ -52,7 +63,7 @@ public class RibbonUtils {
         return json;
     }
 
-    private static void translateRibbonItems(final JSONObject owner, final String prefix, final Locale locale,
+    private void translateRibbonItems(final JSONObject owner, final String prefix, final Locale locale,
             final AbstractComponentPattern pattern) throws JSONException {
         if (owner.has("items")) {
             for (int j = 0; j < owner.getJSONArray("items").length(); j++) {
@@ -84,16 +95,16 @@ public class RibbonUtils {
         }
     }
 
-    private static List<String> getTranslationCodes(final String key, final AbstractComponentPattern pattern) {
+    private List<String> getTranslationCodes(final String key, final AbstractComponentPattern pattern) {
         return Arrays.asList(new String[] { pattern.getTranslationPath() + ".ribbon." + key, "core.ribbon." + key });
     }
 
-    public static RibbonGroup parseRibbonGroup(final Node groupNode, final ViewDefinitionParser parser,
+    public RibbonGroup parseRibbonGroup(final Node groupNode, final ViewDefinitionParser parser,
             final ViewDefinition viewDefinition) {
         String template = parser.getStringAttribute(groupNode, "template");
 
         if (template != null) {
-            return RibbonTemplates.getGroupTemplate(template, viewDefinition);
+            return ribbonTemplates.getGroupTemplate(template, viewDefinition);
         } else {
             RibbonGroup ribbonGroup = new RibbonGroup();
             ribbonGroup.setName(parser.getStringAttribute(groupNode, "name"));
@@ -112,7 +123,7 @@ public class RibbonUtils {
         }
     }
 
-    private static RibbonActionItem parseRibbonItem(final Node itemNode, final ViewDefinitionParser parser,
+    private RibbonActionItem parseRibbonItem(final Node itemNode, final ViewDefinitionParser parser,
             final ViewDefinition viewDefinition) {
         String stringType = itemNode.getNodeName();
 
@@ -189,7 +200,7 @@ public class RibbonUtils {
         return item;
     }
 
-    public static String translateRibbonAction(final String action, final ViewDefinition viewDefinition) {
+    public String translateRibbonAction(final String action, final ViewDefinition viewDefinition) {
         if (action == null) {
             return null;
         }

@@ -3,7 +3,7 @@ package com.qcadoo.mes.view.internal.module;
 import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.internal.api.Module;
 
-public class TabModule extends Module {
+public class ViewTabModule extends Module {
 
     @Override
     public void init(final PluginState state) {

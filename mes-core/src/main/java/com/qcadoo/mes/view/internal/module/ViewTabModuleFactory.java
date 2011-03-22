@@ -4,24 +4,21 @@ import org.jdom.Element;
 
 import com.qcadoo.plugin.internal.api.ModuleFactory;
 
-public class TabModuleFactory implements ModuleFactory<ViewModule> {
+public class ViewTabModuleFactory implements ModuleFactory<ViewTabModule> {
 
     @Override
     public void init() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
-    public ViewModule parse(final String pluginIdentifier, final Element element) {
+    public ViewTabModule parse(final String pluginIdentifier, final Element element) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public String getIdentifier() {
-        // TODO Auto-generated method stub
-        return null;
+        return "viewWindowTabExtension";
     }
 
 }
