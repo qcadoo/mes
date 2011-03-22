@@ -1,6 +1,8 @@
 package com.qcadoo.mes.view.components.tabWindow;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -159,8 +161,10 @@ public class WindowComponentPattern extends AbstractContainerPattern {
         json.put("firstTabName", firstTabName);
         JSONObject translations = new JSONObject();
         for (String childName : getChildren().keySet()) {
-            translations.put("tab." + childName,
-                    getTranslationService().translate(getTranslationPath() + "." + childName + ".tabLabel", locale));
+            List<String> tabNameKeys = new LinkedList<String>();
+            tabNameKeys.add(getTranslationPath() + "." + childName + ".tabLabel");
+            tabNameKeys.add("core.tabs." + childName + ".tabLabel");
+            translations.put("tab." + childName, getTranslationService().translate(tabNameKeys, locale));
         }
         json.put("translations", translations);
         return json;
