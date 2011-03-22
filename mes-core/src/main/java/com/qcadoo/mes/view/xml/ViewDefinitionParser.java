@@ -24,6 +24,7 @@
 
 package com.qcadoo.mes.view.xml;
 
+import java.io.InputStream;
 import java.util.List;
 
 import org.springframework.core.io.Resource;
@@ -35,6 +36,7 @@ import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.internal.ComponentCustomEvent;
+import com.qcadoo.mes.view.ribbon.RibbonGroup;
 
 public interface ViewDefinitionParser {
 
@@ -52,6 +54,12 @@ public interface ViewDefinitionParser {
 
     Boolean getBooleanAttribute(Node node, String name, boolean defaultValue);
 
+    List<Node> geElementChildren(Node node);
+
     List<ViewDefinition> parseViewXml(final Resource viewXml);
+
+    List<ViewExtension> getViewExtensionNodes(InputStream resource, String tagType);
+
+    RibbonGroup parseRibbonGroup(Node groupNode, ViewDefinition viewDefinition);
 
 }
