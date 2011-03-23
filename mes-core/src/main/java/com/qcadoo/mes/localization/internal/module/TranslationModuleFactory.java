@@ -2,7 +2,7 @@ package com.qcadoo.mes.localization.internal.module;
 
 import org.jdom.Element;
 
-import com.qcadoo.plugin.internal.api.ModuleFactory;
+import com.qcadoo.plugin.api.ModuleFactory;
 
 public class TranslationModuleFactory implements ModuleFactory<TranslationModule> {
 

@@ -8,7 +8,7 @@ import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.view.hooks.internal.HookDefinitionImpl;
 import com.qcadoo.mes.view.hooks.internal.HookFactory;
 import com.qcadoo.mes.view.internal.ComponentCustomEvent;
-import com.qcadoo.plugin.internal.api.ModuleFactory;
+import com.qcadoo.plugin.api.ModuleFactory;
 
 public class ViewListenerModuleFactory implements ModuleFactory<ViewListenerModule> {
 

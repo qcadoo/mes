@@ -16,8 +16,8 @@ import com.qcadoo.mes.view.components.tabWindow.WindowComponentPattern;
 import com.qcadoo.mes.view.ribbon.RibbonGroup;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 import com.qcadoo.mes.view.xml.ViewExtension;
+import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.PluginState;
-import com.qcadoo.plugin.internal.api.Module;
 
 public class ViewRibbonModule extends Module {
 
