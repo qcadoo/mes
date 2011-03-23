@@ -66,6 +66,27 @@
 			<resource>qualityControls/view/qualityControlsTest.xml</resource>
 		</view:view>
 		
+		<view:viewRibbonExtension>
+			<resource>qualityControls/view/viewExtension.xml</resource>
+		</view:viewRibbonExtension>
+		
+		<view:viewWindowTabExtension>
+			<resource>qualityControls/view/viewExtension.xml</resource>
+		</view:viewWindowTabExtension>
+		
+		<view:viewHookExtension plugin="products" view="technology" hookType="preRenderHook" 
+				bean="com.qcadoo.mes.qualityControls.QualityControlService" method="changeQualityControlType" />
+				
+		<view:viewListenerExtension plugin="products" view="orders" component="grid" event="activateOrder" 
+				bean="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
+		<view:viewListenerExtension plugin="products" view="orders" component="grid" event="generateQualityControl" 
+				bean="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
+				
+		<view:viewListenerExtension plugin="products" view="order" component="form" event="activateOrder" 
+				bean="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
+		<view:viewListenerExtension plugin="products" view="order" component="form" event="generateQualityControl" 
+				bean="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
+		
 	</modules>
 
 </plugin>

@@ -34,4 +34,4 @@
 
 <tiles:useAttribute name="component" />
 
-<span id="${component['path']}" class="component_label">${component['jspOptions']['translations']['label']}</span>
+<span id="${component['path']}" class="component_label ${component['jspOptions']['labelStyle']}">${component['jspOptions']['translations']['label']}</span>

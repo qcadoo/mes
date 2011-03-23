@@ -43,7 +43,7 @@ public class BasicControllerTest {
     @Test
     public void shouldPrepareViewForParameters() throws Exception {
         // // given
-        Map<String, String> arguments = ImmutableMap.of("context", "{\"window.parameter.id\":\"13\"}");
+        Map<String, String> arguments = ImmutableMap.of("context", "{\"form.id\":\"13\"}");
         ModelAndView expectedMav = mock(ModelAndView.class);
         CrudController crudController = mock(CrudController.class);
         given(crudController.prepareView("basic", "parameter", arguments, Locale.ENGLISH)).willReturn(expectedMav);

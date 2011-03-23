@@ -120,7 +120,7 @@
 				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="technology" reference="form">
-				<component type="gridLayout" name="gridsLayout" columns="3" rows="7" hasBorders="false">
+				<component type="gridLayout" name="gridsLayout" columns="3" rows="5" hasBorders="false">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="master" field="master" />
 					</layoutElement>
@@ -130,8 +130,8 @@
 					<layoutElement column="1" row="3" height="2">
 						<component type="textarea" name="name" field="name" />
 					</layoutElement>
-					<layoutElement column="1" row="5">
-						<component type="lookup" name="product" field="product">
+					<layoutElement column="2" row="1">
+						<component type="lookup" name="product" field="product" reference="product">
 							<option type="column" name="name" fields="name" link="true"
 								width="200" />
 							<option type="column" name="ean" fields="ean" />
@@ -139,58 +139,13 @@
 							<option type="orderable" value="name,ean" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkBatchNrReq"/>
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="generateTechnologyNumber"/>
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="6" height="2">
+					<layoutElement column="2" row="2" height="2">
 						<component type="textarea" name="description" field="description" />
 					</layoutElement>
-					
-					<layoutElement column="2" row="1" height="5">
-						<component type="smallTabLayout" name="smallTabLayout">
-							<tabElement name="batch">
-								<component type="gridLayout" name="batchGridsLayout" columns="1" rows="4">
-									<layoutElement column="1" row="1">
-										<component type="checkbox" name="batchRequired" reference="batchRequired" field="batchRequired">
-											<option type="labelWidth" value="50" />
-										</component>
-									</layoutElement>
-									<layoutElement column="1" row="2">
-										<component type="checkbox" name="shiftFeatureRequired" reference="shiftFeatureRequired" field="shiftFeatureRequired">
-											<option type="labelWidth" value="50" />
-										</component>
-									</layoutElement>
-									<layoutElement column="1" row="3">	
-										<component type="checkbox" name="postFeatureRequired" reference="postFeatureRequired" field="postFeatureRequired">
-											<option type="labelWidth" value="50" />
-										</component>
-									</layoutElement>
-									<layoutElement column="1" row="4">
-										<component type="checkbox" name="otherFeatureRequired" reference="otherFeatureRequired" field="otherFeatureRequired">
-											<option type="labelWidth" value="50" />
-										</component>
-									</layoutElement>
-								</component>
-							</tabElement>
-							<tabElement name="qualityControl">
-								<component type="gridLayout" name="qualityControlGridsLayout" columns="1" rows="4">
-									<layoutElement column="1" row="1">
-										<component type="select" name="qualityControlType" reference="qualityControlType" field="qualityControlType" >
-											<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkQualityControlType"/>									
-										</component>
-									</layoutElement>
-									<layoutElement column="1" row="2">	
-										<component type="input" name="unitSamplingNr" reference="unitSamplingNr" field="unitSamplingNr" />
-									</layoutElement>
-									<layoutElement column="1" row="3" height="2">
-										<component type="textarea" name="qualityControlInstruction" reference="qualityControlInstruction" field="qualityControlInstruction" />
-									</layoutElement>
-								</component>
-							</tabElement>
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="6">
+					<layoutElement column="2" row="4">
 						<component type="select" name="componentQuantityAlgorithm" field="componentQuantityAlgorithm" />
 					</layoutElement>
 				</component>
@@ -278,9 +233,6 @@
 				</component>
 			</component>
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="changeQualityControlType"/>	
-		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="checkAttributesReq" />
-		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="disableBatchRequiredForTechnology"/>
 	</view>
 	<view name="technologyOperationComponent" model="technologyOperationComponent">
 		<component type="window" name="window">
@@ -300,9 +252,6 @@
 							<option type="fieldCode" value="number" />
 							<option type="required" value="true" />
 						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2">
-						<component type="checkbox" name="qualityControlRequired" reference="qualityControlRequired" field="qualityControlRequired" />
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>
@@ -357,7 +306,6 @@
 							<option type="orderable" value="name,ean" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkBatchNrReq"/>
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.util.UnitService" method="fillProductUnit" />
 						</component>
 					</layoutElement>
@@ -366,11 +314,6 @@
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="input" name="unit" reference="unit" defaultEnabled="false" />
-					</layoutElement>
-					<layoutElement column="1" row="4">
-						<component type="checkbox" name="batchRequired" reference="batchRequired" field="batchRequired" >
-							<option type="labelWidth" value="35" />
-						</component>
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>

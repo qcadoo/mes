@@ -131,33 +131,9 @@
 			</ribbon>				
 			<component type="form" name="parameter" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
-					<layoutElement column="1" row="1" height="3">
-						<component type="smallTabLayout" name="smallTabLayout">
-							<tabElement name="qualityControl">
-								<component type="gridLayout" name="qualityControlGridLayout" columns="1" rows="2">
-									<layoutElement column="1" row="1">
-										<component type="checkbox" name="autoGenerateQualityControl" field="autoGenerateQualityControl">
-											<option type="labelWidth" value="80" />
-											<option type="align" value="right" />
-										</component>
-									</layoutElement>
-									<layoutElement column="1" row="2">
-										<component type="checkbox" name="checkDoneOrderForQuality" field="checkDoneOrderForQuality">
-											<option type="labelWidth" value="80" />
-											<option type="align" value="right" />
-										</component>
-									</layoutElement>
-								</component>
-							</tabElement>
-							<tabElement name="batch">
-								<component type="gridLayout" name="batchGridLayout" columns="1" rows="1">
-									<layoutElement column="1" row="1">	
-										<component type="select" name="batchForDoneOrder" field="batchForDoneOrder" reference="batchForDoneOrder">
-											<option type="labelWidth" value="50" />
-										</component>
-									</layoutElement>
-								</component>
-							</tabElement>
+					<layoutElement column="1" row="1">
+						<component type="label" name="parametersWelcomeLabel">
+							<option type="labelStyle" value="text"/>
 						</component>
 					</layoutElement>
 				</component>
