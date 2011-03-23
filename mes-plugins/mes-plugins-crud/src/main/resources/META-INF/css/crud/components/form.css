@@ -200,7 +200,7 @@
 	text-align: left;
 }
 
-.component_container_form select {
+.component_container_form_w select {
 	width: 100%;
 	margin-top: 11px;
 }
@@ -588,8 +588,19 @@
 
 .component_label {
 	font-family: arial;
-	font-size: 11px;
 	font-style: normal;
+}
+.component_label.normal {
+	font-size: 11px;
 	font-weight: bold;
 	line-height: 20px;
+}
+.component_label.text {
+	font-size: 13px;
+	font-weight: normal;
+	display: inline-block;
+	width: 100%;
+	text-align: left;
+	padding-left: 17px;
+	padding-top: 5px;
 }

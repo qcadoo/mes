@@ -28,7 +28,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.json.JSONException;
+
 import com.qcadoo.mes.view.ComponentDefinition;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
@@ -42,8 +45,22 @@ public class LabelComponentPattern extends AbstractComponentPattern {
 
     private static final String JS_PATH = "/js/crud/qcd/components/elements/label.js";
 
+    private String labelStyle = "normal";
+
     public LabelComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
+    }
+
+    @Override
+    protected void initializeComponent() throws JSONException {
+        for (ComponentOption option : getOptions()) {
+            if ("labelStyle".equals(option.getType())) {
+                labelStyle = option.getValue();
+                if (!"normal".equals(labelStyle) && !"text".equals(labelStyle)) {
+                    throw new IllegalStateException("unknown label style: " + labelStyle);
+                }
+            }
+        }
     }
 
     @Override
@@ -52,6 +69,7 @@ public class LabelComponentPattern extends AbstractComponentPattern {
         Map<String, Object> translations = new HashMap<String, Object>();
         translations.put("label", getTranslationService().translate(getTranslationPath() + ".label", locale));
         options.put("translations", translations);
+        options.put("labelStyle", labelStyle);
         return options;
     }
 

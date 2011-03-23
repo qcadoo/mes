@@ -94,11 +94,11 @@ public class WindowComponentPattern extends AbstractContainerPattern {
 
                 if (mainTab == null) {
                     ComponentDefinition componentDefinition = new ComponentDefinition();
-                    componentDefinition.setName("mianTab");
+                    componentDefinition.setName("mainTab");
                     componentDefinition.setParent(this);
                     componentDefinition.setTranslationService(getTranslationService());
                     componentDefinition.setViewDefinition(getViewDefinition());
-                    componentDefinition.setReference("mianTab");
+                    componentDefinition.setReference("mainTab");
                     componentDefinition.setDataDefinition(null);
                     mainTab = new WindowTabComponentPattern(componentDefinition);
                     addChild(mainTab);

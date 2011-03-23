@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,9 +40,7 @@ import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
-import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
-import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 import com.qcadoo.mes.view.components.select.SelectComponentState;
 import com.qcadoo.mes.view.components.tree.TreeComponentState;
 import com.qcadoo.model.api.DataDefinition;
@@ -162,66 +159,6 @@ public final class TechnologyService {
         outProductsGrid.setIsEditable(false);
     }
 
-    public void checkAttributesReq(final ViewDefinitionState viewDefinitionState, final Locale locale) {
-
-        FormComponentState form = (FormComponentState) viewDefinitionState.getComponentByReference("form");
-
-        if (form.getEntityId() != null) {
-            // form is already saved
-            return;
-        }
-
-        SearchResult searchResult = dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list();
-        Entity currentAttribute = null;
-
-        if (searchResult.getEntities().size() > 0) {
-            currentAttribute = searchResult.getEntities().get(0);
-        }
-
-        if (currentAttribute != null) {
-
-            Boolean shiftReq = (Boolean) currentAttribute.getField("shiftReq");
-            if (shiftReq != null && shiftReq) {
-                FieldComponentState req = (FieldComponentState) viewDefinitionState
-                        .getComponentByReference("shiftFeatureRequired");
-                req.setFieldValue("1");
-            }
-
-            Boolean postReq = (Boolean) currentAttribute.getField("postReq");
-            if (postReq != null && postReq) {
-                FieldComponentState req = (FieldComponentState) viewDefinitionState
-                        .getComponentByReference("postFeatureRequired");
-                req.setFieldValue("1");
-            }
-
-            Boolean otherReq = (Boolean) currentAttribute.getField("otherReq");
-            if (otherReq != null && otherReq) {
-                FieldComponentState req = (FieldComponentState) viewDefinitionState
-                        .getComponentByReference("otherFeatureRequired");
-                req.setFieldValue("1");
-            }
-        }
-
-    }
-
-    public void checkBatchNrReq(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (!(state instanceof LookupComponentState)) {
-            throw new IllegalStateException("component is not lookup");
-        }
-
-        LookupComponentState product = (LookupComponentState) state;
-
-        FieldComponentState batchReq = (FieldComponentState) viewDefinitionState.getComponentByReference("batchRequired");
-
-        if (product.getFieldValue() != null) {
-            if (batchRequired(product.getFieldValue())) {
-                batchReq.setFieldValue("1");
-            } else {
-                batchReq.setFieldValue("0");
-            }
-        }
-    }
-
     public void checkQualityControlType(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (!(state instanceof SelectComponentState)) {
@@ -274,15 +211,6 @@ public final class TechnologyService {
             return searchResult.getEntities().get(0);
         }
         return null;
-    }
-
-    private boolean batchRequired(final Long selectedProductId) {
-        Entity product = getProductById(selectedProductId);
-        if (product != null) {
-            return (Boolean) product.getField("genealogyBatchReq");
-        } else {
-            return false;
-        }
     }
 
     public boolean copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
@@ -375,21 +303,6 @@ public final class TechnologyService {
         return copies;
     }
 
-    public void disableBatchRequiredForTechnology(final ViewDefinitionState state, final Locale locale) {
-        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
-        if (form.getFieldValue() != null) {
-            FieldComponentState batchRequired = (FieldComponentState) state.getComponentByReference("batchRequired");
-            if (checkProductInComponentsBatchRequired((Long) form.getFieldValue())) {
-                batchRequired.setEnabled(false);
-                batchRequired.setFieldValue("1");
-                batchRequired.requestComponentUpdateState();
-            } else {
-                batchRequired.setEnabled(true);
-            }
-        }
-
-    }
-
     public boolean validateTechnologyOperationComponent(final DataDefinition dataDefinition, final Entity entity) {
         boolean isValid = true;
         if ("operation".equals(entity.getStringField("entityType"))) {
@@ -422,15 +335,6 @@ public final class TechnologyService {
     // ((FieldComponentState) state.getComponentByReference("referenceMode")).setRequired(true);
     // }
 
-    private boolean checkProductInComponentsBatchRequired(final Long entityId) {
-        SearchResult searchResult = dataDefinitionService.get("products", "operationProductInComponent").find()
-                .restrictedWith(Restrictions.eq("operationComponent.technology.id", entityId))
-                .restrictedWith(Restrictions.eq("batchRequired", true)).withMaxResults(1).list();
-
-        return (searchResult.getTotalNumberOfEntities() > 0);
-
-    }
-
     public boolean checkIfUnitSampligNrIsReq(final DataDefinition dataDefinition, final Entity entity) {
         String qualityControlType = (String) entity.getField("qualityControlType");
 
@@ -451,34 +355,4 @@ public final class TechnologyService {
         }
     }
 
-    public void changeQualityControlType(final ViewDefinitionState state, final Locale locale) {
-        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
-        FieldComponentState qualityControlType = (FieldComponentState) state.getComponentByReference("qualityControlType");
-        if (form.getFieldValue() != null) {
-            if (checkOperationQualityControlRequired((Long) form.getFieldValue())) {
-                qualityControlType.setFieldValue("04forOperation");
-                qualityControlType.setEnabled(false);
-                qualityControlType.requestComponentUpdateState();
-            } else {
-                qualityControlType.setEnabled(true);
-            }
-        }
-        FieldComponentState unitSamplingNr = (FieldComponentState) state.getComponentByReference("unitSamplingNr");
-        if (qualityControlType.getFieldValue() == null || !qualityControlType.getFieldValue().equals("02forUnit")) {
-            unitSamplingNr.setRequired(false);
-            unitSamplingNr.setVisible(false);
-        } else if (qualityControlType.getFieldValue().equals("02forUnit")) {
-            unitSamplingNr.setRequired(true);
-            unitSamplingNr.setVisible(true);
-        }
-    }
-
-    private boolean checkOperationQualityControlRequired(final Long entityId) {
-        SearchResult searchResult = dataDefinitionService.get("products", "technologyOperationComponent").find()
-                .restrictedWith(Restrictions.eq("technology.id", entityId))
-                .restrictedWith(Restrictions.eq("qualityControlRequired", true)).withMaxResults(1).list();
-
-        return (searchResult.getTotalNumberOfEntities() > 0);
-
-    }
 }

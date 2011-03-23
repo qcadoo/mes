@@ -40,9 +40,6 @@
 		<model:field plugin="products" model="technology">
 			<boolean name="otherFeatureRequired" />
 		</model:field>
-		<model:field plugin="products" model="technology">
-			<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology" default="01perProductOut" required="true" />
-		</model:field>
 		<model:field plugin="products" model="operationProductInComponent">
 			<boolean name="batchRequired" />
 		</model:field>
@@ -81,10 +78,6 @@
 			<resource>genealogies/view/orderGenealogies.xml</resource>
 		</view:view>
 		
-		<view:viewHookExtension plugin="products" view="products" hookType="preRenderHook" bean="com.qcadoo.mes.genealogies.GenealogyService" method="testPreRenderHook" />
-		
-		<view:viewListenerExtension plugin="products" view="products" component="grid" event="testEvent" bean="com.qcadoo.mes.genealogies.GenealogyService" method="testListener" />
-		
 		<view:viewRibbonExtension>
 			<resource>genealogies/view/productsExtension.xml</resource>
 		</view:viewRibbonExtension>
@@ -92,6 +85,31 @@
 		<view:viewWindowTabExtension>
 			<resource>genealogies/view/productsExtension.xml</resource>
 		</view:viewWindowTabExtension>
+		
+		<view:viewHookExtension plugin="products" view="technology" hookType="preRenderHook" 
+				bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkAttributesReq" />
+		<view:viewHookExtension plugin="products" view="technology" hookType="preRenderHook" 
+				bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="disableBatchRequiredForTechnology" />
+				
+		<view:viewListenerExtension plugin="products" view="technology" component="product" event="onSelectedEntityChange" 
+				bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
+		
+		<view:viewListenerExtension plugin="products" view="operationProductInComponent" component="product" event="onSelectedEntityChange" 
+				bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
+				
+		<view:viewListenerExtension plugin="products" view="orders" component="grid" event="activateOrder" 
+				bean="com.qcadoo.mes.genealogies.AutoGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone" />
+		<view:viewListenerExtension plugin="products" view="orders" component="grid" event="showGenealogy" 
+				bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
+		<view:viewListenerExtension plugin="products" view="orders" component="grid" event="newGenealogy" 
+				bean="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
+				
+		<view:viewListenerExtension plugin="products" view="order" component="form" event="activateOrder" 
+				bean="com.qcadoo.mes.genealogies.AutoGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone" />
+		<view:viewListenerExtension plugin="products" view="order" component="form" event="showGenealogy" 
+				bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
+		<view:viewListenerExtension plugin="products" view="order" component="form" event="newGenealogy" 
+				bean="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
 		
 	</modules>
 

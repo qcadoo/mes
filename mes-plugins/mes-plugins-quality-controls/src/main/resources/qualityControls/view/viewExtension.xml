@@ -1,0 +1,112 @@
+<viewExtensions>
+
+	<ribbonExtension plugin="products" view="orders">
+		<group name="qualityContol">
+			<bigButton name="generateQualityControl"
+				action="#{grid}.fireEvent(generateQualityControl);" icon="qualityControlIcon24.png"
+				state="disabled">
+				<script>
+					<![CDATA[
+						#{grid}.addOnChangeListener({
+							onChange: function(selectedEntitiesArray) {
+								if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+									this.disable();
+								} else if (selectedEntitiesArray.length == 1) {
+									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
+									if (selectedEntityStatus == '03done') {
+										this.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+									} else {
+										this.enable();
+									}
+								} else {
+									this.disable("#{translate(moreThanOneRecordSelected)}");
+								}
+							}
+						});					
+					]]>
+				</script>
+			</bigButton>
+		</group>
+	</ribbonExtension>
+	
+	<ribbonExtension plugin="products" view="order">
+		<group name="qualityContol">
+			<bigButton name="generateQualityControl" icon="qualityControlIcon24.png" state="disabled">
+				<script>
+					<![CDATA[
+						this.addOnChangeListener({
+							onClick: function() {
+								if(window.canClose()) {
+									#{form}.performEvent('generateQualityControl', []);
+								}
+							}
+						});
+						#{form}.addOnChangeListener({
+							onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								var state = #{state}.getValue().content.value;
+								if (! value.content.entityId || ! state) {
+									this.disable();
+								} else if (state == "03done") {
+									this.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+								} else {
+									this.enable();
+								}
+							}
+						});					
+					]]>
+				</script>
+			</bigButton>
+		</group>
+	</ribbonExtension>
+
+	<windowTabExtension plugin="products" view="technology">
+		<windowTab name="qualityControlTab" reference="qualityControlTab">
+			<component type="gridLayout" name="genealogyLayout" columns="3" rows="4">
+				<layoutElement column="1" row="1">
+					<component type="select" name="qualityControlType" reference="qualityControlType" field="#{form}.qualityControlType" >
+						<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkQualityControlType"/>									
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2">	
+					<component type="input" name="unitSamplingNr" reference="unitSamplingNr" field="#{form}.unitSamplingNr" />
+				</layoutElement>
+				<layoutElement column="1" row="3" height="2">
+					<component type="textarea" name="qualityControlInstruction" reference="qualityControlInstruction" field="#{form}.qualityControlInstruction" />
+				</layoutElement>
+			</component>
+		</windowTab>
+	</windowTabExtension>
+	
+	<windowTabExtension plugin="products" view="technologyOperationComponent">
+		<windowTab name="qualityControlTab" reference="qualityControlTab">
+			<component type="gridLayout" name="qualityControlGridLayout" columns="1" rows="1">
+				<layoutElement column="1" row="1">
+						<component type="checkbox" name="qualityControlRequired" reference="qualityControlRequired" field="#{form}.qualityControlRequired" />
+					</layoutElement>
+			</component>
+		</windowTab>
+	</windowTabExtension>
+
+	<windowTabExtension plugin="basic" view="parameter">
+		<windowTab name="qualityControlTab" reference="qualityControlTab">
+			<component type="gridLayout" name="qualityControlGridLayout" columns="3" rows="2">
+				<layoutElement column="1" row="1">
+					<component type="checkbox" name="autoGenerateQualityControl" field="#{form}.autoGenerateQualityControl">
+						<option type="labelWidth" value="80" />
+						<option type="align" value="right" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="checkbox" name="checkDoneOrderForQuality" field="#{form}.checkDoneOrderForQuality">
+						<option type="labelWidth" value="80" />
+						<option type="align" value="right" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
+	</windowTabExtension>
+
+</viewExtensions>
