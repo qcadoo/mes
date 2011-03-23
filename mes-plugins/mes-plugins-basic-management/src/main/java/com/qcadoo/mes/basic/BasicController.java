@@ -48,7 +48,7 @@ public class BasicController {
 
     @RequestMapping(value = "parameter", method = RequestMethod.GET)
     public ModelAndView getParameterPageView(final Locale locale) {
-        JSONObject json = new JSONObject(ImmutableMap.of("window.parameter.id", parameterService.getParameterId().toString()));
+        JSONObject json = new JSONObject(ImmutableMap.of("form.id", parameterService.getParameterId().toString()));
         Map<String, String> arguments = ImmutableMap.of("context", json.toString());
         return crudController.prepareView("basic", "parameter", arguments, locale);
     }

@@ -10,10 +10,6 @@ public interface InternalMenuService extends MenuService {
 
     void createCategoryIfNotExists(String pluginIdentifier, String categoryName);
 
-    void enableCategory(String pluginIdentifier, String categoryName);
-
-    void disableCategory(String pluginIdentifier, String categoryName);
-
     void createItemIfNotExists(String pluginIdentifier, String name, String category, String viewPluginIdentifier, String viewName);
 
     void enableItem(String pluginIdentifier, String name);
