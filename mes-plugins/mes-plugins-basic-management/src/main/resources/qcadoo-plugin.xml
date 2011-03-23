@@ -21,7 +21,7 @@
 		
 		<view:menu-category name="home" />
 		<view:menu-category name="basic" />
-		<view:menu-category name="administration" admin="true" />
+		<view:menu-category name="administration" />
 		
 		<view:menu-item-url name="home" category="home" url="/homePage.html" />
 		<view:menu-item name="machines" category="basic" view="machines" />

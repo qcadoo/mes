@@ -10,17 +10,12 @@ public class MenuCategoryModule extends Module {
 
     private final String menuCategoryName;
 
-    private final boolean canBeEnabled;
-
     private final String pluginIdentifier;
 
-    public MenuCategoryModule(final InternalMenuService menuService, final String pluginIdentifier,
-            final String menuCategoryName, final boolean canBeEnabled) {
-        System.out.println(" ------> " + menuCategoryName + " : " + canBeEnabled);
+    public MenuCategoryModule(final InternalMenuService menuService, final String pluginIdentifier, final String menuCategoryName) {
         this.menuService = menuService;
         this.pluginIdentifier = pluginIdentifier;
         this.menuCategoryName = menuCategoryName;
-        this.canBeEnabled = canBeEnabled;
     }
 
     @Override
@@ -30,16 +25,12 @@ public class MenuCategoryModule extends Module {
 
     @Override
     public void enable() {
-        if (canBeEnabled) {
-            menuService.enableCategory(pluginIdentifier, menuCategoryName);
-        } else {
-            menuService.disableCategory(pluginIdentifier, menuCategoryName);
-        }
+        // empty
     }
 
     @Override
     public void disable() {
-        menuService.disableCategory(pluginIdentifier, menuCategoryName);
+        // empty
     }
 
 }

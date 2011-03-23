@@ -25,9 +25,6 @@ public class MenuCategory {
     private String name;
 
     @Column
-    private boolean active;
-
-    @Column
     private int succession;
 
     @OneToMany(mappedBy = "category")
@@ -47,14 +44,6 @@ public class MenuCategory {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(final boolean active) {
-        this.active = active;
     }
 
     public int getSuccession() {
