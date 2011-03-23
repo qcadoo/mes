@@ -1,8 +1,8 @@
 package com.qcadoo.mes.view.internal.module;
 
 import com.qcadoo.mes.internal.InternalMenuService;
-import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.plugin.api.Module;
+import com.qcadoo.plugin.api.PluginState;
 
 public class MenuCategoryModule extends Module {
 
