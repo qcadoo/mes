@@ -27,182 +27,257 @@ package com.qcadoo.mes.internal;
 import java.util.List;
 import java.util.Locale;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.utils.Pair;
-import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.menu.MenuDefinition;
-import com.qcadoo.mes.view.menu.MenuItem;
 import com.qcadoo.mes.view.menu.MenulItemsGroup;
 import com.qcadoo.mes.view.menu.items.UrlMenuItem;
 import com.qcadoo.mes.view.menu.items.ViewDefinitionMenuItemItem;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.aop.Monitorable;
-import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.model.beans.menu.MenuCategory;
+import com.qcadoo.model.beans.menu.MenuItem;
+import com.qcadoo.model.beans.menu.MenuView;
+import com.qcadoo.plugin.api.PluginAccessor;
 
 @Service
-// TODO after implementing plugins, reimplement it
-public final class MenuServiceImpl implements MenuService { // , ApplicationListener<ContextRefreshedEvent> {
+public final class MenuServiceImpl implements InternalMenuService {
 
-    // private static final Logger LOG = LoggerFactory.getLogger(MenuServiceImpl.class);
+    @Autowired
+    private PluginAccessor pluginAccessor;
 
     @Autowired
     private TranslationService translationService;
 
     @Autowired
-    private ViewDefinitionService viewDefinitionService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private SessionFactory sessionFactory;
 
     @Value("${showAdministrationMenu}")
     private boolean showAdministrationMenu;
 
     @Override
-    @Transactional
-    @Monitorable
-    public void init() {
-        DataDefinition viewDefinitionDD = dataDefinitionService.get("menu", "viewDefinition");
-
-        List<Pair<String, String>> menuViews = viewDefinitionService.listForMenu();
-        for (Pair<String, String> view : menuViews) {
-            int existingViewsNumber = viewDefinitionDD.find().restrictedWith(Restrictions.eq("pluginIdentifier", view.getKey()))
-                    .restrictedWith(Restrictions.eq("viewName", view.getValue())).list().getTotalNumberOfEntities();
-            if (existingViewsNumber == 0) {
-                Entity viewDefinitionEntity = viewDefinitionDD.create();
-                viewDefinitionEntity.setField("menuName", view.getValue());
-                viewDefinitionEntity.setField("viewName", view.getValue());
-                viewDefinitionEntity.setField("pluginIdentifier", view.getKey());
-                viewDefinitionEntity.setField("url", false);
-                viewDefinitionDD.save(viewDefinitionEntity);
-            }
-        }
-
-        for (Entity viewDefinitionEntity : viewDefinitionDD.find().list().getEntities()) {
-            if ((Boolean) viewDefinitionEntity.getField("url")) {
-                continue;
-            }
-            ViewDefinition vd = viewDefinitionService.getWithoutSession(viewDefinitionEntity.getStringField("pluginIdentifier"),
-                    viewDefinitionEntity.getStringField("viewName"));
-            if (vd == null || !vd.isMenuAccessible()) {
-                viewDefinitionDD.delete(viewDefinitionEntity.getId());
-            }
-        }
-
-        addUrlItem("homePage", "homePage.html", "crud");
-        addUrlItem("profile", "userProfile.html", "crud");
-        addUrlItem("systemInfoView", "systemInfo.html", "crud");
-
-        addUrlItem("systemParameters", "parameter.html", "basic");
-        addUrlItem("genealogyAttributes", "genealogyAttribute.html", "genealogies");
-    }
-
-    private void addUrlItem(final String name, final String url, final String pluginIdentifier) {
-        DataDefinition viewDefinitionDD = dataDefinitionService.get("menu", "viewDefinition");
-
-        int existingViewsNumber = viewDefinitionDD.find().restrictedWith(Restrictions.eq("pluginIdentifier", pluginIdentifier))
-                .restrictedWith(Restrictions.eq("viewName", url)).list().getTotalNumberOfEntities();
-        if (existingViewsNumber == 0) {
-            Entity viewDefinitionEntity = viewDefinitionDD.create();
-            viewDefinitionEntity.setField("menuName", name);
-            viewDefinitionEntity.setField("viewName", url);
-            viewDefinitionEntity.setField("pluginIdentifier", pluginIdentifier);
-            viewDefinitionEntity.setField("url", true);
-            viewDefinitionDD.save(viewDefinitionEntity);
-        }
-    }
-
-    @Override
+    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     @Monitorable
     public MenuDefinition getMenu(final Locale locale) {
 
-        MenuDefinition menuDef = new MenuDefinition();
+        MenuDefinition menuDefinition = new MenuDefinition();
 
-        DataDefinition menuDD = dataDefinitionService.get("menu", "menuCategory");
-        List<Entity> categories = menuDD.find().list().getEntities();
+        List<MenuCategory> menuCategories = sessionFactory.getCurrentSession().createCriteria(MenuCategory.class)
+                .addOrder(Order.asc("succession")).list();
 
         MenulItemsGroup administrationCategory = null;
-        boolean hasMenuCategoryGridView = false;
 
-        for (Entity categoryEntity : categories) {
-            if (!(Boolean) categoryEntity.getField("active")) {
-                continue;
-            }
-            String categoryName = categoryEntity.getStringField("name");
-            String categoryTranslationName = categoryEntity.getStringField("translationName");
+        boolean hasMenuManagement = false;
 
-            MenulItemsGroup category = new MenulItemsGroup(categoryName, getLabel(categoryName, categoryTranslationName, locale));
-            if ("core.menu.administration".equals(categoryTranslationName)) {
-                administrationCategory = category;
+        for (MenuCategory menuCategory : menuCategories) {
+            String label = menuCategory.getName();
+
+            if (menuCategory.getPluginIdentifier() != null) {
+                label = translationService.translate(menuCategory.getPluginIdentifier() + ".menu." + menuCategory.getName(),
+                        locale);
             }
 
-            for (Entity itemEntity : categoryEntity.getHasManyField("viewDefinitionItems")) {
-                if (!(Boolean) itemEntity.getField("active")) {
+            MenulItemsGroup category = new MenulItemsGroup(menuCategory.getName(), label);
+
+            List<MenuItem> menuItems = sessionFactory.getCurrentSession().createCriteria(MenuItem.class)
+                    .add(Restrictions.eq("active", true)).add(Restrictions.eq("category", menuCategory))
+                    .addOrder(Order.asc("succession")).list();
+
+            for (MenuItem menuItem : menuItems) {
+                if (!menuItem.isActive()) {
                     continue;
                 }
-                String itemName = itemEntity.getStringField("name");
-                Entity viewDefinitionEntity = itemEntity.getBelongsToField("viewDefinition");
-                String viewName = viewDefinitionEntity.getStringField("viewName");
-                String pluginIdentifier = viewDefinitionEntity.getStringField("pluginIdentifier");
-                boolean isUrl = (Boolean) viewDefinitionEntity.getField("url");
-                if (belongsToActivePlugin(pluginIdentifier)) {
-                    String itemTranslationName = itemEntity.getStringField("translationName");
-                    MenuItem item;
-                    String itemLabel = getLabel(itemName, itemTranslationName, locale);
-                    if (isUrl) {
-                        item = new UrlMenuItem(itemName, itemLabel, pluginIdentifier, viewName);
-                    } else {
-                        item = new ViewDefinitionMenuItemItem(itemName, itemLabel, pluginIdentifier, viewName);
-                    }
-                    category.addItem(item);
+
+                MenuView menuView = menuItem.getView();
+
+                String itemLabel = menuItem.getName();
+
+                if (menuItem.getPluginIdentifier() != null) {
+                    itemLabel = translationService.translate(menuItem.getPluginIdentifier() + ".menu." + menuCategory.getName()
+                            + "." + menuItem.getName(), locale);
                 }
-                if ("menu".equals(pluginIdentifier) && "menuCategories".equals(viewName)) {
-                    hasMenuCategoryGridView = true;
+
+                if (menuView.getUrl() != null) {
+                    category.addItem(new UrlMenuItem(menuItem.getName(), itemLabel, null, menuView.getUrl()));
+                } else if (belongsToActivePlugin(menuView.getPluginIdentifier())) {
+                    category.addItem(new ViewDefinitionMenuItemItem(menuItem.getName(), itemLabel,
+                            menuView.getPluginIdentifier(), menuView.getName()));
+                }
+
+                if ("menu".equals(menuView.getPluginIdentifier()) && "menuCategories".equals(menuView.getView())) {
+                    hasMenuManagement = true;
                 }
             }
 
-            menuDef.addItem(category);
-        }
-
-        if (!hasMenuCategoryGridView && showAdministrationMenu) {
-            if (administrationCategory == null) {
-                administrationCategory = new MenulItemsGroup("administration", getLabel("administration",
-                        "core.menu.administration", locale));
-                menuDef.addItem(administrationCategory);
-            }
-            administrationCategory.addItem(new ViewDefinitionMenuItemItem("menuCategories", getLabel("menuCategories",
-                    "menu.menu.administration.menu", locale), "menu", "menuCategories"));
-        }
-
-        return menuDef;
-    }
-
-    private String getLabel(final String name, final String translationName, final Locale locale) {
-        if (translationName == null) {
-            return name;
-        } else {
-            String[] translationNameParts = translationName.split("\\.");
-            String lastPart = translationNameParts[translationNameParts.length - 1];
-            if (name.equals(lastPart)) {
-                return translationService.translate(translationName, locale);
-            } else {
-                return name;
+            if ("administration".equals(menuCategory.getName())) {
+                administrationCategory = category;
+            } else if (!category.getItems().isEmpty()) {
+                menuDefinition.addItem(category);
             }
         }
+
+        if (showAdministrationMenu) {
+            if (!hasMenuManagement) {
+                if (administrationCategory == null) {
+                    administrationCategory = new MenulItemsGroup("administration", translationService.translate(
+                            "basic.menu.administration", locale));
+                }
+                administrationCategory.addItem(new ViewDefinitionMenuItemItem("menuCategories", translationService.translate(
+                        "menu.menu.administration.menu", locale), "menu", "menuCategories"));
+            }
+
+            if (administrationCategory != null) {
+                menuDefinition.addItem(administrationCategory);
+            }
+        }
+
+        return menuDefinition;
     }
 
     private boolean belongsToActivePlugin(final String pluginIdentifier) {
-        return true;
-        // TODO after implementing plugins it should not be neccessary
-        // return pluginManagementService.getByIdentifierAndStatus(pluginIdentifier, PluginStatus.ACTIVE.getValue()) != null;
+        return pluginAccessor.getEnabledPlugin(pluginIdentifier) != null;
+    }
+
+    @Override
+    @Transactional
+    public void createViewIfNotExists(final String pluginIdentifier, final String viewName, final String view, final String url) {
+        MenuView menuView = getView(pluginIdentifier, viewName);
+
+        if (menuView != null) {
+            return;
+        }
+
+        menuView = new MenuView();
+        menuView.setPluginIdentifier(pluginIdentifier);
+        menuView.setName(viewName);
+        menuView.setUrl(url);
+        menuView.setView(view);
+        sessionFactory.getCurrentSession().save(menuView);
+    }
+
+    @Override
+    @Transactional
+    public void enableView(final String pluginIdentifier, final String viewName) {
+        // ignore
+
+    }
+
+    @Override
+    @Transactional
+    public void disableView(final String pluginIdentifier, final String viewName) {
+        // ignore
+    }
+
+    @Override
+    @Transactional
+    public void createCategoryIfNotExists(final String pluginIdentifier, final String categoryName) {
+        MenuCategory menuCategory = getCategory(pluginIdentifier, categoryName);
+
+        if (menuCategory != null) {
+            return;
+        }
+
+        menuCategory = new MenuCategory();
+        menuCategory.setPluginIdentifier(pluginIdentifier);
+        menuCategory.setName(categoryName);
+        menuCategory.setSuccession(getTotalNumberOfCategories());
+        sessionFactory.getCurrentSession().save(menuCategory);
+    }
+
+    @Override
+    @Transactional
+    public void createItemIfNotExists(final String pluginIdentifier, final String name, final String category,
+            final String viewPluginIdentifier, final String viewName) {
+        MenuItem menuItem = getItem(pluginIdentifier, name);
+
+        if (menuItem != null) {
+            return;
+        }
+
+        MenuCategory menuCategory = getCategory(category);
+        MenuView menuView = getView(viewPluginIdentifier, viewName);
+
+        if (menuCategory == null) {
+            throw new IllegalStateException("Cannot find menu category " + category + " for item " + pluginIdentifier + "."
+                    + name);
+        }
+
+        if (menuView == null) {
+            throw new IllegalStateException("Cannot find menu view " + viewPluginIdentifier + "." + viewName + " for item "
+                    + pluginIdentifier + "." + name);
+        }
+
+        menuItem = new MenuItem();
+        menuItem.setPluginIdentifier(pluginIdentifier);
+        menuItem.setName(name);
+        menuItem.setActive(true);
+        menuItem.setCategory(menuCategory);
+        menuItem.setView(menuView);
+        menuItem.setSuccession(getTotalNumberOfItems(menuCategory));
+        sessionFactory.getCurrentSession().save(menuItem);
+    }
+
+    @Override
+    @Transactional
+    public void enableItem(final String pluginIdentifier, final String name) {
+        MenuItem menuItem = getItem(pluginIdentifier, name);
+
+        if (menuItem != null) {
+            menuItem.setActive(true);
+            sessionFactory.getCurrentSession().save(menuItem);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void disableItem(final String pluginIdentifier, final String name) {
+        MenuItem menuItem = getItem(pluginIdentifier, name);
+
+        if (menuItem != null) {
+            menuItem.setActive(false);
+            sessionFactory.getCurrentSession().save(menuItem);
+        }
+    }
+
+    private int getTotalNumberOfItems(final MenuCategory category) {
+        return ((Number) sessionFactory.getCurrentSession().createCriteria(MenuItem.class).setProjection(Projections.rowCount())
+                .add(Restrictions.eq("category", category)).uniqueResult()).intValue() + 1;
+    }
+
+    private int getTotalNumberOfCategories() {
+        return ((Number) sessionFactory.getCurrentSession().createCriteria(MenuCategory.class)
+                .setProjection(Projections.rowCount()).uniqueResult()).intValue() + 1;
+    }
+
+    private MenuCategory getCategory(final String pluginIdentifier, final String categoryName) {
+        return (MenuCategory) sessionFactory.getCurrentSession().createCriteria(MenuCategory.class)
+                .add(Restrictions.eq("name", categoryName)).add(Restrictions.eq("pluginIdentifier", pluginIdentifier))
+                .setMaxResults(1).uniqueResult();
+    }
+
+    private MenuCategory getCategory(final String categoryName) {
+        return (MenuCategory) sessionFactory.getCurrentSession().createCriteria(MenuCategory.class)
+                .add(Restrictions.eq("name", categoryName)).setMaxResults(1).uniqueResult();
+    }
+
+    private MenuItem getItem(final String pluginIdentifier, final String itemName) {
+        return (MenuItem) sessionFactory.getCurrentSession().createCriteria(MenuItem.class)
+                .add(Restrictions.eq("name", itemName)).add(Restrictions.eq("pluginIdentifier", pluginIdentifier))
+                .setMaxResults(1).uniqueResult();
+    }
+
+    private MenuView getView(final String pluginIdentifier, final String viewName) {
+        return (MenuView) sessionFactory.getCurrentSession().createCriteria(MenuView.class)
+                .add(Restrictions.eq("name", viewName)).add(Restrictions.eq("pluginIdentifier", pluginIdentifier))
+                .setMaxResults(1).uniqueResult();
     }
 
 }

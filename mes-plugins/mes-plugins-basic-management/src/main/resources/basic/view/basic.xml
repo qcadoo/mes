@@ -131,39 +131,25 @@
 			</ribbon>				
 			<component type="form" name="parameter" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
-					<layoutElement column="1" row="1" height="3">
-						<component type="smallTabLayout" name="smallTabLayout">
-							<tabElement name="qualityControl">
-								<component type="gridLayout" name="qualityControlGridLayout" columns="1" rows="2">
-									<layoutElement column="1" row="1">
-										<component type="checkbox" name="autoGenerateQualityControl" field="autoGenerateQualityControl">
-											<option type="labelWidth" value="80" />
-											<option type="align" value="right" />
-										</component>
-									</layoutElement>
-									<layoutElement column="1" row="2">
-										<component type="checkbox" name="checkDoneOrderForQuality" field="checkDoneOrderForQuality">
-											<option type="labelWidth" value="80" />
-											<option type="align" value="right" />
-										</component>
-									</layoutElement>
-								</component>
-							</tabElement>
-							<tabElement name="batch">
-								<component type="gridLayout" name="batchGridLayout" columns="1" rows="1">
-									<layoutElement column="1" row="1">	
-										<component type="select" name="batchForDoneOrder" field="batchForDoneOrder" reference="batchForDoneOrder">
-											<option type="labelWidth" value="50" />
-										</component>
-									</layoutElement>
-								</component>
-							</tabElement>
+					<layoutElement column="1" row="1">
+						<component type="label" name="parametersWelcomeLabel">
+							<option type="labelStyle" value="text"/>
 						</component>
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>
 				<option type="expression" value="' '"/>
 			</component>
+		</component>
+	</view>
+	<view name="systemInfo" menuAccessible="true">
+		<component type="window" name="window">
+			<ribbon>
+			</ribbon>
+			<component type="staticPage" name="systemInfo">
+				<option type="page" value="core/systemInfo.jsp" />
+			</component>
+			<option type="header" value="true" />
 		</component>
 	</view>
 </qcd:views>

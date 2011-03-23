@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.ViewDefinition;
 
 /**
@@ -74,13 +73,6 @@ public interface ViewDefinitionService {
      * @return the data definitions
      */
     List<ViewDefinition> list();
-
-    /**
-     * Return all view definitions which can be displayed in menu.
-     * 
-     * @return the data definitions
-     */
-    List<Pair<String, String>> listForMenu();
 
     /**
      * Save the data definition.

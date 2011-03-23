@@ -31,6 +31,17 @@
 		<model:model model="workPlan" resource="products/model/workPlan.xml"/>
 		<model:model model="workPlanComponent" resource="products/model/workPlanComponent.xml"/>
 
+		<view:menu-category name="technology" />
+		<view:menu-category name="orders" />
+		<view:menu-category name="reports" />
+		
+		<view:menu-item name="products" category="basic" view="products" />
+		<view:menu-item name="technologies" category="technology" view="technologies" />
+		<view:menu-item name="operations" category="technology" view="operations" />
+		<view:menu-item name="productionOrders" category="orders" view="orders" />
+		<view:menu-item name="materialRequirements" category="reports" view="materialRequirements" />
+		<view:menu-item name="workPlans" category="reports" view="workPlans" />
+		
 		<view:view>
 			<resource>products/view/materialRequirements.xml</resource>
 			<resource>products/view/orders.xml</resource>

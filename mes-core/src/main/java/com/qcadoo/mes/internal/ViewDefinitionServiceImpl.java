@@ -33,14 +33,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.model.api.aop.Monitorable;
 
 @Service
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
-
-    private final List<Pair<String, String>> menuViews = new ArrayList<Pair<String, String>>();
 
     private final Map<String, ViewDefinition> viewDefinitions = new HashMap<String, ViewDefinition>();
 
@@ -66,13 +63,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Override
     @Transactional(readOnly = true)
     @Monitorable
-    public List<Pair<String, String>> listForMenu() {
-        return menuViews;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    @Monitorable
     public List<ViewDefinition> list() {
         return new ArrayList<ViewDefinition>(viewDefinitions.values());
     }
@@ -82,9 +72,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Monitorable
     public void save(final ViewDefinition viewDefinition) {
         viewDefinitions.put(viewDefinition.getPluginIdentifier() + "." + viewDefinition.getName(), viewDefinition);
-        if (viewDefinition.isMenuAccessible()) {
-            menuViews.add(new Pair<String, String>(viewDefinition.getPluginIdentifier(), viewDefinition.getName()));
-        }
     }
 
     @Override

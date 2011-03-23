@@ -1,6 +1,8 @@
 package com.qcadoo.mes.view.components.tabWindow;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -29,8 +31,6 @@ public class WindowComponentPattern extends AbstractContainerPattern {
 
     private Boolean fixedHeight;
 
-    private Boolean tabMode;
-
     private Ribbon ribbon;
 
     private boolean hasRibbon = true;
@@ -55,6 +55,8 @@ public class WindowComponentPattern extends AbstractContainerPattern {
         Node ribbonNode = null;
 
         NodeList childNodes = componentNode.getChildNodes();
+
+        Boolean tabMode = null;
 
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node child = childNodes.item(i);
@@ -92,11 +94,11 @@ public class WindowComponentPattern extends AbstractContainerPattern {
 
                 if (mainTab == null) {
                     ComponentDefinition componentDefinition = new ComponentDefinition();
-                    componentDefinition.setName("mianTab");
+                    componentDefinition.setName("mainTab");
                     componentDefinition.setParent(this);
                     componentDefinition.setTranslationService(getTranslationService());
                     componentDefinition.setViewDefinition(getViewDefinition());
-                    componentDefinition.setReference("mianTab");
+                    componentDefinition.setReference("mainTab");
                     componentDefinition.setDataDefinition(null);
                     mainTab = new WindowTabComponentPattern(componentDefinition);
                     addChild(mainTab);
@@ -135,15 +137,13 @@ public class WindowComponentPattern extends AbstractContainerPattern {
             setRibbon(RibbonUtils.getInstance().parseRibbon(ribbonNode, parser, getViewDefinition()));
         }
 
-        // TODO mina
-        tabMode = true;
     }
 
     @Override
     protected Map<String, Object> getJspOptions(final Locale locale) {
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("header", header);
-        options.put("tabMode", tabMode);
+        options.put("oneTab", this.getChildren().size() < 2);
         options.put("hasRibbon", hasRibbon);
         return options;
     }
@@ -153,20 +153,20 @@ public class WindowComponentPattern extends AbstractContainerPattern {
         JSONObject json = new JSONObject();
         json.put("fixedHeight", fixedHeight);
         json.put("header", header);
-        json.put("tabMode", tabMode);
+        json.put("oneTab", this.getChildren().size() < 2);
         json.put("hasRibbon", hasRibbon);
         if (ribbon != null) {
             json.put("ribbon", RibbonUtils.getInstance().translateRibbon(ribbon, locale, this));
         }
-        if (tabMode) {
-            json.put("firstTabName", firstTabName);
-            JSONObject translations = new JSONObject();
-            for (String childName : getChildren().keySet()) {
-                translations.put("tab." + childName,
-                        getTranslationService().translate(getTranslationPath() + "." + childName + ".tabLabel", locale));
-            }
-            json.put("translations", translations);
+        json.put("firstTabName", firstTabName);
+        JSONObject translations = new JSONObject();
+        for (String childName : getChildren().keySet()) {
+            List<String> tabNameKeys = new LinkedList<String>();
+            tabNameKeys.add(getTranslationPath() + "." + childName + ".tabLabel");
+            tabNameKeys.add("core.tabs." + childName + ".tabLabel");
+            translations.put("tab." + childName, getTranslationService().translate(tabNameKeys, locale));
         }
+        json.put("translations", translations);
         return json;
     }
 

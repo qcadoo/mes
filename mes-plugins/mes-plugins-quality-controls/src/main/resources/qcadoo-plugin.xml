@@ -52,14 +52,41 @@
 		<model:hook plugin="genealogies" model="genealogy">
 			<onSave class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateOnSaveQualityControl" />
 		</model:hook>
-
+		
+		<view:menu-category name="quality" />
+		
+		<view:menu-item name="qualityControlReport" category="reports" view="qualityControlReport" />
+		<view:menu-item name="forOrder" category="quality" view="qualityControlsForOrder" />
+		<view:menu-item name="forUnits" category="quality" view="qualityControlsForUnit" />
+		<view:menu-item name="forBatch" category="quality" view="qualityControlsForBatch" />
+		<view:menu-item name="forOperation" category="quality" view="qualityControlsForOperation" />
+		
 		<view:view>
 			<resource>qualityControls/view/qualityControls.xml</resource>
 			<resource>qualityControls/view/qualityControlsTest.xml</resource>
 		</view:view>
 		
-		<view:menu></view:menu>
-		<databasePreparation></databasePreparation>
+		<view:viewRibbonExtension>
+			<resource>qualityControls/view/viewExtension.xml</resource>
+		</view:viewRibbonExtension>
+		
+		<view:viewWindowTabExtension>
+			<resource>qualityControls/view/viewExtension.xml</resource>
+		</view:viewWindowTabExtension>
+		
+		<view:viewHookExtension plugin="products" view="technology" hookType="preRenderHook" 
+				bean="com.qcadoo.mes.qualityControls.QualityControlService" method="changeQualityControlType" />
+				
+		<view:viewListenerExtension plugin="products" view="orders" component="grid" event="activateOrder" 
+				bean="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
+		<view:viewListenerExtension plugin="products" view="orders" component="grid" event="generateQualityControl" 
+				bean="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
+				
+		<view:viewListenerExtension plugin="products" view="order" component="form" event="activateOrder" 
+				bean="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
+		<view:viewListenerExtension plugin="products" view="order" component="form" event="generateQualityControl" 
+				bean="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
+		
 	</modules>
 
 </plugin>

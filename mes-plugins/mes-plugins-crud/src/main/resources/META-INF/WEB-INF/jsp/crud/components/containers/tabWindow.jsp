@@ -19,14 +19,14 @@
 		<div id="${component['path']}_windowContainerContentBodyWidthMarker" style=" z-index: 5000;"></div>
 		<div class="windowContent" id="${component['path']}_windowContent">
 			<c:if test="${component.jspOptions['header']}">
-				<div class="tabWindowHeader <c:if test="${! component.jspOptions['tabMode']}">noTabs</c:if>" id="${component['path']}_windowHeader"></div>
+				<div class="tabWindowHeader <c:if test="${component.jspOptions['oneTab']}">noTabs</c:if>" id="${component['path']}_windowHeader"></div>
 			</c:if>
-			<c:if test="${component.jspOptions['tabMode']}">
+			<c:if test="${! component.jspOptions['oneTab']}">
 				<div id="${component['path']}_windowTabs" class="windowTabs">
 					<div></div>
 				</div>
 			</c:if>
-			<div class="tabWindowComponents <c:if test="${! component.jspOptions['tabMode']}">noTabs</c:if>" id="${component['path']}_windowComponents">
+			<div class="tabWindowComponents" id="${component['path']}_windowComponents">
 				<c:forEach items="${component['children']}" var="component">
 					<tiles:insertTemplate template="../component.jsp">
 						<tiles:putAttribute name="component" value="${component.value}" />
