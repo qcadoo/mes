@@ -29,7 +29,6 @@
 	<fields>
 		<string name="pluginIdentifier" />
 		<string name="name" required="true" unique="true" />
-		<boolean name="active" readonly="false" default="true" required="true" />
 		<hasMany name="items" model="item" joinField="category" cascade="delete" />
 		<priority name="succession" />
 	</fields>

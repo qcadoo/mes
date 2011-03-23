@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,7 @@ public final class MenuServiceImpl implements InternalMenuService {
         MenuDefinition menuDefinition = new MenuDefinition();
 
         List<MenuCategory> menuCategories = sessionFactory.getCurrentSession().createCriteria(MenuCategory.class)
-                .add(Restrictions.eq("active", true)).list();
+                .addOrder(Order.asc("succession")).list();
 
         MenulItemsGroup administrationCategory = null;
 
@@ -86,7 +87,11 @@ public final class MenuServiceImpl implements InternalMenuService {
 
             MenulItemsGroup category = new MenulItemsGroup(menuCategory.getName(), label);
 
-            for (MenuItem menuItem : menuCategory.getItems()) {
+            List<MenuItem> menuItems = sessionFactory.getCurrentSession().createCriteria(MenuItem.class)
+                    .add(Restrictions.eq("active", true)).add(Restrictions.eq("category", menuCategory))
+                    .addOrder(Order.asc("succession")).list();
+
+            for (MenuItem menuItem : menuItems) {
                 if (!menuItem.isActive()) {
                     continue;
                 }
@@ -114,22 +119,24 @@ public final class MenuServiceImpl implements InternalMenuService {
 
             if ("administration".equals(menuCategory.getName())) {
                 administrationCategory = category;
-            } else {
+            } else if (!category.getItems().isEmpty()) {
                 menuDefinition.addItem(category);
             }
         }
 
-        if (!hasMenuManagement && showAdministrationMenu) {
-            if (administrationCategory == null) {
-                administrationCategory = new MenulItemsGroup("administration", translationService.translate(
-                        "basic.menu.administration", locale));
+        if (showAdministrationMenu) {
+            if (!hasMenuManagement) {
+                if (administrationCategory == null) {
+                    administrationCategory = new MenulItemsGroup("administration", translationService.translate(
+                            "basic.menu.administration", locale));
+                }
+                administrationCategory.addItem(new ViewDefinitionMenuItemItem("menuCategories", translationService.translate(
+                        "menu.menu.administration.menu", locale), "menu", "menuCategories"));
             }
-            administrationCategory.addItem(new ViewDefinitionMenuItemItem("menuCategories", translationService.translate(
-                    "menu.menu.administration.menu", locale), "menu", "menuCategories"));
-        }
 
-        if (administrationCategory != null) {
-            menuDefinition.addItem(administrationCategory);
+            if (administrationCategory != null) {
+                menuDefinition.addItem(administrationCategory);
+            }
         }
 
         return menuDefinition;
@@ -142,30 +149,18 @@ public final class MenuServiceImpl implements InternalMenuService {
     @Override
     @Transactional
     public void createViewIfNotExists(final String pluginIdentifier, final String viewName, final String view, final String url) {
-
-        System.out.println(" ----> 1");
-
         MenuView menuView = getView(pluginIdentifier, viewName);
-
-        System.out.println(" ----> 2");
 
         if (menuView != null) {
             return;
         }
 
-        System.out.println(" ----> " + pluginIdentifier + "." + viewName + "." + view + "." + url);
-
         menuView = new MenuView();
         menuView.setPluginIdentifier(pluginIdentifier);
-        System.out.println(" ----> 3");
         menuView.setName(viewName);
-        System.out.println(" ----> 4");
         menuView.setUrl(url);
-        System.out.println(" ----> 5");
         menuView.setView(view);
-        System.out.println(" ----> 6");
         sessionFactory.getCurrentSession().save(menuView);
-        System.out.println(" ----> 7");
     }
 
     @Override
@@ -193,31 +188,8 @@ public final class MenuServiceImpl implements InternalMenuService {
         menuCategory = new MenuCategory();
         menuCategory.setPluginIdentifier(pluginIdentifier);
         menuCategory.setName(categoryName);
-        menuCategory.setActive(true);
         menuCategory.setSuccession(getTotalNumberOfCategories());
         sessionFactory.getCurrentSession().save(menuCategory);
-    }
-
-    @Override
-    @Transactional
-    public void enableCategory(final String pluginIdentifier, final String categoryName) {
-        MenuCategory menuCategory = getCategory(pluginIdentifier, categoryName);
-
-        if (menuCategory != null) {
-            menuCategory.setActive(true);
-            sessionFactory.getCurrentSession().save(menuCategory);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void disableCategory(final String pluginIdentifier, final String categoryName) {
-        MenuCategory menuCategory = getCategory(pluginIdentifier, categoryName);
-
-        if (menuCategory != null) {
-            menuCategory.setActive(false);
-            sessionFactory.getCurrentSession().save(menuCategory);
-        }
     }
 
     @Override
