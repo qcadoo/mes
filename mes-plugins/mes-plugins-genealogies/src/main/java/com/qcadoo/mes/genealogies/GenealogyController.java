@@ -50,8 +50,7 @@ public class GenealogyController {
     @RequestMapping(value = "genealogyAttribute", method = RequestMethod.GET)
     public ModelAndView getGenealogyAttributesPageView(final Locale locale) {
 
-        JSONObject json = new JSONObject(ImmutableMap.of("window.currentAttribute.id", genealogyService.getGenealogyAttributeId()
-                .toString()));
+        JSONObject json = new JSONObject(ImmutableMap.of("form.id", genealogyService.getGenealogyAttributeId().toString()));
 
         Map<String, String> arguments = ImmutableMap.of("context", json.toString());
         return crudController.prepareView("genealogies", "currentAttribute", arguments, locale);
