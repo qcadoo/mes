@@ -12,7 +12,7 @@ import org.w3c.dom.Node;
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.view.ViewDefinition;
-import com.qcadoo.mes.view.components.tabWindow.WindowComponentPattern;
+import com.qcadoo.mes.view.components.window.WindowComponentPattern;
 import com.qcadoo.mes.view.ribbon.RibbonGroup;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 import com.qcadoo.mes.view.xml.ViewExtension;

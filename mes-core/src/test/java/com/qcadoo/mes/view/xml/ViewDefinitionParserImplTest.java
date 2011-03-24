@@ -59,7 +59,7 @@ import com.qcadoo.mes.view.components.TextAreaComponentPattern;
 import com.qcadoo.mes.view.components.TextInputComponentPattern;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.components.grid.GridComponentPattern;
-import com.qcadoo.mes.view.components.tabWindow.WindowComponentPattern;
+import com.qcadoo.mes.view.components.window.WindowComponentPattern;
 import com.qcadoo.mes.view.hooks.internal.HookFactory;
 import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.internal.ViewComponentsResolver;

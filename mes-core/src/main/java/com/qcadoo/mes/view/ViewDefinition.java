@@ -30,7 +30,7 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.mes.view.components.tabWindow.WindowComponentPattern;
+import com.qcadoo.mes.view.components.window.WindowComponentPattern;
 import com.qcadoo.model.api.DataDefinition;
 
 public interface ViewDefinition {

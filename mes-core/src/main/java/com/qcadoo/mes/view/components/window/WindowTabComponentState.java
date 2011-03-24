@@ -1,4 +1,4 @@
-package com.qcadoo.mes.view.components.tabWindow;
+package com.qcadoo.mes.view.components.window;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,7 +7,7 @@ import com.qcadoo.mes.view.states.AbstractContainerState;
 
 public class WindowTabComponentState extends AbstractContainerState {
 
-    public WindowTabComponentState(final WindowTabComponentPattern pattern) {
+    public WindowTabComponentState() {
 
     }
 
