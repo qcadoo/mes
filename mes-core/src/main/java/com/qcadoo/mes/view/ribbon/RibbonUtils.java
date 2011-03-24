@@ -28,7 +28,11 @@ public class RibbonUtils {
 
     public static RibbonUtils getInstance() {
         if (instance == null) {
-            instance = new RibbonUtils();
+            synchronized (RibbonUtils.class) {
+                if (instance == null) {
+                    instance = new RibbonUtils();
+                }
+            }
         }
         return instance;
     }
