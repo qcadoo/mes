@@ -27,10 +27,6 @@ package com.qcadoo.mes.internal;
 import java.util.List;
 import java.util.Locale;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -41,10 +37,10 @@ import com.qcadoo.mes.view.menu.MenuDefinition;
 import com.qcadoo.mes.view.menu.MenulItemsGroup;
 import com.qcadoo.mes.view.menu.items.UrlMenuItem;
 import com.qcadoo.mes.view.menu.items.ViewDefinitionMenuItemItem;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.aop.Monitorable;
-import com.qcadoo.model.beans.menu.MenuCategory;
-import com.qcadoo.model.beans.menu.MenuItem;
-import com.qcadoo.model.beans.menu.MenuView;
+import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.plugin.api.PluginAccessor;
 
 @Service
@@ -57,67 +53,71 @@ public final class MenuServiceImpl implements InternalMenuService {
     private TranslationService translationService;
 
     @Autowired
-    private SessionFactory sessionFactory;
+    private DataDefinitionService dataDefinitionService;
 
     @Value("${showAdministrationMenu}")
     private boolean showAdministrationMenu;
 
     @Override
-    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     @Monitorable
     public MenuDefinition getMenu(final Locale locale) {
 
         MenuDefinition menuDefinition = new MenuDefinition();
 
-        List<MenuCategory> menuCategories = sessionFactory.getCurrentSession().createCriteria(MenuCategory.class)
-                .addOrder(Order.asc("succession")).list();
+        List<Entity> menuCategories = dataDefinitionService.get("menu", "category").find().orderAscBy("succession").list()
+                .getEntities();
 
         MenulItemsGroup administrationCategory = null;
 
         boolean hasMenuManagement = false;
 
-        for (MenuCategory menuCategory : menuCategories) {
-            String label = menuCategory.getName();
+        for (Entity menuCategory : menuCategories) {
+            String label = menuCategory.getStringField("name");
 
-            if (menuCategory.getPluginIdentifier() != null) {
-                label = translationService.translate(menuCategory.getPluginIdentifier() + ".menu." + menuCategory.getName(),
-                        locale);
+            if (menuCategory.getStringField("pluginIdentifier") != null) {
+                label = translationService.translate(
+                        menuCategory.getStringField("pluginIdentifier") + ".menu." + menuCategory.getStringField("name"), locale);
             }
 
-            MenulItemsGroup category = new MenulItemsGroup(menuCategory.getName(), label);
+            MenulItemsGroup category = new MenulItemsGroup(menuCategory.getStringField("name"), label);
 
-            List<MenuItem> menuItems = sessionFactory.getCurrentSession().createCriteria(MenuItem.class)
-                    .add(Restrictions.eq("active", true)).add(Restrictions.eq("category", menuCategory))
-                    .addOrder(Order.asc("succession")).list();
+            List<Entity> menuItems = dataDefinitionService
+                    .get("menu", "item")
+                    .find()
+                    .restrictedWith(
+                            Restrictions.belongsTo(dataDefinitionService.get("menu", "item").getField("category"), menuCategory))
+                    .orderAscBy("succession").list().getEntities();
 
-            for (MenuItem menuItem : menuItems) {
-                if (!menuItem.isActive()) {
+            for (Entity menuItem : menuItems) {
+                if (!(Boolean) menuItem.getField("active")) {
                     continue;
                 }
 
-                MenuView menuView = menuItem.getView();
+                Entity menuView = menuItem.getBelongsToField("view");
 
-                String itemLabel = menuItem.getName();
+                String itemLabel = menuItem.getStringField("name");
 
-                if (menuItem.getPluginIdentifier() != null) {
-                    itemLabel = translationService.translate(menuItem.getPluginIdentifier() + ".menu." + menuCategory.getName()
-                            + "." + menuItem.getName(), locale);
+                if (menuItem.getStringField("pluginIdentifier") != null) {
+                    itemLabel = translationService.translate(menuItem.getStringField("pluginIdentifier") + ".menu."
+                            + menuCategory.getStringField("name") + "." + menuItem.getStringField("name"), locale);
                 }
 
-                if (menuView.getUrl() != null) {
-                    category.addItem(new UrlMenuItem(menuItem.getName(), itemLabel, null, menuView.getUrl()));
-                } else if (belongsToActivePlugin(menuView.getPluginIdentifier())) {
-                    category.addItem(new ViewDefinitionMenuItemItem(menuItem.getName(), itemLabel,
-                            menuView.getPluginIdentifier(), menuView.getName()));
+                if (menuView.getStringField("url") != null) {
+                    category.addItem(new UrlMenuItem(menuItem.getStringField("name"), itemLabel, null, menuView
+                            .getStringField("url")));
+                } else if (belongsToActivePlugin(menuView.getStringField("pluginIdentifier"))) {
+                    category.addItem(new ViewDefinitionMenuItemItem(menuItem.getStringField("name"), itemLabel, menuView
+                            .getStringField("pluginIdentifier"), menuView.getStringField("name")));
                 }
 
-                if ("menu".equals(menuView.getPluginIdentifier()) && "menuCategories".equals(menuView.getView())) {
+                if ("menu".equals(menuView.getStringField("pluginIdentifier"))
+                        && "menuCategories".equals(menuView.getStringField("view"))) {
                     hasMenuManagement = true;
                 }
             }
 
-            if ("administration".equals(menuCategory.getName())) {
+            if ("administration".equals(menuCategory.getStringField("name"))) {
                 administrationCategory = category;
             } else if (!category.getItems().isEmpty()) {
                 menuDefinition.addItem(category);
@@ -149,18 +149,18 @@ public final class MenuServiceImpl implements InternalMenuService {
     @Override
     @Transactional
     public void createViewIfNotExists(final String pluginIdentifier, final String viewName, final String view, final String url) {
-        MenuView menuView = getView(pluginIdentifier, viewName);
+        Entity menuView = getView(pluginIdentifier, viewName);
 
         if (menuView != null) {
             return;
         }
 
-        menuView = new MenuView();
-        menuView.setPluginIdentifier(pluginIdentifier);
-        menuView.setName(viewName);
-        menuView.setUrl(url);
-        menuView.setView(view);
-        sessionFactory.getCurrentSession().save(menuView);
+        menuView = dataDefinitionService.get("menu", "view").create();
+        menuView.setField("pluginIdentifier", pluginIdentifier);
+        menuView.setField("name", viewName);
+        menuView.setField("url", url);
+        menuView.setField("view", view);
+        dataDefinitionService.get("menu", "view").save(menuView);
     }
 
     @Override
@@ -179,31 +179,31 @@ public final class MenuServiceImpl implements InternalMenuService {
     @Override
     @Transactional
     public void createCategoryIfNotExists(final String pluginIdentifier, final String categoryName) {
-        MenuCategory menuCategory = getCategory(pluginIdentifier, categoryName);
+        Entity menuCategory = getCategory(pluginIdentifier, categoryName);
 
         if (menuCategory != null) {
             return;
         }
 
-        menuCategory = new MenuCategory();
-        menuCategory.setPluginIdentifier(pluginIdentifier);
-        menuCategory.setName(categoryName);
-        menuCategory.setSuccession(getTotalNumberOfCategories());
-        sessionFactory.getCurrentSession().save(menuCategory);
+        menuCategory = dataDefinitionService.get("menu", "category").create();
+        menuCategory.setField("pluginIdentifier", pluginIdentifier);
+        menuCategory.setField("name", categoryName);
+        menuCategory.setField("pluginIdentifier", getTotalNumberOfCategories());
+        dataDefinitionService.get("menu", "category").save(menuCategory);
     }
 
     @Override
     @Transactional
     public void createItemIfNotExists(final String pluginIdentifier, final String name, final String category,
             final String viewPluginIdentifier, final String viewName) {
-        MenuItem menuItem = getItem(pluginIdentifier, name);
+        Entity menuItem = getItem(pluginIdentifier, name);
 
         if (menuItem != null) {
             return;
         }
 
-        MenuCategory menuCategory = getCategory(category);
-        MenuView menuView = getView(viewPluginIdentifier, viewName);
+        Entity menuCategory = getCategory(category);
+        Entity menuView = getView(viewPluginIdentifier, viewName);
 
         if (menuCategory == null) {
             throw new IllegalStateException("Cannot find menu category " + category + " for item " + pluginIdentifier + "."
@@ -215,69 +215,66 @@ public final class MenuServiceImpl implements InternalMenuService {
                     + pluginIdentifier + "." + name);
         }
 
-        menuItem = new MenuItem();
-        menuItem.setPluginIdentifier(pluginIdentifier);
-        menuItem.setName(name);
-        menuItem.setActive(true);
-        menuItem.setCategory(menuCategory);
-        menuItem.setView(menuView);
-        menuItem.setSuccession(getTotalNumberOfItems(menuCategory));
-        sessionFactory.getCurrentSession().save(menuItem);
+        menuItem = dataDefinitionService.get("menu", "item").create();
+        menuItem.setField("pluginIdentifier", pluginIdentifier);
+        menuItem.setField("name", name);
+        menuItem.setField("active", true);
+        menuItem.setField("category", menuCategory);
+        menuItem.setField("view", menuView);
+        menuItem.setField("succession", getTotalNumberOfItems(menuCategory));
+        dataDefinitionService.get("menu", "item").save(menuItem);
     }
 
     @Override
     @Transactional
     public void enableItem(final String pluginIdentifier, final String name) {
-        MenuItem menuItem = getItem(pluginIdentifier, name);
+        Entity menuItem = getItem(pluginIdentifier, name);
 
         if (menuItem != null) {
-            menuItem.setActive(true);
-            sessionFactory.getCurrentSession().save(menuItem);
+            menuItem.setField("active", true);
+            dataDefinitionService.get("menu", "item").save(menuItem);
         }
     }
 
     @Override
     @Transactional
     public void disableItem(final String pluginIdentifier, final String name) {
-        MenuItem menuItem = getItem(pluginIdentifier, name);
+        Entity menuItem = getItem(pluginIdentifier, name);
 
         if (menuItem != null) {
-            menuItem.setActive(false);
-            sessionFactory.getCurrentSession().save(menuItem);
+            menuItem.setField("active", false);
+            dataDefinitionService.get("menu", "item").save(menuItem);
         }
     }
 
-    private int getTotalNumberOfItems(final MenuCategory category) {
-        return ((Number) sessionFactory.getCurrentSession().createCriteria(MenuItem.class).setProjection(Projections.rowCount())
-                .add(Restrictions.eq("category", category)).uniqueResult()).intValue() + 1;
+    private int getTotalNumberOfItems(final Entity category) {
+        return dataDefinitionService.get("menu", "item").find()
+                .restrictedWith(Restrictions.belongsTo(dataDefinitionService.get("menu", "item").getField("category"), category))
+                .list().getTotalNumberOfEntities() + 1;
     }
 
     private int getTotalNumberOfCategories() {
-        return ((Number) sessionFactory.getCurrentSession().createCriteria(MenuCategory.class)
-                .setProjection(Projections.rowCount()).uniqueResult()).intValue() + 1;
+        return dataDefinitionService.get("menu", "category").find().list().getTotalNumberOfEntities() + 1;
     }
 
-    private MenuCategory getCategory(final String pluginIdentifier, final String categoryName) {
-        return (MenuCategory) sessionFactory.getCurrentSession().createCriteria(MenuCategory.class)
-                .add(Restrictions.eq("name", categoryName)).add(Restrictions.eq("pluginIdentifier", pluginIdentifier))
-                .setMaxResults(1).uniqueResult();
+    private Entity getCategory(final String pluginIdentifier, final String categoryName) {
+        return dataDefinitionService.get("menu", "category").find().restrictedWith(Restrictions.eq("name", categoryName))
+                .restrictedWith(Restrictions.eq("pluginIdentifier", pluginIdentifier)).withMaxResults(1).uniqueResult();
     }
 
-    private MenuCategory getCategory(final String categoryName) {
-        return (MenuCategory) sessionFactory.getCurrentSession().createCriteria(MenuCategory.class)
-                .add(Restrictions.eq("name", categoryName)).setMaxResults(1).uniqueResult();
+    private Entity getCategory(final String categoryName) {
+        return dataDefinitionService.get("menu", "category").find().restrictedWith(Restrictions.eq("name", categoryName))
+                .withMaxResults(1).uniqueResult();
     }
 
-    private MenuItem getItem(final String pluginIdentifier, final String itemName) {
-        return (MenuItem) sessionFactory.getCurrentSession().createCriteria(MenuItem.class)
-                .add(Restrictions.eq("name", itemName)).add(Restrictions.eq("pluginIdentifier", pluginIdentifier))
-                .setMaxResults(1).uniqueResult();
+    private Entity getItem(final String pluginIdentifier, final String itemName) {
+        return dataDefinitionService.get("menu", "item").find().restrictedWith(Restrictions.eq("name", itemName))
+                .restrictedWith(Restrictions.eq("pluginIdentifier", pluginIdentifier)).withMaxResults(1).uniqueResult();
     }
 
-    private MenuView getView(final String pluginIdentifier, final String viewName) {
-        return (MenuView) sessionFactory.getCurrentSession().createCriteria(MenuView.class)
-                .add(Restrictions.eq("name", viewName)).add(Restrictions.eq("pluginIdentifier", pluginIdentifier))
-                .setMaxResults(1).uniqueResult();
+    private Entity getView(final String pluginIdentifier, final String viewName) {
+        return dataDefinitionService.get("menu", "view").find().restrictedWith(Restrictions.eq("name", viewName))
+                .restrictedWith(Restrictions.eq("pluginIdentifier", pluginIdentifier)).withMaxResults(1).uniqueResult();
     }
 
 }
