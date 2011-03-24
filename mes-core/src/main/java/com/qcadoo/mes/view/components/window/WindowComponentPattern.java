@@ -427,7 +427,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonNewAction;
     }
 
-    private RibbonGroup createFormSaveCopyAndRemoveActionsTemplate() { // TODO
+    private RibbonGroup createFormSaveCopyAndRemoveActionsTemplate() {
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("actions");
         ribbonGroup.addItem(createFormSaveAction());
