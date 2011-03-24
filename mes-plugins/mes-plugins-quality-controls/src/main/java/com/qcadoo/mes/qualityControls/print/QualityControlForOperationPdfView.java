@@ -80,7 +80,7 @@ public class QualityControlForOperationPdfView extends ReportPdfView {
 
         for (Entry<Entity, List<Entity>> entry : operationOrders.entrySet()) {
             document.add(Chunk.NEWLINE);
-            addProductSeries(document, operationOrders, entry, locale);
+            addProductSeries(document, entry, locale);
         }
 
         String text = getTranslationService().translate("core.report.endOfReport", locale);
@@ -115,8 +115,8 @@ public class QualityControlForOperationPdfView extends ReportPdfView {
         document.add(table);
     }
 
-    private void addProductSeries(final Document document, final Map<Entity, List<Entity>> productOrders,
-            final Entry<Entity, List<Entity>> entry, final Locale locale) throws DocumentException {
+    private void addProductSeries(final Document document, final Entry<Entity, List<Entity>> entry, final Locale locale)
+            throws DocumentException {
 
         document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "operation"));
 

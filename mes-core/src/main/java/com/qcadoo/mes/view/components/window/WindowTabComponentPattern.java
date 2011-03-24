@@ -1,4 +1,4 @@
-package com.qcadoo.mes.view.components.tabWindow;
+package com.qcadoo.mes.view.components.window;
 
 import java.util.Locale;
 
@@ -28,7 +28,7 @@ public class WindowTabComponentPattern extends AbstractContainerPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new WindowTabComponentState(this);
+        return new WindowTabComponentState();
     }
 
     @Override

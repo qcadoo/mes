@@ -223,8 +223,7 @@ public class ComponentPatternTest extends AbstractPatternTest {
 
         // then
         JSONObject options = (JSONObject) model.get("jsOptions");
-        assertTrue(options.getBoolean("header"));
-        assertFalse(options.getBoolean("fixedHeight"));
+        assertTrue(options.getBoolean("hasRibbon"));
     }
 
     @Test
