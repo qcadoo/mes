@@ -4,7 +4,7 @@ import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.qcadoo.mes.internal.InternalMenuService;
-import com.qcadoo.plugin.internal.api.ModuleFactory;
+import com.qcadoo.plugin.api.ModuleFactory;
 
 public class MenuViewModuleFactory implements ModuleFactory<MenuModule> {
 
@@ -20,7 +20,6 @@ public class MenuViewModuleFactory implements ModuleFactory<MenuModule> {
     public MenuModule parse(final String pluginIdentifier, final Element element) {
         String menuName = element.getAttributeValue("name");
         String menuCategory = element.getAttributeValue("category");
-        String menuViewPluginIdentifier = element.getAttributeValue("plugin");
         String menuViewName = element.getAttributeValue("view");
 
         if (menuName == null) {

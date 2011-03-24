@@ -1,7 +1,7 @@
 package com.qcadoo.mes.localization.internal.module;
 
+import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.PluginState;
-import com.qcadoo.plugin.internal.api.Module;
 
 public class TranslationModule extends Module {
 

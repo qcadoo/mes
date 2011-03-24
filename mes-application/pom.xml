@@ -89,6 +89,7 @@
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
+				<version>6.1.26</version>
 				<configuration>
 					<systemProperties>
 						<systemProperty>
@@ -156,7 +157,7 @@
 										<property name="build.number" value="-" />
 										<echo file="${basedir}/target/classes/build.properties">
 											buildApplicationName = Qcadoo MES
-											buildApplicationVersion = ${pom.version}
+											buildApplicationVersion = ${project.version}
 											buildTime = ${build.time}
 											buildNumber = ${build.number}
 											buildRevision = ${build.revision}

@@ -27,7 +27,7 @@
 		<view:menu-item name="machines" category="basic" view="machines" />
 		<view:menu-item name="staff" category="basic" view="staffs" />
 		<view:menu-item-url name="systemParameters" category="basic" url="/parameter.html" />
-		<view:menu-item name="systemInfo" category="administration" view="systemInfo" />
+		<view:menu-item-url name="systemInfo" category="administration" url="/systemInfo.html" />
 		
 		<view:view>
 			<resource>basic/view/basic.xml</resource>

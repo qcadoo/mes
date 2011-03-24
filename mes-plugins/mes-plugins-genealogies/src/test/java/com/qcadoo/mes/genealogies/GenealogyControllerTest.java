@@ -43,7 +43,7 @@ public class GenealogyControllerTest {
     @Test
     public void shouldPrepareViewForGenealogyAttributes() throws Exception {
         // // given
-        Map<String, String> arguments = ImmutableMap.of("context", "{\"window.currentAttribute.id\":\"13\"}");
+        Map<String, String> arguments = ImmutableMap.of("context", "{\"form.id\":\"13\"}");
         ModelAndView expectedMav = mock(ModelAndView.class);
         CrudController crudController = mock(CrudController.class);
         given(crudController.prepareView("genealogies", "currentAttribute", arguments, Locale.ENGLISH)).willReturn(expectedMav);

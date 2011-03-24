@@ -60,7 +60,6 @@ import com.qcadoo.mes.view.components.grid.GridComponentColumn;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.states.AbstractStateTest;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.Restriction;
@@ -96,6 +95,7 @@ public class GridComponentStateTest extends AbstractStateTest {
 
     private SearchCriteriaBuilder substituteCriteria;
 
+    @SuppressWarnings("unchecked")
     @Before
     public void init() throws Exception {
         JSONObject jsonContent = new JSONObject();
@@ -657,7 +657,6 @@ public class GridComponentStateTest extends AbstractStateTest {
     @Test
     public void shouldGetValueUsingExpression() throws Exception {
         // given
-        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         given(productDataDefinition.getField(anyString()).getType().toString(anyString(), any(Locale.class))).willReturn("John");
 
         GridComponentColumn column = new GridComponentColumn("name");

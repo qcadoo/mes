@@ -402,35 +402,6 @@ public class QualityControlService {
         });
     }
 
-    // TODO mina test
-    public void addRestrictionToTestGrids(final ViewDefinitionState viewDefinitionState, final Locale locale) {
-        final GridComponentState qualityControlsForOrderGrid = (GridComponentState) viewDefinitionState
-                .getComponentByReference("forOrderGrid");
-        final String qualityControlForOrderType = qualityControlsForOrderGrid.getName();
-
-        qualityControlsForOrderGrid.setCustomRestriction(new CustomRestriction() {
-
-            @Override
-            public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.restrictedWith(Restrictions.eq("qualityControlType", qualityControlForOrderType));
-            }
-
-        });
-
-        final GridComponentState qualityControlsForUnitGrid = (GridComponentState) viewDefinitionState
-                .getComponentByReference("forUnitGrid");
-        final String qualityControlForUnitType = qualityControlsForUnitGrid.getName();
-
-        qualityControlsForUnitGrid.setCustomRestriction(new CustomRestriction() {
-
-            @Override
-            public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.restrictedWith(Restrictions.eq("qualityControlType", qualityControlForUnitType));
-            }
-
-        });
-    }
-
     public void setQualityControlTypeHiddenField(final ViewDefinitionState viewDefinitionState, final Locale locale) {
         FormComponentState qualityControlsForm = (FormComponentState) viewDefinitionState.getComponentByReference("form");
         String qualityControlTypeString = qualityControlsForm.getName().replace("Control", "Controls");
@@ -516,6 +487,37 @@ public class QualityControlService {
         entity.setField("closed", "0");
         entity.setField("controlResult", null);
         return true;
+    }
+
+    public void changeQualityControlType(final ViewDefinitionState state, final Locale locale) {
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        FieldComponentState qualityControlType = (FieldComponentState) state.getComponentByReference("qualityControlType");
+        if (form.getFieldValue() != null) {
+            if (checkOperationQualityControlRequired((Long) form.getFieldValue())) {
+                qualityControlType.setFieldValue("04forOperation");
+                qualityControlType.setEnabled(false);
+                qualityControlType.requestComponentUpdateState();
+            } else {
+                qualityControlType.setEnabled(true);
+            }
+        }
+        FieldComponentState unitSamplingNr = (FieldComponentState) state.getComponentByReference("unitSamplingNr");
+        if (qualityControlType.getFieldValue() == null || !qualityControlType.getFieldValue().equals("02forUnit")) {
+            unitSamplingNr.setRequired(false);
+            unitSamplingNr.setVisible(false);
+        } else if (qualityControlType.getFieldValue().equals("02forUnit")) {
+            unitSamplingNr.setRequired(true);
+            unitSamplingNr.setVisible(true);
+        }
+    }
+
+    private boolean checkOperationQualityControlRequired(final Long entityId) {
+        SearchResult searchResult = dataDefinitionService.get("products", "technologyOperationComponent").find()
+                .restrictedWith(Restrictions.eq("technology.id", entityId))
+                .restrictedWith(Restrictions.eq("qualityControlRequired", true)).withMaxResults(1).list();
+
+        return (searchResult.getTotalNumberOfEntities() > 0);
+
     }
 
     private boolean hasQuantitiesToBeChecked(final String qualityControlType) {

@@ -1,7 +1,77 @@
 <viewExtensions>
-	<ribbonExtension plugin="products" view="products">
-		<group name="testGroup">
-			<bigButton name="testButton" state="enabled" action="#{grid}.fireEvent(testEvent);" />
+	
+	<ribbonExtension plugin="products" view="orders">
+		<group name="genealogy">
+			<bigButton name="genealogy" action="#{grid}.fireEvent(showGenealogy);"
+				icon="genealogyIcon24.png" state="disabled">
+				<script>
+					<![CDATA[
+						var newGenealogy = #{window}.getRibbonItem("genealogy.newGenealogy");
+						#{grid}.addOnChangeListener({
+							onChange: function(selectedEntitiesArray) {
+								if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+									this.disable();
+									newGenealogy.disable();
+								} else if (selectedEntitiesArray.length == 1) {
+									this.enable();
+									newGenealogy.enable();
+								} else {
+									this.disable("#{translate(moreThanOneRecordSelected)}");
+									newGenealogy.disable("#{translate(moreThanOneRecordSelected)}");
+								}
+							}
+						});					
+					]]>
+				</script>
+			</bigButton>
+			<bigButton name="newGenealogy" action="#{grid}.fireEvent(newGenealogy);"
+				icon="newGenealogyIcon24.png" state="disabled" />
+		</group>
+	</ribbonExtension>
+	
+	<ribbonExtension plugin="products" view="order">
+		<group name="genealogy">
+			<bigButton name="genealogy" icon="genealogyIcon24.png" state="disabled" >
+				<script>
+					<![CDATA[
+						var newGenealogy = #{window}.getRibbonItem("genealogy.newGenealogy");
+						this.addOnChangeListener({
+							onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('showGenealogy', []);
+									}
+							}
+						});		
+						#{form}.addOnChangeListener({
+							onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								if (! value.content.entityId) {
+									this.disable();
+									newGenealogy.disable();
+								} else {
+									this.enable();
+									newGenealogy.enable();
+								}
+							}
+						});					
+					]]>
+				</script>	
+			</bigButton>
+			<bigButton name="newGenealogy" icon="newGenealogyIcon24.png" state="disabled" >
+				<script>
+					<![CDATA[
+						this.addOnChangeListener({
+							onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('newGenealogy', []);
+									}
+							}
+						});							
+					]]>
+				</script>	
+			</bigButton>
 		</group>
 	</ribbonExtension>
 	
@@ -14,6 +84,58 @@
 				<layoutElement column="1" row="2">
 					<component type="checkbox" name="genealogyBatchReq" field="#{form}.genealogyBatchReq">
 						<option type="labelWidth" value="60" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
+	</windowTabExtension>
+	
+	
+	<windowTabExtension plugin="products" view="technology">
+		<windowTab name="genealogyTab" reference="genealogyTab">
+			<component type="gridLayout" name="genealogyLayout" columns="3" rows="4">
+				<layoutElement column="1" row="1">
+					<component type="checkbox" name="batchRequired" reference="batchRequired" field="#{form}.batchRequired">
+						<option type="labelWidth" value="50" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="checkbox" name="shiftFeatureRequired" reference="shiftFeatureRequired" field="#{form}.shiftFeatureRequired">
+						<option type="labelWidth" value="50" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="3">	
+					<component type="checkbox" name="postFeatureRequired" reference="postFeatureRequired" field="#{form}.postFeatureRequired">
+						<option type="labelWidth" value="50" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="4">
+					<component type="checkbox" name="otherFeatureRequired" reference="otherFeatureRequired" field="#{form}.otherFeatureRequired">
+						<option type="labelWidth" value="50" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
+	</windowTabExtension>
+	
+	<windowTabExtension plugin="products" view="operationProductInComponent">
+		<windowTab name="genealogyTab" reference="genealogyTab">
+			<component type="gridLayout" name="genealogyLayout" columns="1" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="checkbox" name="batchRequired" reference="batchRequired" field="#{form}.batchRequired" >
+						<option type="labelWidth" value="35" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
+	</windowTabExtension>
+	
+	<windowTabExtension plugin="basic" view="parameter">
+		<windowTab name="genealogyTab" reference="genealogyTab">
+			<component type="gridLayout" name="genealogyLayout" columns="3" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="select" name="batchForDoneOrder" field="#{form}.batchForDoneOrder" reference="batchForDoneOrder">
+						<option type="labelWidth" value="50" />
 					</component>
 				</layoutElement>
 			</component>

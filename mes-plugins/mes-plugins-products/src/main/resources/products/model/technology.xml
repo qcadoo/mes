@@ -36,6 +36,7 @@
 		<string name="description" />
 		<tree name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />
 		<hasMany name="orders" model="order" joinField="technology" cascade="none"/>
+		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology" default="01perProductOut" required="true" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="checkTechnologyDefault" />

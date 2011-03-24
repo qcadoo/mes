@@ -170,7 +170,7 @@ public class AwesomeDynamicListPattern extends FieldComponentPattern {
 
     @Override
     protected ComponentState getComponentStateInstance() {
-        return new AwesomeDynamicListState(this, innerFormPattern, headerFormPattern);
+        return new AwesomeDynamicListState(this, innerFormPattern);
     }
 
 }

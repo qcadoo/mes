@@ -28,7 +28,7 @@ public class MenuCategory {
     private int succession;
 
     @OneToMany(mappedBy = "category")
-    public Set<MenuItem> items;
+    private Set<MenuItem> items;
 
     public Long getId() {
         return id;

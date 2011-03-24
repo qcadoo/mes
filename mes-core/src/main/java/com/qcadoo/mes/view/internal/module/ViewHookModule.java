@@ -4,8 +4,8 @@ import com.google.common.base.Preconditions;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.view.HookDefinition;
 import com.qcadoo.mes.view.ViewDefinition;
+import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.PluginState;
-import com.qcadoo.plugin.internal.api.Module;
 
 public class ViewHookModule extends Module {
 

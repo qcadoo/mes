@@ -12,12 +12,6 @@
 	<packaging>pom</packaging>
 
 	<name>Qcadoo MES :: Plugins</name>
-	<description />
-
-	<properties>
-		<mes.plugin.identifier>${pom.artifactId}</mes.plugin.identifier>
-		<mes.plugin.dependencies />
-	</properties>
 
 	<modules>
 		<module>mes-plugins-crud</module>
@@ -42,61 +36,5 @@
 			<artifactId>spring-test</artifactId>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<!-- plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<configuration>
-							<tasks>
-								<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.plugin.classpath" />
-								<if>
-									<equals arg1="${pom.artifactId}" arg2="mes-plugins" />
-									<else>
-										<echoxml file="${basedir}/target/classes/plugin.xml">
-											<qcd:plugin xmlns:qcd="http://www.qcadoo.com/plugin">
-												<identifier>${mes.plugin.identifier}</identifier>
-												<name>${pom.name}</name>
-												<packageName>${pom.groupId}</packageName>
-												<version>${pom.version}</version>
-												<vendor>${pom.organization.name}</vendor>
-												<vendorUrl>${pom.organization.url}</vendorUrl>
-												<description>${pom.description}</description>
-												<dependencies>${mes.plugin.dependencies}</dependencies>
-											</qcd:plugin>
-										</echoxml>
-									</else>
-								</if>
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>ant-contrib</groupId>
-						<artifactId>ant-contrib</artifactId>
-						<version>1.0b3</version>
-						<exclusions>
-							<exclusion>
-								<groupId>ant</groupId>
-								<artifactId>ant</artifactId>
-							</exclusion>
-						</exclusions>
-					</dependency>
-					<dependency>
-						<groupId>ant</groupId>
-						<artifactId>ant-nodeps</artifactId>
-						<version>1.6.5</version>
-					</dependency>
-				</dependencies>
-			</plugin -->
-		</plugins>
-	</build>
 
 </project>

@@ -47,7 +47,7 @@ import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.HookDefinition;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.mes.view.components.tabWindow.WindowComponentPattern;
+import com.qcadoo.mes.view.components.window.WindowComponentPattern;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 import com.qcadoo.model.api.DataDefinition;
 

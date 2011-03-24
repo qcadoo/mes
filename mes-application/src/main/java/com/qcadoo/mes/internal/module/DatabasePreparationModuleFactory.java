@@ -32,9 +32,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.application.TestDataLoader;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.plugin.internal.api.Module;
-import com.qcadoo.plugin.internal.api.ModuleFactory;
 
 @Component
 public final class DatabasePreparationModuleFactory implements ModuleFactory<Module> {
