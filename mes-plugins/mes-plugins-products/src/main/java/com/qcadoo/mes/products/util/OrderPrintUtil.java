@@ -36,8 +36,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.components.grid.GridComponentState;

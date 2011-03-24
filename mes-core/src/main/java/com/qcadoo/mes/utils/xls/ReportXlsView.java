@@ -37,7 +37,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.servlet.view.document.AbstractExcelView;
 
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 
 public abstract class ReportXlsView extends AbstractExcelView {
 

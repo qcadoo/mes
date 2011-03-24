@@ -46,7 +46,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
 import com.google.common.collect.ImmutableMap;
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
 import com.qcadoo.mes.internal.ViewDefinitionServiceImpl;
@@ -124,17 +124,21 @@ public class ViewDefinitionParserImplTest {
 
         dataDefinitionA = mock(DataDefinition.class);
         dataDefinitionB = mock(DataDefinition.class);
-        FieldDefinition nameA = mock(FieldDefinition.class);
-        FieldDefinition nameB = mock(FieldDefinition.class);
-        FieldDefinition hasManyB = mock(FieldDefinition.class);
-        FieldDefinition belongToA = mock(FieldDefinition.class);
+        FieldDefinition nameA = mock(FieldDefinition.class, "nameA");
+        FieldDefinition nameB = mock(FieldDefinition.class, "nameB");
+        FieldDefinition hasManyB = mock(FieldDefinition.class, "hasManyB");
+        FieldDefinition belongToA = mock(FieldDefinition.class, "belongsToA");
         HasManyType hasManyBType = mock(HasManyType.class);
         BelongsToType belongToAType = mock(BelongsToType.class);
 
+        given(nameA.getDataDefinition()).willReturn(dataDefinitionA);
         given(nameA.getType()).willReturn(new StringType());
         given(nameB.getType()).willReturn(new StringType());
+        given(nameB.getDataDefinition()).willReturn(dataDefinitionA);
         given(hasManyB.getType()).willReturn(hasManyBType);
+        given(hasManyB.getDataDefinition()).willReturn(dataDefinitionB);
         given(belongToA.getType()).willReturn(belongToAType);
+        given(belongToA.getDataDefinition()).willReturn(dataDefinitionB);
         given(hasManyBType.getDataDefinition()).willReturn(dataDefinitionB);
         given(belongToAType.getDataDefinition()).willReturn(dataDefinitionA);
         given(dataDefinitionA.getField("beansB")).willReturn(hasManyB);

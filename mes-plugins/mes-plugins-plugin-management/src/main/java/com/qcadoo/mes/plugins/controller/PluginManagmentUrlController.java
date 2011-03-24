@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.crud.CrudController;
 import com.qcadoo.plugin.internal.api.PluginArtifact;
 import com.qcadoo.plugin.internal.artifact.InputStreamPluginArtifact;

@@ -43,7 +43,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.controller.ErrorController;
 import com.qcadoo.model.api.CopyException;
 import com.qcadoo.model.api.validators.ErrorMessage;

@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.xls.XlsUtil;
 import com.qcadoo.model.api.DataDefinition;

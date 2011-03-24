@@ -36,8 +36,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.crud.CrudController;
 import com.qcadoo.mes.internal.MenuService;
@@ -80,7 +80,7 @@ public final class MainPageController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("core/main");
         mav.addObject("viewsList", viewDefinitionService.list());
-        mav.addObject("commonTranslations", translationService.getCommonsMessages(locale));
+        mav.addObject("commonTranslations", translationService.getMessagesForPrefix("commons", locale));
         mav.addObject("menuStructure", menuService.getMenu(locale).getAsJson());
         mav.addObject("userLogin", securityService.getCurrentUserName());
         return mav;
@@ -92,7 +92,7 @@ public final class MainPageController {
 
         mav.addObject("userLogin", securityService.getCurrentUserName());
 
-        mav.addObject("translationsMap", translationService.getDashboardMessages(locale));
+        mav.addObject("translationsMap", translationService.getMessagesForPrefix("core.dashboard", locale));
 
         mav.setViewName("core/dashboard");
         return mav;

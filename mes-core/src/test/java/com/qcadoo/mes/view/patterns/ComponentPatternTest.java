@@ -42,7 +42,7 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentPattern;

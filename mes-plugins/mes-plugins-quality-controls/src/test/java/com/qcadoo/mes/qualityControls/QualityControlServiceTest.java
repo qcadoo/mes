@@ -45,9 +45,9 @@ import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.api.NumberGeneratorService;
 import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;

@@ -24,7 +24,7 @@
 
 package com.qcadoo.mes.view;
 
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.DataDefinition;
 
 public final class ComponentDefinition {
