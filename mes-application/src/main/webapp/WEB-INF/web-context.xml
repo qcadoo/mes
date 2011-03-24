@@ -113,18 +113,6 @@
 		JSON. The ObjectMapper is similar to JAXB marshallers. -->
 	<bean class="org.codehaus.jackson.map.ObjectMapper" id="jacksonObjectMapper" />
 
-	<bean id="messageSource"
-		class="com.qcadoo.mes.application.ResourceBundleMessageSource">		
-		<property name="defaultEncoding" value="UTF-8" />
-	</bean>
-
-	<bean id="localeChangeInterceptor"
-		class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
-		<property name="paramName" value="lang" />
-	</bean>
-	
-	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
-
 	<bean id="exceptionResolver"  
 		class="com.qcadoo.mes.application.TranslatedMessageExceptionResolver">  
   		<property name="defaultErrorView" value="500" />

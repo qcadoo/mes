@@ -36,6 +36,7 @@
 		<param-value>
 			/WEB-INF/database-context.xml
 			/WEB-INF/plugin-context.xml
+			/WEB-INF/localization-context.xml
 			/WEB-INF/model-context.xml
 			/WEB-INF/root-context.xml
 			/WEB-INF/security-context.xml

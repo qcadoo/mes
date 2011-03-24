@@ -72,7 +72,7 @@
 				<bean class="com.qcadoo.model.internal.module.FieldModuleFactory" />
 				<bean class="com.qcadoo.model.internal.module.HookModuleFactory" />
 				<bean class="com.qcadoo.model.internal.module.DictionaryModuleFactory" />
-				<bean class="com.qcadoo.mes.localization.internal.module.TranslationModuleFactory" />
+				<bean class="com.qcadoo.localization.internal.module.TranslationModuleFactory" />
 				<bean class="com.qcadoo.mes.view.internal.module.ViewModuleFactory" />
 				<bean class="com.qcadoo.mes.view.internal.module.ViewHookModuleFactory" />
 				<bean class="com.qcadoo.mes.view.internal.module.ViewListenerModuleFactory" />
