@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qcadoo.mes.application.TestDataLoader;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.PluginState;
-import com.qcadoo.plugin.internal.api.Module;
 
 public class DatabasePreparationModule extends Module {
 
