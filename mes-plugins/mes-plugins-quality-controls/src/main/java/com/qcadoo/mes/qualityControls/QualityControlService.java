@@ -402,35 +402,6 @@ public class QualityControlService {
         });
     }
 
-    // TODO mina test
-    public void addRestrictionToTestGrids(final ViewDefinitionState viewDefinitionState, final Locale locale) {
-        final GridComponentState qualityControlsForOrderGrid = (GridComponentState) viewDefinitionState
-                .getComponentByReference("forOrderGrid");
-        final String qualityControlForOrderType = qualityControlsForOrderGrid.getName();
-
-        qualityControlsForOrderGrid.setCustomRestriction(new CustomRestriction() {
-
-            @Override
-            public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.restrictedWith(Restrictions.eq("qualityControlType", qualityControlForOrderType));
-            }
-
-        });
-
-        final GridComponentState qualityControlsForUnitGrid = (GridComponentState) viewDefinitionState
-                .getComponentByReference("forUnitGrid");
-        final String qualityControlForUnitType = qualityControlsForUnitGrid.getName();
-
-        qualityControlsForUnitGrid.setCustomRestriction(new CustomRestriction() {
-
-            @Override
-            public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.restrictedWith(Restrictions.eq("qualityControlType", qualityControlForUnitType));
-            }
-
-        });
-    }
-
     public void setQualityControlTypeHiddenField(final ViewDefinitionState viewDefinitionState, final Locale locale) {
         FormComponentState qualityControlsForm = (FormComponentState) viewDefinitionState.getComponentByReference("form");
         String qualityControlTypeString = qualityControlsForm.getName().replace("Control", "Controls");

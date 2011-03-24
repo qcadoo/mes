@@ -20,16 +20,13 @@ public class RibbonUtils {
 
     private RibbonTemplates ribbonTemplates;
 
-    private static RibbonUtils instance;
+    private static RibbonUtils instance = new RibbonUtils();
 
     private RibbonUtils() {
         ribbonTemplates = new RibbonTemplates();
     }
 
     public static RibbonUtils getInstance() {
-        if (instance == null) {
-            instance = new RibbonUtils();
-        }
         return instance;
     }
 

@@ -20,7 +20,6 @@ public class MenuViewModuleFactory implements ModuleFactory<MenuModule> {
     public MenuModule parse(final String pluginIdentifier, final Element element) {
         String menuName = element.getAttributeValue("name");
         String menuCategory = element.getAttributeValue("category");
-        String menuViewPluginIdentifier = element.getAttributeValue("plugin");
         String menuViewName = element.getAttributeValue("view");
 
         if (menuName == null) {
