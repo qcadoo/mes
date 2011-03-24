@@ -49,7 +49,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.google.common.base.Preconditions;
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;

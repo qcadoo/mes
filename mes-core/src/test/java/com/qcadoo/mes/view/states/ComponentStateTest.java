@@ -35,7 +35,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.components.SimpleComponentState;

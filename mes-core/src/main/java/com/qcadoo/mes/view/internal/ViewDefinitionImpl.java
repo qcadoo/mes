@@ -40,7 +40,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ContainerPattern;

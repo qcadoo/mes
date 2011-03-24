@@ -31,7 +31,7 @@ import java.util.Locale;
 
 import org.json.JSONObject;
 
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ContainerPattern;

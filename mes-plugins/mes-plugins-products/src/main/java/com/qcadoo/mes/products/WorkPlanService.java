@@ -35,8 +35,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanForMachinePdfService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanForProductPdfService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanForWorkerPdfService;

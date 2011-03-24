@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.view.menu.MenuDefinition;
 import com.qcadoo.mes.view.menu.MenulItemsGroup;
 import com.qcadoo.mes.view.menu.items.UrlMenuItem;
@@ -188,7 +188,7 @@ public final class MenuServiceImpl implements InternalMenuService {
         menuCategory = dataDefinitionService.get("menu", "category").create();
         menuCategory.setField("pluginIdentifier", pluginIdentifier);
         menuCategory.setField("name", categoryName);
-        menuCategory.setField("pluginIdentifier", getTotalNumberOfCategories());
+        menuCategory.setField("succession", getTotalNumberOfCategories());
         dataDefinitionService.get("menu", "category").save(menuCategory);
     }
 
