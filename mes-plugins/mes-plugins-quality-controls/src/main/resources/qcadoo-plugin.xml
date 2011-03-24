@@ -65,7 +65,8 @@
 			<resource>qualityControls/view/qualityControls.xml</resource>
 			<resource>qualityControls/view/qualityControlsTest.xml</resource>
 		</view:view>
-		
+		<!-- TODO remove after implementing import data -->
+		<databasePreparation></databasePreparation>
 	</modules>
 
 </plugin>
