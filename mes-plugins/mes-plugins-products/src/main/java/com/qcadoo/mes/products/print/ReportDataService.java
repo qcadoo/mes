@@ -48,7 +48,6 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.mes.products.util.EntityOperationInPairNumberComparator;
 import com.qcadoo.mes.utils.Pair;
@@ -58,6 +57,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.utils.DateUtils;
+import com.qcadoo.security.api.SecurityService;
 
 @Service
 public class ReportDataService {

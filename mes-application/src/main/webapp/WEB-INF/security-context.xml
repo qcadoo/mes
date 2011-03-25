@@ -28,11 +28,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="
        http://www.springframework.org/schema/beans 
        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/security 
-       http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+       http://www.springframework.org/schema/security/spring-security-3.0.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:component-scan base-package="com.qcadoo.security" />
 
 	<security:global-method-security
 		pre-post-annotations="enabled">
@@ -63,9 +68,6 @@
 		<security:custom-filter ref="mySessionExpirationFilter"
 			before="FIRST" />
 
-		<security:custom-filter ref="deletedUserFilter"
-			before="SESSION_MANAGEMENT_FILTER" />
-
 		<security:custom-filter ref="customAuthenticationFilter"
 			position="FORM_LOGIN_FILTER" />
 
@@ -80,35 +82,12 @@
 	</security:http>
 
 	<security:authentication-manager alias="authenticationManager">
-		<security:authentication-provider
-			user-service-ref="userDetailsService">
+		<security:authentication-provider user-service-ref="userDetailsService">
 			<security:password-encoder ref="passwordEncoder" />
 		</security:authentication-provider>
 	</security:authentication-manager>
 
-	<bean id="userDetailsService"
-		class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
-		<property name="dataSource" ref="dataSource" />
-		<property name="usersByUsernameQuery">
-			<value>
-				SELECT USERNAME, PASSWORD, enabled FROM
-				Users_User WHERE
-				USERNAME like ? and enabled=true
-            </value>
-		</property>
-		<property name="authoritiesByUsernameQuery">
-			<value>SELECT U.username, G.role as authority FROM Users_User U JOIN
-				Users_Group G ON u.usergroup_id = G.id WHERE U.username like ?</value>
-		</property>
-	</bean>
-
-	<bean id="delegatePasswordEncoder"
-		class="com.qcadoo.mes.security.internal.DelegatePasswordEncoder">
-		<constructor-arg ref="passwordEncoder" />
-	</bean>
-	
-	<bean id="passwordEncoder"
-		class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
+	<bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
 		<constructor-arg value="256" />
 	</bean>
 
@@ -139,11 +118,6 @@
 
 	<bean id="mySessionExpirationFilter"
 		class="com.qcadoo.mes.security.internal.SessionExpirationFilter" />
-
-	<bean id="deletedUserFilter"
-		class="com.qcadoo.mes.security.internal.DeletedUserFilter">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
 
 	<bean id="staticResourcesFilter" class="com.qcadoo.mes.application.StaticResourcesFilter">
 		<property name="compressStaticResources" value="${compressStaticResources}" />

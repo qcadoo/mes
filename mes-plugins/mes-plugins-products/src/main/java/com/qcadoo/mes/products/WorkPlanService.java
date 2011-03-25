@@ -36,7 +36,6 @@ import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanForMachinePdfService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanForProductPdfService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanForWorkerPdfService;
@@ -56,6 +55,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.utils.DateUtils;
+import com.qcadoo.security.api.SecurityService;
 
 @Service
 public final class WorkPlanService {

@@ -81,6 +81,7 @@
 				<bean class="com.qcadoo.mes.view.internal.module.MenuCategoryModuleFactory" />
 				<bean class="com.qcadoo.mes.view.internal.module.MenuViewModuleFactory" />
 				<bean class="com.qcadoo.mes.view.internal.module.MenuUrlModuleFactory" />
+				<bean class="com.qcadoo.mes.view.internal.module.resourceModule.ResourceModuleFactory" />
 				<bean class="com.qcadoo.mes.internal.module.DatabasePreparationModuleFactory" />
 			</list>
 		</property>

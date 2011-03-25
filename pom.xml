@@ -231,6 +231,11 @@
 			<version>${qcadoo.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-security</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>2.2</version>
