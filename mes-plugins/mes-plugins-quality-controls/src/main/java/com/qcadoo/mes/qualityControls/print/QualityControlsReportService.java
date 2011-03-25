@@ -43,18 +43,18 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
-import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.ComponentState.MessageType;
-import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.mes.view.components.FieldComponentState;
-import com.qcadoo.mes.view.components.form.FormComponentState;
-import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.utils.DateUtils;
+import com.qcadoo.view.internal.ComponentState;
+import com.qcadoo.view.internal.ViewDefinitionState;
+import com.qcadoo.view.internal.ComponentState.MessageType;
+import com.qcadoo.view.internal.components.FieldComponentState;
+import com.qcadoo.view.internal.components.form.FormComponentState;
+import com.qcadoo.view.internal.components.grid.GridComponentState;
 
 @Service
 public class QualityControlsReportService {

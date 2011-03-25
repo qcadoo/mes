@@ -29,12 +29,12 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.mes.view.components.FieldComponentState;
-import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.internal.ComponentState;
+import com.qcadoo.view.internal.ViewDefinitionState;
+import com.qcadoo.view.internal.components.FieldComponentState;
+import com.qcadoo.view.internal.components.lookup.LookupComponentState;
 
 @Service
 public class UnitService {

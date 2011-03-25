@@ -55,14 +55,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.api.NumberGeneratorService;
-import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.ComponentState.MessageType;
-import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.mes.view.components.FieldComponentState;
-import com.qcadoo.mes.view.components.form.FormComponentState;
-import com.qcadoo.mes.view.components.grid.GridComponentState;
-import com.qcadoo.mes.view.components.lookup.LookupComponentState;
+import com.qcadoo.mes.utils.NumberGeneratorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -75,6 +68,13 @@ import com.qcadoo.model.internal.EntityTreeImpl;
 import com.qcadoo.model.internal.types.BooleanType;
 import com.qcadoo.model.internal.types.StringType;
 import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.internal.ComponentState;
+import com.qcadoo.view.internal.ComponentState.MessageType;
+import com.qcadoo.view.internal.ViewDefinitionState;
+import com.qcadoo.view.internal.components.FieldComponentState;
+import com.qcadoo.view.internal.components.form.FormComponentState;
+import com.qcadoo.view.internal.components.grid.GridComponentState;
+import com.qcadoo.view.internal.components.lookup.LookupComponentState;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ FormComponentState.class, LookupComponentState.class, FieldComponentState.class, EntityTreeImpl.class,

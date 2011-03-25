@@ -73,11 +73,11 @@
 				<bean class="com.qcadoo.model.internal.module.HookModuleFactory" />
 				<bean class="com.qcadoo.model.internal.module.DictionaryModuleFactory" />
 				<bean class="com.qcadoo.localization.internal.module.TranslationModuleFactory" />
-				<bean class="com.qcadoo.mes.view.internal.module.ViewModuleFactory" />
-				<bean class="com.qcadoo.mes.view.internal.module.ViewHookModuleFactory" />
-				<bean class="com.qcadoo.mes.view.internal.module.ViewListenerModuleFactory" />
-				<bean class="com.qcadoo.mes.view.internal.module.ViewRibbonModuleFactory" />
-				<bean class="com.qcadoo.mes.view.internal.module.ViewTabModuleFactory" />
+				<bean class="com.qcadoo.view.internal.module.ViewModuleFactory" />
+				<bean class="com.qcadoo.view.internal.module.ViewHookModuleFactory" />
+				<bean class="com.qcadoo.view.internal.module.ViewListenerModuleFactory" />
+				<bean class="com.qcadoo.view.internal.module.ViewRibbonModuleFactory" />
+				<bean class="com.qcadoo.view.internal.module.ViewTabModuleFactory" />
 				<bean class="com.qcadoo.view.internal.menu.module.MenuCategoryModuleFactory" />
 				<bean class="com.qcadoo.view.internal.menu.module.MenuViewModuleFactory" />
 				<bean class="com.qcadoo.view.internal.menu.module.MenuUrlModuleFactory" />

@@ -40,9 +40,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.model.api.aop.Monitorable;
+import com.qcadoo.view.api.ViewDefinitionService;
+import com.qcadoo.view.internal.ViewDefinition;
 
 @Controller
 public class CrudController {

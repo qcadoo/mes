@@ -35,14 +35,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.api.NumberGeneratorService;
 import com.qcadoo.mes.products.print.ReportDataService;
-import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.mes.view.components.FieldComponentState;
-import com.qcadoo.mes.view.components.grid.GridComponentState;
-import com.qcadoo.mes.view.components.select.SelectComponentState;
-import com.qcadoo.mes.view.components.tree.TreeComponentState;
+import com.qcadoo.mes.utils.NumberGeneratorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -53,6 +47,12 @@ import com.qcadoo.model.api.search.RestrictionOperator;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.view.internal.ComponentState;
+import com.qcadoo.view.internal.ViewDefinitionState;
+import com.qcadoo.view.internal.components.FieldComponentState;
+import com.qcadoo.view.internal.components.grid.GridComponentState;
+import com.qcadoo.view.internal.components.select.SelectComponentState;
+import com.qcadoo.view.internal.components.tree.TreeComponentState;
 
 @Service
 public final class TechnologyService {

@@ -29,13 +29,13 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.mes.view.components.ButtonComponentState;
-import com.qcadoo.mes.view.components.FieldComponentState;
-import com.qcadoo.mes.view.components.PasswordComponentState;
-import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.internal.ViewDefinitionState;
+import com.qcadoo.view.internal.components.ButtonComponentState;
+import com.qcadoo.view.internal.components.FieldComponentState;
+import com.qcadoo.view.internal.components.PasswordComponentState;
+import com.qcadoo.view.internal.components.form.FormComponentState;
 
 @Service
 public final class UserService {

@@ -52,10 +52,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.ComponentState.MessageType;
-import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -65,6 +61,10 @@ import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
 import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.internal.ComponentState;
+import com.qcadoo.view.internal.ViewDefinitionState;
+import com.qcadoo.view.internal.ComponentState.MessageType;
+import com.qcadoo.view.internal.components.form.FormComponentState;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ FormComponentState.class, GenealogyService.class, TransactionAspectSupport.class })
