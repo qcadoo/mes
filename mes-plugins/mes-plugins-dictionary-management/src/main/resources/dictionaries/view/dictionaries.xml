@@ -26,7 +26,7 @@
 -->
 
 <qcd:views plugin="dictionaries" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="dictionaries" model="dictionary" menuAccessible="true">
+	<view name="dictionaries" plugin="qcadooModel" model="dictionary" menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
 			</ribbon>				
@@ -46,7 +46,7 @@
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="dictionary" model="dictionary">
+	<view name="dictionary" plugin="qcadooModel" model="dictionary">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
@@ -72,7 +72,7 @@
 			</component>
 		</component>
 	</view>
-	<view name="dictionaryItem" model="dictionaryItem">
+	<view name="dictionaryItem" plugin="qcadooModel" model="dictionaryItem">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>

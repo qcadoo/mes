@@ -31,15 +31,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.ComponentState.MessageType;
-import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.mes.view.components.form.FormComponentState;
-import com.qcadoo.mes.view.components.grid.GridComponentState;
-import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.components.form.FormComponentState;
+import com.qcadoo.view.components.grid.GridComponentState;
+import com.qcadoo.view.components.lookup.LookupComponentState;
 
 @Service
 public class ReportService {

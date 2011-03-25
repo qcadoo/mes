@@ -56,6 +56,7 @@ import org.xml.sax.SAXException;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.plugin.api.PluginAccessor;
 
 @Component
 public final class TestDataLoader {
@@ -95,6 +96,9 @@ public final class TestDataLoader {
     private ApplicationContext applicationContext;
 
     @Autowired
+    private PluginAccessor pluginAccessor;
+
+    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Value("${loadTestDataLocale}")
@@ -104,17 +108,13 @@ public final class TestDataLoader {
     private boolean addOtherUsers;
 
     public void loadTestData() {
-        if (checkPluginIsEnabled("users") && addOtherUsers) {
-            readDataFromXML("users", USER_ATTRIBUTES);
-        }
-        if (checkPluginIsEnabled("dictionaries")) {
-            readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
-        }
-        if (checkPluginIsEnabled("basic")) {
+        readDataFromXML("users", USER_ATTRIBUTES);
+        readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
+        if (pluginAccessor.getEnabledPlugin("basic") != null) {
             readDataFromXML("machines", MACHINE_ATTRIBUTES);
             readDataFromXML("staff", STAFF_ATTRIBUTES);
         }
-        if (checkPluginIsEnabled("products")) {
+        if (pluginAccessor.getEnabledPlugin("products") != null) {
             readDataFromXML("units", new String[] { "name" });
             readDataFromXML("products", PRODUCT_ATTRIBUTES);
             readDataFromXML("operations", OPERATION_ATTRIBUTES);
@@ -322,7 +322,7 @@ public final class TestDataLoader {
     private void addDictionary(final Map<String, String> values) {
         Entity dictionary = getDictionaryByName(values.get("name"));
 
-        Entity item = dataDefinitionService.get("dictionaries", "dictionaryItem").create();
+        Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
         item.setField("dictionary", dictionary);
         item.setField("name", values.get("item"));
 
@@ -331,14 +331,14 @@ public final class TestDataLoader {
                     + "}");
         }
 
-        item = dataDefinitionService.get("dictionaries", "dictionaryItem").save(item);
+        item = dataDefinitionService.get("qcadooModel", "dictionaryItem").save(item);
         if (!item.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
     }
 
     private void addUser(final Map<String, String> values) {
-        Entity user = dataDefinitionService.get("users", "user").create();
+        Entity user = dataDefinitionService.get("qcadooSecurity", "user").create();
         if (!values.get("login").isEmpty()) {
             user.setField("userName", values.get("login"));
         }
@@ -362,7 +362,7 @@ public final class TestDataLoader {
                     + ((Entity) user.getField("userGroup")).getField("name") + "}");
         }
 
-        user = dataDefinitionService.get("users", "user").save(user);
+        user = dataDefinitionService.get("qcadooSecurity", "user").save(user);
         if (!user.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
@@ -855,8 +855,8 @@ public final class TestDataLoader {
     }
 
     private Entity getGroupByRole(final String role) {
-        return dataDefinitionService.get("users", "group").find().restrictedWith(Restrictions.eq("role", role)).withMaxResults(1)
-                .list().getEntities().get(0);
+        return dataDefinitionService.get("qcadooSecurity", "group").find().restrictedWith(Restrictions.eq("role", role))
+                .withMaxResults(1).list().getEntities().get(0);
     }
 
     private Entity getOperationByNumber(final String number) {
@@ -866,16 +866,16 @@ public final class TestDataLoader {
 
     private String getRandomDictionaryItem(final String dictionaryName) {
         Entity dictionary = getDictionaryByName(dictionaryName);
-        Long total = (long) dataDefinitionService.get("dictionaries", "dictionaryItem").find()
+        Long total = (long) dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
                 .restrictedWith(Restrictions.eq("dictionary.id", dictionary.getId())).list().getTotalNumberOfEntities();
-        Entity item = dataDefinitionService.get("dictionaries", "dictionaryItem").find()
+        Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
                 .restrictedWith(Restrictions.eq("dictionary.id", dictionary.getId()))
                 .withFirstResult(RANDOM.nextInt(total.intValue())).withMaxResults(1).list().getEntities().get(0);
         return item.getField("name").toString();
     }
 
     private Entity getDictionaryByName(final String name) {
-        return dataDefinitionService.get("dictionaries", "dictionary").find().restrictedWith(Restrictions.eq("name", name))
+        return dataDefinitionService.get("qcadooModel", "dictionary").find().restrictedWith(Restrictions.eq("name", name))
                 .withMaxResults(1).list().getEntities().get(0);
     }
 
@@ -898,15 +898,9 @@ public final class TestDataLoader {
     }
 
     private Entity getRandomUser() {
-        Long total = (long) dataDefinitionService.get("users", "user").find().list().getTotalNumberOfEntities();
-        return dataDefinitionService.get("users", "user").find().withFirstResult(RANDOM.nextInt(total.intValue()))
+        Long total = (long) dataDefinitionService.get("qcadooSecurity", "user").find().list().getTotalNumberOfEntities();
+        return dataDefinitionService.get("qcadooSecurity", "user").find().withFirstResult(RANDOM.nextInt(total.intValue()))
                 .withMaxResults(1).list().getEntities().get(0);
-    }
-
-    private boolean checkPluginIsEnabled(final String identifier) {
-        Entity entity = dataDefinitionService.get("plugins", "plugin").find()
-                .restrictedWith(Restrictions.eq("identifier", identifier)).withMaxResults(1).list().getEntities().get(0);
-        return "ENABLED".equals(entity.getField("state"));
     }
 
     private String getRandomTypeOfMaterial() {

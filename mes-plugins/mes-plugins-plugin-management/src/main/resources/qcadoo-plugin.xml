@@ -9,14 +9,25 @@
 		</vendor>
 	</information>
 	
+	<dependencies>
+		<dependency>
+			<plugin>qcadooPlugin</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+	
 	<modules>
-		<model:model model="plugin" resource="plugins/model/plugin.xml"/>
-		
+		<!-- TODO model:hook plugin="qcadooPlugin" model="plugin">
+			<onView class="com.qcadoo.plugin.controller.PluginManagmentDataHook" method="updatePluginData" />
+		</model:hook -->
+	
 		<view:menu-item name="plugins" category="administration" view="plugins" />
 
 		<view:view>
 			<resource>plugins/view/plugins.xml</resource>
 		</view:view>
+		
+		<resource uri="public/**/*" />
 		
 	</modules>
 

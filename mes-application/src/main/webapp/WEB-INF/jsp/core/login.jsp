@@ -37,17 +37,17 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/qcadoo.min.js"></script>
 		</c:when>
 		<c:otherwise>
-			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/login.css" type="text/css" />
-			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/components/form.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/core/login.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/form.css" type="text/css" />
 			
-			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/_jquery-1.4.2.min.js"></script>
-			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/serializator.js"></script>
-			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/logger.js"></script>
-			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/snow.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/_jquery-1.4.2.min.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/qcd/utils/serializator.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/qcd/utils/logger.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/qcd/utils/snow.js"></script>
 		</c:otherwise>
 	</c:choose>
 
-	<link rel="shortcut icon" href="/img/core/icons/favicon.png">
+	<link rel="shortcut icon" href="/qcadooView/public/img/core/icons/favicon.png">
 	
 	<title>QCADOO :: login</title>
 		
