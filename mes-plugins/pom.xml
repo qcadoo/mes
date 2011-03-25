@@ -14,7 +14,6 @@
 	<name>Qcadoo MES :: Plugins</name>
 
 	<modules>
-		<module>mes-plugins-crud</module>
 		<module>mes-plugins-user-management</module>
 		<module>mes-plugins-dictionary-management</module>
 		<module>mes-plugins-plugin-management</module>

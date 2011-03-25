@@ -122,9 +122,9 @@
 						<baseResource implementation="org.mortbay.resource.ResourceCollection">
 							<resourcesAsCSV>
 								${basedir}/src/main/webapp;
-								${basedir}/../mes-plugins/mes-plugins-crud/src/main/resources/META-INF;
+								<!-- ${basedir}/../mes-plugins/mes-plugins-crud/src/main/resources/META-INF;
 								${basedir}/../mes-plugins/mes-plugins-plugin-management/src/main/resources/META-INF;
-								${basedir}/../mes-plugins/mes-plugins-products/src/main/resources/META-INF;
+								${basedir}/../mes-plugins/mes-plugins-products/src/main/resources/META-INF;-->
 							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>

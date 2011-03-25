@@ -78,6 +78,7 @@
 				<bean class="com.qcadoo.view.internal.module.ViewListenerModuleFactory" />
 				<bean class="com.qcadoo.view.internal.module.ViewRibbonModuleFactory" />
 				<bean class="com.qcadoo.view.internal.module.ViewTabModuleFactory" />
+				<bean class="com.qcadoo.view.internal.module.resourceModule.UniversalResourceModuleFactory" />
 				<bean class="com.qcadoo.view.internal.menu.module.MenuCategoryModuleFactory" />
 				<bean class="com.qcadoo.view.internal.menu.module.MenuViewModuleFactory" />
 				<bean class="com.qcadoo.view.internal.menu.module.MenuUrlModuleFactory" />

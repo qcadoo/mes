@@ -78,9 +78,9 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {
         if (copyPluginResources) {
-            copyResources("js", "js");
-            copyResources("css", "css");
-            copyResources("img", "img");
+            // copyResources("js", "js");
+            // copyResources("css", "css");
+            // copyResources("img", "img");
             copyResources("WEB-INF/jsp", "WEB-INF/jsp");
 
             try {
