@@ -47,7 +47,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.api.NumberGeneratorService;
-import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
@@ -63,6 +62,7 @@ import com.qcadoo.model.api.search.RestrictionOperator;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.security.api.SecurityService;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ FormComponentState.class, SelectComponentState.class, GridComponentState.class, LookupComponentState.class })

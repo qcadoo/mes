@@ -35,8 +35,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
-import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.crud.CrudController;
+import com.qcadoo.security.api.SecurityService;
 
 @Controller
 public class UserProfileController {

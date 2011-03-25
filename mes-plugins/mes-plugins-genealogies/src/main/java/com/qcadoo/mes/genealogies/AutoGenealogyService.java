@@ -37,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -48,6 +47,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.security.api.SecurityService;
 
 @Service
 public class AutoGenealogyService {

@@ -40,13 +40,13 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.genealogies.print.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.security.api.SecurityService;
 
 public class GenealogyForComponentView extends ReportPdfView {
 
