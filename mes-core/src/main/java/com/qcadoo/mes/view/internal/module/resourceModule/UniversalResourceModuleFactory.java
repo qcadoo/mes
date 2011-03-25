@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 import com.google.common.base.Preconditions;
 import com.qcadoo.plugin.api.ModuleFactory;
 
-public class ResourceModuleFactory implements ModuleFactory<ResourceModule> {
+public class UniversalResourceModuleFactory implements ModuleFactory<UniversalResourceModule> {
 
     @Autowired
     private ResourceService resourceService;
@@ -21,13 +21,13 @@ public class ResourceModuleFactory implements ModuleFactory<ResourceModule> {
     }
 
     @Override
-    public ResourceModule parse(final String pluginIdentifier, final Element element) {
+    public UniversalResourceModule parse(final String pluginIdentifier, final Element element) {
         String uri = element.getAttributeValue("uri");
         Preconditions.checkNotNull(uri, "Resource module error: uri not defined");
 
-        // TODO mina add slash when not defined
+        // TODO mina remove slash on begin
 
-        return new ResourceModule(resourceService, applicationContext, uri);
+        return new UniversalResourceModule(resourceService, applicationContext, pluginIdentifier, uri);
     }
 
     @Override

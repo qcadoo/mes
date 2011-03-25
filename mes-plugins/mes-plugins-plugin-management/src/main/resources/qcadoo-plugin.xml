@@ -18,7 +18,7 @@
 			<resource>plugins/view/plugins.xml</resource>
 		</view:view>
 		
-		<view:resource uri="META-INF/" />
+		<view:resource uri="plublic/css/**/*.css" />
 		
 	</modules>
 

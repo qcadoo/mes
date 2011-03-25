@@ -1,28 +1,24 @@
 package com.qcadoo.mes.view.internal.module.resourceModule;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.PluginState;
 
-public class ResourceModule extends Module {
+public abstract class ResourceModule extends Module {
 
     private final ResourceService resourceService;
 
-    private final ApplicationContext applicationContext;
-
-    private final String uriRoot;
-
-    public ResourceModule(final ResourceService resourceService, final ApplicationContext applicationContext, final String uriRoot) {
+    public ResourceModule(final ResourceService resourceService) {
         this.resourceService = resourceService;
-        this.applicationContext = applicationContext;
-        this.uriRoot = uriRoot;
     }
 
     @Override
     public void init(final PluginState state) {
-        // empty
+        if (PluginState.ENABLED.equals(state)) {
+            enable();
+        }
     }
 
     @Override
@@ -35,13 +31,12 @@ public class ResourceModule extends Module {
         resourceService.removeResourceModule(this);
     }
 
-    public Resource getResource(final String uri) {
-
-        Resource resource = applicationContext.getResource("classpath:" + uriRoot + uri);
-
-        if (resource != null && resource.exists()) {
-            return resource;
-        }
-        return null;
-    }
+    /**
+     * Serves resource to response
+     * 
+     * @param request
+     * @param response
+     * @return true when resource was served
+     */
+    abstract boolean serveResource(final HttpServletRequest request, final HttpServletResponse response);
 }
