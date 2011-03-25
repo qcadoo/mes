@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<plugin plugin="testPlugin2" version="2.3.1" xmlns="http://www.qcadoo.com/plugin">
-	<information>
-		<name>testPlugin2Name</name>
-	</information>
-	<modules></modules>
-</plugin>

@@ -43,13 +43,13 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
-import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.mes.products.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.SecurityService;
 
 @Service
 public final class MaterialRequirementPdfService extends PdfDocumentService {

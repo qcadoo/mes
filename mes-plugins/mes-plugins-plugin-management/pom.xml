@@ -23,14 +23,9 @@
 			<artifactId>spring-webmvc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${pom.groupId}</groupId>
+			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-crud</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>mes-plugin</artifactId>
-			<version>${pom.version}</version>
+			<version>0.4.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

@@ -60,7 +60,7 @@
 		</property>
 		<property name="annotatedClasses">
 			<list>
-				<value>com.qcadoo.model.beans.plugins.PluginsPlugin</value>
+				<value>com.qcadoo.model.beans.qcadooPlugin.QcadooPluginPlugin</value>
 			</list>
 		</property>
 	</bean>
@@ -72,15 +72,15 @@
 				<bean class="com.qcadoo.model.internal.module.FieldModuleFactory" />
 				<bean class="com.qcadoo.model.internal.module.HookModuleFactory" />
 				<bean class="com.qcadoo.model.internal.module.DictionaryModuleFactory" />
-				<bean class="com.qcadoo.mes.localization.internal.module.TranslationModuleFactory" />
+				<bean class="com.qcadoo.localization.internal.module.TranslationModuleFactory" />
 				<bean class="com.qcadoo.mes.view.internal.module.ViewModuleFactory" />
 				<bean class="com.qcadoo.mes.view.internal.module.ViewHookModuleFactory" />
 				<bean class="com.qcadoo.mes.view.internal.module.ViewListenerModuleFactory" />
 				<bean class="com.qcadoo.mes.view.internal.module.ViewRibbonModuleFactory" />
 				<bean class="com.qcadoo.mes.view.internal.module.ViewTabModuleFactory" />
-				<bean class="com.qcadoo.mes.view.internal.module.MenuCategoryModuleFactory" />
-				<bean class="com.qcadoo.mes.view.internal.module.MenuViewModuleFactory" />
-				<bean class="com.qcadoo.mes.view.internal.module.MenuUrlModuleFactory" />
+				<bean class="com.qcadoo.view.internal.menu.module.MenuCategoryModuleFactory" />
+				<bean class="com.qcadoo.view.internal.menu.module.MenuViewModuleFactory" />
+				<bean class="com.qcadoo.view.internal.menu.module.MenuUrlModuleFactory" />
 				<bean class="com.qcadoo.mes.internal.module.DatabasePreparationModuleFactory" />
 			</list>
 		</property>

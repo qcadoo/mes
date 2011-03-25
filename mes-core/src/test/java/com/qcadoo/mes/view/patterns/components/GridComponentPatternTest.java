@@ -47,7 +47,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import com.google.common.collect.ImmutableMap;
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
@@ -76,11 +76,9 @@ public class GridComponentPatternTest extends AbstractPatternTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
         TranslationService translationService = mock(TranslationService.class);
-        com.qcadoo.model.api.localization.TranslationService translationService2 = mock(com.qcadoo.model.api.localization.TranslationService.class);
         given(translationService.translate(Mockito.anyString(), Mockito.any(Locale.class))).willReturn("i18n");
-        given(translationService2.translate(Mockito.anyString(), Mockito.any(Locale.class))).willReturn("i18n");
         FieldDefinition nameFieldDefinition = mock(FieldDefinition.class);
-        given(nameFieldDefinition.getType()).willReturn(new EnumType(translationService2, "", "v1", "v2"));
+        given(nameFieldDefinition.getType()).willReturn(new EnumType(translationService, "", "v1", "v2"));
 
         FieldDefinition numberFieldDefinition = mock(FieldDefinition.class);
         given(numberFieldDefinition.getType()).willReturn(new IntegerType());

@@ -54,9 +54,8 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.api.NumberGeneratorService;
-import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -75,6 +74,7 @@ import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
 import com.qcadoo.model.internal.types.BooleanType;
 import com.qcadoo.model.internal.types.StringType;
+import com.qcadoo.security.api.SecurityService;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ FormComponentState.class, LookupComponentState.class, FieldComponentState.class, EntityTreeImpl.class,

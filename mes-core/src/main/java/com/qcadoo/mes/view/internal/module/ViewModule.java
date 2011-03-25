@@ -7,8 +7,8 @@ import org.springframework.core.io.Resource;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
+import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.PluginState;
-import com.qcadoo.plugin.internal.api.Module;
 
 public class ViewModule extends Module {
 

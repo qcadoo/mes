@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.localization.api.TranslationService;
 
 @Controller
 public final class LoginController {
@@ -55,7 +55,7 @@ public final class LoginController {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("core/login");
-        mav.addObject("translation", translationService.getSecurityMessages(locale));
+        mav.addObject("translation", translationService.getMessagesForPrefix("security", locale));
         mav.addObject("currentLanguage", locale.getLanguage());
 
         mav.addObject("iframe", iframe);
@@ -90,7 +90,7 @@ public final class LoginController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("core/accessDenied");
 
-        mav.addObject("translation", translationService.getSecurityMessages(locale));
+        mav.addObject("translation", translationService.getMessagesForPrefix("security", locale));
 
         return mav;
     }

@@ -46,7 +46,6 @@
 			<resource>products/view/materialRequirements.xml</resource>
 			<resource>products/view/orders.xml</resource>
 			<resource>products/view/products.xml</resource>
-			<resource>products/view/tabWindowTest.xml</resource>
 			<resource>products/view/technologies.xml</resource>
 			<resource>products/view/workPlans.xml</resource>
 		</view:view>

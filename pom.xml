@@ -18,14 +18,13 @@
 	<url>http://www.qcadoo.com/</url>
 
 	<modules>
-		<module>mes-model</module>
 		<module>mes-core</module>
-		<module>mes-plugin</module>
 		<module>mes-plugins</module>
 		<module>mes-application</module>
 	</modules>
 
 	<properties>
+		<qcadoo.version>0.4.0-SNAPSHOT</qcadoo.version>
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<spring.security.version>3.0.5.RELEASE</spring.security.version>
 		<slf4j.version>1.6.1</slf4j.version>
@@ -217,6 +216,31 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-plugin</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-model</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-localization</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-security</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-view</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>2.2</version>
@@ -229,6 +253,11 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
@@ -311,6 +340,7 @@
 			<plugin>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
+				<version>1.9.0</version>
 				<configuration>
 					<header>licence_include.txt</header>
 					<strictCheck>true</strictCheck>
@@ -401,7 +431,28 @@
 
 	<repositories>
 		<repository>
-			<id>jboss-public-repository-group</id>
+			<id>qcadoo-releases-repository</id>
+			<url>http://nexus.qcadoo.org/content/repositories/releases</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>qcadoo-snapshots-repository</id>
+			<url>http://nexus.qcadoo.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>jboss-repository</id>
 			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
 			<layout>default</layout>
 			<releases>
@@ -411,16 +462,6 @@
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>never</updatePolicy>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>jboss-repository</id>
-			<url>http://repository.jboss.org/maven2</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 		<repository>

@@ -35,6 +35,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.types.BelongsToType;
 
@@ -68,14 +69,13 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
         List<String> codes = Lists.newArrayList(getTranslationPath() + ".label");
 
         if (getFieldDefinition() != null) {
-            codes.add(getTranslationService().getEntityFieldBaseMessageCode(getFieldDefinition().getDataDefinition(),
-                    getFieldDefinition().getName())
-                    + ".label");
+            codes.add(getFieldDefinition().getDataDefinition().getPluginIdentifier() + "."
+                    + getFieldDefinition().getDataDefinition().getName() + "." + getFieldDefinition().getName() + ".label");
 
             if (BelongsToType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
-                codes.add(getTranslationService().getEntityFieldBaseMessageCode(
-                        ((BelongsToType) getFieldDefinition().getType()).getDataDefinition(), getFieldDefinition().getName())
-                        + ".label");
+                DataDefinition fieldDataDefinition = ((BelongsToType) getFieldDefinition().getType()).getDataDefinition();
+                codes.add(fieldDataDefinition.getPluginIdentifier() + "." + fieldDataDefinition.getName() + "."
+                        + getFieldDefinition().getName() + ".label");
             }
         }
 

@@ -34,9 +34,8 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.api.NumberGeneratorService;
-import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -56,6 +55,7 @@ import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.utils.DateUtils;
+import com.qcadoo.security.api.SecurityService;
 
 @Service
 public class QualityControlService {
@@ -397,35 +397,6 @@ public class QualityControlService {
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
                 searchCriteriaBuilder.restrictedWith(Restrictions.eq("qualityControlType", qualityControlType));
-            }
-
-        });
-    }
-
-    // TODO mina test
-    public void addRestrictionToTestGrids(final ViewDefinitionState viewDefinitionState, final Locale locale) {
-        final GridComponentState qualityControlsForOrderGrid = (GridComponentState) viewDefinitionState
-                .getComponentByReference("forOrderGrid");
-        final String qualityControlForOrderType = qualityControlsForOrderGrid.getName();
-
-        qualityControlsForOrderGrid.setCustomRestriction(new CustomRestriction() {
-
-            @Override
-            public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.restrictedWith(Restrictions.eq("qualityControlType", qualityControlForOrderType));
-            }
-
-        });
-
-        final GridComponentState qualityControlsForUnitGrid = (GridComponentState) viewDefinitionState
-                .getComponentByReference("forUnitGrid");
-        final String qualityControlForUnitType = qualityControlsForUnitGrid.getName();
-
-        qualityControlsForUnitGrid.setCustomRestriction(new CustomRestriction() {
-
-            @Override
-            public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.restrictedWith(Restrictions.eq("qualityControlType", qualityControlForUnitType));
             }
 
         });

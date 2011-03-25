@@ -257,8 +257,8 @@ public final class GridComponentPattern extends AbstractComponentPattern {
 
     private List<String> getColumnTranslationCodes(final GridComponentColumn column) {
         if (column.getFields().size() == 1) {
-            String fieldCode = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(),
-                    column.getFields().get(0).getName());
+            String fieldCode = getDataDefinition().getPluginIdentifier() + "." + getDataDefinition().getName() + "."
+                    + column.getFields().get(0).getName();
             return Arrays.asList(new String[] { getTranslationPath() + ".column." + column.getName(), fieldCode + ".label" });
         } else {
             return Arrays.asList(new String[] { getTranslationPath() + ".column." + column.getName() });

@@ -65,7 +65,7 @@
 			<resource>qualityControls/view/qualityControls.xml</resource>
 			<resource>qualityControls/view/qualityControlsTest.xml</resource>
 		</view:view>
-		
+
 		<view:viewRibbonExtension>
 			<resource>qualityControls/view/viewExtension.xml</resource>
 		</view:viewRibbonExtension>
@@ -87,6 +87,8 @@
 		<view:viewListenerExtension plugin="products" view="order" component="form" event="generateQualityControl" 
 				bean="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
 		
+		<!-- TODO remove after implementing import data -->
+		<databasePreparation></databasePreparation>
 	</modules>
 
 </plugin>

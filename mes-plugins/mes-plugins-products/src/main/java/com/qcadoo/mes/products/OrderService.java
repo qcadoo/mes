@@ -32,9 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.api.NumberGeneratorService;
-import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -49,6 +48,7 @@ import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.security.api.SecurityService;
 
 @Service
 public final class OrderService {

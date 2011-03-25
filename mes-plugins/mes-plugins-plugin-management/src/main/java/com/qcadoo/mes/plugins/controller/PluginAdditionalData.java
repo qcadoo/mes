@@ -2,15 +2,15 @@ package com.qcadoo.mes.plugins.controller;
 
 public class PluginAdditionalData {
 
-    public final String name;
+    private final String name;
 
-    public final String description;
+    private final String description;
 
-    public final String vendor;
+    private final String vendor;
 
-    public final String vendorUrl;
+    private final String vendorUrl;
 
-    public final boolean isSystem;
+    private final boolean isSystem;
 
     public PluginAdditionalData(final String name, final String description, final String vendor, final String vendorUrl,
             final boolean isSystem) {

@@ -43,12 +43,12 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
 import com.qcadoo.mes.utils.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.SecurityService;
 
 public class QualityControlForOrderPdfView extends ReportPdfView {
 
@@ -78,7 +78,7 @@ public class QualityControlForOrderPdfView extends ReportPdfView {
 
         for (Entry<Entity, List<Entity>> entry : productOrders.entrySet()) {
             document.add(Chunk.NEWLINE);
-            addProductSeries(document, productOrders, entry, locale);
+            addProductSeries(document, entry, locale);
         }
 
         String text = getTranslationService().translate("core.report.endOfReport", locale);
@@ -116,8 +116,8 @@ public class QualityControlForOrderPdfView extends ReportPdfView {
         document.add(table);
     }
 
-    private void addProductSeries(final Document document, final Map<Entity, List<Entity>> productOrders,
-            final Entry<Entity, List<Entity>> entry, final Locale locale) throws DocumentException {
+    private void addProductSeries(final Document document, final Entry<Entity, List<Entity>> entry, final Locale locale)
+            throws DocumentException {
 
         document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "order"));
         List<String> productHeader = new ArrayList<String>();
