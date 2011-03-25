@@ -50,14 +50,6 @@ public final class GenealogyService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void testPreRenderHook(final ViewDefinitionState state, final Locale locale) {
-        System.out.println("-------------HOOK IS ENABLED-----------");
-    }
-
-    public void testListener(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String[] args) {
-        System.out.println("-------------TEST EVENT FIRED-----------");
-    }
-
     public void showGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
         Long orderId = (Long) triggerState.getFieldValue();

@@ -100,6 +100,9 @@ public final class OrderService {
     }
 
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (!(state instanceof FieldComponentState)) {
+            return;
+        }
         FieldComponentState dateFrom = (FieldComponentState) state;
         FieldComponentState dateTo = (FieldComponentState) viewDefinitionState.getComponentByReference("dateTo");
 
