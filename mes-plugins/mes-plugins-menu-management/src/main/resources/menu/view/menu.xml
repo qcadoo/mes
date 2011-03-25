@@ -26,7 +26,7 @@
 -->
 
 <qcd:views plugin="menu" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="menuCategories" model="category" menuAccessible="true">
+	<view name="menuCategories" plugin="qcadooView" model="category" menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="gridNewAndRemoveAction"/>
@@ -45,7 +45,7 @@
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="menuCategory" model="category">
+	<view name="menuCategory" plugin="qcadooView" model="category">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
@@ -80,7 +80,7 @@
 			</component>
 		</component>
 	</view>
-	<view name="menuViewDefinitionItem" model="item">
+	<view name="menuViewDefinitionItem" plugin="qcadooView" model="item">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
