@@ -44,11 +44,6 @@ import com.qcadoo.mes.products.print.xls.WorkPlanForProductXlsService;
 import com.qcadoo.mes.products.print.xls.WorkPlanForWorkerXlsService;
 import com.qcadoo.mes.products.util.OrderPrintUtil;
 import com.qcadoo.mes.products.util.RibbonUtil;
-import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.ComponentState.MessageType;
-import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.mes.view.components.FieldComponentState;
-import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -56,6 +51,11 @@ import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.utils.DateUtils;
 import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.components.form.FormComponentState;
 
 @Service
 public final class WorkPlanService {

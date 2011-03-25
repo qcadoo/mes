@@ -27,6 +27,8 @@
 			<resource>plugins/view/plugins.xml</resource>
 		</view:view>
 		
+		<resource uri="public/**/*" />
+		
 	</modules>
 
 </plugin>

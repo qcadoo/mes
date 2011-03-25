@@ -33,14 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.api.NumberGeneratorService;
-import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.ComponentState.MessageType;
-import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.mes.view.components.FieldComponentState;
-import com.qcadoo.mes.view.components.form.FormComponentState;
-import com.qcadoo.mes.view.components.grid.GridComponentState;
-import com.qcadoo.mes.view.components.lookup.LookupComponentState;
+import com.qcadoo.mes.utils.NumberGeneratorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -49,6 +42,13 @@ import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.components.form.FormComponentState;
+import com.qcadoo.view.components.grid.GridComponentState;
+import com.qcadoo.view.components.lookup.LookupComponentState;
 
 @Service
 public final class OrderService {
@@ -100,6 +100,9 @@ public final class OrderService {
     }
 
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (!(state instanceof FieldComponentState)) {
+            return;
+        }
         FieldComponentState dateFrom = (FieldComponentState) state;
         FieldComponentState dateTo = (FieldComponentState) viewDefinitionState.getComponentByReference("dateTo");
 

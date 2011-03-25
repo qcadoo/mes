@@ -141,6 +141,11 @@
 		<servlet-name>Qcadoo MES</servlet-name>
 		<url-pattern>*.xls</url-pattern>
 	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>Qcadoo MES</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
 
 	<session-config>
 		<session-timeout>15</session-timeout>

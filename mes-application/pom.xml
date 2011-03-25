@@ -16,11 +16,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-crud</artifactId>
-			<version>0.4.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-dictionary-management</artifactId>
 			<version>0.4.0-SNAPSHOT</version>
 		</dependency>
@@ -70,6 +65,10 @@
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-lgpl</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.yahoo.platform.yui</groupId>
@@ -122,9 +121,9 @@
 						<baseResource implementation="org.mortbay.resource.ResourceCollection">
 							<resourcesAsCSV>
 								${basedir}/src/main/webapp;
-								${basedir}/../mes-plugins/mes-plugins-crud/src/main/resources/META-INF;
+								<!-- ${basedir}/../mes-plugins/mes-plugins-crud/src/main/resources/META-INF;
 								${basedir}/../mes-plugins/mes-plugins-plugin-management/src/main/resources/META-INF;
-								${basedir}/../mes-plugins/mes-plugins-products/src/main/resources/META-INF;
+								${basedir}/../mes-plugins/mes-plugins-products/src/main/resources/META-INF;-->
 							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>

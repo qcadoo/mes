@@ -30,13 +30,13 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.mes.view.components.form.FormComponentState;
-import com.qcadoo.mes.view.components.grid.GridComponentState;
-import com.qcadoo.mes.view.components.window.WindowComponentState;
-import com.qcadoo.mes.view.ribbon.RibbonActionItem;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.components.form.FormComponentState;
+import com.qcadoo.view.components.grid.GridComponentState;
+import com.qcadoo.view.components.window.WindowComponentState;
+import com.qcadoo.view.internal.ribbon.RibbonActionItem;
 
 @Service
 public class RibbonUtil {

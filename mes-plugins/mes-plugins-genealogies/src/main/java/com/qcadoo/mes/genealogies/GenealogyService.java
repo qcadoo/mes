@@ -32,15 +32,15 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.mes.view.components.FieldComponentState;
-import com.qcadoo.mes.view.components.awesomeDynamicList.AwesomeDynamicListState;
-import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.components.awesomeDynamicList.AwesomeDynamicListState;
+import com.qcadoo.view.components.form.FormComponentState;
 
 @Service
 public final class GenealogyService {
@@ -49,14 +49,6 @@ public final class GenealogyService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    public void testPreRenderHook(final ViewDefinitionState state, final Locale locale) {
-        System.out.println("-------------HOOK IS ENABLED-----------");
-    }
-
-    public void testListener(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String[] args) {
-        System.out.println("-------------TEST EVENT FIRED-----------");
-    }
 
     public void showGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {

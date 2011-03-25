@@ -49,6 +49,9 @@
 			<resource>products/view/technologies.xml</resource>
 			<resource>products/view/workPlans.xml</resource>
 		</view:view>
+		
+		<resource uri="public/**/*" />
+		
 	</modules>
 
 </plugin>

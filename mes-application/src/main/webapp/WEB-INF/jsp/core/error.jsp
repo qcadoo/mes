@@ -33,14 +33,14 @@
 	<head>
 		<title>QCADOO MES :: error</title>
 		
-		<link rel="shortcut icon" href="/img/core/icons/favicon.png">
+		<link rel="shortcut icon" href="/qcadooView/public/img/core/icons/favicon.png">
 
 		<c:choose>
 			<c:when test="${compressStaticResources}">		
 				<script type="text/javascript" src="${pageContext.request.contextPath}/js/qcadoo.min.js"></script>
 			</c:when>
 			<c:otherwise>
-				<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/_jquery-1.4.2.min.js"></script>
+				<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/_jquery-1.4.2.min.js"></script>
 			</c:otherwise>
 		</c:choose>		
 		
