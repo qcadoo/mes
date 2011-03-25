@@ -29,14 +29,12 @@ import javax.sql.DataSource;
 import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.application.TestDataLoader;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.ModuleFactory;
 
-@Component
 public final class DatabasePreparationModuleFactory implements ModuleFactory<Module> {
 
     @Autowired
