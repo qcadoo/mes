@@ -55,7 +55,7 @@ public abstract class ReportXlsView extends AbstractExcelView {
 
     @Override
     protected void buildExcelDocument(final Map<String, Object> model, final HSSFWorkbook workbook,
-            final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+            final HttpServletRequest request, final HttpServletResponse response) {
         String fileName = addContent(model, workbook, LocaleContextHolder.getLocale());
         response.setHeader("Content-disposition", "inline; filename=" + fileName + XlsUtil.XLS_EXTENSION);
     }

@@ -49,8 +49,8 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.utils.DateUtils;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.components.FieldComponentState;
 import com.qcadoo.view.components.form.FormComponentState;
 import com.qcadoo.view.components.grid.GridComponentState;
@@ -607,7 +607,7 @@ public class QualityControlService {
                             : plannedQuantity.divideAndRemainder(sampling)[1];
                     forUnit.setField("controlledQuantity", numberOfRemainders);
 
-                    if (numberOfRemainders.compareTo(new BigDecimal("0")) < 1) {
+                    if (numberOfRemainders.compareTo(BigDecimal.ZERO) < 1) {
                         return;
                     }
                 }
