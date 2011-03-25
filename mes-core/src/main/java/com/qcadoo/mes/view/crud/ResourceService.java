@@ -24,9 +24,6 @@ public class ResourceService {
 
     public void serveResource(final HttpServletRequest request, final HttpServletResponse response) {
 
-        System.out.println("-----------");
-        System.out.println(request.getRequestURI());
-
         boolean resourceServed = false;
         for (ResourceModule resourceModule : resourceModules) {
             if (resourceModule.serveResource(request, response)) {

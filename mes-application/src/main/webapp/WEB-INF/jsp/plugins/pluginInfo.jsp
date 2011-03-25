@@ -6,7 +6,7 @@
 String ctx = request.getContextPath();
 %>
 
-<link rel="stylesheet" href="${ctx}/css/plugins/pluginInfo.css" type="text/css" />
+<link rel="stylesheet" href="${ctx}/plugins/public/css/pluginInfo.css" type="text/css" />
 
 <script type="text/JavaScript">
 

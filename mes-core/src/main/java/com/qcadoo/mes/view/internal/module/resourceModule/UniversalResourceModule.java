@@ -37,10 +37,8 @@ public class UniversalResourceModule extends ResourceModule {
 
     @Override
     public boolean serveResource(final HttpServletRequest request, final HttpServletResponse response) {
-        System.out.println("serveResource - " + uriPattern);
         Resource resource = getResourceFromURI(request.getRequestURI());
         if (resource != null && resource.exists()) {
-            System.out.println("FOUND");
             response.setContentType(getContentTypeFromURI(request.getRequestURI()));
             try {
                 copy(resource.getInputStream(), response.getOutputStream());

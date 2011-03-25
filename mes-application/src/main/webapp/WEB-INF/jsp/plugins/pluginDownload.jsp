@@ -5,7 +5,7 @@
 <%
 String ctx = request.getContextPath();
 %>
-<script type="text/javascript" src="${pageContext.request.contextPath}/js/plugins/jquery.form.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/plugins/public/js/jquery.form.js"></script>
 
 <script type="text/JavaScript">
 	var buttonActive = false;
