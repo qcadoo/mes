@@ -18,7 +18,6 @@
 	<url>http://www.qcadoo.com/</url>
 
 	<modules>
-		<module>mes-core</module>
 		<module>mes-plugins</module>
 		<module>mes-application</module>
 	</modules>
@@ -238,6 +237,11 @@
 		<dependency>
 			<groupId>com.qcadoo</groupId>
 			<artifactId>qcadoo-view</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-report</artifactId>
 			<version>${qcadoo.version}</version>
 		</dependency>
 		<dependency>

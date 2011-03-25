@@ -37,8 +37,8 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityOperationNumberComparator;
-import com.qcadoo.mes.utils.xls.XlsUtil;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.report.internal.xls.XlsUtil;
 
 @Service
 public final class WorkPlanForProductXlsService extends XlsDocumentService {

@@ -27,8 +27,8 @@ package com.qcadoo.mes.genealogies.print.util;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.report.internal.Pair;
 
 public class BatchOrderNrComparator implements Comparator<Pair<String, Entity>>, Serializable {
 
