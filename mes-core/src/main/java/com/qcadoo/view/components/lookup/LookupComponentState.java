@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.view.internal.components.lookup;
+package com.qcadoo.view.components.lookup;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +38,8 @@ import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.utils.ExpressionUtils;
-import com.qcadoo.view.internal.components.FieldComponentState;
+import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.internal.components.lookup.LookupComponentPattern;
 
 public final class LookupComponentState extends FieldComponentState {
 

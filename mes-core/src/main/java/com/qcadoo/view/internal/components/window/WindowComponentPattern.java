@@ -11,8 +11,9 @@ import org.json.JSONObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.components.window.WindowComponentState;
 import com.qcadoo.view.internal.ComponentDefinition;
-import com.qcadoo.view.internal.ComponentState;
 import com.qcadoo.view.internal.ViewComponent;
 import com.qcadoo.view.internal.patterns.AbstractContainerPattern;
 import com.qcadoo.view.internal.ribbon.Ribbon;

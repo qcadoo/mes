@@ -1,4 +1,4 @@
-package com.qcadoo.view.internal.components.window;
+package com.qcadoo.view.components.window;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -8,7 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.view.internal.ComponentState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.internal.components.window.WindowComponentPattern;
 import com.qcadoo.view.internal.ribbon.Ribbon;
 import com.qcadoo.view.internal.ribbon.RibbonUtils;
 import com.qcadoo.view.internal.states.AbstractContainerState;

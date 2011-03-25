@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.view.internal.components.awesomeDynamicList;
+package com.qcadoo.view.components.awesomeDynamicList;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -34,12 +34,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.ContainerState;
-import com.qcadoo.view.internal.ViewDefinitionState;
-import com.qcadoo.view.internal.components.FieldComponentState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ContainerState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.components.form.FormComponentState;
+import com.qcadoo.view.internal.components.awesomeDynamicList.AwesomeDynamicListPattern;
 import com.qcadoo.view.internal.components.form.FormComponentPattern;
-import com.qcadoo.view.internal.components.form.FormComponentState;
 import com.qcadoo.view.internal.internal.ViewDefinitionStateImpl;
 
 public class AwesomeDynamicListState extends FieldComponentState implements ContainerState {

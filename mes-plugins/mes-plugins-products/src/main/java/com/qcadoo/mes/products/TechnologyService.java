@@ -47,12 +47,12 @@ import com.qcadoo.model.api.search.RestrictionOperator;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.ViewDefinitionState;
-import com.qcadoo.view.internal.components.FieldComponentState;
-import com.qcadoo.view.internal.components.grid.GridComponentState;
-import com.qcadoo.view.internal.components.select.SelectComponentState;
-import com.qcadoo.view.internal.components.tree.TreeComponentState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.components.grid.GridComponentState;
+import com.qcadoo.view.components.select.SelectComponentState;
+import com.qcadoo.view.components.tree.TreeComponentState;
 
 @Service
 public final class TechnologyService {

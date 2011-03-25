@@ -53,11 +53,11 @@ import com.qcadoo.model.api.search.Restriction;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.ViewDefinitionState;
-import com.qcadoo.view.internal.components.FieldComponentState;
-import com.qcadoo.view.internal.components.awesomeDynamicList.AwesomeDynamicListState;
-import com.qcadoo.view.internal.components.form.FormComponentState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.components.awesomeDynamicList.AwesomeDynamicListState;
+import com.qcadoo.view.components.form.FormComponentState;
 
 public class GenealogyServiceTest {
 

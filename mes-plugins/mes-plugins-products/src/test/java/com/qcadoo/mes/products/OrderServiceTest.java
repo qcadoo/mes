@@ -68,13 +68,13 @@ import com.qcadoo.model.internal.EntityTreeImpl;
 import com.qcadoo.model.internal.types.BooleanType;
 import com.qcadoo.model.internal.types.StringType;
 import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.ComponentState.MessageType;
-import com.qcadoo.view.internal.ViewDefinitionState;
-import com.qcadoo.view.internal.components.FieldComponentState;
-import com.qcadoo.view.internal.components.form.FormComponentState;
-import com.qcadoo.view.internal.components.grid.GridComponentState;
-import com.qcadoo.view.internal.components.lookup.LookupComponentState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.components.form.FormComponentState;
+import com.qcadoo.view.components.grid.GridComponentState;
+import com.qcadoo.view.components.lookup.LookupComponentState;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ FormComponentState.class, LookupComponentState.class, FieldComponentState.class, EntityTreeImpl.class,

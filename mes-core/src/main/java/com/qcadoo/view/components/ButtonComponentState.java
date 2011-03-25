@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.view.internal.components;
+package com.qcadoo.view.components;
 
 import org.json.JSONException;
 import org.json.JSONObject;

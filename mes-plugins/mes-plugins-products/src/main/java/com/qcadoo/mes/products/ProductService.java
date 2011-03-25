@@ -35,7 +35,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.view.internal.ViewDefinitionState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public final class ProductService {

@@ -12,11 +12,11 @@ import com.qcadoo.model.api.search.RestrictionOperator;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.ViewDefinitionState;
-import com.qcadoo.view.internal.components.FieldComponentState;
-import com.qcadoo.view.internal.components.form.FormComponentState;
-import com.qcadoo.view.internal.components.lookup.LookupComponentState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.components.form.FormComponentState;
+import com.qcadoo.view.components.lookup.LookupComponentState;
 
 @Service
 public class GenealogyTechnologyService {

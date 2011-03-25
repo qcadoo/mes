@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.plugin.api.ModuleFactory;
-import com.qcadoo.view.api.InternalViewDefinitionService;
+import com.qcadoo.view.internal.api.InternalViewDefinitionService;
 import com.qcadoo.view.internal.hooks.HookDefinitionImpl;
 import com.qcadoo.view.internal.hooks.HookFactory;
 import com.qcadoo.view.internal.internal.ComponentCustomEvent;

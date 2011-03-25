@@ -26,8 +26,8 @@ package com.qcadoo.mes.beans.sample;
 
 import java.util.Locale;
 
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.ViewDefinitionState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 public class CustomEntityService {
 

@@ -24,8 +24,9 @@
 
 package com.qcadoo.view.internal.components;
 
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.components.EmptyContainerState;
 import com.qcadoo.view.internal.ComponentDefinition;
-import com.qcadoo.view.internal.ComponentState;
 import com.qcadoo.view.internal.ViewComponent;
 import com.qcadoo.view.internal.patterns.AbstractComponentPattern;
 

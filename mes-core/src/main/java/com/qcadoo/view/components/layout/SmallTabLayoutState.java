@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.view.internal.components.layout;
+package com.qcadoo.view.components.layout;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -32,8 +32,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.internal.ComponentPattern;
-import com.qcadoo.view.internal.ComponentState;
+import com.qcadoo.view.internal.components.layout.SmallTabLayoutPatternTab;
 import com.qcadoo.view.internal.states.AbstractContainerState;
 
 public class SmallTabLayoutState extends AbstractContainerState {

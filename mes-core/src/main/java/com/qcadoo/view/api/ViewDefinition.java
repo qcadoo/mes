@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.view.internal;
+package com.qcadoo.view.api;
 
 import java.util.Locale;
 import java.util.Map;
@@ -31,6 +31,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.view.internal.ComponentPattern;
+import com.qcadoo.view.internal.HookDefinition;
 import com.qcadoo.view.internal.components.window.WindowComponentPattern;
 
 public interface ViewDefinition {

@@ -30,9 +30,10 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.components.FieldComponentState;
 import com.qcadoo.view.internal.ComponentDefinition;
 import com.qcadoo.view.internal.ComponentOption;
-import com.qcadoo.view.internal.ComponentState;
 import com.qcadoo.view.internal.ViewComponent;
 
 @ViewComponent("checkbox")

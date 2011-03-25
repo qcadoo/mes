@@ -22,23 +22,40 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.view.internal.components;
+package com.qcadoo.view.components;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.view.internal.states.AbstractContainerState;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.types.EnumeratedType;
+import com.qcadoo.view.internal.components.FieldComponentPattern;
 
-public final class EmptyContainerState extends AbstractContainerState {
+public class TranslatedFieldComponentState extends FieldComponentState {
 
-    @Override
-    protected void initializeContent(final JSONObject json) throws JSONException {
-        // empty
+    private final FieldComponentPattern pattern;
+
+    public TranslatedFieldComponentState(final FieldComponentPattern pattern) {
+        super(pattern);
+        this.pattern = pattern;
     }
 
     @Override
     protected JSONObject renderContent() throws JSONException {
-        return new JSONObject();
+        JSONObject json = new JSONObject();
+
+        String value = (String) getFieldValue();
+
+        FieldDefinition fieldDefinition = pattern.getFieldComponentFieldDefinition();
+        if (fieldDefinition != null) {
+            if (EnumeratedType.class.isAssignableFrom(fieldDefinition.getType().getClass())) {
+                value = ((EnumeratedType) fieldDefinition.getType()).values(getLocale()).get(value);
+            }
+        }
+
+        json.put(JSON_VALUE, value);
+        json.put(JSON_REQUIRED, isRequired());
+        return json;
     }
 
 }

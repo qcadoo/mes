@@ -34,9 +34,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.google.common.base.Preconditions;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.components.layout.SmallTabLayoutState;
 import com.qcadoo.view.internal.ComponentDefinition;
 import com.qcadoo.view.internal.ComponentPattern;
-import com.qcadoo.view.internal.ComponentState;
 import com.qcadoo.view.internal.ViewComponent;
 import com.qcadoo.view.internal.xml.ViewDefinitionParser;
 

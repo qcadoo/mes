@@ -33,9 +33,9 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.ContainerState;
-import com.qcadoo.view.internal.ViewDefinitionState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ContainerState;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.internal.states.AbstractContainerState;
 
 public final class ViewDefinitionStateImpl extends AbstractContainerState implements ViewDefinitionState {

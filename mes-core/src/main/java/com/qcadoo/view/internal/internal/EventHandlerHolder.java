@@ -31,8 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.ViewDefinitionState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 public final class EventHandlerHolder {
 

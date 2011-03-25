@@ -30,11 +30,11 @@ import java.util.List;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
 
+import com.qcadoo.view.api.ViewDefinition;
 import com.qcadoo.view.internal.ComponentDefinition;
 import com.qcadoo.view.internal.ComponentOption;
 import com.qcadoo.view.internal.ComponentPattern;
 import com.qcadoo.view.internal.ContainerPattern;
-import com.qcadoo.view.internal.ViewDefinition;
 import com.qcadoo.view.internal.internal.ComponentCustomEvent;
 import com.qcadoo.view.internal.ribbon.RibbonGroup;
 

@@ -32,10 +32,10 @@ import java.util.Locale;
 import org.json.JSONObject;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.view.api.ViewDefinition;
 import com.qcadoo.view.internal.ComponentDefinition;
 import com.qcadoo.view.internal.ComponentPattern;
 import com.qcadoo.view.internal.ContainerPattern;
-import com.qcadoo.view.internal.ViewDefinition;
 import com.qcadoo.view.internal.patterns.AbstractComponentPattern;
 
 public abstract class AbstractPatternTest {

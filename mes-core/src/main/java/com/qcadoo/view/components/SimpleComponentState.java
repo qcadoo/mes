@@ -22,26 +22,38 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.view.internal.components.select;
+package com.qcadoo.view.components;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.view.internal.components.FieldComponentState;
+import com.qcadoo.view.internal.states.AbstractComponentState;
 
-public final class SelectComponentState extends FieldComponentState {
+public final class SimpleComponentState extends AbstractComponentState {
 
-    private final SelectComponentPattern selectComponentPattern;
+    private String value;
 
-    public SelectComponentState(final SelectComponentPattern selectComponentPattern) {
-        super(selectComponentPattern);
-        this.selectComponentPattern = selectComponentPattern;
+    @Override
+    protected void initializeContent(final JSONObject json) throws JSONException {
+        value = json.getString(JSON_VALUE);
+    }
+
+    @Override
+    public void setFieldValue(final Object value) {
+        this.value = value != null ? value.toString() : null;
+        requestRender();
+        requestUpdateState();
+    }
+
+    @Override
+    public Object getFieldValue() {
+        return value;
     }
 
     @Override
     protected JSONObject renderContent() throws JSONException {
-        JSONObject json = super.renderContent();
-        json.put("values", selectComponentPattern.getValuesJson(getLocale()));
+        JSONObject json = new JSONObject();
+        json.put(JSON_VALUE, value);
         return json;
     }
 

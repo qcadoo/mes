@@ -40,7 +40,7 @@ import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.types.BelongsToType;
 import com.qcadoo.model.api.types.FieldType;
 import com.qcadoo.model.api.types.HasManyType;
-import com.qcadoo.view.internal.ViewDefinition;
+import com.qcadoo.view.api.ViewDefinition;
 import com.qcadoo.view.internal.components.TextInputComponentPattern;
 import com.qcadoo.view.internal.components.form.FormComponentPattern;
 import com.qcadoo.view.internal.components.window.WindowComponentPattern;

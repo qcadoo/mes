@@ -22,23 +22,16 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.view.internal.components;
+package com.qcadoo.view.api;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.Map;
 
-import com.qcadoo.view.internal.states.AbstractComponentState;
+public interface ContainerState extends ComponentState {
 
-public final class EmptyComponentState extends AbstractComponentState {
+    Map<String, ComponentState> getChildren();
 
-    @Override
-    protected void initializeContent(final JSONObject json) throws JSONException {
-        // empty
-    }
+    ComponentState getChild(String name);
 
-    @Override
-    protected JSONObject renderContent() throws JSONException {
-        return new JSONObject();
-    }
+    void addChild(ComponentState state);
 
 }

@@ -37,8 +37,9 @@ import org.w3c.dom.NodeList;
 
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.types.TreeType;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.components.tree.TreeComponentState;
 import com.qcadoo.view.internal.ComponentDefinition;
-import com.qcadoo.view.internal.ComponentState;
 import com.qcadoo.view.internal.ViewComponent;
 import com.qcadoo.view.internal.components.FieldComponentPattern;
 import com.qcadoo.view.internal.xml.ViewDefinitionParser;

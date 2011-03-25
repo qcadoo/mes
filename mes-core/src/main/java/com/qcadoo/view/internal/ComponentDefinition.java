@@ -26,6 +26,7 @@ package com.qcadoo.view.internal;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.view.api.ViewDefinition;
 
 public final class ComponentDefinition {
 

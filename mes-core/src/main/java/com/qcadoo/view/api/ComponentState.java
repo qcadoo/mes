@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.view.internal;
+package com.qcadoo.view.api;
 
 import java.util.Locale;
 

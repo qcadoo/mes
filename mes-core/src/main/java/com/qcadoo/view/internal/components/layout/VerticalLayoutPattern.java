@@ -26,10 +26,10 @@ package com.qcadoo.view.internal.components.layout;
 
 import org.json.JSONException;
 
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.components.EmptyContainerState;
 import com.qcadoo.view.internal.ComponentDefinition;
-import com.qcadoo.view.internal.ComponentState;
 import com.qcadoo.view.internal.ViewComponent;
-import com.qcadoo.view.internal.components.EmptyContainerState;
 
 @ViewComponent("verticalLayout")
 public class VerticalLayoutPattern extends AbstractLayoutPattern {

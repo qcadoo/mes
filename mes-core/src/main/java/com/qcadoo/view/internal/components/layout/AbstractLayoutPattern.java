@@ -24,10 +24,10 @@
 
 package com.qcadoo.view.internal.components.layout;
 
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.components.EmptyContainerState;
 import com.qcadoo.view.internal.ComponentDefinition;
 import com.qcadoo.view.internal.ComponentPattern;
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.components.EmptyContainerState;
 import com.qcadoo.view.internal.patterns.AbstractComponentPattern;
 import com.qcadoo.view.internal.patterns.AbstractContainerPattern;
 

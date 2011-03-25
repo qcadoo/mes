@@ -46,11 +46,11 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinition;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.internal.ComponentPattern;
-import com.qcadoo.view.internal.ComponentState;
 import com.qcadoo.view.internal.HookDefinition;
-import com.qcadoo.view.internal.ViewDefinition;
-import com.qcadoo.view.internal.ViewDefinitionState;
 import com.qcadoo.view.internal.components.form.FormComponentPattern;
 import com.qcadoo.view.internal.components.window.WindowComponentPattern;
 import com.qcadoo.view.internal.internal.ViewDefinitionImpl;

@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.plugin.api.ModuleFactory;
-import com.qcadoo.view.api.InternalViewDefinitionService;
+import com.qcadoo.view.api.ViewDefinition;
 import com.qcadoo.view.internal.HookDefinition;
-import com.qcadoo.view.internal.ViewDefinition;
+import com.qcadoo.view.internal.api.InternalViewDefinitionService;
 import com.qcadoo.view.internal.hooks.HookFactory;
 
 public class ViewHookModuleFactory implements ModuleFactory<ViewHookModule> {

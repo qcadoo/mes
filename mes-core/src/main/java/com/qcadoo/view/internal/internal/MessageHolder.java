@@ -33,8 +33,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.ComponentState.MessageType;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 
 public final class MessageHolder {
 

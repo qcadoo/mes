@@ -32,9 +32,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qcadoo.view.api.ViewDefinition;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.internal.HookDefinition;
-import com.qcadoo.view.internal.ViewDefinition;
-import com.qcadoo.view.internal.ViewDefinitionState;
 
 public final class HookDefinitionImpl implements HookDefinition {
 

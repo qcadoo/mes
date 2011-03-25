@@ -3,9 +3,9 @@ package com.qcadoo.view.internal.module;
 import com.google.common.base.Preconditions;
 import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.PluginState;
-import com.qcadoo.view.api.InternalViewDefinitionService;
+import com.qcadoo.view.api.ViewDefinition;
 import com.qcadoo.view.internal.HookDefinition;
-import com.qcadoo.view.internal.ViewDefinition;
+import com.qcadoo.view.internal.api.InternalViewDefinitionService;
 
 public class ViewHookModule extends Module {
 

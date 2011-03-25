@@ -48,14 +48,14 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.utils.DateUtils;
 import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.ComponentState.MessageType;
-import com.qcadoo.view.internal.ViewDefinitionState;
-import com.qcadoo.view.internal.components.FieldComponentState;
-import com.qcadoo.view.internal.components.form.FormComponentState;
-import com.qcadoo.view.internal.components.grid.GridComponentState;
-import com.qcadoo.view.internal.components.lookup.LookupComponentState;
-import com.qcadoo.view.internal.components.select.SelectComponentState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.components.form.FormComponentState;
+import com.qcadoo.view.components.grid.GridComponentState;
+import com.qcadoo.view.components.lookup.LookupComponentState;
+import com.qcadoo.view.components.select.SelectComponentState;
 
 @Service
 public class QualityControlService {

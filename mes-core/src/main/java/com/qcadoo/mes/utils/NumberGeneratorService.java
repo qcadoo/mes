@@ -30,9 +30,9 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.view.internal.ViewDefinitionState;
-import com.qcadoo.view.internal.components.FieldComponentState;
-import com.qcadoo.view.internal.components.form.FormComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.components.form.FormComponentState;
 
 @Service
 public class NumberGeneratorService {

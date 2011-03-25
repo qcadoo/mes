@@ -33,13 +33,14 @@ import org.json.JSONObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.qcadoo.view.api.InternalViewDefinitionService;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.components.awesomeDynamicList.AwesomeDynamicListState;
 import com.qcadoo.view.internal.ComponentDefinition;
 import com.qcadoo.view.internal.ComponentOption;
 import com.qcadoo.view.internal.ComponentPattern;
-import com.qcadoo.view.internal.ComponentState;
 import com.qcadoo.view.internal.ContainerPattern;
 import com.qcadoo.view.internal.ViewComponent;
+import com.qcadoo.view.internal.api.InternalViewDefinitionService;
 import com.qcadoo.view.internal.components.FieldComponentPattern;
 import com.qcadoo.view.internal.components.form.FormComponentPattern;
 import com.qcadoo.view.internal.components.layout.FlowLayoutPattern;

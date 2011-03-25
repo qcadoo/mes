@@ -34,9 +34,9 @@ import java.util.Collections;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.ContainerState;
-import com.qcadoo.view.internal.ViewDefinitionState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ContainerState;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.internal.internal.ViewDefinitionStateImpl;
 import com.qcadoo.view.internal.states.AbstractStateTest;
 

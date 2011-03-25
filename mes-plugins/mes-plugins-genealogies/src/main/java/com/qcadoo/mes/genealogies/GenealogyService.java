@@ -36,11 +36,11 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.ViewDefinitionState;
-import com.qcadoo.view.internal.components.FieldComponentState;
-import com.qcadoo.view.internal.components.awesomeDynamicList.AwesomeDynamicListState;
-import com.qcadoo.view.internal.components.form.FormComponentState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.components.awesomeDynamicList.AwesomeDynamicListState;
+import com.qcadoo.view.components.form.FormComponentState;
 
 @Service
 public final class GenealogyService {

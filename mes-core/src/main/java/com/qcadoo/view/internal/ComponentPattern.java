@@ -29,7 +29,9 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
-import com.qcadoo.view.api.InternalViewDefinitionService;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.internal.api.InternalViewDefinitionService;
 import com.qcadoo.view.internal.internal.ComponentCustomEvent;
 import com.qcadoo.view.internal.xml.ViewDefinitionParser;
 

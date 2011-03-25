@@ -32,10 +32,10 @@ import org.json.JSONObject;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.view.internal.ComponentState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.internal.FieldEntityIdChangeListener;
 import com.qcadoo.view.internal.ScopeEntityIdChangeListener;
-import com.qcadoo.view.internal.ViewDefinitionState;
 import com.qcadoo.view.internal.internal.EntityIdChangeListenerHolder;
 import com.qcadoo.view.internal.internal.EventHandlerHolder;
 import com.qcadoo.view.internal.internal.MessageHolder;

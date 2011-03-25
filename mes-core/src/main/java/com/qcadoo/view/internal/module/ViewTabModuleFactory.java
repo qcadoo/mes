@@ -9,7 +9,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.qcadoo.plugin.api.ModuleFactory;
-import com.qcadoo.view.api.InternalViewDefinitionService;
+import com.qcadoo.view.internal.api.InternalViewDefinitionService;
 import com.qcadoo.view.internal.xml.ViewDefinitionParser;
 
 public class ViewTabModuleFactory implements ModuleFactory<ViewTabModule> {

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.2.0
+ * Version: 0.3.0
  *
  * This file is part of Qcadoo.
  *
@@ -22,38 +22,28 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.view.internal;
+package com.qcadoo.view.components.select;
 
-import java.util.Locale;
-
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.view.api.ViewDefinition;
-import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.internal.components.select.SelectComponentPattern;
 
-/**
- * Defines hooks for validation/saving entities and generating views.
- */
-public interface HookDefinition {
+public final class SelectComponentState extends FieldComponentState {
 
-    /**
-     * Call custom hook on view.
-     * 
-     * @param viewDefinitionState
-     *            view definition state
-     * @param locale
-     *            locale
-     */
-    void callWithViewState(ViewDefinitionState viewDefinitionState, final Locale locale);
+    private final SelectComponentPattern selectComponentPattern;
 
-    /**
-     * Call custom hook on view.
-     * 
-     * @param object
-     *            json object
-     * @param locale
-     *            locale
-     */
-    void callWithJSONObject(ViewDefinition viewDefinition, JSONObject object, final Locale locale);
+    public SelectComponentState(final SelectComponentPattern selectComponentPattern) {
+        super(selectComponentPattern);
+        this.selectComponentPattern = selectComponentPattern;
+    }
+
+    @Override
+    protected JSONObject renderContent() throws JSONException {
+        JSONObject json = super.renderContent();
+        json.put("values", selectComponentPattern.getValuesJson(getLocale()));
+        return json;
+    }
 
 }

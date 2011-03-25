@@ -33,7 +33,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.model.api.aop.Monitorable;
-import com.qcadoo.view.api.InternalViewDefinitionService;
+import com.qcadoo.view.api.ViewDefinition;
+import com.qcadoo.view.internal.api.InternalViewDefinitionService;
 
 @Service
 public final class ViewDefinitionServiceImpl implements InternalViewDefinitionService {

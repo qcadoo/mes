@@ -22,18 +22,24 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.view.internal;
+package com.qcadoo.view.components;
 
-public interface ViewDefinitionState extends ContainerState {
+import org.json.JSONException;
+import org.json.JSONObject;
 
-    void performEvent(String path, String event, String... args);
+import com.qcadoo.view.internal.components.PasswordComponentPattern;
 
-    ComponentState getComponentByReference(String reference);
+public class PasswordComponentState extends FieldComponentState {
 
-    void redirectTo(String redirectToUrl, boolean openInNewWindow, boolean shouldSerialize);
+    public PasswordComponentState(final PasswordComponentPattern pattern) {
+        super(pattern);
+    }
 
-    void openModal(String url);
-
-    void registerComponent(String reference, String path, ComponentState state);
+    @Override
+    protected JSONObject renderContent() throws JSONException {
+        JSONObject json = super.renderContent();
+        json.put(JSON_VALUE, "");
+        return json;
+    }
 
 }

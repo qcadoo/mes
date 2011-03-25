@@ -36,8 +36,9 @@ import org.json.JSONObject;
 import com.google.common.collect.Lists;
 import com.qcadoo.model.api.types.BelongsToType;
 import com.qcadoo.model.api.types.EnumeratedType;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.components.select.SelectComponentState;
 import com.qcadoo.view.internal.ComponentDefinition;
-import com.qcadoo.view.internal.ComponentState;
 import com.qcadoo.view.internal.ViewComponent;
 import com.qcadoo.view.internal.components.FieldComponentPattern;
 

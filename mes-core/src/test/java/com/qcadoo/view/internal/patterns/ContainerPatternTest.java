@@ -36,11 +36,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinition;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.components.EmptyContainerState;
 import com.qcadoo.view.internal.ComponentPattern;
-import com.qcadoo.view.internal.ComponentState;
-import com.qcadoo.view.internal.ViewDefinition;
-import com.qcadoo.view.internal.ViewDefinitionState;
-import com.qcadoo.view.internal.components.EmptyContainerState;
 import com.qcadoo.view.internal.components.TextInputComponentPattern;
 import com.qcadoo.view.internal.components.form.FormComponentPattern;
 import com.qcadoo.view.internal.patterns.AbstractComponentPattern;
