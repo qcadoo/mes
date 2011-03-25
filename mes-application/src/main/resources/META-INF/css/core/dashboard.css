@@ -1,0 +1,182 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo MES
+ * Version: 0.3.0
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
+
+ html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #9B9B9B;
+}
+
+#windowContainer {
+	height: 100%;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	font-family:Arial, Helvetica, sans-serif;
+}
+
+#windowContainer #windowContainerRibbon {
+	height: 76px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 10;
+}
+
+#windowContainer #windowContainerContentBody {
+	position: absolute;
+	top: 70px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	overflow: auto;
+}
+
+#contentWrapperOuter {
+	display: table;
+	position: static;
+	height: 100%;
+	width: 100%;
+	background: url('/css/core/images/dashboard/startowa_pattern_grey.png');
+	background-position: top center;
+	background-repeat: no-repeat;
+}
+
+#contentWrapperMiddle {
+	display: table-cell;
+	vertical-align: middle;
+	width: 100%;
+}
+
+#dashboardContentWrapper {
+	clear: both;
+	width: 940px;
+	background-image: url('/css/core/images/dashboard/qcadoo_white.png');
+	background-position: 770px 30px;
+	background-repeat: no-repeat;
+	margin: auto;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+#dashboardContentWrapper #userElement {
+	color: #6a6a6a;
+	font-size: 11px;
+	margin-left: 10px;
+}
+
+#dashboardContentWrapper #userElement #userLogin {
+	font-weight: bold;
+}
+
+#dashboardContentWrapper #descriptionElement {
+	width: 600px;
+	height: 130px;
+	color: white;
+	overflow: hidden;
+	margin-top: 23px;
+	margin-left: 10px;
+}
+
+#dashboardContentWrapper #descriptionElement #descriptionHeader {
+	font-size: 23px;	
+}
+
+#dashboardContentWrapper #descriptionElement #descriptionContent {
+	margin-top: 15px;
+	
+}
+
+#dashboardContentWrapper #buttonsElement {
+	margin-top: 20px;
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton {
+	display: inline-block;
+	width: 297px;
+	height: 152px;
+	margin-left: 10px;
+	margin-right: 3px;
+	vertical-align: middle;
+	background-image: url('/css/core/images/dashboard/startowa_tlo.png');
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon {
+	display: inline-block;
+	width: 75px;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	vertical-align: middle;
+	background-position: 15px 15px;
+	background-repeat: no-repeat;
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon.icon1 {
+	background-image: url('/css/core/images/dashboard/organize.png');
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon.icon2 {
+	background-image: url('/css/core/images/dashboard/define.png');
+	background-position: 15px 25px;
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon.icon3 {
+	background-image: url('/css/core/images/dashboard/react.png');
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonContent {
+	display: inline-block;
+	width: 200px;
+	padding-right: 10px;
+	height: 100%;
+	vertical-align: middle;
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonContent .dashboardButtonContentHeader {
+	color: #FF9A29;
+	margin-top: 15px;
+	padding-bottom: 8px;
+	font-size: 20px;
+	border-bottom: solid #b1b1b1 1px;
+	width: 200px;
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonContent .dashboardButtonContentText {
+	margin-top: 10px;
+	font-size: 11px;
+	color: #818181;
+	height: 45px;
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonContent .dashboardButtonContentLink {
+	margin-top: 5px;
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonContent .dashboardButtonContentLink a {
+	font-size: 11px;
+	text-decoration: none;
+	color: #549BD8;
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonContent .dashboardButtonContentLink a:hover {
+	text-decoration: underline;
+}

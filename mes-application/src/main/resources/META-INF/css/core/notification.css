@@ -1,0 +1,161 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo MES
+ * Version: 0.3.0
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
+
+ .getFFClass {
+ 	width: auto !important;
+ }
+ .getFFClass .ui-pnotify-container {
+ 	width: auto !important;
+ }
+
+.ui-pnotify {
+	font-size: 10px;
+	position: absolute;
+	right: auto;
+	top: auto;
+	bottom: 15px;
+	right: 15px;
+	height: auto;
+	width: 300px;
+	opacity: 1;
+	cursor: auto;
+	display: block;
+	z-index: 9999;
+}
+
+/* This hides position: fixed from IE6, which doesn't understand it. */
+html>body .ui-pnotify {
+	position: fixed;
+}
+
+.ui-pnotify-container {
+	background-attachment: scroll;
+	background-clip: border-box;
+	background-origin: padding-box;
+	border-radius: 4px;
+	font-family: Verdana, Arial, sans-serif;
+	min-height: 16px;
+	padding: 8px;
+	width: 282px;
+	-moz-border-radius: 0 0 0 0;
+}
+
+.ui-pnotify.noAutoCloseClass {
+	width: 400px;
+}
+.ui-pnotify.noAutoCloseClass .ui-pnotify-container {
+	width: 332px;
+	padding-left: 58px;
+	background-image: url(/img/core/icons/importantIcon48.png);
+	background-repeat: no-repeat;
+	background-position: 4px 0px;
+}
+
+.ui-pnotify .ui-state-error {
+	background: #FEF1EC; 
+	border: 1px solid #CD0A0A;
+	color: #CD0A0A;
+}
+
+.ui-pnotify .ui-state-highlight {
+	background: #EEE; 
+	border: 1px solid #DDD;
+	color: #444;
+}
+
+.ui-state-success .ui-state-highlight {
+	background: #B9F47D; 
+	border: 1px solid #24A800;
+	color: #363636;
+}
+
+.ui-pnotify-closer {
+	float: right;
+	margin-left: .2em;
+}
+
+.ui-pnotify-title {
+	display: block;
+	font-weight: bold;
+	font-size: 10px;
+	margin-bottom: .4em;
+	line-height: 16px;
+	vertical-align: middle;
+	margin: 0 .2em .2em;
+}
+
+.ui-pnotify-text {
+	display: block;
+	font-size: 10px;
+}
+
+.ui-pnotify-icon, .ui-pnotify-closer {
+	display: block;
+}
+
+.ui-pnotify-closer {
+	margin-left: .2em; 
+	float: right;
+}
+
+.ui-pnotify-icon { 
+	margin-right: .2em; 
+	float: left;
+}
+
+.ui-pnotify-icon span, .ui-pnotify-closer span {
+	display: block;
+	height: 16px;
+	width: 16px;
+	background-repeat: no-repeat;
+	overflow: hidden;
+}
+
+.ui-pnotify-closer .ui-icon-circle-close {
+	background-image: url(/css/core/images/ui-icons_222222_256x240.png);
+	background-position: -32px -192px;
+}
+
+.ui-pnotify-icon .ui-icon-error {
+	background-image: url(/css/core/images/ui-icons_222222_256x240.png);
+	background-position: 0px -144px;
+}
+
+.ui-pnotify-icon .ui-icon-notify {
+	background-image: url(/css/core/images/ui-icons_222222_256x240.png);
+	background-position: -16px -144px;
+}
+
+.ui-pnotify-icon .ui-icon-success {
+	background-image: url(/css/core/images/ui-icons_222222_256x240.png);
+	background-position: -16px -144px;
+}
+
+.ui-pnotify .picon {
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-position: center center;
+	width: 17px;
+	height: 17px;
+}
