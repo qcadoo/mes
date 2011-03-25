@@ -81,7 +81,7 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
             // copyResources("js", "js");
             // copyResources("css", "css");
             // copyResources("img", "img");
-            copyResources("WEB-INF/jsp", "WEB-INF/jsp");
+            // copyResources("WEB-INF/jsp", "WEB-INF/jsp");
 
             try {
                 if (compressStaticResources) {

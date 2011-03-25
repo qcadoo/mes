@@ -89,6 +89,9 @@
 		
 		<!-- TODO remove after implementing import data -->
 		<databasePreparation></databasePreparation>
+		
+		<!-- TODO mina test remove -->
+		<resource uri="test/**/*" />
 	</modules>
 
 </plugin>
