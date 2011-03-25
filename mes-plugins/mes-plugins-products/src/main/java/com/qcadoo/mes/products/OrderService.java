@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.utils.NumberGeneratorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -100,6 +99,9 @@ public final class OrderService {
     }
 
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (!(state instanceof FieldComponentState)) {
+            return;
+        }
         FieldComponentState dateFrom = (FieldComponentState) state;
         FieldComponentState dateTo = (FieldComponentState) viewDefinitionState.getComponentByReference("dateTo");
 

@@ -24,13 +24,7 @@
 		<module>mes-plugins-quality-controls</module>
 	</modules>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-core</artifactId>
-			<version>0.4.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
+	<dependencies>		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 		</dependency>

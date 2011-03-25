@@ -108,7 +108,9 @@ public final class TestDataLoader {
     private boolean addOtherUsers;
 
     public void loadTestData() {
-        readDataFromXML("users", USER_ATTRIBUTES);
+        if (addOtherUsers) {
+            readDataFromXML("users", USER_ATTRIBUTES);
+        }
         readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
         if (pluginAccessor.getEnabledPlugin("basic") != null) {
             readDataFromXML("machines", MACHINE_ATTRIBUTES);

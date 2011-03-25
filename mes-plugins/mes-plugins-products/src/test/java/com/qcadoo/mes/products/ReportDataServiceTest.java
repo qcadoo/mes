@@ -41,7 +41,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.qcadoo.mes.products.print.ReportDataService;
-import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -51,6 +50,7 @@ import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
+import com.qcadoo.report.internal.Pair;
 
 public class ReportDataServiceTest {
 
