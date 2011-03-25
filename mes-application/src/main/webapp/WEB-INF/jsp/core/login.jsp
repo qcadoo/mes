@@ -37,7 +37,7 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/qcadoo.min.js"></script>
 		</c:when>
 		<c:otherwise>
-			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/login.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/core/login.css" type="text/css" />
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/components/form.css" type="text/css" />
 			
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/_jquery-1.4.2.min.js"></script>

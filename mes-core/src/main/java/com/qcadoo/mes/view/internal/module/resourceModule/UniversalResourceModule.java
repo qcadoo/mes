@@ -12,25 +12,35 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
+import com.qcadoo.mes.view.crud.ResourceModule;
+import com.qcadoo.mes.view.crud.ResourceService;
+
 public class UniversalResourceModule extends ResourceModule {
 
     private final ApplicationContext applicationContext;
 
-    private final String uriRoot;
+    private final String uriPattern;
 
-    private final String pluginIdentifier;
+    private final PathMatcher matcher = new AntPathMatcher();
 
     public UniversalResourceModule(final ResourceService resourceService, final ApplicationContext applicationContext,
-            final String pluginIdentifier, final String uriRoot) {
+            final String pluginIdentifier, final String uriPattern) {
         super(resourceService);
         this.applicationContext = applicationContext;
-        this.pluginIdentifier = pluginIdentifier;
-        this.uriRoot = uriRoot;
+        if (uriPattern.startsWith("/")) {
+            this.uriPattern = "/" + pluginIdentifier + uriPattern;
+        } else {
+            this.uriPattern = "/" + pluginIdentifier + "/" + uriPattern;
+        }
+
     }
 
-    boolean serveResource(final HttpServletRequest request, final HttpServletResponse response) {
+    @Override
+    public boolean serveResource(final HttpServletRequest request, final HttpServletResponse response) {
+        System.out.println("serveResource - " + uriPattern);
         Resource resource = getResourceFromURI(request.getRequestURI());
         if (resource != null && resource.exists()) {
+            System.out.println("FOUND");
             response.setContentType(getContentTypeFromURI(request.getRequestURI()));
             try {
                 copy(resource.getInputStream(), response.getOutputStream());
@@ -43,20 +53,15 @@ public class UniversalResourceModule extends ResourceModule {
         }
     }
 
+    private boolean matchPattern(final String uri) {
+        return matcher.match(uriPattern, uri);
+    }
+
     private Resource getResourceFromURI(final String uri) {
-        System.out.println("-----------");
-        System.out.println(uri);
-        String path = "classpath:" + uri;
-        String matchPatch = "/" + pluginIdentifier + "/" + uriRoot;
-        System.out.println(path);
-        System.out.println(matchPatch);
-
-        PathMatcher matcher = new AntPathMatcher();
-        boolean match = matcher.match(matchPatch, uri);
-        System.out.println(match);
-
-        Resource resource = applicationContext.getResource(path);
-        return resource;
+        if (matchPattern(uri)) {
+            return applicationContext.getResource("classpath:" + uri);
+        }
+        return null;
     }
 
     private String getContentTypeFromURI(final String uri) {

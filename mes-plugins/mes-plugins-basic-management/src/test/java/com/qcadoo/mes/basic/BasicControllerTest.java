@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
-import com.qcadoo.mes.crud.CrudController;
+import com.qcadoo.mes.view.crud.CrudController;
 
 public class BasicControllerTest {
 

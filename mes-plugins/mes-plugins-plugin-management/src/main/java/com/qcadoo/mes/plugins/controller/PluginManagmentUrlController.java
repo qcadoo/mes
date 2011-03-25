@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.crud.CrudController;
+import com.qcadoo.mes.view.crud.CrudController;
 import com.qcadoo.plugin.internal.api.PluginArtifact;
 import com.qcadoo.plugin.internal.artifact.InputStreamPluginArtifact;
 

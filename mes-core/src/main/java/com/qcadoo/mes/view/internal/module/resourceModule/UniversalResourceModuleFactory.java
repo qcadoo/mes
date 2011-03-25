@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.google.common.base.Preconditions;
+import com.qcadoo.mes.view.crud.ResourceService;
 import com.qcadoo.plugin.api.ModuleFactory;
 
 public class UniversalResourceModuleFactory implements ModuleFactory<UniversalResourceModule> {
@@ -24,9 +25,6 @@ public class UniversalResourceModuleFactory implements ModuleFactory<UniversalRe
     public UniversalResourceModule parse(final String pluginIdentifier, final Element element) {
         String uri = element.getAttributeValue("uri");
         Preconditions.checkNotNull(uri, "Resource module error: uri not defined");
-
-        // TODO mina remove slash on begin
-
         return new UniversalResourceModule(resourceService, applicationContext, pluginIdentifier, uri);
     }
 

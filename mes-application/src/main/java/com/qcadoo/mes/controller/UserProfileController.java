@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
-import com.qcadoo.mes.crud.CrudController;
+import com.qcadoo.mes.view.crud.CrudController;
 import com.qcadoo.security.api.SecurityService;
 
 @Controller
