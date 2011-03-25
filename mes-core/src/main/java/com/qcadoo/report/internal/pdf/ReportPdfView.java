@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.utils.pdf;
+package com.qcadoo.report.internal.pdf;
 
 import java.io.IOException;
 import java.text.DecimalFormat;

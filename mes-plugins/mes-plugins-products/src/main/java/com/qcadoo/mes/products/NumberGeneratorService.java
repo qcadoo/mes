@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.utils;
+package com.qcadoo.mes.products;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -43,11 +43,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.utils.pdf.PdfUtil;
-import com.qcadoo.mes.utils.xls.XlsUtil;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.report.internal.pdf.PdfUtil;
+import com.qcadoo.report.internal.xls.XlsUtil;
 
 @Controller
 public class ProductController {

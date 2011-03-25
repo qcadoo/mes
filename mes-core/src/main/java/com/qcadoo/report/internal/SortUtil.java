@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.utils;
+package com.qcadoo.report.internal;
 
 import java.util.Collections;
 import java.util.Comparator;

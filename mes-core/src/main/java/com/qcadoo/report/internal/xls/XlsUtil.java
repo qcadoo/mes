@@ -22,28 +22,28 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.utils.pdf;
+package com.qcadoo.report.internal.xls;
 
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfPTableEvent;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Font;
 
-public final class TableBorderEvent implements PdfPTableEvent {
+public final class XlsUtil {
 
-    @Override
-    public void tableLayout(final PdfPTable table, final float[][] widths, final float[] heights, final int headerRows,
-            final int rowStart, final PdfContentByte[] canvases) {
-        float[] width = widths[0];
-        float x1 = width[0];
-        float x2 = width[width.length - 1];
-        float y1 = heights[0];
-        float y2 = heights[heights.length - 1];
-        PdfContentByte cb = canvases[PdfPTable.LINECANVAS];
-        cb.saveState();
-        cb.setLineWidth(1);
-        cb.setColorStroke(PdfUtil.getLineDarkColor());
-        cb.rectangle(x1, y1, x2 - x1, y2 - y1);
-        cb.stroke();
-        cb.restoreState();
+    public static final String XLS_EXTENSION = ".xls";
+
+    private XlsUtil() {
     }
+
+    public static HSSFCellStyle getHeaderStyle(final HSSFWorkbook workbook) {
+        HSSFCellStyle style = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setFontHeightInPoints((short) 12);
+        font.setFontName(HSSFFont.FONT_ARIAL);
+        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        style.setFont(font);
+        return style;
+    }
+
 }

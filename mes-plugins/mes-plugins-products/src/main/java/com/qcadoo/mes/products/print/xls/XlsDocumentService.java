@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.products.print.DocumentService;
-import com.qcadoo.mes.utils.xls.XlsUtil;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.report.internal.xls.XlsUtil;
 
 @Service
 public abstract class XlsDocumentService extends DocumentService {

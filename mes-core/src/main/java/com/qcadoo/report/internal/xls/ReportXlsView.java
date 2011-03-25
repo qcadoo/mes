@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.utils.xls;
+package com.qcadoo.report.internal.xls;
 
 import java.util.Locale;
 import java.util.Map;

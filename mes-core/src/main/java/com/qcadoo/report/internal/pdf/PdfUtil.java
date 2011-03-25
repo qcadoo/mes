@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.utils.pdf;
+package com.qcadoo.report.internal.pdf;
 
 import java.awt.Color;
 import java.io.IOException;

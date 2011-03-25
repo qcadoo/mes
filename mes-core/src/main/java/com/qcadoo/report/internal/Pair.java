@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.utils;
+package com.qcadoo.report.internal;
 
 /**
  * Represents pair key->value
