@@ -68,7 +68,7 @@ public class DatabasePreparationModule extends Module {
     private void addUser(final String login, final String email, final String firstName, final String lastName,
             final String password, final Entity group) {
         LOG.info("Adding \"" + login + "\" user");
-        Entity entity = dataDefinitionService.get("users", "user").create();
+        Entity entity = dataDefinitionService.get("qcadooSecurity", "user").create();
         entity.setField("userName", login);
         entity.setField("userGroup", group);
         entity.setField("email", email);
@@ -77,19 +77,19 @@ public class DatabasePreparationModule extends Module {
         entity.setField("password", password);
         entity.setField("passwordConfirmation", password);
         entity.setField("enabled", true);
-        dataDefinitionService.get("users", "user").save(entity);
+        dataDefinitionService.get("qcadooSecurity", "user").save(entity);
     }
 
     private Entity addGroup(final String name, final String role) {
         LOG.info("Adding group \"" + name + "\" with role \"" + role + "\"");
-        Entity entity = dataDefinitionService.get("users", "group").create();
+        Entity entity = dataDefinitionService.get("qcadooSecurity", "group").create();
         entity.setField("name", name);
         entity.setField("role", role);
-        return dataDefinitionService.get("users", "group").save(entity);
+        return dataDefinitionService.get("qcadooSecurity", "group").save(entity);
     }
 
     private boolean databaseHasToBePrepared() {
-        return dataDefinitionService.get("users", "user").find().list().getTotalNumberOfEntities() == 0;
+        return dataDefinitionService.get("qcadooSecurity", "user").find().list().getTotalNumberOfEntities() == 0;
     }
 
     @Override

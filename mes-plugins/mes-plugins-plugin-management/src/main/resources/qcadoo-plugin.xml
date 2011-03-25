@@ -10,8 +10,6 @@
 	</information>
 	
 	<modules>
-		<model:model model="plugin" resource="plugins/model/plugin.xml"/>
-		
 		<view:menu-item name="plugins" category="administration" view="plugins" />
 
 		<view:view>

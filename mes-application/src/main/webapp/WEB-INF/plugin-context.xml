@@ -60,7 +60,7 @@
 		</property>
 		<property name="annotatedClasses">
 			<list>
-				<value>com.qcadoo.model.beans.plugins.PluginsPlugin</value>
+				<value>com.qcadoo.model.beans.qcadooPlugin.QcadooPluginPlugin</value>
 			</list>
 		</property>
 	</bean>
