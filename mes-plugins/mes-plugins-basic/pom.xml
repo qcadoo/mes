@@ -17,7 +17,7 @@
 	<!--<build>
 		<plugins>
 			<plugin>
-				<groupId>org.qcadoo</groupId>
+				<groupId>com.qcadoo</groupId>
 				<artifactId>qcadoo-maven-plugin</artifactId>
 				<version>${qcadoo.version}</version>
 				<extensions>true</extensions>
