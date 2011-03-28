@@ -8,9 +8,21 @@
 		<version>0.4.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>mes-plugins-dictionary-management</artifactId>
+	<artifactId>mes-plugins-basic</artifactId>
 	<packaging>jar</packaging>
+	<!--<packaging>qar</packaging>
 
-	<name>Qcadoo MES :: Plugins :: Dictionary Management</name>
-
-</project>
+	--><name>Qcadoo MES :: Plugins :: Basic</name>
+	
+	<!--<build>
+		<plugins>
+			<plugin>
+				<groupId>org.qcadoo</groupId>
+				<artifactId>qcadoo-maven-plugin</artifactId>
+				<version>${qcadoo.version}</version>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
+	
+--></project>

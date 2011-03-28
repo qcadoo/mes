@@ -17,9 +17,9 @@
 	</dependencies>
 	
 	<modules>
-		<!-- TODO model:hook plugin="qcadooPlugin" model="plugin">
-			<onView class="com.qcadoo.plugin.controller.PluginManagmentDataHook" method="updatePluginData" />
-		</model:hook -->
+		<model:hook plugin="qcadooPlugin" model="plugin">
+			<onView class="com.qcadoo.mes.plugins.controller.PluginManagmentDataHook" method="updatePluginData" />
+		</model:hook>
 	
 		<view:menu-item name="plugins" category="administration" view="plugins" />
 

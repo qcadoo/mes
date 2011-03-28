@@ -12,10 +12,6 @@
 	<packaging>jar</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Quality Controls</name>
-
-	<properties>
-		<mes.plugin.identifier>qualityControls</mes.plugin.identifier>
-	</properties>
 	
 	<dependencies>
 		<dependency>

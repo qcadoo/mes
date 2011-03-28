@@ -45,9 +45,9 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.report.internal.SortUtil;
-import com.qcadoo.report.internal.pdf.PdfUtil;
-import com.qcadoo.report.internal.pdf.ReportPdfView;
+import com.qcadoo.report.api.SortUtil;
+import com.qcadoo.report.api.pdf.PdfUtil;
+import com.qcadoo.report.api.pdf.ReportPdfView;
 import com.qcadoo.security.api.SecurityService;
 
 public class QualityControlForUnitPdfView extends ReportPdfView {

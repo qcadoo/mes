@@ -13,15 +13,4 @@
 
 	<name>Qcadoo MES :: Plugins :: Genealogies</name>
 
-	<properties>
-		<mes.plugin.identifier>genealogies</mes.plugin.identifier>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-		</dependency>
-	</dependencies>
-
 </project>

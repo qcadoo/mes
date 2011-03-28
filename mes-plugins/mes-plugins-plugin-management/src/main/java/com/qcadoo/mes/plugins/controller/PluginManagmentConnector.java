@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.plugin.api.PluginManager;
+import com.qcadoo.plugin.api.PluginOperationResult;
 import com.qcadoo.plugin.api.PluginServerManager;
-import com.qcadoo.plugin.internal.api.PluginArtifact;
-import com.qcadoo.plugin.internal.api.PluginOperationResult;
+import com.qcadoo.plugin.api.artifact.PluginArtifact;
 
 @Service
 public class PluginManagmentConnector {

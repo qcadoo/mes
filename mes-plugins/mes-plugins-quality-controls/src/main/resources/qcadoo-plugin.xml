@@ -25,7 +25,7 @@
 	</dependencies>
 	
 	<modules>
-		<model:model model="qualityControl" resource="qualityControls/model/qualityControl.xml"/>
+		<model:model model="qualityControl" resource="model/qualityControl.xml"/>
 		<model:field plugin="products" model="technology">
 			<enum name="qualityControlType" values="01forBatch,02forUnit,03forOrder,04forOperation" />
 		</model:field>

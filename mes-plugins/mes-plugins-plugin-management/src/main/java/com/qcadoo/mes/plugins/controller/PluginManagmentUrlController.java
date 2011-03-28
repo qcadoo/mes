@@ -16,9 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.plugin.internal.api.PluginArtifact;
-import com.qcadoo.plugin.internal.artifact.InputStreamPluginArtifact;
-import com.qcadoo.view.internal.crud.CrudController;
+import com.qcadoo.plugin.api.artifact.InputStreamPluginArtifact;
+import com.qcadoo.plugin.api.artifact.PluginArtifact;
+import com.qcadoo.view.api.crud.CrudController;
 
 @Controller
 public class PluginManagmentUrlController {

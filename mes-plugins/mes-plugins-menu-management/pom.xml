@@ -13,8 +13,4 @@
 
 	<name>Qcadoo MES :: Plugins :: Menu Management</name>
 
-	<properties>
-		<mes.plugin.identifier>menu</mes.plugin.identifier>
-	</properties>
-
 </project>
