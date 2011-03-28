@@ -24,14 +24,11 @@
 
 package com.qcadoo.mes.application;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
@@ -48,7 +45,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.yahoo.platform.yui.compressor.YUICompressor;
@@ -146,50 +142,50 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
         YUICompressor.main(new String[] { "-v", "-o", minFile.getAbsolutePath(), file.getAbsolutePath() });
     }
 
-    private void copyResources(final String type, final String targetPath) {
-        LOG.info("Copying resources " + type + " ...");
+    // private void copyResources(final String type, final String targetPath) {
+    // LOG.info("Copying resources " + type + " ...");
+    //
+    // try {
+    // Resource[] resources = applicationContext.getResources("classpath*:META-INF/" + type + "/**/*");
+    //
+    // for (Resource resource : resources) {
+    // copyResource(resource, type, targetPath);
+    // }
+    // } catch (IOException e) {
+    // throw new IllegalStateException("Cannot find resources " + type + " in classpath", e);
+    // }
+    // }
 
-        try {
-            Resource[] resources = applicationContext.getResources("classpath*:META-INF/" + type + "/**/*");
+    // private void copyResource(final Resource resource, final String type, final String targetPath) {
+    // if (!resource.isReadable()) {
+    // return;
+    // }
+    //
+    // try {
+    // String path = resource.getURI().toString().split("META-INF/" + type)[1];
+    // File file = new File(webappPath + "/" + targetPath + path);
+    // copyFile(resource, path, file);
+    // } catch (IOException e) {
+    // throw new IllegalStateException("Cannot copy resource " + resource, e);
+    // }
+    // }
 
-            for (Resource resource : resources) {
-                copyResource(resource, type, targetPath);
-            }
-        } catch (IOException e) {
-            throw new IllegalStateException("Cannot find resources " + type + " in classpath", e);
-        }
-    }
-
-    private void copyResource(final Resource resource, final String type, final String targetPath) {
-        if (!resource.isReadable()) {
-            return;
-        }
-
-        try {
-            String path = resource.getURI().toString().split("META-INF/" + type)[1];
-            File file = new File(webappPath + "/" + targetPath + path);
-            copyFile(resource, path, file);
-        } catch (IOException e) {
-            throw new IllegalStateException("Cannot copy resource " + resource, e);
-        }
-    }
-
-    private void copyFile(final Resource resource, final String path, final File file) throws IOException {
-        if (resource.getInputStream().available() == 0) {
-            file.mkdirs();
-        } else {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Copying " + path + " to " + file.getAbsolutePath());
-            }
-
-            OutputStream output = null;
-
-            try {
-                output = new BufferedOutputStream(new FileOutputStream(file));
-                IOUtils.copy(resource.getInputStream(), output);
-            } finally {
-                IOUtils.closeQuietly(output);
-            }
-        }
-    }
+    // private void copyFile(final Resource resource, final String path, final File file) throws IOException {
+    // if (resource.getInputStream().available() == 0) {
+    // file.mkdirs();
+    // } else {
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("Copying " + path + " to " + file.getAbsolutePath());
+    // }
+    //
+    // OutputStream output = null;
+    //
+    // try {
+    // output = new BufferedOutputStream(new FileOutputStream(file));
+    // IOUtils.copy(resource.getInputStream(), output);
+    // } finally {
+    // IOUtils.closeQuietly(output);
+    // }
+    // }
+    // }
 }
