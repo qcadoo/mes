@@ -218,6 +218,20 @@
 		</plugins>
 	</reporting>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>qcadoo-plugin-snapshots-repository</id>
+			<url>http://nexus.qcadoo.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<repositories>
 		<repository>
 			<id>qcadoo-releases-repository</id>

@@ -225,7 +225,7 @@ buildRevision = ${build.revision}
 						<executions>
 							<execution>
 								<id>prepare-tomcat-package</id>
-								<phase>install</phase>
+								<phase>package</phase>
 								<goals>
 									<goal>tomcat</goal>
 								</goals>

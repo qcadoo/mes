@@ -10,11 +10,10 @@
 
 	<artifactId>mes-plugins-basic</artifactId>
 	<packaging>jar</packaging>
-	<!--<packaging>qar</packaging>
 
-	--><name>Qcadoo MES :: Plugins :: Basic</name>
+	<name>Qcadoo MES :: Plugins :: Basic</name>
 	
-	<!--<build>
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>com.qcadoo</groupId>
@@ -25,4 +24,4 @@
 		</plugins>
 	</build>
 	
---></project>
+</project>
