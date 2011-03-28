@@ -32,9 +32,10 @@
 <head>
 
 	<c:choose>
-		<c:when test="${compressStaticResources}">
-			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/qcadoo.min.css" type="text/css" />
-			<script type="text/javascript" src="${pageContext.request.contextPath}/js/qcadoo.min.js"></script>
+		<c:when test="${useCompressedStaticResources}">
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/qcadoo-min.css" type="text/css" />
+			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/_jquery-1.4.2.min.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/qcadoo-min.js"></script>
 		</c:when>
 		<c:otherwise>
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/core/login.css" type="text/css" />
