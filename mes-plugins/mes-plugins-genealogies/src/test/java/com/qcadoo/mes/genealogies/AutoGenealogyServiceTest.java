@@ -36,6 +36,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.localization.api.TranslationService;
@@ -359,114 +361,119 @@ public class AutoGenealogyServiceTest {
         verify(state).addMessage("genealogies.message.autoGenealogy.success.pl", MessageType.SUCCESS);
     }
 
-    // TODO plugin krna
-    // @Test
-    // public void shouldFailAutoCreateGenealogyWithLastUsedBatch() {
-    // // given
-    // ComponentState state = mock(ComponentState.class);
-    // given(state.getFieldValue()).willReturn(13L);
-    // given(state.getLocale()).willReturn(Locale.ENGLISH);
-    // ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-    // Entity order = mock(Entity.class);
-    // given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
-    // Entity product = mock(Entity.class);
-    // Entity technology = mock(Entity.class);
-    // Entity genealogy = new DefaultEntity(null);
-    // given(dataDefinitionService.get("genealogies", "genealogy").create()).willReturn(genealogy);
-    // given(order.getBelongsToField("product")).willReturn(product);
-    // given(order.getBelongsToField("technology")).willReturn(technology);
-    // given(product.getField("lastUsedBatch")).willReturn("test");
-    // given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
-    // .willReturn(new ArrayList<Entity>());
-    // given(technology.getField("shiftFeatureRequired")).willReturn(true);
-    // given(technology.getField("postFeatureRequired")).willReturn(true);
-    // given(technology.getField("otherFeatureRequired")).willReturn(true);
-    //
-    // doAnswer(new Answer<Object>() {
-    //
-    // @SuppressWarnings("unchecked")
-    // @Override
-    // public Object answer(final InvocationOnMock invocation) throws Throwable {
-    // Object[] args = invocation.getArguments();
-    // ((List<Entity>) args[1]).add(createOperationComponent(true));
-    // ((List<Entity>) args[1]).add(createOperationComponent(true));
-    // ((List<Entity>) args[1]).add(createOperationComponent(true));
-    // ((List<Entity>) args[1]).add(createOperationComponent(true));
-    // return null;
-    // }
-    // }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
-    //
-    // given(translationService.translate("genealogies.message.autoGenealogy.missingShift", Locale.ENGLISH)).willReturn(
-    // "genealogies.message.autoGenealogy.missingShift.pl");
-    //
-    // given(translationService.translate("genealogies.message.autoGenealogy.missingOther", Locale.ENGLISH)).willReturn(
-    // "genealogies.message.autoGenealogy.missingOther.pl");
-    //
-    // given(translationService.translate("genealogies.message.autoGenealogy.missingPost", Locale.ENGLISH)).willReturn(
-    // "genealogies.message.autoGenealogy.missingPost.pl");
-    //
-    // given(translationService.translate("genealogies.message.autoGenealogy.missingBatch", Locale.ENGLISH)).willReturn(
-    // "genealogies.message.autoGenealogy.missingBatch.pl");
-    //
-    // mockStatic(TransactionAspectSupport.class);
-    //
-    // TransactionStatus transactionStatus = mock(TransactionStatus.class);
-    //
-    // given(TransactionAspectSupport.currentTransactionStatus()).willReturn(transactionStatus);
-    //
-    // // when
-    // autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "true" });
-    //
-    // // then
-    // verify(state, times(2)).getFieldValue();
-    //
-    // verify(state).addMessage("genealogies.message.autoGenealogy.missingShift.pl", MessageType.INFO, false);
-    // verify(state).addMessage("genealogies.message.autoGenealogy.missingOther.pl", MessageType.INFO, false);
-    // verify(state).addMessage("genealogies.message.autoGenealogy.missingPost.pl", MessageType.INFO, false);
-    // verify(state).addMessage(
-    // "genealogies.message.autoGenealogy.missingBatch.pl\nnumber1-name1; \nnumber3-name3; \nnumber4-name4; ",
-    // MessageType.INFO, false);
-    // }
+    @Test
+    public void shouldFailAutoCreateGenealogyWithLastUsedBatch() {
+        // given
+        ComponentState state = mock(ComponentState.class);
+        given(state.getFieldValue()).willReturn(13L);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        Entity order = mock(Entity.class);
+        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        Entity shift = new DefaultEntity(null);
+        Entity post = new DefaultEntity(null);
+        Entity other = new DefaultEntity(null);
+        given(dataDefinitionService.get("genealogies", "shiftFeature").create()).willReturn(shift);
+        given(dataDefinitionService.get("genealogies", "postFeature").create()).willReturn(post);
+        given(dataDefinitionService.get("genealogies", "otherFeature").create()).willReturn(other);
+        Entity product = mock(Entity.class);
+        Entity technology = mock(Entity.class);
+        Entity genealogy = new DefaultEntity(null);
+        given(dataDefinitionService.get("genealogies", "genealogy").create()).willReturn(genealogy);
+        given(order.getBelongsToField("product")).willReturn(product);
+        given(order.getBelongsToField("technology")).willReturn(technology);
+        given(product.getField("lastUsedBatch")).willReturn("test");
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+                .willReturn(new ArrayList<Entity>());
+        given(technology.getField("shiftFeatureRequired")).willReturn(true);
+        given(technology.getField("postFeatureRequired")).willReturn(true);
+        given(technology.getField("otherFeatureRequired")).willReturn(true);
 
-    // TODO plugin krna
-    // @Test
-    // public void shouldFailAutoCreateGenealogyWithLastUsedBatchOtherError() {
-    // // given
-    // ComponentState state = mock(ComponentState.class);
-    // given(state.getFieldValue()).willReturn(13L);
-    // given(state.getLocale()).willReturn(Locale.ENGLISH);
-    // ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-    // Entity order = mock(Entity.class);
-    // given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
-    // Entity product = mock(Entity.class);
-    // Entity technology = mock(Entity.class);
-    // given(order.getBelongsToField("product")).willReturn(product);
-    // given(order.getBelongsToField("technology")).willReturn(technology);
-    // given(product.getField("lastUsedBatch")).willReturn("test");
-    // given(technology.getField("shiftFeatureRequired")).willReturn(false);
-    // given(technology.getField("postFeatureRequired")).willReturn(false);
-    // given(technology.getField("otherFeatureRequired")).willReturn(false);
-    //
-    // given(translationService.translate("genealogies.message.autoGenealogy.failure", Locale.ENGLISH)).willReturn(
-    // "genealogies.message.autoGenealogy.failure.pl");
-    //
-    // given(dataDefinitionService.get("genealogies", "genealogy").save(any(Entity.class)).getGlobalErrors().isEmpty())
-    // .willReturn(true);
-    //
-    // mockStatic(TransactionAspectSupport.class);
-    //
-    // TransactionStatus transactionStatus = mock(TransactionStatus.class);
-    //
-    // given(TransactionAspectSupport.currentTransactionStatus()).willReturn(transactionStatus);
-    //
-    // // when
-    // autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "true" });
-    //
-    // // then
-    // verify(state, times(2)).getFieldValue();
-    //
-    // verify(state).addMessage("genealogies.message.autoGenealogy.failure.pl", MessageType.INFO);
-    // }
+        doAnswer(new Answer<Object>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                ((List<Entity>) args[1]).add(createOperationComponent(true));
+                ((List<Entity>) args[1]).add(createOperationComponent(true));
+                ((List<Entity>) args[1]).add(createOperationComponent(true));
+                ((List<Entity>) args[1]).add(createOperationComponent(true));
+                return null;
+            }
+        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
+
+        given(translationService.translate("genealogies.message.autoGenealogy.missingShift", Locale.ENGLISH)).willReturn(
+                "genealogies.message.autoGenealogy.missingShift.pl");
+
+        given(translationService.translate("genealogies.message.autoGenealogy.missingOther", Locale.ENGLISH)).willReturn(
+                "genealogies.message.autoGenealogy.missingOther.pl");
+
+        given(translationService.translate("genealogies.message.autoGenealogy.missingPost", Locale.ENGLISH)).willReturn(
+                "genealogies.message.autoGenealogy.missingPost.pl");
+
+        given(translationService.translate("genealogies.message.autoGenealogy.missingBatch", Locale.ENGLISH)).willReturn(
+                "genealogies.message.autoGenealogy.missingBatch.pl");
+
+        mockStatic(TransactionAspectSupport.class);
+
+        TransactionStatus transactionStatus = mock(TransactionStatus.class);
+
+        given(TransactionAspectSupport.currentTransactionStatus()).willReturn(transactionStatus);
+
+        // when
+        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "true" });
+
+        // then
+        verify(state, times(2)).getFieldValue();
+
+        verify(state).addMessage("genealogies.message.autoGenealogy.missingShift.pl", MessageType.INFO, false);
+        verify(state).addMessage("genealogies.message.autoGenealogy.missingOther.pl", MessageType.INFO, false);
+        verify(state).addMessage("genealogies.message.autoGenealogy.missingPost.pl", MessageType.INFO, false);
+        verify(state).addMessage(
+                "genealogies.message.autoGenealogy.missingBatch.pl\nnumber1-name1; \nnumber3-name3; \nnumber4-name4; ",
+                MessageType.INFO, false);
+    }
+
+    @Test
+    public void shouldFailAutoCreateGenealogyWithLastUsedBatchOtherError() {
+        // given
+        ComponentState state = mock(ComponentState.class);
+        given(state.getFieldValue()).willReturn(13L);
+        given(state.getLocale()).willReturn(Locale.ENGLISH);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        Entity order = mock(Entity.class);
+        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        Entity product = mock(Entity.class);
+        Entity technology = mock(Entity.class);
+        given(order.getBelongsToField("product")).willReturn(product);
+        given(order.getBelongsToField("technology")).willReturn(technology);
+        given(product.getField("lastUsedBatch")).willReturn("test");
+        given(technology.getField("shiftFeatureRequired")).willReturn(false);
+        given(technology.getField("postFeatureRequired")).willReturn(false);
+        given(technology.getField("otherFeatureRequired")).willReturn(false);
+
+        given(translationService.translate("genealogies.message.autoGenealogy.failure", Locale.ENGLISH)).willReturn(
+                "genealogies.message.autoGenealogy.failure.pl");
+
+        given(dataDefinitionService.get("genealogies", "genealogy").create().isValid()).willReturn(true);
+        given(dataDefinitionService.get("genealogies", "genealogy").save(any(Entity.class)).getGlobalErrors().isEmpty())
+                .willReturn(true);
+
+        mockStatic(TransactionAspectSupport.class);
+
+        TransactionStatus transactionStatus = mock(TransactionStatus.class);
+
+        given(TransactionAspectSupport.currentTransactionStatus()).willReturn(transactionStatus);
+
+        // when
+        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "true" });
+
+        // then
+        verify(state, times(2)).getFieldValue();
+
+        verify(state).addMessage("genealogies.message.autoGenealogy.failure.pl", MessageType.INFO);
+    }
 
     @Test
     public void shouldFailAutoCreateGenealogyOnChangeOrderStatusIfNoRowIsSelected() throws Exception {
