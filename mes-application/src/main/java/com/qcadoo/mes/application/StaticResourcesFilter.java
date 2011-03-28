@@ -25,6 +25,8 @@
 package com.qcadoo.mes.application;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -32,16 +34,35 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.qcadoo.view.internal.resource.ResourceService;
 
 public final class StaticResourcesFilter implements Filter {
 
-    private boolean compressStaticResources;
+    private boolean useJarStaticResources;
+
+    private static final List<String> NOT_STATIC_EXTENSIONS = Arrays.asList(new String[] { "html", "pdf", "xls" });
+
+    @Autowired
+    private ResourceService resourceService;
 
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
             throws IOException, ServletException {
-        request.setAttribute("compressStaticResources", compressStaticResources);
-        chain.doFilter(request, response);
+
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        String[] arr = httpRequest.getRequestURI().split("\\.");
+        String ext = arr[arr.length - 1];
+
+        if (!NOT_STATIC_EXTENSIONS.contains(ext) && useJarStaticResources) {
+            resourceService.serveResource(httpRequest, (HttpServletResponse) response);
+        } else {
+            chain.doFilter(request, response);
+        }
     }
 
     @Override
@@ -54,8 +75,8 @@ public final class StaticResourcesFilter implements Filter {
         // empty
     }
 
-    public void setCompressStaticResources(final boolean compressStaticResources) {
-        this.compressStaticResources = compressStaticResources;
+    public void setUseJarStaticResources(final boolean useJarStaticResources) {
+        this.useJarStaticResources = useJarStaticResources;
     }
 
 }

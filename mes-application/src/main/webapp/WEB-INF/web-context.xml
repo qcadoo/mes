@@ -60,6 +60,10 @@
 			</map>
 		</property>
 	</bean>
+	
+	<bean id="staticResourcesFilter" class="com.qcadoo.mes.application.StaticResourcesFilter">
+		<property name="useJarStaticResources" value="${useJarStaticResources}" />
+	</bean>
   		
   	<bean id="beanNameViewResolver"
   		class="org.springframework.web.servlet.view.BeanNameViewResolver">
