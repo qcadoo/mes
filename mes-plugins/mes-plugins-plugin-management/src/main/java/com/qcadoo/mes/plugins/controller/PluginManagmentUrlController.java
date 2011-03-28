@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.plugin.api.VersionOfDependency;
 import com.qcadoo.plugin.api.artifact.InputStreamPluginArtifact;
 import com.qcadoo.plugin.api.artifact.PluginArtifact;
 import com.qcadoo.view.api.crud.CrudController;
@@ -79,7 +80,7 @@ public class PluginManagmentUrlController {
             throw new IllegalStateException("Unsuported plugin info type: " + arguments.get("type"));
         }
         mav.addObject("content", translationService.translate("plugins.pluginInfo.content." + arguments.get("status"), locale));
-        mav.addObject("dependencies", createDependenciesMap(arguments));
+        mav.addObject("dependencies", createDependenciesMap(arguments, locale));
         mav.addObject("inVersion", translationService.translate("plugins.pluginInfo.inVersion", locale));
 
         return mav;
@@ -124,7 +125,7 @@ public class PluginManagmentUrlController {
         return crudController.prepareView("plugins", viewName, crudArgs, locale);
     }
 
-    private Map<String, String> createDependenciesMap(final Map<String, String> arguments) {
+    private Map<String, String> createDependenciesMap(final Map<String, String> arguments, final Locale locale) {
         Map<String, String> dependencies = new HashMap<String, String>();
         for (Map.Entry<String, String> arg : arguments.entrySet()) {
             if (arg.getKey().length() < 5) {
@@ -134,7 +135,22 @@ public class PluginManagmentUrlController {
                 if ("none".equals(arg.getValue())) {
                     dependencies.put(arg.getKey().substring(4), null);
                 } else {
-                    dependencies.put(arg.getKey().substring(4), arg.getValue());
+                    String versionStr = arg.getValue();
+                    String result = "";
+                    VersionOfDependency version = new VersionOfDependency(versionStr);
+                    if (version.getMinVersion() != null) {
+                        result += translationService.translate("plugins.pluginInfo.versionFrom", locale) + " "
+                                + version.getMinVersion();
+                    }
+                    if (version.getMinVersion() != null && version.getMaxVersion() != null) {
+                        result += " " + translationService.translate("plugins.pluginInfo.versionAnd", locale) + " ";
+                    }
+                    if (version.getMaxVersion() != null) {
+                        result += translationService.translate("plugins.pluginInfo.versionTo", locale) + " "
+                                + version.getMaxVersion();
+                    }
+
+                    dependencies.put(arg.getKey().substring(4), result);
                 }
             }
         }
