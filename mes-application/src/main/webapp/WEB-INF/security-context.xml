@@ -119,10 +119,6 @@
 	<bean id="mySessionExpirationFilter"
 		class="com.qcadoo.mes.security.internal.SessionExpirationFilter" />
 
-	<bean id="staticResourcesFilter" class="com.qcadoo.mes.application.StaticResourcesFilter">
-		<property name="compressStaticResources" value="${compressStaticResources}" />
-	</bean>
-
 	<bean id="customAuthenticationFilter"
 		class="com.qcadoo.mes.security.internal.CustomAuthenticationFilter">
 		<property name="authenticationManager" ref="authenticationManager" />

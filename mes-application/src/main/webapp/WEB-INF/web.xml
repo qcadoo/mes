@@ -84,7 +84,8 @@
 
 	<filter-mapping>
 		<filter-name>staticResourcesFilter</filter-name>
-		<url-pattern>*.html</url-pattern>
+		<!--<url-pattern>*.html</url-pattern>-->
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	
 	<filter>
@@ -142,10 +143,10 @@
 		<url-pattern>*.xls</url-pattern>
 	</servlet-mapping>
 	
-	<servlet-mapping>
+	<!--<servlet-mapping>
 		<servlet-name>Qcadoo MES</servlet-name>
 		<url-pattern>/</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping>-->
 
 	<session-config>
 		<session-timeout>15</session-timeout>

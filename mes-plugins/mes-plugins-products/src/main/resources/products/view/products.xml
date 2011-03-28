@@ -57,7 +57,7 @@
 				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="product" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="11">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="12">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number" reference="number" />
 					</layoutElement>
@@ -76,7 +76,7 @@
 					<layoutElement column="2" row="2">
 						<component type="select" name="category" field="category" />
 					</layoutElement>
-					<layoutElement column="1" row="5" width="3" height="7">
+					<layoutElement column="1" row="6" width="3" height="7">
 						<component type="borderLayout" name="substitutesBorderLayout" reference="substitutesBorderLayout">
 							<option type="label" value="substitutesBorderLayoutLabel" />
 							<component type="gridLayout" name="gridsLayout" columns="5" rows="6" hasBorders="false">
