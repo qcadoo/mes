@@ -223,7 +223,7 @@ buildRevision = ${build.revision}
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.qcadoo</groupId>
+						<groupId>com.qcadoo</groupId>
 						<artifactId>qcadoo-maven-plugin</artifactId>
 						<version>${qcadoo.version}</version>
 						<configuration>
@@ -233,7 +233,7 @@ buildRevision = ${build.revision}
 						<executions>
 							<execution>
 								<id>prepare-tomcat-package</id>
-								<phase>install</phase>
+								<phase>package</phase>
 								<goals>
 									<goal>tomcat</goal>
 								</goals>
