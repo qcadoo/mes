@@ -46,9 +46,9 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.mes.products.util.EntityOrderNumberComparator;
-import com.qcadoo.mes.utils.SortUtil;
-import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.report.api.SortUtil;
+import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.security.api.SecurityService;
 
 @Service

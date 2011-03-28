@@ -13,15 +13,4 @@
 
 	<name>Qcadoo MES :: Plugins :: Plugin Management</name>
 
-	<properties>
-		<mes.plugin.identifier>plugins</mes.plugin.identifier>
-	</properties>
-	
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-		</dependency>
-	</dependencies>
-
 </project>

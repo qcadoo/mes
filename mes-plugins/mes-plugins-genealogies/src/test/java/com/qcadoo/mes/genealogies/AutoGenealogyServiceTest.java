@@ -62,8 +62,8 @@ import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.components.form.FormComponentState;
 
 @RunWith(PowerMockRunner.class)
@@ -359,7 +359,7 @@ public class AutoGenealogyServiceTest {
         verify(state).addMessage("genealogies.message.autoGenealogy.success.pl", MessageType.SUCCESS);
     }
 
-    // TODO krna
+    // TODO plugin krna
     // @Test
     // public void shouldFailAutoCreateGenealogyWithLastUsedBatch() {
     // // given
@@ -428,7 +428,7 @@ public class AutoGenealogyServiceTest {
     // MessageType.INFO, false);
     // }
 
-    // TODO krna
+    // TODO plugin krna
     // @Test
     // public void shouldFailAutoCreateGenealogyWithLastUsedBatchOtherError() {
     // // given

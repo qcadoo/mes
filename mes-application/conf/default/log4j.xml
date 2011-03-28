@@ -30,6 +30,38 @@
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
 	</appender>
+	<appender name="view-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/view.log" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
+		</layout>
+	</appender>
+	<appender name="localization-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/localization.log" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
+		</layout>
+	</appender>
+	<appender name="security-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/security.log" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
+		</layout>
+	</appender>
+	<appender name="report-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/report.log" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
+		</layout>
+	</appender>
 	<appender name="warn-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/warn.log" />
 		<param name="MaxFileSize" value="100MB" />
@@ -67,9 +99,6 @@
 	<logger name="com.qcadoo.mes">
 		<level value="debug" />
 	</logger>
-	<logger name="com.qcadoo.mes.utils">
-		<level value="info" />
-	</logger>
 	<logger name="org.springframework">
 		<level value="info" />
 	</logger>
@@ -97,6 +126,26 @@
 	<logger name="com.qcadoo.plugin">
 		<level value="debug" />
 		<appender-ref ref="plugin-log" />
+	</logger>
+	
+	<logger name="com.qcadoo.view">
+		<level value="debug" />
+		<appender-ref ref="view-log" />
+	</logger>
+	
+	<logger name="com.qcadoo.security">
+		<level value="debug" />
+		<appender-ref ref="security-log" />
+	</logger>
+	
+	<logger name="com.qcadoo.localization">
+		<level value="debug" />
+		<appender-ref ref="localization-log" />
+	</logger>
+	
+	<logger name="com.qcadoo.report">
+		<level value="debug" />
+		<appender-ref ref="report-log" />
 	</logger>
 	
 	<logger name="org.hibernate.SQL" additivity="false">

@@ -23,13 +23,13 @@
     ***************************************************************************
 
 --%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
 <head>
@@ -80,7 +80,6 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/crud/qcd/components/container.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/crud/qcd/components/containers/layout/layout.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/crud/qcd/components/containers/window.js"></script>
-			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/crud/qcd/components/containers/tabWindow.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/crud/qcd/components/containers/windowTab.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/crud/qcd/components/containers/form.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/crud/qcd/components/elements/utils/elementHeaderUtils.js"></script>
@@ -104,12 +103,15 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/crud/qcd/components/ribbon.js"></script>
 			
 			<c:forEach items="${model['jsFilePaths']}" var="jsFilePath">
-				<script type="text/javascript" src="${jsFilePath}"></script>
+				<c:if test="${jsFilePath != null }">
+					<script type="text/javascript" src="${jsFilePath}"></script>
+				</c:if>
 			</c:forEach>
 		</c:otherwise>
 	</c:choose>
 
 	<script type="text/javascript">
+	<!--//--><![CDATA[//><!--
 
 		var viewName = "${viewName}";
 		var pluginIdentifier = "${pluginIdentifier}";
@@ -139,9 +141,7 @@
 		}
 
 		jQuery(document).ready(function(){
-			//if (! window.parent.getCurrentUserLogin && ! lookupComponentName) {
-				//window.location = "/main.html";
-			//}
+			
 			controller = new QCD.PageController(viewName, pluginIdentifier, hasDataDefinition, popup);
 			
 			context = $.trim(context);
@@ -155,10 +155,7 @@
 			window.mainController = controller;
 		});
 
-		//window.translationsMap = new Object();
-		//<c:forEach items="${translationsMap}" var="translation">
-			//window.translationsMap["${translation.key}"] = "${translation.value}";
-		//</c:forEach>
+	//--><!]]>
 	</script>
 </head>
 <body>

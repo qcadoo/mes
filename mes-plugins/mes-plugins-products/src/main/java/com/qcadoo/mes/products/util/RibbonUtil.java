@@ -33,10 +33,10 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.components.form.FormComponentState;
 import com.qcadoo.view.components.grid.GridComponentState;
 import com.qcadoo.view.components.window.WindowComponentState;
-import com.qcadoo.view.internal.ribbon.RibbonActionItem;
 
 @Service
 public class RibbonUtil {

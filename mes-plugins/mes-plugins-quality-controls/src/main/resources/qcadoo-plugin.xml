@@ -25,7 +25,7 @@
 	</dependencies>
 	
 	<modules>
-		<model:model model="qualityControl" resource="qualityControls/model/qualityControl.xml"/>
+		<model:model model="qualityControl" resource="model/qualityControl.xml"/>
 		<model:field plugin="products" model="technology">
 			<enum name="qualityControlType" values="01forBatch,02forUnit,03forOrder,04forOperation" />
 		</model:field>
@@ -89,6 +89,9 @@
 		
 		<!-- TODO remove after implementing import data -->
 		<databasePreparation></databasePreparation>
+		
+		<!-- TODO mina test remove -->
+		<resource uri="test/**/*" />
 	</modules>
 
 </plugin>

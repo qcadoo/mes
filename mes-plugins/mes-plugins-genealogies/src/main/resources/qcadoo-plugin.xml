@@ -21,13 +21,13 @@
 	</dependencies>
 	
 	<modules>
-		<model:model model="currentAttribute" resource="genealogies/model/currentAttribute.xml"/>
-		<model:model model="genealogy" resource="genealogies/model/genealogy.xml"/>
-		<model:model model="productInBatch" resource="genealogies/model/productInBatch.xml"/>
-		<model:model model="genealogyProductInComponent" resource="genealogies/model/genealogyProductInComponent.xml"/>
-		<model:model model="otherFeature" resource="genealogies/model/otherFeature.xml"/>
-		<model:model model="postFeature" resource="genealogies/model/postFeature.xml"/>
-		<model:model model="shiftFeature" resource="genealogies/model/shiftFeature.xml"/>
+		<model:model model="currentAttribute" resource="model/currentAttribute.xml"/>
+		<model:model model="genealogy" resource="model/genealogy.xml"/>
+		<model:model model="productInBatch" resource="model/productInBatch.xml"/>
+		<model:model model="genealogyProductInComponent" resource="model/genealogyProductInComponent.xml"/>
+		<model:model model="otherFeature" resource="model/otherFeature.xml"/>
+		<model:model model="postFeature" resource="model/postFeature.xml"/>
+		<model:model model="shiftFeature" resource="model/shiftFeature.xml"/>
 		<model:field plugin="products" model="technology">
 			<boolean name="batchRequired" />
 		</model:field>

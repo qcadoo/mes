@@ -12,9 +12,13 @@
 	<packaging>jar</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Quality Controls</name>
-
-	<properties>
-		<mes.plugin.identifier>qualityControls</mes.plugin.identifier>
-	</properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-products</artifactId>
+			<version>0.4.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 
 </project>

@@ -19,21 +19,9 @@
 		<module>mes-plugins-plugin-management</module>
 		<module>mes-plugins-menu-management</module>
 		<module>mes-plugins-products</module>
-		<module>mes-plugins-basic-management</module>
+		<module>mes-plugins-basic</module>
 		<module>mes-plugins-genealogies</module>
 		<module>mes-plugins-quality-controls</module>
 	</modules>
-
-	<dependencies>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-core</artifactId>
-			<version>0.4.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-		</dependency>
-	</dependencies>
 
 </project>
