@@ -86,7 +86,7 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
             try {
                 if (compressStaticResources) {
                     compressResources("js", "js");
-                    // TODO masz dla css musimy zmieniać znacznik "url"
+                    // TODO plugin masz dla css musimy zmieniać znacznik "url"
                     // jeśli zaczyna się od "/" usuwamy go
                     // jeśli nie, dodajemy ścieżke do pliku
                     // chodzi o to aby wszystkie "url" były względne do qcadoo.css
@@ -105,7 +105,7 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
         Arrays.sort(files, new Comparator<File>() {
 
             @Override
-            public int compare(File f1, File f2) {
+            public int compare(final File f1, final File f2) {
                 return f1.getName().compareTo(f2.getName());
             }
         });
