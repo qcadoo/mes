@@ -60,6 +60,10 @@
 			</map>
 		</property>
 	</bean>
+	
+	<bean id="staticResourcesFilter" class="com.qcadoo.mes.application.StaticResourcesFilter">
+		<property name="useJarStaticResources" value="${useJarStaticResources}" />
+	</bean>
   		
   	<bean id="beanNameViewResolver"
   		class="org.springframework.web.servlet.view.BeanNameViewResolver">
@@ -90,7 +94,7 @@
 		<property name="messageConverters">
 			<list>
 				<bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter" />
-				<bean id="jsonConverter" class="com.qcadoo.mes.application.JsonHttpMessageConverter">
+				<bean id="jsonConverter" class="com.qcadoo.view.internal.JsonHttpMessageConverter">
 					<property name="supportedMediaTypes" value="application/json" />
 				</bean>
 			</list>

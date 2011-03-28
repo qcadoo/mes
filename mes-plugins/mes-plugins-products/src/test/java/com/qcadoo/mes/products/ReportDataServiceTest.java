@@ -50,7 +50,7 @@ import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
-import com.qcadoo.report.internal.Pair;
+import com.qcadoo.report.api.Pair;
 
 public class ReportDataServiceTest {
 

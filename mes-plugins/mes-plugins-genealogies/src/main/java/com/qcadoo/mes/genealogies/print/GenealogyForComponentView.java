@@ -44,8 +44,8 @@ import com.qcadoo.mes.genealogies.print.util.EntityOrderNumberComparator;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
-import com.qcadoo.report.internal.pdf.PdfUtil;
-import com.qcadoo.report.internal.pdf.ReportPdfView;
+import com.qcadoo.report.api.pdf.PdfUtil;
+import com.qcadoo.report.api.pdf.ReportPdfView;
 import com.qcadoo.security.api.SecurityService;
 
 public class GenealogyForComponentView extends ReportPdfView {

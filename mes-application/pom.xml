@@ -41,7 +41,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-basic-management</artifactId>
+			<artifactId>mes-plugins-basic</artifactId>
 			<version>0.4.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -55,76 +55,44 @@
 			<version>0.4.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache-core</artifactId>
+			<version>2.3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-jsp</artifactId>
+			<version>2.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-core</artifactId>
+			<version>2.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-lgpl</artifactId>
+			<version>1.5.6</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.1.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>c3p0</groupId>
-		    <artifactId>c3p0</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-		</dependency>
-		<dependency>
-	        <groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache-core</artifactId>
-	    </dependency>
-		<dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-        </dependency>
-        <dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-		</dependency>
-        	<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.yahoo.platform.yui</groupId>
@@ -134,6 +102,8 @@
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<version>8.4-701</version>
+			<classifier>jdbc4</classifier>
 			<scope>system</scope>
 			<systemPath>${basedir}/driver/postgresql-8.4-701.jdbc4.jar</systemPath>
 		</dependency>
@@ -146,6 +116,9 @@
 				<artifactId>maven-jetty-plugin</artifactId>
 				<version>6.1.26</version>
 				<configuration>
+					<scanTargets>
+			        	<scanTarget>driver/</scanTarget>
+			        </scanTargets>
 					<systemProperties>
 						<systemProperty>
 							<name>QCADOO_CONF</name>
@@ -178,47 +151,92 @@
 							<resourcesAsCSV>
 								${basedir}/src/main/webapp;
 								${basedir}/../../qcadoo/qcadoo-view/src/main/resources;
-								<!-- ${basedir}/../mes-plugins/mes-plugins-plugin-management/src/main/resources/META-INF;
-								${basedir}/../mes-plugins/mes-plugins-products/src/main/resources/META-INF; -->
+								${basedir}/../mes-plugins/mes-plugins-plugin-management/src/main/resources;
+								${basedir}/../mes-plugins/mes-plugins-products/src/main/resources;
 							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<mkdir dir="${basedir}/target/classes" />
+								<exec command="git rev-list --max-count=1 --all" osfamily="unix" outputproperty="build.revision" />
+								<tstamp>
+									<format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" />
+								</tstamp>
+								<property name="build.number" value="-" />
+								<echo file="${basedir}/target/classes/build.properties">
+									buildApplicationName = Qcadoo MES
+buildApplicationVersion = ${project.version}
+buildFrameworkVersion = ${qcadoo.version}
+buildTime = ${build.time}
+buildNumber = ${build.number}
+buildRevision = ${build.revision}
+								</echo>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
 
 	<profiles>
 		<profile>
-			<id>package</id>
+			<id>emhyr</id>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.5</version>
 						<executions>
 							<execution>
-								<phase>generate-resources</phase>
+								<id>deploy-to-emhyr</id>
+								<phase>deploy</phase>
+								<configuration>
+									<target>
+										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/Users/tomcat/deploy/${profile.name}.zip" />
+									</target>
+								</configuration>
 								<goals>
 									<goal>run</goal>
 								</goals>
-								<configuration>
-									<tasks>
-										<mkdir dir="${basedir}/target/classes" />
-										<exec command="git rev-list --max-count=1 --all" osfamily="unix" outputproperty="build.revision" />
-										<tstamp>
-											<format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" />
-										</tstamp>
-										<property name="build.number" value="-" />
-										<echo file="${basedir}/target/classes/build.properties">
-											buildApplicationName = Qcadoo MES
-											buildApplicationVersion = ${project.version}
-											buildTime = ${build.time}
-											buildNumber = ${build.number}
-											buildRevision = ${build.revision}
-										</echo>
-									</tasks>
-								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>tomcat</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.qcadoo</groupId>
+						<artifactId>qcadoo-maven-plugin</artifactId>
+						<version>${qcadoo.version}</version>
+						<configuration>
+							<jdbcDriver>${basedir}/driver/postgresql-8.4-701.jdbc4.jar</jdbcDriver>
+							<configuration>${basedir}/conf/${profile.name}/</configuration>
+						</configuration>
+						<executions>
+							<execution>
+								<id>prepare-tomcat-package</id>
+								<phase>install</phase>
+								<goals>
+									<goal>tomcat</goal>
+								</goals>
 							</execution>
 						</executions>
 					</plugin>

@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
-import com.qcadoo.view.internal.crud.CrudController;
+import com.qcadoo.view.api.crud.CrudController;
 
 public class GenealogyControllerTest {
 

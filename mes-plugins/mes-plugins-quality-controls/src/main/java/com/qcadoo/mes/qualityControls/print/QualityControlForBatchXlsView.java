@@ -41,9 +41,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.qcadoo.mes.qualityControls.print.utils.EntityBatchNumberComparator;
 import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.report.internal.SortUtil;
-import com.qcadoo.report.internal.xls.ReportXlsView;
-import com.qcadoo.report.internal.xls.XlsUtil;
+import com.qcadoo.report.api.SortUtil;
+import com.qcadoo.report.api.xls.ReportXlsView;
+import com.qcadoo.report.api.xls.XlsUtil;
 
 public class QualityControlForBatchXlsView extends ReportXlsView {
 

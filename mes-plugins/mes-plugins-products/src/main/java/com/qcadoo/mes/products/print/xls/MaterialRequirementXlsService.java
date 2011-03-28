@@ -39,8 +39,8 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.report.internal.SortUtil;
-import com.qcadoo.report.internal.xls.XlsUtil;
+import com.qcadoo.report.api.SortUtil;
+import com.qcadoo.report.api.xls.XlsUtil;
 
 @Service
 public final class MaterialRequirementXlsService extends XlsDocumentService {

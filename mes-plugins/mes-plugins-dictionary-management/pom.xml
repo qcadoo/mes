@@ -13,8 +13,4 @@
 
 	<name>Qcadoo MES :: Plugins :: Dictionary Management</name>
 
-	<properties>
-		<mes.plugin.identifier>dictionaries</mes.plugin.identifier>
-	</properties>
-
 </project>

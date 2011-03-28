@@ -64,9 +64,6 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
     @Value("${QCADOO_WEBAPP_PATH}")
     private String webappPath;
 
-    @Value("${copyPluginResources}")
-    private boolean copyPluginResources;
-
     @Value("${compressStaticResources}")
     private boolean compressStaticResources;
 
@@ -77,24 +74,22 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
 
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-        if (copyPluginResources) {
-            // copyResources("js", "js");
-            // copyResources("css", "css");
-            // copyResources("img", "img");
-            // copyResources("WEB-INF/jsp", "WEB-INF/jsp");
+        // copyResources("js", "js");
+        // copyResources("css", "css");
+        // copyResources("img", "img");
+        // copyResources("WEB-INF/jsp", "WEB-INF/jsp");
 
-            try {
-                if (compressStaticResources) {
-                    compressResources("js", "js");
-                    // TODO masz dla css musimy zmieniać znacznik "url"
-                    // jeśli zaczyna się od "/" usuwamy go
-                    // jeśli nie, dodajemy ścieżke do pliku
-                    // chodzi o to aby wszystkie "url" były względne do qcadoo.css
-                    compressResources("css", "css");
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException(e.getMessage(), e);
+        try {
+            if (compressStaticResources) {
+                compressResources("js", "js");
+                // TODO plugin masz dla css musimy zmieniać znacznik "url"
+                // jeśli zaczyna się od "/" usuwamy go
+                // jeśli nie, dodajemy ścieżke do pliku
+                // chodzi o to aby wszystkie "url" były względne do qcadoo.css
+                compressResources("css", "css");
             }
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
@@ -105,7 +100,7 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
         Arrays.sort(files, new Comparator<File>() {
 
             @Override
-            public int compare(File f1, File f2) {
+            public int compare(final File f1, final File f2) {
                 return f1.getName().compareTo(f2.getName());
             }
         });

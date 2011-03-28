@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="basic" system="true" version="0.4.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/modules/model" xmlns:view="http://www.qcadoo.com/modules/view" >
+
+	<information>
+		<name>MES - Basic</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+	
+	<modules>
+		<model:model model="machine" resource="model/machine.xml" />
+		<model:model model="staff" resource="model/staff.xml" />
+		<model:model model="parameter" resource="model/parameter.xml" />
+		
+		<model:dictionary name="categories" />
+		<model:dictionary name="shifts" />
+		<model:dictionary name="posts" />
+		<model:dictionary name="units" />
+		
+		<view:menu-category name="home" />
+		<view:menu-category name="basic" />
+		<view:menu-category name="administration" />
+		
+		<view:menu-item-url name="home" category="home" url="/homePage.html" />
+		<view:menu-item name="machines" category="basic" view="machines" />
+		<view:menu-item name="staff" category="basic" view="staffs" />
+		<view:menu-item-url name="systemParameters" category="basic" url="/parameter.html" />
+		<view:menu-item-url name="systemInfo" category="administration" url="/systemInfo.html" />
+		
+		<view:view>
+			<resource>basic/view/basic.xml</resource>
+		</view:view>
+		
+	</modules>
+
+</plugin>

@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.report.internal.Pair;
+import com.qcadoo.report.api.Pair;
 
 public class EntityOperationInPairNumberComparator implements Comparator<Pair<Entity, Entity>>, Serializable {
 
