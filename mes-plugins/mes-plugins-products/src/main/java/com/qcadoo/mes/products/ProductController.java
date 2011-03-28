@@ -46,8 +46,8 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.report.internal.pdf.PdfUtil;
-import com.qcadoo.report.internal.xls.XlsUtil;
+import com.qcadoo.report.api.pdf.PdfUtil;
+import com.qcadoo.report.api.xls.XlsUtil;
 
 @Controller
 public class ProductController {

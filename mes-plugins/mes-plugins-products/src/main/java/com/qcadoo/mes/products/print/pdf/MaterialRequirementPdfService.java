@@ -47,8 +47,8 @@ import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.mes.products.util.EntityOrderNumberComparator;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.report.internal.SortUtil;
-import com.qcadoo.report.internal.pdf.PdfUtil;
+import com.qcadoo.report.api.SortUtil;
+import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.security.api.SecurityService;
 
 @Service
