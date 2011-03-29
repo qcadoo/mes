@@ -25,7 +25,7 @@
 
 -->
 
-<qcd:views plugin="genealogies" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<views plugin="genealogies" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<view name="currentAttribute" model="currentAttribute">
 		<component type="window" name="window">
@@ -179,4 +179,4 @@
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.genealogies.print.ReportService" method="addRestrictionToGenealogyGrid" />
 	</view>
-</qcd:views>
+</views>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<qcd:views plugin="plugins" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<views plugin="plugins" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<view name="plugins" plugin="qcadooPlugin" model="plugin"
 		menuAccessible="true">
@@ -235,4 +235,4 @@
 			<option type="header" value="true" />
 		</component>
 	</view>
-</qcd:views>
+</views>

@@ -12,7 +12,7 @@
 	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
 	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 
-<qcd:views plugin="menu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<views plugin="menu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<view name="menuCategories" plugin="qcadooView" model="category"
 		menuAccessible="true">
@@ -109,4 +109,4 @@
 		</component>
 	</view>
 
-</qcd:views>
+</views>
