@@ -83,11 +83,11 @@
 		</view:view>
 
 		<view:viewRibbonExtension>
-			<resource>qualityControls/view/viewExtension.xml</resource>
+			<view:resource>qualityControls/view/viewExtension.xml</view:resource>
 		</view:viewRibbonExtension>
 
 		<view:viewWindowTabExtension>
-			<resource>qualityControls/view/viewExtension.xml</resource>
+			<view:resource>qualityControls/view/viewExtension.xml</view:resource>
 		</view:viewWindowTabExtension>
 
 		<view:viewHookExtension plugin="products" view="technology"

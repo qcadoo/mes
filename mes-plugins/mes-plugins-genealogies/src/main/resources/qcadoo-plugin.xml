@@ -96,11 +96,11 @@
 		</view:view>
 
 		<view:viewRibbonExtension>
-			<resource>genealogies/view/productsExtension.xml</resource>
+			<view:resource>genealogies/view/productsExtension.xml</view:resource>
 		</view:viewRibbonExtension>
 
 		<view:viewWindowTabExtension>
-			<resource>genealogies/view/productsExtension.xml</resource>
+			<view:resource>genealogies/view/productsExtension.xml</view:resource>
 		</view:viewWindowTabExtension>
 
 		<view:viewHookExtension plugin="products" view="technology"
