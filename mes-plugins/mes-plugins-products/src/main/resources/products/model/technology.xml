@@ -1,49 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 0.3.0 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 0.3.0
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
-
-<model name="technology" xmlns="http://www.qcadoo.com/model">
+<model name="technology" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
 		</string>
 		<string name="name" required="true" />
-		<belongsTo name="product" model="product" lazy="false" required="true" />
+		<belongsTo name="product" model="product" lazy="false"
+			required="true" />
 		<boolean name="master" default="true" />
 		<string name="description" />
-		<tree name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />
-		<hasMany name="orders" model="order" joinField="technology" cascade="none"/>
-		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology" default="01perProductOut" required="true" />
+		<tree name="operationComponents" model="technologyOperationComponent"
+			joinField="technology" cascade="delete" copyable="true" />
+		<hasMany name="orders" model="order" joinField="technology"
+			cascade="none" />
+		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology"
+			default="01perProductOut" required="true" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="checkTechnologyDefault" />
-		<validatesWith class="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
-		<validatesWith class="com.qcadoo.mes.products.TechnologyService" method="checkIfUnitSampligNrIsReq" />
-		<onCopy class="com.qcadoo.mes.products.TechnologyService" method="clearMasterOnCopy" />
-		<onSave class="com.qcadoo.mes.products.TechnologyService" method="setFirstTechnologyAsDefault" />
+		<validatesWith class="com.qcadoo.mes.products.TechnologyService"
+			method="checkTechnologyDefault" />
+		<validatesWith class="com.qcadoo.mes.products.ProductService"
+			method="checkIfProductIsNotRemoved" />
+		<validatesWith class="com.qcadoo.mes.products.TechnologyService"
+			method="checkIfUnitSampligNrIsReq" />
+		<onCopy class="com.qcadoo.mes.products.TechnologyService"
+			method="clearMasterOnCopy" />
+		<onSave class="com.qcadoo.mes.products.TechnologyService"
+			method="setFirstTechnologyAsDefault" />
 	</hooks>
-	<identifier expression="#number + ' - ' + #name"/>
+	<identifier expression="#number + ' - ' + #name" />
 </model>
