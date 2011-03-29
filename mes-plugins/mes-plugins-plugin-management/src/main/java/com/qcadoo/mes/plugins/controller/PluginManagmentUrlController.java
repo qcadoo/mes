@@ -81,7 +81,6 @@ public class PluginManagmentUrlController {
         }
         mav.addObject("content", translationService.translate("plugins.pluginInfo.content." + arguments.get("status"), locale));
         mav.addObject("dependencies", createDependenciesMap(arguments, locale));
-        mav.addObject("inVersion", translationService.translate("plugins.pluginInfo.inVersion", locale));
 
         return mav;
     }
@@ -135,22 +134,7 @@ public class PluginManagmentUrlController {
                 if ("none".equals(arg.getValue())) {
                     dependencies.put(arg.getKey().substring(4), null);
                 } else {
-                    String versionStr = arg.getValue();
-                    String result = "";
-                    VersionOfDependency version = new VersionOfDependency(versionStr);
-                    if (version.getMinVersion() != null) {
-                        result += translationService.translate("plugins.pluginInfo.versionFrom", locale) + " "
-                                + version.getMinVersion();
-                    }
-                    if (version.getMinVersion() != null && version.getMaxVersion() != null) {
-                        result += " " + translationService.translate("plugins.pluginInfo.versionAnd", locale) + " ";
-                    }
-                    if (version.getMaxVersion() != null) {
-                        result += translationService.translate("plugins.pluginInfo.versionTo", locale) + " "
-                                + version.getMaxVersion();
-                    }
-
-                    dependencies.put(arg.getKey().substring(4), result);
+                    dependencies.put(arg.getKey().substring(4), convertVersionString(arg.getValue(), locale));
                 }
             }
         }
@@ -159,5 +143,28 @@ public class PluginManagmentUrlController {
         } else {
             return null;
         }
+    }
+
+    private String convertVersionString(final String versionStr, final Locale locale) {
+        StringBuilder result = new StringBuilder();
+        result.append(translationService.translate("plugins.pluginInfo.inVersion", locale));
+        result.append(" ");
+        VersionOfDependency version = new VersionOfDependency(versionStr);
+        if (version.getMinVersion() != null) {
+            result.append(translationService.translate("plugins.pluginInfo.versionFrom", locale));
+            result.append(" ");
+            result.append(version.getMinVersion());
+        }
+        if (version.getMinVersion() != null && version.getMaxVersion() != null) {
+            result.append(" ");
+            result.append(translationService.translate("plugins.pluginInfo.versionAnd", locale));
+            result.append(" ");
+        }
+        if (version.getMaxVersion() != null) {
+            result.append(translationService.translate("plugins.pluginInfo.versionTo", locale));
+            result.append(" ");
+            result.append(version.getMaxVersion());
+        }
+        return result.toString();
     }
 }
