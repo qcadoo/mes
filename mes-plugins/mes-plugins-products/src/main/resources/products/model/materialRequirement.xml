@@ -35,6 +35,7 @@
 		<boolean name="onlyComponents" />
 		<boolean name="generated" />
 		<string name="fileName" />
+		<belongsTo name="test" model="product" />	
 		<hasMany name="orders" model="materialRequirementComponent" joinField="materialRequirement" cascade="delete" copyable="true" />
 	</fields>
 	<hooks>

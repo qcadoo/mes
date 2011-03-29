@@ -76,6 +76,9 @@
 					<layoutElement column="2" row="2">
 						<component type="select" name="category" field="category" />
 					</layoutElement>
+					<layoutElement column="2" row="3">
+						<component type="textarea" name="test" field="test" />
+					</layoutElement>
 					<layoutElement column="1" row="6" width="3" height="7">
 						<component type="borderLayout" name="substitutesBorderLayout" reference="substitutesBorderLayout">
 							<option type="label" value="substitutesBorderLayoutLabel" />
