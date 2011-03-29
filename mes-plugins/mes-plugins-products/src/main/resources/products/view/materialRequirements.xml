@@ -154,8 +154,7 @@
 						}
 					]]>
 				</script>
-				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="6">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="generated" reference="generated"
 							field="generated" defaultEnabled="false">
