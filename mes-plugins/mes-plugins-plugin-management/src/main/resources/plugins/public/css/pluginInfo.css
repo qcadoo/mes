@@ -10,11 +10,8 @@
 .pluginInfoPage .dependencies .dependency {
 	margin-left: 20px;
 }
-.pluginInfoPage .dependencies .dependency .dependencyKey {
+.pluginInfoPage .dependencies .dependency .dependencyIdentifier {
 	
-}
-.pluginInfoPage .dependencies .dependency .dependencyInVersion {
-	color: #888888;
 }
 .pluginInfoPage .dependencies .dependency .dependencyVersion {
 	color: #888888;

@@ -75,6 +75,9 @@ public final class MainPageController {
     @Value("${buildRevision:-}")
     private String buildRevision;
 
+    @Value("${useCompressedStaticResources}")
+    private boolean useCompressedStaticResources;
+
     @RequestMapping(value = "main", method = RequestMethod.GET)
     public ModelAndView getMainView(@RequestParam final Map<String, String> arguments, final Locale locale) {
         ModelAndView mav = new ModelAndView();
@@ -83,6 +86,7 @@ public final class MainPageController {
         mav.addObject("commonTranslations", translationService.getMessagesForPrefix("commons", locale));
         mav.addObject("menuStructure", menuService.getMenu(locale).getAsJson());
         mav.addObject("userLogin", securityService.getCurrentUserName());
+        mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
         return mav;
     }
 
@@ -95,6 +99,7 @@ public final class MainPageController {
         mav.addObject("translationsMap", translationService.getMessagesForPrefix("core.dashboard", locale));
 
         mav.setViewName("core/dashboard");
+        mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
         return mav;
     }
 
@@ -121,6 +126,7 @@ public final class MainPageController {
         mav.addObject("buildNumber", buildNumber);
         mav.addObject("buildTime", buildTime);
         mav.addObject("buildRevision", buildRevision);
+        mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
 
         return mav;
     }

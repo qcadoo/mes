@@ -45,6 +45,9 @@ public final class LoginController {
     @Value("${showUserAndPassword}")
     private boolean showUserAndPassword;
 
+    @Value("${useCompressedStaticResources}")
+    private boolean useCompressedStaticResources;
+
     @RequestMapping(value = "login", method = RequestMethod.GET)
     public ModelAndView getLoginPageView(@RequestParam(required = false) final String loginError,
             @RequestParam(required = false, defaultValue = "false") final Boolean iframe,
@@ -81,6 +84,7 @@ public final class LoginController {
         } else {
             mav.addObject("showUserAndPassword", false);
         }
+        mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
 
         return mav;
     }

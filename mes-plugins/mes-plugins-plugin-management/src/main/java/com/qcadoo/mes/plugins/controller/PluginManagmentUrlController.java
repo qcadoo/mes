@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.plugin.api.VersionOfDependency;
 import com.qcadoo.plugin.api.artifact.InputStreamPluginArtifact;
 import com.qcadoo.plugin.api.artifact.PluginArtifact;
 import com.qcadoo.view.api.crud.CrudController;
@@ -79,8 +80,7 @@ public class PluginManagmentUrlController {
             throw new IllegalStateException("Unsuported plugin info type: " + arguments.get("type"));
         }
         mav.addObject("content", translationService.translate("plugins.pluginInfo.content." + arguments.get("status"), locale));
-        mav.addObject("dependencies", createDependenciesMap(arguments));
-        mav.addObject("inVersion", translationService.translate("plugins.pluginInfo.inVersion", locale));
+        mav.addObject("dependencies", createDependenciesMap(arguments, locale));
 
         return mav;
     }
@@ -124,7 +124,7 @@ public class PluginManagmentUrlController {
         return crudController.prepareView("plugins", viewName, crudArgs, locale);
     }
 
-    private Map<String, String> createDependenciesMap(final Map<String, String> arguments) {
+    private Map<String, String> createDependenciesMap(final Map<String, String> arguments, final Locale locale) {
         Map<String, String> dependencies = new HashMap<String, String>();
         for (Map.Entry<String, String> arg : arguments.entrySet()) {
             if (arg.getKey().length() < 5) {
@@ -134,7 +134,7 @@ public class PluginManagmentUrlController {
                 if ("none".equals(arg.getValue())) {
                     dependencies.put(arg.getKey().substring(4), null);
                 } else {
-                    dependencies.put(arg.getKey().substring(4), arg.getValue());
+                    dependencies.put(arg.getKey().substring(4), convertVersionString(arg.getValue(), locale));
                 }
             }
         }
@@ -143,5 +143,28 @@ public class PluginManagmentUrlController {
         } else {
             return null;
         }
+    }
+
+    private String convertVersionString(final String versionStr, final Locale locale) {
+        StringBuilder result = new StringBuilder();
+        result.append(translationService.translate("plugins.pluginInfo.inVersion", locale));
+        result.append(" ");
+        VersionOfDependency version = new VersionOfDependency(versionStr);
+        if (version.getMinVersion() != null) {
+            result.append(translationService.translate("plugins.pluginInfo.versionFrom", locale));
+            result.append(" ");
+            result.append(version.getMinVersion());
+        }
+        if (version.getMinVersion() != null && version.getMaxVersion() != null) {
+            result.append(" ");
+            result.append(translationService.translate("plugins.pluginInfo.versionAnd", locale));
+            result.append(" ");
+        }
+        if (version.getMaxVersion() != null) {
+            result.append(translationService.translate("plugins.pluginInfo.versionTo", locale));
+            result.append(" ");
+            result.append(version.getMaxVersion());
+        }
+        return result.toString();
     }
 }
