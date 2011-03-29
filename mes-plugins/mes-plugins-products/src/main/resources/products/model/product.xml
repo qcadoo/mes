@@ -18,7 +18,6 @@
 			<validatesLength max="40" />
 		</string>
 		<string name="name" required="true" />
-		<string name="test" required="true" />
 		<enum name="typeOfMaterial" values="01component,02intermediate,03product,04waste"
 			required="true" />
 		<string name="ean" />
