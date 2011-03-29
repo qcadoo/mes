@@ -26,9 +26,8 @@ String ctx = request.getContextPath();
 		<div class="dependencies">
 			<c:forEach var="dependency" items="${dependencies}">
 				<div class="dependency">
-					- <span class="dependencyKey">${dependency.key}</span>
+					- <span class="dependencyIdentifier">${dependency.key}</span>
 					<c:if test="${dependency.value != null}">
-						<span class="dependencyInVersion">${inVersion}</span>
 						<span class="dependencyVersion">${dependency.value}</span>
 					</c:if>
 				</div>
