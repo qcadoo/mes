@@ -27,7 +27,7 @@
 			url="/userProfile.html" />
 
 		<view:view>
-			<view:resource>users/view/users.xml</view:resource>
+			<view:resource>view/users.xml</view:resource>
 		</view:view>
 
 	</modules>

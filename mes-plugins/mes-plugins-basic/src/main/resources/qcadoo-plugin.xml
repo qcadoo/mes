@@ -42,7 +42,7 @@
 			url="/systemInfo.html" />
 
 		<view:view>
-			<view:resource>basic/view/basic.xml</view:resource>
+			<view:resource>view/basic.xml</view:resource>
 		</view:view>
 
 	</modules>

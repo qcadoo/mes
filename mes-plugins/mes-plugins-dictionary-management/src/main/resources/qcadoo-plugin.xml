@@ -23,7 +23,7 @@
 			view="dictionaries" />
 
 		<view:view>
-			<view:resource>dictionaries/view/dictionaries.xml</view:resource>
+			<view:resource>view/dictionaries.xml</view:resource>
 		</view:view>
 	</modules>
 
