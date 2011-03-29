@@ -23,7 +23,7 @@
 			view="menuCategories" />
 
 		<view:view>
-			<view:resource>menu/view/menu.xml</view:resource>
+			<view:resource>view/menu.xml</view:resource>
 		</view:view>
 
 	</modules>

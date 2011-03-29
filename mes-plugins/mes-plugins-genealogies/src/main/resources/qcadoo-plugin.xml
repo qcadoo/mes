@@ -91,16 +91,16 @@
 			view="genealogyForProduct" />
 
 		<view:view>
-			<view:resource>genealogies/view/genealogies.xml</view:resource>
-			<view:resource>genealogies/view/orderGenealogies.xml</view:resource>
+			<view:resource>view/genealogies.xml</view:resource>
+			<view:resource>view/orderGenealogies.xml</view:resource>
 		</view:view>
 
 		<view:viewRibbonExtension>
-			<view:resource>genealogies/view/productsExtension.xml</view:resource>
+			<view:resource>view/productsExtension.xml</view:resource>
 		</view:viewRibbonExtension>
 
 		<view:viewWindowTabExtension>
-			<view:resource>genealogies/view/productsExtension.xml</view:resource>
+			<view:resource>view/productsExtension.xml</view:resource>
 		</view:viewWindowTabExtension>
 
 		<view:viewHookExtension plugin="products" view="technology"
