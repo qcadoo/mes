@@ -167,8 +167,8 @@
 								<option type="correspondingView" value="products/technologyOperationComponent" />
 								<option type="correspondingComponent" value="form" />
 								<option type="correspondingViewInModal" value="true" />
-								<option type="nodeIcon" value="/css/products/icons/operationIcon16.png" />
-								<option type="newIcon" value="/css/products/icons/newOperationIcon16.png" />
+								<option type="nodeIcon" value="/products/public/css/icons/operationIcon16.png" />
+								<option type="newIcon" value="/products/public/css/icons/newOperationIcon16.png" />
 							</dataType>
 							<dataType name="referenceTechnology">
 								<option type="nodeLabelExpression"
@@ -177,9 +177,8 @@
 									value="products/technologyReferenceTechnologyComponent" />
 								<option type="correspondingComponent" value="form" />
 								<option type="correspondingViewInModal" value="true" />
-								<option type="nodeIcon" value="/css/products/icons/technologyIcon16.png" />
-								<option type="newIcon"
-									value="/css/products/icons/newTechnologyIcon16.png" />
+								<option type="nodeIcon" value="/products/public/css/icons/technologyIcon16.png" />
+								<option type="newIcon" value="/products/public/css/icons/newTechnologyIcon16.png" />
 								<option type="canHaveChildren" value="false" />
 							</dataType>
 							<listener event="select"
