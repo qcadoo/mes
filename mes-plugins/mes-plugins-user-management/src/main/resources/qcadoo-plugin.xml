@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="users" version="0.4.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/modules/model" xmlns:view="http://www.qcadoo.com/modules/view">
+<plugin plugin="users" version="0.4.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd">
 
 	<information>
 		<name>User Management</name>
@@ -8,16 +17,19 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 	</information>
-	
+
 	<modules>
-		<view:menu-item name="users" category="administration" view="users" />
-		<view:menu-item name="groups" category="administration" view="groups" />
-		<view:menu-item-url name="profile" category="home" url="/userProfile.html" />
-		
+		<view:menu-item name="users" category="administration"
+			view="users" />
+		<view:menu-item name="groups" category="administration"
+			view="groups" />
+		<view:menu-item-url name="profile" category="home"
+			url="/userProfile.html" />
+
 		<view:view>
-			<resource>users/view/users.xml</resource>
+			<view:resource>users/view/users.xml</view:resource>
 		</view:view>
-		
+
 	</modules>
 
 </plugin>

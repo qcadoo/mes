@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="basic" system="true" version="0.4.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/modules/model" xmlns:view="http://www.qcadoo.com/modules/view" >
+<plugin plugin="basic" system="true" version="0.4.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd">
 
 	<information>
 		<name>MES - Basic</name>
@@ -8,31 +17,34 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 	</information>
-	
+
 	<modules>
 		<model:model model="machine" resource="model/machine.xml" />
 		<model:model model="staff" resource="model/staff.xml" />
 		<model:model model="parameter" resource="model/parameter.xml" />
-		
+
 		<model:dictionary name="categories" />
 		<model:dictionary name="shifts" />
 		<model:dictionary name="posts" />
 		<model:dictionary name="units" />
-		
+
 		<view:menu-category name="home" />
 		<view:menu-category name="basic" />
 		<view:menu-category name="administration" />
-		
-		<view:menu-item-url name="home" category="home" url="/homePage.html" />
+
+		<view:menu-item-url name="home" category="home"
+			url="/homePage.html" />
 		<view:menu-item name="machines" category="basic" view="machines" />
 		<view:menu-item name="staff" category="basic" view="staffs" />
-		<view:menu-item-url name="systemParameters" category="basic" url="/parameter.html" />
-		<view:menu-item-url name="systemInfo" category="administration" url="/systemInfo.html" />
-		
+		<view:menu-item-url name="systemParameters"
+			category="basic" url="/parameter.html" />
+		<view:menu-item-url name="systemInfo" category="administration"
+			url="/systemInfo.html" />
+
 		<view:view>
-			<resource>basic/view/basic.xml</resource>
+			<view:resource>basic/view/basic.xml</view:resource>
 		</view:view>
-		
+
 	</modules>
 
 </plugin>

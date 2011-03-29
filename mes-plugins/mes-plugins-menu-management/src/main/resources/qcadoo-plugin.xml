@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="menu" version="0.4.0" xmlns="http://www.qcadoo.com/plugin" xmlns:model="http://www.qcadoo.com/modules/model" xmlns:view="http://www.qcadoo.com/modules/view">
+<plugin plugin="menu" version="0.4.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd">
 
 	<information>
 		<name>Menu Management</name>
@@ -8,14 +17,15 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 	</information>
-	
+
 	<modules>
-		<view:menu-item name="menu" category="administration" view="menuCategories" />
+		<view:menu-item name="menu" category="administration"
+			view="menuCategories" />
 
 		<view:view>
-			<resource>menu/view/menu.xml</resource>
+			<view:resource>menu/view/menu.xml</view:resource>
 		</view:view>
-		
+
 	</modules>
 
 </plugin>
