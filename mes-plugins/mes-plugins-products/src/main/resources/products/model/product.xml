@@ -12,7 +12,9 @@
 	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
 	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 
-<model name="product" xmlns="http://www.qcadoo.com/model">
+<model name="product" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
