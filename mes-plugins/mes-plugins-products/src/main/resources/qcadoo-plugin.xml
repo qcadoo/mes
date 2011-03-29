@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="products" version="0.4.0" xmlns="http://www.qcadoo.org/plugin" xmlns:model="http://www.qcadoo.org/modules/model" xmlns:view="http://www.qcadoo.org/modules/view">
+<plugin plugin="products" version="0.4.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd">
 
 	<information>
 		<name>MES - Products</name>
@@ -8,50 +17,58 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 	</information>
-	
+
 	<dependencies>
 		<dependency>
 			<plugin>basic</plugin>
 			<version>[0.4.0</version>
 		</dependency>
 	</dependencies>
-	
+
 	<modules>
-		<model:model model="materialRequirement" resource="model/materialRequirement.xml"/>
-		<model:model model="materialRequirementComponent" resource="model/materialRequirementComponent.xml"/>
-		<model:model model="operation" resource="model/operation.xml"/>
-		<model:model model="operationProductOutComponent" resource="model/operationProductOutComponent.xml"/>
-		<model:model model="operationProductInComponent" resource="model/operationProductInComponent.xml"/>
-		<model:model model="order" resource="model/order.xml"/>
-		<model:model model="product" resource="model/product.xml"/>
-		<model:model model="substitute" resource="model/substitute.xml"/>
-		<model:model model="substituteComponent" resource="model/substituteComponent.xml"/>
-		<model:model model="technology" resource="model/technology.xml"/>
-		<model:model model="technologyOperationComponent" resource="model/technologyOperationComponent.xml"/>
-		<model:model model="workPlan" resource="model/workPlan.xml"/>
-		<model:model model="workPlanComponent" resource="model/workPlanComponent.xml"/>
+		<model:model model="materialRequirement" resource="model/materialRequirement.xml" />
+		<model:model model="materialRequirementComponent"
+			resource="model/materialRequirementComponent.xml" />
+		<model:model model="operation" resource="model/operation.xml" />
+		<model:model model="operationProductOutComponent"
+			resource="model/operationProductOutComponent.xml" />
+		<model:model model="operationProductInComponent" resource="model/operationProductInComponent.xml" />
+		<model:model model="order" resource="model/order.xml" />
+		<model:model model="product" resource="model/product.xml" />
+		<model:model model="substitute" resource="model/substitute.xml" />
+		<model:model model="substituteComponent" resource="model/substituteComponent.xml" />
+		<model:model model="technology" resource="model/technology.xml" />
+		<model:model model="technologyOperationComponent"
+			resource="model/technologyOperationComponent.xml" />
+		<model:model model="workPlan" resource="model/workPlan.xml" />
+		<model:model model="workPlanComponent" resource="model/workPlanComponent.xml" />
 
 		<view:menu-category name="technology" />
 		<view:menu-category name="orders" />
 		<view:menu-category name="reports" />
-		
+
 		<view:menu-item name="products" category="basic" view="products" />
-		<view:menu-item name="technologies" category="technology" view="technologies" />
-		<view:menu-item name="operations" category="technology" view="operations" />
-		<view:menu-item name="productionOrders" category="orders" view="orders" />
-		<view:menu-item name="materialRequirements" category="reports" view="materialRequirements" />
-		<view:menu-item name="workPlans" category="reports" view="workPlans" />
-		
+		<view:menu-item name="technologies" category="technology"
+			view="technologies" />
+		<view:menu-item name="operations" category="technology"
+			view="operations" />
+		<view:menu-item name="productionOrders" category="orders"
+			view="orders" />
+		<view:menu-item name="materialRequirements" category="reports"
+			view="materialRequirements" />
+		<view:menu-item name="workPlans" category="reports"
+			view="workPlans" />
+
 		<view:view>
-			<resource>products/view/materialRequirements.xml</resource>
-			<resource>products/view/orders.xml</resource>
-			<resource>products/view/products.xml</resource>
-			<resource>products/view/technologies.xml</resource>
-			<resource>products/view/workPlans.xml</resource>
+			<view:resource>products/view/materialRequirements.xml</view:resource>
+			<view:resource>products/view/orders.xml</view:resource>
+			<view:resource>products/view/products.xml</view:resource>
+			<view:resource>products/view/technologies.xml</view:resource>
+			<view:resource>products/view/workPlans.xml</view:resource>
 		</view:view>
-		
-		<resource uri="public/**/*" />
-		
+
+		<view:resource uri="public/**/*" />
+
 	</modules>
 
 </plugin>
