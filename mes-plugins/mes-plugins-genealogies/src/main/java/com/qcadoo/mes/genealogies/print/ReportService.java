@@ -25,12 +25,16 @@
 package com.qcadoo.mes.genealogies.print;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -85,10 +89,11 @@ public class ReportService {
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
                 searchCriteriaBuilder.restrictedWith(Restrictions.eq("order.product.id", product.getFieldValue()));
-                searchCriteriaBuilder.withDistinctProperty("batch");
             }
 
         });
+
+        batches.setEntities(setDistinctBatch(batches.getEntities()));
     }
 
     public void addRestrictionToComponentGrid(final ViewDefinitionState viewDefinitionState, final Locale locale) {
@@ -101,10 +106,24 @@ public class ReportService {
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
                 searchCriteriaBuilder.restrictedWith(Restrictions.eq("productInComponent.productInComponent.product.id",
                         product.getFieldValue()));
-                searchCriteriaBuilder.withDistinctProperty("batch");
             }
 
         });
+
+        batches.setEntities(setDistinctBatch(batches.getEntities()));
+    }
+
+    private List<Entity> setDistinctBatch(final List<Entity> entities) {
+        List<Entity> distinctEntities = new LinkedList<Entity>();
+        Set<String> usedBatches = new HashSet<String>();
+        for (Entity genealogyEntity : entities) {
+            String batch = genealogyEntity.getStringField("batch");
+            if (!usedBatches.contains(batch)) {
+                usedBatches.add(batch);
+                distinctEntities.add(genealogyEntity);
+            }
+        }
+        return distinctEntities;
     }
 
     public void generateReportForProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state,

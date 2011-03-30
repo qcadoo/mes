@@ -78,16 +78,16 @@
 			view="qualityControlsForOperation" />
 
 		<view:view>
-			<view:resource>qualityControls/view/qualityControls.xml</view:resource>
-			<view:resource>qualityControls/view/qualityControlsTest.xml</view:resource>
+			<view:resource>view/qualityControls.xml</view:resource>
+			<view:resource>view/qualityControlsTest.xml</view:resource>
 		</view:view>
 
 		<view:viewRibbonExtension>
-			<view:resource>qualityControls/view/viewExtension.xml</view:resource>
+			<view:resource>view/viewExtension.xml</view:resource>
 		</view:viewRibbonExtension>
 
 		<view:viewWindowTabExtension>
-			<view:resource>qualityControls/view/viewExtension.xml</view:resource>
+			<view:resource>view/viewExtension.xml</view:resource>
 		</view:viewWindowTabExtension>
 
 		<view:viewHookExtension plugin="products" view="technology"

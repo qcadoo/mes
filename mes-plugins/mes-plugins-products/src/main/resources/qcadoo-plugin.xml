@@ -60,11 +60,11 @@
 			view="workPlans" />
 
 		<view:view>
-			<view:resource>products/view/materialRequirements.xml</view:resource>
-			<view:resource>products/view/orders.xml</view:resource>
-			<view:resource>products/view/products.xml</view:resource>
-			<view:resource>products/view/technologies.xml</view:resource>
-			<view:resource>products/view/workPlans.xml</view:resource>
+			<view:resource>view/materialRequirements.xml</view:resource>
+			<view:resource>view/orders.xml</view:resource>
+			<view:resource>view/products.xml</view:resource>
+			<view:resource>view/technologies.xml</view:resource>
+			<view:resource>view/workPlans.xml</view:resource>
 		</view:view>
 
 		<view:resource uri="public/**/*" />
