@@ -19,7 +19,7 @@
 		<component type="window" name="window">
 			<ribbon>
 			</ribbon>
-			<component type="grid" name="dictionaries">
+			<component type="grid" name="dictionaries" reference="grid">
 				<option type="column" name="label" fields="name" link="true" />
 				<option type="order" column="label" direction="asc" />
 				<option type="paginable" value="true" />
@@ -32,6 +32,8 @@
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.dictionaries.DictionaryService"
+			method="translateLabel" />
 	</view>
 	<view name="dictionary" plugin="qcadooModel" model="dictionary">
 		<component type="window" name="window">
