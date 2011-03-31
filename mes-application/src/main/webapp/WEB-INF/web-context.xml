@@ -61,7 +61,7 @@
 		</property>
 	</bean>
 	
-	<bean id="staticResourcesFilter" class="com.qcadoo.mes.application.StaticResourcesFilter">
+	<bean id="staticResourcesFilter" class="com.qcadoo.view.internal.resource.ResourceFilter">
 		<property name="useJarStaticResources" value="${useJarStaticResources}" />
 	</bean>
   		
