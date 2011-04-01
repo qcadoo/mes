@@ -42,8 +42,7 @@
 
 		<model:model model="qualityControl" resource="model/qualityControl.xml" />
 		<model:field plugin="products" model="technology">
-			<model:enum name="qualityControlType"
-				values="01forBatch,02forUnit,03forOrder,04forOperation" />
+			<model:enum name="qualityControlType" values="01forBatch,02forUnit,03forOrder,04forOperation" />
 		</model:field>
 		<model:field plugin="products" model="technology">
 			<model:decimal name="unitSamplingNr" />
@@ -57,12 +56,10 @@
 			<model:boolean name="qualityControlRequired" />
 		</model:field>
 		<model:field plugin="basic" model="parameter">
-			<model:boolean name="checkDoneOrderForQuality"
-				required="true" />
+			<model:boolean name="checkDoneOrderForQuality" required="true" />
 		</model:field>
 		<model:field plugin="basic" model="parameter">
-			<model:boolean name="autoGenerateQualityControl"
-				required="true" />
+			<model:boolean name="autoGenerateQualityControl" required="true" />
 		</model:field>
 		<model:hook plugin="products" model="technologyOperationComponent">
 			<model:onSave class="com.qcadoo.mes.qualityControls.QualityControlService"
@@ -88,7 +85,6 @@
 
 		<view:view>
 			<view:resource>view/qualityControls.xml</view:resource>
-			<view:resource>view/qualityControlsTest.xml</view:resource>
 		</view:view>
 
 		<view:viewRibbonExtension>
@@ -120,8 +116,6 @@
 		<!-- TODO remove after implementing import data -->
 		<databasePreparation />
 
-		<!-- TODO mina test remove -->
-		<view:resource uri="test/**/*" />
 	</modules>
 
 </plugin>
