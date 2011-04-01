@@ -41,11 +41,20 @@
 
 	<context:component-scan base-package="com.qcadoo.localization" />
 	
+	
+	
 	<bean id="messageSource"
 		class="com.qcadoo.localization.internal.ResourceBundleMessageSource">		
 		<property name="defaultEncoding" value="UTF-8" />
 	</bean>
-
+	
+	<!--
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">		
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+	
+	-->
 	<bean id="localeChangeInterceptor"
 		class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
 		<property name="paramName" value="lang" />
