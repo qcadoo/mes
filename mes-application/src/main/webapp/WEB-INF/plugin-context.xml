@@ -72,6 +72,8 @@
 				<bean class="com.qcadoo.model.internal.module.FieldModuleFactory" />
 				<bean class="com.qcadoo.model.internal.module.HookModuleFactory" />
 				<bean class="com.qcadoo.model.internal.module.DictionaryModuleFactory" />
+				<bean class="com.qcadoo.localization.internal.module.LocaleModuleFactory" />
+				<bean class="com.qcadoo.localization.internal.module.TranslationGroupModuleFactory" />
 				<bean class="com.qcadoo.localization.internal.module.TranslationModuleFactory" />
 				<bean class="com.qcadoo.view.internal.module.ViewComponentModuleFactory" />
 				<bean class="com.qcadoo.view.internal.module.ViewModuleFactory" />

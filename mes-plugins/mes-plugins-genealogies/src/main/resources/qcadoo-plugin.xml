@@ -2,13 +2,16 @@
 <plugin plugin="genealogies" version="0.4.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
        http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd">
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd">
 
 	<information>
 		<name>MES - Genealogies</name>
@@ -29,7 +32,10 @@
 		</dependency>
 	</dependencies>
 
+
 	<modules>
+		<localization:translation path="locales" />
+
 		<model:model model="currentAttribute" resource="model/currentAttribute.xml" />
 		<model:model model="genealogy" resource="model/genealogy.xml" />
 		<model:model model="productInBatch" resource="model/productInBatch.xml" />
@@ -38,48 +44,48 @@
 		<model:model model="postFeature" resource="model/postFeature.xml" />
 		<model:model model="shiftFeature" resource="model/shiftFeature.xml" />
 		<model:field plugin="products" model="technology">
-			<boolean name="batchRequired" />
+			<model:boolean name="batchRequired" />
 		</model:field>
 		<model:field plugin="products" model="technology">
-			<boolean name="shiftFeatureRequired" />
+			<model:boolean name="shiftFeatureRequired" />
 		</model:field>
 		<model:field plugin="products" model="technology">
-			<boolean name="postFeatureRequired" />
+			<model:boolean name="postFeatureRequired" />
 		</model:field>
 		<model:field plugin="products" model="technology">
-			<boolean name="otherFeatureRequired" />
+			<model:boolean name="otherFeatureRequired" />
 		</model:field>
 		<model:field plugin="products" model="operationProductInComponent">
-			<boolean name="batchRequired" />
+			<model:boolean name="batchRequired" />
 		</model:field>
 		<model:field plugin="products" model="product">
-			<string name="batch">
-				<validatesLength max="255" />
-			</string>
+			<model:string name="batch">
+				<model:validatesLength max="255" />
+			</model:string>
 		</model:field>
 		<model:field plugin="products" model="product">
-			<string name="lastUsedBatch">
-				<validatesLength max="255" />
-			</string>
+			<model:string name="lastUsedBatch">
+				<model:validatesLength max="255" />
+			</model:string>
 		</model:field>
 		<model:field plugin="products" model="product">
-			<boolean name="genealogyBatchReq" />
+			<model:boolean name="genealogyBatchReq" />
 		</model:field>
 		<model:field plugin="products" model="order">
-			<hasMany name="genealogies" plugin="genealogies" model="genealogy"
-				joinField="order" cascade="delete" />
+			<model:hasMany name="genealogies" plugin="genealogies"
+				model="genealogy" joinField="order" cascade="delete" />
 		</model:field>
 		<model:field plugin="products" model="operationProductInComponent">
-			<hasMany name="genealogyProductInComponents" plugin="genealogies"
-				model="genealogyProductInComponent" joinField="productInComponent"
+			<model:hasMany name="genealogyProductInComponents"
+				plugin="genealogies" model="genealogyProductInComponent" joinField="productInComponent"
 				cascade="delete" />
 		</model:field>
 		<model:field plugin="basic" model="parameter">
-			<enum name="batchForDoneOrder" values="01none,02active,03lastUsed"
+			<model:enum name="batchForDoneOrder" values="01none,02active,03lastUsed"
 				default="01none" />
 		</model:field>
 		<model:hook plugin="products" model="operationProductInComponent">
-			<onSave class="com.qcadoo.mes.genealogies.GenealogyService"
+			<model:onSave class="com.qcadoo.mes.genealogies.GenealogyService"
 				method="fillBatchRequiredForTechnology" />
 		</model:hook>
 
