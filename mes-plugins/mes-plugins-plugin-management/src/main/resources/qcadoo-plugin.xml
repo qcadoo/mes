@@ -27,7 +27,7 @@
 
 	<modules>
 		<model:hook plugin="qcadooPlugin" model="plugin">
-			<onView class="com.qcadoo.mes.plugins.controller.PluginManagmentDataHook"
+			<model:onView class="com.qcadoo.mes.plugins.controller.PluginManagmentDataHook"
 				method="updatePluginData" />
 		</model:hook>
 

@@ -10,7 +10,8 @@
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd">
+       http://schema.qcadoo.org/modules/localization.xsd"
+       >
 
 	<information>
 		<name>MES - Basic</name>
@@ -25,18 +26,18 @@
 		
 		TODO
 	
-		<localization:locale locale="en" />
-		<localization:locale locale="pl" />
+		<localization:locale locale="en" label="english" />
+		<localization:locale locale="pl" label="polski" />
 		
 		<localization:group name="commons" prefix="commons" />
 		<localization:group name="security" prefix="security" />
-		<localization:group name="dashoboard" prefix="core.dashboard" />
+		<localization:group name="dashboard" prefix="core.dashboard" />
 		
 		- basename is optional, if empty we will register all files under the given path
 		
-		<localization:translation path="locales" basename="basic" />
-		
 		-->
+		
+		<localization:translation path="locales"/>
 	
 		<model:model model="machine" resource="model/machine.xml" />
 		<model:model model="staff" resource="model/staff.xml" />
