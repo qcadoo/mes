@@ -111,7 +111,7 @@ public class GenealogyTechnologyService {
     private boolean batchRequired(final Long selectedProductId) {
         Entity product = getProductById(selectedProductId);
         if (product != null) {
-            return (Boolean) product.getField("genealogyBatchReq");
+            return product.getField("genealogyBatchReq") != null ? (Boolean) product.getField("genealogyBatchReq") : false;
         } else {
             return false;
         }
