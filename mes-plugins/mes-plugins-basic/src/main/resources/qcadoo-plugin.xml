@@ -25,8 +25,8 @@
 		
 		TODO
 	
-		<localization:locale locale="en" />
-		<localization:locale locale="pl" />
+		<localization:locale locale="en" label="english" />
+		<localization:locale locale="pl" label="polski" />
 		
 		<localization:group name="commons" prefix="commons" />
 		<localization:group name="security" prefix="security" />
