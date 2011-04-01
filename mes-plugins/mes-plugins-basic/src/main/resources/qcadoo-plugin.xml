@@ -35,8 +35,8 @@
 		
 		- basename is optional, if empty we will register all files under the given path
 		
-		
 		-->
+		
 		<localization:translation path="locales"/>
 	
 		<model:model model="machine" resource="model/machine.xml" />
