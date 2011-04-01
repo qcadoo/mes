@@ -79,7 +79,6 @@
 
 		<view:view>
 			<view:resource>view/qualityControls.xml</view:resource>
-			<view:resource>view/qualityControlsTest.xml</view:resource>
 		</view:view>
 
 		<view:viewRibbonExtension>
@@ -111,8 +110,6 @@
 		<!-- TODO remove after implementing import data -->
 		<databasePreparation />
 
-		<!-- TODO mina test remove -->
-		<view:resource uri="test/**/*" />
 	</modules>
 
 </plugin>
