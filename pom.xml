@@ -292,6 +292,12 @@
 		</profile>
 		<profile>
 			<id>saas</id>
+			<activation>
+				<property>
+					<name>spring.profiles.active</name>
+					<value>saas</value>
+				</property>
+			</activation>
 			<dependencies>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
