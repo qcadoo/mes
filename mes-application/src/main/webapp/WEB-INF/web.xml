@@ -34,13 +34,14 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			/WEB-INF/database-context.xml
-			/WEB-INF/plugin-context.xml
-			/WEB-INF/localization-context.xml
-			/WEB-INF/model-context.xml
+			classpath*:qcadoo-model-database-context.xml
+			classpath*:qcadoo-tenant-context.xml
+			classpath*:qcadoo-plugin-context.xml
+			classpath*:qcadoo-localization-context.xml
+			classpath*:qcadoo-model-context.xml
 			/WEB-INF/root-context.xml
-			/WEB-INF/security-context.xml
-			/WEB-INF/view-context.xml
+			classpath*:qcadoo-security-context.xml
+			classpath*:qcadoo-view-context.xml
 			classpath*:root-context.xml
 			/WEB-INF/web-context.xml
 			classpath*:web-context.xml
@@ -124,6 +125,10 @@
 				/WEB-INF/empty-context.xml
 			</param-value>
 		</init-param>
+		<!-- <init-param>
+	        <param-name>spring.profiles.active</param-name>
+	        <param-value>standalone</param-value>
+	    </init-param> -->
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 

@@ -38,11 +38,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo</groupId>
-			<artifactId>qcadoo-model</artifactId>
-			<version>${qcadoo.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo</groupId>
 			<artifactId>qcadoo-localization</artifactId>
 			<version>${qcadoo.version}</version>
 		</dependency>
@@ -294,6 +289,36 @@
 			<properties>
 				<profile.name>${profile}</profile.name>
 			</properties>
+		</profile>
+		<profile>
+			<id>saas</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.qcadoo.saas</groupId>
+					<artifactId>qcadoo-saas-model</artifactId>
+					<version>${qcadoo.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.saas</groupId>
+					<artifactId>qcadoo-saas-tenant</artifactId>
+					<version>${qcadoo.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.saas</groupId>
+					<artifactId>qcadoo-saas-plugin</artifactId>
+					<version>${qcadoo.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.saas</groupId>
+					<artifactId>qcadoo-saas-security</artifactId>
+					<version>${qcadoo.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.saas</groupId>
+					<artifactId>qcadoo-saas-view</artifactId>
+					<version>${qcadoo.version}</version>
+				</dependency>
+			</dependencies>
 		</profile>
 	</profiles>
 
