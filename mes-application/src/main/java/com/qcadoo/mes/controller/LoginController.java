@@ -60,6 +60,7 @@ public final class LoginController {
         mav.setViewName("core/login");
         mav.addObject("translation", translationService.getMessagesForPrefix("security", locale));
         mav.addObject("currentLanguage", locale.getLanguage());
+        mav.addObject("locales", translationService.getLocalesList());
 
         mav.addObject("iframe", iframe);
         mav.addObject("popup", popup);

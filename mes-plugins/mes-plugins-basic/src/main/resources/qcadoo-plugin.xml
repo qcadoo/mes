@@ -22,21 +22,23 @@
 	</information>
 
 	<modules>
-		<!-- 
+		 
 		
-		TODO
+		<!--  
+			TODO
+		-->
 	
-		<localization:locale locale="en" label="english" />
-		<localization:locale locale="pl" label="polski" />
+		<localization:locale locale="en" label="English"/>
+		<localization:locale locale="pl" label="Polski"/>
 		
 		<localization:group name="commons" prefix="commons" />
 		<localization:group name="security" prefix="security" />
 		<localization:group name="dashboard" prefix="core.dashboard" />
-		
-		- basename is optional, if empty we will register all files under the given path
-		
-		-->
-		
+
+		<!-- 
+			- basename is optional, if empty we will register all files under the given path
+		 -->
+
 		<localization:translation path="locales"/>
 	
 		<model:model model="machine" resource="model/machine.xml" />
