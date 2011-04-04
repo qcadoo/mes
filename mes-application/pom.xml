@@ -127,6 +127,10 @@
 					</scanTargets>
 					<systemProperties>
 						<systemProperty>
+							<name>spring.profiles.default</name>
+							<value>standalone</value>
+						</systemProperty>
+						<systemProperty>
 							<name>QCADOO_CONF</name>
 							<value>${basedir}/conf/${profile.name}</value>
 						</systemProperty>
