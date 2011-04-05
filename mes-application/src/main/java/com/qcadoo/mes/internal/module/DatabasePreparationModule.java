@@ -4,8 +4,6 @@ import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.application.TestDataLoader;
@@ -35,10 +33,6 @@ public class DatabasePreparationModule extends Module {
     @Override
     public void init(final PluginState state) {
         // empty
-    }
-
-    private void createPersistenceLogins() {
-        new JdbcTemplate(dataSource).execute(JdbcTokenRepositoryImpl.CREATE_TABLE_SQL);
     }
 
     private void addParameters() {
@@ -97,8 +91,6 @@ public class DatabasePreparationModule extends Module {
     public void enable() {
         if (databaseHasToBePrepared()) {
             LOG.info("Database has to be prepared ...");
-
-            createPersistenceLogins();
 
             addGroups();
             addUsers();

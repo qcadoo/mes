@@ -23,21 +23,12 @@
 
 	<modules>
 		 
-		
-		<!--  
-			TODO
-		-->
-	
 		<localization:locale locale="en" label="English"/>
 		<localization:locale locale="pl" label="Polski"/>
 		
 		<localization:group name="commons" prefix="commons" />
 		<localization:group name="security" prefix="security" />
 		<localization:group name="dashboard" prefix="core.dashboard" />
-
-		<!-- 
-			- basename is optional, if empty we will register all files under the given path
-		 -->
 
 		<localization:translation path="locales"/>
 	
