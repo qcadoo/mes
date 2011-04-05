@@ -1,7 +1,5 @@
 package com.qcadoo.mes.internal.module;
 
-import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,10 +98,6 @@ public class DatabasePreparationModule extends Module {
     public void disable() {
         // empty
 
-    }
-
-    public void setDataSource(final DataSource dataSource) {
-        this.dataSource = dataSource;
     }
 
     public void setDataDefinitionService(final DataDefinitionService dataDefinitionService) {

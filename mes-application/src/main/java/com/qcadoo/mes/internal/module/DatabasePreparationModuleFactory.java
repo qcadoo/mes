@@ -38,9 +38,6 @@ import com.qcadoo.plugin.api.ModuleFactory;
 public final class DatabasePreparationModuleFactory extends ModuleFactory<Module> {
 
     @Autowired
-    private DataSource dataSource;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
@@ -55,7 +52,6 @@ public final class DatabasePreparationModuleFactory extends ModuleFactory<Module
     @Override
     public Module parse(final String pluginIdentifier, final Element element) {
         DatabasePreparationModule module = new DatabasePreparationModule();
-        module.setDataSource(dataSource);
         module.setDataDefinitionService(dataDefinitionService);
         module.setTestDataLoader(testDataLoader);
         module.setAddTestData(addTestData);
