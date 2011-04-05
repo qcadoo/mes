@@ -42,8 +42,9 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.components.FieldComponentState;
 import com.qcadoo.view.components.form.FormComponentState;
 import com.qcadoo.view.components.grid.GridComponentState;
@@ -264,7 +265,7 @@ public final class OrderService {
     }
 
     public void generateOrderNumber(final ViewDefinitionState state, final Locale locale) {
-        numberGeneratorService.generateAndInsertNumber(state, "order");
+        numberGeneratorService.generateAndInsertNumber(state, "products", "order", "form", "number");
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState state, final Locale locale) {

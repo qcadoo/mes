@@ -48,6 +48,7 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.components.FieldComponentState;
 import com.qcadoo.view.components.grid.GridComponentState;
 import com.qcadoo.view.components.select.SelectComponentState;
@@ -186,14 +187,14 @@ public final class TechnologyService {
         FieldComponentState number = (FieldComponentState) state.getComponentByReference("number");
         FieldComponentState productState = (FieldComponentState) componentState;
 
-        if (!numberGeneratorService.checkIfShouldInsertNumber(state)) {
+        if (!numberGeneratorService.checkIfShouldInsertNumber(state, "form", "number")) {
             return;
         }
         if (productState.getFieldValue() != null) {
             Entity product = getProductById((Long) productState.getFieldValue());
             if (product != null) {
                 String numberValue = product.getField("number") + "-"
-                        + numberGeneratorService.generateNumber(state, "technology", 3);
+                        + numberGeneratorService.generateNumber("products", "technology", 3);
                 number.setFieldValue(numberValue);
             }
         }
