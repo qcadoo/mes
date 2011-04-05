@@ -1,0 +1,29 @@
+<viewExtensions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	
+	<ribbonExtension plugin="products" view="orders">
+				<group name="exportPlan">
+					<smallButtons name="pdfWorker" icon="pdfIcon16.png"
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForWorker);"
+						state="disabled">
+						<smallButton name="pdfMachine" icon="pdfIcon16.png"
+							action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForMachine);"
+							state="disabled" />
+						<smallButton name="pdfProduct" icon="pdfIcon16.png"
+							action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForProduct);"
+							state="disabled" />
+					</smallButtons>
+					<smallButtons name="xlsWorker" icon="xlsIcon16.png"
+						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);"
+						state="disabled">
+						<smallButton name="xlsMachine" icon="xlsIcon16.png"
+							action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForMachine);"
+							state="disabled" />
+						<smallButton name="xlsProduct" icon="xlsIcon16.png"
+							action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);"
+							state="disabled" />
+					</smallButtons>
+				</group>
+	</ribbonExtension>
+	
+</viewExtensions>

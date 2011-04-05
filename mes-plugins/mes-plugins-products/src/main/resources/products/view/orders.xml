@@ -51,28 +51,6 @@
 							action="#{grid}.fireEvent(printMaterialReqForOrder,xls);" state="disabled" />
 					</smallButtons>
 				</group>
-				<group name="exportPlan">
-					<smallButtons name="pdfWorker" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForWorker);"
-						state="disabled">
-						<smallButton name="pdfMachine" icon="pdfIcon16.png"
-							action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForMachine);"
-							state="disabled" />
-						<smallButton name="pdfProduct" icon="pdfIcon16.png"
-							action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForProduct);"
-							state="disabled" />
-					</smallButtons>
-					<smallButtons name="xlsWorker" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);"
-						state="disabled">
-						<smallButton name="xlsMachine" icon="xlsIcon16.png"
-							action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForMachine);"
-							state="disabled" />
-						<smallButton name="xlsProduct" icon="xlsIcon16.png"
-							action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);"
-							state="disabled" />
-					</smallButtons>
-				</group>
 			</ribbon>
 			<component type="grid" name="orders" reference="grid">
 				<script>

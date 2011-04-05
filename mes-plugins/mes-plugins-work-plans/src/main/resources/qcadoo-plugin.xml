@@ -46,6 +46,10 @@
 			<view:resource>view/workPlans.xml</view:resource>
 		</view:view>
 		
+		<view:viewRibbonExtension>
+			<view:resource>view/ordersExtension.xml</view:resource>
+		</view:viewRibbonExtension>
+		
 		<view:viewListenerExtension plugin="products"
 			view="orders" component="grid" event="printWorkPlanForOrder"
 			bean="com.qcadoo.mes.workPlans.WorkPlanService" method="printWorkPlanForOrder" />
