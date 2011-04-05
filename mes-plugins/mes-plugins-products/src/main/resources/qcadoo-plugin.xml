@@ -2,13 +2,16 @@
 <plugin plugin="products" version="0.4.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
        http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd">
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd">
 
 	<information>
 		<name>MES - Products</name>
@@ -25,10 +28,10 @@
 		</dependency>
 	</dependencies>
 
+
 	<modules>
-		<model:model model="materialRequirement" resource="model/materialRequirement.xml" />
-		<model:model model="materialRequirementComponent"
-			resource="model/materialRequirementComponent.xml" />
+		<localization:translation path="locales" />
+
 		<model:model model="operation" resource="model/operation.xml" />
 		<model:model model="operationProductOutComponent"
 			resource="model/operationProductOutComponent.xml" />
@@ -40,12 +43,10 @@
 		<model:model model="technology" resource="model/technology.xml" />
 		<model:model model="technologyOperationComponent"
 			resource="model/technologyOperationComponent.xml" />
-		<model:model model="workPlan" resource="model/workPlan.xml" />
-		<model:model model="workPlanComponent" resource="model/workPlanComponent.xml" />
+
 
 		<view:menu-category name="technology" />
 		<view:menu-category name="orders" />
-		<view:menu-category name="reports" />
 
 		<view:menu-item name="products" category="basic" view="products" />
 		<view:menu-item name="technologies" category="technology"
@@ -54,17 +55,11 @@
 			view="operations" />
 		<view:menu-item name="productionOrders" category="orders"
 			view="orders" />
-		<view:menu-item name="materialRequirements" category="reports"
-			view="materialRequirements" />
-		<view:menu-item name="workPlans" category="reports"
-			view="workPlans" />
 
 		<view:view>
-			<view:resource>view/materialRequirements.xml</view:resource>
 			<view:resource>view/orders.xml</view:resource>
 			<view:resource>view/products.xml</view:resource>
 			<view:resource>view/technologies.xml</view:resource>
-			<view:resource>view/workPlans.xml</view:resource>
 		</view:view>
 
 		<view:resource uri="public/**/*" />

@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>mes-plugins-menu-management</artifactId>
-	<packaging>qcadoo-plugin</packaging>
+	<packaging>jar</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Menu Management</name>
 

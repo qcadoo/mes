@@ -735,7 +735,7 @@ public final class TestDataLoader {
     }
 
     private void addMaterialRequirement() {
-        Entity requirement = dataDefinitionService.get("products", "materialRequirement").create();
+        Entity requirement = dataDefinitionService.get("materialRequirements", "materialRequirement").create();
         requirement.setField("name", getRandomProduct().getField("name"));
         requirement.setField("generated", false);
         requirement.setField("date", null);
@@ -748,13 +748,13 @@ public final class TestDataLoader {
                     + requirement.getField("onlyComponents") + ", generated=" + requirement.getField("generated") + "}");
         }
 
-        requirement = dataDefinitionService.get("products", "materialRequirement").save(requirement);
+        requirement = dataDefinitionService.get("materialRequirements", "materialRequirement").save(requirement);
         if (!requirement.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
 
         for (int i = 0; i < 1; i++) {
-            Entity component = dataDefinitionService.get("products", "materialRequirementComponent").create();
+            Entity component = dataDefinitionService.get("materialRequirements", "materialRequirementComponent").create();
             component.setField("materialRequirement", requirement);
             component.setField("order", getRandomOrder());
 
@@ -764,7 +764,7 @@ public final class TestDataLoader {
                         + ((Entity) component.getField("order")).getField("number") + "}");
             }
 
-            component = dataDefinitionService.get("products", "materialRequirementComponent").save(component);
+            component = dataDefinitionService.get("materialRequirements", "materialRequirementComponent").save(component);
             if (!component.isValid()) {
                 throw new IllegalStateException("Saved entity have validation errors");
             }
@@ -778,7 +778,7 @@ public final class TestDataLoader {
     }
 
     private void addWorkPlan() {
-        Entity workPlan = dataDefinitionService.get("products", "workPlan").create();
+        Entity workPlan = dataDefinitionService.get("workPlans", "workPlan").create();
         workPlan.setField("name", getRandomProduct().getField("name"));
         workPlan.setField("generated", false);
         workPlan.setField("date", null);
@@ -789,13 +789,13 @@ public final class TestDataLoader {
                     + ", worker=" + workPlan.getField("worker") + ", generated=" + workPlan.getField("generated") + "}");
         }
 
-        workPlan = dataDefinitionService.get("products", "workPlan").save(workPlan);
+        workPlan = dataDefinitionService.get("workPlans", "workPlan").save(workPlan);
         if (!workPlan.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
 
         for (int i = 0; i < 1; i++) {
-            Entity component = dataDefinitionService.get("products", "workPlanComponent").create();
+            Entity component = dataDefinitionService.get("workPlans", "workPlanComponent").create();
             component.setField("workPlan", workPlan);
             component.setField("order", getRandomOrder());
 
@@ -804,7 +804,7 @@ public final class TestDataLoader {
                         + ", order=" + ((Entity) component.getField("order")).getField("number") + "}");
             }
 
-            component = dataDefinitionService.get("products", "workPlanComponent").save(component);
+            component = dataDefinitionService.get("workPlans", "workPlanComponent").save(component);
             if (!component.isValid()) {
                 throw new IllegalStateException("Saved entity have validation errors");
             }

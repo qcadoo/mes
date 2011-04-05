@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>mes-plugins-quality-controls</artifactId>
-	<packaging>qcadoo-plugin</packaging>
+	<packaging>jar</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Quality Controls</name>
 	
