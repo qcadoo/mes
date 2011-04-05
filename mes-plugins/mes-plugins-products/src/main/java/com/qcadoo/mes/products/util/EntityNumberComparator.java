@@ -29,14 +29,13 @@ import java.util.Comparator;
 
 import com.qcadoo.model.api.Entity;
 
-public class EntityOperationNumberComparator implements Comparator<Entity>, Serializable {
+public class EntityNumberComparator implements Comparator<Entity>, Serializable {
 
-    private static final long serialVersionUID = -3569221006218524772L;
+    private static final long serialVersionUID = 6299937240797213900L;
 
     @Override
     public int compare(final Entity o1, final Entity o2) {
-        return ((Entity) o1.getField("operation")).getField("number").toString()
-                .compareTo(((Entity) o2.getField("operation")).getField("number").toString());
+        return o1.getField("number").toString().compareTo(o2.getField("number").toString());
     }
 
 }

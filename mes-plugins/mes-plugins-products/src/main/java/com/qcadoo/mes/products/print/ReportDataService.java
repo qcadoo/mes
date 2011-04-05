@@ -26,53 +26,21 @@ package com.qcadoo.mes.products.print;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.PdfPTable;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.products.util.EntityOperationInPairNumberComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
-import com.qcadoo.model.api.utils.DateUtils;
 import com.qcadoo.report.api.Pair;
-import com.qcadoo.report.api.SortUtil;
-import com.qcadoo.report.api.pdf.PdfUtil;
-import com.qcadoo.report.api.util.EntityNumberComparator;
-import com.qcadoo.security.api.SecurityService;
 
 @Service
 public class ReportDataService {
-
-    private static final SimpleDateFormat D_F = new SimpleDateFormat(DateUtils.DATE_FORMAT);
-
-    private final int[] defaultWorkPlanColumnWidth = new int[] { 20, 20, 20, 13, 13, 13 };
-
-    private final int[] defaultWorkPlanOperationColumnWidth = new int[] { 10, 21, 23, 23, 23 };
-
-    @Autowired
-    private TranslationService translationService;
-
-    @Autowired
-    private SecurityService securityService;
 
     private static final String MATERIAL_WASTE = "04waste";
 
@@ -81,47 +49,6 @@ public class ReportDataService {
     private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 
     private static final String MATERIAL_COMPONENT = "01component";
-
-    public final void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {
-        for (Entity operationComponent : entityTree) {
-            if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
-                operationComponents.add(operationComponent);
-            } else {
-                addOperationsFromSubtechnologiesToList(
-                        operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents"),
-                        operationComponents);
-            }
-        }
-    }
-
-    public final void addSeries(final Document document, final Entity entity, final Locale locale, final String type)
-            throws DocumentException {
-        DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
-        decimalFormat.setMaximumFractionDigits(3);
-        decimalFormat.setMinimumFractionDigits(3);
-        boolean firstPage = true;
-        for (Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry : prepareOperationSeries(
-                entity, type).entrySet()) {
-            if (!firstPage) {
-                document.newPage();
-            }
-
-            List<Entity> orders = new ArrayList<Entity>();
-
-            BigDecimal totalQuantity = createUniqueOrdersList(orders, entry);
-
-            PdfPTable orderTable = PdfUtil.createTableWithHeader(6, prepareOrderHeader(document, entity, locale), false,
-                    defaultWorkPlanColumnWidth);
-            addOrderSeries(orderTable, orders, decimalFormat);
-            document.add(orderTable);
-            document.add(Chunk.NEWLINE);
-
-            document.add(prepareTitle(totalQuantity, entry, locale, type));
-
-            addOperationSeries(entry, document, decimalFormat, locale);
-            firstPage = false;
-        }
-    }
 
     public final void countQuantityForProductsIn(final Map<Entity, BigDecimal> products, final Entity technology,
             final BigDecimal plannedQuantity, final Boolean onlyComponents) {
@@ -146,6 +73,213 @@ public class ReportDataService {
                 }
             }
         }
+    }
+
+    public final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> prepareOperationSeries(
+            final Entity entity, final String type) {
+        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = new HashMap<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>>();
+        List<Entity> orders = entity.getHasManyField("orders");
+        for (Entity component : orders) {
+            Entity order = (Entity) component.getField("order");
+            Entity technology = (Entity) order.getField("technology");
+            if (technology != null) {
+                EntityTree operationComponents = technology.getTreeField("operationComponents");
+                if (COMPONENT_QUANTITY_ALGORITHM.equals(technology.getField("componentQuantityAlgorithm"))) {
+                    aggregateTreeDataPerTechnology(operationComponents, operations, type, order,
+                            (BigDecimal) order.getField("plannedQuantity"));
+                } else {
+                    Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> orderOperations = new HashMap<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>>();
+                    EntityTreeNode rootNode = operationComponents.getRoot();
+                    if (rootNode != null) {
+                        boolean success = aggregateTreeDataPerOutProducts(rootNode, orderOperations, type, order,
+                                (BigDecimal) order.getField("plannedQuantity"));
+                        if (success) {
+                            concatenateOperationsList(operations, orderOperations);
+                        }
+                    }
+                }
+            }
+        }
+        return operations;
+    }
+
+    private void concatenateOperationsList(
+            final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations,
+            final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> orderOperations) {
+        if (operations.size() == 0) {
+            operations.putAll(orderOperations);
+        } else {
+            for (Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry : orderOperations
+                    .entrySet()) {
+                if (operations.containsKey(entry.getKey())) {
+                    Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> products = operations
+                            .get(entry.getKey());
+                    products.putAll(entry.getValue());
+                    operations.put(entry.getKey(), products);
+                } else {
+                    operations.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+    }
+
+    private void aggregateTreeDataPerTechnology(final List<Entity> operationComponents,
+            final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations,
+            final String type, final Entity order, final BigDecimal plannedQuantity) {
+        Entity entityKey = null;
+        if (type.equals("product")) {
+            Entity product = (Entity) order.getField("product");
+            entityKey = product;
+        }
+
+        for (Entity operationComponent : operationComponents) {
+            if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
+                Entity operation = (Entity) operationComponent.getField("operation");
+
+                if (type.equals("machine")) {
+                    Object machine = operation.getField("machine");
+                    if (machine != null) {
+                        entityKey = (Entity) machine;
+                    } else {
+                        entityKey = null;
+                    }
+                } else if (type.equals("worker")) {
+                    Object worker = operation.getField("staff");
+                    if (worker != null) {
+                        entityKey = (Entity) worker;
+                    } else {
+                        entityKey = null;
+                    }
+                }
+                Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operationMap = null;
+                if (operations.containsKey(entityKey)) {
+                    operationMap = operations.get(entityKey);
+                } else {
+                    operationMap = new HashMap<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>();
+                }
+                Pair<Entity, Entity> pair = Pair.of(operationComponent, order);
+                Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>> mapPair = Pair.of(
+                        prepareInProductsPerTechnology(operationComponent, plannedQuantity),
+                        prepareOutProductsPerTechnology(operationComponent, plannedQuantity));
+                operationMap.put(pair, mapPair);
+                operations.put(entityKey, operationMap);
+            } else {
+                aggregateTreeDataPerTechnology(
+                        operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents"),
+                        operations, type, order, plannedQuantity);
+            }
+        }
+    }
+
+    private Map<Entity, BigDecimal> prepareOutProductsPerTechnology(final Entity operationComponent,
+            final BigDecimal plannedQuantity) {
+        List<Entity> operationProductOutComponents = operationComponent.getHasManyField("operationProductOutComponents");
+        Map<Entity, BigDecimal> productsOutMap = new HashMap<Entity, BigDecimal>();
+        for (Entity operationProductOutComponent : operationProductOutComponents) {
+            Entity product = (Entity) operationProductOutComponent.getField("product");
+            if (!MATERIAL_WASTE.equals(product.getField("typeOfMaterial"))) {
+                BigDecimal quantity = ((BigDecimal) operationProductOutComponent.getField("quantity")).multiply(plannedQuantity,
+                        MathContext.DECIMAL128);
+                productsOutMap.put(product, quantity);
+            }
+        }
+        return productsOutMap;
+    }
+
+    private boolean aggregateTreeDataPerOutProducts(final EntityTreeNode node,
+            final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations,
+            final String type, final Entity order, final BigDecimal plannedQuantity) {
+        if (OPERATION_NODE_ENTITY_TYPE.equals(node.getField("entityType"))) {
+            Entity entityKey = null;
+            Entity operation = (Entity) node.getField("operation");
+            List<Entity> operationProductInComponents = node.getHasManyField("operationProductInComponents");
+            if (operationProductInComponents.size() == 0) {
+                return false;
+            }
+            Entity productOutComponent = checkOutProducts(node);
+            if (productOutComponent == null) {
+                return false;
+            }
+
+            if (type.equals("product")) {
+                Entity product = (Entity) order.getField("product");
+                entityKey = product;
+            } else if (type.equals("machine")) {
+                Object machine = operation.getField("machine");
+                if (machine != null) {
+                    entityKey = (Entity) machine;
+                } else {
+                    entityKey = null;
+                }
+            } else if (type.equals("worker")) {
+                Object worker = operation.getField("staff");
+                if (worker != null) {
+                    entityKey = (Entity) worker;
+                } else {
+                    entityKey = null;
+                }
+            }
+            Map<Entity, BigDecimal> productsInMap = new HashMap<Entity, BigDecimal>();
+            for (Entity operationProductInComponent : operationProductInComponents) {
+                Entity product = (Entity) operationProductInComponent.getField("product");
+                BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
+                        MathContext.DECIMAL128).divide((BigDecimal) productOutComponent.getField("quantity"),
+                        MathContext.DECIMAL128);
+                EntityTreeNode prevOperation = findPreviousOperation(node, product);
+                if (prevOperation != null) {
+                    boolean success = aggregateTreeDataPerOutProducts(prevOperation, operations, type, order, quantity);
+                    if (!success) {
+                        return false;
+                    }
+                }
+                productsInMap.put(product, quantity);
+            }
+            Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operationMap = null;
+            if (operations.containsKey(entityKey)) {
+                operationMap = operations.get(entityKey);
+            } else {
+                operationMap = new HashMap<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>();
+            }
+            Pair<Entity, Entity> pair = Pair.of((Entity) node, order);
+            Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>> mapPair = Pair.of(productsInMap,
+                    prepareOutProducts(node, plannedQuantity));
+            operationMap.put(pair, mapPair);
+            operations.put(entityKey, operationMap);
+        } else {
+            EntityTreeNode rootNode = node.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot();
+            if (rootNode != null) {
+                boolean success = aggregateTreeDataPerOutProducts(rootNode, operations, type, order, plannedQuantity);
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private Map<Entity, BigDecimal> prepareInProductsPerTechnology(final Entity operationComponent,
+            final BigDecimal plannedQuantity) {
+        List<Entity> operationProductInComponents = operationComponent.getHasManyField("operationProductInComponents");
+        Map<Entity, BigDecimal> productsInMap = new HashMap<Entity, BigDecimal>();
+        for (Entity operationProductInComponent : operationProductInComponents) {
+            Entity product = (Entity) operationProductInComponent.getField("product");
+            BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
+                    MathContext.DECIMAL128);
+            productsInMap.put(product, quantity);
+        }
+        return productsInMap;
+    }
+
+    private Map<Entity, BigDecimal> prepareOutProducts(final EntityTreeNode node, final BigDecimal plannedQuantity) {
+        Map<Entity, BigDecimal> productsOutMap = new HashMap<Entity, BigDecimal>();
+        List<Entity> operationProductOutComponents = node.getHasManyField("operationProductOutComponents");
+        for (Entity operationProductOutComponent : operationProductOutComponents) {
+            Entity product = (Entity) operationProductOutComponent.getField("product");
+            if (!MATERIAL_WASTE.equals(product.getField("typeOfMaterial"))) {
+                productsOutMap.put(product, plannedQuantity);
+            }
+        }
+        return productsOutMap;
     }
 
     private void countQuntityComponentPerTechnology(final Map<Entity, BigDecimal> products,
@@ -257,364 +391,6 @@ public class ReportDataService {
             }
         }
         return null;
-    }
-
-    public final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> prepareOperationSeries(
-            final Entity entity, final String type) {
-        Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations = new HashMap<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>>();
-        List<Entity> orders = entity.getHasManyField("orders");
-        for (Entity component : orders) {
-            Entity order = (Entity) component.getField("order");
-            Entity technology = (Entity) order.getField("technology");
-            if (technology != null) {
-                EntityTree operationComponents = technology.getTreeField("operationComponents");
-                if (COMPONENT_QUANTITY_ALGORITHM.equals(technology.getField("componentQuantityAlgorithm"))) {
-                    aggregateTreeDataPerTechnology(operationComponents, operations, type, order,
-                            (BigDecimal) order.getField("plannedQuantity"));
-                } else {
-                    Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> orderOperations = new HashMap<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>>();
-                    EntityTreeNode rootNode = operationComponents.getRoot();
-                    if (rootNode != null) {
-                        boolean success = aggregateTreeDataPerOutProducts(rootNode, orderOperations, type, order,
-                                (BigDecimal) order.getField("plannedQuantity"));
-                        if (success) {
-                            concatenateOperationsList(operations, orderOperations);
-                        }
-                    }
-                }
-            }
-        }
-        return operations;
-    }
-
-    private void concatenateOperationsList(
-            final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations,
-            final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> orderOperations) {
-        if (operations.size() == 0) {
-            operations.putAll(orderOperations);
-        } else {
-            for (Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry : orderOperations
-                    .entrySet()) {
-                if (operations.containsKey(entry.getKey())) {
-                    Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> products = operations
-                            .get(entry.getKey());
-                    products.putAll(entry.getValue());
-                    operations.put(entry.getKey(), products);
-                } else {
-                    operations.put(entry.getKey(), entry.getValue());
-                }
-            }
-        }
-    }
-
-    private void aggregateTreeDataPerTechnology(final List<Entity> operationComponents,
-            final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations,
-            final String type, final Entity order, final BigDecimal plannedQuantity) {
-        Entity entityKey = null;
-        if (type.equals("product")) {
-            Entity product = (Entity) order.getField("product");
-            entityKey = product;
-        }
-
-        for (Entity operationComponent : operationComponents) {
-            if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
-                Entity operation = (Entity) operationComponent.getField("operation");
-
-                if (type.equals("machine")) {
-                    Object machine = operation.getField("machine");
-                    if (machine != null) {
-                        entityKey = (Entity) machine;
-                    } else {
-                        entityKey = null;
-                    }
-                } else if (type.equals("worker")) {
-                    Object worker = operation.getField("staff");
-                    if (worker != null) {
-                        entityKey = (Entity) worker;
-                    } else {
-                        entityKey = null;
-                    }
-                }
-                Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operationMap = null;
-                if (operations.containsKey(entityKey)) {
-                    operationMap = operations.get(entityKey);
-                } else {
-                    operationMap = new HashMap<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>();
-                }
-                Pair<Entity, Entity> pair = Pair.of(operationComponent, order);
-                Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>> mapPair = Pair.of(
-                        prepareInProductsPerTechnology(operationComponent, plannedQuantity),
-                        prepareOutProductsPerTechnology(operationComponent, plannedQuantity));
-                operationMap.put(pair, mapPair);
-                operations.put(entityKey, operationMap);
-            } else {
-                aggregateTreeDataPerTechnology(
-                        operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents"),
-                        operations, type, order, plannedQuantity);
-            }
-        }
-    }
-
-    private Map<Entity, BigDecimal> prepareInProductsPerTechnology(final Entity operationComponent,
-            final BigDecimal plannedQuantity) {
-        List<Entity> operationProductInComponents = operationComponent.getHasManyField("operationProductInComponents");
-        Map<Entity, BigDecimal> productsInMap = new HashMap<Entity, BigDecimal>();
-        for (Entity operationProductInComponent : operationProductInComponents) {
-            Entity product = (Entity) operationProductInComponent.getField("product");
-            BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
-                    MathContext.DECIMAL128);
-            productsInMap.put(product, quantity);
-        }
-        return productsInMap;
-    }
-
-    private Map<Entity, BigDecimal> prepareOutProductsPerTechnology(final Entity operationComponent,
-            final BigDecimal plannedQuantity) {
-        List<Entity> operationProductOutComponents = operationComponent.getHasManyField("operationProductOutComponents");
-        Map<Entity, BigDecimal> productsOutMap = new HashMap<Entity, BigDecimal>();
-        for (Entity operationProductOutComponent : operationProductOutComponents) {
-            Entity product = (Entity) operationProductOutComponent.getField("product");
-            if (!MATERIAL_WASTE.equals(product.getField("typeOfMaterial"))) {
-                BigDecimal quantity = ((BigDecimal) operationProductOutComponent.getField("quantity")).multiply(plannedQuantity,
-                        MathContext.DECIMAL128);
-                productsOutMap.put(product, quantity);
-            }
-        }
-        return productsOutMap;
-    }
-
-    private boolean aggregateTreeDataPerOutProducts(final EntityTreeNode node,
-            final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations,
-            final String type, final Entity order, final BigDecimal plannedQuantity) {
-        if (OPERATION_NODE_ENTITY_TYPE.equals(node.getField("entityType"))) {
-            Entity entityKey = null;
-            Entity operation = (Entity) node.getField("operation");
-            List<Entity> operationProductInComponents = node.getHasManyField("operationProductInComponents");
-            if (operationProductInComponents.size() == 0) {
-                return false;
-            }
-            Entity productOutComponent = checkOutProducts(node);
-            if (productOutComponent == null) {
-                return false;
-            }
-
-            if (type.equals("product")) {
-                Entity product = (Entity) order.getField("product");
-                entityKey = product;
-            } else if (type.equals("machine")) {
-                Object machine = operation.getField("machine");
-                if (machine != null) {
-                    entityKey = (Entity) machine;
-                } else {
-                    entityKey = null;
-                }
-            } else if (type.equals("worker")) {
-                Object worker = operation.getField("staff");
-                if (worker != null) {
-                    entityKey = (Entity) worker;
-                } else {
-                    entityKey = null;
-                }
-            }
-            Map<Entity, BigDecimal> productsInMap = new HashMap<Entity, BigDecimal>();
-            for (Entity operationProductInComponent : operationProductInComponents) {
-                Entity product = (Entity) operationProductInComponent.getField("product");
-                BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
-                        MathContext.DECIMAL128).divide((BigDecimal) productOutComponent.getField("quantity"),
-                        MathContext.DECIMAL128);
-                EntityTreeNode prevOperation = findPreviousOperation(node, product);
-                if (prevOperation != null) {
-                    boolean success = aggregateTreeDataPerOutProducts(prevOperation, operations, type, order, quantity);
-                    if (!success) {
-                        return false;
-                    }
-                }
-                productsInMap.put(product, quantity);
-            }
-            Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operationMap = null;
-            if (operations.containsKey(entityKey)) {
-                operationMap = operations.get(entityKey);
-            } else {
-                operationMap = new HashMap<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>();
-            }
-            Pair<Entity, Entity> pair = Pair.of((Entity) node, order);
-            Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>> mapPair = Pair.of(productsInMap,
-                    prepareOutProducts(node, plannedQuantity));
-            operationMap.put(pair, mapPair);
-            operations.put(entityKey, operationMap);
-        } else {
-            EntityTreeNode rootNode = node.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot();
-            if (rootNode != null) {
-                boolean success = aggregateTreeDataPerOutProducts(rootNode, operations, type, order, plannedQuantity);
-                if (!success) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private Map<Entity, BigDecimal> prepareOutProducts(final EntityTreeNode node, final BigDecimal plannedQuantity) {
-        Map<Entity, BigDecimal> productsOutMap = new HashMap<Entity, BigDecimal>();
-        List<Entity> operationProductOutComponents = node.getHasManyField("operationProductOutComponents");
-        for (Entity operationProductOutComponent : operationProductOutComponents) {
-            Entity product = (Entity) operationProductOutComponent.getField("product");
-            if (!MATERIAL_WASTE.equals(product.getField("typeOfMaterial"))) {
-                productsOutMap.put(product, plannedQuantity);
-            }
-        }
-        return productsOutMap;
-    }
-
-    private void addOperationSeries(
-            final Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry,
-            final Document document, final DecimalFormat decimalFormat, final Locale locale) throws DocumentException {
-        PdfPTable table = PdfUtil.createTableWithHeader(5, prepareOperationHeader(locale), false,
-                defaultWorkPlanOperationColumnWidth);
-
-        table.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
-
-        Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operationMap = SortUtil
-                .sortMapUsingComparator(entry.getValue(), new EntityOperationInPairNumberComparator());
-
-        for (Entry<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> entryComponent : operationMap
-                .entrySet()) {
-
-            Pair<Entity, Entity> entryPair = entryComponent.getKey();
-            Entity operation = (Entity) entryPair.getKey().getField("operation");
-            table.addCell(new Phrase(operation.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(operation.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(entryPair.getValue().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            addProductSeries(table, entryComponent.getValue().getValue(), decimalFormat);
-            addProductSeries(table, entryComponent.getValue().getKey(), decimalFormat);
-        }
-        document.add(table);
-    }
-
-    private Paragraph prepareTitle(final BigDecimal totalQuantity,
-            final Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry,
-            final Locale locale, final String type) {
-        Paragraph title = new Paragraph();
-        if (type.equals("machine")) {
-            Entity machine = entry.getKey();
-            title.add(new Phrase(translationService.translate("products.workPlan.report.paragrah3", locale), PdfUtil
-                    .getArialBold11Light()));
-            String name = "";
-            if (machine != null) {
-                name = machine.getField("name").toString();
-            }
-            title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
-        } else if (type.equals("worker")) {
-            Entity staff = entry.getKey();
-            title.add(new Phrase(translationService.translate("products.workPlan.report.paragrah2", locale), PdfUtil
-                    .getArialBold11Light()));
-            String name = "";
-            if (staff != null) {
-                name = staff.getField("name") + " " + staff.getField("surname");
-            }
-            title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
-        } else if (type.equals("product")) {
-            Entity product = entry.getKey();
-            title.add(new Phrase(translationService.translate("products.workPlan.report.paragrah4", locale), PdfUtil
-                    .getArialBold11Light()));
-            title.add(new Phrase(" " + totalQuantity + " x " + product.getField("name"), PdfUtil.getArialBold19Dark()));
-        }
-        return title;
-    }
-
-    private BigDecimal createUniqueOrdersList(final List<Entity> orders,
-            final Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry) {
-        BigDecimal totalQuantity = BigDecimal.ZERO;
-
-        for (Pair<Entity, Entity> pair : entry.getValue().keySet()) {
-            if (!orders.contains(pair.getValue())) {
-                totalQuantity = totalQuantity.add((BigDecimal) pair.getValue().getField("plannedQuantity"));
-                orders.add(pair.getValue());
-            }
-        }
-        return totalQuantity;
-    }
-
-    private void addProductSeries(final PdfPTable table, final Map<Entity, BigDecimal> productsQuantity, final DecimalFormat df) {
-        StringBuilder products = new StringBuilder();
-        for (Entry<Entity, BigDecimal> entry : productsQuantity.entrySet()) {
-            products.append(entry.getKey().getField("number").toString() + " " + entry.getKey().getField("name").toString()
-                    + " x " + df.format(entry.getValue()) + " ["
-                    + (entry.getKey().getField("unit") != null ? entry.getKey().getField("unit").toString() : "") + "] \n\n");
-
-        }
-        table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
-    }
-
-    /*
-     * @SuppressWarnings({ "unused" }) private Image generateBarcode(final String code) throws BadElementException { Code128Bean
-     * codeBean = new Code128Bean(); final int dpi = 150; codeBean.setModuleWidth(UnitConv.in2mm(1.0f / dpi));
-     * codeBean.doQuietZone(false); codeBean.setHeight(8); codeBean.setFontSize(0.0); ByteArrayOutputStream out = new
-     * ByteArrayOutputStream(); try { BitmapCanvasProvider canvas = new BitmapCanvasProvider(out, "image/x-png", dpi,
-     * BufferedImage.TYPE_BYTE_BINARY, false, 0); codeBean.generateBarcode(canvas, code); canvas.finish(); } catch (IOException e)
-     * { LOG.error(e.getMessage(), e); } finally { try { out.close(); } catch (IOException e) { LOG.error(e.getMessage(), e); } }
-     * try { Image image = Image.getInstance(out.toByteArray()); image.setAlignment(Image.RIGHT); return image; } catch
-     * (MalformedURLException e) { LOG.error(e.getMessage(), e); } catch (IOException e) { LOG.error(e.getMessage(), e); } return
-     * null; }
-     */
-    private void addOrderSeries(final PdfPTable table, final List<Entity> orders, final DecimalFormat df)
-            throws DocumentException {
-        Collections.sort(orders, new EntityNumberComparator());
-        for (Entity order : orders) {
-            table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-            Entity product = (Entity) order.getField("product");
-            if (product != null) {
-                table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-            } else {
-                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-            }
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-            plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
-            table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            if (product != null) {
-                Object unit = product.getField("unit");
-                if (unit != null) {
-                    table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
-                } else {
-                    table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-                }
-            } else {
-                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-            }
-            table.addCell(new Phrase(D_F.format((Date) order.getField("dateTo")), PdfUtil.getArialRegular9Dark()));
-        }
-    }
-
-    private List<String> prepareOrderHeader(final Document document, final Entity entity, final Locale locale)
-            throws DocumentException {
-        String documenTitle = translationService.translate("products.workPlan.report.title", locale);
-        String documentAuthor = translationService.translate("products.materialRequirement.report.author", locale);
-        PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
-                (Date) entity.getField("date"), securityService.getCurrentUserName());
-        // document.add(generateBarcode(entity.getField("name").toString()));
-        document.add(new Paragraph(translationService.translate("products.workPlan.report.paragrah", locale), PdfUtil
-                .getArialBold11Dark()));
-        List<String> orderHeader = new ArrayList<String>();
-        orderHeader.add(translationService.translate("products.order.number.label", locale));
-        orderHeader.add(translationService.translate("products.order.name.label", locale));
-        orderHeader.add(translationService.translate("products.order.product.label", locale));
-        orderHeader.add(translationService.translate("products.order.plannedQuantity.label", locale));
-        orderHeader.add(translationService.translate("products.product.unit.label", locale));
-        orderHeader.add(translationService.translate("products.order.dateTo.label", locale));
-        return orderHeader;
-    }
-
-    private List<String> prepareOperationHeader(final Locale locale) {
-        List<String> operationHeader = new ArrayList<String>();
-        operationHeader.add(translationService.translate("products.operation.number.label", locale));
-        operationHeader.add(translationService.translate("products.operation.name.label", locale));
-        operationHeader.add(translationService.translate("products.workPlan.report.operationTable.order.column", locale));
-        operationHeader.add(translationService.translate("products.workPlan.report.operationTable.productsOut.column", locale));
-        operationHeader.add(translationService.translate("products.workPlan.report.operationTable.productsIn.column", locale));
-        return operationHeader;
     }
 
 }

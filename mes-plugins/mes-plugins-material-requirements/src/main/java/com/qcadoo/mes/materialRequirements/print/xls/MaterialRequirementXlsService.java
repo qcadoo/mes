@@ -36,10 +36,10 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialRequirements.print.MaterialRequirementsReportDataService;
+import com.qcadoo.mes.materialRequirements.print.MaterialRequirementReportDataService;
+import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
-import com.qcadoo.report.api.util.EntityNumberComparator;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 import com.qcadoo.report.api.xls.XlsUtil;
 
@@ -47,7 +47,7 @@ import com.qcadoo.report.api.xls.XlsUtil;
 public final class MaterialRequirementXlsService extends XlsDocumentService {
 
     @Autowired
-    private MaterialRequirementsReportDataService reportDataService;
+    private MaterialRequirementReportDataService materialRequirementReportDataService;
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -69,7 +69,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
-        Map<Entity, BigDecimal> products = reportDataService.prepareTechnologySeries(entity);
+        Map<Entity, BigDecimal> products = materialRequirementReportDataService.prepareTechnologySeries(entity);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);

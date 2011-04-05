@@ -24,6 +24,7 @@
 		<module>mes-plugins-genealogies</module>
 		<module>mes-plugins-quality-controls</module>
     	<module>mes-plugins-material-requirements</module>
+    <module>mes-plugins-workPlans</module>
   </modules>
 
 </project>

@@ -288,25 +288,6 @@ public class ReportDataServiceTest {
     }
 
     @Test
-    public void shouldReturnValidList() {
-        // given
-        List<Entity> operationComponents = new ArrayList<Entity>();
-
-        given(
-                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
-        given(
-                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
-
-        // when
-        reportDataService.addOperationsFromSubtechnologiesToList(entityTree, operationComponents);
-
-        // then
-        assertEquals(operationComponents.size(), 6);
-    }
-
-    @Test
     public void shouldReturnValidMapPerTechnologyAlgorithm() {
         // given
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
