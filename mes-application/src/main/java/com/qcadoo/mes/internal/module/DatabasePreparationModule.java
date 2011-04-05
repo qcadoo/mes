@@ -10,13 +10,10 @@ import com.qcadoo.mes.application.TestDataLoader;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.Module;
-import com.qcadoo.plugin.api.PluginState;
 
 public class DatabasePreparationModule extends Module {
 
     private static final Logger LOG = LoggerFactory.getLogger(DatabasePreparationModule.class);
-
-    private DataSource dataSource;
 
     private DataDefinitionService dataDefinitionService;
 
@@ -29,11 +26,6 @@ public class DatabasePreparationModule extends Module {
     private Entity supervisorsGroup;
 
     private boolean addHardAdminPass;
-
-    @Override
-    public void init(final PluginState state) {
-        // empty
-    }
 
     private void addParameters() {
         LOG.info("Adding parameters");

@@ -35,7 +35,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.ModuleFactory;
 
-public final class DatabasePreparationModuleFactory implements ModuleFactory<Module> {
+public final class DatabasePreparationModuleFactory extends ModuleFactory<Module> {
 
     @Autowired
     private DataSource dataSource;
@@ -51,11 +51,6 @@ public final class DatabasePreparationModuleFactory implements ModuleFactory<Mod
 
     @Value("${addHardAdminPass}")
     private boolean addHardAdminPass;
-
-    @Override
-    public void init() {
-        // empty
-    }
 
     @Override
     public Module parse(final String pluginIdentifier, final Element element) {
