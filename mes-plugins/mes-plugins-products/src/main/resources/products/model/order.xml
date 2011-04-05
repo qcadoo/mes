@@ -42,10 +42,6 @@
 		<date name="effectiveDateTo" readonly="true" />
 		<string name="startWorker" readonly="true" />
 		<string name="endWorker" readonly="true" />
-		<hasMany name="materialRequirements" model="materialRequirementComponent"
-			joinField="order" cascade="none" />
-		<hasMany name="workPlans" model="workPlanComponent" joinField="order"
-			cascade="none" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.products.OrderService"

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
@@ -32,6 +33,7 @@ import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.security.api.SecurityService;
 
+@Service
 public class WorkPlanReportDataService {
 
     private static final SimpleDateFormat D_F = new SimpleDateFormat(DateUtils.DATE_FORMAT);

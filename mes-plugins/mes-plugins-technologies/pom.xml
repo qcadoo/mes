@@ -9,21 +9,25 @@
 		<version>0.4.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>mes-plugins-workPlans</artifactId>
+	<artifactId>mes-plugins-technologies</artifactId>
 
-	<groupId>com.qcadoo</groupId>
+	<groupId>com.qcadoo.mes</groupId>
 	<packaging>jar</packaging>
 
-	<name>Qcadoo MES :: Plugins :: Work Plans</name>
+	<name>Qcadoo MES :: Plugins :: Technologies</name>
 	
-	<dependencies>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-products</artifactId>
-			<version>0.4.0-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
-		
+	<version>0.4.0-SNAPSHOT</version>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.qcadoo</groupId>
+				<artifactId>qcadoo-maven-plugin</artifactId>
+				<version>${qcadoo.version}</version>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
 	
 </project>
 

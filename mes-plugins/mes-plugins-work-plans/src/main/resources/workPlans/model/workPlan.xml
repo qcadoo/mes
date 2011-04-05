@@ -27,7 +27,7 @@
 			cascade="delete" copyable="true" />
 	</fields>
 	<hooks>
-		<onCopy class="com.qcadoo.mes.products.WorkPlanService" method="clearGeneratedOnCopy" />
+		<onCopy class="com.qcadoo.mes.workPlans.WorkPlanService" method="clearGeneratedOnCopy" />
 	</hooks>
 	<identifier expression="#name" />
 </model>
