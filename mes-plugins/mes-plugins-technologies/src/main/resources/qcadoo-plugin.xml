@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="technologies" version="0.4.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd">
+
+	<information>
+		<name>Technologies</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+
+
+	<modules>
+		<localization:translation path="locales" />
+		
+		<model:model model="technologies" resource="model/technologies.xml" />
+		
+		<view:menu-category name="technologies" />
+
+		<view:menu-item name="technologies" category="technologies"
+			view="technologies" />
+
+		<view:view>
+			<view:resource>view/technologies.xml</view:resource>
+		</view:view>
+		
+		<view:resource uri="public/**/*" />
+
+	</modules>
+
+</plugin>

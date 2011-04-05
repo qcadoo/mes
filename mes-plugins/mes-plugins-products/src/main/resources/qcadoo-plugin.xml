@@ -32,9 +32,6 @@
 	<modules>
 		<localization:translation path="locales" />
 
-		<model:model model="materialRequirement" resource="model/materialRequirement.xml" />
-		<model:model model="materialRequirementComponent"
-			resource="model/materialRequirementComponent.xml" />
 		<model:model model="operation" resource="model/operation.xml" />
 		<model:model model="operationProductOutComponent"
 			resource="model/operationProductOutComponent.xml" />
@@ -46,12 +43,10 @@
 		<model:model model="technology" resource="model/technology.xml" />
 		<model:model model="technologyOperationComponent"
 			resource="model/technologyOperationComponent.xml" />
-		<model:model model="workPlan" resource="model/workPlan.xml" />
-		<model:model model="workPlanComponent" resource="model/workPlanComponent.xml" />
+
 
 		<view:menu-category name="technology" />
 		<view:menu-category name="orders" />
-		<view:menu-category name="reports" />
 
 		<view:menu-item name="products" category="basic" view="products" />
 		<view:menu-item name="technologies" category="technology"
@@ -60,17 +55,11 @@
 			view="operations" />
 		<view:menu-item name="productionOrders" category="orders"
 			view="orders" />
-		<view:menu-item name="materialRequirements" category="reports"
-			view="materialRequirements" />
-		<view:menu-item name="workPlans" category="reports"
-			view="workPlans" />
 
 		<view:view>
-			<view:resource>view/materialRequirements.xml</view:resource>
 			<view:resource>view/orders.xml</view:resource>
 			<view:resource>view/products.xml</view:resource>
 			<view:resource>view/technologies.xml</view:resource>
-			<view:resource>view/workPlans.xml</view:resource>
 		</view:view>
 
 		<view:resource uri="public/**/*" />

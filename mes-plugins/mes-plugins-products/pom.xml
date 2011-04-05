@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>mes-plugins-products</artifactId>
-	<packaging>qcadoo-plugin</packaging>
+	<packaging>jar</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Products</name>
 
@@ -23,5 +23,6 @@
 			</plugin>
 		</plugins>
 	</build>
+
 
 </project>

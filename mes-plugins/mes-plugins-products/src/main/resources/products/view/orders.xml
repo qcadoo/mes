@@ -180,10 +180,6 @@
 				</predefinedFilters>
 				<listener event="printOrder" bean="com.qcadoo.mes.products.OrderService"
 					method="printOrder" />
-				<listener event="printMaterialReqForOrder"
-					bean="com.qcadoo.mes.products.MaterialRequirementService" method="printMaterialReqForOrder" />
-				<listener event="printWorkPlanForOrder" bean="com.qcadoo.mes.products.WorkPlanService"
-					method="printWorkPlanForOrder" />
 				<listener event="activateOrder" bean="com.qcadoo.mes.products.OrderService"
 					method="activateOrder" />
 			</component>
@@ -326,7 +322,7 @@
 								<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.OrderService"
 									method="setDefaultNameUsingProduct" />
 								<listener event="onSelectedEntityChange"
-									bean="com.qcadoo.mes.products.util.UnitService" method="fillProductUnit" />
+									bean="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnit" />
 							</component>
 						</layoutElement>
 						<layoutElement column="2" row="2">
@@ -405,7 +401,7 @@
 			method="disableTechnologiesIfProductDoesNotAny" />
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService"
 			method="setAndDisableState" />
-		<preRenderHook bean="com.qcadoo.mes.products.util.UnitService"
+		<preRenderHook bean="com.qcadoo.mes.basic.util.UnitService"
 			method="fillProductUnitPreRender" />
 	</view>
 </views>

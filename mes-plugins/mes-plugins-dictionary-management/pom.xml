@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>mes-plugins-dictionary-management</artifactId>
-	<packaging>qcadoo-plugin</packaging>
+	<packaging>jar</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Dictionary Management</name>
 
@@ -23,5 +23,6 @@
 			</plugin>
 		</plugins>
 	</build>
+
 
 </project>

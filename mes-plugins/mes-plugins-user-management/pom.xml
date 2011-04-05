@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>mes-plugins-user-management</artifactId>
-	<packaging>qcadoo-plugin</packaging>
+	<packaging>jar</packaging>
 
 	<name>Qcadoo MES :: Plugins :: User Management</name>
 

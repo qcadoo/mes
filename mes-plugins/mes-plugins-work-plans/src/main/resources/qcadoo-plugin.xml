@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="workPlans" version="0.4.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd">
+
+	<information>
+		<name>Work Plans</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+
+	<dependencies>
+		<dependency>
+			<plugin>products</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+		
+		<model:model model="workPlan" resource="model/workPlan.xml" />
+		<model:model model="workPlanComponent" resource="model/workPlanComponent.xml" />
+		
+		<model:field plugin="products" model="order">
+			<model:hasMany name="workPlans" plugin="workPlans"
+				model="workPlanComponent" joinField="order" cascade="none" />
+		</model:field>
+		
+		<view:menu-item name="workPlans" category="reports"
+			view="workPlans" />
+		
+		<view:view>	
+			<view:resource>view/workPlans.xml</view:resource>
+		</view:view>
+		
+		<view:viewListenerExtension plugin="products"
+			view="orders" component="grid" event="printWorkPlanForOrder"
+			bean="com.qcadoo.mes.workPlans.WorkPlanService" method="printWorkPlanForOrder" />
+
+
+	</modules>
+
+</plugin>
