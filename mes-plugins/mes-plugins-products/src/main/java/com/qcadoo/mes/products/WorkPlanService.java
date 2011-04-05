@@ -42,8 +42,8 @@ import com.qcadoo.mes.products.print.pdf.WorkPlanForWorkerPdfService;
 import com.qcadoo.mes.products.print.xls.WorkPlanForMachineXlsService;
 import com.qcadoo.mes.products.print.xls.WorkPlanForProductXlsService;
 import com.qcadoo.mes.products.print.xls.WorkPlanForWorkerXlsService;
-import com.qcadoo.mes.products.util.OrderPrintUtil;
-import com.qcadoo.mes.products.util.RibbonUtil;
+import com.qcadoo.mes.products.util.OrderReportService;
+import com.qcadoo.mes.products.util.RibbonReportService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -52,8 +52,8 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.utils.DateUtils;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.components.FieldComponentState;
 import com.qcadoo.view.components.form.FormComponentState;
 
@@ -91,10 +91,10 @@ public final class WorkPlanService {
     private TranslationService translationService;
 
     @Autowired
-    private RibbonUtil ribbonUtil;
+    private RibbonReportService ribbonReportService;
 
     @Autowired
-    private OrderPrintUtil orderPrintUtil;
+    private OrderReportService orderReportService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
@@ -157,11 +157,11 @@ public final class WorkPlanService {
     }
 
     public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale) {
-        ribbonUtil.setGenerateButtonState(state, locale, "workPlan");
+        ribbonReportService.setGenerateButtonState(state, locale, "workPlan");
     }
 
     public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale) {
-        ribbonUtil.setGridGenerateButtonState(state, locale, "workPlan");
+        ribbonReportService.setGridGenerateButtonState(state, locale, "workPlan");
     }
 
     public void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -225,7 +225,7 @@ public final class WorkPlanService {
 
     public void printWorkPlanForOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        Entity workPlan = orderPrintUtil.printWorkPlanForOrder(state);
+        Entity workPlan = orderReportService.printWorkPlanForOrder(state);
         if (workPlan == null) {
             return;
         }

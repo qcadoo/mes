@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.util.EntityOperationNumberComparator;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.report.api.xls.XlsDocumentService;
 import com.qcadoo.report.api.xls.XlsUtil;
 
 @Service

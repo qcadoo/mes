@@ -28,7 +28,7 @@
 			joinField="materialRequirement" cascade="delete" copyable="true" />
 	</fields>
 	<hooks>
-		<onCopy class="com.qcadoo.mes.products.MaterialRequirementService"
+		<onCopy class="com.qcadoo.mes.materialRequirements.MaterialRequirementService"
 			method="clearGeneratedOnCopy" />
 	</hooks>
 	<identifier expression="#name" />

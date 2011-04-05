@@ -39,7 +39,7 @@ import com.qcadoo.view.components.grid.GridComponentState;
 import com.qcadoo.view.components.window.WindowComponentState;
 
 @Service
-public class RibbonUtil {
+public class RibbonReportService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;

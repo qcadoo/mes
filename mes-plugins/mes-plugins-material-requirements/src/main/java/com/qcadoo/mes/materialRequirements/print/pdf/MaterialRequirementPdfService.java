@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.products.print.pdf;
+package com.qcadoo.mes.materialRequirements.print.pdf;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -43,12 +43,13 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
-import com.qcadoo.mes.products.print.ReportDataService;
-import com.qcadoo.mes.products.util.EntityNumberComparator;
-import com.qcadoo.mes.products.util.EntityOrderNumberComparator;
+import com.qcadoo.mes.materialRequirements.print.MaterialRequirementsReportDataService;
+import com.qcadoo.mes.materialRequirements.util.EntityOrderNumberComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
+import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfUtil;
+import com.qcadoo.report.api.util.EntityNumberComparator;
 import com.qcadoo.security.api.SecurityService;
 
 @Service
@@ -62,7 +63,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     private SecurityService securityService;
 
     @Autowired
-    private ReportDataService reportDataService;
+    private MaterialRequirementsReportDataService reportDataService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {

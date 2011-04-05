@@ -22,37 +22,38 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.products.print.pdf;
+package com.qcadoo.mes.materialRequirements.print;
 
-import java.util.Locale;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.report.api.pdf.PdfDocumentService;
 
 @Service
-public final class WorkPlanForMachinePdfService extends PdfDocumentService {
+public class MaterialRequirementsReportDataService {
 
     @Autowired
-    private ReportDataService productReportService;
+    ReportDataService reportDataService;
 
-    @Override
-    protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        productReportService.addSeries(document, entity, locale, "machine");
+    public final Map<Entity, BigDecimal> prepareTechnologySeries(final Entity entity) {
+        Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
+        List<Entity> orders = entity.getHasManyField("orders");
+        Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
+        for (Entity component : orders) {
+            Entity order = (Entity) component.getField("order");
+            Entity technology = (Entity) order.getField("technology");
+            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
+            if (technology != null && plannedQuantity != null && plannedQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                reportDataService.countQuantityForProductsIn(products, technology, plannedQuantity, onlyComponents);
+            }
+        }
+        return products;
     }
 
-    @Override
-    protected String getSuffix() {
-        return "for_machine";
-    }
-
-    @Override
-    protected String getReportTitle(final Locale locale) {
-        return getTranslationService().translate("products.workPlan.report.title", locale);
-    }
 }

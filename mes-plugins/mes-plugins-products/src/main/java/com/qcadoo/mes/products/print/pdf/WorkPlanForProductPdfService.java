@@ -33,6 +33,7 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.report.api.pdf.PdfDocumentService;
 
 @Service
 public final class WorkPlanForProductPdfService extends PdfDocumentService {

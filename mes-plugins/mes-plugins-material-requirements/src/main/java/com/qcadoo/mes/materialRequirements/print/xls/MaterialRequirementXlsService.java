@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.products.print.xls;
+package com.qcadoo.mes.materialRequirements.print.xls;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -36,17 +36,18 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.products.print.ReportDataService;
-import com.qcadoo.mes.products.util.EntityNumberComparator;
+import com.qcadoo.mes.materialRequirements.print.MaterialRequirementsReportDataService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
+import com.qcadoo.report.api.util.EntityNumberComparator;
+import com.qcadoo.report.api.xls.XlsDocumentService;
 import com.qcadoo.report.api.xls.XlsUtil;
 
 @Service
 public final class MaterialRequirementXlsService extends XlsDocumentService {
 
     @Autowired
-    private ReportDataService reportDataService;
+    private MaterialRequirementsReportDataService reportDataService;
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {

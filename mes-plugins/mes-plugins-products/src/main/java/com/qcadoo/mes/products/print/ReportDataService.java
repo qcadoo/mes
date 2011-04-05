@@ -48,7 +48,6 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.mes.products.util.EntityOperationInPairNumberComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
@@ -57,6 +56,7 @@ import com.qcadoo.model.api.utils.DateUtils;
 import com.qcadoo.report.api.Pair;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfUtil;
+import com.qcadoo.report.api.util.EntityNumberComparator;
 import com.qcadoo.security.api.SecurityService;
 
 @Service
@@ -74,13 +74,13 @@ public class ReportDataService {
     @Autowired
     private SecurityService securityService;
 
-    private static final String MATERIAL_COMPONENT = "01component";
-
     private static final String MATERIAL_WASTE = "04waste";
 
     private static final String COMPONENT_QUANTITY_ALGORITHM = "02perTechnology";
 
     private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
+
+    private static final String MATERIAL_COMPONENT = "01component";
 
     public final void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {
         for (Entity operationComponent : entityTree) {
@@ -90,46 +90,6 @@ public class ReportDataService {
                 addOperationsFromSubtechnologiesToList(
                         operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents"),
                         operationComponents);
-            }
-        }
-    }
-
-    public final Map<Entity, BigDecimal> prepareTechnologySeries(final Entity entity) {
-        Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
-        List<Entity> orders = entity.getHasManyField("orders");
-        Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
-        for (Entity component : orders) {
-            Entity order = (Entity) component.getField("order");
-            Entity technology = (Entity) order.getField("technology");
-            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-            if (technology != null && plannedQuantity != null && plannedQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                countQuantityForProductsIn(products, technology, plannedQuantity, onlyComponents);
-            }
-        }
-        return products;
-    }
-
-    public final void countQuantityForProductsIn(final Map<Entity, BigDecimal> products, final Entity technology,
-            final BigDecimal plannedQuantity, final Boolean onlyComponents) {
-        EntityTree operationComponents = technology.getTreeField("operationComponents");
-        if (COMPONENT_QUANTITY_ALGORITHM.equals(technology.getField("componentQuantityAlgorithm"))) {
-            countQuntityComponentPerTechnology(products, operationComponents, onlyComponents, plannedQuantity);
-        } else {
-            Map<Entity, BigDecimal> orderProducts = new HashMap<Entity, BigDecimal>();
-            EntityTreeNode rootNode = operationComponents.getRoot();
-            if (rootNode != null) {
-                boolean success = countQuntityComponentPerOutProducts(orderProducts, rootNode, onlyComponents, plannedQuantity);
-                if (success) {
-                    for (Entry<Entity, BigDecimal> entry : orderProducts.entrySet()) {
-                        if (!onlyComponents || MATERIAL_COMPONENT.equals(entry.getKey().getField("typeOfMaterial"))) {
-                            if (products.containsKey(entry.getKey())) {
-                                products.put(entry.getKey(), products.get(entry.getKey()).add(entry.getValue()));
-                            } else {
-                                products.put(entry.getKey(), entry.getValue());
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -160,6 +120,31 @@ public class ReportDataService {
 
             addOperationSeries(entry, document, decimalFormat, locale);
             firstPage = false;
+        }
+    }
+
+    public final void countQuantityForProductsIn(final Map<Entity, BigDecimal> products, final Entity technology,
+            final BigDecimal plannedQuantity, final Boolean onlyComponents) {
+        EntityTree operationComponents = technology.getTreeField("operationComponents");
+        if (COMPONENT_QUANTITY_ALGORITHM.equals(technology.getField("componentQuantityAlgorithm"))) {
+            countQuntityComponentPerTechnology(products, operationComponents, onlyComponents, plannedQuantity);
+        } else {
+            Map<Entity, BigDecimal> orderProducts = new HashMap<Entity, BigDecimal>();
+            EntityTreeNode rootNode = operationComponents.getRoot();
+            if (rootNode != null) {
+                boolean success = countQuntityComponentPerOutProducts(orderProducts, rootNode, onlyComponents, plannedQuantity);
+                if (success) {
+                    for (Entry<Entity, BigDecimal> entry : orderProducts.entrySet()) {
+                        if (!onlyComponents || MATERIAL_COMPONENT.equals(entry.getKey().getField("typeOfMaterial"))) {
+                            if (products.containsKey(entry.getKey())) {
+                                products.put(entry.getKey(), products.get(entry.getKey()).add(entry.getValue()));
+                            } else {
+                                products.put(entry.getKey(), entry.getValue());
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
