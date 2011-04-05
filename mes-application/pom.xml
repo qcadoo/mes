@@ -55,6 +55,12 @@
 			<artifactId>mes-plugins-quality-controls</artifactId>
 			<version>0.4.0-SNAPSHOT</version>
 		</dependency>
+		<!-- TODO remove after developement !!! -->
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugin-integration-subiekt</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
@@ -154,6 +160,7 @@
 								${basedir}/../../qcadoo/qcadoo-view/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-plugin-management/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-products/src/main/resources;
+								${basedir}/../../mes_comercial_plugins/plugin_integration_subiekt/src/main/resources;
 							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>

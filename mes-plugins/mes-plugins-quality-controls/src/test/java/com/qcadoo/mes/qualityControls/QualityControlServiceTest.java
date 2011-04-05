@@ -46,7 +46,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.products.NumberGeneratorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -56,8 +55,9 @@ import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.components.FieldComponentState;
 import com.qcadoo.view.components.form.FormComponentState;
 import com.qcadoo.view.components.grid.GridComponentState;
@@ -424,7 +424,7 @@ public class QualityControlServiceTest {
                 "qualityControls.qualityControls.generated.success.pl");
         given(technology.getField("unitSamplingNr")).willReturn(new BigDecimal("2"));
         given(order.getField("plannedQuantity")).willReturn(new BigDecimal("5"));
-        given(numberGeneratorService.generateNumber("qualityControl")).willReturn("1");
+        given(numberGeneratorService.generateNumber("qualityControls", "qualityControl")).willReturn("1");
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
 

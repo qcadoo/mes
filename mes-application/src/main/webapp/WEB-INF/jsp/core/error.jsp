@@ -52,7 +52,7 @@
 			#content #codeDiv {
 				width: 130px;
 				height: 130px;
-				background-image: url('/img/core/error/errorCodeBg.png');
+				background-image: url('/qcadooView/public/img/core/error/errorCodeBg.png');
 				background-repeat: no-repeat;
 				font-size: 45px;
 				text-align: center;

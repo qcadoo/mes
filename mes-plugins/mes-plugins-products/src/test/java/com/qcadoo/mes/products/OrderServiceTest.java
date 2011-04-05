@@ -68,8 +68,9 @@ import com.qcadoo.model.internal.types.BooleanType;
 import com.qcadoo.model.internal.types.StringType;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.components.FieldComponentState;
 import com.qcadoo.view.components.form.FormComponentState;
 import com.qcadoo.view.components.grid.GridComponentState;
@@ -323,7 +324,7 @@ public class OrderServiceTest {
         orderService.generateOrderNumber(viewDefinitionState, Locale.ENGLISH);
 
         // then
-        verify(numberGeneratorService).generateAndInsertNumber(viewDefinitionState, "order");
+        verify(numberGeneratorService).generateAndInsertNumber(viewDefinitionState, "products", "order", "form", "number");
     }
 
     @Test

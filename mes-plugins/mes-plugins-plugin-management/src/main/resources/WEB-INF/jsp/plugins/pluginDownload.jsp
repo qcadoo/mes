@@ -11,8 +11,9 @@ String ctx = request.getContextPath();
 	var buttonActive = false;
 
 	jQuery(document).ready(function(){
-		window.mainController.setWindowHeader("${headerLabel}");	
+		window.mainController.setWindowHeader("${headerLabel}");
 		$('#form').ajaxForm(function(response) {
+			alert(response);
 			window.location = Encoder.htmlDecode(response);
 	    }); 
 	});

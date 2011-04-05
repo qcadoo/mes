@@ -35,6 +35,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public final class ProductService {
@@ -46,7 +47,7 @@ public final class ProductService {
     private NumberGeneratorService numberGeneratorService;
 
     public void generateProductNumber(final ViewDefinitionState state, final Locale locale) {
-        numberGeneratorService.generateAndInsertNumber(state, "product");
+        numberGeneratorService.generateAndInsertNumber(state, "products", "product", "form", "number");
     }
 
     public boolean checkIfSubstituteIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
