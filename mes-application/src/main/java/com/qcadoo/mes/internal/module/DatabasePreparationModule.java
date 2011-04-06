@@ -78,7 +78,7 @@ public class DatabasePreparationModule extends Module {
 
     @Override
     @Transactional
-    public void enable() {
+    public void multiTenantEnable() {
         if (databaseHasToBePrepared()) {
             LOG.info("Database has to be prepared ...");
 
@@ -92,12 +92,6 @@ public class DatabasePreparationModule extends Module {
         } else {
             LOG.info("Database has been already prepared, skipping");
         }
-    }
-
-    @Override
-    public void disable() {
-        // empty
-
     }
 
     public void setDataDefinitionService(final DataDefinitionService dataDefinitionService) {
