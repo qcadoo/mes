@@ -22,7 +22,6 @@
 	</information>
 
 	<modules>
-		 
 		<localization:locale locale="en" label="English"/>
 		<localization:locale locale="pl" label="Polski"/>
 		

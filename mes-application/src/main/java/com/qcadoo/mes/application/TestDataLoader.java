@@ -112,19 +112,19 @@ public final class TestDataLoader {
             readDataFromXML("users", USER_ATTRIBUTES);
         }
         readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
-        if (pluginAccessor.getEnabledPlugin("basic") != null) {
-            readDataFromXML("machines", MACHINE_ATTRIBUTES);
-            readDataFromXML("staff", STAFF_ATTRIBUTES);
-        }
-        if (pluginAccessor.getEnabledPlugin("products") != null) {
-            readDataFromXML("units", new String[] { "name" });
-            readDataFromXML("products", PRODUCT_ATTRIBUTES);
-            readDataFromXML("operations", OPERATION_ATTRIBUTES);
-            readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
-            readDataFromXML("orders", ORDER_ATTRIBUTES);
-            addMaterialRequirements();
-            addWorkPlans();
-        }
+        // if (pluginAccessor.getEnabledPlugin("basic") != null) {
+        readDataFromXML("machines", MACHINE_ATTRIBUTES);
+        readDataFromXML("staff", STAFF_ATTRIBUTES);
+        // }
+        // if (pluginAccessor.getEnabledPlugin("products") != null) {
+        readDataFromXML("units", new String[] { "name" });
+        readDataFromXML("products", PRODUCT_ATTRIBUTES);
+        readDataFromXML("operations", OPERATION_ATTRIBUTES);
+        readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
+        readDataFromXML("orders", ORDER_ATTRIBUTES);
+        addMaterialRequirements();
+        addWorkPlans();
+        // }
     }
 
     private File getXmlFile(final String type) throws IOException {
