@@ -35,6 +35,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.ModuleFactory;
 
+
 public final class DatabasePreparationModuleFactory extends ModuleFactory<Module> {
 
     @Autowired
