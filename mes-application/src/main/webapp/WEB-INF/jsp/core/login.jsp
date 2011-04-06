@@ -256,10 +256,6 @@
 				<c:if test="${! iframe && ! popup}">
 					<div id="languageDiv">
 				 		<select id="languageSelect" onchange="changeLanguage(this.value)">
-				 		<!--
-				 			<option value="pl">polski</option>
-				 			<option value="en">english</option>
-				 		-->
 				 			<c:forEach items="${locales}" var="localesEntry">
 				 				<option value="${localesEntry.key}">${localesEntry.value}</option>
 				 			</c:forEach>
