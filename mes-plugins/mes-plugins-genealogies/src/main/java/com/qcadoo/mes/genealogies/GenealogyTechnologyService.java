@@ -1,7 +1,5 @@
 package com.qcadoo.mes.genealogies;
 
-import java.util.Locale;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +40,7 @@ public class GenealogyTechnologyService {
         }
     }
 
-    public void checkAttributesReq(final ViewDefinitionState viewDefinitionState, final Locale locale) {
+    public void checkAttributesReq(final ViewDefinitionState viewDefinitionState) {
 
         FormComponentState form = (FormComponentState) viewDefinitionState.getComponentByReference("form");
 
@@ -84,7 +82,7 @@ public class GenealogyTechnologyService {
 
     }
 
-    public void disableBatchRequiredForTechnology(final ViewDefinitionState state, final Locale locale) {
+    public void disableBatchRequiredForTechnology(final ViewDefinitionState state) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         if (form.getFieldValue() != null) {
             FieldComponentState batchRequired = (FieldComponentState) state.getComponentByReference("batchRequired");

@@ -93,7 +93,7 @@ public final class SessionExpirationFilter implements Filter {
             response.getOutputStream().println("sessionExpired");
         } else if ("true".equals(request.getParameter("popup"))) {
             String targetUrl = request.getContextPath() + "/login.html?popup=true&targetUrl="
-                    + URLEncoder.encode(request.getRequestURL().toString() + "?" + request.getQueryString(), "ISO-8859-1") + "";
+                    + URLEncoder.encode(request.getRequestURL().toString() + "?" + request.getQueryString(), "UTF-8") + "";
             response.sendRedirect(response.encodeRedirectURL(targetUrl));
         } else if ("true".equals(request.getParameter("iframe"))) {
             String targetUrl = request.getContextPath() + "/login.html?iframe=true";
