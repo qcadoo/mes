@@ -96,10 +96,8 @@
 		<view:menu-item name="genealogyForProduct" category="reports"
 			view="genealogyForProduct" />
 
-		<view:view>
-			<view:resource>view/genealogies.xml</view:resource>
-			<view:resource>view/orderGenealogies.xml</view:resource>
-		</view:view>
+		<view:view resource="view/genealogies.xml" />
+		<view:view resource="view/orderGenealogies.xml" />
 
 		<view:viewRibbonExtension>
 			<view:resource>view/productsExtension.xml</view:resource>
@@ -109,12 +107,12 @@
 			<view:resource>view/productsExtension.xml</view:resource>
 		</view:viewWindowTabExtension>
 
-		<view:viewHookExtension plugin="technologies" view="technology"
-			hookType="preRenderHook" bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService"
-			method="checkAttributesReq" />
-		<view:viewHookExtension plugin="technologies" view="technology"
-			hookType="preRenderHook" bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService"
-			method="disableBatchRequiredForTechnology" />
+		<view:viewHookExtension plugin="technologies"
+			view="technology" hookType="preRenderHook"
+			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkAttributesReq" />
+		<view:viewHookExtension plugin="technologies"
+			view="technology" hookType="preRenderHook"
+			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="disableBatchRequiredForTechnology" />
 
 		<view:viewListenerExtension plugin="technologies"
 			view="technology" component="product" event="onSelectedEntityChange"

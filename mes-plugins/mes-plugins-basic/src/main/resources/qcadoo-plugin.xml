@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin plugin="basic" system="true" version="0.4.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
@@ -10,8 +11,7 @@
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd"
-       >
+       http://schema.qcadoo.org/modules/localization.xsd">
 
 	<information>
 		<name>MES - Basic</name>
@@ -22,19 +22,19 @@
 	</information>
 
 	<modules>
-		<localization:locale locale="en" label="English"/>
-		<localization:locale locale="pl" label="Polski"/>
-		
+		<localization:locale locale="en" label="English" />
+		<localization:locale locale="pl" label="Polski" />
+
 		<localization:group name="commons" prefix="commons" />
 		<localization:group name="security" prefix="security" />
 		<localization:group name="dashboard" prefix="core.dashboard" />
 
-		<localization:translation path="locales"/>
-	
+		<localization:translation path="locales" />
+
 		<model:model model="machine" resource="model/machine.xml" />
 		<model:model model="staff" resource="model/staff.xml" />
 		<model:model model="parameter" resource="model/parameter.xml" />
-		
+
 		<model:model model="product" resource="model/product.xml" />
 		<model:model model="substitute" resource="model/substitute.xml" />
 		<model:model model="substituteComponent" resource="model/substituteComponent.xml" />
@@ -59,11 +59,8 @@
 		<view:menu-item-url name="systemInfo" category="administration"
 			url="/systemInfo.html" />
 
-		<view:view>
-			<view:resource>view/basic.xml</view:resource>
-			<view:resource>view/products.xml</view:resource>
-		</view:view>
-
+		<view:view resource="view/basic.xml" />
+		<view:view resource="view/products.xml" />
 	</modules>
 
 </plugin>

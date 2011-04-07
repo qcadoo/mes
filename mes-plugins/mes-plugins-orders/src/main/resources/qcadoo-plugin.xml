@@ -37,15 +37,15 @@
 		<localization:translation path="locales" />
 
 		<model:model model="order" resource="model/order.xml" />
-		
+
 		<model:field plugin="basic" model="product">
-			<model:hasMany name="orders" plugin="orders"
-				model="order" joinField="product" cascade="none" />
+			<model:hasMany name="orders" plugin="orders" model="order"
+				joinField="product" cascade="none" />
 		</model:field>
-		
+
 		<model:field plugin="technologies" model="technology">
-			<model:hasMany name="orders" plugin="orders"
-				model="order" joinField="technology" cascade="none" />
+			<model:hasMany name="orders" plugin="orders" model="order"
+				joinField="technology" cascade="none" />
 		</model:field>
 
 		<view:menu-category name="orders" />
@@ -53,9 +53,7 @@
 		<view:menu-item name="productionOrders" category="orders"
 			view="orders" />
 
-		<view:view>
-			<view:resource>view/orders.xml</view:resource>
-		</view:view>
+		<view:view resource="view/orders.xml" />
 
 	</modules>
 
