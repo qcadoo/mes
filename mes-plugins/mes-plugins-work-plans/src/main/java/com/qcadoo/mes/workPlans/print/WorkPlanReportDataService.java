@@ -22,8 +22,8 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.products.print.ReportDataService;
-import com.qcadoo.mes.products.util.EntityNumberComparator;
+import com.qcadoo.mes.orders.util.EntityNumberComparator;
+import com.qcadoo.mes.technologies.print.ReportDataService;
 import com.qcadoo.mes.workPlans.util.EntityOperationInPairNumberComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
@@ -136,7 +136,7 @@ public class WorkPlanReportDataService {
         Paragraph title = new Paragraph();
         if (type.equals("machine")) {
             Entity machine = entry.getKey();
-            title.add(new Phrase(translationService.translate("products.workPlan.report.paragrah3", locale), PdfUtil
+            title.add(new Phrase(translationService.translate("workPlans.workPlan.report.paragrah3", locale), PdfUtil
                     .getArialBold11Light()));
             String name = "";
             if (machine != null) {
@@ -145,7 +145,7 @@ public class WorkPlanReportDataService {
             title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
         } else if (type.equals("worker")) {
             Entity staff = entry.getKey();
-            title.add(new Phrase(translationService.translate("products.workPlan.report.paragrah2", locale), PdfUtil
+            title.add(new Phrase(translationService.translate("workPlans.workPlan.report.paragrah2", locale), PdfUtil
                     .getArialBold11Light()));
             String name = "";
             if (staff != null) {
@@ -154,7 +154,7 @@ public class WorkPlanReportDataService {
             title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
         } else if (type.equals("product")) {
             Entity product = entry.getKey();
-            title.add(new Phrase(translationService.translate("products.workPlan.report.paragrah4", locale), PdfUtil
+            title.add(new Phrase(translationService.translate("workPlans.workPlan.report.paragrah4", locale), PdfUtil
                     .getArialBold11Light()));
             title.add(new Phrase(" " + totalQuantity + " x " + product.getField("name"), PdfUtil.getArialBold19Dark()));
         }
@@ -219,30 +219,30 @@ public class WorkPlanReportDataService {
 
     private List<String> prepareOrderHeader(final Document document, final Entity entity, final Locale locale)
             throws DocumentException {
-        String documenTitle = translationService.translate("products.workPlan.report.title", locale);
-        String documentAuthor = translationService.translate("products.materialRequirement.report.author", locale);
+        String documenTitle = translationService.translate("workPlans.workPlan.report.title", locale);
+        String documentAuthor = translationService.translate("workPlans.workPlan.report.author", locale);
         PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
                 (Date) entity.getField("date"), securityService.getCurrentUserName());
         // document.add(generateBarcode(entity.getField("name").toString()));
-        document.add(new Paragraph(translationService.translate("products.workPlan.report.paragrah", locale), PdfUtil
+        document.add(new Paragraph(translationService.translate("workPlans.workPlan.report.paragrah", locale), PdfUtil
                 .getArialBold11Dark()));
         List<String> orderHeader = new ArrayList<String>();
-        orderHeader.add(translationService.translate("products.order.number.label", locale));
-        orderHeader.add(translationService.translate("products.order.name.label", locale));
-        orderHeader.add(translationService.translate("products.order.product.label", locale));
-        orderHeader.add(translationService.translate("products.order.plannedQuantity.label", locale));
-        orderHeader.add(translationService.translate("products.product.unit.label", locale));
-        orderHeader.add(translationService.translate("products.order.dateTo.label", locale));
+        orderHeader.add(translationService.translate("orders.order.number.label", locale));
+        orderHeader.add(translationService.translate("orders.order.name.label", locale));
+        orderHeader.add(translationService.translate("orders.order.product.label", locale));
+        orderHeader.add(translationService.translate("orders.order.plannedQuantity.label", locale));
+        orderHeader.add(translationService.translate("basic.product.unit.label", locale));
+        orderHeader.add(translationService.translate("orders.order.dateTo.label", locale));
         return orderHeader;
     }
 
     private List<String> prepareOperationHeader(final Locale locale) {
         List<String> operationHeader = new ArrayList<String>();
-        operationHeader.add(translationService.translate("products.operation.number.label", locale));
-        operationHeader.add(translationService.translate("products.operation.name.label", locale));
-        operationHeader.add(translationService.translate("products.workPlan.report.operationTable.order.column", locale));
-        operationHeader.add(translationService.translate("products.workPlan.report.operationTable.productsOut.column", locale));
-        operationHeader.add(translationService.translate("products.workPlan.report.operationTable.productsIn.column", locale));
+        operationHeader.add(translationService.translate("technologies.operation.number.label", locale));
+        operationHeader.add(translationService.translate("technologies.operation.name.label", locale));
+        operationHeader.add(translationService.translate("workPlans.workPlan.report.operationTable.order.column", locale));
+        operationHeader.add(translationService.translate("workPlans.workPlan.report.operationTable.productsOut.column", locale));
+        operationHeader.add(translationService.translate("workPlans.workPlan.report.operationTable.productsIn.column", locale));
         return operationHeader;
     }
 

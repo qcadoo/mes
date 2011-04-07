@@ -19,13 +19,13 @@
 		<module>mes-plugins-dictionary-management</module>
 		<module>mes-plugins-plugin-management</module>
 		<module>mes-plugins-menu-management</module>
-		<module>mes-plugins-products</module>
+		<module>mes-plugins-orders</module>
 		<module>mes-plugins-basic</module>
 		<module>mes-plugins-genealogies</module>
 		<module>mes-plugins-quality-controls</module>
-	    	<module>mes-plugins-material-requirements</module>
-    		<module>mes-plugins-work-plans</module>
-	        <module>mes-plugins-technologies</module>
+	    <module>mes-plugins-material-requirements</module>
+    	<module>mes-plugins-work-plans</module>
+	       <module>mes-plugins-technologies</module>
   </modules>
 
 </project>

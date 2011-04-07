@@ -100,7 +100,7 @@ public class GenealogyTechnologyService {
     }
 
     private boolean checkProductInComponentsBatchRequired(final Long entityId) {
-        SearchResult searchResult = dataDefinitionService.get("products", "operationProductInComponent").find()
+        SearchResult searchResult = dataDefinitionService.get("technologies", "operationProductInComponent").find()
                 .restrictedWith(Restrictions.eq("operationComponent.technology.id", entityId))
                 .restrictedWith(Restrictions.eq("batchRequired", true)).withMaxResults(1).list();
 
@@ -118,7 +118,7 @@ public class GenealogyTechnologyService {
     }
 
     private Entity getProductById(final Long productId) {
-        DataDefinition instructionDD = dataDefinitionService.get("products", "product");
+        DataDefinition instructionDD = dataDefinitionService.get("basic", "product");
 
         SearchCriteriaBuilder searchCriteria = instructionDD.find().withMaxResults(1)
                 .restrictedWith(Restrictions.idRestriction(productId, RestrictionOperator.EQ));

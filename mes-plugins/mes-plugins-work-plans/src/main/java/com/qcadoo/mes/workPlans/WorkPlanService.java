@@ -36,8 +36,8 @@ import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.products.util.OrderReportService;
-import com.qcadoo.mes.products.util.RibbonReportService;
+import com.qcadoo.mes.orders.util.OrderReportService;
+import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.mes.workPlans.print.pdf.WorkPlanForMachinePdfService;
 import com.qcadoo.mes.workPlans.print.pdf.WorkPlanForProductPdfService;
 import com.qcadoo.mes.workPlans.print.pdf.WorkPlanForWorkerPdfService;
@@ -110,19 +110,19 @@ public final class WorkPlanService {
             ComponentState date = viewDefinitionState.getComponentByReference("date");
             ComponentState worker = viewDefinitionState.getComponentByReference("worker");
 
-            Entity workPlan = dataDefinitionService.get("products", "workPlan").get((Long) state.getFieldValue());
+            Entity workPlan = dataDefinitionService.get("workPlans", "workPlan").get((Long) state.getFieldValue());
 
             if (workPlan == null) {
                 String message = translationService.translate("core.message.entityNotFound", state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;
             } else if (StringUtils.hasText(workPlan.getStringField("fileName"))) {
-                String message = translationService.translate("products.workPlan.window.workPlan.documentsWasGenerated",
+                String message = translationService.translate("workPlans.workPlan.window.workPlan.documentsWasGenerated",
                         state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;
             } else if (workPlan.getHasManyField("orders").isEmpty()) {
-                String message = translationService.translate("products.workPlan.window.workPlan.missingAssosiatedOrders",
+                String message = translationService.translate("workPlans.workPlan.window.workPlan.missingAssosiatedOrders",
                         state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;
@@ -143,7 +143,7 @@ public final class WorkPlanService {
                 return;
             }
 
-            workPlan = dataDefinitionService.get("products", "workPlan").get((Long) state.getFieldValue());
+            workPlan = dataDefinitionService.get("workPlans", "workPlan").get((Long) state.getFieldValue());
 
             try {
                 generateWorkPlanDocuments(state, workPlan);
@@ -157,26 +157,26 @@ public final class WorkPlanService {
     }
 
     public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale) {
-        ribbonReportService.setGenerateButtonState(state, locale, "workPlan");
+        ribbonReportService.setGenerateButtonState(state, locale, "workPlans", "workPlan");
     }
 
     public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale) {
-        ribbonReportService.setGridGenerateButtonState(state, locale, "workPlan");
+        ribbonReportService.setGridGenerateButtonState(state, locale, "workPlans", "workPlan");
     }
 
     public void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
 
         if (state.getFieldValue() instanceof Long) {
-            Entity workPlan = dataDefinitionService.get("products", "workPlan").get((Long) state.getFieldValue());
+            Entity workPlan = dataDefinitionService.get("workPlans", "workPlan").get((Long) state.getFieldValue());
             if (workPlan == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
             } else if (!StringUtils.hasText(workPlan.getStringField("fileName"))) {
                 state.addMessage(
-                        translationService.translate("products.workPlan.window.workPlan.documentsWasNotGenerated",
+                        translationService.translate("workPlans.workPlan.window.workPlan.documentsWasNotGenerated",
                                 state.getLocale()), MessageType.FAILURE);
             } else {
-                viewDefinitionState.redirectTo("/products/workPlan" + args[1] + "." + args[0] + "?id=" + state.getFieldValue(),
+                viewDefinitionState.redirectTo("/workPlans/workPlan" + args[1] + "." + args[0] + "?id=" + state.getFieldValue(),
                         false, false);
             }
         } else {
@@ -216,7 +216,7 @@ public final class WorkPlanService {
                 .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("workPlan"), workPlan.getId())).list();
 
         if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
-            entity.addError(dataDefinition.getField("order"), "products.validate.global.error.workPlanDuplicated");
+            entity.addError(dataDefinition.getField("order"), "workPlans.validate.global.error.workPlanDuplicated");
             return false;
         } else {
             return true;
@@ -232,7 +232,7 @@ public final class WorkPlanService {
         try {
             generateWorkPlanDocuments(state, workPlan);
 
-            viewDefinitionState.redirectTo("/products/workPlan" + args[1] + "." + args[0] + "?id=" + workPlan.getId(), false,
+            viewDefinitionState.redirectTo("/workPlans/workPlan" + args[1] + "." + args[0] + "?id=" + workPlan.getId(), false,
                     false);
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage(), e);
@@ -259,7 +259,7 @@ public final class WorkPlanService {
 
     private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
         entity.setField("fileName", fileName);
-        return dataDefinitionService.get("products", entityName).save(entity);
+        return dataDefinitionService.get("workPlans", entityName).save(entity);
     }
 
 }

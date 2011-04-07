@@ -32,7 +32,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.products.print.ReportDataService;
+import com.qcadoo.mes.technologies.print.ReportDataService;
 import com.qcadoo.model.api.Entity;
 
 @Service

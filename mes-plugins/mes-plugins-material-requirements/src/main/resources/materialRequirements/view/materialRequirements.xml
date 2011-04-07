@@ -38,7 +38,7 @@
 				<option type="order" column="name" direction="asc" />
 				<option type="searchable" value="name,generated,worker" />
 				<option type="orderable" value="name,generated,worker" />
-				<option type="correspondingView" value="products/materialRequirement" />
+				<option type="correspondingView" value="materialRequirements/materialRequirement" />
 				<option type="correspondingComponent" value="form" />
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
@@ -58,8 +58,8 @@
 									xlsRibbonItem.disable("#{translate(moreThanOneRecordSelected)}");
 									pdfRibbonItem.disable("#{translate(moreThanOneRecordSelected)}");	
 								} else if (selectedEntitiesArray[0].fields.generated == '0') {
-									xlsRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
-									pdfRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");								
+									xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");								
 								} else {
 									xlsRibbonItem.enable();
 									pdfRibbonItem.enable();
@@ -139,10 +139,10 @@
 								if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
 									xlsRibbonItem.enable();
 									pdfRibbonItem.enable();
-									saveRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+									saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 								} else {
-									xlsRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
-									pdfRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 									saveRibbonItem.enable();
 								}
 							} else {
@@ -191,7 +191,7 @@
 							<option type="column" name="name" fields="order"
 								expression="#order['name']" />
 							<option type="order" column="number" direction="desc" />
-							<option type="correspondingView" value="products/materialRequirementComponent" />
+							<option type="correspondingView" value="materialRequirements/materialRequirementComponent" />
 							<option type="correspondingComponent" value="form" />
 							<option type="correspondingViewInModal" value="true" />
 							<option type="paginable" value="false" />
