@@ -48,6 +48,10 @@
 			<view:resource>view/materialRequirements.xml</view:resource>
 		</view:view>
 		
+		<view:viewRibbonExtension>
+			<view:resource>view/ordersExtension.xml</view:resource>
+		</view:viewRibbonExtension>
+		
 		<view:viewListenerExtension plugin="products"
 			view="orders" component="grid" event="printMaterialReqForOrder"
 			bean="com.qcadoo.mes.materialRequirements.MaterialRequirementService" method="printMaterialReqForOrder" />
