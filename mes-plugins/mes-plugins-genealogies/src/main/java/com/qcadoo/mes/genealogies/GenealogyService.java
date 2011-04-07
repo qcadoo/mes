@@ -79,7 +79,7 @@ public final class GenealogyService {
         ComponentState otherList = state.getComponentByReference("otherBorderLayout");
         FieldComponentState otherFeaturesList = (FieldComponentState) state.getComponentByReference("otherFeaturesList");
 
-        Entity order = dataDefinitionService.get("products", "order").get(
+        Entity order = dataDefinitionService.get("orders", "order").get(
                 Long.valueOf(form.getEntity().getField("order").toString()));
         Entity technology = order.getBelongsToField("technology");
 
@@ -129,7 +129,7 @@ public final class GenealogyService {
                 existingProductInComponents = genealogy.getHasManyField("productInComponents");
             }
 
-            Entity order = dataDefinitionService.get("products", "order").get(
+            Entity order = dataDefinitionService.get("orders", "order").get(
                     Long.valueOf(form.getEntity().getField("order").toString()));
             Entity technology = order.getBelongsToField("technology");
 
@@ -187,7 +187,7 @@ public final class GenealogyService {
     public void fillBatchRequiredForTechnology(final DataDefinition dataDefinition, final Entity entity) {
         if ((Boolean) entity.getField("batchRequired")) {
             Entity technology = entity.getBelongsToField("operationComponent").getBelongsToField("technology");
-            DataDefinition technologyInDef = dataDefinitionService.get("products", "technology");
+            DataDefinition technologyInDef = dataDefinitionService.get("technologies", "technology");
             Entity technologyEntity = technologyInDef.get(technology.getId());
             if (!(Boolean) technologyEntity.getField("batchRequired")) {
                 technologyEntity.setField("batchRequired", true);

@@ -1,7 +1,7 @@
 <viewExtensions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
-	<ribbonExtension plugin="products" view="orders">
+	<ribbonExtension plugin="orders" view="orders">
 		<group name="qualityContol">
 			<bigButton name="generateQualityControl"
 				action="#{grid}.fireEvent(generateQualityControl);" icon="qualityControlIcon24.png"
@@ -15,7 +15,7 @@
 								} else if (selectedEntitiesArray.length == 1) {
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
 									if (selectedEntityStatus == '03done') {
-										this.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+										this.disable("#{translate(orders.order.ribbon.message.stateIsDone)}");
 									} else {
 										this.enable();
 									}
@@ -30,7 +30,7 @@
 		</group>
 	</ribbonExtension>
 	
-	<ribbonExtension plugin="products" view="order">
+	<ribbonExtension plugin="orders" view="order">
 		<group name="qualityContol">
 			<bigButton name="generateQualityControl" icon="qualityControlIcon24.png" state="disabled">
 				<script>
@@ -51,7 +51,7 @@
 								if (! value.content.entityId || ! state) {
 									this.disable();
 								} else if (state == "03done") {
-									this.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+									this.disable("#{translate(orders.order.ribbon.message.stateIsDone)}");
 								} else {
 									this.enable();
 								}
@@ -63,12 +63,12 @@
 		</group>
 	</ribbonExtension>
 
-	<windowTabExtension plugin="products" view="technology">
+	<windowTabExtension plugin="technologies" view="technology">
 		<windowTab name="qualityControlTab" reference="qualityControlTab">
 			<component type="gridLayout" name="genealogyLayout" columns="3" rows="4">
 				<layoutElement column="1" row="1">
 					<component type="select" name="qualityControlType" reference="qualityControlType" field="#{form}.qualityControlType" >
-						<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkQualityControlType"/>									
+						<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.technologies.TechnologyService" method="checkQualityControlType"/>									
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">	
@@ -81,7 +81,7 @@
 		</windowTab>
 	</windowTabExtension>
 	
-	<windowTabExtension plugin="products" view="technologyOperationComponent">
+	<windowTabExtension plugin="technologies" view="technologyOperationComponent">
 		<windowTab name="qualityControlTab" reference="qualityControlTab">
 			<component type="gridLayout" name="qualityControlGridLayout" columns="1" rows="1">
 				<layoutElement column="1" row="1">

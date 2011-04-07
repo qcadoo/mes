@@ -153,7 +153,7 @@ public class GenealogyServiceTest {
         Entity order = mock(Entity.class);
         given(order.getBelongsToField("technology")).willReturn(null);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         ComponentState features = mock(ComponentState.class);
 
@@ -184,7 +184,7 @@ public class GenealogyServiceTest {
         Entity order = mock(Entity.class);
         given(order.getBelongsToField("technology")).willReturn(technology);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         ComponentState features = mock(ComponentState.class);
         ComponentState shiftFeature = mock(ComponentState.class);
@@ -224,7 +224,7 @@ public class GenealogyServiceTest {
         Entity order = mock(Entity.class);
         given(order.getBelongsToField("technology")).willReturn(technology);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         ComponentState features = mock(ComponentState.class);
         FieldComponentState shiftFeature = mock(FieldComponentState.class);
@@ -264,7 +264,7 @@ public class GenealogyServiceTest {
         Entity order = mock(Entity.class);
         given(order.getBelongsToField("technology")).willReturn(technology);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         ComponentState features = mock(ComponentState.class);
         FieldComponentState shiftFeature = mock(FieldComponentState.class);
@@ -319,7 +319,7 @@ public class GenealogyServiceTest {
         Entity order = mock(Entity.class);
         given(order.getBelongsToField("technology")).willReturn(null);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         ViewDefinitionState state = mock(ViewDefinitionState.class);
         given(state.getComponentByReference("form")).willReturn(form);
@@ -353,7 +353,7 @@ public class GenealogyServiceTest {
         Entity order = mock(Entity.class);
         given(order.getBelongsToField("technology")).willReturn(technology);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         ViewDefinitionState state = mock(ViewDefinitionState.class);
         given(state.getComponentByReference("form")).willReturn(form);
@@ -392,7 +392,7 @@ public class GenealogyServiceTest {
         given(technology.getTreeField("operationComponents")).willReturn(operationProductInComponents);
 
         Entity order = mock(Entity.class);
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
         given(order.getBelongsToField("technology")).willReturn(technology);
 
         Entity genealogy = mock(Entity.class);

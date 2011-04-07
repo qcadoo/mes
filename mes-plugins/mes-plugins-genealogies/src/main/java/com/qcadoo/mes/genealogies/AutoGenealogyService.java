@@ -45,8 +45,8 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.components.form.FormComponentState;
 
 @Service
@@ -68,7 +68,7 @@ public class AutoGenealogyService {
     public void generateGenalogyOnChangeOrderStatusForDone(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
         if (state.getFieldValue() instanceof Long) {
-            Entity order = dataDefinitionService.get("products", "order").get((Long) state.getFieldValue());
+            Entity order = dataDefinitionService.get("orders", "order").get((Long) state.getFieldValue());
             if (order == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
@@ -104,7 +104,7 @@ public class AutoGenealogyService {
         fillUserAndDate(entity);
         Entity product = entity.getBelongsToField("productInComponent").getBelongsToField("productInComponent")
                 .getBelongsToField("product");
-        DataDefinition productInDef = dataDefinitionService.get("products", "product");
+        DataDefinition productInDef = dataDefinitionService.get("basic", "product");
         Entity productEntity = productInDef.get(product.getId());
         productEntity.setField("lastUsedBatch", entity.getField("batch"));
         productInDef.save(productEntity);
@@ -113,7 +113,7 @@ public class AutoGenealogyService {
     public void fillLastUsedBatchForGenealogy(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
         Entity product = entity.getBelongsToField("order").getBelongsToField("product");
-        DataDefinition productInDef = dataDefinitionService.get("products", "product");
+        DataDefinition productInDef = dataDefinitionService.get("basic", "product");
         Entity productEntity = productInDef.get(product.getId());
         productEntity.setField("lastUsedBatch", entity.getField("batch"));
         productInDef.save(productEntity);
@@ -123,7 +123,7 @@ public class AutoGenealogyService {
     public void autocompleteGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state.getFieldValue() instanceof Long) {
-            Entity order = dataDefinitionService.get("products", "order").get((Long) state.getFieldValue());
+            Entity order = dataDefinitionService.get("orders", "order").get((Long) state.getFieldValue());
             if (order == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);

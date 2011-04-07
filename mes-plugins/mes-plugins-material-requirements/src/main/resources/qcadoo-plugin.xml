@@ -23,7 +23,11 @@
 	
 	<dependencies>
 		<dependency>
-			<plugin>products</plugin>
+			<plugin>orders</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+		<dependency>
+			<plugin>technologies</plugin>
 			<version>[0.4.0</version>
 		</dependency>
 	</dependencies>
@@ -36,7 +40,7 @@
 		<model:model model="materialRequirementComponent"
 			resource="model/materialRequirementComponent.xml" />
 			
-		<model:field plugin="products" model="order">
+		<model:field plugin="orders" model="order">
 			<model:hasMany name="materialRequirements" plugin="materialRequirements"
 				model="materialRequirementComponent" joinField="order" cascade="none" />
 		</model:field>
@@ -52,7 +56,7 @@
 			<view:resource>view/ordersExtension.xml</view:resource>
 		</view:viewRibbonExtension>
 		
-		<view:viewListenerExtension plugin="products"
+		<view:viewListenerExtension plugin="orders"
 			view="orders" component="grid" event="printMaterialReqForOrder"
 			bean="com.qcadoo.mes.materialRequirements.MaterialRequirementService" method="printMaterialReqForOrder" />
 

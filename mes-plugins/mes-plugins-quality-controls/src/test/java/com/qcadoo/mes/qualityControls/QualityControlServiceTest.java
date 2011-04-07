@@ -379,7 +379,7 @@ public class QualityControlServiceTest {
 
         SearchCriteriaBuilder searchCriteria = mock(SearchCriteriaBuilder.class, RETURNS_DEEP_STUBS);
 
-        given(dataDefinitionService.get("products", "order")).willReturn(orderDataDefinition);
+        given(dataDefinitionService.get("orders", "order")).willReturn(orderDataDefinition);
         given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(qualityForBatchDataDefinition);
         given(orderDataDefinition.get(7L)).willReturn(order);
         given(order.getField("technology")).willReturn(technology);
@@ -414,7 +414,7 @@ public class QualityControlServiceTest {
 
         Entity technology = mock(Entity.class);
 
-        given(dataDefinitionService.get("products", "order")).willReturn(orderDataDefinition);
+        given(dataDefinitionService.get("orders", "order")).willReturn(orderDataDefinition);
         given(orderDataDefinition.get(7L)).willReturn(order);
         given(order.getField("technology")).willReturn(technology);
         given(technology.getField("qualityControlType")).willReturn("02forUnit");
@@ -537,7 +537,7 @@ public class QualityControlServiceTest {
         given(viewDefinitionState.getComponentByReference("controlInstruction")).willReturn(controlInstruction);
         given(state.getFieldValue()).willReturn(1L);
 
-        given(dataDefinitionService.get("products", "order")).willReturn(orderDD);
+        given(dataDefinitionService.get("orders", "order")).willReturn(orderDD);
 
         given(
                 orderDD.find().withMaxResults(1)

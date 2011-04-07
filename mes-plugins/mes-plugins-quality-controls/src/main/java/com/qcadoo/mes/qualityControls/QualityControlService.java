@@ -89,7 +89,7 @@ public class QualityControlService {
     public void setQualityControlTypeForTechnology(final DataDefinition dataDefinition, final Entity entity) {
         if (entity.getField("qualityControlRequired") != null && (Boolean) entity.getField("qualityControlRequired")) {
             Entity technology = entity.getBelongsToField("technology");
-            DataDefinition technologyInDef = dataDefinitionService.get("products", "technology");
+            DataDefinition technologyInDef = dataDefinitionService.get("technologies", "technology");
             Entity technologyEntity = technologyInDef.get(technology.getId());
             if (technologyEntity.getField("qualityControlType") == null
                     || !technologyEntity.getField("qualityControlType").equals("04forOperation")) {
@@ -278,7 +278,7 @@ public class QualityControlService {
     public void generateQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state.getFieldValue() != null) {
-            DataDefinition orderDataDefinition = dataDefinitionService.get("products", "order");
+            DataDefinition orderDataDefinition = dataDefinitionService.get("orders", "order");
             Entity order = orderDataDefinition.get((Long) state.getFieldValue());
 
             Entity technology = (Entity) order.getField("technology");
@@ -512,7 +512,7 @@ public class QualityControlService {
     }
 
     private boolean checkOperationQualityControlRequired(final Long entityId) {
-        SearchResult searchResult = dataDefinitionService.get("products", "technologyOperationComponent").find()
+        SearchResult searchResult = dataDefinitionService.get("technologies", "technologyOperationComponent").find()
                 .restrictedWith(Restrictions.eq("technology.id", entityId))
                 .restrictedWith(Restrictions.eq("qualityControlRequired", true)).withMaxResults(1).list();
 
@@ -537,7 +537,7 @@ public class QualityControlService {
     }
 
     private String getInstructionForOrder(final Long fieldValue) {
-        DataDefinition orderDD = dataDefinitionService.get("products", "order");
+        DataDefinition orderDD = dataDefinitionService.get("orders", "order");
 
         SearchCriteriaBuilder searchCriteria = orderDD.find().withMaxResults(1)
                 .restrictedWith(Restrictions.idRestriction(fieldValue, RestrictionOperator.EQ));

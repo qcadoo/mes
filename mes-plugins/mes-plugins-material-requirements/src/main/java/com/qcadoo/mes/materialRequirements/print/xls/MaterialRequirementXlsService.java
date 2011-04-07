@@ -37,7 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialRequirements.print.MaterialRequirementReportDataService;
-import com.qcadoo.mes.products.util.EntityNumberComparator;
+import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.xls.XlsDocumentService;
@@ -53,16 +53,16 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
         HSSFCell cell0 = header.createCell(0);
-        cell0.setCellValue(getTranslationService().translate("products.product.number.label", locale));
+        cell0.setCellValue(getTranslationService().translate("basic.product.number.label", locale));
         cell0.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell1 = header.createCell(1);
-        cell1.setCellValue(getTranslationService().translate("products.product.name.label", locale));
+        cell1.setCellValue(getTranslationService().translate("basic.product.name.label", locale));
         cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell2 = header.createCell(2);
-        cell2.setCellValue(getTranslationService().translate("products.technologyOperationComponent.quantity.label", locale));
+        cell2.setCellValue(getTranslationService().translate("technologies.technologyOperationComponent.quantity.label", locale));
         cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell3 = header.createCell(3);
-        cell3.setCellValue(getTranslationService().translate("products.product.unit.label", locale));
+        cell3.setCellValue(getTranslationService().translate("basic.product.unit.label", locale));
         cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
     }
 
@@ -91,7 +91,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
 
     @Override
     protected String getReportTitle(final Locale locale) {
-        return getTranslationService().translate("products.materialRequirement.report.title", locale);
+        return getTranslationService().translate("materialRequirements.materialRequirement.report.title", locale);
     }
 
     @Override

@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.products.print.ReportDataService;
+import com.qcadoo.mes.technologies.print.ReportDataService;
 import com.qcadoo.mes.workPlans.print.WorkPlanReportDataService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;

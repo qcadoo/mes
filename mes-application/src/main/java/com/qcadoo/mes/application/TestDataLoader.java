@@ -115,14 +115,20 @@ public final class TestDataLoader {
         if (pluginAccessor.getEnabledPlugin("basic") != null) {
             readDataFromXML("machines", MACHINE_ATTRIBUTES);
             readDataFromXML("staff", STAFF_ATTRIBUTES);
-        }
-        if (pluginAccessor.getEnabledPlugin("products") != null) {
             readDataFromXML("units", new String[] { "name" });
             readDataFromXML("products", PRODUCT_ATTRIBUTES);
+        }
+        if (pluginAccessor.getEnabledPlugin("technologies") != null) {
             readDataFromXML("operations", OPERATION_ATTRIBUTES);
             readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
+        }
+        if (pluginAccessor.getEnabledPlugin("orders") != null) {
             readDataFromXML("orders", ORDER_ATTRIBUTES);
+        }
+        if (pluginAccessor.getEnabledPlugin("materialRequirements") != null) {
             addMaterialRequirements();
+        }
+        if (pluginAccessor.getEnabledPlugin("workPlans") != null) {
             addWorkPlans();
         }
     }
@@ -226,7 +232,7 @@ public final class TestDataLoader {
     }
 
     private void addOperations(final Map<String, String> values) {
-        Entity operation = dataDefinitionService.get("products", "operation").create();
+        Entity operation = dataDefinitionService.get("technologies", "operation").create();
 
         operation.setField("name", values.get("name"));
         operation.setField("number", values.get("number"));
@@ -238,14 +244,14 @@ public final class TestDataLoader {
                     + "}");
         }
 
-        operation = dataDefinitionService.get("products", "operation").save(operation);
+        operation = dataDefinitionService.get("technologies", "operation").save(operation);
         if (!operation.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
     }
 
     private void addProduct(final Map<String, String> values) {
-        Entity product = dataDefinitionService.get("products", "product").create();
+        Entity product = dataDefinitionService.get("basic", "product").create();
         product.setField("category", getRandomDictionaryItem("categories"));
         if (!values.get("ean").isEmpty()) {
             product.setField("ean", values.get("ean"));
@@ -261,7 +267,7 @@ public final class TestDataLoader {
         }
         product.setField("typeOfMaterial", getRandomTypeOfMaterial());
         product.setField("unit", getRandomUnit());
-        product = dataDefinitionService.get("products", "product").save(product);
+        product = dataDefinitionService.get("basic", "product").save(product);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test product {id=" + product.getId() + ", category=" + product.getField("category") + ", ean="
@@ -280,7 +286,7 @@ public final class TestDataLoader {
     }
 
     private void addSubstitute(final String name, final String number, final Entity product, final int priority) {
-        Entity substitute = dataDefinitionService.get("products", "substitute").create();
+        Entity substitute = dataDefinitionService.get("basic", "substitute").create();
         substitute.setField("name", name);
         substitute.setField("number", number);
         substitute.setField("priority", priority);
@@ -292,7 +298,7 @@ public final class TestDataLoader {
                     + ((Entity) substitute.getField("product")).getField("number") + "}");
         }
 
-        substitute = dataDefinitionService.get("products", "substitute").save(substitute);
+        substitute = dataDefinitionService.get("basic", "substitute").save(substitute);
         if (!substitute.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
@@ -303,7 +309,7 @@ public final class TestDataLoader {
     }
 
     private void addSubstituteComponent(final Entity substitute, final Entity product, final double quantity) {
-        Entity substituteComponent = dataDefinitionService.get("products", "substituteComponent").create();
+        Entity substituteComponent = dataDefinitionService.get("basic", "substituteComponent").create();
         substituteComponent.setField("product", product);
         substituteComponent.setField("quantity", new BigDecimal(quantity).setScale(3, RoundingMode.HALF_EVEN));
         substituteComponent.setField("substitute", substitute);
@@ -315,7 +321,7 @@ public final class TestDataLoader {
                     + substituteComponent.getField("quantity") + "}");
         }
 
-        substituteComponent = dataDefinitionService.get("products", "substituteComponent").save(substituteComponent);
+        substituteComponent = dataDefinitionService.get("basic", "substituteComponent").save(substituteComponent);
         if (!substituteComponent.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
@@ -411,7 +417,7 @@ public final class TestDataLoader {
             }
         }
 
-        Entity order = dataDefinitionService.get("products", "order").create();
+        Entity order = dataDefinitionService.get("orders", "order").create();
         order.setField("dateFrom", new Date(startDate));
         order.setField("dateTo", new Date(endDate));
         order.setField("doneQuantity", values.get("quantity_completed").isEmpty() ? new BigDecimal(100 * RANDOM.nextDouble())
@@ -462,7 +468,7 @@ public final class TestDataLoader {
                     + ", startWorker=" + order.getField("startWorker") + ", endWorker=" + order.getField("endWorker") + "}");
         }
 
-        order = dataDefinitionService.get("products", "order").save(order);
+        order = dataDefinitionService.get("orders", "order").save(order);
         if (!order.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
@@ -474,7 +480,7 @@ public final class TestDataLoader {
         if (product != null) {
             Entity defaultTechnology = getDefaultTechnologyForProduct(product);
 
-            Entity technology = dataDefinitionService.get("products", "technology").create();
+            Entity technology = dataDefinitionService.get("technologies", "technology").create();
             if (!values.get("description").isEmpty()) {
                 technology.setField("description", values.get("description"));
             }
@@ -497,7 +503,7 @@ public final class TestDataLoader {
                         + technology.getField("description") + ", master=" + technology.getField("master") + "}");
             }
 
-            technology = dataDefinitionService.get("products", "technology").save(technology);
+            technology = dataDefinitionService.get("technologies", "technology").save(technology);
             if (!technology.isValid()) {
                 throw new IllegalStateException("Saved entity have validation errors");
             }
@@ -637,13 +643,13 @@ public final class TestDataLoader {
     }
 
     private Entity addOperationComponent(final Entity technology, final Entity parent, final Entity operation) {
-        Entity component = dataDefinitionService.get("products", "technologyOperationComponent").create();
+        Entity component = dataDefinitionService.get("technologies", "technologyOperationComponent").create();
         component.setField("technology", technology);
         component.setField("parent", parent);
         component.setField("operation", operation);
         component.setField("entityType", "operation");
 
-        component = dataDefinitionService.get("products", "technologyOperationComponent").save(component);
+        component = dataDefinitionService.get("technologies", "technologyOperationComponent").save(component);
         if (!component.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
@@ -658,13 +664,13 @@ public final class TestDataLoader {
     }
 
     private void addProductInComponent(final Entity component, final BigDecimal quantity, final Entity product) {
-        Entity productComponent = dataDefinitionService.get("products", "operationProductInComponent").create();
+        Entity productComponent = dataDefinitionService.get("technologies", "operationProductInComponent").create();
         productComponent.setField("operationComponent", component);
         productComponent.setField("quantity", quantity);
         productComponent.setField("product", product);
         productComponent.setField("batchRequired", true);
 
-        productComponent = dataDefinitionService.get("products", "operationProductInComponent").save(productComponent);
+        productComponent = dataDefinitionService.get("technologies", "operationProductInComponent").save(productComponent);
         if (!productComponent.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
@@ -679,12 +685,12 @@ public final class TestDataLoader {
     }
 
     private void addProductOutComponent(final Entity component, final BigDecimal quantity, final Entity product) {
-        Entity productComponent = dataDefinitionService.get("products", "operationProductOutComponent").create();
+        Entity productComponent = dataDefinitionService.get("technologies", "operationProductOutComponent").create();
         productComponent.setField("operationComponent", component);
         productComponent.setField("quantity", quantity);
         productComponent.setField("product", product);
 
-        productComponent = dataDefinitionService.get("products", "operationProductOutComponent").save(productComponent);
+        productComponent = dataDefinitionService.get("technologies", "operationProductOutComponent").save(productComponent);
         if (!productComponent.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
@@ -828,7 +834,7 @@ public final class TestDataLoader {
     }
 
     private Entity getTechnologyByName(final String name) {
-        List<Entity> technologies = dataDefinitionService.get("products", "technology").find()
+        List<Entity> technologies = dataDefinitionService.get("technologies", "technology").find()
                 .restrictedWith(Restrictions.eq("name", name)).withMaxResults(1).list().getEntities();
         if (technologies.size() > 0) {
             return technologies.get(0);
@@ -841,7 +847,7 @@ public final class TestDataLoader {
         if (product == null) {
             return null;
         }
-        List<Entity> technologies = dataDefinitionService.get("products", "technology").find()
+        List<Entity> technologies = dataDefinitionService.get("technologies", "technology").find()
                 .restrictedWith(Restrictions.eq("product.id", product.getId())).restrictedWith(Restrictions.eq("master", true))
                 .withMaxResults(1).list().getEntities();
         if (technologies.size() > 0) {
@@ -852,7 +858,7 @@ public final class TestDataLoader {
     }
 
     private Entity getProductByNumber(final String number) {
-        return dataDefinitionService.get("products", "product").find().restrictedWith(Restrictions.eq("number", number))
+        return dataDefinitionService.get("basic", "product").find().restrictedWith(Restrictions.eq("number", number))
                 .withMaxResults(1).list().getEntities().get(0);
     }
 
@@ -862,7 +868,7 @@ public final class TestDataLoader {
     }
 
     private Entity getOperationByNumber(final String number) {
-        return dataDefinitionService.get("products", "operation").find().restrictedWith(Restrictions.eq("number", number))
+        return dataDefinitionService.get("technologies", "operation").find().restrictedWith(Restrictions.eq("number", number))
                 .withMaxResults(1).list().getEntities().get(0);
     }
 
@@ -882,20 +888,20 @@ public final class TestDataLoader {
     }
 
     private Entity getRandomProduct() {
-        Long total = (long) dataDefinitionService.get("products", "product").find().list().getTotalNumberOfEntities();
-        return dataDefinitionService.get("products", "product").find().withFirstResult(RANDOM.nextInt(total.intValue()))
+        Long total = (long) dataDefinitionService.get("basic", "product").find().list().getTotalNumberOfEntities();
+        return dataDefinitionService.get("basic", "product").find().withFirstResult(RANDOM.nextInt(total.intValue()))
                 .withMaxResults(1).list().getEntities().get(0);
     }
 
     private Entity getRandomOperation() {
-        Long total = (long) dataDefinitionService.get("products", "operation").find().list().getTotalNumberOfEntities();
-        return dataDefinitionService.get("products", "operation").find().withFirstResult(RANDOM.nextInt(total.intValue()))
+        Long total = (long) dataDefinitionService.get("technologies", "operation").find().list().getTotalNumberOfEntities();
+        return dataDefinitionService.get("technologies", "operation").find().withFirstResult(RANDOM.nextInt(total.intValue()))
                 .withMaxResults(1).list().getEntities().get(0);
     }
 
     private Entity getRandomOrder() {
-        Long total = (long) dataDefinitionService.get("products", "order").find().list().getTotalNumberOfEntities();
-        return dataDefinitionService.get("products", "order").find().withFirstResult(RANDOM.nextInt(total.intValue()))
+        Long total = (long) dataDefinitionService.get("orders", "order").find().list().getTotalNumberOfEntities();
+        return dataDefinitionService.get("orders", "order").find().withFirstResult(RANDOM.nextInt(total.intValue()))
                 .withMaxResults(1).list().getEntities().get(0);
     }
 
