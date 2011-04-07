@@ -28,9 +28,7 @@
 		<view:menu-item name="dictionaries" category="administration"
 			view="dictionaries" />
 
-		<view:view>
-			<view:resource>view/dictionaries.xml</view:resource>
-		</view:view>
+		<view:view resource="view/dictionaries.xml" />
 	</modules>
 
 </plugin>

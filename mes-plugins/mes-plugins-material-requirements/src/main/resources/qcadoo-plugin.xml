@@ -20,7 +20,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 	</information>
-	
+
 	<dependencies>
 		<dependency>
 			<plugin>orders</plugin>
@@ -35,30 +35,29 @@
 
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model model="materialRequirement" resource="model/materialRequirement.xml" />
 		<model:model model="materialRequirementComponent"
 			resource="model/materialRequirementComponent.xml" />
-			
+
 		<model:field plugin="orders" model="order">
 			<model:hasMany name="materialRequirements" plugin="materialRequirements"
 				model="materialRequirementComponent" joinField="order" cascade="none" />
 		</model:field>
-			
+
 		<view:menu-item name="materialRequirements" category="reports"
 			view="materialRequirements" />
-			
-		<view:view>
-			<view:resource>view/materialRequirements.xml</view:resource>
-		</view:view>
-		
+
+		<view:view resource="view/materialRequirements.xml" />
+
 		<view:viewRibbonExtension>
 			<view:resource>view/ordersExtension.xml</view:resource>
 		</view:viewRibbonExtension>
-		
+
 		<view:viewListenerExtension plugin="orders"
 			view="orders" component="grid" event="printMaterialReqForOrder"
-			bean="com.qcadoo.mes.materialRequirements.MaterialRequirementService" method="printMaterialReqForOrder" />
+			bean="com.qcadoo.mes.materialRequirements.MaterialRequirementService"
+			method="printMaterialReqForOrder" />
 
 	</modules>
 

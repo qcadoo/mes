@@ -32,10 +32,7 @@
 		<view:menu-item-url name="profile" category="home"
 			url="/userProfile.html" />
 
-		<view:view>
-			<view:resource>view/users.xml</view:resource>
-		</view:view>
-
+		<view:view resource="view/users.xml" />
 	</modules>
 
 </plugin>

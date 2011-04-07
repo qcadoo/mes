@@ -28,9 +28,7 @@
 		<view:menu-item name="menu" category="administration"
 			view="menuCategories" />
 
-		<view:view>
-			<view:resource>view/menu.xml</view:resource>
-		</view:view>
+		<view:view resource="view/menu.xml" />
 
 	</modules>
 

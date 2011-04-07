@@ -20,7 +20,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 	</information>
-	
+
 	<dependencies>
 		<dependency>
 			<plugin>basic</plugin>
@@ -31,42 +31,42 @@
 
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model model="operation" resource="model/operation.xml" />
 		<model:model model="operationProductOutComponent"
 			resource="model/operationProductOutComponent.xml" />
 		<model:model model="operationProductInComponent" resource="model/operationProductInComponent.xml" />
-		
+
 		<model:model model="technology" resource="model/technology.xml" />
 		<model:model model="technologyOperationComponent"
 			resource="model/technologyOperationComponent.xml" />
-			
+
 		<model:field plugin="basic" model="product">
-			<model:hasMany name="operationProductInComponents" plugin="technologies"
-				model="operationProductInComponent" joinField="product" cascade="none" />
+			<model:hasMany name="operationProductInComponents"
+				plugin="technologies" model="operationProductInComponent" joinField="product"
+				cascade="none" />
 		</model:field>
-		
+
 		<model:field plugin="basic" model="product">
-			<model:hasMany name="operationProductOutComponents" plugin="technologies"
-				model="operationProductOutComponent" joinField="product" cascade="none" />
+			<model:hasMany name="operationProductOutComponents"
+				plugin="technologies" model="operationProductOutComponent"
+				joinField="product" cascade="none" />
 		</model:field>
-		
+
 		<model:field plugin="basic" model="product">
 			<model:hasMany name="technologies" plugin="technologies"
 				model="technology" joinField="product" cascade="none" />
 		</model:field>
-			
+
 		<view:menu-category name="technology" />
-		
+
 		<view:menu-item name="technologies" category="technology"
 			view="technologies" />
 		<view:menu-item name="operations" category="technology"
 			view="operations" />
-			
-		<view:view>
-			<view:resource>view/technologies.xml</view:resource>
-		</view:view>
-		
+
+		<view:view resource="view/technologies.xml" />
+
 		<view:resource uri="public/**/*" />
 
 	</modules>

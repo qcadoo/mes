@@ -33,16 +33,15 @@
 		<localization:translation path="locales" />
 
 		<model:hook plugin="qcadooPlugin" model="plugin">
-			<model:onView class="com.qcadoo.mes.plugins.controller.PluginManagmentDataHook"
+			<model:onView
+				class="com.qcadoo.mes.plugins.controller.PluginManagmentDataHook"
 				method="updatePluginData" />
 		</model:hook>
 
 		<view:menu-item name="plugins" category="administration"
 			view="plugins" />
 
-		<view:view>
-			<view:resource>view/plugins.xml</view:resource>
-		</view:view>
+		<view:view resource="view/plugins.xml" />
 
 		<view:resource uri="public/**/*" />
 

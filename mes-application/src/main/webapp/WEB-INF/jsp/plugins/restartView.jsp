@@ -44,7 +44,7 @@ String ctx = request.getContextPath();
 </script>
 
 <div style="margin: 10px;">
-	<span style="padding-top: 10px; padding-bottom: 10px; font-size: 18px; height: 35px; line-height: 35px; background: transparent url('/img/core/loading_indicator.gif') no-repeat 0 0; padding-left: 35px;">
+	<span style="padding-top: 10px; padding-bottom: 10px; font-size: 18px; height: 35px; line-height: 35px; background: transparent url('/qcadooView/public/img/core/loading_indicator.gif') no-repeat 0 0; padding-left: 35px;">
 		${restartMessage}
 	</span>
 </div>
