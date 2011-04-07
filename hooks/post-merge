@@ -1,4 +1,0 @@
-#!/bin/sh
-
-#git log -1 | grep "Merge branch" | tr -s " " | cut -d" " -f1-4
-git commit --amend -m "`git log -1 | grep "Merge branch" | tr -s " " | cut -d" " -f1-4`"
