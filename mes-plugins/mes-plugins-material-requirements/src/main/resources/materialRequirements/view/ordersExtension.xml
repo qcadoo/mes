@@ -2,6 +2,29 @@
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	
 	<ribbonExtension plugin="orders" view="orders">
-	
+		<group name="exportMaterialRequirement">
+			<smallButton name="pdfMaterialReq" icon="pdfIcon16.png"
+				action="#{grid}.fireEvent(printMaterialReqForOrder,pdf);" state="disabled">
+				<script>
+					<![CDATA[
+						var pdfMaterialReq = #{window}.getRibbonItem("exportMaterialRequirement.pdfMaterialReq");
+						var xlsMaterialReq = #{window}.getRibbonItem("exportMaterialRequirement.xlsMaterialReq");
+						#{grid}.addOnChangeListener({
+							onChange: function(selectedEntitiesArray) {
+								if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+									pdfMaterialReq.disable();
+									xlsMaterialReq.disable();
+								} else {
+									pdfMaterialReq.enable();
+									xlsMaterialReq.enable();
+								}
+							}
+						});
+					]]>
+				</script>
+			</smallButton>
+			<smallButton name="xlsMaterialReq" icon="xlsIcon16.png"
+				action="#{grid}.fireEvent(printMaterialReqForOrder,xls);" state="disabled" />
+		</group>
 	</ribbonExtension>
 </viewExtensions>

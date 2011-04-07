@@ -45,38 +45,17 @@
 				<group name="export">
 					<smallButton name="print" icon="pdfIcon16.png"
 						action="#{grid}.fireEvent(printOrder,pdf);" state="disabled" />
-					<smallButtons name="pdfMaterialReq" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printMaterialReqForOrder,pdf);" state="disabled">
-						<smallButton name="xlsMaterialReq" icon="xlsIcon16.png"
-							action="#{grid}.fireEvent(printMaterialReqForOrder,xls);" state="disabled" />
-					</smallButtons>
 				</group>
 			</ribbon>
 			<component type="grid" name="orders" reference="grid">
 				<script>
 					<![CDATA[
 						var print = #{window}.getRibbonItem("export.print");
-						var pdfMaterialReq = #{window}.getRibbonItem("export.pdfMaterialReq");
-						var xlsMaterialReq = #{window}.getRibbonItem("export.pdfMaterialReq.xlsMaterialReq");
-						var pdfWorker = #{window}.getRibbonItem("exportPlan.pdfWorker");
-						var xlsWorker = #{window}.getRibbonItem("exportPlan.xlsWorker");
-						var pdfMachine = #{window}.getRibbonItem("exportPlan.pdfWorker.pdfMachine");
-						var xlsMachine = #{window}.getRibbonItem("exportPlan.xlsWorker.xlsMachine");
-						var pdfProduct = #{window}.getRibbonItem("exportPlan.pdfWorker.pdfProduct");
-						var xlsProduct = #{window}.getRibbonItem("exportPlan.xlsWorker.xlsProduct");
 						var activateOrder = #{window}.getRibbonItem("status.activateOrder");
 						var listener = {
 							onChange: function(selectedEntitiesArray) {
 								if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 									print.disable();
-									pdfMaterialReq.disable();
-									xlsMaterialReq.disable();
-									pdfWorker.disable();
-									xlsWorker.disable();
-									pdfMachine.disable();
-									xlsMachine.disable();
-									pdfProduct.disable();
-									xlsProduct.disable();
 									activateOrder.disable();
 								} else {
 									if (selectedEntitiesArray.length == 1) {
@@ -99,14 +78,6 @@
 										print.disable("#{translate(moreThanOneRecordSelected)}");
 										activateOrder.disable("#{translate(moreThanOneRecordSelected)}");
 									}
-									pdfMaterialReq.enable();
-									xlsMaterialReq.enable();
-									pdfWorker.enable();
-									xlsWorker.enable();
-									pdfMachine.enable();
-									xlsMachine.enable();
-									pdfProduct.enable();
-									xlsProduct.enable();
 								}
 							}
 						}
