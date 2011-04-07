@@ -112,41 +112,26 @@ public final class TestDataLoader {
             readDataFromXML("users", USER_ATTRIBUTES);
         }
         readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
-<<<<<<< HEAD
+        // TODO masz
         // if (pluginAccessor.getEnabledPlugin("basic") != null) {
         readDataFromXML("machines", MACHINE_ATTRIBUTES);
         readDataFromXML("staff", STAFF_ATTRIBUTES);
-        // }
-        // if (pluginAccessor.getEnabledPlugin("products") != null) {
         readDataFromXML("units", new String[] { "name" });
         readDataFromXML("products", PRODUCT_ATTRIBUTES);
+        // }
+        // if (pluginAccessor.getEnabledPlugin("technologies") != null) {
         readDataFromXML("operations", OPERATION_ATTRIBUTES);
         readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
+        // }
+        // if (pluginAccessor.getEnabledPlugin("orders") != null) {
         readDataFromXML("orders", ORDER_ATTRIBUTES);
+        // }
+        // if (pluginAccessor.getEnabledPlugin("materialRequirements") != null) {
         addMaterialRequirements();
+        // }
+        // if (pluginAccessor.getEnabledPlugin("workPlans") != null) {
         addWorkPlans();
         // }
-=======
-        if (pluginAccessor.getEnabledPlugin("basic") != null) {
-            readDataFromXML("machines", MACHINE_ATTRIBUTES);
-            readDataFromXML("staff", STAFF_ATTRIBUTES);
-            readDataFromXML("units", new String[] { "name" });
-            readDataFromXML("products", PRODUCT_ATTRIBUTES);
-        }
-        if (pluginAccessor.getEnabledPlugin("technologies") != null) {
-            readDataFromXML("operations", OPERATION_ATTRIBUTES);
-            readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
-        }
-        if (pluginAccessor.getEnabledPlugin("orders") != null) {
-            readDataFromXML("orders", ORDER_ATTRIBUTES);
-        }
-        if (pluginAccessor.getEnabledPlugin("materialRequirements") != null) {
-            addMaterialRequirements();
-        }
-        if (pluginAccessor.getEnabledPlugin("workPlans") != null) {
-            addWorkPlans();
-        }
->>>>>>> a4c45542d4aea1b4f4b879092e553ebd2386ae89
     }
 
     private File getXmlFile(final String type) throws IOException {

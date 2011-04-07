@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.qcadoo.mes.application.TestDataLoader;
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.plugin.api.ModuleFactory;
 
 public final class DatabasePreparationModuleFactory extends ModuleFactory<DatabasePreparationModule> {
 
