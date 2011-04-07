@@ -178,6 +178,21 @@
 					</webAppConfig>
 				</configuration>
 			</plugin>
+			<!-- plugin>
+				<groupId>com.qcadoo</groupId>
+				<artifactId>qcadoo-maven-plugin</artifactId>
+				<version>${qcadoo.version}</version>
+				<configuration>
+				    <jdbcDriver>${basedir}/driver/</jdbcDriver>
+				    <profile>standalone</profile>
+				    <configuration>${basedir}/conf/${profile.name}</configuration>
+				    <logs>${basedir}/target/logs</logs>
+				    <temporaryPlugins>${basedir}/target/tmp</temporaryPlugins>
+				    <plugins>${basedir}/target/lib</plugins>
+				    <webapp>${basedir}/src/main/webapp</webapp>
+				    <restartCommand>${basedir}/restart.sh</restartCommand>
+				</configuration>
+			</plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
