@@ -65,7 +65,7 @@
 			<model:onSave class="com.qcadoo.mes.qualityControls.QualityControlService"
 				method="generateOnSaveQualityControl" />
 		</model:hook>
-
+		
 		<view:menu-category name="quality" />
 
 		<view:menu-item name="qualityControlReport" category="reports"
