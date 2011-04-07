@@ -176,7 +176,7 @@ public final class WorkPlanService {
                         translationService.translate("workPlans.workPlan.window.workPlan.documentsWasNotGenerated",
                                 state.getLocale()), MessageType.FAILURE);
             } else {
-                viewDefinitionState.redirectTo("/products/workPlan" + args[1] + "." + args[0] + "?id=" + state.getFieldValue(),
+                viewDefinitionState.redirectTo("/workPlans/workPlan" + args[1] + "." + args[0] + "?id=" + state.getFieldValue(),
                         false, false);
             }
         } else {
@@ -232,7 +232,7 @@ public final class WorkPlanService {
         try {
             generateWorkPlanDocuments(state, workPlan);
 
-            viewDefinitionState.redirectTo("/products/workPlan" + args[1] + "." + args[0] + "?id=" + workPlan.getId(), false,
+            viewDefinitionState.redirectTo("/workPlans/workPlan" + args[1] + "." + args[0] + "?id=" + workPlan.getId(), false,
                     false);
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage(), e);

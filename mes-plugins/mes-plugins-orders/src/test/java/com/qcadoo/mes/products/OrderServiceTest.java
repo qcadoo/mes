@@ -139,7 +139,7 @@ public class OrderServiceTest {
         orderService.printOrder(viewDefinitionState, state, new String[] { "pdf" });
 
         // then
-        verify(viewDefinitionState).redirectTo("/products/order.pdf?id=13", true, false);
+        verify(viewDefinitionState).redirectTo("/orders/order.pdf?id=13", true, false);
     }
 
     @Test
