@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>mes-plugins-orders</artifactId>
-	<packaging>jar</packaging>
+	<packaging>qcadoo-plugin</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Orders</name>
 
