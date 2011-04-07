@@ -13,6 +13,7 @@ String ctx = request.getContextPath();
 	jQuery(document).ready(function(){
 		window.mainController.setWindowHeader("${headerLabel}");
 		$('#form').ajaxForm(function(response) {
+			alert(response);
 			window.location = Encoder.htmlDecode(response);
 	    }); 
 	});

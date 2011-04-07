@@ -5,19 +5,24 @@
 <%
 String ctx = request.getContextPath();
 %>
-<script type="text/javascript" src="${pageContext.request.contextPath}/plugins/public/js/jquery.form.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/integrationSubiekt/public/js/jquery.form.js"></script>
 
 <script type="text/JavaScript">
 	var buttonActive = false;
+	var acceptExtensions = new Array();
+
+    <c:forEach items="${acceptExtension}" var="extension">  
+    	acceptExtensions.push('${extension}'); 
+    </c:forEach>  
 
 	jQuery(document).ready(function(){
-		window.mainController.setWindowHeader("${headerLabel}");
+		window.mainController.setWindowHeader("${headerLabel}");	
 		$('#form').ajaxForm(function(response) {
 			window.location = Encoder.htmlDecode(response);
 	    }); 
 	});
 
-	function checkExtension(fileName, submitName, fileTypes) {
+	function checkExtension(fileName) {
 		if (!fileName){
 			return;
 		}
@@ -25,7 +30,7 @@ String ctx = request.getContextPath();
 		var dots = fileName.split(".")
 		var fileType = dots[dots.length-1];
       
-		if (fileTypes.indexOf(fileType) != -1) {
+		if (acceptExtensions.indexOf(fileType) != -1) {
 			buttonActive = true;
 			$("#submit").addClass("activeButton");
 			return true;
@@ -39,14 +44,14 @@ String ctx = request.getContextPath();
 </script>
 
 
-<form method="post" action="<%=ctx%>/performDownload.html" enctype="multipart/form-data" id="form" style="text-align: left">
+<form method="post" action="<%=ctx%>/${submitPage}" enctype="multipart/form-data" id="form" style="text-align: left">
 		        	
 	<div style="margin-left: 10px; margin-top: 10px; font: 11px arial; font-weight: bold;">
 		${chooseFileLabel}
 	</div>
 	
 	<div style="margin-top: 5px; margin-bottom: 20px; margin-left: 10px;">
-		<input type="file" name="file" size="50" onChange="checkExtension(this.value, this.form.upload, ['jar']);"/>
+		<input type="file" name="file" size="50" onChange="checkExtension(this.value);"/>
 	</div>
 		            
 	<div class="linkButton" style="width: 200px; margin-left: 10px; margin-bottom: 5px;" id="submit">
