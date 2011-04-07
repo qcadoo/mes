@@ -57,6 +57,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.plugin.api.PluginAccessor;
+import com.qcadoo.plugin.api.PluginState;
 
 @Component
 public final class TestDataLoader {
@@ -112,26 +113,33 @@ public final class TestDataLoader {
             readDataFromXML("users", USER_ATTRIBUTES);
         }
         readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
-        // TODO masz
-        // if (pluginAccessor.getEnabledPlugin("basic") != null) {
-        readDataFromXML("machines", MACHINE_ATTRIBUTES);
-        readDataFromXML("staff", STAFF_ATTRIBUTES);
-        readDataFromXML("units", new String[] { "name" });
-        readDataFromXML("products", PRODUCT_ATTRIBUTES);
-        // }
-        // if (pluginAccessor.getEnabledPlugin("technologies") != null) {
-        readDataFromXML("operations", OPERATION_ATTRIBUTES);
-        readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
-        // }
-        // if (pluginAccessor.getEnabledPlugin("orders") != null) {
-        readDataFromXML("orders", ORDER_ATTRIBUTES);
-        // }
-        // if (pluginAccessor.getEnabledPlugin("materialRequirements") != null) {
-        addMaterialRequirements();
-        // }
-        // if (pluginAccessor.getEnabledPlugin("workPlans") != null) {
-        addWorkPlans();
-        // }
+        if (isEnabled("basic")) {
+            readDataFromXML("machines", MACHINE_ATTRIBUTES);
+            readDataFromXML("staff", STAFF_ATTRIBUTES);
+            readDataFromXML("units", new String[] { "name" });
+            readDataFromXML("products", PRODUCT_ATTRIBUTES);
+        }
+        if (isEnabled("technologies")) {
+            readDataFromXML("operations", OPERATION_ATTRIBUTES);
+            readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
+        }
+        if (isEnabled("orders")) {
+            readDataFromXML("orders", ORDER_ATTRIBUTES);
+        }
+        if (isEnabled("materialRequirements")) {
+            addMaterialRequirements();
+        }
+        if (isEnabled("workPlans")) {
+            addWorkPlans();
+        }
+    }
+
+    private boolean isEnabled(final String pluginIdentifier) {
+        if (pluginAccessor.getPlugin(pluginIdentifier) == null) {
+            return false;
+        }
+        return (PluginState.ENABLED.equals(pluginAccessor.getPlugin(pluginIdentifier).getState()) || PluginState.ENABLING
+                .equals(pluginAccessor.getPlugin(pluginIdentifier).getState()));
     }
 
     private File getXmlFile(final String type) throws IOException {
