@@ -79,9 +79,9 @@ public class GenealogyForProductView extends ReportPdfView {
 
     private void addTables(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         List<String> orderHeader = new ArrayList<String>();
-        orderHeader.add(getTranslationService().translate("products.order.number.label", locale));
-        orderHeader.add(getTranslationService().translate("products.order.name.label", locale));
-        orderHeader.add(getTranslationService().translate("products.order.dateFrom.label", locale));
+        orderHeader.add(getTranslationService().translate("orders.order.number.label", locale));
+        orderHeader.add(getTranslationService().translate("orders.order.name.label", locale));
+        orderHeader.add(getTranslationService().translate("orders.order.dateFrom.label", locale));
         Paragraph productTitle = new Paragraph(new Phrase(getTranslationService().translate(
                 "genealogies.genealogyForProduct.report.paragrah.product", locale), PdfUtil.getArialBold11Light()));
         productTitle.setSpacingBefore(20);
@@ -89,9 +89,9 @@ public class GenealogyForProductView extends ReportPdfView {
         PdfPTable headerData = PdfUtil.createPanelTable(3);
         headerData.setSpacingBefore(7);
         Entity product = entity.getBelongsToField("order").getBelongsToField("product");
-        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("products.product.number.label", locale),
+        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("basic.product.number.label", locale),
                 product.getField("number"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("products.product.name.label", locale),
+        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("basic.product.name.label", locale),
                 product.getField("name"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("genealogies.genealogy.batch.label", locale),
                 entity.getField("batch"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
@@ -115,8 +115,8 @@ public class GenealogyForProductView extends ReportPdfView {
             title.add(new Phrase(" " + order.getField("number").toString(), PdfUtil.getArialBold19Dark()));
             document.add(title);
             List<String> componentHeader = new ArrayList<String>();
-            componentHeader.add(getTranslationService().translate("products.product.number.label", locale));
-            componentHeader.add(getTranslationService().translate("products.product.name.label", locale));
+            componentHeader.add(getTranslationService().translate("basic.product.number.label", locale));
+            componentHeader.add(getTranslationService().translate("basic.product.name.label", locale));
             componentHeader.add(getTranslationService().translate("genealogies.productInBatch.batch.label", locale));
             PdfPTable table = PdfUtil.createTableWithHeader(3, componentHeader, false);
 

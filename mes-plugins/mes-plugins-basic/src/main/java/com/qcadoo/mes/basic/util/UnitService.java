@@ -51,7 +51,7 @@ public class UnitService {
         FieldComponentState unitState = (FieldComponentState) state.getComponentByReference("unit");
         unitState.requestComponentUpdateState();
         if (productState.getFieldValue() != null) {
-            Entity product = dataDefinitionService.get("products", "product").get(productState.getFieldValue());
+            Entity product = dataDefinitionService.get("basic", "product").get(productState.getFieldValue());
             unitState.setFieldValue(product.getStringField("unit"));
         } else {
             unitState.setFieldValue("");

@@ -24,19 +24,14 @@
 
 package com.qcadoo.mes.internal.module;
 
-import javax.sql.DataSource;
-
 import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.qcadoo.mes.application.TestDataLoader;
 import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.plugin.api.Module;
-import com.qcadoo.plugin.api.ModuleFactory;
 
-
-public final class DatabasePreparationModuleFactory extends ModuleFactory<Module> {
+public final class DatabasePreparationModuleFactory extends ModuleFactory<DatabasePreparationModule> {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -51,7 +46,7 @@ public final class DatabasePreparationModuleFactory extends ModuleFactory<Module
     private boolean addHardAdminPass;
 
     @Override
-    public Module parse(final String pluginIdentifier, final Element element) {
+    public DatabasePreparationModule parse(final String pluginIdentifier, final Element element) {
         DatabasePreparationModule module = new DatabasePreparationModule();
         module.setDataDefinitionService(dataDefinitionService);
         module.setTestDataLoader(testDataLoader);

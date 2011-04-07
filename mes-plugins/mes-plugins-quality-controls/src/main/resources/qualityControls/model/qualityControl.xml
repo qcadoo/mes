@@ -16,9 +16,9 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="order" model="order" plugin="products"
+		<belongsTo name="order" model="order" plugin="orders"
 			required="true" />
-		<belongsTo name="operation" model="operation" plugin="products" />
+		<belongsTo name="operation" model="operation" plugin="technologies" />
 		<string name="number" required="true" unique="true" />
 		<enum name="controlResult" values="01correct,02incorrect,03objection" />
 		<string name="batchNr" />

@@ -37,7 +37,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-products</artifactId>
+			<artifactId>mes-plugins-orders</artifactId>
 			<version>0.4.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -172,7 +172,7 @@
 								${basedir}/src/main/webapp;
 								${basedir}/../../qcadoo/qcadoo-view/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-plugin-management/src/main/resources;
-								${basedir}/../mes-plugins/mes-plugins-products/src/main/resources;
+								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
 							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>

@@ -17,7 +17,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="genealogy" model="genealogy" />
-		<belongsTo name="productInComponent" plugin="products"
+		<belongsTo name="productInComponent" plugin="technologies"
 			model="operationProductInComponent" />
 		<hasMany name="batch" model="productInBatch" joinField="productInComponent"
 			cascade="delete" copyable="true" required="true" />

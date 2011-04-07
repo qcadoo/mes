@@ -1,7 +1,7 @@
 <viewExtensions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	
-	<ribbonExtension plugin="products" view="orders">
+	<ribbonExtension plugin="orders" view="orders">
 		<group name="genealogy">
 			<bigButton name="genealogy" action="#{grid}.fireEvent(showGenealogy);"
 				icon="genealogyIcon24.png" state="disabled">
@@ -30,7 +30,7 @@
 		</group>
 	</ribbonExtension>
 	
-	<ribbonExtension plugin="products" view="order">
+	<ribbonExtension plugin="orders" view="order">
 		<group name="genealogy">
 			<bigButton name="genealogy" icon="genealogyIcon24.png" state="disabled" >
 				<script>
@@ -76,7 +76,7 @@
 		</group>
 	</ribbonExtension>
 	
-	<windowTabExtension plugin="products" view="product">
+	<windowTabExtension plugin="basic" view="product">
 		<windowTab name="genealogyTab" reference="genealogyTab">
 			<component type="gridLayout" name="genealogyLayout" columns="3" rows="2">
 				<layoutElement column="1" row="1">
@@ -92,7 +92,7 @@
 	</windowTabExtension>
 	
 	
-	<windowTabExtension plugin="products" view="technology">
+	<windowTabExtension plugin="technologies" view="technology">
 		<windowTab name="genealogyTab" reference="genealogyTab">
 			<component type="gridLayout" name="genealogyLayout" columns="3" rows="4">
 				<layoutElement column="1" row="1">
@@ -119,7 +119,7 @@
 		</windowTab>
 	</windowTabExtension>
 	
-	<windowTabExtension plugin="products" view="operationProductInComponent">
+	<windowTabExtension plugin="technologies" view="operationProductInComponent">
 		<windowTab name="genealogyTab" reference="genealogyTab">
 			<component type="gridLayout" name="genealogyLayout" columns="1" rows="1">
 				<layoutElement column="1" row="1">

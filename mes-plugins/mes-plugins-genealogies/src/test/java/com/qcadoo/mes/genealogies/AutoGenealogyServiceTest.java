@@ -137,7 +137,7 @@ public class AutoGenealogyServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(null);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(null);
 
         given(translationService.translate("core.message.entityNotFound", Locale.ENGLISH)).willReturn(
                 "core.message.entityNotFound.pl");
@@ -160,7 +160,7 @@ public class AutoGenealogyServiceTest {
         Entity order = mock(Entity.class);
         given(order.getBelongsToField("product")).willReturn(null);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         given(translationService.translate("genealogies.message.autoGenealogy.failure.product", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.failure.product.pl");
@@ -185,7 +185,7 @@ public class AutoGenealogyServiceTest {
         given(order.getBelongsToField("product")).willReturn(product);
         given(order.getBelongsToField("technology")).willReturn(null);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         given(translationService.translate("genealogies.message.autoGenealogy.failure.product", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.failure.product.pl");
@@ -213,7 +213,7 @@ public class AutoGenealogyServiceTest {
         given(product.getField("number")).willReturn("test");
         given(product.getField("name")).willReturn("test");
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         given(translationService.translate("genealogies.message.autoGenealogy.missingMainBatch", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.missingMainBatch.pl");
@@ -240,7 +240,7 @@ public class AutoGenealogyServiceTest {
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(product.getField("batch")).willReturn("test");
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         List<Entity> list = new ArrayList<Entity>();
         list.add(mock(Entity.class));
@@ -269,7 +269,7 @@ public class AutoGenealogyServiceTest {
         Entity order = mock(Entity.class);
         Entity genealogy = new DefaultEntity(null);
         given(dataDefinitionService.get("genealogies", "genealogy").create()).willReturn(genealogy);
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
         given(order.getBelongsToField("product")).willReturn(product);
@@ -318,7 +318,7 @@ public class AutoGenealogyServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         Entity order = mock(Entity.class);
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
         Entity genealogy = new DefaultEntity(null);
@@ -369,7 +369,7 @@ public class AutoGenealogyServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         Entity order = mock(Entity.class);
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
         Entity shift = new DefaultEntity(null);
         Entity post = new DefaultEntity(null);
         Entity other = new DefaultEntity(null);
@@ -443,7 +443,7 @@ public class AutoGenealogyServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         Entity order = mock(Entity.class);
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
         given(order.getBelongsToField("product")).willReturn(product);
@@ -517,7 +517,7 @@ public class AutoGenealogyServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(null);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(null);
 
         given(translationService.translate("core.message.entityNotFound", Locale.ENGLISH)).willReturn(
                 "core.message.entityNotFound.pl");
@@ -539,7 +539,7 @@ public class AutoGenealogyServiceTest {
 
         Entity order = mock(Entity.class);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
                 getParameter("02active"));
@@ -595,7 +595,7 @@ public class AutoGenealogyServiceTest {
 
         Entity order = mock(Entity.class);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
                 getParameter("03lastUsed"));
@@ -651,7 +651,7 @@ public class AutoGenealogyServiceTest {
 
         Entity order = mock(Entity.class);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         // when
         autoGenealogyService.generateGenalogyOnChangeOrderStatusForDone(viewDefinitionState, state, new String[] { "true" });
@@ -673,7 +673,7 @@ public class AutoGenealogyServiceTest {
 
         Entity order = mock(Entity.class);
 
-        given(dataDefinitionService.get("products", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
                 new ArrayList<Entity>());
@@ -828,8 +828,8 @@ public class AutoGenealogyServiceTest {
 
         // then
         verify(entity, times(2)).setField(anyString(), any());
-        verify(dataDefinitionService.get("products", "product").get(anyLong())).setField(anyString(), anyString());
-        verify(dataDefinitionService.get("products", "product")).save(any(Entity.class));
+        verify(dataDefinitionService.get("basic", "product").get(anyLong())).setField(anyString(), anyString());
+        verify(dataDefinitionService.get("basic", "product")).save(any(Entity.class));
     }
 
     @Test
@@ -845,8 +845,8 @@ public class AutoGenealogyServiceTest {
         autoGenealogyService.fillLastUsedBatchForGenealogy(dataDefinition, entity);
 
         // then
-        verify(dataDefinitionService.get("products", "product").get(anyLong())).setField(anyString(), anyString());
-        verify(dataDefinitionService.get("products", "product")).save(any(Entity.class));
+        verify(dataDefinitionService.get("basic", "product").get(anyLong())).setField(anyString(), anyString());
+        verify(dataDefinitionService.get("basic", "product")).save(any(Entity.class));
     }
 
     private Entity createOperationComponent(final boolean withoutBatch) {

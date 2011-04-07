@@ -19,7 +19,7 @@
 		<string name="batch" required="true">
 			<validatesLength max="255" />
 		</string>
-		<belongsTo name="order" plugin="products" model="order"
+		<belongsTo name="order" plugin="orders" model="order"
 			lazy="false" required="true" />
 		<date name="date" readonly="true" />
 		<string name="worker" readonly="true" />

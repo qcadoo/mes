@@ -51,20 +51,21 @@ public final class WorkPlanForProductXlsService extends XlsDocumentService {
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
         HSSFCell cell0 = header.createCell(0);
-        cell0.setCellValue(getTranslationService().translate("products.workPlan.report.operationTable.product.column", locale));
+        cell0.setCellValue(getTranslationService().translate("workPlans.workPlan.report.operationTable.product.column", locale));
         cell0.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell1 = header.createCell(1);
-        cell1.setCellValue(getTranslationService().translate("products.operation.number.label", locale));
+        cell1.setCellValue(getTranslationService().translate("technologies.operation.number.label", locale));
         cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell2 = header.createCell(2);
-        cell2.setCellValue(getTranslationService().translate("products.operation.name.label", locale));
+        cell2.setCellValue(getTranslationService().translate("technologies.operation.name.label", locale));
         cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell3 = header.createCell(3);
-        cell3.setCellValue(getTranslationService()
-                .translate("products.workPlan.report.operationTable.productsOut.column", locale));
+        cell3.setCellValue(getTranslationService().translate("workPlans.workPlan.report.operationTable.productsOut.column",
+                locale));
         cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell4 = header.createCell(4);
-        cell4.setCellValue(getTranslationService().translate("products.workPlan.report.operationTable.productsIn.column", locale));
+        cell4.setCellValue(getTranslationService()
+                .translate("workPlans.workPlan.report.operationTable.productsIn.column", locale));
         cell4.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
 
     }
@@ -121,7 +122,7 @@ public final class WorkPlanForProductXlsService extends XlsDocumentService {
 
     @Override
     protected String getReportTitle(final Locale locale) {
-        return getTranslationService().translate("products.workPlan.report.title", locale);
+        return getTranslationService().translate("workPlans.workPlan.report.title", locale);
     }
 
     @Override

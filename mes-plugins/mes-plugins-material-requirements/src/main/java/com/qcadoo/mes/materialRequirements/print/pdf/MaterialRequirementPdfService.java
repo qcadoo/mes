@@ -45,7 +45,7 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.materialRequirements.print.MaterialRequirementReportDataService;
 import com.qcadoo.mes.materialRequirements.util.EntityOrderNumberComparator;
-import com.qcadoo.mes.products.util.EntityNumberComparator;
+import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -67,28 +67,29 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        String documenTitle = getTranslationService().translate("products.materialRequirement.report.title", locale);
-        String documentAuthor = getTranslationService().translate("products.materialRequirement.report.author", locale);
+        String documenTitle = getTranslationService().translate("materialRequirements.materialRequirement.report.title", locale);
+        String documentAuthor = getTranslationService().translate("materialRequirements.materialRequirement.report.author",
+                locale);
         PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
                 (Date) entity.getField("date"), securityService.getCurrentUserName());
         document.add(Chunk.NEWLINE);
-        document.add(new Paragraph(getTranslationService().translate("products.materialRequirement.report.paragrah", locale),
-                PdfUtil.getArialBold11Dark()));
+        document.add(new Paragraph(getTranslationService().translate("materialRequirements.materialRequirement.report.paragrah",
+                locale), PdfUtil.getArialBold11Dark()));
         List<String> orderHeader = new ArrayList<String>();
-        orderHeader.add(getTranslationService().translate("products.order.number.label", locale));
-        orderHeader.add(getTranslationService().translate("products.order.name.label", locale));
-        orderHeader.add(getTranslationService().translate("products.order.product.label", locale));
-        orderHeader.add(getTranslationService().translate("products.product.unit.label", locale));
-        orderHeader.add(getTranslationService().translate("products.order.plannedQuantity.label", locale));
+        orderHeader.add(getTranslationService().translate("orders.order.number.label", locale));
+        orderHeader.add(getTranslationService().translate("orders.order.name.label", locale));
+        orderHeader.add(getTranslationService().translate("orders.order.product.label", locale));
+        orderHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
+        orderHeader.add(getTranslationService().translate("orders.order.plannedQuantity.label", locale));
         addOrderSeries(document, entity, orderHeader);
         document.add(Chunk.NEWLINE);
-        document.add(new Paragraph(getTranslationService().translate("products.materialRequirement.report.paragrah2", locale),
-                PdfUtil.getArialBold11Dark()));
+        document.add(new Paragraph(getTranslationService().translate("materialRequirements.materialRequirement.report.paragrah2",
+                locale), PdfUtil.getArialBold11Dark()));
         List<String> productHeader = new ArrayList<String>();
-        productHeader.add(getTranslationService().translate("products.product.number.label", locale));
-        productHeader.add(getTranslationService().translate("products.product.name.label", locale));
-        productHeader.add(getTranslationService().translate("products.product.unit.label", locale));
-        productHeader.add(getTranslationService().translate("products.technologyOperationComponent.quantity.label", locale));
+        productHeader.add(getTranslationService().translate("basic.product.number.label", locale));
+        productHeader.add(getTranslationService().translate("basic.product.name.label", locale));
+        productHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
+        productHeader.add(getTranslationService().translate("technologies.technologyOperationComponent.quantity.label", locale));
         addTechnologySeries(document, entity, productHeader);
     }
 
@@ -155,7 +156,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     @Override
     protected String getReportTitle(final Locale locale) {
-        return getTranslationService().translate("products.materialRequirement.report.title", locale);
+        return getTranslationService().translate("materialRequirements.materialRequirement.report.title", locale);
     }
 
 }

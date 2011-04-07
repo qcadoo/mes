@@ -44,7 +44,7 @@
 					link="false" width="100" />
 				<option type="column" name="worker" fields="worker" width="200" />
 				<option type="order" column="name" direction="asc" />
-				<option type="correspondingView" value="products/workPlan" />
+				<option type="correspondingView" value="workPlans/workPlan" />
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,generated,worker" />
 				<option type="orderable" value="name,generated,worker" />
@@ -77,12 +77,12 @@
 									pdfProduct.disable("#{translate(moreThanOneRecordSelected)}");
 									xlsProduct.disable("#{translate(moreThanOneRecordSelected)}");	
 								} else if (selectedEntitiesArray[0].fields.generated == '0') {
-									pdfWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
-									xlsWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
-									pdfMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
-									xlsMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
-									pdfProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
-									xlsProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");								
+									pdfWorker.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									xlsWorker.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									pdfMachine.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									xlsMachine.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									pdfProduct.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									xlsProduct.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");								
 								} else {
 									pdfWorker.enable();
 									xlsWorker.enable();
@@ -181,14 +181,14 @@
 									xlsMachine.enable();
 									pdfProduct.enable();
 									xlsProduct.enable();
-									saveRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+									saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 								} else {
-									pdfWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
-									xlsWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
-									pdfMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
-									xlsMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
-									pdfProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
-									xlsProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfWorker.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									xlsWorker.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									pdfMachine.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									xlsMachine.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									pdfProduct.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									xlsProduct.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 									saveRibbonItem.enable();
 								}
 							} else {
@@ -236,7 +236,7 @@
 							<option type="column" name="name" fields="order"
 								expression="#order['name']" />
 							<option type="order" column="number" direction="desc" />
-							<option type="correspondingView" value="products/workPlanComponent" />
+							<option type="correspondingView" value="workPlans/workPlanComponent" />
 							<option type="correspondingComponent" value="form" />
 							<option type="correspondingViewInModal" value="true" />
 							<option type="paginable" value="false" />
