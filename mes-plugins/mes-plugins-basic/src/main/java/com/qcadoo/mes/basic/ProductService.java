@@ -113,7 +113,7 @@ public final class ProductService {
             return true;
         }
 
-        Entity technologyEntity = dataDefinitionService.get("basic", "technology").get(technology.getId());
+        Entity technologyEntity = dataDefinitionService.get("technologies", "technology").get(technology.getId());
 
         if (technologyEntity == null) {
             entity.addGlobalError("core.message.belongsToNotFound");
