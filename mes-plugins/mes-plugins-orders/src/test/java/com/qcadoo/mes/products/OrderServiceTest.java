@@ -810,6 +810,7 @@ public class OrderServiceTest {
         // given
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
+        given(securityService.getCurrentUserName()).willReturn("user", "admin");
 
         // when
         orderService.fillOrderDatesAndWorkers(dataDefinition, entity);
@@ -841,7 +842,7 @@ public class OrderServiceTest {
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
         given(entity.getField("state")).willReturn("03done");
-        given(securityService.getCurrentUserName()).willReturn("user", "admin");
+        given(securityService.getCurrentUserName()).willReturn("user", "user", "admin");
 
         // when
         orderService.fillOrderDatesAndWorkers(dataDefinition, entity);
