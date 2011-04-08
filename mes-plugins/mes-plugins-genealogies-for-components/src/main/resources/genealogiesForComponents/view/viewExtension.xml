@@ -1,0 +1,16 @@
+<viewExtensions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+	<windowTabExtension plugin="technologies" view="operationProductInComponent">
+		<windowTab name="genealogyTab" reference="genealogyTab">
+			<component type="gridLayout" name="genealogyLayout" columns="1" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="checkbox" name="batchRequired" reference="batchRequired" field="#{form}.batchRequired" >
+						<option type="labelWidth" value="35" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
+	</windowTabExtension>
+	
+</viewExtensions>

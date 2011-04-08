@@ -119,18 +119,6 @@
 		</windowTab>
 	</windowTabExtension>
 	
-	<windowTabExtension plugin="technologies" view="operationProductInComponent">
-		<windowTab name="genealogyTab" reference="genealogyTab">
-			<component type="gridLayout" name="genealogyLayout" columns="1" rows="1">
-				<layoutElement column="1" row="1">
-					<component type="checkbox" name="batchRequired" reference="batchRequired" field="#{form}.batchRequired" >
-						<option type="labelWidth" value="35" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
-	</windowTabExtension>
-	
 	<windowTabExtension plugin="basic" view="parameter">
 		<windowTab name="genealogyTab" reference="genealogyTab">
 			<component type="gridLayout" name="genealogyLayout" columns="3" rows="1">

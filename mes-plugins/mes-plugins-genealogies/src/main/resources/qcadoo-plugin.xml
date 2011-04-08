@@ -23,10 +23,6 @@
 
 	<dependencies>
 		<dependency>
-			<plugin>basic</plugin>
-			<version>[0.4.0</version>
-		</dependency>
-		<dependency>
 			<plugin>orders</plugin>
 			<version>[0.4.0</version>
 		</dependency>
@@ -38,8 +34,6 @@
 
 		<model:model model="currentAttribute" resource="model/currentAttribute.xml" />
 		<model:model model="genealogy" resource="model/genealogy.xml" />
-		<model:model model="productInBatch" resource="model/productInBatch.xml" />
-		<model:model model="genealogyProductInComponent" resource="model/genealogyProductInComponent.xml" />
 		<model:model model="otherFeature" resource="model/otherFeature.xml" />
 		<model:model model="postFeature" resource="model/postFeature.xml" />
 		<model:model model="shiftFeature" resource="model/shiftFeature.xml" />
@@ -54,9 +48,6 @@
 		</model:field>
 		<model:field plugin="technologies" model="technology">
 			<model:boolean name="otherFeatureRequired" />
-		</model:field>
-		<model:field plugin="technologies" model="operationProductInComponent">
-			<model:boolean name="batchRequired" />
 		</model:field>
 		<model:field plugin="basic" model="product">
 			<model:string name="batch">
@@ -75,24 +66,14 @@
 			<model:hasMany name="genealogies" plugin="genealogies"
 				model="genealogy" joinField="order" cascade="delete" />
 		</model:field>
-		<model:field plugin="technologies" model="operationProductInComponent">
-			<model:hasMany name="genealogyProductInComponents"
-				plugin="genealogies" model="genealogyProductInComponent" joinField="productInComponent"
-				cascade="delete" />
-		</model:field>
 		<model:field plugin="basic" model="parameter">
 			<model:enum name="batchForDoneOrder" values="01none,02active,03lastUsed"
 				default="01none" />
 		</model:field>
-		<model:hook plugin="technologies" model="operationProductInComponent">
-			<model:onSave class="com.qcadoo.mes.genealogies.GenealogyService"
-				method="fillBatchRequiredForTechnology" />
-		</model:hook>
+
 
 		<view:menu-item-url name="genealogyAttributes"
 			category="basic" url="genealogyAttribute.html" />
-		<view:menu-item name="genealogyForComponent" category="reports"
-			view="genealogyForComponent" />
 		<view:menu-item name="genealogyForProduct" category="reports"
 			view="genealogyForProduct" />
 
@@ -110,16 +91,9 @@
 		<view:viewHookExtension plugin="technologies"
 			view="technology" hookType="preRenderHook"
 			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkAttributesReq" />
-		<view:viewHookExtension plugin="technologies"
-			view="technology" hookType="preRenderHook"
-			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="disableBatchRequiredForTechnology" />
 
 		<view:viewListenerExtension plugin="technologies"
 			view="technology" component="product" event="onSelectedEntityChange"
-			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
-
-		<view:viewListenerExtension plugin="technologies"
-			view="operationProductInComponent" component="product" event="onSelectedEntityChange"
 			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
 
 		<view:viewListenerExtension plugin="orders"
