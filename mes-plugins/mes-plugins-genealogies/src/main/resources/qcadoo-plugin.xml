@@ -99,13 +99,9 @@
 		<view:view resource="view/genealogies.xml" />
 		<view:view resource="view/orderGenealogies.xml" />
 
-		<view:viewRibbonExtension>
-			<view:resource>view/productsExtension.xml</view:resource>
-		</view:viewRibbonExtension>
+		<view:viewRibbonExtension resource="view/productsExtension.xml" />
 
-		<view:viewWindowTabExtension>
-			<view:resource>view/productsExtension.xml</view:resource>
-		</view:viewWindowTabExtension>
+		<view:viewWindowTabExtension resource="view/productsExtension.xml" />
 
 		<view:viewHookExtension plugin="technologies"
 			view="technology" hookType="preRenderHook"

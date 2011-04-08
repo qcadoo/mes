@@ -75,13 +75,9 @@
 
 		<view:view resource="view/qualityControls.xml" />
 
-		<view:viewRibbonExtension>
-			<view:resource>view/viewExtension.xml</view:resource>
-		</view:viewRibbonExtension>
+		<view:viewRibbonExtension resource="view/viewExtension.xml" />
 
-		<view:viewWindowTabExtension>
-			<view:resource>view/viewExtension.xml</view:resource>
-		</view:viewWindowTabExtension>
+		<view:viewWindowTabExtension resource="view/viewExtension.xml" />
 
 		<view:viewHookExtension plugin="technologies" view="technology"
 			hookType="preRenderHook" bean="com.qcadoo.mes.qualityControls.QualityControlService"
