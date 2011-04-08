@@ -55,7 +55,7 @@
 
 		<model:field plugin="basic" model="product">
 			<model:hasMany name="technologies" plugin="technologies"
-				model="technology" joinField="product" cascade="none" />
+				model="technology" joinField="product" cascade="delete" />
 		</model:field>
 
 		<view:menu-category name="technology" />
