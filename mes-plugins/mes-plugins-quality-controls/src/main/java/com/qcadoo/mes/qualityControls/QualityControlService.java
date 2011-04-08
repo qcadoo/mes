@@ -57,7 +57,7 @@ import com.qcadoo.view.components.lookup.LookupComponentState;
 import com.qcadoo.view.components.select.SelectComponentState;
 
 @Service
-public class QualityControlService {
+public final class QualityControlService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -387,7 +387,7 @@ public class QualityControlService {
 
     }
 
-    public void addRestrictionToQualityControlGrid(final ViewDefinitionState viewDefinitionState) {
+    public final void addRestrictionToQualityControlGrid(final ViewDefinitionState viewDefinitionState) {
         final GridComponentState qualityControlsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("grid");
         final String qualityControlType = qualityControlsGrid.getName();
 
@@ -467,7 +467,7 @@ public class QualityControlService {
         return true;
     }
 
-    public void disableFormForClosedControl(final ViewDefinitionState state) {
+    public final void disableFormForClosedControl(final ViewDefinitionState state) {
         FormComponentState qualityControl = (FormComponentState) state.getComponentByReference("form");
         boolean disabled = false;
 
