@@ -57,7 +57,7 @@ import com.qcadoo.view.components.lookup.LookupComponentState;
 import com.qcadoo.view.components.select.SelectComponentState;
 
 @Service
-public class QualityControlService {
+public final class QualityControlService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -512,6 +512,9 @@ public class QualityControlService {
     }
 
     private boolean checkOperationQualityControlRequired(final Long entityId) {
+        if (dataDefinitionService.get("technologies", "technologyOperationComponent").getField("qualityControlRequired") == null) {
+            return false;
+        }
         SearchResult searchResult = dataDefinitionService.get("technologies", "technologyOperationComponent").find()
                 .restrictedWith(Restrictions.eq("technology.id", entityId))
                 .restrictedWith(Restrictions.eq("qualityControlRequired", true)).withMaxResults(1).list();

@@ -219,9 +219,11 @@
 			<url>http://nexus.qcadoo.org/content/repositories/releases</url>
 			<releases>
 				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
 			</releases>
 			<snapshots>
 				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
 			</snapshots>
 		</repository>
 		<repository>
@@ -229,10 +231,11 @@
 			<url>http://nexus.qcadoo.org/content/repositories/snapshots</url>
 			<releases>
 				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
+				<updatePolicy>interval:5</updatePolicy>
 			</snapshots>
 		</repository>
 		<repository>
@@ -258,24 +261,31 @@
 			<url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
 			<snapshots>
 				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
 			</snapshots>
 			<releases>
 				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
 			</releases>
 		</repository>
 	</repositories>
 
 	<scm>
-		<connection>scm:git:ssh://emhyr.qcadoo.private/Users/git/mes.git</connection>
-		<developerConnection>scm:git:ssh://emhyr.qcadoo.private/Users/git/mes.git</developerConnection>
+		<connection>scm:git:ssh://github.com/qcadoo/mes.git</connection>
+   		<developerConnection>scm:git:ssh://git@github.com/qcadoo/mes.git</developerConnection>
+   		<url>http://github.com/qcadoo/mes</url>
 	</scm>
 
 	<distributionManagement>
 		<repository>
-			<id>qcadoo</id>
-			<!-- TODO -->
-			<url>file://target</url>
+			<id>qcadoo-releases-repository</id>
+			<url>http://nexus.qcadoo.org/content/repositories/releases</url>
 		</repository>
+		<snapshotRepository>
+			<id>qcadoo-snapshots-repository</id>
+			<url>http://nexus.qcadoo.org/content/repositories/snapshots</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<profiles>
