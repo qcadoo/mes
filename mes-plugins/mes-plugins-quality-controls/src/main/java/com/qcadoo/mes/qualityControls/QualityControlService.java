@@ -441,27 +441,37 @@ public class QualityControlService {
             BigDecimal rejectedQuantity = (BigDecimal) entity.getField("rejectedQuantity");
             BigDecimal acceptedDefectsQuantity = (BigDecimal) entity.getField("acceptedDefectsQuantity");
 
-            if (rejectedQuantity != null && rejectedQuantity.compareTo(takenForControlQuantity) > 0) {
+            if (controlledQuantity == null) {
+                controlledQuantity = BigDecimal.ZERO;
+            }
+            if (takenForControlQuantity == null) {
+                takenForControlQuantity = BigDecimal.ZERO;
+            }
+            if (rejectedQuantity == null) {
+                rejectedQuantity = BigDecimal.ZERO;
+            }
+            if (acceptedDefectsQuantity == null) {
+                acceptedDefectsQuantity = BigDecimal.ZERO;
+            }
+
+            if (rejectedQuantity.compareTo(takenForControlQuantity) > 0) {
                 entity.addGlobalError("core.validate.global.error.custom");
                 entity.addError(dataDefinition.getField("rejectedQuantity"),
                         "qualityControls.quality.control.validate.global.error.rejectedQuantity.tooLarge");
                 return false;
             }
 
-            if (acceptedDefectsQuantity != null && takenForControlQuantity != null
-                    && acceptedDefectsQuantity.compareTo(takenForControlQuantity.subtract(rejectedQuantity)) > 0) {
+            if (acceptedDefectsQuantity.compareTo(takenForControlQuantity.subtract(rejectedQuantity)) > 0) {
                 entity.addGlobalError("core.validate.global.error.custom");
                 entity.addError(dataDefinition.getField("acceptedDefectsQuantity"),
                         "qualityControls.quality.control.validate.global.error.acceptedDefectsQuantity.tooLarge");
                 return false;
             }
 
-            entity.setField("controlledQuantity", controlledQuantity == null ? BigDecimal.ZERO : controlledQuantity);
-            entity.setField("takenForControlQuantity", takenForControlQuantity == null ? BigDecimal.ZERO
-                    : takenForControlQuantity);
-            entity.setField("rejectedQuantity", rejectedQuantity == null ? BigDecimal.ZERO : rejectedQuantity);
-            entity.setField("acceptedDefectsQuantity", acceptedDefectsQuantity == null ? BigDecimal.ZERO
-                    : acceptedDefectsQuantity);
+            entity.setField("controlledQuantity", controlledQuantity);
+            entity.setField("takenForControlQuantity", takenForControlQuantity);
+            entity.setField("rejectedQuantity", rejectedQuantity);
+            entity.setField("acceptedDefectsQuantity", acceptedDefectsQuantity);
         }
 
         return true;

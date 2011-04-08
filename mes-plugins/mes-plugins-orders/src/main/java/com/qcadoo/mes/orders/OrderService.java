@@ -349,6 +349,9 @@ public final class OrderService {
     }
 
     public void fillOrderDatesAndWorkers(final DataDefinition dataDefinition, final Entity entity) {
+        if (securityService.getCurrentUserName() == null) {
+            return;
+        }
         if (("02inProgress".equals(entity.getField("state")) || "03done".equals(entity.getField("state")))
                 && entity.getField("effectiveDateFrom") == null) {
             entity.setField("effectiveDateFrom", new Date());
