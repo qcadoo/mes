@@ -41,8 +41,14 @@
 		
 		<model:model-field plugin="technologies" model="operationProductInComponent">
 			<model:hasMany name="genealogyProductInComponents"
-				plugin="genealogies" model="genealogyProductInComponent" joinField="productInComponent"
+				plugin="genealogiesForComponents" model="genealogyProductInComponent" joinField="productInComponent"
 				cascade="delete" />
+		</model:model-field>
+		
+		<model:model-field plugin="genealogies" model="genealogy">
+			<model:hasMany name="productInComponents"
+				plugin="genealogiesForComponents" model="genealogyProductInComponent" joinField="genealogy"
+				cascade="delete" copyable="true" />
 		</model:model-field>
 		
 		<model:model-hook plugin="technologies" model="operationProductInComponent">
