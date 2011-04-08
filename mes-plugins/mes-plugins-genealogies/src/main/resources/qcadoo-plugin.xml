@@ -43,51 +43,51 @@
 		<model:model model="otherFeature" resource="model/otherFeature.xml" />
 		<model:model model="postFeature" resource="model/postFeature.xml" />
 		<model:model model="shiftFeature" resource="model/shiftFeature.xml" />
-		<model:field plugin="technologies" model="technology">
+		<model:model-field plugin="technologies" model="technology">
 			<model:boolean name="batchRequired" />
-		</model:field>
-		<model:field plugin="technologies" model="technology">
+		</model:model-field>
+		<model:model-field plugin="technologies" model="technology">
 			<model:boolean name="shiftFeatureRequired" />
-		</model:field>
-		<model:field plugin="technologies" model="technology">
+		</model:model-field>
+		<model:model-field plugin="technologies" model="technology">
 			<model:boolean name="postFeatureRequired" />
-		</model:field>
-		<model:field plugin="technologies" model="technology">
+		</model:model-field>
+		<model:model-field plugin="technologies" model="technology">
 			<model:boolean name="otherFeatureRequired" />
-		</model:field>
-		<model:field plugin="technologies" model="operationProductInComponent">
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operationProductInComponent">
 			<model:boolean name="batchRequired" />
-		</model:field>
-		<model:field plugin="basic" model="product">
+		</model:model-field>
+		<model:model-field plugin="basic" model="product">
 			<model:string name="batch">
 				<model:validatesLength max="255" />
 			</model:string>
-		</model:field>
-		<model:field plugin="basic" model="product">
+		</model:model-field>
+		<model:model-field plugin="basic" model="product">
 			<model:string name="lastUsedBatch">
 				<model:validatesLength max="255" />
 			</model:string>
-		</model:field>
-		<model:field plugin="basic" model="product">
+		</model:model-field>
+		<model:model-field plugin="basic" model="product">
 			<model:boolean name="genealogyBatchReq" />
-		</model:field>
-		<model:field plugin="orders" model="order">
+		</model:model-field>
+		<model:model-field plugin="orders" model="order">
 			<model:hasMany name="genealogies" plugin="genealogies"
 				model="genealogy" joinField="order" cascade="delete" />
-		</model:field>
-		<model:field plugin="technologies" model="operationProductInComponent">
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operationProductInComponent">
 			<model:hasMany name="genealogyProductInComponents"
 				plugin="genealogies" model="genealogyProductInComponent" joinField="productInComponent"
 				cascade="delete" />
-		</model:field>
-		<model:field plugin="basic" model="parameter">
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
 			<model:enum name="batchForDoneOrder" values="01none,02active,03lastUsed"
 				default="01none" />
-		</model:field>
-		<model:hook plugin="technologies" model="operationProductInComponent">
+		</model:model-field>
+		<model:model-hook plugin="technologies" model="operationProductInComponent">
 			<model:onSave class="com.qcadoo.mes.genealogies.GenealogyService"
 				method="fillBatchRequiredForTechnology" />
-		</model:hook>
+		</model:model-hook>
 
 		<view:menu-item-url name="genealogyAttributes"
 			category="basic" url="genealogyAttribute.html" />
@@ -99,42 +99,42 @@
 		<view:view resource="view/genealogies.xml" />
 		<view:view resource="view/orderGenealogies.xml" />
 
-		<view:viewRibbonExtension resource="view/productsExtension.xml" />
+		<view:view-ribbon-group resource="view/productsExtension.xml" />
 
-		<view:viewWindowTabExtension resource="view/productsExtension.xml" />
+		<view:view-tab resource="view/productsExtension.xml" />
 
-		<view:viewHookExtension plugin="technologies"
+		<view:view-hook plugin="technologies"
 			view="technology" hookType="preRenderHook"
 			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkAttributesReq" />
-		<view:viewHookExtension plugin="technologies"
+		<view:view-hook plugin="technologies"
 			view="technology" hookType="preRenderHook"
 			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="disableBatchRequiredForTechnology" />
 
-		<view:viewListenerExtension plugin="technologies"
+		<view:view-listener plugin="technologies"
 			view="technology" component="product" event="onSelectedEntityChange"
 			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
 
-		<view:viewListenerExtension plugin="technologies"
+		<view:view-listener plugin="technologies"
 			view="operationProductInComponent" component="product" event="onSelectedEntityChange"
 			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
 
-		<view:viewListenerExtension plugin="orders"
+		<view:view-listener plugin="orders"
 			view="orders" component="grid" event="activateOrder"
 			bean="com.qcadoo.mes.genealogies.AutoGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone" />
-		<view:viewListenerExtension plugin="orders"
+		<view:view-listener plugin="orders"
 			view="orders" component="grid" event="showGenealogy"
 			bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
-		<view:viewListenerExtension plugin="orders"
+		<view:view-listener plugin="orders"
 			view="orders" component="grid" event="newGenealogy"
 			bean="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
 
-		<view:viewListenerExtension plugin="orders"
+		<view:view-listener plugin="orders"
 			view="order" component="form" event="activateOrder"
 			bean="com.qcadoo.mes.genealogies.AutoGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone" />
-		<view:viewListenerExtension plugin="orders"
+		<view:view-listener plugin="orders"
 			view="order" component="form" event="showGenealogy"
 			bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
-		<view:viewListenerExtension plugin="orders"
+		<view:view-listener plugin="orders"
 			view="order" component="form" event="newGenealogy"
 			bean="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
 

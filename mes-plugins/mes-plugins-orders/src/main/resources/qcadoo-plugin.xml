@@ -38,15 +38,15 @@
 
 		<model:model model="order" resource="model/order.xml" />
 
-		<model:field plugin="basic" model="product">
+		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="orders" plugin="orders" model="order"
 				joinField="product" cascade="none" />
-		</model:field>
+		</model:model-field>
 
-		<model:field plugin="technologies" model="technology">
+		<model:model-field plugin="technologies" model="technology">
 			<model:hasMany name="orders" plugin="orders" model="order"
 				joinField="technology" cascade="none" />
-		</model:field>
+		</model:model-field>
 
 		<view:menu-category name="orders" />
 

@@ -40,19 +40,19 @@
 		<model:model model="materialRequirementComponent"
 			resource="model/materialRequirementComponent.xml" />
 
-		<model:field plugin="orders" model="order">
+		<model:model-field plugin="orders" model="order">
 			<model:hasMany name="materialRequirements" plugin="materialRequirements"
 				model="materialRequirementComponent" joinField="order" cascade="none" />
-		</model:field>
+		</model:model-field>
 
 		<view:menu-item name="materialRequirements" category="reports"
 			view="materialRequirements" />
 
 		<view:view resource="view/materialRequirements.xml" />
 
-		<view:viewRibbonExtension resource="view/ordersExtension.xml" />
+		<view:view-ribbon-group resource="view/ordersExtension.xml" />
 
-		<view:viewListenerExtension plugin="orders"
+		<view:view-listener plugin="orders"
 			view="orders" component="grid" event="printMaterialReqForOrder"
 			bean="com.qcadoo.mes.materialRequirements.MaterialRequirementService"
 			method="printMaterialReqForOrder" />

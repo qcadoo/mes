@@ -32,11 +32,11 @@
 	<modules>
 		<localization:translation path="locales" />
 
-		<model:hook plugin="qcadooPlugin" model="plugin">
+		<model:model-hook plugin="qcadooPlugin" model="plugin">
 			<model:onView
 				class="com.qcadoo.mes.plugins.controller.PluginManagmentDataHook"
 				method="updatePluginData" />
-		</model:hook>
+		</model:model-hook>
 
 		<view:menu-item name="plugins" category="administration"
 			view="plugins" />
