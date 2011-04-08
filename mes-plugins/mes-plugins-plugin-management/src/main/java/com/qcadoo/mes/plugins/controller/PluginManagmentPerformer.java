@@ -194,7 +194,7 @@ public class PluginManagmentPerformer {
         }
         for (PluginDependencyInformation dependency : dependencies) {
             redirectUrl.append("&plugin=");
-            redirectUrl.append(dependency.getDependencyPluginIdentifier());
+            redirectUrl.append(dependency.getIdentifier());
         }
 
         StringBuilder url = new StringBuilder("../pluginPages/infoPage.html?type=confirm&status=");
@@ -228,13 +228,13 @@ public class PluginManagmentPerformer {
         if (dependencies != null) {
             for (PluginDependencyInformation dependencyInfo : dependencies) {
                 url.append("&dep_");
-                url.append(dependencyInfo.getDependencyPluginIdentifier());
+                url.append(dependencyInfo.getIdentifier());
                 url.append("=");
-                if (dependencyInfo.getDependencyPluginVersion() == null
-                        || "0.0.0".equals(dependencyInfo.getDependencyPluginVersion().toString())) {
+                if (dependencyInfo.getVersionOfDependency() == null
+                        || "0.0.0".equals(dependencyInfo.getVersionOfDependency().toString())) {
                     url.append("none");
                 } else {
-                    url.append(dependencyInfo.getDependencyPluginVersion().toString());
+                    url.append(dependencyInfo.getVersionOfDependency().toString());
                 }
             }
         }

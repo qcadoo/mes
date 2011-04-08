@@ -54,7 +54,7 @@
 			method="checkIfProductIsNotRemoved" />
 		<validatesWith class="com.qcadoo.mes.basic.ProductService"
 			method="checkIfTechnologyIsNotRemoved" />
-		<onCopy class="com.qcadoo.mes.orders.OrderService" method="fillOrderDatesAndWorkers" />
+		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillOrderDatesAndWorkers" />
 		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesAndWorkersOnCopy" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
