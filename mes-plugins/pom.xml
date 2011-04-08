@@ -25,7 +25,8 @@
 		<module>mes-plugins-quality-controls</module>
 	    <module>mes-plugins-material-requirements</module>
     	<module>mes-plugins-work-plans</module>
-	       <module>mes-plugins-technologies</module>
+	    <module>mes-plugins-technologies</module>
+    	<module>mes-plugins-quality-controls-for-operation</module>
   </modules>
 
 </project>
