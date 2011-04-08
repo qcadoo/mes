@@ -387,7 +387,7 @@ public final class QualityControlService {
 
     }
 
-    public final void addRestrictionToQualityControlGrid(final ViewDefinitionState viewDefinitionState) {
+    public void addRestrictionToQualityControlGrid(final ViewDefinitionState viewDefinitionState) {
         final GridComponentState qualityControlsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("grid");
         final String qualityControlType = qualityControlsGrid.getName();
 
@@ -467,7 +467,7 @@ public final class QualityControlService {
         return true;
     }
 
-    public final void disableFormForClosedControl(final ViewDefinitionState state) {
+    public void disableFormForClosedControl(final ViewDefinitionState state) {
         FormComponentState qualityControl = (FormComponentState) state.getComponentByReference("form");
         boolean disabled = false;
 

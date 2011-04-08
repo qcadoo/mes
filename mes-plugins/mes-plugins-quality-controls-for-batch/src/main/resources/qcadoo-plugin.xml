@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="qualityControlsForOperation" version="0.4.0"
+<plugin plugin="qualityControlsForBatch" version="0.4.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -14,7 +14,7 @@
        http://schema.qcadoo.org/modules/localization.xsd">
 
 	<information>
-		<name>MES - Quality Controls For Operation</name>
+		<name>MES - Quality Controls For Batch</name>
 		<vendor>
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
@@ -26,37 +26,30 @@
 			<plugin>qualityControls</plugin>
 			<version>[0.4.0</version>
 		</dependency>
+		<dependency>
+			<plugin>genealogies</plugin>
+			<version>[0.4.0</version>
+		</dependency>
 	</dependencies>
+	
 
 
 	<modules>
 		<localization:translation path="locales" />
 		
-		<model:model-enum-value plugin="technologies" model="technology" enum="qualityControlType" value="04forOperation" />
-		
-		<model:field plugin="technologies" model="technologyOperationComponent">
-			<model:boolean name="qualityControlRequired" />
-		</model:field>
-		
-		<model:hook plugin="technologies" model="technologyOperationComponent">
-			<model:onSave class="com.qcadoo.mes.qualityControls.QualityControlService"
-				method="setQualityControlTypeForTechnology" />
-		</model:hook>
-		
-		<view:menu-item name="forOperation" category="quality"
-			view="qualityControlsForOperation" />
+		<model:model-enum-value plugin="technologies" model="technology" enum="qualityControlType" value="01forBatch" />
+
+		<view:menu-item name="forBatch" category="quality"
+			view="qualityControlsForBatch" />
 			
-		<view:view resource="view/qualityControlsForOperation.xml" />
+		<view:view resource="view/qualityControlsForBatch.xml" />
 			
 		<view:viewRibbonExtension>
 			<view:resource>view/viewExtension.xml</view:resource>
 		</view:viewRibbonExtension>
-			
-		<view:viewWindowTabExtension>
-			<view:resource>view/viewExtension.xml</view:resource>
-		</view:viewWindowTabExtension>
-		
 
+		<!-- TODO remove after implementing import data -->
+		<databasePreparation />
 	</modules>
 
 </plugin>
