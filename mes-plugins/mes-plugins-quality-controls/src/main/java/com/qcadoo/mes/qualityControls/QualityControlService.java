@@ -72,7 +72,7 @@ public class QualityControlService {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state, final Locale locale) {
+    public final void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state, final Locale locale) {
         FieldComponentState comment = (FieldComponentState) state.getComponentByReference("comment");
 
         FieldComponentState controlResult = (FieldComponentState) state.getComponentByReference("controlResult");
@@ -86,7 +86,7 @@ public class QualityControlService {
 
     }
 
-    public void setQualityControlTypeForTechnology(final DataDefinition dataDefinition, final Entity entity) {
+    public final void setQualityControlTypeForTechnology(final DataDefinition dataDefinition, final Entity entity) {
         if (entity.getField("qualityControlRequired") != null && (Boolean) entity.getField("qualityControlRequired")) {
             Entity technology = entity.getBelongsToField("technology");
             DataDefinition technologyInDef = dataDefinitionService.get("technologies", "technology");
@@ -99,7 +99,7 @@ public class QualityControlService {
         }
     }
 
-    public void checkIfCommentIsRequiredBasedOnDefects(final ViewDefinitionState state, final Locale locale) {
+    public final void checkIfCommentIsRequiredBasedOnDefects(final ViewDefinitionState state, final Locale locale) {
         FieldComponentState comment = (FieldComponentState) state.getComponentByReference("comment");
 
         FieldComponentState acceptedDefectsQuantity = (FieldComponentState) state
@@ -117,7 +117,7 @@ public class QualityControlService {
 
     }
 
-    public boolean checkIfCommentForResultOrQuantityIsReq(final DataDefinition dataDefinition, final Entity entity) {
+    public final boolean checkIfCommentForResultOrQuantityIsReq(final DataDefinition dataDefinition, final Entity entity) {
         String qualityControlType = (String) entity.getField("qualityControlType");
 
         if (hasControlResult(qualityControlType)) {
@@ -128,7 +128,7 @@ public class QualityControlService {
 
     }
 
-    public boolean checkIfCommentForResultIsReq(final DataDefinition dataDefinition, final Entity entity) {
+    public final boolean checkIfCommentForResultIsReq(final DataDefinition dataDefinition, final Entity entity) {
         String resultType = (String) entity.getField("controlResult");
 
         if (resultType != null && "03objection".equals(resultType)) {
@@ -145,7 +145,7 @@ public class QualityControlService {
 
     }
 
-    public boolean checkIfCommentForQuantityIsReq(final DataDefinition dataDefinition, final Entity entity) {
+    public final boolean checkIfCommentForQuantityIsReq(final DataDefinition dataDefinition, final Entity entity) {
         BigDecimal acceptedDefectsQuantity = (BigDecimal) entity.getField("acceptedDefectsQuantity");
 
         if (acceptedDefectsQuantity != null) {
@@ -162,7 +162,7 @@ public class QualityControlService {
 
     }
 
-    public void checkQualityControlResult(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+    public final void checkQualityControlResult(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (!(state instanceof SelectComponentState)) {
             throw new IllegalStateException("component is not select");
@@ -179,7 +179,8 @@ public class QualityControlService {
         }
     }
 
-    public void closeQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public final void closeQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
         if (state.getFieldValue() != null) {
             if (state instanceof FormComponentState) {
                 FieldComponentState controlResult = (FieldComponentState) viewDefinitionState
@@ -252,7 +253,7 @@ public class QualityControlService {
         }
     }
 
-    public void autoGenerateQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+    public final void autoGenerateQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         boolean inProgressState = Boolean.parseBoolean(args[0]);
         if (inProgressState && isQualityControlAutoGenEnabled()) {
@@ -260,7 +261,7 @@ public class QualityControlService {
         }
     }
 
-    public void generateOnSaveQualityControl(final DataDefinition dataDefinition, final Entity entity) {
+    public final void generateOnSaveQualityControl(final DataDefinition dataDefinition, final Entity entity) {
         Entity order = entity.getBelongsToField("order");
         Entity technology = order.getBelongsToField("technology");
 
@@ -275,7 +276,7 @@ public class QualityControlService {
         }
     }
 
-    public void generateQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+    public final void generateQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state.getFieldValue() != null) {
             DataDefinition orderDataDefinition = dataDefinitionService.get("orders", "order");
@@ -315,7 +316,7 @@ public class QualityControlService {
         }
     }
 
-    public void checkAcceptedDefectsQuantity(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+    public final void checkAcceptedDefectsQuantity(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (!(state instanceof FieldComponentState)) {
             throw new IllegalStateException("component is not input");
@@ -335,7 +336,7 @@ public class QualityControlService {
         }
     }
 
-    public void setQualityControlInstruction(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+    public final void setQualityControlInstruction(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (!(state instanceof LookupComponentState)) {
             return;
@@ -359,7 +360,7 @@ public class QualityControlService {
         }
     }
 
-    public void enableCalendarsOnRender(final ViewDefinitionState state, final Locale locale) {
+    public final void enableCalendarsOnRender(final ViewDefinitionState state, final Locale locale) {
         FieldComponentState dateFrom = (FieldComponentState) state.getComponentByReference("dateFrom");
         FieldComponentState dateTo = (FieldComponentState) state.getComponentByReference("dateTo");
 
@@ -367,7 +368,7 @@ public class QualityControlService {
         dateTo.setEnabled(true);
     }
 
-    public void setQuantitiesToDefaulIfEmpty(final ViewDefinitionState state, final Locale locale) {
+    public final void setQuantitiesToDefaulIfEmpty(final ViewDefinitionState state, final Locale locale) {
         FieldComponentState takenForControlQuantity = (FieldComponentState) state
                 .getComponentByReference("takenForControlQuantity");
         FieldComponentState rejectedQuantity = (FieldComponentState) state.getComponentByReference("rejectedQuantity");
@@ -388,7 +389,7 @@ public class QualityControlService {
 
     }
 
-    public void addRestrictionToQualityControlGrid(final ViewDefinitionState viewDefinitionState, final Locale locale) {
+    public final void addRestrictionToQualityControlGrid(final ViewDefinitionState viewDefinitionState, final Locale locale) {
         final GridComponentState qualityControlsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("grid");
         final String qualityControlType = qualityControlsGrid.getName();
 
@@ -402,7 +403,7 @@ public class QualityControlService {
         });
     }
 
-    public void setQualityControlTypeHiddenField(final ViewDefinitionState viewDefinitionState, final Locale locale) {
+    public final void setQualityControlTypeHiddenField(final ViewDefinitionState viewDefinitionState, final Locale locale) {
         FormComponentState qualityControlsForm = (FormComponentState) viewDefinitionState.getComponentByReference("form");
         String qualityControlTypeString = qualityControlsForm.getName().replace("Control", "Controls");
         FieldComponentState qualityControlType = (FieldComponentState) viewDefinitionState
@@ -411,12 +412,12 @@ public class QualityControlService {
         qualityControlType.setFieldValue(qualityControlTypeString);
     }
 
-    public void setOperationAsRequired(final ViewDefinitionState state, final Locale locale) {
+    public final void setOperationAsRequired(final ViewDefinitionState state, final Locale locale) {
         LookupComponentState operation = (LookupComponentState) state.getComponentByReference("operation");
         operation.setRequired(true);
     }
 
-    public boolean checkIfOperationIsRequired(final DataDefinition dataDefinition, final Entity entity) {
+    public final boolean checkIfOperationIsRequired(final DataDefinition dataDefinition, final Entity entity) {
         String qualityControlType = (String) entity.getField("qualityControlType");
 
         if ("qualityControlsForOperation".equals(qualityControlType)) {
@@ -433,7 +434,7 @@ public class QualityControlService {
         return true;
     }
 
-    public boolean checkIfQuantitiesAreCorrect(final DataDefinition dataDefinition, final Entity entity) {
+    public final boolean checkIfQuantitiesAreCorrect(final DataDefinition dataDefinition, final Entity entity) {
         String qualityControlType = (String) entity.getField("qualityControlType");
 
         if (hasQuantitiesToBeChecked(qualityControlType)) {
@@ -468,7 +469,7 @@ public class QualityControlService {
         return true;
     }
 
-    public void disableFormForClosedControl(final ViewDefinitionState state, final Locale locale) {
+    public final void disableFormForClosedControl(final ViewDefinitionState state, final Locale locale) {
         FormComponentState qualityControl = (FormComponentState) state.getComponentByReference("form");
         boolean disabled = false;
 
@@ -483,13 +484,13 @@ public class QualityControlService {
         qualityControl.setEnabledWithChildren(!disabled);
     }
 
-    public boolean clearQualityControlOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+    public final boolean clearQualityControlOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("closed", "0");
         entity.setField("controlResult", null);
         return true;
     }
 
-    public void changeQualityControlType(final ViewDefinitionState state, final Locale locale) {
+    public final void changeQualityControlType(final ViewDefinitionState state, final Locale locale) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         FieldComponentState qualityControlType = (FieldComponentState) state.getComponentByReference("qualityControlType");
         if (form.getFieldValue() != null) {
