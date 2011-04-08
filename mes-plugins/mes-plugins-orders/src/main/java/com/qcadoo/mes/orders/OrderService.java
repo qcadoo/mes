@@ -349,6 +349,11 @@ public final class OrderService {
     }
 
     public void fillOrderDatesAndWorkers(final DataDefinition dataDefinition, final Entity entity) {
+        System.out.println("1");
+        if (securityService.getCurrentUserName() == null) {
+            return;
+        }
+        System.out.println("2");
         if (("02inProgress".equals(entity.getField("state")) || "03done".equals(entity.getField("state")))
                 && entity.getField("effectiveDateFrom") == null) {
             entity.setField("effectiveDateFrom", new Date());
