@@ -38,8 +38,7 @@
 
 		<model:model model="qualityControl" resource="model/qualityControl.xml" />
 		<model:field plugin="technologies" model="technology">
-			<model:enum name="qualityControlType"
-				values="01forBatch,02forUnit,03forOrder,04forOperation" />
+			<model:enum name="qualityControlType" values="01forBatch,02forUnit,03forOrder,04forOperation" />
 		</model:field>
 		<model:field plugin="technologies" model="technology">
 			<model:decimal name="unitSamplingNr" />
@@ -53,12 +52,10 @@
 			<model:boolean name="qualityControlRequired" />
 		</model:field>
 		<model:field plugin="basic" model="parameter">
-			<model:boolean name="checkDoneOrderForQuality"
-				required="true" />
+			<model:boolean name="checkDoneOrderForQuality" required="true" />
 		</model:field>
 		<model:field plugin="basic" model="parameter">
-			<model:boolean name="autoGenerateQualityControl"
-				required="true" />
+			<model:boolean name="autoGenerateQualityControl" required="true" />
 		</model:field>
 		<model:hook plugin="technologies" model="technologyOperationComponent">
 			<model:onSave class="com.qcadoo.mes.qualityControls.QualityControlService"
@@ -92,9 +89,9 @@
 			<view:resource>view/viewExtension.xml</view:resource>
 		</view:viewWindowTabExtension>
 
-		<view:viewHookExtension plugin="technologies"
-			view="technology" hookType="preRenderHook"
-			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="changeQualityControlType" />
+		<view:viewHookExtension plugin="technologies" view="technology"
+			hookType="preRenderHook" bean="com.qcadoo.mes.qualityControls.QualityControlService"
+			method="changeQualityControlType" />
 
 		<view:viewListenerExtension plugin="orders"
 			view="orders" component="grid" event="activateOrder"

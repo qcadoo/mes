@@ -106,7 +106,7 @@ public class QualityControlServiceTest {
         given(state.getComponentByReference("form")).willReturn(form);
 
         // when
-        qualityControlService.checkIfCommentIsRequiredBasedOnResult(state, Locale.ENGLISH);
+        qualityControlService.checkIfCommentIsRequiredBasedOnResult(state);
 
         // then
         verify(comment).setRequired(true);
@@ -129,7 +129,7 @@ public class QualityControlServiceTest {
         given(state.getComponentByReference("form")).willReturn(form);
 
         // when
-        qualityControlService.checkIfCommentIsRequiredBasedOnDefects(state, Locale.ENGLISH);
+        qualityControlService.checkIfCommentIsRequiredBasedOnDefects(state);
 
         // then
         verify(comment).setRequired(true);
@@ -446,7 +446,7 @@ public class QualityControlServiceTest {
         given(state.getComponentByReference("dateTo")).willReturn(dateTo);
 
         // when
-        qualityControlService.enableCalendarsOnRender(state, Locale.ENGLISH);
+        qualityControlService.enableCalendarsOnRender(state);
 
         // then
         verify(dateFrom).setEnabled(true);
@@ -472,7 +472,7 @@ public class QualityControlServiceTest {
         given(state.getComponentByReference("acceptedDefectsQuantity").getFieldValue()).willReturn(null);
 
         // when
-        qualityControlService.setQuantitiesToDefaulIfEmpty(state, Locale.ENGLISH);
+        qualityControlService.setQuantitiesToDefaulIfEmpty(state);
 
         // then
         verify(takenForControl).setFieldValue(BigDecimal.ONE);
@@ -563,7 +563,7 @@ public class QualityControlServiceTest {
         given(viewDefinitionState.getComponentByReference("operation")).willReturn(operation);
 
         // when
-        qualityControlService.setOperationAsRequired(viewDefinitionState, Locale.ENGLISH);
+        qualityControlService.setOperationAsRequired(viewDefinitionState);
 
         // then
         verify(operation).setRequired(true);
@@ -581,7 +581,7 @@ public class QualityControlServiceTest {
         given(viewDefinitionState.getComponentByReference("qualityControlType")).willReturn(qualityControlType);
 
         // when
-        qualityControlService.setQualityControlTypeHiddenField(viewDefinitionState, Locale.ENGLISH);
+        qualityControlService.setQualityControlTypeHiddenField(viewDefinitionState);
 
         // then
         verify(qualityControlType).setFieldValue("qualityControlsForBatch");

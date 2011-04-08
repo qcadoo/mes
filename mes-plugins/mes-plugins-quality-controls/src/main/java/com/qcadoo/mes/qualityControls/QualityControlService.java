@@ -29,7 +29,6 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,7 +71,7 @@ public class QualityControlService {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public final void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state, final Locale locale) {
+    public final void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state) {
         FieldComponentState comment = (FieldComponentState) state.getComponentByReference("comment");
 
         FieldComponentState controlResult = (FieldComponentState) state.getComponentByReference("controlResult");
@@ -99,7 +98,7 @@ public class QualityControlService {
         }
     }
 
-    public final void checkIfCommentIsRequiredBasedOnDefects(final ViewDefinitionState state, final Locale locale) {
+    public final void checkIfCommentIsRequiredBasedOnDefects(final ViewDefinitionState state) {
         FieldComponentState comment = (FieldComponentState) state.getComponentByReference("comment");
 
         FieldComponentState acceptedDefectsQuantity = (FieldComponentState) state
@@ -360,7 +359,7 @@ public class QualityControlService {
         }
     }
 
-    public final void enableCalendarsOnRender(final ViewDefinitionState state, final Locale locale) {
+    public final void enableCalendarsOnRender(final ViewDefinitionState state) {
         FieldComponentState dateFrom = (FieldComponentState) state.getComponentByReference("dateFrom");
         FieldComponentState dateTo = (FieldComponentState) state.getComponentByReference("dateTo");
 
@@ -368,7 +367,7 @@ public class QualityControlService {
         dateTo.setEnabled(true);
     }
 
-    public final void setQuantitiesToDefaulIfEmpty(final ViewDefinitionState state, final Locale locale) {
+    public final void setQuantitiesToDefaulIfEmpty(final ViewDefinitionState state) {
         FieldComponentState takenForControlQuantity = (FieldComponentState) state
                 .getComponentByReference("takenForControlQuantity");
         FieldComponentState rejectedQuantity = (FieldComponentState) state.getComponentByReference("rejectedQuantity");
@@ -389,7 +388,7 @@ public class QualityControlService {
 
     }
 
-    public final void addRestrictionToQualityControlGrid(final ViewDefinitionState viewDefinitionState, final Locale locale) {
+    public final void addRestrictionToQualityControlGrid(final ViewDefinitionState viewDefinitionState) {
         final GridComponentState qualityControlsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("grid");
         final String qualityControlType = qualityControlsGrid.getName();
 
@@ -403,7 +402,7 @@ public class QualityControlService {
         });
     }
 
-    public final void setQualityControlTypeHiddenField(final ViewDefinitionState viewDefinitionState, final Locale locale) {
+    public final void setQualityControlTypeHiddenField(final ViewDefinitionState viewDefinitionState) {
         FormComponentState qualityControlsForm = (FormComponentState) viewDefinitionState.getComponentByReference("form");
         String qualityControlTypeString = qualityControlsForm.getName().replace("Control", "Controls");
         FieldComponentState qualityControlType = (FieldComponentState) viewDefinitionState
@@ -412,7 +411,7 @@ public class QualityControlService {
         qualityControlType.setFieldValue(qualityControlTypeString);
     }
 
-    public final void setOperationAsRequired(final ViewDefinitionState state, final Locale locale) {
+    public final void setOperationAsRequired(final ViewDefinitionState state) {
         LookupComponentState operation = (LookupComponentState) state.getComponentByReference("operation");
         operation.setRequired(true);
     }
@@ -469,7 +468,7 @@ public class QualityControlService {
         return true;
     }
 
-    public final void disableFormForClosedControl(final ViewDefinitionState state, final Locale locale) {
+    public final void disableFormForClosedControl(final ViewDefinitionState state) {
         FormComponentState qualityControl = (FormComponentState) state.getComponentByReference("form");
         boolean disabled = false;
 
@@ -490,7 +489,7 @@ public class QualityControlService {
         return true;
     }
 
-    public final void changeQualityControlType(final ViewDefinitionState state, final Locale locale) {
+    public final void changeQualityControlType(final ViewDefinitionState state) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         FieldComponentState qualityControlType = (FieldComponentState) state.getComponentByReference("qualityControlType");
         if (form.getFieldValue() != null) {

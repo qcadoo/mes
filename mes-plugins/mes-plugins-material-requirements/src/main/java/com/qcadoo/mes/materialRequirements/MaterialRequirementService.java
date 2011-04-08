@@ -3,7 +3,6 @@ package com.qcadoo.mes.materialRequirements;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,7 +87,7 @@ public final class MaterialRequirementService {
         }
     }
 
-    public void disableFormForExistingMaterialRequirement(final ViewDefinitionState state, final Locale locale) {
+    public void disableFormForExistingMaterialRequirement(final ViewDefinitionState state) {
         ComponentState name = state.getComponentByReference("name");
         ComponentState onlyComponents = state.getComponentByReference("onlyComponents");
         ComponentState materialRequirementComponents = state.getComponentByReference("materialRequirementComponents");
@@ -104,12 +103,12 @@ public final class MaterialRequirementService {
         }
     }
 
-    public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale) {
-        ribbonReportService.setGenerateButtonState(state, locale, "materialRequirements", "materialRequirement");
+    public void setGenerateButtonState(final ViewDefinitionState state) {
+        ribbonReportService.setGenerateButtonState(state, state.getLocale(), "materialRequirements", "materialRequirement");
     }
 
-    public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale) {
-        ribbonReportService.setGridGenerateButtonState(state, locale, "materialRequirements", "materialRequirement");
+    public void setGridGenerateButtonState(final ViewDefinitionState state) {
+        ribbonReportService.setGridGenerateButtonState(state, state.getLocale(), "materialRequirements", "materialRequirement");
     }
 
     public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,

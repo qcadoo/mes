@@ -291,7 +291,7 @@ public class OrderServiceTest {
         given(form.getEntityId()).willReturn(null);
 
         // when
-        orderService.setAndDisableState(viewDefinitionState, Locale.ENGLISH);
+        orderService.setAndDisableState(viewDefinitionState);
 
         // then
         verify(orderState).setEnabled(false);
@@ -309,7 +309,7 @@ public class OrderServiceTest {
         given(form.getEntityId()).willReturn(1L);
 
         // when
-        orderService.setAndDisableState(viewDefinitionState, Locale.ENGLISH);
+        orderService.setAndDisableState(viewDefinitionState);
 
         // then
         verify(orderState).setEnabled(false);
@@ -322,7 +322,7 @@ public class OrderServiceTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
         // when
-        orderService.generateOrderNumber(viewDefinitionState, Locale.ENGLISH);
+        orderService.generateOrderNumber(viewDefinitionState);
 
         // then
         verify(numberGeneratorService).generateAndInsertNumber(viewDefinitionState, "orders", "order", "form", "number");
@@ -339,7 +339,7 @@ public class OrderServiceTest {
         given(product.getFieldValue()).willReturn(null);
 
         // when
-        orderService.fillDefaultTechnology(viewDefinitionState, Locale.ENGLISH);
+        orderService.fillDefaultTechnology(viewDefinitionState);
 
         // then
         verify(defaultTechnology, never()).setFieldValue(anyString());
@@ -370,7 +370,7 @@ public class OrderServiceTest {
         given(searchResult.getTotalNumberOfEntities()).willReturn(0);
 
         // when
-        orderService.fillDefaultTechnology(viewDefinitionState, Locale.ENGLISH);
+        orderService.fillDefaultTechnology(viewDefinitionState);
 
         // then
         verify(defaultTechnology, never()).setFieldValue(anyString());
@@ -403,7 +403,7 @@ public class OrderServiceTest {
         given(searchResult.getEntities()).willReturn(Collections.singletonList(entity));
 
         // when
-        orderService.fillDefaultTechnology(viewDefinitionState, Locale.ENGLISH);
+        orderService.fillDefaultTechnology(viewDefinitionState);
 
         // then
         verify(defaultTechnology).setFieldValue(anyString());
@@ -425,7 +425,7 @@ public class OrderServiceTest {
         given(product.getFieldValue()).willReturn(null);
 
         // when
-        orderService.disableTechnologiesIfProductDoesNotAny(viewDefinitionState, Locale.ENGLISH);
+        orderService.disableTechnologiesIfProductDoesNotAny(viewDefinitionState);
 
         // then
         verify(defaultTechnology).setEnabled(false);
@@ -459,7 +459,7 @@ public class OrderServiceTest {
         given(searchResult.getTotalNumberOfEntities()).willReturn(0);
 
         // when
-        orderService.disableTechnologiesIfProductDoesNotAny(viewDefinitionState, Locale.ENGLISH);
+        orderService.disableTechnologiesIfProductDoesNotAny(viewDefinitionState);
 
         // then
         verify(defaultTechnology).setEnabled(false);
@@ -493,7 +493,7 @@ public class OrderServiceTest {
         given(searchResult.getTotalNumberOfEntities()).willReturn(1);
 
         // when
-        orderService.disableTechnologiesIfProductDoesNotAny(viewDefinitionState, Locale.ENGLISH);
+        orderService.disableTechnologiesIfProductDoesNotAny(viewDefinitionState);
 
         // then
         verify(defaultTechnology).setEnabled(false);
@@ -513,7 +513,7 @@ public class OrderServiceTest {
         given(order.getFieldValue()).willReturn(null);
 
         // when
-        orderService.disableFormForDoneOrder(viewDefinitionState, Locale.ENGLISH);
+        orderService.disableFormForDoneOrder(viewDefinitionState);
 
         // then
         verify(order).setEnabledWithChildren(true);
@@ -533,7 +533,7 @@ public class OrderServiceTest {
         given(dataDefinitionService.get("orders", "order").get(117L)).willReturn(null);
 
         // when
-        orderService.disableFormForDoneOrder(viewDefinitionState, Locale.ENGLISH);
+        orderService.disableFormForDoneOrder(viewDefinitionState);
 
         // then
         verify(order).setEnabledWithChildren(true);
@@ -556,7 +556,7 @@ public class OrderServiceTest {
         given(order.isValid()).willReturn(true);
 
         // when
-        orderService.disableFormForDoneOrder(viewDefinitionState, Locale.ENGLISH);
+        orderService.disableFormForDoneOrder(viewDefinitionState);
 
         // then
         verify(order).setEnabledWithChildren(true);
@@ -579,7 +579,7 @@ public class OrderServiceTest {
         given(order.isValid()).willReturn(false);
 
         // when
-        orderService.disableFormForDoneOrder(viewDefinitionState, Locale.ENGLISH);
+        orderService.disableFormForDoneOrder(viewDefinitionState);
 
         // then
         verify(order).setEnabledWithChildren(true);
@@ -602,7 +602,7 @@ public class OrderServiceTest {
         given(order.isValid()).willReturn(true);
 
         // when
-        orderService.disableFormForDoneOrder(viewDefinitionState, Locale.ENGLISH);
+        orderService.disableFormForDoneOrder(viewDefinitionState);
 
         // then
         verify(order).setEnabledWithChildren(false);
