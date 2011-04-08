@@ -24,8 +24,6 @@
 
 package com.qcadoo.mes.basic;
 
-import java.util.Locale;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +44,7 @@ public final class ProductService {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public void generateProductNumber(final ViewDefinitionState state, final Locale locale) {
+    public void generateProductNumber(final ViewDefinitionState state) {
         numberGeneratorService.generateAndInsertNumber(state, "basic", "product", "form", "number");
     }
 

@@ -29,7 +29,6 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,7 +57,7 @@ import com.qcadoo.view.components.lookup.LookupComponentState;
 import com.qcadoo.view.components.select.SelectComponentState;
 
 @Service
-public class QualityControlService {
+public final class QualityControlService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -72,7 +71,7 @@ public class QualityControlService {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state, final Locale locale) {
+    public void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state) {
         FieldComponentState comment = (FieldComponentState) state.getComponentByReference("comment");
 
         FieldComponentState controlResult = (FieldComponentState) state.getComponentByReference("controlResult");
@@ -99,7 +98,7 @@ public class QualityControlService {
         }
     }
 
-    public void checkIfCommentIsRequiredBasedOnDefects(final ViewDefinitionState state, final Locale locale) {
+    public void checkIfCommentIsRequiredBasedOnDefects(final ViewDefinitionState state) {
         FieldComponentState comment = (FieldComponentState) state.getComponentByReference("comment");
 
         FieldComponentState acceptedDefectsQuantity = (FieldComponentState) state
@@ -359,7 +358,7 @@ public class QualityControlService {
         }
     }
 
-    public void enableCalendarsOnRender(final ViewDefinitionState state, final Locale locale) {
+    public void enableCalendarsOnRender(final ViewDefinitionState state) {
         FieldComponentState dateFrom = (FieldComponentState) state.getComponentByReference("dateFrom");
         FieldComponentState dateTo = (FieldComponentState) state.getComponentByReference("dateTo");
 
@@ -367,7 +366,7 @@ public class QualityControlService {
         dateTo.setEnabled(true);
     }
 
-    public void setQuantitiesToDefaulIfEmpty(final ViewDefinitionState state, final Locale locale) {
+    public void setQuantitiesToDefaulIfEmpty(final ViewDefinitionState state) {
         FieldComponentState takenForControlQuantity = (FieldComponentState) state
                 .getComponentByReference("takenForControlQuantity");
         FieldComponentState rejectedQuantity = (FieldComponentState) state.getComponentByReference("rejectedQuantity");
@@ -388,7 +387,7 @@ public class QualityControlService {
 
     }
 
-    public void addRestrictionToQualityControlGrid(final ViewDefinitionState viewDefinitionState, final Locale locale) {
+    public final void addRestrictionToQualityControlGrid(final ViewDefinitionState viewDefinitionState) {
         final GridComponentState qualityControlsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("grid");
         final String qualityControlType = qualityControlsGrid.getName();
 
@@ -402,7 +401,7 @@ public class QualityControlService {
         });
     }
 
-    public void setQualityControlTypeHiddenField(final ViewDefinitionState viewDefinitionState, final Locale locale) {
+    public void setQualityControlTypeHiddenField(final ViewDefinitionState viewDefinitionState) {
         FormComponentState qualityControlsForm = (FormComponentState) viewDefinitionState.getComponentByReference("form");
         String qualityControlTypeString = qualityControlsForm.getName().replace("Control", "Controls");
         FieldComponentState qualityControlType = (FieldComponentState) viewDefinitionState
@@ -411,7 +410,7 @@ public class QualityControlService {
         qualityControlType.setFieldValue(qualityControlTypeString);
     }
 
-    public void setOperationAsRequired(final ViewDefinitionState state, final Locale locale) {
+    public void setOperationAsRequired(final ViewDefinitionState state) {
         LookupComponentState operation = (LookupComponentState) state.getComponentByReference("operation");
         operation.setRequired(true);
     }
@@ -468,7 +467,7 @@ public class QualityControlService {
         return true;
     }
 
-    public void disableFormForClosedControl(final ViewDefinitionState state, final Locale locale) {
+    public final void disableFormForClosedControl(final ViewDefinitionState state) {
         FormComponentState qualityControl = (FormComponentState) state.getComponentByReference("form");
         boolean disabled = false;
 
@@ -489,7 +488,7 @@ public class QualityControlService {
         return true;
     }
 
-    public void changeQualityControlType(final ViewDefinitionState state, final Locale locale) {
+    public void changeQualityControlType(final ViewDefinitionState state) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         FieldComponentState qualityControlType = (FieldComponentState) state.getComponentByReference("qualityControlType");
         if (form.getFieldValue() != null) {
@@ -512,6 +511,9 @@ public class QualityControlService {
     }
 
     private boolean checkOperationQualityControlRequired(final Long entityId) {
+        if (dataDefinitionService.get("technologies", "technologyOperationComponent").getField("qualityControlRequired") == null) {
+            return false;
+        }
         SearchResult searchResult = dataDefinitionService.get("technologies", "technologyOperationComponent").find()
                 .restrictedWith(Restrictions.eq("technology.id", entityId))
                 .restrictedWith(Restrictions.eq("qualityControlRequired", true)).withMaxResults(1).list();

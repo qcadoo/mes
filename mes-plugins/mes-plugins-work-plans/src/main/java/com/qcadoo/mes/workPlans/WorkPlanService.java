@@ -27,7 +27,6 @@ package com.qcadoo.mes.workPlans;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -156,12 +155,12 @@ public final class WorkPlanService {
         }
     }
 
-    public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale) {
-        ribbonReportService.setGenerateButtonState(state, locale, "workPlans", "workPlan");
+    public void setGenerateButtonState(final ViewDefinitionState state) {
+        ribbonReportService.setGenerateButtonState(state, state.getLocale(), "workPlans", "workPlan");
     }
 
-    public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale) {
-        ribbonReportService.setGridGenerateButtonState(state, locale, "workPlans", "workPlan");
+    public void setGridGenerateButtonState(final ViewDefinitionState state) {
+        ribbonReportService.setGridGenerateButtonState(state, state.getLocale(), "workPlans", "workPlan");
     }
 
     public void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -190,7 +189,7 @@ public final class WorkPlanService {
         }
     }
 
-    public void disableFormForExistingWorkPlan(final ViewDefinitionState state, final Locale locale) {
+    public void disableFormForExistingWorkPlan(final ViewDefinitionState state) {
         ComponentState name = state.getComponentByReference("name");
         ComponentState workPlanComponents = state.getComponentByReference("workPlanComponents");
         FieldComponentState generated = (FieldComponentState) state.getComponentByReference("generated");

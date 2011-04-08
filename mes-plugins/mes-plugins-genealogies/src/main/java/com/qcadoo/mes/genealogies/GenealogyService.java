@@ -27,7 +27,6 @@ package com.qcadoo.mes.genealogies;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,7 +68,7 @@ public final class GenealogyService {
         }
     }
 
-    public void hideComponents(final ViewDefinitionState state, final Locale locale) {
+    public void hideComponents(final ViewDefinitionState state) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         ComponentState featuresLayout = state.getComponentByReference("featuresLayout");
         ComponentState shiftList = state.getComponentByReference("shiftBorderLayout");
@@ -114,7 +113,7 @@ public final class GenealogyService {
         }
     }
 
-    public void fillProductInComponents(final ViewDefinitionState state, final Locale locale) {
+    public void fillProductInComponents(final ViewDefinitionState state) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         ComponentState productGridLayout = state.getComponentByReference("productGridLayout");
         AwesomeDynamicListState productInComponentsList = (AwesomeDynamicListState) state

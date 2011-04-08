@@ -24,8 +24,6 @@
 
 package com.qcadoo.mes.basic.util;
 
-import java.util.Locale;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,10 +41,10 @@ public class UnitService {
     private DataDefinitionService dataDefinitionService;
 
     public void fillProductUnit(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        fillProductUnitPreRender(viewDefinitionState, viewDefinitionState.getLocale());
+        fillProductUnitPreRender(viewDefinitionState);
     }
 
-    public void fillProductUnitPreRender(final ViewDefinitionState state, final Locale locale) {
+    public void fillProductUnitPreRender(final ViewDefinitionState state) {
         LookupComponentState productState = (LookupComponentState) state.getComponentByReference("product");
         FieldComponentState unitState = (FieldComponentState) state.getComponentByReference("unit");
         unitState.requestComponentUpdateState();

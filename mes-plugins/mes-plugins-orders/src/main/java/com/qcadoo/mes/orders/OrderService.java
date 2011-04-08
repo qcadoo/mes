@@ -26,7 +26,6 @@ package com.qcadoo.mes.orders;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -149,7 +148,7 @@ public final class OrderService {
         }
     }
 
-    public void setAndDisableState(final ViewDefinitionState state, final Locale locale) {
+    public void setAndDisableState(final ViewDefinitionState state) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         FieldComponentState orderState = (FieldComponentState) state.getComponentByReference("state");
 
@@ -264,11 +263,11 @@ public final class OrderService {
         }
     }
 
-    public void generateOrderNumber(final ViewDefinitionState state, final Locale locale) {
+    public void generateOrderNumber(final ViewDefinitionState state) {
         numberGeneratorService.generateAndInsertNumber(state, "orders", "order", "form", "number");
     }
 
-    public void fillDefaultTechnology(final ViewDefinitionState state, final Locale locale) {
+    public void fillDefaultTechnology(final ViewDefinitionState state) {
         LookupComponentState product = (LookupComponentState) state.getComponentByReference("product");
         FieldComponentState defaultTechnology = (FieldComponentState) state.getComponentByReference("defaultTechnology");
 
@@ -277,13 +276,13 @@ public final class OrderService {
 
             if (defaultTechnologyEntity != null) {
                 String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
-                        locale);
+                        state.getLocale());
                 defaultTechnology.setFieldValue(defaultTechnologyValue);
             }
         }
     }
 
-    public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState state, final Locale locale) {
+    public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState state) {
         LookupComponentState product = (LookupComponentState) state.getComponentByReference("product");
         LookupComponentState technology = (LookupComponentState) state.getComponentByReference("technology");
         FieldComponentState defaultTechnology = (FieldComponentState) state.getComponentByReference("defaultTechnology");
@@ -301,7 +300,7 @@ public final class OrderService {
         }
     }
 
-    public void disableFormForDoneOrder(final ViewDefinitionState state, final Locale locale) {
+    public void disableFormForDoneOrder(final ViewDefinitionState state) {
         FormComponentState order = (FormComponentState) state.getComponentByReference("form");
         LookupComponentState technology = (LookupComponentState) state.getComponentByReference("technology");
 
