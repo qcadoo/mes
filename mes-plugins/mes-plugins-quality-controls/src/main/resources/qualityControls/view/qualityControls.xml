@@ -516,10 +516,6 @@
 									var xlsOrder = #{window}.getRibbonItem("reportsForOrder.xlsOrder");
 									var pdfUnit = #{window}.getRibbonItem("reportsForUnit.pdfUnit");
 									var xlsUnit = #{window}.getRibbonItem("reportsForUnit.xlsUnit");
-									var pdfBatch = #{window}.getRibbonItem("reportsForBatch.pdfBatch");
-									var xlsBatch = #{window}.getRibbonItem("reportsForBatch.xlsBatch");
-									var pdfOperation = #{window}.getRibbonItem("reportsForOperation.pdfOperation");
-									var xlsOperation = #{window}.getRibbonItem("reportsForOperation.xlsOperation");
 									var dateToElement = #{dateTo};
 									this.performUpdateState();
 									this.addOnChangeListener({
@@ -534,29 +530,17 @@
 													xlsOrder.disable();
 													pdfUnit.disable();
 													xlsUnit.disable();
-													pdfBatch.disable();
-													xlsBatch.disable();
-													pdfOperation.disable();
-													xlsOperation.disable();
 												} else {
 													pdfOrder.enable();
 													xlsOrder.enable();
 													pdfUnit.enable();
 													xlsUnit.enable();
-													pdfBatch.enable();
-													xlsBatch.enable();
-													pdfOperation.enable();
-													xlsOperation.enable();
 												}
 											} else {
 												pdfOrder.disable();
 												xlsOrder.disable();
 												pdfUnit.disable();
 												xlsUnit.disable();
-												pdfBatch.disable();
-												xlsBatch.disable();
-												pdfOperation.disable();
-												xlsOperation.disable();
 											}
 										}
 									});
@@ -573,10 +557,6 @@
 									var xlsOrder = #{window}.getRibbonItem("reportsForOrder.xlsOrder");
 									var pdfUnit = #{window}.getRibbonItem("reportsForUnit.pdfUnit");
 									var xlsUnit = #{window}.getRibbonItem("reportsForUnit.xlsUnit");
-									var pdfBatch = #{window}.getRibbonItem("reportsForBatch.pdfBatch");
-									var xlsBatch = #{window}.getRibbonItem("reportsForBatch.xlsBatch");
-									var pdfOperation = #{window}.getRibbonItem("reportsForOperation.pdfOperation");
-									var xlsOperation = #{window}.getRibbonItem("reportsForOperation.xlsOperation");
 									var dateFromElement = #{dateFrom};
 									this.performUpdateState();
 									this.addOnChangeListener({
@@ -591,29 +571,17 @@
 													xlsOrder.disable();
 													pdfUnit.disable();
 													xlsUnit.disable();
-													pdfBatch.disable();
-													xlsBatch.disable();
-													pdfOperation.disable();
-													xlsOperation.disable();
 												} else {
 													pdfOrder.enable();
 													xlsOrder.enable();
 													pdfUnit.enable();
 													xlsUnit.enable();
-													pdfBatch.enable();
-													xlsBatch.enable();
-													pdfOperation.enable();
-													xlsOperation.enable();
 												}
 											} else {
 												pdfOrder.disable();
 												xlsOrder.disable();
 												pdfUnit.disable();
 												xlsUnit.disable();
-												pdfBatch.disable();
-												xlsBatch.disable();
-												pdfOperation.disable();
-												xlsOperation.disable();
 											}
 										}
 									});

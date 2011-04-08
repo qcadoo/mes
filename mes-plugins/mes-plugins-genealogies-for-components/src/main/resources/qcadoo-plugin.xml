@@ -35,35 +35,33 @@
 		<model:model model="productInBatch" resource="model/productInBatch.xml" />
 		<model:model model="genealogyProductInComponent" resource="model/genealogyProductInComponent.xml" />
 		
-		<model:field plugin="technologies" model="operationProductInComponent">
+		<model:model-field plugin="technologies" model="operationProductInComponent">
 			<model:boolean name="batchRequired" />
-		</model:field>
+		</model:model-field>
 		
-		<model:field plugin="technologies" model="operationProductInComponent">
+		<model:model-field plugin="technologies" model="operationProductInComponent">
 			<model:hasMany name="genealogyProductInComponents"
 				plugin="genealogies" model="genealogyProductInComponent" joinField="productInComponent"
 				cascade="delete" />
-		</model:field>
+		</model:model-field>
 		
-		<model:hook plugin="technologies" model="operationProductInComponent">
+		<model:model-hook plugin="technologies" model="operationProductInComponent">
 			<model:onSave class="com.qcadoo.mes.genealogies.GenealogyService"
 				method="fillBatchRequiredForTechnology" />
-		</model:hook>
+		</model:model-hook>
 		
 		<view:menu-item name="genealogyForComponent" category="reports"
 			view="genealogyForComponent" />
 			
 		<view:view resource="view/genealogiesForComponent.xml" />
 			
-		<view:viewWindowTabExtension>
-			<view:resource>view/viewExtension.xml</view:resource>
-		</view:viewWindowTabExtension>
+		<view:view-tab resource="view/viewExtension.xml" />
 		
-		<view:viewHookExtension plugin="technologies"
+		<view:view-hook plugin="technologies"
 			view="technology" hookType="preRenderHook"
 			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="disableBatchRequiredForTechnology" />
 			
-		<view:viewListenerExtension plugin="technologies"
+		<view:view-listener plugin="technologies"
 			view="operationProductInComponent" component="product" event="onSelectedEntityChange"
 			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
 	

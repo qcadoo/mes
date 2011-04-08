@@ -133,8 +133,8 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
 
     private String getAdditionalMessageForCopyException(final CopyException exception, final Locale locale) {
         for (Map.Entry<String, ErrorMessage> error : exception.getEntity().getErrors().entrySet()) {
-            String field = translationService.translate(exception.getEntity().getPluginIdentifier() + "."
-                    + exception.getEntity().getName() + "." + error.getKey() + ".label", locale);
+            String field = translationService.translate(exception.getEntity().getDataDefinition().getPluginIdentifier() + "."
+                    + exception.getEntity().getDataDefinition().getName() + "." + error.getKey() + ".label", locale);
             return field + " - " + translationService.translate(error.getValue().getMessage(), locale);
         }
         for (ErrorMessage error : exception.getEntity().getGlobalErrors()) {

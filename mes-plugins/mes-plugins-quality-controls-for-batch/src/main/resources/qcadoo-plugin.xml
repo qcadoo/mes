@@ -44,9 +44,7 @@
 			
 		<view:view resource="view/qualityControlsForBatch.xml" />
 			
-		<view:viewRibbonExtension>
-			<view:resource>view/viewExtension.xml</view:resource>
-		</view:viewRibbonExtension>
+		<view:view-ribbon-group resource="view/viewExtension.xml" />
 
 		<!-- TODO remove after implementing import data -->
 		<databasePreparation />
