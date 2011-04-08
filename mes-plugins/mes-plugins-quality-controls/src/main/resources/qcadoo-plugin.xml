@@ -39,7 +39,7 @@
 		<model:model model="qualityControl" resource="model/qualityControl.xml" />
 		<model:field plugin="technologies" model="technology">
 			<model:enum name="qualityControlType"
-				values="01forBatch,02forUnit,03forOrder" />
+				values="02forUnit,03forOrder" />
 		</model:field>
 		<model:field plugin="technologies" model="technology">
 			<model:decimal name="unitSamplingNr" />
@@ -70,8 +70,6 @@
 			view="qualityControlsForOrder" />
 		<view:menu-item name="forUnits" category="quality"
 			view="qualityControlsForUnit" />
-		<view:menu-item name="forBatch" category="quality"
-			view="qualityControlsForBatch" />
 
 		<view:view resource="view/qualityControls.xml" />
 
