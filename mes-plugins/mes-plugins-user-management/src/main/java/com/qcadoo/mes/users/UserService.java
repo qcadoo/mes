@@ -24,8 +24,6 @@
 
 package com.qcadoo.mes.users;
 
-import java.util.Locale;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +41,7 @@ public final class UserService {
     @Value("${showChangePasswordButton}")
     private boolean showChangePasswordButton;
 
-    public void setPasswordAndOldPasswordAdRequired(final ViewDefinitionState state, final Locale locale) {
+    public void setPasswordAndOldPasswordAdRequired(final ViewDefinitionState state) {
         FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByReference("viewIdentifierHiddenInput");
         PasswordComponentState oldPassword = (PasswordComponentState) state.getComponentByReference("oldPasswordTextInput");
         PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("passwordTextInput");
@@ -56,7 +54,7 @@ public final class UserService {
         viewIdentifier.setFieldValue("profileChangePassword");
     }
 
-    public void removeChangePasswordButtonWhenNotAllowed(final ViewDefinitionState state, final Locale locale) {
+    public void removeChangePasswordButtonWhenNotAllowed(final ViewDefinitionState state) {
         if (!showChangePasswordButton) {
             ButtonComponentState changePasswordButton = (ButtonComponentState) state
                     .getComponentByReference("changePasswordButton");
@@ -64,7 +62,7 @@ public final class UserService {
         }
     }
 
-    public void setPasswordAsRequired(final ViewDefinitionState state, final Locale locale) {
+    public void setPasswordAsRequired(final ViewDefinitionState state) {
         FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByReference("viewIdentifierHiddenInput");
         PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("passwordTextInput");
         PasswordComponentState passwordConfirmation = (PasswordComponentState) state
@@ -75,7 +73,7 @@ public final class UserService {
         viewIdentifier.setFieldValue("userChangePassword");
     }
 
-    public void hidePasswordOnUpdateForm(final ViewDefinitionState state, final Locale locale) {
+    public void hidePasswordOnUpdateForm(final ViewDefinitionState state) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("passwordTextInput");
         PasswordComponentState passwordConfirmation = (PasswordComponentState) state

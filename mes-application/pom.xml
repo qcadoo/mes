@@ -194,7 +194,7 @@
 				<artifactId>qcadoo-maven-plugin</artifactId>
 				<version>${qcadoo.version}</version>
 				<configuration>
-				    <jdbcDriver>${basedir}/driver/</jdbcDriver>
+				    <jdbcDriver>${basedir}/driver/postgresql-8.4-701.jdbc4.jar</jdbcDriver>
 				    <profile>standalone</profile>
 				    <configuration>${basedir}/conf/${profile.name}</configuration>
 				    <logs>${basedir}/target/logs</logs>
@@ -203,7 +203,7 @@
 				    <webapp>${basedir}/src/main/webapp</webapp>
 				    <restartCommand>${basedir}/restart.sh</restartCommand>
 				</configuration>
-			</plugin -->
+			</plugin --> 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>

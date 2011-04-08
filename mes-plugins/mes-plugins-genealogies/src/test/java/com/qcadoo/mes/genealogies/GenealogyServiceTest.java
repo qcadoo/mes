@@ -38,7 +38,6 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -162,7 +161,7 @@ public class GenealogyServiceTest {
         given(state.getComponentByReference("form")).willReturn(form);
 
         // when
-        genealogyService.hideComponents(state, Locale.ENGLISH);
+        genealogyService.hideComponents(state);
 
         // then
         verify(features).setVisible(false);
@@ -199,7 +198,7 @@ public class GenealogyServiceTest {
         given(state.getComponentByReference("form")).willReturn(form);
 
         // when
-        genealogyService.hideComponents(state, Locale.ENGLISH);
+        genealogyService.hideComponents(state);
 
         // then
         verify(features).setVisible(false);
@@ -239,7 +238,7 @@ public class GenealogyServiceTest {
         given(state.getComponentByReference("form")).willReturn(form);
 
         // when
-        genealogyService.hideComponents(state, Locale.ENGLISH);
+        genealogyService.hideComponents(state);
 
         // then
         verify(features, never()).setVisible(false);
@@ -279,7 +278,7 @@ public class GenealogyServiceTest {
         given(state.getComponentByReference("form")).willReturn(form);
 
         // when
-        genealogyService.hideComponents(state, Locale.ENGLISH);
+        genealogyService.hideComponents(state);
 
         // then
         verify(features, never()).setVisible(false);
@@ -300,7 +299,7 @@ public class GenealogyServiceTest {
         given(state.getComponentByReference("form")).willReturn(form);
 
         // when
-        genealogyService.fillProductInComponents(state, Locale.ENGLISH);
+        genealogyService.fillProductInComponents(state);
 
         // then
         verify(state, atLeastOnce()).getComponentByReference(anyString());
@@ -326,7 +325,7 @@ public class GenealogyServiceTest {
         given(state.getComponentByReference("productGridLayout")).willReturn(products);
 
         // when
-        genealogyService.fillProductInComponents(state, Locale.ENGLISH);
+        genealogyService.fillProductInComponents(state);
 
         // then
         verify(products).setVisible(false);
@@ -360,7 +359,7 @@ public class GenealogyServiceTest {
         given(state.getComponentByReference("productGridLayout")).willReturn(products);
 
         // when
-        genealogyService.fillProductInComponents(state, Locale.ENGLISH);
+        genealogyService.fillProductInComponents(state);
 
         // then
         verify(products).setVisible(false);
@@ -405,7 +404,7 @@ public class GenealogyServiceTest {
         given(state.getComponentByReference("productInComponentsList")).willReturn(productsList);
 
         // when
-        genealogyService.fillProductInComponents(state, Locale.ENGLISH);
+        genealogyService.fillProductInComponents(state);
 
         // then
         verify(products, never()).setVisible(false);

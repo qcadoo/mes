@@ -51,12 +51,10 @@
 		</model:field>
 
 		<model:field plugin="basic" model="parameter">
-			<model:boolean name="checkDoneOrderForQuality"
-				required="true" />
+			<model:boolean name="checkDoneOrderForQuality" required="true" />
 		</model:field>
 		<model:field plugin="basic" model="parameter">
-			<model:boolean name="autoGenerateQualityControl"
-				required="true" />
+			<model:boolean name="autoGenerateQualityControl" required="true" />
 		</model:field>
 
 		<model:hook plugin="genealogies" model="genealogy">
@@ -85,9 +83,9 @@
 			<view:resource>view/viewExtension.xml</view:resource>
 		</view:viewWindowTabExtension>
 
-		<view:viewHookExtension plugin="technologies"
-			view="technology" hookType="preRenderHook"
-			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="changeQualityControlType" />
+		<view:viewHookExtension plugin="technologies" view="technology"
+			hookType="preRenderHook" bean="com.qcadoo.mes.qualityControls.QualityControlService"
+			method="changeQualityControlType" />
 
 		<view:viewListenerExtension plugin="orders"
 			view="orders" component="grid" event="activateOrder"
