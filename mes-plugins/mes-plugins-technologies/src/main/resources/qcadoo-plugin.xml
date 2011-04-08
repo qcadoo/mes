@@ -41,22 +41,22 @@
 		<model:model model="technologyOperationComponent"
 			resource="model/technologyOperationComponent.xml" />
 
-		<model:field plugin="basic" model="product">
+		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="operationProductInComponents"
 				plugin="technologies" model="operationProductInComponent" joinField="product"
 				cascade="none" />
-		</model:field>
+		</model:model-field>
 
-		<model:field plugin="basic" model="product">
+		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="operationProductOutComponents"
 				plugin="technologies" model="operationProductOutComponent"
 				joinField="product" cascade="none" />
-		</model:field>
+		</model:model-field>
 
-		<model:field plugin="basic" model="product">
+		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="technologies" plugin="technologies"
 				model="technology" joinField="product" cascade="delete" />
-		</model:field>
+		</model:model-field>
 
 		<view:menu-category name="technology" />
 
