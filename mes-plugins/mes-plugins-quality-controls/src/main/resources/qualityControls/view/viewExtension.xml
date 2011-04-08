@@ -80,16 +80,6 @@
 			</component>
 		</windowTab>
 	</windowTabExtension>
-	
-	<windowTabExtension plugin="technologies" view="technologyOperationComponent">
-		<windowTab name="qualityControlTab" reference="qualityControlTab">
-			<component type="gridLayout" name="qualityControlGridLayout" columns="1" rows="1">
-				<layoutElement column="1" row="1">
-						<component type="checkbox" name="qualityControlRequired" reference="qualityControlRequired" field="#{form}.qualityControlRequired" />
-					</layoutElement>
-			</component>
-		</windowTab>
-	</windowTabExtension>
 
 	<windowTabExtension plugin="basic" view="parameter">
 		<windowTab name="qualityControlTab" reference="qualityControlTab">

@@ -39,7 +39,7 @@
 		<model:model model="qualityControl" resource="model/qualityControl.xml" />
 		<model:field plugin="technologies" model="technology">
 			<model:enum name="qualityControlType"
-				values="01forBatch,02forUnit,03forOrder,04forOperation" />
+				values="01forBatch,02forUnit,03forOrder" />
 		</model:field>
 		<model:field plugin="technologies" model="technology">
 			<model:decimal name="unitSamplingNr" />
@@ -49,9 +49,7 @@
 				<model:validatesLength max="255" />
 			</model:string>
 		</model:field>
-		<model:field plugin="technologies" model="technologyOperationComponent">
-			<model:boolean name="qualityControlRequired" />
-		</model:field>
+
 		<model:field plugin="basic" model="parameter">
 			<model:boolean name="checkDoneOrderForQuality"
 				required="true" />
@@ -60,10 +58,7 @@
 			<model:boolean name="autoGenerateQualityControl"
 				required="true" />
 		</model:field>
-		<model:hook plugin="technologies" model="technologyOperationComponent">
-			<model:onSave class="com.qcadoo.mes.qualityControls.QualityControlService"
-				method="setQualityControlTypeForTechnology" />
-		</model:hook>
+
 		<model:hook plugin="genealogies" model="genealogy">
 			<model:onSave class="com.qcadoo.mes.qualityControls.QualityControlService"
 				method="generateOnSaveQualityControl" />
@@ -79,8 +74,6 @@
 			view="qualityControlsForUnit" />
 		<view:menu-item name="forBatch" category="quality"
 			view="qualityControlsForBatch" />
-		<view:menu-item name="forOperation" category="quality"
-			view="qualityControlsForOperation" />
 
 		<view:view resource="view/qualityControls.xml" />
 
@@ -110,8 +103,7 @@
 			view="order" component="form" event="generateQualityControl"
 			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
 
-		<!-- TODO remove after implementing import data -->
-		<databasePreparation />
+
 
 	</modules>
 

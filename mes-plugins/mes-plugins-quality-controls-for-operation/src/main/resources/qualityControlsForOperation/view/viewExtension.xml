@@ -1,0 +1,25 @@
+<viewExtensions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	
+	<windowTabExtension plugin="technologies" view="technologyOperationComponent">
+		<windowTab name="qualityControlTab" reference="qualityControlTab">
+			<component type="gridLayout" name="qualityControlGridLayout" columns="1" rows="1">
+				<layoutElement column="1" row="1">
+						<component type="checkbox" name="qualityControlRequired" reference="qualityControlRequired" field="#{form}.qualityControlRequired" />
+					</layoutElement>
+			</component>
+		</windowTab>
+	</windowTabExtension>
+	
+	<ribbonExtension plugin="qualityControls" view="qualityControlReport">
+				<group name="reportsForOperation">
+					<smallButton name="pdfOperation" icon="pdfIcon16.png"
+						action="#{form}.fireEvent(printQualityControlReport,pdf,operation);"
+						state="disabled" />
+					<smallButton name="xlsOperation" icon="xlsIcon16.png"
+						action="#{form}.fireEvent(printQualityControlReport,xls,operation);"
+						state="disabled" />
+				</group>
+	</ribbonExtension>
+
+</viewExtensions>

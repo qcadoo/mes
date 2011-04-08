@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="qualityControlsForOperation" version="0.4.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd">
+
+	<information>
+		<name>MES - Quality Controls For Operation</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+	
+	<dependencies>
+		<dependency>
+			<plugin>qualityControls</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+
+
+	<modules>
+		<localization:translation path="locales" />
+		
+		<model:model-enum-value plugin="technologies" model="technology" enum="qualityControlType" value="04forOperation" />
+		
+		<model:field plugin="technologies" model="technologyOperationComponent">
+			<model:boolean name="qualityControlRequired" />
+		</model:field>
+		
+		<model:hook plugin="technologies" model="technologyOperationComponent">
+			<model:onSave class="com.qcadoo.mes.qualityControls.QualityControlService"
+				method="setQualityControlTypeForTechnology" />
+		</model:hook>
+		
+		<view:menu-item name="forOperation" category="quality"
+			view="qualityControlsForOperation" />
+			
+		<view:view resource="view/qualityControlsForOperation.xml" />
+			
+		<view:viewRibbonExtension>
+			<view:resource>view/viewExtension.xml</view:resource>
+		</view:viewRibbonExtension>
+			
+		<view:viewWindowTabExtension>
+			<view:resource>view/viewExtension.xml</view:resource>
+		</view:viewWindowTabExtension>
+		
+		<!-- TODO remove after implementing import data -->
+		<databasePreparation />
+
+	</modules>
+
+</plugin>

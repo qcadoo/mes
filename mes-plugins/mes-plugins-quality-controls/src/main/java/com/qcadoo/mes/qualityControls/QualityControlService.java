@@ -512,6 +512,9 @@ public class QualityControlService {
     }
 
     private boolean checkOperationQualityControlRequired(final Long entityId) {
+        if (dataDefinitionService.get("technologies", "technologyOperationComponent").getField("qualityControlRequired") == null) {
+            return false;
+        }
         SearchResult searchResult = dataDefinitionService.get("technologies", "technologyOperationComponent").find()
                 .restrictedWith(Restrictions.eq("technology.id", entityId))
                 .restrictedWith(Restrictions.eq("qualityControlRequired", true)).withMaxResults(1).list();
