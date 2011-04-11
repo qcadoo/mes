@@ -105,11 +105,11 @@ public final class TestDataLoader {
     @Value("${loadTestDataLocale}")
     private String locale;
 
-    @Value("${addOtherUsers}")
-    private boolean addOtherUsers;
+    @Value("${setAsDemoEnviroment}")
+    private boolean setAsDemoEnviroment;
 
     public void loadTestData() {
-        if (addOtherUsers) {
+        if (!setAsDemoEnviroment) {
             readDataFromXML("users", USER_ATTRIBUTES);
         }
         readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);

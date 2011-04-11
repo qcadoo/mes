@@ -28,6 +28,7 @@
 	    <module>mes-plugins-technologies</module>
     	<module>mes-plugins-quality-controls-for-operation</module>
     	<module>mes-plugins-quality-controls-for-batch</module>
+    	<module>mes-plugins-genealogies-for-components</module>
   </modules>
 
 </project>

@@ -26,10 +26,6 @@
 			<plugin>orders</plugin>
 			<version>[0.4.0</version>
 		</dependency>
-		<dependency>
-			<plugin>technologies</plugin>
-			<version>[0.4.0</version>
-		</dependency>
 	</dependencies>
 
 	<modules>
@@ -38,21 +34,19 @@
 		<model:model model="workPlan" resource="model/workPlan.xml" />
 		<model:model model="workPlanComponent" resource="model/workPlanComponent.xml" />
 
-		<model:field plugin="orders" model="order">
+		<model:model-field plugin="orders" model="order">
 			<model:hasMany name="workPlans" plugin="workPlans"
 				model="workPlanComponent" joinField="order" cascade="none" />
-		</model:field>
+		</model:model-field>
 
 		<view:menu-item name="workPlans" category="reports"
 			view="workPlans" />
 
 		<view:view resource="view/workPlans.xml" />
 
-		<view:viewRibbonExtension>
-			<view:resource>view/ordersExtension.xml</view:resource>
-		</view:viewRibbonExtension>
+		<view:view-ribbon-group resource="view/ordersExtension.xml" />
 
-		<view:viewListenerExtension plugin="orders"
+		<view:view-listener plugin="orders"
 			view="orders" component="grid" event="printWorkPlanForOrder"
 			bean="com.qcadoo.mes.workPlans.WorkPlanService" method="printWorkPlanForOrder" />
 

@@ -29,8 +29,6 @@
 			cascade="delete" copyable="true" />
 		<hasMany name="postFeatures" model="postFeature" joinField="genealogy"
 			cascade="delete" copyable="true" />
-		<hasMany name="productInComponents" model="genealogyProductInComponent"
-			joinField="genealogy" cascade="delete" copyable="true" />
 	</fields>
 	<hooks>
 		<onSave class="com.qcadoo.mes.genealogies.AutoGenealogyService"

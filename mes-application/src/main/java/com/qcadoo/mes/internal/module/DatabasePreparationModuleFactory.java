@@ -43,8 +43,8 @@ public final class DatabasePreparationModuleFactory extends ModuleFactory<Databa
     @Value("${loadTestData}")
     private boolean addTestData;
 
-    @Value("${addHardAdminPass}")
-    private boolean addHardAdminPass;
+    @Value("${setAsDemoEnviroment}")
+    private boolean setAsDemoEnviroment;
 
     @Override
     public DatabasePreparationModule parse(final String pluginIdentifier, final Element element) {
@@ -52,7 +52,7 @@ public final class DatabasePreparationModuleFactory extends ModuleFactory<Databa
         module.setDataDefinitionService(dataDefinitionService);
         module.setTestDataLoader(testDataLoader);
         module.setAddTestData(addTestData);
-        module.setAddHardAdminPass(addHardAdminPass);
+        module.setAddHardAdminPass(setAsDemoEnviroment);
         return module;
     }
 

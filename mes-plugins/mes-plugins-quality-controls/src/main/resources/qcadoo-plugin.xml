@@ -23,10 +23,6 @@
 
 	<dependencies>
 		<dependency>
-			<plugin>basic</plugin>
-			<version>[0.4.0</version>
-		</dependency>
-		<dependency>
 			<plugin>orders</plugin>
 			<version>[0.4.0</version>
 		</dependency>
@@ -37,30 +33,30 @@
 		<localization:translation path="locales" />
 
 		<model:model model="qualityControl" resource="model/qualityControl.xml" />
-		<model:field plugin="technologies" model="technology">
+		<model:model-field plugin="technologies" model="technology">
 			<model:enum name="qualityControlType"
 				values="02forUnit,03forOrder" />
-		</model:field>
-		<model:field plugin="technologies" model="technology">
+		</model:model-field>
+		<model:model-field plugin="technologies" model="technology">
 			<model:decimal name="unitSamplingNr" />
-		</model:field>
-		<model:field plugin="technologies" model="technology">
+		</model:model-field>
+		<model:model-field plugin="technologies" model="technology">
 			<model:string name="qualityControlInstruction">
 				<model:validatesLength max="255" />
 			</model:string>
-		</model:field>
+		</model:model-field>
 
-		<model:field plugin="basic" model="parameter">
+		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="checkDoneOrderForQuality" required="true" />
-		</model:field>
-		<model:field plugin="basic" model="parameter">
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="autoGenerateQualityControl" required="true" />
-		</model:field>
+		</model:model-field>
 
-		<model:hook plugin="genealogies" model="genealogy">
+		<model:model-hook plugin="genealogies" model="genealogy">
 			<model:onSave class="com.qcadoo.mes.qualityControls.QualityControlService"
 				method="generateOnSaveQualityControl" />
-		</model:hook>
+		</model:model-hook>
 
 		<view:menu-category name="quality" />
 
@@ -73,29 +69,25 @@
 
 		<view:view resource="view/qualityControls.xml" />
 
-		<view:viewRibbonExtension>
-			<view:resource>view/viewExtension.xml</view:resource>
-		</view:viewRibbonExtension>
+		<view:view-ribbon-group resource="view/viewExtension.xml" />
 
-		<view:viewWindowTabExtension>
-			<view:resource>view/viewExtension.xml</view:resource>
-		</view:viewWindowTabExtension>
+		<view:view-tab resource="view/viewExtension.xml" />
 
-		<view:viewHookExtension plugin="technologies" view="technology"
+		<view:view-hook plugin="technologies" view="technology"
 			hookType="preRenderHook" bean="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="changeQualityControlType" />
 
-		<view:viewListenerExtension plugin="orders"
+		<view:view-listener plugin="orders"
 			view="orders" component="grid" event="activateOrder"
 			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
-		<view:viewListenerExtension plugin="orders"
+		<view:view-listener plugin="orders"
 			view="orders" component="grid" event="generateQualityControl"
 			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
 
-		<view:viewListenerExtension plugin="orders"
+		<view:view-listener plugin="orders"
 			view="order" component="form" event="activateOrder"
 			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
-		<view:viewListenerExtension plugin="orders"
+		<view:view-listener plugin="orders"
 			view="order" component="form" event="generateQualityControl"
 			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
 
