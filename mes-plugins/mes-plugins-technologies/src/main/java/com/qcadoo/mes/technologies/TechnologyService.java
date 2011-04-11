@@ -72,7 +72,7 @@ public final class TechnologyService {
     }
 
     public void setFirstTechnologyAsDefault(final DataDefinition dataDefinition, final Entity entity) {
-        if (!(Boolean) entity.getField("master")) {
+        if (!(Boolean) entity.getField("master") && entity.getField("product") != null) {
             SearchCriteriaBuilder searchCriteria = dataDefinition.find().withMaxResults(1)
                     .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("product"), entity.getField("product")));
 
