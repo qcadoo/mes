@@ -255,7 +255,7 @@
 						<executions>
 							<execution>
 								<id>deploy-to-emhyr</id>
-								<phase>deploy</phase>
+								<phase>package</phase>
 								<configuration>
 									<target>
 										<copy file="${basedir}/target/${project.artifactId}.zip"
