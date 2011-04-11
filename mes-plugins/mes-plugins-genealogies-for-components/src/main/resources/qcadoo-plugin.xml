@@ -67,6 +67,11 @@
 			view="technology" hookType="preRenderHook"
 			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="disableBatchRequiredForTechnology" />
 			
+		<view:view-hook plugin="genealogies"
+			view="orderGenealogy" hookType="preRenderHook"
+			bean="com.qcadoo.mes.genealogies.GenealogyService" method="fillProductInComponents" />
+			
+			
 		<view:view-listener plugin="technologies"
 			view="operationProductInComponent" component="product" event="onSelectedEntityChange"
 			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
