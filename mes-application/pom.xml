@@ -250,6 +250,31 @@
 
 	<profiles>
 		<profile>
+			<id>tomcat</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.qcadoo</groupId>
+						<artifactId>qcadoo-maven-plugin</artifactId>
+						<version>${qcadoo.version}</version>
+						<configuration>
+							<jdbcDriver>${basedir}/driver/postgresql-8.4-701.jdbc4.jar</jdbcDriver>
+							<configuration>${basedir}/conf/${profile.name}/</configuration>
+						</configuration>
+						<executions>
+							<execution>
+								<id>prepare-tomcat-package</id>
+								<phase>package</phase>
+								<goals>
+									<goal>tomcat</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
 			<id>emhyr</id>
 			<build>
 				<plugins>
@@ -269,31 +294,6 @@
 								</configuration>
 								<goals>
 									<goal>run</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>tomcat</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.qcadoo</groupId>
-						<artifactId>qcadoo-maven-plugin</artifactId>
-						<version>${qcadoo.version}</version>
-						<configuration>
-							<jdbcDriver>${basedir}/driver/postgresql-8.4-701.jdbc4.jar</jdbcDriver>
-							<configuration>${basedir}/conf/${profile.name}/</configuration>
-						</configuration>
-						<executions>
-							<execution>
-								<id>prepare-tomcat-package</id>
-								<phase>package</phase>
-								<goals>
-									<goal>tomcat</goal>
 								</goals>
 							</execution>
 						</executions>
