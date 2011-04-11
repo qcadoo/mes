@@ -42,8 +42,8 @@ public final class LoginController {
     @Autowired
     private TranslationService translationService;
 
-    @Value("${showUserAndPassword}")
-    private boolean showUserAndPassword;
+    @Value("${setAsDemoEnviroment}")
+    private boolean setAsDemoEnviroment;
 
     @Value("${useCompressedStaticResources}")
     private boolean useCompressedStaticResources;
@@ -80,7 +80,7 @@ public final class LoginController {
             mav.addObject("messageContent", "security.message.errorContent");
         }
 
-        if (showUserAndPassword) {
+        if (setAsDemoEnviroment) {
             mav.addObject("showUserAndPassword", true);
         } else {
             mav.addObject("showUserAndPassword", false);

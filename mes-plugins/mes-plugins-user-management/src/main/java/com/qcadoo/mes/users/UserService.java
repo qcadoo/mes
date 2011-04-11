@@ -38,8 +38,8 @@ import com.qcadoo.view.components.form.FormComponentState;
 @Service
 public final class UserService {
 
-    @Value("${showChangePasswordButton}")
-    private boolean showChangePasswordButton;
+    @Value("${setAsDemoEnviroment}")
+    private boolean setAsDemoEnviroment;
 
     public void setPasswordAndOldPasswordAdRequired(final ViewDefinitionState state) {
         FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByReference("viewIdentifierHiddenInput");
@@ -55,7 +55,7 @@ public final class UserService {
     }
 
     public void removeChangePasswordButtonWhenNotAllowed(final ViewDefinitionState state) {
-        if (!showChangePasswordButton) {
+        if (setAsDemoEnviroment) {
             ButtonComponentState changePasswordButton = (ButtonComponentState) state
                     .getComponentByReference("changePasswordButton");
             changePasswordButton.setVisible(false);
