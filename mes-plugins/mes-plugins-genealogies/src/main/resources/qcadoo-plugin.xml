@@ -86,8 +86,7 @@
 		<view:view-hook plugin="technologies"
 			view="technology" hookType="preRenderHook"
 			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkAttributesReq" />
-
-
+			
 		<view:view-listener plugin="technologies"
 			view="technology" component="product" event="onSelectedEntityChange"
 			bean="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
