@@ -27,7 +27,6 @@ package com.qcadoo.mes.genealogies.print;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +79,7 @@ public class ReportService {
         batches.setSelectedEntitiesId(new HashSet<Long>());
     }
 
-    public void addRestrictionToGenealogyGrid(final ViewDefinitionState viewDefinitionState, final Locale locale) {
+    public void addRestrictionToGenealogyGrid(final ViewDefinitionState viewDefinitionState) {
         final LookupComponentState product = (LookupComponentState) viewDefinitionState.getComponentByReference("product");
         final GridComponentState batches = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
 
@@ -96,7 +95,7 @@ public class ReportService {
         batches.setEntities(setDistinctBatch(batches.getEntities()));
     }
 
-    public void addRestrictionToComponentGrid(final ViewDefinitionState viewDefinitionState, final Locale locale) {
+    public void addRestrictionToComponentGrid(final ViewDefinitionState viewDefinitionState) {
         final LookupComponentState product = (LookupComponentState) viewDefinitionState.getComponentByReference("product");
         final GridComponentState batches = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
 

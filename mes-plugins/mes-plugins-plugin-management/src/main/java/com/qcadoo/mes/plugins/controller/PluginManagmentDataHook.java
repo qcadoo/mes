@@ -22,12 +22,7 @@ public class PluginManagmentDataHook {
         entity.setField("description", pluginAdditionalData.getDescription());
         entity.setField("vendor", pluginAdditionalData.getVendor());
         entity.setField("vendorUrl", pluginAdditionalData.getVendorUrl());
-        if (pluginAdditionalData.isSystem()) {
-            entity.setField("isSystem", "1");
-        } else {
-            entity.setField("isSystem", "0");
-        }
 
-        pluginManagmentConnector.getPluginData(pluginIdentifier);
+        // pluginManagmentConnector.getPluginData(pluginIdentifier);
     }
 }

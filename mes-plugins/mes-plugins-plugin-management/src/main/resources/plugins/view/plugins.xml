@@ -58,8 +58,6 @@
 				<option type="column" name="vendor" fields="vendor" width="100" />
 				<option type="column" name="version" fields="version" width="40" />
 				<option type="column" name="state" fields="state" width="60" />
-				<option type="column" name="isSystem" fields="isSystem"
-					width="40" />
 				<option type="order" column="identifier" direction="asc" />
 				<option type="correspondingView" value="plugins/plugin" />
 				<option type="correspondingComponent" value="form" />
@@ -139,6 +137,7 @@
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.plugins.controller.PluginManagmentViewHook" method="addRestrictionToPluginsGrid" />
 	</view>
 	<view name="plugin" plugin="qcadooPlugin" model="plugin"
 		windowHeight="450">
@@ -153,17 +152,15 @@
 						<component type="input" name="identifier" field="identifier"
 							defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="2" row="1">
+					<layoutElement column="1" row="2">
 						<component type="input" name="version" field="version"
 							defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="1" row="2">
+					<layoutElement column="2" row="1">
 						<component type="select" name="state" field="state"
 							defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="2" row="2">
-						<component type="checkbox" name="isSystem" field="isSystem"
-							defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="3" width="2">
 						<component type="input" name="name" field="name"
