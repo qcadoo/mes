@@ -149,12 +149,14 @@ public class GenealogyForProductView extends ReportPdfView {
     private List<Pair<String, Entity>> getBatchList(final Entity entity) {
         List<Pair<String, Entity>> batchList = new ArrayList<Pair<String, Entity>>();
         for (Entity genealogy : entity.getHasManyField("genealogies")) {
-            for (Entity productInComponent : genealogy.getHasManyField("productInComponents")) {
-                Entity product = (Entity) ((Entity) productInComponent.getField("productInComponent")).getField("product");
-                for (Entity batch : productInComponent.getHasManyField("batch")) {
-                    Pair<String, Entity> pair = Pair.of(batch.getField("batch").toString(), product);
-                    if (!batchList.contains(pair)) {
-                        batchList.add(pair);
+            if (genealogy.getHasManyField("productInComponents") != null) {
+                for (Entity productInComponent : genealogy.getHasManyField("productInComponents")) {
+                    Entity product = (Entity) ((Entity) productInComponent.getField("productInComponent")).getField("product");
+                    for (Entity batch : productInComponent.getHasManyField("batch")) {
+                        Pair<String, Entity> pair = Pair.of(batch.getField("batch").toString(), product);
+                        if (!batchList.contains(pair)) {
+                            batchList.add(pair);
+                        }
                     }
                 }
             }

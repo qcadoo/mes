@@ -315,7 +315,8 @@ public class AutoGenealogyService {
                 operationComponents);
         for (Entity operationComponent : operationComponents) {
             for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                if ((Boolean) operationProductComponent.getField("batchRequired")) {
+                if (operationProductComponent.getField("batchRequired") != null
+                        && (Boolean) operationProductComponent.getField("batchRequired")) {
                     Entity productIn = dataDefinitionService.get("genealogiesForComponents", "genealogyProductInComponent")
                             .create();
                     productIn.setField("genealogy", genealogy);
