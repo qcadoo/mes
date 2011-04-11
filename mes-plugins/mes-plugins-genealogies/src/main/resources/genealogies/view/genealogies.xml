@@ -66,13 +66,13 @@
 			<ribbon>
 				<group name="report">
 					<bigButton name="printReport" icon="pdfIcon24.png"
-						action="#{form}.fireEvent(generateReportForProduct);" state="disabled" message="genealogies.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo">
+						action="#{form}.fireEvent(generateReportForProduct);" state="disabled" message="genealogiesForComponents.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo">
 						<script>
 							<![CDATA[
 								#{batches}.addOnChangeListener({
 									onChange: function(selectedEntitiesArray) {
 										if (! selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-											this.disable("#{translate(genealogies.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo)}");
+											this.disable("#{translate(genealogiesForComponents.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo)}");
 										} else if (selectedEntitiesArray.length > 1) {
 											this.disable("#{translate(moreThanOneRecordSelected)}");
 										} else {

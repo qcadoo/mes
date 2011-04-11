@@ -59,20 +59,23 @@ public class GenealogyForComponentView extends ReportPdfView {
     @Override
     protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
-        Entity entity = dataDefinitionService.get("genealogies", "productInBatch").get(
+        Entity entity = dataDefinitionService.get("genealogiesForComponents", "productInBatch").get(
                 Long.valueOf(model.get("value").toString()));
-        String documentTitle = getTranslationService().translate("genealogies.genealogyForComponent.report.title", locale);
-        String documentAuthor = getTranslationService().translate("genealogies.genealogyForComponent.report.author", locale);
+        String documentTitle = getTranslationService().translate("genealogiesForComponents.genealogyForComponent.report.title",
+                locale);
+        String documentAuthor = getTranslationService().translate("genealogiesForComponents.genealogyForComponent.report.author",
+                locale);
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
         addTables(document, entity, locale);
         String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
-        return getTranslationService().translate("genealogies.genealogyForComponent.report.fileName", locale);
+        return getTranslationService().translate("genealogiesForComponents.genealogyForComponent.report.fileName", locale);
     }
 
     @Override
     protected void addTitle(final Document document, final Locale locale) {
-        document.addTitle(getTranslationService().translate("genealogies.genealogyForComponent.report.title", locale));
+        document.addTitle(getTranslationService()
+                .translate("genealogiesForComponents.genealogyForComponent.report.title", locale));
     }
 
     private void addTables(final Document document, final Entity entity, final Locale locale) throws DocumentException {
@@ -80,9 +83,10 @@ public class GenealogyForComponentView extends ReportPdfView {
         orderHeader.add(getTranslationService().translate("orders.order.number.label", locale));
         orderHeader.add(getTranslationService().translate("orders.order.name.label", locale));
         orderHeader.add(getTranslationService().translate("orders.order.product.label", locale));
-        orderHeader.add(getTranslationService().translate("genealogies.genealogyForComponent.report.productBatch", locale));
+        orderHeader.add(getTranslationService().translate("genealogiesForComponents.genealogyForComponent.report.productBatch",
+                locale));
         Paragraph productTitle = new Paragraph(new Phrase(getTranslationService().translate(
-                "genealogies.genealogyForComponent.report.paragrah.product", locale), PdfUtil.getArialBold11Light()));
+                "genealogiesForComponents.genealogyForComponent.report.paragrah.product", locale), PdfUtil.getArialBold11Light()));
         productTitle.setSpacingBefore(20);
         document.add(productTitle);
         PdfPTable headerData = PdfUtil.createPanelTable(3);
@@ -94,11 +98,11 @@ public class GenealogyForComponentView extends ReportPdfView {
         PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("basic.product.name.label", locale),
                 product.getField("name"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(headerData,
-                getTranslationService().translate("genealogies.productInBatch.batch.label", locale), entity.getField("batch"),
-                "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                getTranslationService().translate("genealogiesForComponents.productInBatch.batch.label", locale),
+                entity.getField("batch"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         document.add(headerData);
         Paragraph orderTitle = new Paragraph(new Phrase(getTranslationService().translate(
-                "genealogies.genealogyForComponent.report.paragrah.order", locale), PdfUtil.getArialBold11Light()));
+                "genealogiesForComponents.genealogyForComponent.report.paragrah.order", locale), PdfUtil.getArialBold11Light()));
         orderTitle.setSpacingBefore(20);
         document.add(orderTitle);
         addOrderSeries(document, entity, orderHeader);
@@ -126,7 +130,7 @@ public class GenealogyForComponentView extends ReportPdfView {
 
     private List<Entity> getGenealogies(final Entity entity) {
         List<Entity> genealogies = new ArrayList<Entity>();
-        List<Entity> batchList = dataDefinitionService.get("genealogies", "productInBatch").find()
+        List<Entity> batchList = dataDefinitionService.get("genealogiesForComponents", "productInBatch").find()
                 .restrictedWith(Restrictions.eq("batch", entity.getField("batch"))).list().getEntities();
         for (Entity batch : batchList) {
             Entity genealogy = ((Entity) ((Entity) batch.getField("productInComponent")).getField("genealogy"));

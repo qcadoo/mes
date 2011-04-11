@@ -164,7 +164,8 @@ public final class GenealogyService {
                 return e;
             }
         }
-        Entity genealogyProductInComponent = dataDefinitionService.get("genealogies", "genealogyProductInComponent").create();
+        Entity genealogyProductInComponent = dataDefinitionService.get("genealogiesForComponents", "genealogyProductInComponent")
+                .create();
         genealogyProductInComponent.setField("genealogy", genealogy);
         genealogyProductInComponent.setField("productInComponent", operationProductInComponent);
         genealogyProductInComponent.setField("batch", new ArrayList<Entity>());

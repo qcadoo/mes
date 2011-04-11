@@ -56,16 +56,17 @@ public class ReportService {
         if (state instanceof FormComponentState) {
             GridComponentState batchState = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
             if (batchState != null && batchState.getFieldValue() != null) {
-                viewDefinitionState.redirectTo("/genealogies/genealogyForComponent.pdf?value=" + batchState.getFieldValue(),
-                        true, false);
+                viewDefinitionState.redirectTo(
+                        "/genealogiesForComponents/genealogyForComponent.pdf?value=" + batchState.getFieldValue(), true, false);
             } else {
                 state.addMessage(
-                        translationService.translate("genealogies.genealogyForComponent.report.noBatch", state.getLocale()),
-                        MessageType.FAILURE);
+                        translationService.translate("genealogiesForComponents.genealogyForComponent.report.noBatch",
+                                state.getLocale()), MessageType.FAILURE);
             }
         } else {
-            state.addMessage(translationService.translate("genealogies.genealogyForComponent.report.noBatch", state.getLocale()),
-                    MessageType.FAILURE);
+            state.addMessage(
+                    translationService.translate("genealogiesForComponents.genealogyForComponent.report.noBatch",
+                            state.getLocale()), MessageType.FAILURE);
         }
     }
 

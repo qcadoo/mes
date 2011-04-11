@@ -117,7 +117,7 @@ public class GenealogyForProductView extends ReportPdfView {
             List<String> componentHeader = new ArrayList<String>();
             componentHeader.add(getTranslationService().translate("basic.product.number.label", locale));
             componentHeader.add(getTranslationService().translate("basic.product.name.label", locale));
-            componentHeader.add(getTranslationService().translate("genealogies.productInBatch.batch.label", locale));
+            componentHeader.add(getTranslationService().translate("genealogiesForComponents.productInBatch.batch.label", locale));
             PdfPTable table = PdfUtil.createTableWithHeader(3, componentHeader, false);
 
             List<Pair<String, Entity>> batchList = getBatchList(order);

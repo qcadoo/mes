@@ -56,7 +56,7 @@ public class GenealogyController {
         return crudController.prepareView("genealogies", "currentAttribute", arguments, locale);
     }
 
-    @RequestMapping(value = "genealogies/genealogyForComponent.pdf", method = RequestMethod.GET)
+    @RequestMapping(value = "genealogiesForComponents/genealogyForComponent.pdf", method = RequestMethod.GET)
     public ModelAndView genealogyForComponentPdf(@RequestParam("value") final String value) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("genealogyForComponentView");
