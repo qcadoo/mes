@@ -62,6 +62,8 @@ import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
+import com.qcadoo.plugin.api.Plugin;
+import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -82,17 +84,22 @@ public class AutoGenealogyServiceTest {
 
     private SecurityService securityService;
 
+    private PluginAccessor pluginAccessor;
+
     @Before
     public void init() {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         translationService = mock(TranslationService.class);
         genealogyService = mock(GenealogyService.class);
         securityService = mock(SecurityService.class);
+        pluginAccessor = mock(PluginAccessor.class);
         autoGenealogyService = new AutoGenealogyService();
         setField(autoGenealogyService, "dataDefinitionService", dataDefinitionService);
         setField(autoGenealogyService, "translationService", translationService);
         setField(autoGenealogyService, "genealogyService", genealogyService);
         setField(autoGenealogyService, "securityService", securityService);
+        setField(autoGenealogyService, "pluginAccessor", pluginAccessor);
+        given(pluginAccessor.getEnabledPlugin("genealogiesForComponents")).willReturn(mock(Plugin.class));
     }
 
     @Test
