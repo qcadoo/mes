@@ -384,7 +384,7 @@ public class GenealogyServiceTest {
         given(form.getEntity().getField("order").toString()).willReturn("13");
 
         Entity genealogyProductInComponent = new DefaultEntity(null);
-        given(dataDefinitionService.get("genealogies", "genealogyProductInComponent").create()).willReturn(
+        given(dataDefinitionService.get("genealogiesForComponents", "genealogyProductInComponent").create()).willReturn(
                 genealogyProductInComponent);
 
         Entity technology = mock(Entity.class);

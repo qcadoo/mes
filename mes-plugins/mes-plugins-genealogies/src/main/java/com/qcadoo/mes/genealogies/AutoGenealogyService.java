@@ -316,7 +316,8 @@ public class AutoGenealogyService {
         for (Entity operationComponent : operationComponents) {
             for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                 if ((Boolean) operationProductComponent.getField("batchRequired")) {
-                    Entity productIn = dataDefinitionService.get("genealogies", "genealogyProductInComponent").create();
+                    Entity productIn = dataDefinitionService.get("genealogiesForComponents", "genealogyProductInComponent")
+                            .create();
                     productIn.setField("genealogy", genealogy);
                     productIn.setField("productInComponent", operationProductComponent);
 
@@ -329,7 +330,7 @@ public class AutoGenealogyService {
                     }
 
                     if (batch != null) {
-                        Entity productBatch = dataDefinitionService.get("genealogies", "productInBatch").create();
+                        Entity productBatch = dataDefinitionService.get("genealogiesForComponents", "productInBatch").create();
                         productBatch.setField("batch", batch);
                         productBatch.setField("productInComponent", productIn);
                         productIn.setField("batch", Collections.singletonList(productBatch));
