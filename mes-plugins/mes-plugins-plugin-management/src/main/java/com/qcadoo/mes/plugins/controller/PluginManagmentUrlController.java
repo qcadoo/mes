@@ -19,7 +19,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.plugin.api.VersionOfDependency;
 import com.qcadoo.plugin.api.artifact.InputStreamPluginArtifact;
 import com.qcadoo.plugin.api.artifact.PluginArtifact;
-import com.qcadoo.view.api.crud.CrudController;
+import com.qcadoo.view.api.crud.CrudService;
 
 @Controller
 public class PluginManagmentUrlController {
@@ -28,7 +28,7 @@ public class PluginManagmentUrlController {
     private PluginManagmentPerformer pluginManagmentPerformer;
 
     @Autowired
-    private CrudController crudController;
+    private CrudService crudController;
 
     @Autowired
     private TranslationService translationService;

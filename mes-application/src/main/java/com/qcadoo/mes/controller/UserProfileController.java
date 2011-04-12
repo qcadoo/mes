@@ -36,13 +36,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.view.api.crud.CrudController;
+import com.qcadoo.view.api.crud.CrudService;
 
 @Controller
 public class UserProfileController {
 
     @Autowired
-    private CrudController crudController;
+    private CrudService crudController;
 
     @Autowired
     private SecurityService securityService;

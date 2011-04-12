@@ -40,7 +40,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.MenuService;
 import com.qcadoo.view.api.ViewDefinitionService;
-import com.qcadoo.view.api.crud.CrudController;
+import com.qcadoo.view.api.crud.CrudService;
 
 @Controller
 public final class MainPageController {
@@ -58,7 +58,7 @@ public final class MainPageController {
     private SecurityService securityService;
 
     @Autowired
-    private CrudController crudController;
+    private CrudService crudController;
 
     @Value("${buildApplicationName:-}")
     private String buildApplicationName;

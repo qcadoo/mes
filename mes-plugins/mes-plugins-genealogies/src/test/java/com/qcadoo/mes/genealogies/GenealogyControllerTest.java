@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
-import com.qcadoo.view.api.crud.CrudController;
+import com.qcadoo.view.api.crud.CrudService;
 
 public class GenealogyControllerTest {
 
@@ -45,7 +45,7 @@ public class GenealogyControllerTest {
         // // given
         Map<String, String> arguments = ImmutableMap.of("context", "{\"form.id\":\"13\"}");
         ModelAndView expectedMav = mock(ModelAndView.class);
-        CrudController crudController = mock(CrudController.class);
+        CrudService crudController = mock(CrudService.class);
         given(crudController.prepareView("genealogies", "currentAttribute", arguments, Locale.ENGLISH)).willReturn(expectedMav);
 
         GenealogyAttributeService genealogyAttributeService = mock(GenealogyAttributeService.class);

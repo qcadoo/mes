@@ -42,6 +42,8 @@ public class GenealogyTechnologyService {
 
     public void checkAttributesReq(final ViewDefinitionState viewDefinitionState) {
 
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
         FormComponentState form = (FormComponentState) viewDefinitionState.getComponentByReference("form");
 
         if (form.getEntityId() != null) {
