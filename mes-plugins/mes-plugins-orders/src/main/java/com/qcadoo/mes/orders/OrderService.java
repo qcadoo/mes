@@ -163,31 +163,40 @@ public final class OrderService {
 
     public void activateOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state.getFieldValue() != null) {
+
+            // TODO mady
             DataDefinition orderDataDefinition = dataDefinitionService.get("orders", "order");
             Entity order = orderDataDefinition.get((Long) state.getFieldValue());
 
             if (state instanceof FormComponentState) {
-                FieldComponentState orderState = (FieldComponentState) viewDefinitionState.getComponentByReference("state");
-
-                if (Boolean.parseBoolean(args[0])) {
-                    orderState.setFieldValue("02inProgress");
-                } else {
-                    if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
-                        state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
-                                MessageType.FAILURE);
-                        return;
-                    }
-                    if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
-                        state.addMessage(
-                                translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
-                                MessageType.FAILURE);
-                        return;
-                    }
-
-                    orderState.setFieldValue("03done");
-                }
-
                 ((FormComponentState) state).performEvent(viewDefinitionState, "save", new String[0]);
+
+                if (!state.isHasError()) {
+
+                    FieldComponentState orderState = (FieldComponentState) viewDefinitionState.getComponentByReference("state");
+
+                    if (Boolean.parseBoolean(args[0])) {
+                        orderState.setFieldValue("02inProgress");
+                    } else {
+
+                        if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
+                            state.addMessage(
+                                    translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
+                                    MessageType.FAILURE);
+                            return;
+                        }
+                        if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
+                            state.addMessage(
+                                    translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
+                                    MessageType.FAILURE);
+                            return;
+                        }
+
+                        orderState.setFieldValue("03done");
+                    }
+
+                    ((FormComponentState) state).performEvent(viewDefinitionState, "save", new String[0]);
+                }
             } else if (state instanceof GridComponentState) {
                 if (Boolean.parseBoolean(args[0])) {
                     order.setField("state", "02inProgress");

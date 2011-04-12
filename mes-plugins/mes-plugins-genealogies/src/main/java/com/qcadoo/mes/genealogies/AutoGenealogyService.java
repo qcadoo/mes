@@ -43,6 +43,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -63,6 +64,9 @@ public class AutoGenealogyService {
 
     @Autowired
     private GenealogyService genealogyService;
+
+    @Autowired
+    private PluginAccessor pluginAccessor;
 
     @Transactional(propagation = REQUIRES_NEW)
     public void generateGenalogyOnChangeOrderStatusForDone(final ViewDefinitionState viewDefinitionState,
@@ -214,7 +218,9 @@ public class AutoGenealogyService {
         genealogy.setField("order", order);
         genealogy.setField("batch", mainBatch);
         completeAttributesForGenealogy(technology, genealogy, lastUsedMode);
-        completeBatchForComponents(technology, genealogy, lastUsedMode);
+        if (pluginAccessor.getEnabledPlugin("genealogiesForComponents") != null) {
+            completeBatchForComponents(technology, genealogy, lastUsedMode);
+        }
 
         if (genealogy.isValid()) {
             genealogy = genealogyDef.save(genealogy);
@@ -315,7 +321,8 @@ public class AutoGenealogyService {
                 operationComponents);
         for (Entity operationComponent : operationComponents) {
             for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                if ((Boolean) operationProductComponent.getField("batchRequired")) {
+                if (operationProductComponent.getField("batchRequired") != null
+                        && (Boolean) operationProductComponent.getField("batchRequired")) {
                     Entity productIn = dataDefinitionService.get("genealogiesForComponents", "genealogyProductInComponent")
                             .create();
                     productIn.setField("genealogy", genealogy);

@@ -29,7 +29,7 @@
 		<localization:group name="security" prefix="security" />
 		<localization:group name="dashboard" prefix="core.dashboard" />
 
-		<localization:translation path="locales" />
+		<localization:translation path="locales" basename="basic"/>
 
 		<model:model model="machine" resource="model/machine.xml" />
 		<model:model model="staff" resource="model/staff.xml" />

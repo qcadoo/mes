@@ -1040,7 +1040,6 @@ public class OrderServiceTest {
         orderService.activateOrder(viewDefinitionState, state, new String[] { "true" });
 
         // then
-        verify(state).performEvent(viewDefinitionState, "save", new String[0]);
         verify(orderState).setFieldValue("02inProgress");
     }
 
@@ -1202,7 +1201,6 @@ public class OrderServiceTest {
         orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
 
         // then
-        verify(state).performEvent(viewDefinitionState, "save", new String[0]);
         verify(orderState).setFieldValue("03done");
     }
 
@@ -1231,7 +1229,6 @@ public class OrderServiceTest {
         orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
 
         // then
-        verify(state).performEvent(viewDefinitionState, "save", new String[0]);
         verify(orderState).setFieldValue("03done");
     }
 
