@@ -498,6 +498,14 @@ public final class QualityControlService {
         return true;
     }
 
+    public boolean setStaffAndDateIfClosed(final DataDefinition dataDefinition, final Entity entity) {
+        if ((Boolean) entity.getField("closed")) {
+            entity.setField("date", new Date());
+            entity.setField("staff", securityService.getCurrentUserName());
+        }
+        return true;
+    }
+
     public void changeQualityControlType(final ViewDefinitionState state) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         FieldComponentState qualityControlType = (FieldComponentState) state.getComponentByReference("qualityControlType");

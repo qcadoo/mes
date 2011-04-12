@@ -50,6 +50,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.components.FieldComponentState;
+import com.qcadoo.view.components.form.FormComponentState;
 import com.qcadoo.view.components.grid.GridComponentState;
 import com.qcadoo.view.components.select.SelectComponentState;
 import com.qcadoo.view.components.tree.TreeComponentState;
@@ -72,7 +73,7 @@ public final class TechnologyService {
     }
 
     public void setFirstTechnologyAsDefault(final DataDefinition dataDefinition, final Entity entity) {
-        if (!(Boolean) entity.getField("master")) {
+        if (!(Boolean) entity.getField("master") && entity.getField("product") != null) {
             SearchCriteriaBuilder searchCriteria = dataDefinition.find().withMaxResults(1)
                     .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("product"), entity.getField("product")));
 
@@ -197,6 +198,14 @@ public final class TechnologyService {
                         + numberGeneratorService.generateNumber("technologies", "technology", 3);
                 number.setFieldValue(numberValue);
             }
+        }
+    }
+
+    public void hideReferenceMode(final ViewDefinitionState viewDefinitionState) {
+        FormComponentState form = (FormComponentState) viewDefinitionState.getComponentByReference("form");
+        if (form.getEntityId() != null) {
+            ComponentState referenceModeComponent = viewDefinitionState.getComponentByReference("referenceMode");
+            referenceModeComponent.setVisible(false);
         }
     }
 

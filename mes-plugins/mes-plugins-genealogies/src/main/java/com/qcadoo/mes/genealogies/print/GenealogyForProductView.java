@@ -46,6 +46,7 @@ import com.qcadoo.mes.genealogies.print.util.EntityNumberComparator;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
+import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.report.api.Pair;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.report.api.pdf.ReportPdfView;
@@ -58,6 +59,9 @@ public class GenealogyForProductView extends ReportPdfView {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private PluginAccessor pluginAccessor;
 
     @Override
     protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
@@ -103,7 +107,9 @@ public class GenealogyForProductView extends ReportPdfView {
         List<Entity> orders = getOrders(entity);
         Collections.sort(orders, new EntityNumberComparator());
         addOrderSeries(document, orders, orderHeader);
-        addComponentSeries(document, orders, locale);
+        if (pluginAccessor.getEnabledPlugin("genealogiesForComponents") != null) {
+            addComponentSeries(document, orders, locale);
+        }
     }
 
     private void addComponentSeries(final Document document, final List<Entity> orders, final Locale locale)
@@ -132,6 +138,7 @@ public class GenealogyForProductView extends ReportPdfView {
                 table.addCell(new Phrase(batch, PdfUtil.getArialRegular9Dark()));
             }
             document.add(table);
+
         }
     }
 

@@ -45,5 +45,7 @@
 			method="checkIfQuantitiesAreCorrect" />
 		<onCopy class="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="clearQualityControlOnCopy" />
+		<onSave class="com.qcadoo.mes.qualityControls.QualityControlService"
+			method="setStaffAndDateIfClosed" />
 	</hooks>
 </model>

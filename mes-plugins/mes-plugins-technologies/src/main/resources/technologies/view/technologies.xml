@@ -305,6 +305,8 @@
 				<option type="expression" value="#technology['name']" />
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.technologies.TechnologyService"
+			method="hideReferenceMode" />
 	</view>
 	<view name="operationProductInComponent" model="operationProductInComponent">
 		<component type="window" name="window">
