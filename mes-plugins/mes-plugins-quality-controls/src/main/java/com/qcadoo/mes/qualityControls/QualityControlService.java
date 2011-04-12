@@ -395,7 +395,7 @@ public final class QualityControlService {
 
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.restrictedWith(Restrictions.eq("qualityControlType", qualityControlType));
+                searchCriteriaBuilder.addRestriction(Restrictions.eq("qualityControlType", qualityControlType));
             }
 
         });
@@ -525,8 +525,8 @@ public final class QualityControlService {
             return false;
         }
         SearchResult searchResult = dataDefinitionService.get("technologies", "technologyOperationComponent").find()
-                .restrictedWith(Restrictions.eq("technology.id", entityId))
-                .restrictedWith(Restrictions.eq("qualityControlRequired", true)).withMaxResults(1).list();
+                .addRestriction(Restrictions.eq("technology.id", entityId))
+                .addRestriction(Restrictions.eq("qualityControlRequired", true)).setMaxResults(1).list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
 
@@ -551,8 +551,8 @@ public final class QualityControlService {
     private String getInstructionForOrder(final Long fieldValue) {
         DataDefinition orderDD = dataDefinitionService.get("orders", "order");
 
-        SearchCriteriaBuilder searchCriteria = orderDD.find().withMaxResults(1)
-                .restrictedWith(Restrictions.idRestriction(fieldValue, RestrictionOperator.EQ));
+        SearchCriteriaBuilder searchCriteria = orderDD.find().setMaxResults(1)
+                .addRestriction(Restrictions.idRestriction(fieldValue, RestrictionOperator.EQ));
 
         return (String) searchCriteria.list().getEntities().get(0).getBelongsToField("technology")
                 .getField("qualityControlInstruction");
@@ -569,7 +569,7 @@ public final class QualityControlService {
     }
 
     private boolean isQualityControlAutoGenEnabled() {
-        SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list();
+        SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list();
 
         Entity parameter = null;
         if (searchResult.getEntities().size() > 0) {
@@ -714,7 +714,7 @@ public final class QualityControlService {
     private List<Entity> getGenealogiesForOrder(final Long id) {
         DataDefinition genealogyDD = dataDefinitionService.get("genealogies", "genealogy");
 
-        SearchCriteriaBuilder searchCriteria = genealogyDD.find().restrictedWith(Restrictions.eq("order.id", id));
+        SearchCriteriaBuilder searchCriteria = genealogyDD.find().addRestriction(Restrictions.eq("order.id", id));
 
         return searchCriteria.list().getEntities();
     }

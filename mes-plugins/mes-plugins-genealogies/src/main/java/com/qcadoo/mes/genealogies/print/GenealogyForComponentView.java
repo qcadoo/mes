@@ -131,7 +131,7 @@ public class GenealogyForComponentView extends ReportPdfView {
     private List<Entity> getGenealogies(final Entity entity) {
         List<Entity> genealogies = new ArrayList<Entity>();
         List<Entity> batchList = dataDefinitionService.get("genealogiesForComponents", "productInBatch").find()
-                .restrictedWith(Restrictions.eq("batch", entity.getField("batch"))).list().getEntities();
+                .addRestriction(Restrictions.eq("batch", entity.getField("batch"))).list().getEntities();
         for (Entity batch : batchList) {
             Entity genealogy = ((Entity) ((Entity) batch.getField("productInComponent")).getField("genealogy"));
             if (!genealogies.contains(genealogy)) {

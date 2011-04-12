@@ -245,8 +245,8 @@ public class AutoGenealogyServiceTest {
         List<Entity> list = new ArrayList<Entity>();
         list.add(mock(Entity.class));
         given(
-                dataDefinitionService.get("genealogies", "genealogy").find().restrictedWith(Restrictions.eq("batch", "test"))
-                        .restrictedWith(Restrictions.eq("order.id", order.getId())).withMaxResults(1).list().getEntities())
+                dataDefinitionService.get("genealogies", "genealogy").find().addRestriction(Restrictions.eq("batch", "test"))
+                        .addRestriction(Restrictions.eq("order.id", order.getId())).setMaxResults(1).list().getEntities())
                 .willReturn(list);
 
         given(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", Locale.ENGLISH)).willReturn(
@@ -275,7 +275,7 @@ public class AutoGenealogyServiceTest {
         given(order.getBelongsToField("product")).willReturn(product);
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(product.getField("batch")).willReturn("test");
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
                 .willReturn(getCurrentAttribute());
 
         given(technology.getField("shiftFeatureRequired")).willReturn(true);
@@ -326,7 +326,7 @@ public class AutoGenealogyServiceTest {
         given(order.getBelongsToField("product")).willReturn(product);
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(product.getField("lastUsedBatch")).willReturn("test");
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
                 .willReturn(getCurrentAttribute());
 
         given(technology.getField("shiftFeatureRequired")).willReturn(true);
@@ -383,7 +383,7 @@ public class AutoGenealogyServiceTest {
         given(order.getBelongsToField("product")).willReturn(product);
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(product.getField("lastUsedBatch")).willReturn("test");
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
                 .willReturn(new ArrayList<Entity>());
         given(technology.getField("shiftFeatureRequired")).willReturn(true);
         given(technology.getField("postFeatureRequired")).willReturn(true);
@@ -541,7 +541,7 @@ public class AutoGenealogyServiceTest {
 
         given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
-        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
                 getParameter("02active"));
 
         Entity product = mock(Entity.class);
@@ -597,7 +597,7 @@ public class AutoGenealogyServiceTest {
 
         given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
-        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
                 getParameter("03lastUsed"));
 
         Entity product = mock(Entity.class);
@@ -675,7 +675,7 @@ public class AutoGenealogyServiceTest {
 
         given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
-        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
                 new ArrayList<Entity>());
 
         // when
@@ -699,14 +699,14 @@ public class AutoGenealogyServiceTest {
         List<Entity> featureEntities = new ArrayList<Entity>();
         featureEntities.add(feature);
 
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
                 .willReturn(featureEntities);
         given(securityService.getCurrentUserName()).willReturn("newTest");
 
         // when
         autoGenealogyService.fillLastUsedShiftFeature(dataDefinition, entity);
         // then
-        verify(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities().get(0))
+        verify(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities().get(0))
                 .setField(anyString(), anyString());
         verify(dataDefinitionService.get("genealogies", "currentAttribute")).save(any(Entity.class));
         assertNotNull(entity.getField("date"));
@@ -720,7 +720,7 @@ public class AutoGenealogyServiceTest {
 
         Entity entity = new DefaultEntity(dataDefinition);
 
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
                 .willReturn(new ArrayList<Entity>());
         given(securityService.getCurrentUserName()).willReturn("newTest");
 
@@ -740,14 +740,14 @@ public class AutoGenealogyServiceTest {
         List<Entity> featureEntities = new ArrayList<Entity>();
         featureEntities.add(feature);
 
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
                 .willReturn(featureEntities);
         given(securityService.getCurrentUserName()).willReturn("newTest");
 
         // when
         autoGenealogyService.fillLastUsedOtherFeature(dataDefinition, entity);
         // then
-        verify(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities().get(0))
+        verify(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities().get(0))
                 .setField(anyString(), anyString());
         verify(dataDefinitionService.get("genealogies", "currentAttribute")).save(any(Entity.class));
         assertNotNull(entity.getField("date"));
@@ -761,7 +761,7 @@ public class AutoGenealogyServiceTest {
 
         Entity entity = new DefaultEntity(dataDefinition);
 
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
                 .willReturn(new ArrayList<Entity>());
         given(securityService.getCurrentUserName()).willReturn("newTest");
 
@@ -781,14 +781,14 @@ public class AutoGenealogyServiceTest {
         List<Entity> featureEntities = new ArrayList<Entity>();
         featureEntities.add(feature);
 
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
                 .willReturn(featureEntities);
         given(securityService.getCurrentUserName()).willReturn("newTest");
 
         // when
         autoGenealogyService.fillLastUsedPostFeature(dataDefinition, entity);
         // then
-        verify(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities().get(0))
+        verify(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities().get(0))
                 .setField(anyString(), anyString());
         verify(dataDefinitionService.get("genealogies", "currentAttribute")).save(any(Entity.class));
         assertNotNull(entity.getField("date"));
@@ -802,7 +802,7 @@ public class AutoGenealogyServiceTest {
 
         Entity entity = new DefaultEntity(dataDefinition);
 
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
                 .willReturn(new ArrayList<Entity>());
         given(securityService.getCurrentUserName()).willReturn("newTest");
 
@@ -857,7 +857,7 @@ public class AutoGenealogyServiceTest {
         productsEntities.add(createOperationProductInComponent(3L, true, withoutBatch));
         productsEntities.add(createOperationProductInComponent(4L, true, withoutBatch));
         DataDefinition listDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(listDataDefinition.find().restrictedWith(any(Restriction.class)).list().getEntities()).willReturn(productsEntities);
+        given(listDataDefinition.find().addRestriction(any(Restriction.class)).list().getEntities()).willReturn(productsEntities);
 
         EntityListImpl operationProductInComponents = new EntityListImpl(listDataDefinition, "joinField", 1L);
 

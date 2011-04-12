@@ -75,7 +75,7 @@ public class AutoGenealogyService {
             } else {
                 boolean inProgressState = Boolean.parseBoolean(args[0]);
                 if (!inProgressState) {
-                    SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list();
+                    SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list();
                     Entity parameter = null;
                     if (searchResult.getEntities().size() > 0) {
                         parameter = searchResult.getEntities().get(0);
@@ -144,7 +144,7 @@ public class AutoGenealogyService {
     public void fillLastUsedShiftFeature(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
         DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
-        SearchResult searchResult = featureDef.find().withMaxResults(1).list();
+        SearchResult searchResult = featureDef.find().setMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
             Entity currentAttribute = searchResult.getEntities().get(0);
             currentAttribute.setField("lastUsedShift", entity.getField("value"));
@@ -155,7 +155,7 @@ public class AutoGenealogyService {
     public void fillLastUsedPostFeature(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
         DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
-        SearchResult searchResult = featureDef.find().withMaxResults(1).list();
+        SearchResult searchResult = featureDef.find().setMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
             Entity currentAttribute = searchResult.getEntities().get(0);
             currentAttribute.setField("lastUsedPost", entity.getField("value"));
@@ -166,7 +166,7 @@ public class AutoGenealogyService {
     public void fillLastUsedOtherFeature(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
         DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
-        SearchResult searchResult = featureDef.find().withMaxResults(1).list();
+        SearchResult searchResult = featureDef.find().setMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
             Entity currentAttribute = searchResult.getEntities().get(0);
             currentAttribute.setField("lastUsedOther", entity.getField("value"));
@@ -242,8 +242,8 @@ public class AutoGenealogyService {
 
     private boolean checkIfExistGenealogyWithBatch(final Entity order, final String batch) {
         SearchResult searchResult = dataDefinitionService.get("genealogies", "genealogy").find()
-                .restrictedWith(Restrictions.eq("batch", batch)).restrictedWith(Restrictions.eq("order.id", order.getId()))
-                .withMaxResults(1).list();
+                .addRestriction(Restrictions.eq("batch", batch)).addRestriction(Restrictions.eq("order.id", order.getId()))
+                .setMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
             return true;
         }
@@ -251,7 +251,7 @@ public class AutoGenealogyService {
     }
 
     private void completeAttributesForGenealogy(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
-        SearchResult searchResult = dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list();
+        SearchResult searchResult = dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list();
         Entity currentAttribute = null;
         if (searchResult.getEntities().size() > 0) {
             currentAttribute = searchResult.getEntities().get(0);

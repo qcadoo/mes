@@ -425,11 +425,11 @@ public class GenealogyServiceTest {
         productsEntities3.add(craeteOperationProductInComponent(104L, false));
 
         DataDefinition treeDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(treeDataDefinition.find().restrictedWith(any(Restriction.class)).orderAscBy(eq("priority")).list().getEntities())
+        given(treeDataDefinition.find().addRestriction(any(Restriction.class)).setOrderAscBy(eq("priority")).list().getEntities())
                 .willReturn(entities, subEntities);
 
         DataDefinition listDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(listDataDefinition.find().restrictedWith(any(Restriction.class)).list().getEntities()).willReturn(
+        given(listDataDefinition.find().addRestriction(any(Restriction.class)).list().getEntities()).willReturn(
                 productsEntities1, productsEntities3);
 
         EntityTree subOperationComponents = new EntityTreeImpl(treeDataDefinition, "joinField", 13L);
@@ -472,7 +472,7 @@ public class GenealogyServiceTest {
         existingEntities.add(craeteGenealogyProductInComponent(102L, craeteOperationProductInComponent(102L, true)));
 
         DataDefinition existingListDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(existingListDataDefinition.find().restrictedWith(any(Restriction.class)).list().getEntities()).willReturn(
+        given(existingListDataDefinition.find().addRestriction(any(Restriction.class)).list().getEntities()).willReturn(
                 existingEntities);
 
         EntityList existingOperationComponents = new EntityListImpl(existingListDataDefinition, "joinField", 11L);

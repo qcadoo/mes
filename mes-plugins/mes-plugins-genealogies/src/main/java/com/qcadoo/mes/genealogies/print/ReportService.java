@@ -88,7 +88,7 @@ public class ReportService {
 
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.restrictedWith(Restrictions.eq("order.product.id", product.getFieldValue()));
+                searchCriteriaBuilder.addRestriction(Restrictions.eq("order.product.id", product.getFieldValue()));
             }
 
         });
@@ -104,7 +104,7 @@ public class ReportService {
 
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.restrictedWith(Restrictions.eq("productInComponent.productInComponent.product.id",
+                searchCriteriaBuilder.addRestriction(Restrictions.eq("productInComponent.productInComponent.product.id",
                         product.getFieldValue()));
             }
 

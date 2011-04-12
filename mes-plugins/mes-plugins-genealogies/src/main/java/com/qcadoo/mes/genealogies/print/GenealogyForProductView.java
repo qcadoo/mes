@@ -165,7 +165,7 @@ public class GenealogyForProductView extends ReportPdfView {
     private List<Entity> getOrders(final Entity entity) {
         List<Entity> orders = new ArrayList<Entity>();
         List<Entity> genealogyList = dataDefinitionService.get("genealogies", "genealogy").find()
-                .restrictedWith(Restrictions.eq("batch", entity.getField("batch"))).list().getEntities();
+                .addRestriction(Restrictions.eq("batch", entity.getField("batch"))).list().getEntities();
         for (Entity genealogy : genealogyList) {
             Entity order = (Entity) genealogy.getField("order");
             if (!orders.contains(order)) {

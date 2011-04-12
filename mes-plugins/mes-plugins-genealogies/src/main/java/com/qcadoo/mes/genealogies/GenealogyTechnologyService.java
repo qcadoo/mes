@@ -49,7 +49,7 @@ public class GenealogyTechnologyService {
             return;
         }
 
-        SearchResult searchResult = dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list();
+        SearchResult searchResult = dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list();
         Entity currentAttribute = null;
 
         if (searchResult.getEntities().size() > 0) {
@@ -99,8 +99,8 @@ public class GenealogyTechnologyService {
 
     private boolean checkProductInComponentsBatchRequired(final Long entityId) {
         SearchResult searchResult = dataDefinitionService.get("technologies", "operationProductInComponent").find()
-                .restrictedWith(Restrictions.eq("operationComponent.technology.id", entityId))
-                .restrictedWith(Restrictions.eq("batchRequired", true)).withMaxResults(1).list();
+                .addRestriction(Restrictions.eq("operationComponent.technology.id", entityId))
+                .addRestriction(Restrictions.eq("batchRequired", true)).setMaxResults(1).list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
 
@@ -118,8 +118,8 @@ public class GenealogyTechnologyService {
     private Entity getProductById(final Long productId) {
         DataDefinition instructionDD = dataDefinitionService.get("basic", "product");
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().withMaxResults(1)
-                .restrictedWith(Restrictions.idRestriction(productId, RestrictionOperator.EQ));
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1)
+                .addRestriction(Restrictions.idRestriction(productId, RestrictionOperator.EQ));
 
         SearchResult searchResult = searchCriteria.list();
         if (searchResult.getTotalNumberOfEntities() == 1) {

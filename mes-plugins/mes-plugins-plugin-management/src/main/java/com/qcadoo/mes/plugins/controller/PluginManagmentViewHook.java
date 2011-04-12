@@ -52,7 +52,7 @@ public class PluginManagmentViewHook {
 
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.restrictedWith(Restrictions.eq("isSystem", false));
+                searchCriteriaBuilder.addRestriction(Restrictions.eq("isSystem", false));
             }
         });
     }

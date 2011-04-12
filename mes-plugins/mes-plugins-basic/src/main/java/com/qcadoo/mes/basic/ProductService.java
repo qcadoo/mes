@@ -75,8 +75,8 @@ public final class ProductService {
         }
 
         SearchResult searchResult = dataDefinition.find()
-                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("product"), product.getId()))
-                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("substitute"), substitute.getId())).list();
+                .addRestriction(Restrictions.belongsTo(dataDefinition.getField("product"), product.getId()))
+                .addRestriction(Restrictions.belongsTo(dataDefinition.getField("substitute"), substitute.getId())).list();
 
         if (searchResult.getTotalNumberOfEntities() > 0 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
             entity.addError(dataDefinition.getField("product"), "basic.validate.global.error.substituteComponentDuplicated");

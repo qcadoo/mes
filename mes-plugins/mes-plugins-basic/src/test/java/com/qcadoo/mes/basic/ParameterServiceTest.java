@@ -51,7 +51,7 @@ public class ParameterServiceTest {
         entities.add(new DefaultEntity(null, 14L));
 
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
-        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(entities);
+        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(entities);
 
         ParameterService parameterService = new ParameterService();
         setField(parameterService, "dataDefinitionService", dataDefinitionService);
@@ -76,7 +76,7 @@ public class ParameterServiceTest {
 
         Entity savedEntity = new DefaultEntity(dataDefinition, 15L);
 
-        given(dataDefinition.find().withMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
+        given(dataDefinition.find().setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
         given(dataDefinition.save(newEntity)).willReturn(savedEntity);
 
         ParameterService parameterService = new ParameterService();

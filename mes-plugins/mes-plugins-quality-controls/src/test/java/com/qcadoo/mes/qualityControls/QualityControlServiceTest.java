@@ -387,7 +387,7 @@ public class QualityControlServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(state.getFieldValue()).willReturn(7L);
         given(dataDefinitionService.get("genealogies", "genealogy")).willReturn(genealogyDataDefinition);
-        given(genealogyDataDefinition.find().restrictedWith(Restrictions.eq("order.id", 7L))).willReturn(searchCriteria);
+        given(genealogyDataDefinition.find().addRestriction(Restrictions.eq("order.id", 7L))).willReturn(searchCriteria);
         given(searchCriteria.list().getEntities()).willReturn(genealogies);
         given(numberGeneratorService.generateNumber("qualityControls", "qualityControl")).willReturn("1");
         given(order.getField("plannedQuantity")).willReturn(new BigDecimal("1"));
@@ -540,8 +540,8 @@ public class QualityControlServiceTest {
         given(dataDefinitionService.get("orders", "order")).willReturn(orderDD);
 
         given(
-                orderDD.find().withMaxResults(1)
-                        .restrictedWith(Restrictions.idRestriction(Mockito.anyLong(), RestrictionOperator.EQ))).willReturn(
+                orderDD.find().setMaxResults(1)
+                        .addRestriction(Restrictions.idRestriction(Mockito.anyLong(), RestrictionOperator.EQ))).willReturn(
                 searchCriteria);
 
         given(searchCriteria.list().getEntities()).willReturn(orders);

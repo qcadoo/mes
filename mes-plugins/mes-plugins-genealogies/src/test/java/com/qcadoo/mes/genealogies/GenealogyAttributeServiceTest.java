@@ -51,7 +51,7 @@ public class GenealogyAttributeServiceTest {
         entities.add(new DefaultEntity(null, 14L));
 
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list().getEntities())
+        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
                 .willReturn(entities);
 
         GenealogyAttributeService genealogyAttributeService = new GenealogyAttributeService();
@@ -75,7 +75,7 @@ public class GenealogyAttributeServiceTest {
 
         Entity savedEntity = new DefaultEntity(dataDefinition, 15L);
 
-        given(dataDefinition.find().withMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
+        given(dataDefinition.find().setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
         given(dataDefinition.save(newEntity)).willReturn(savedEntity);
 
         GenealogyAttributeService genealogyAttributeService = new GenealogyAttributeService();

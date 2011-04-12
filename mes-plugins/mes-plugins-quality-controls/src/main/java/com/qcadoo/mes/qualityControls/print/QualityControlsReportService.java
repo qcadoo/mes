@@ -276,14 +276,14 @@ public class QualityControlsReportService {
             try {
                 SearchResult result = dataDef
                         .find()
-                        .restrictedWith(
+                        .addRestriction(
                                 Restrictions.ge(dataDef.getField("date"),
                                         DateUtils.parseDate(model.get("dateFrom").toString(), false)))
-                        .restrictedWith(
+                        .addRestriction(
                                 Restrictions.le(dataDef.getField("date"),
                                         DateUtils.parseDate(model.get("dateTo").toString(), true)))
-                        .restrictedWith(Restrictions.eq("qualityControlType", type))
-                        .restrictedWith(Restrictions.eq("closed", true)).list();
+                        .addRestriction(Restrictions.eq("qualityControlType", type))
+                        .addRestriction(Restrictions.eq("closed", true)).list();
                 return result.getEntities();
             } catch (ParseException e) {
                 return Collections.emptyList();

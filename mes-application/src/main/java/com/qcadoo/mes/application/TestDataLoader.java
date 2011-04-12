@@ -828,13 +828,13 @@ public final class TestDataLoader {
 
     private Entity getRandomStaff() {
         Long total = (long) dataDefinitionService.get("basic", "staff").find().list().getTotalNumberOfEntities();
-        return dataDefinitionService.get("basic", "staff").find().withFirstResult(RANDOM.nextInt(total.intValue()))
-                .withMaxResults(1).list().getEntities().get(0);
+        return dataDefinitionService.get("basic", "staff").find().setFirstResult(RANDOM.nextInt(total.intValue()))
+                .setMaxResults(1).list().getEntities().get(0);
     }
 
     private Entity getMachine(final String id) {
         List<Entity> machines = dataDefinitionService.get("basic", "machine").find()
-                .restrictedWith(Restrictions.eq("number", id)).list().getEntities();
+                .addRestriction(Restrictions.eq("number", id)).list().getEntities();
         if (machines.size() > 0) {
             return machines.get(0);
         } else {
@@ -844,7 +844,7 @@ public final class TestDataLoader {
 
     private Entity getTechnologyByName(final String name) {
         List<Entity> technologies = dataDefinitionService.get("technologies", "technology").find()
-                .restrictedWith(Restrictions.eq("name", name)).withMaxResults(1).list().getEntities();
+                .addRestriction(Restrictions.eq("name", name)).setMaxResults(1).list().getEntities();
         if (technologies.size() > 0) {
             return technologies.get(0);
         } else {
@@ -857,8 +857,8 @@ public final class TestDataLoader {
             return null;
         }
         List<Entity> technologies = dataDefinitionService.get("technologies", "technology").find()
-                .restrictedWith(Restrictions.eq("product.id", product.getId())).restrictedWith(Restrictions.eq("master", true))
-                .withMaxResults(1).list().getEntities();
+                .addRestriction(Restrictions.eq("product.id", product.getId())).addRestriction(Restrictions.eq("master", true))
+                .setMaxResults(1).list().getEntities();
         if (technologies.size() > 0) {
             return technologies.get(0);
         } else {
@@ -867,57 +867,57 @@ public final class TestDataLoader {
     }
 
     private Entity getProductByNumber(final String number) {
-        return dataDefinitionService.get("basic", "product").find().restrictedWith(Restrictions.eq("number", number))
-                .withMaxResults(1).list().getEntities().get(0);
+        return dataDefinitionService.get("basic", "product").find().addRestriction(Restrictions.eq("number", number))
+                .setMaxResults(1).list().getEntities().get(0);
     }
 
     private Entity getGroupByRole(final String role) {
-        return dataDefinitionService.get("qcadooSecurity", "group").find().restrictedWith(Restrictions.eq("role", role))
-                .withMaxResults(1).list().getEntities().get(0);
+        return dataDefinitionService.get("qcadooSecurity", "group").find().addRestriction(Restrictions.eq("role", role))
+                .setMaxResults(1).list().getEntities().get(0);
     }
 
     private Entity getOperationByNumber(final String number) {
-        return dataDefinitionService.get("technologies", "operation").find().restrictedWith(Restrictions.eq("number", number))
-                .withMaxResults(1).list().getEntities().get(0);
+        return dataDefinitionService.get("technologies", "operation").find().addRestriction(Restrictions.eq("number", number))
+                .setMaxResults(1).list().getEntities().get(0);
     }
 
     private String getRandomDictionaryItem(final String dictionaryName) {
         Entity dictionary = getDictionaryByName(dictionaryName);
         Long total = (long) dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
-                .restrictedWith(Restrictions.eq("dictionary.id", dictionary.getId())).list().getTotalNumberOfEntities();
+                .addRestriction(Restrictions.eq("dictionary.id", dictionary.getId())).list().getTotalNumberOfEntities();
         Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
-                .restrictedWith(Restrictions.eq("dictionary.id", dictionary.getId()))
-                .withFirstResult(RANDOM.nextInt(total.intValue())).withMaxResults(1).list().getEntities().get(0);
+                .addRestriction(Restrictions.eq("dictionary.id", dictionary.getId()))
+                .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).list().getEntities().get(0);
         return item.getField("name").toString();
     }
 
     private Entity getDictionaryByName(final String name) {
-        return dataDefinitionService.get("qcadooModel", "dictionary").find().restrictedWith(Restrictions.eq("name", name))
-                .withMaxResults(1).list().getEntities().get(0);
+        return dataDefinitionService.get("qcadooModel", "dictionary").find().addRestriction(Restrictions.eq("name", name))
+                .setMaxResults(1).list().getEntities().get(0);
     }
 
     private Entity getRandomProduct() {
         Long total = (long) dataDefinitionService.get("basic", "product").find().list().getTotalNumberOfEntities();
-        return dataDefinitionService.get("basic", "product").find().withFirstResult(RANDOM.nextInt(total.intValue()))
-                .withMaxResults(1).list().getEntities().get(0);
+        return dataDefinitionService.get("basic", "product").find().setFirstResult(RANDOM.nextInt(total.intValue()))
+                .setMaxResults(1).list().getEntities().get(0);
     }
 
     private Entity getRandomOperation() {
         Long total = (long) dataDefinitionService.get("technologies", "operation").find().list().getTotalNumberOfEntities();
-        return dataDefinitionService.get("technologies", "operation").find().withFirstResult(RANDOM.nextInt(total.intValue()))
-                .withMaxResults(1).list().getEntities().get(0);
+        return dataDefinitionService.get("technologies", "operation").find().setFirstResult(RANDOM.nextInt(total.intValue()))
+                .setMaxResults(1).list().getEntities().get(0);
     }
 
     private Entity getRandomOrder() {
         Long total = (long) dataDefinitionService.get("orders", "order").find().list().getTotalNumberOfEntities();
-        return dataDefinitionService.get("orders", "order").find().withFirstResult(RANDOM.nextInt(total.intValue()))
-                .withMaxResults(1).list().getEntities().get(0);
+        return dataDefinitionService.get("orders", "order").find().setFirstResult(RANDOM.nextInt(total.intValue()))
+                .setMaxResults(1).list().getEntities().get(0);
     }
 
     private Entity getRandomUser() {
         Long total = (long) dataDefinitionService.get("qcadooSecurity", "user").find().list().getTotalNumberOfEntities();
-        return dataDefinitionService.get("qcadooSecurity", "user").find().withFirstResult(RANDOM.nextInt(total.intValue()))
-                .withMaxResults(1).list().getEntities().get(0);
+        return dataDefinitionService.get("qcadooSecurity", "user").find().setFirstResult(RANDOM.nextInt(total.intValue()))
+                .setMaxResults(1).list().getEntities().get(0);
     }
 
     private String getRandomTypeOfMaterial() {
