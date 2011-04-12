@@ -243,8 +243,8 @@ public final class OrderService {
 
             if (qualityControlDD != null) {
                 SearchCriteriaBuilder searchCriteria = qualityControlDD.find()
-                        .restrictedWith(Restrictions.belongsTo(qualityControlDD.getField("order"), order.getId()))
-                        .restrictedWith(Restrictions.eq("closed", false));
+                        .addRestriction(Restrictions.belongsTo(qualityControlDD.getField("order"), order.getId()))
+                        .addRestriction(Restrictions.eq("closed", false));
 
                 SearchResult searchResult = searchCriteria.list();
 
@@ -258,7 +258,7 @@ public final class OrderService {
     }
 
     private boolean isQualityControlAutoCheckEnabled() {
-        SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list();
+        SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list();
 
         Entity parameter = null;
         if (searchResult.getEntities().size() > 0) {
@@ -405,9 +405,9 @@ public final class OrderService {
     private Entity getDefaultTechnology(final Long selectedProductId) {
         DataDefinition instructionDD = dataDefinitionService.get("technologies", "technology");
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().withMaxResults(1)
-                .restrictedWith(Restrictions.eq(instructionDD.getField("master"), true))
-                .restrictedWith(Restrictions.belongsTo(instructionDD.getField("product"), selectedProductId));
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1)
+                .addRestriction(Restrictions.eq(instructionDD.getField("master"), true))
+                .addRestriction(Restrictions.belongsTo(instructionDD.getField("product"), selectedProductId));
 
         SearchResult searchResult = searchCriteria.list();
 
@@ -421,8 +421,8 @@ public final class OrderService {
     private boolean hasAnyTechnologies(final Long selectedProductId) {
         DataDefinition technologyDD = dataDefinitionService.get("technologies", "technology");
 
-        SearchCriteriaBuilder searchCriteria = technologyDD.find().withMaxResults(1)
-                .restrictedWith(Restrictions.belongsTo(technologyDD.getField("product"), selectedProductId));
+        SearchCriteriaBuilder searchCriteria = technologyDD.find().setMaxResults(1)
+                .addRestriction(Restrictions.belongsTo(technologyDD.getField("product"), selectedProductId));
 
         SearchResult searchResult = searchCriteria.list();
 
@@ -447,7 +447,7 @@ public final class OrderService {
     }
 
     public boolean checkAutogenealogyRequired() {
-        SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list();
+        SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list();
         Entity parameter = null;
         if (searchResult.getEntities().size() > 0) {
             parameter = searchResult.getEntities().get(0);

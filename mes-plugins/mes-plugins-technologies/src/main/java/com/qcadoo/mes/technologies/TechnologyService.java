@@ -74,8 +74,8 @@ public final class TechnologyService {
 
     public void setFirstTechnologyAsDefault(final DataDefinition dataDefinition, final Entity entity) {
         if (!(Boolean) entity.getField("master") && entity.getField("product") != null) {
-            SearchCriteriaBuilder searchCriteria = dataDefinition.find().withMaxResults(1)
-                    .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("product"), entity.getField("product")));
+            SearchCriteriaBuilder searchCriteria = dataDefinition.find().setMaxResults(1)
+                    .addRestriction(Restrictions.belongsTo(dataDefinition.getField("product"), entity.getField("product")));
 
             if (searchCriteria.list().getTotalNumberOfEntities() == 0) {
                 entity.setField("master", Boolean.TRUE);
@@ -90,12 +90,12 @@ public final class TechnologyService {
             return true;
         }
 
-        SearchCriteriaBuilder searchCriteria = dataDefinition.find().withMaxResults(1)
-                .restrictedWith(Restrictions.eq(dataDefinition.getField("master"), true))
-                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("product"), entity.getField("product")));
+        SearchCriteriaBuilder searchCriteria = dataDefinition.find().setMaxResults(1)
+                .addRestriction(Restrictions.eq(dataDefinition.getField("master"), true))
+                .addRestriction(Restrictions.belongsTo(dataDefinition.getField("product"), entity.getField("product")));
 
         if (entity.getId() != null) {
-            searchCriteria.restrictedWith(Restrictions.idRestriction(entity.getId(), RestrictionOperator.NE));
+            searchCriteria.addRestriction(Restrictions.idRestriction(entity.getId(), RestrictionOperator.NE));
         }
 
         SearchResult searchResult = searchCriteria.list();
@@ -212,8 +212,8 @@ public final class TechnologyService {
     private Entity getProductById(final Long productId) {
         DataDefinition instructionDD = dataDefinitionService.get("basic", "product");
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().withMaxResults(1)
-                .restrictedWith(Restrictions.idRestriction(productId, RestrictionOperator.EQ));
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1)
+                .addRestriction(Restrictions.idRestriction(productId, RestrictionOperator.EQ));
 
         SearchResult searchResult = searchCriteria.list();
         if (searchResult.getTotalNumberOfEntities() == 1) {

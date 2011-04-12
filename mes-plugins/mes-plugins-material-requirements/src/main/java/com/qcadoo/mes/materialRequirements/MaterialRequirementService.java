@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.materialRequirements.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.materialRequirements.print.xls.MaterialRequirementXlsService;
 import com.qcadoo.mes.orders.util.OrderReportService;
@@ -20,7 +21,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.model.api.utils.DateUtils;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -73,8 +73,8 @@ public final class MaterialRequirementService {
 
         SearchResult searchResult = dataDefinition
                 .find()
-                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("order"), order.getId()))
-                .restrictedWith(
+                .addRestriction(Restrictions.belongsTo(dataDefinition.getField("order"), order.getId()))
+                .addRestriction(
                         Restrictions.belongsTo(dataDefinition.getField("materialRequirement"), materialRequirement.getId()))
                 .list();
 

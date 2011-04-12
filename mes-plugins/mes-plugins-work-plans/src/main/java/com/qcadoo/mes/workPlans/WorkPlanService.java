@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.util.OrderReportService;
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.mes.workPlans.print.pdf.WorkPlanForMachinePdfService;
@@ -48,7 +49,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.model.api.utils.DateUtils;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -211,8 +211,8 @@ public final class WorkPlanService {
         }
 
         SearchResult searchResult = dataDefinition.find()
-                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("order"), order.getId()))
-                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("workPlan"), workPlan.getId())).list();
+                .addRestriction(Restrictions.belongsTo(dataDefinition.getField("order"), order.getId()))
+                .addRestriction(Restrictions.belongsTo(dataDefinition.getField("workPlan"), workPlan.getId())).list();
 
         if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
             entity.addError(dataDefinition.getField("order"), "workPlans.validate.global.error.workPlanDuplicated");
