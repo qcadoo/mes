@@ -229,8 +229,8 @@ public class OrderServiceTest {
         given(product.getFieldValue()).willReturn(13L);
         given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
         given(
-                dataDefinition.find().withMaxResults(1).restrictedWith(any(Restriction.class))
-                        .restrictedWith(any(Restriction.class)).list()).willReturn(searchResult);
+                dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class))
+                        .addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
         given(dataDefinition.getField("master")).willReturn(masterField);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(masterField.getType()).willReturn(new BooleanType());
@@ -262,8 +262,8 @@ public class OrderServiceTest {
         given(product.getFieldValue()).willReturn(13L);
         given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
         given(
-                dataDefinition.find().withMaxResults(1).restrictedWith(any(Restriction.class))
-                        .restrictedWith(any(Restriction.class)).list()).willReturn(searchResult);
+                dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class))
+                        .addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
         given(dataDefinition.getField("master")).willReturn(masterField);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(masterField.getType()).willReturn(new BooleanType());
@@ -361,8 +361,8 @@ public class OrderServiceTest {
         SearchResult searchResult = mock(SearchResult.class);
         given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
         given(
-                dataDefinition.find().withMaxResults(1).restrictedWith(any(Restriction.class))
-                        .restrictedWith(any(Restriction.class)).list()).willReturn(searchResult);
+                dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class))
+                        .addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
         given(dataDefinition.getField("master")).willReturn(masterField);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(masterField.getType()).willReturn(new BooleanType());
@@ -393,8 +393,8 @@ public class OrderServiceTest {
         SearchResult searchResult = mock(SearchResult.class);
         given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
         given(
-                dataDefinition.find().withMaxResults(1).restrictedWith(any(Restriction.class))
-                        .restrictedWith(any(Restriction.class)).list()).willReturn(searchResult);
+                dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class))
+                        .addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
         given(dataDefinition.getField("master")).willReturn(masterField);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(masterField.getType()).willReturn(new BooleanType());
@@ -453,7 +453,7 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         SearchResult searchResult = mock(SearchResult.class);
         given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
-        given(dataDefinition.find().withMaxResults(1).restrictedWith(any(Restriction.class)).list()).willReturn(searchResult);
+        given(dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(productField.getType()).willReturn(new StringType());
         given(searchResult.getTotalNumberOfEntities()).willReturn(0);
@@ -487,7 +487,7 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         SearchResult searchResult = mock(SearchResult.class);
         given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
-        given(dataDefinition.find().withMaxResults(1).restrictedWith(any(Restriction.class)).list()).willReturn(searchResult);
+        given(dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(productField.getType()).willReturn(new StringType());
         given(searchResult.getTotalNumberOfEntities()).willReturn(1);
@@ -765,7 +765,7 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         SearchResult searchResult = mock(SearchResult.class);
         given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
-        given(dataDefinition.find().withMaxResults(1).restrictedWith(any(Restriction.class)).list()).willReturn(searchResult);
+        given(dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(productField.getType()).willReturn(new StringType());
         given(searchResult.getTotalNumberOfEntities()).willReturn(0);
@@ -791,7 +791,7 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         SearchResult searchResult = mock(SearchResult.class);
         given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
-        given(dataDefinition.find().withMaxResults(1).restrictedWith(any(Restriction.class)).list()).willReturn(searchResult);
+        given(dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(productField.getType()).willReturn(new StringType());
         given(searchResult.getTotalNumberOfEntities()).willReturn(1);
@@ -1080,7 +1080,7 @@ public class OrderServiceTest {
         given(translationService.translate("genealogies.message.batchNotFound", Locale.ENGLISH)).willReturn(
                 "genealogies.message.batchNotFound.pl");
         Entity parameter = mock(Entity.class);
-        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
                 Collections.singletonList(parameter));
         given(parameter.getField("batchForDoneOrder")).willReturn("02");
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
@@ -1107,7 +1107,7 @@ public class OrderServiceTest {
         given(translationService.translate("genealogies.message.batchNotFound", Locale.ENGLISH)).willReturn(
                 "genealogies.message.batchNotFound.pl");
         Entity parameter = mock(Entity.class);
-        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
                 Collections.singletonList(parameter));
         given(parameter.getField("batchForDoneOrder")).willReturn("02");
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
@@ -1139,7 +1139,7 @@ public class OrderServiceTest {
         given(translationService.translate("qualityControls.qualityControls.not.closed", Locale.ENGLISH)).willReturn(
                 "qualityControls.qualityControls.not.closed.pl");
         Entity parameter = mock(Entity.class);
-        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
                 Collections.singletonList(parameter));
         given(parameter.getField("batchForDoneOrder")).willReturn("02");
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
@@ -1169,7 +1169,7 @@ public class OrderServiceTest {
         given(translationService.translate("qualityControls.qualityControls.not.closed", Locale.ENGLISH)).willReturn(
                 "qualityControls.qualityControls.not.closed.pl");
         Entity parameter = mock(Entity.class);
-        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
                 Collections.singletonList(parameter));
         given(parameter.getField("batchForDoneOrder")).willReturn("02");
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
@@ -1220,7 +1220,7 @@ public class OrderServiceTest {
         prepareIsQualityControlAutoCheckEnabled(true);
         prepareCheckIfAllQualityControlsAreClosed(order, true);
         Entity parameter = mock(Entity.class);
-        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
                 Collections.singletonList(parameter));
         given(parameter.getField("batchForDoneOrder")).willReturn("02");
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
@@ -1269,7 +1269,7 @@ public class OrderServiceTest {
         prepareIsQualityControlAutoCheckEnabled(true);
         prepareCheckIfAllQualityControlsAreClosed(order, true);
         Entity parameter = mock(Entity.class);
-        given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
                 Collections.singletonList(parameter));
         given(parameter.getField("batchForDoneOrder")).willReturn("02");
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
@@ -1289,7 +1289,7 @@ public class OrderServiceTest {
             given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("01forBatch");
             given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
             given(
-                    dataDefinition.find().restrictedWith(any(Restriction.class)).restrictedWith(any(Restriction.class)).list()
+                    dataDefinition.find().addRestriction(any(Restriction.class)).addRestriction(any(Restriction.class)).list()
                             .getTotalNumberOfEntities()).willReturn(0);
         } else {
             given(order.getBelongsToField("technology").getField("qualityControlType")).willReturn(null);
@@ -1302,12 +1302,12 @@ public class OrderServiceTest {
             List<Entity> entities = new ArrayList<Entity>();
             entities.add(entity);
             given(entity.getField("checkDoneOrderForQuality")).willReturn(true);
-            given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities().size())
+            given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities().size())
                     .willReturn(1);
-            given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities()).willReturn(
+            given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
                     entities);
         } else {
-            given(dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list().getEntities().size())
+            given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities().size())
                     .willReturn(0);
         }
     }
@@ -1332,7 +1332,7 @@ public class OrderServiceTest {
         given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("02forUnit");
         given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
         given(
-                dataDefinition.find().restrictedWith(any(Restriction.class)).restrictedWith(any(Restriction.class)).list()
+                dataDefinition.find().addRestriction(any(Restriction.class)).addRestriction(any(Restriction.class)).list()
                         .getTotalNumberOfEntities()).willReturn(0);
 
         // when
@@ -1358,7 +1358,7 @@ public class OrderServiceTest {
         given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("03forOrder");
         given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
         given(
-                dataDefinition.find().restrictedWith(any(Restriction.class)).restrictedWith(any(Restriction.class)).list()
+                dataDefinition.find().addRestriction(any(Restriction.class)).addRestriction(any(Restriction.class)).list()
                         .getTotalNumberOfEntities()).willReturn(0);
 
         boolean results = callCheckIfAllQualityControlsAreClosed(order);
@@ -1375,7 +1375,7 @@ public class OrderServiceTest {
         given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("04forOperation");
         given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
         given(
-                dataDefinition.find().restrictedWith(any(Restriction.class)).restrictedWith(any(Restriction.class)).list()
+                dataDefinition.find().addRestriction(any(Restriction.class)).addRestriction(any(Restriction.class)).list()
                         .getTotalNumberOfEntities()).willReturn(1);
 
         boolean results = callCheckIfAllQualityControlsAreClosed(order);

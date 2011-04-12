@@ -115,11 +115,11 @@ public class WorkPlanReportDataServiceTest {
         List<Entity> operationComponents = new ArrayList<Entity>();
 
         given(
-                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
+                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
         given(
-                dataDefinition.find().restrictedWith(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
+                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         // when
         workPlanReportDataService.addOperationsFromSubtechnologiesToList(entityTree, operationComponents);
