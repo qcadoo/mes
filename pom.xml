@@ -334,6 +334,11 @@
 					<artifactId>qcadoo-saas-view</artifactId>
 					<version>${qcadoo.version}</version>
 				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.saas</groupId>
+					<artifactId>qcadoo-saas-shop</artifactId>
+					<version>${qcadoo.version}</version>
+				</dependency>
 			</dependencies>
 		</profile>
 	</profiles>

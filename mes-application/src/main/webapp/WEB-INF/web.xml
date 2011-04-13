@@ -42,6 +42,7 @@
 			/WEB-INF/root-context.xml
 			classpath*:qcadoo-security-context.xml
 			classpath*:qcadoo-view-context.xml
+			classpath*:qcadoo-shop-context.xml
 			classpath*:root-context.xml
 			/WEB-INF/web-context.xml
 			classpath*:web-context.xml
