@@ -38,6 +38,14 @@
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
 	</appender>
+	<appender name="saas-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/saas.log" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
+		</layout>
+	</appender>
 	<appender name="localization-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/localization.log" />
 		<param name="MaxFileSize" value="100MB" />
@@ -141,6 +149,11 @@
 	<logger name="com.qcadoo.localization">
 		<level value="debug" />
 		<appender-ref ref="localization-log" />
+	</logger>
+	
+	<logger name="com.qcadoo.saas">
+		<level value="debug" />
+		<appender-ref ref="saas-log" />
 	</logger>
 	
 	<logger name="com.qcadoo.report">
