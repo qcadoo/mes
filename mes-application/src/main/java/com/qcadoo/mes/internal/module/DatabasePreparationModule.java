@@ -29,7 +29,7 @@ public class DatabasePreparationModule extends Module {
     }
 
     private boolean databaseHasToBePrepared() {
-        return dataDefinitionService.get("qcadooSecurity", "user").find().list().getTotalNumberOfEntities() == 0;
+        return dataDefinitionService.get("basic", "parameter").find().list().getTotalNumberOfEntities() == 0;
     }
 
     @Override
