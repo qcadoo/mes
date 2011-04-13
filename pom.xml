@@ -336,7 +336,7 @@
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
-					<artifactId>qcadoo-saas-shop-integration</artifactId>
+					<artifactId>qcadoo-saas-shop</artifactId>
 					<version>${qcadoo.version}</version>
 				</dependency>
 			</dependencies>
