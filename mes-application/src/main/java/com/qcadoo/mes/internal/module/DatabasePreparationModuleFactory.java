@@ -43,16 +43,12 @@ public final class DatabasePreparationModuleFactory extends ModuleFactory<Databa
     @Value("${loadTestData}")
     private boolean addTestData;
 
-    @Value("${setAsDemoEnviroment}")
-    private boolean setAsDemoEnviroment;
-
     @Override
     public DatabasePreparationModule parse(final String pluginIdentifier, final Element element) {
         DatabasePreparationModule module = new DatabasePreparationModule();
         module.setDataDefinitionService(dataDefinitionService);
         module.setTestDataLoader(testDataLoader);
         module.setAddTestData(addTestData);
-        module.setAddHardAdminPass(setAsDemoEnviroment);
         return module;
     }
 
