@@ -185,7 +185,7 @@ public final class GenealogyService {
     }
 
     public void fillBatchRequiredForTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if ((Boolean) entity.getField("batchRequired")) {
+        if (entity.getField("batchRequired") != null && (Boolean) entity.getField("batchRequired")) {
             Entity technology = entity.getBelongsToField("operationComponent").getBelongsToField("technology");
             DataDefinition technologyInDef = dataDefinitionService.get("technologies", "technology");
             Entity technologyEntity = technologyInDef.get(technology.getId());
