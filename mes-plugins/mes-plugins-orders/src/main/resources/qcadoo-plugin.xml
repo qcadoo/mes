@@ -43,6 +43,10 @@
 			<model:hasMany name="orders" plugin="orders" model="order"
 				joinField="technology" cascade="none" />
 		</model:model-field>
+		
+		<model:model-hook plugin="technologies" model="technology">
+			<model:validatesWith class="com.qcadoo.mes.orders.OrdersTechnologyExtensionService" method="checkExistingOrders"/>
+		</model:model-hook>
 
 		<view:menu-category name="orders" />
 

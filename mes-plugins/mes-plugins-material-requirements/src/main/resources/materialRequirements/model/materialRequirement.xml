@@ -21,7 +21,7 @@
 		</string>
 		<datetime name="date" />
 		<string name="worker" />
-		<boolean name="onlyComponents" />
+		<boolean name="onlyComponents" default="1"/>
 		<boolean name="generated" />
 		<string name="fileName" />
 		<hasMany name="orders" model="materialRequirementComponent"
