@@ -58,12 +58,13 @@
 				<option type="column" name="vendor" fields="vendor" width="100" />
 				<option type="column" name="version" fields="version" width="40" />
 				<option type="column" name="state" fields="state" width="60" />
+				<option type="column" name="isSystem" fields="isSystem" width="60" />
 				<option type="order" column="identifier" direction="asc" />
 				<option type="correspondingView" value="plugins/plugin" />
 				<option type="correspondingComponent" value="form" />
 				<option type="correspondingViewInModal" value="true" />
-				<option type="searchable" value="identifier,version,state" />
-				<option type="orderable" value="identifier,version,state" />
+				<option type="searchable" value="identifier,version,state,isSystem" />
+				<option type="orderable" value="identifier,version,state,isSystem" />
 				<option type="paginable" value="false" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
@@ -137,7 +138,6 @@
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.plugins.controller.PluginManagmentViewHook" method="addRestrictionToPluginsGrid" />
 	</view>
 	<view name="plugin" plugin="qcadooPlugin" model="plugin"
 		windowHeight="450">
