@@ -144,7 +144,7 @@
 
 						this.addOnChangeListener({
 							onSetValue: function(value) {
-								if (! value.content || ! value.content.entityId) {
+								if (! value || ! value.content) {
 									return;
 								}
 							

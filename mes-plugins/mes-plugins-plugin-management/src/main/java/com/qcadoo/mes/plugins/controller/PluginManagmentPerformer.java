@@ -35,6 +35,9 @@ public class PluginManagmentPerformer {
                 url = createSuccessPageUrl("install.successWithMissingDependencies", result.getPluginDependencyResult()
                         .getUnsatisfiedDependencies());
                 break;
+            case DEPENDENCIES_CYCLES_EXISTS:
+                url = createErrorPageUrl("install.cyclingDependency");
+                break;
             case CANNOT_UPLOAD_PLUGIN:
                 url = createErrorPageUrl("install.cannotUploadPlugin");
                 break;
