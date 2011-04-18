@@ -15,7 +15,7 @@
 <views plugin="menu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<view name="menuCategories" plugin="qcadooView" model="category"
-		menuAccessible="true">
+		menuAccessible="true" defaultAuthorizationRole="ROLE_ADMIN">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="gridNewAndRemoveAction" />
@@ -35,7 +35,7 @@
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="menuCategory" plugin="qcadooView" model="category">
+	<view name="menuCategory" plugin="qcadooView" model="category" defaultAuthorizationRole="ROLE_ADMIN">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation" />
@@ -75,7 +75,7 @@
 			</component>
 		</component>
 	</view>
-	<view name="menuViewDefinitionItem" plugin="qcadooView" model="item">
+	<view name="menuViewDefinitionItem" plugin="qcadooView" model="item" defaultAuthorizationRole="ROLE_ADMIN">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation" />

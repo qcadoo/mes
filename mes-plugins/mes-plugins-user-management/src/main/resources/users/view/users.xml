@@ -15,7 +15,7 @@
 <views plugin="users" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<view name="groups" plugin="qcadooSecurity" model="group"
-		menuAccessible="true">
+		menuAccessible="true" defaultAuthorizationRole="ROLE_ADMIN">
 		<component type="window" name="window">
 			<ribbon>
 			</ribbon>
@@ -36,7 +36,7 @@
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="group" plugin="qcadooSecurity" model="group">
+	<view name="group" plugin="qcadooSecurity" model="group" defaultAuthorizationRole="ROLE_ADMIN">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation" />
@@ -59,7 +59,7 @@
 		</component>
 	</view>
 	<view name="users" plugin="qcadooSecurity" model="user"
-		menuAccessible="true">
+		menuAccessible="true" defaultAuthorizationRole="ROLE_ADMIN">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="gridNewAndRemoveAction" />
@@ -84,7 +84,7 @@
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="user" plugin="qcadooSecurity" model="user">
+	<view name="user" plugin="qcadooSecurity" model="user" defaultAuthorizationRole="ROLE_ADMIN">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation" />
@@ -124,7 +124,7 @@
 		<preRenderHook bean="com.qcadoo.mes.users.UserService"
 			method="hidePasswordOnUpdateForm" />
 	</view>
-	<view name="userChangePassword" plugin="qcadooSecurity" model="user">
+	<view name="userChangePassword" plugin="qcadooSecurity" model="user" defaultAuthorizationRole="ROLE_ADMIN">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation" />

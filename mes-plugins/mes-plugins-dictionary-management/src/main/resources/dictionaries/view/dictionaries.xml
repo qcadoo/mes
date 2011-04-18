@@ -15,7 +15,7 @@
 <views plugin="dictionaries" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<view name="dictionaries" plugin="qcadooModel" model="dictionary"
-		menuAccessible="true">
+		menuAccessible="true" defaultAuthorizationRole="ROLE_SUPERVISOR">
 		<component type="window" name="window">
 			<ribbon>
 			</ribbon>
@@ -36,7 +36,7 @@
 		<preRenderHook bean="com.qcadoo.mes.dictionaries.DictionaryService"
 			method="translateLabel" />
 	</view>
-	<view name="dictionary" plugin="qcadooModel" model="dictionary">
+	<view name="dictionary" plugin="qcadooModel" model="dictionary" defaultAuthorizationRole="ROLE_SUPERVISOR">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation" />
@@ -65,7 +65,7 @@
 			</component>
 		</component>
 	</view>
-	<view name="dictionaryItem" plugin="qcadooModel" model="dictionaryItem">
+	<view name="dictionaryItem" plugin="qcadooModel" model="dictionaryItem" defaultAuthorizationRole="ROLE_SUPERVISOR">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation" />
