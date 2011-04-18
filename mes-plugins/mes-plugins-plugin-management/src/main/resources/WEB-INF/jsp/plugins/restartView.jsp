@@ -8,10 +8,15 @@ String ctx = request.getContextPath();
 
 <script type="text/JavaScript">
 
+	var errorTimePassed = false;
+
 	jQuery(document).ready(function(){
 
 		window.mainController.setWindowHeader("${headerLabel}");
 
+		setTimeout('errorTimePassed = true;', 60000);
+		checkStatusTimer = setTimeout('checkStatus();', 5000);
+		
 		$.ajax({
 			url: 'performRestart.html',
 			type: 'POST',
@@ -22,6 +27,13 @@ String ctx = request.getContextPath();
 	});
 
 	function checkStatus() {
+		
+		if (errorTimePassed) {
+			$("#restartMessage").hide();
+			$("#errorMessage").show();
+			return;
+		}
+		
 		$.ajax({
 			url: 'restartPage.html',
 			type: 'GET',
@@ -39,12 +51,16 @@ String ctx = request.getContextPath();
 				}
 			}
 		});
+		
 	}
 
 </script>
 
 <div style="margin: 10px;">
-	<span style="padding-top: 10px; padding-bottom: 10px; font-size: 18px; height: 35px; line-height: 35px; background: transparent url('/qcadooView/public/img/core/loading_indicator.gif') no-repeat 0 0; padding-left: 35px;">
+	<span id="restartMessage" style="padding-top: 10px; padding-bottom: 10px; font-size: 18px; height: 35px; line-height: 35px; background: transparent url('/qcadooView/public/img/core/loading_indicator.gif') no-repeat 0 0; padding-left: 35px;">
 		${restartMessage}
+	</span>
+	<span id="errorMessage" style="display: none; padding-top: 10px; padding-bottom: 10px; font-size: 18px; height: 35px; line-height: 35px; color: red;">
+		${restartErrorMessage}
 	</span>
 </div>

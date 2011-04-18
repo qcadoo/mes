@@ -91,6 +91,7 @@ public class PluginManagmentUrlController {
 
         mav.addObject("headerLabel", translationService.translate("plugins.restartView.header", locale));
         mav.addObject("restartMessage", translationService.translate("plugins.restartView.message", locale));
+        mav.addObject("restartErrorMessage", translationService.translate("plugins.restartView.errorMessage", locale));
         mav.addObject("redirectPage", arguments.get("redirect"));
 
         return mav;
