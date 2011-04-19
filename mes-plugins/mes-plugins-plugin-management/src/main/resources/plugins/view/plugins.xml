@@ -3,7 +3,7 @@
 <views plugin="plugins" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<view name="plugins" plugin="qcadooPlugin" model="plugin"
-		menuAccessible="true" defaultAuthorizationRole="ROLE_ADMIN">
+		menuAccessible="true" defaultAuthorizationRole="ROLE_SYSTEM_ADMIN">
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group name="plugins">
@@ -140,7 +140,7 @@
 		</component>
 	</view>
 	<view name="plugin" plugin="qcadooPlugin" model="plugin"
-		windowHeight="450" defaultAuthorizationRole="ROLE_ADMIN">
+		windowHeight="450" defaultAuthorizationRole="ROLE_SYSTEM_ADMIN">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation" />
@@ -185,7 +185,7 @@
 		</component>
 	</view>
 
-	<view name="pluginDownload" windowWidth="520" windowHeight="260" defaultAuthorizationRole="ROLE_ADMIN">
+	<view name="pluginDownload" windowWidth="520" windowHeight="260" defaultAuthorizationRole="ROLE_SYSTEM_ADMIN">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation" />
@@ -202,7 +202,7 @@
 		</component>
 	</view>
 
-	<view name="pluginInfo" defaultAuthorizationRole="ROLE_ADMIN">
+	<view name="pluginInfo" defaultAuthorizationRole="ROLE_SYSTEM_ADMIN">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation" />
@@ -219,7 +219,7 @@
 		</component>
 	</view>
 
-	<view name="restartView" windowWidth="500" windowHeight="140" defaultAuthorizationRole="ROLE_ADMIN">
+	<view name="restartView" windowWidth="500" windowHeight="140" defaultAuthorizationRole="ROLE_SYSTEM_ADMIN">
 		<component type="window" name="window" ribbon="false">
 			<component type="gridLayout" name="gridLayout" columns="1"
 				rows="1" fixedRowHeight="false">
