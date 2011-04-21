@@ -56,8 +56,9 @@ import org.xml.sax.SAXException;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.Restrictions;
-import com.qcadoo.plugin.api.PluginAccessor;
-import com.qcadoo.plugin.api.PluginState;
+import com.qcadoo.plugin.api.PluginUtil;
+import com.qcadoo.security.api.SecurityRole;
+import com.qcadoo.security.api.SecurityRolesService;
 
 @Component
 public final class TestDataLoader {
@@ -97,7 +98,7 @@ public final class TestDataLoader {
     private ApplicationContext applicationContext;
 
     @Autowired
-    private PluginAccessor pluginAccessor;
+    private SecurityRolesService securityRolesService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -135,11 +136,7 @@ public final class TestDataLoader {
     }
 
     private boolean isEnabled(final String pluginIdentifier) {
-        if (pluginAccessor.getPlugin(pluginIdentifier) == null) {
-            return false;
-        }
-        return (PluginState.ENABLED.equals(pluginAccessor.getPlugin(pluginIdentifier).getState()) || PluginState.ENABLING
-                .equals(pluginAccessor.getPlugin(pluginIdentifier).getState()));
+        return PluginUtil.isEnabled(pluginIdentifier);
     }
 
     private File getXmlFile(final String type) throws IOException {
@@ -368,15 +365,16 @@ public final class TestDataLoader {
         if (!values.get("lastname").isEmpty()) {
             user.setField("lastName", values.get("lastname"));
         }
-        user.setField("userGroup", getGroupByRole(values.get("role")));
+        SecurityRole role = securityRolesService.getRoleByIdentifier(values.get("role"));
+        user.setField("role", role.getName());
         user.setField("password", "123");
         user.setField("passwordConfirmation", "123");
         user.setField("enabled", true);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test user {login=" + user.getField("userName") + ", email=" + user.getField("email") + ", firstName="
-                    + user.getField("firstName") + ", lastName=" + user.getField("lastName") + ", role="
-                    + ((Entity) user.getField("userGroup")).getField("name") + "}");
+                    + user.getField("firstName") + ", lastName=" + user.getField("lastName") + ", role=" + user.getField("role")
+                    + "}");
         }
 
         user = dataDefinitionService.get("qcadooSecurity", "user").save(user);
@@ -868,11 +866,6 @@ public final class TestDataLoader {
 
     private Entity getProductByNumber(final String number) {
         return dataDefinitionService.get("basic", "product").find().addRestriction(Restrictions.eq("number", number))
-                .setMaxResults(1).list().getEntities().get(0);
-    }
-
-    private Entity getGroupByRole(final String role) {
-        return dataDefinitionService.get("qcadooSecurity", "group").find().addRestriction(Restrictions.eq("role", role))
                 .setMaxResults(1).list().getEntities().get(0);
     }
 

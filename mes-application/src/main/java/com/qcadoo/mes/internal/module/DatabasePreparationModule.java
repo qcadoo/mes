@@ -34,12 +34,6 @@ public class DatabasePreparationModule extends Module {
 
     @Override
     @Transactional
-    public void multiTenantEnableOnStartup() {
-        multiTenantEnable();
-    }
-
-    @Override
-    @Transactional
     public void multiTenantEnable() {
         if (databaseHasToBePrepared()) {
             LOG.info("Database has to be prepared ...");

@@ -25,7 +25,7 @@
 	<modules>
 		<localization:translation path="locales" />
 
-		<view:menu-item name="dictionaries" category="administration"
+		<view:menu-item name="dictionaries" category="basic"
 			view="dictionaries" />
 
 		<view:view resource="view/dictionaries.xml" />

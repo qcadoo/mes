@@ -80,6 +80,7 @@ public final class MainPageController {
 
     @RequestMapping(value = "main", method = RequestMethod.GET)
     public ModelAndView getMainView(@RequestParam final Map<String, String> arguments, final Locale locale) {
+
         ModelAndView mav = new ModelAndView();
         mav.setViewName("core/main");
         mav.addObject("viewsList", viewDefinitionService.list());

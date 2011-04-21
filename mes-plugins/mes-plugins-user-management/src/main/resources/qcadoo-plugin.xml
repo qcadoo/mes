@@ -27,8 +27,6 @@
 
 		<view:menu-item name="users" category="administration"
 			view="users" />
-		<view:menu-item name="groups" category="administration"
-			view="groups" />
 		<view:menu-item-url name="profile" category="home"
 			url="/userProfile.html" />
 
