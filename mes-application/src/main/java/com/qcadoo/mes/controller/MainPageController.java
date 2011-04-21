@@ -24,12 +24,16 @@
 
 package com.qcadoo.mes.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -89,6 +93,22 @@ public final class MainPageController {
         mav.addObject("userLogin", securityService.getCurrentUserName());
         mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
         return mav;
+    }
+
+    @RequestMapping(value = "menu", method = RequestMethod.GET)
+    public ResponseEntity<String> getMenu(final Locale locale) {
+
+        String responseBody = menuService.getMenu(locale).getAsJson();
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("Content-Type", "text/plain; charset=utf-8");
+        try {
+            responseHeaders.add("Content-Length", "" + responseBody.getBytes("utf-8").length);
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+
+        return new ResponseEntity<String>(responseBody, responseHeaders, HttpStatus.OK);
     }
 
     @RequestMapping(value = "homePage", method = RequestMethod.GET)

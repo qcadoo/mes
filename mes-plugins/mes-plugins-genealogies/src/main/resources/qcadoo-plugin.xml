@@ -71,6 +71,7 @@
 				default="01none" />
 		</model:model-field>
 
+		<view:menu-category name="reports" />
 		<view:menu-item-url name="genealogyAttributes"
 			category="basic" url="genealogyAttribute.html" />
 		<view:menu-item name="genealogyForProduct" category="reports"

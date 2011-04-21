@@ -59,6 +59,7 @@
 		</model:model-hook>
 
 		<view:menu-category name="quality" />
+		<view:menu-category name="reports" />
 
 		<view:menu-item name="qualityControlReport" category="reports"
 			view="qualityControlReport" />

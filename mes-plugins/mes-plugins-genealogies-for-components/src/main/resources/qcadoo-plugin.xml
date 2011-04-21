@@ -56,6 +56,7 @@
 				method="fillBatchRequiredForTechnology" />
 		</model:model-hook>
 		
+		<view:menu-category name="reports" />
 		<view:menu-item name="genealogyForComponent" category="reports"
 			view="genealogyForComponent" />
 			

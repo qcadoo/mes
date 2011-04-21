@@ -16,27 +16,52 @@
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<view name="menuCategories" plugin="qcadooView" model="category"
 		menuAccessible="true" defaultAuthorizationRole="ROLE_ADMIN">
-		<component type="window" name="window">
+		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="gridNewAndRemoveAction" />
 			</ribbon>
 			<component type="grid" name="menuCategories" reference="grid">
-				<option type="column" name="succession" fields="succession" />
 				<option type="column" name="name" fields="name" link="true"
 					width="600" />
+				<option type="column" name="pluginIdentifier" fields="pluginIdentifier" link="false"
+					width="600" />
 				<option type="order" column="succession" direction="asc" />
-				<option type="orderable" value="name" />
-				<option type="searchable" value="name" />
+				<option type="searchable" value="name,pluginIdentifier" />
 				<option type="correspondingView" value="menu/menuCategory" />
 				<option type="correspondingComponent" value="form" />
 				<option type="fullscreen" value="true" />
+				<script><![CDATA[
+					var deleteButton = #{window}.getRibbonItem("actions.delete");
+					this.addOnChangeListener({
+						onChange: function(selectedEntitiesArray) {
+							if (selectedEntitiesArray && selectedEntitiesArray.length == 1) {
+								if (selectedEntitiesArray[0].fields.pluginIdentifier && selectedEntitiesArray[0].fields.pluginIdentifier != "") {
+									deleteButton.disable();
+								} else {
+									deleteButton.enable();
+								}
+							} else {
+								deleteButton.disable();
+							}
+						}
+					});
+				]]></script>
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
+			<script><![CDATA[
+				this.addOnChangeListener({
+					onSetValue: function(selectedEntitiesArray) {
+						this.updateMenu();
+					}
+				});
+			]]></script>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.menu.MenuAdministrationService" method="addRestrictionToCategoriesGrid" />
+		<preRenderHook bean="com.qcadoo.mes.menu.MenuAdministrationService" method="translateCategoriesGrid" />
 	</view>
 	<view name="menuCategory" plugin="qcadooView" model="category" defaultAuthorizationRole="ROLE_ADMIN">
-		<component type="window" name="window">
+		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="navigation" />
 				<group template="formSaveAndRemoveActions" />
@@ -46,7 +71,7 @@
 					rows="2">
 					<layoutElement column="1" row="1">
 						<component type="input" name="name" field="name"
-							hasDescription="false" />
+							hasDescription="false" reference="categoryName"/>
 					</layoutElement>
 				</component>
 				<option type="header" value="true" />
@@ -56,11 +81,11 @@
 				rows="5">
 				<layoutElement column="1" row="1" height="5" width="2">
 					<component type="grid" name="menuViewDefinitionItems"
-						source="#{form}.items">
-						<option type="column" name="succession" fields="succession" />
+						source="#{form}.items" reference="itemsGrid">
 						<option type="column" name="name" fields="name" link="true"
 							width="300" />
 						<option type="column" name="active" fields="active" link="false" />
+						<option type="column" name="pluginIdentifier" fields="pluginIdentifier" link="false" width="300" />
 						<option type="order" column="succession" direction="asc" />
 						<option type="correspondingView" value="menu/menuViewDefinitionItem" />
 						<option type="correspondingComponent" value="form" />
@@ -70,13 +95,36 @@
 						<option type="width" value="400" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
+						<script><![CDATA[
+							this.addOnChangeListener({
+								onChange: function(selectedEntitiesArray) {
+									if (selectedEntitiesArray && selectedEntitiesArray.length == 1) {
+										if (selectedEntitiesArray[0].fields.pluginIdentifier && selectedEntitiesArray[0].fields.pluginIdentifier != "") {
+											this.setDeleteEnabled(false);
+										} else {
+											this.setDeleteEnabled(true);
+										}
+									} else {
+										this.setDeleteEnabled(false);
+									}
+								}
+							});
+						]]></script>
 					</component>
 				</layoutElement>
 			</component>
+			<script><![CDATA[
+				this.addOnChangeListener({
+					onSetValue: function(selectedEntitiesArray) {
+						this.updateMenu();
+					}
+				});
+			]]></script>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.menu.MenuAdministrationService" method="translateCategoryForm" />
 	</view>
 	<view name="menuViewDefinitionItem" plugin="qcadooView" model="item" defaultAuthorizationRole="ROLE_ADMIN">
-		<component type="window" name="window">
+		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="navigation" />
 				<group template="formSaveAndRemoveActions" />
@@ -87,10 +135,10 @@
 					rows="3">
 					<layoutElement column="1" row="1">
 						<component type="input" name="name" field="name"
-							hasDescription="false" />
+							hasDescription="false" reference="itemName"/>
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="lookup" name="viewDefinition" field="view">
+						<component type="lookup" name="viewDefinition" field="view" reference="itemView">
 							<option type="column" name="pluginIdentifier" fields="pluginIdentifier" />
 							<option type="searchable" value="pluginIdentifier" />
 							<option type="orderable" value="pluginIdentifier" />
@@ -99,7 +147,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="checkbox" name="active" field="active" />
+						<component type="checkbox" name="active" field="active" reference="itemActive"/>
 					</layoutElement>
 				</component>
 				<option type="header" value="true" />
@@ -107,6 +155,7 @@
 					value="#name + ' - ' + #category['name'] + '[' + #succession + ']'" />
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.menu.MenuAdministrationService" method="translateItemForm" />
 	</view>
 
 </views>

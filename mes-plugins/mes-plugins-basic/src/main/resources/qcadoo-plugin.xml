@@ -44,10 +44,10 @@
 		<model:dictionary name="posts" />
 		<model:dictionary name="units" />
 
+		<!-- IMPORTANT - HOME AND ADMINISTRATION MUST BE ADDED FIRST -->
 		<view:menu-category name="home" />
+		<view:menu-category name="administration" /> 
 		<view:menu-category name="basic" />
-		<view:menu-category name="administration" />
-		<view:menu-category name="reports" />
 
 		<view:menu-item-url name="home" category="home"
 			url="/homePage.html" />
