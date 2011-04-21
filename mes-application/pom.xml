@@ -27,11 +27,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-plugin-management</artifactId>
-			<version>0.4.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-menu-management</artifactId>
 			<version>0.4.0-SNAPSHOT</version>
 		</dependency>
@@ -85,13 +80,6 @@
 			<artifactId>mes-plugins-technologies</artifactId>
 			<version>0.4.0-SNAPSHOT</version>
 		</dependency>
-		
-		<!-- TODO mina delete -->
-		<!--<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugin-integration-subiekt</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>-->
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
@@ -251,6 +239,38 @@
 	</build>
 
 	<profiles>
+		<profile>
+			<id>standalone</id>
+			<activation>
+				<property>
+					<name>spring.profiles.active</name>
+					<value>!saas</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-plugins-plugin-management</artifactId>
+					<version>0.4.0-SNAPSHOT</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>saas</id>
+			<activation>
+				<property>
+					<name>spring.profiles.active</name>
+					<value>saas</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.qcadoo.saas</groupId>
+					<artifactId>qcadoo-saas-tenant-plugin-management</artifactId>
+					<version>${qcadoo.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
 		<profile>
 			<id>tomcat</id>
 			<build>
