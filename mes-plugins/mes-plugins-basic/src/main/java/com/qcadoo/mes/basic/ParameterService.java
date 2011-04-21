@@ -34,12 +34,12 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchResult;
 
 @Service
-@Transactional
 public class ParameterService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Transactional
     public Long getParameterId() {
 
         DataDefinition dataDefinition = dataDefinitionService.get("basic", "parameter");
