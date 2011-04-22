@@ -10,7 +10,7 @@ import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.components.grid.GridComponentState;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class DictionaryService {
@@ -19,7 +19,7 @@ public class DictionaryService {
     com.qcadoo.model.api.DictionaryService dictionaryService;
 
     public void translateLabel(final ViewDefinitionState state) {
-        GridComponentState grid = (GridComponentState) state.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) state.getComponentByReference("grid");
 
         List<Entity> entities = grid.getEntities();
 
@@ -29,7 +29,7 @@ public class DictionaryService {
     }
 
     public void addRestrictionToDictionariesGrid(final ViewDefinitionState viewDefinitionState) {
-        GridComponentState grid = (GridComponentState) viewDefinitionState.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
         grid.setCustomRestriction(new CustomRestriction() {
 
             @Override

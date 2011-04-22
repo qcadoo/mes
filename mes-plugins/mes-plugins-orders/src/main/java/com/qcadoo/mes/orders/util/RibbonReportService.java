@@ -33,10 +33,10 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.components.form.FormComponentState;
-import com.qcadoo.view.components.grid.GridComponentState;
-import com.qcadoo.view.components.window.WindowComponentState;
 
 @Service
 public class RibbonReportService {
@@ -47,8 +47,8 @@ public class RibbonReportService {
     @SuppressWarnings("unchecked")
     public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
             final String entityName) {
-        WindowComponentState window = (WindowComponentState) state.getComponentByReference("window");
-        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        WindowComponent window = (WindowComponent) state.getComponentByReference("window");
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
         RibbonActionItem generateButton = window.getRibbon().getGroupByName("generate").getItemByName("generate");
         RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
 
@@ -97,8 +97,8 @@ public class RibbonReportService {
     @SuppressWarnings("unchecked")
     public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
             final String entityName) {
-        WindowComponentState window = (WindowComponentState) state.getComponentByReference("window");
-        GridComponentState grid = (GridComponentState) state.getComponentByReference("grid");
+        WindowComponent window = (WindowComponent) state.getComponentByReference("window");
+        GridComponent grid = (GridComponent) state.getComponentByReference("grid");
         RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
 
         if (grid.getSelectedEntitiesId() == null || grid.getSelectedEntitiesId().size() == 0) {

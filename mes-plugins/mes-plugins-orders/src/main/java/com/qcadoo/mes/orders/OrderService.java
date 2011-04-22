@@ -43,11 +43,10 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import com.qcadoo.view.components.FieldComponentState;
-import com.qcadoo.view.components.form.FormComponentState;
-import com.qcadoo.view.components.grid.GridComponentState;
-import com.qcadoo.view.components.lookup.LookupComponentState;
 
 @Service
 public final class OrderService {
@@ -88,7 +87,7 @@ public final class OrderService {
             }
 
         } else {
-            if (state instanceof FormComponentState) {
+            if (state instanceof FormComponent) {
                 state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
                         MessageType.FAILURE);
             } else {
@@ -99,11 +98,11 @@ public final class OrderService {
     }
 
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (!(state instanceof FieldComponentState)) {
+        if (!(state instanceof FieldComponent)) {
             return;
         }
-        FieldComponentState dateFrom = (FieldComponentState) state;
-        FieldComponentState dateTo = (FieldComponentState) viewDefinitionState.getComponentByReference("dateTo");
+        FieldComponent dateFrom = (FieldComponent) state;
+        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
 
         if (!StringUtils.hasText((String) dateTo.getFieldValue()) && StringUtils.hasText((String) dateFrom.getFieldValue())) {
             dateTo.setFieldValue(dateFrom.getFieldValue());
@@ -112,35 +111,35 @@ public final class OrderService {
 
     public void setDefaultNameUsingProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (!(state instanceof LookupComponentState)) {
+        if (!(state instanceof FieldComponent)) {
             return;
         }
 
-        LookupComponentState product = (LookupComponentState) state;
-        FieldComponentState name = (FieldComponentState) viewDefinitionState.getComponentByReference("name");
+        FieldComponent product = (FieldComponent) state;
+        FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference("name");
 
         if (!StringUtils.hasText((String) name.getFieldValue())) {
-            Entity entity = dataDefinitionService.get("basic", "product").get(product.getFieldValue());
+            Entity entity = dataDefinitionService.get("basic", "product").get((Long) product.getFieldValue());
             name.setFieldValue(translationService.translate("orders.order.name.default", state.getLocale(),
                     entity.getStringField("number")));
         }
     }
 
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (!(state instanceof LookupComponentState)) {
+        if (!(state instanceof FieldComponent)) {
             return;
         }
 
-        LookupComponentState product = (LookupComponentState) state;
-        LookupComponentState technology = (LookupComponentState) viewDefinitionState.getComponentByReference("technology");
-        FieldComponentState defaultTechnology = (FieldComponentState) viewDefinitionState
+        FieldComponent product = (FieldComponent) state;
+        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
+        FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState
                 .getComponentByReference("defaultTechnology");
 
         defaultTechnology.setFieldValue("");
         technology.setFieldValue(null);
 
         if (product.getFieldValue() != null) {
-            Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
+            Entity defaultTechnologyEntity = getDefaultTechnology((Long) product.getFieldValue());
 
             if (defaultTechnologyEntity != null) {
                 technology.setFieldValue(defaultTechnologyEntity.getId());
@@ -149,8 +148,8 @@ public final class OrderService {
     }
 
     public void setAndDisableState(final ViewDefinitionState state) {
-        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
-        FieldComponentState orderState = (FieldComponentState) state.getComponentByReference("state");
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
+        FieldComponent orderState = (FieldComponent) state.getComponentByReference("state");
 
         orderState.setEnabled(false);
 
@@ -168,12 +167,12 @@ public final class OrderService {
             DataDefinition orderDataDefinition = dataDefinitionService.get("orders", "order");
             Entity order = orderDataDefinition.get((Long) state.getFieldValue());
 
-            if (state instanceof FormComponentState) {
-                ((FormComponentState) state).performEvent(viewDefinitionState, "save", new String[0]);
+            if (state instanceof FormComponent) {
+                state.performEvent(viewDefinitionState, "save", new String[0]);
 
                 if (!state.isHasError()) {
 
-                    FieldComponentState orderState = (FieldComponentState) viewDefinitionState.getComponentByReference("state");
+                    FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
 
                     if (Boolean.parseBoolean(args[0])) {
                         orderState.setFieldValue("02inProgress");
@@ -195,9 +194,9 @@ public final class OrderService {
                         orderState.setFieldValue("03done");
                     }
 
-                    ((FormComponentState) state).performEvent(viewDefinitionState, "save", new String[0]);
+                    state.performEvent(viewDefinitionState, "save", new String[0]);
                 }
-            } else if (state instanceof GridComponentState) {
+            } else if (state instanceof GridComponent) {
                 if (Boolean.parseBoolean(args[0])) {
                     order.setField("state", "02inProgress");
                 } else {
@@ -219,10 +218,10 @@ public final class OrderService {
 
                 orderDataDefinition.save(order);
 
-                ((GridComponentState) state).performEvent(viewDefinitionState, "refresh", new String[0]);
+                state.performEvent(viewDefinitionState, "refresh", new String[0]);
             }
         } else {
-            if (state instanceof FormComponentState) {
+            if (state instanceof FormComponent) {
                 state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
                         MessageType.FAILURE);
             } else {
@@ -277,11 +276,11 @@ public final class OrderService {
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState state) {
-        LookupComponentState product = (LookupComponentState) state.getComponentByReference("product");
-        FieldComponentState defaultTechnology = (FieldComponentState) state.getComponentByReference("defaultTechnology");
+        FieldComponent product = (FieldComponent) state.getComponentByReference("product");
+        FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference("defaultTechnology");
 
         if (product.getFieldValue() != null) {
-            Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
+            Entity defaultTechnologyEntity = getDefaultTechnology((Long) product.getFieldValue());
 
             if (defaultTechnologyEntity != null) {
                 String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
@@ -292,14 +291,14 @@ public final class OrderService {
     }
 
     public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState state) {
-        LookupComponentState product = (LookupComponentState) state.getComponentByReference("product");
-        LookupComponentState technology = (LookupComponentState) state.getComponentByReference("technology");
-        FieldComponentState defaultTechnology = (FieldComponentState) state.getComponentByReference("defaultTechnology");
-        FieldComponentState plannedQuantity = (FieldComponentState) state.getComponentByReference("plannedQuantity");
+        FieldComponent product = (FieldComponent) state.getComponentByReference("product");
+        FieldComponent technology = (FieldComponent) state.getComponentByReference("technology");
+        FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference("defaultTechnology");
+        FieldComponent plannedQuantity = (FieldComponent) state.getComponentByReference("plannedQuantity");
 
         defaultTechnology.setEnabled(false);
 
-        if (product.getFieldValue() == null || !hasAnyTechnologies(product.getFieldValue())) {
+        if (product.getFieldValue() == null || !hasAnyTechnologies((Long) product.getFieldValue())) {
             technology.setEnabled(false);
             technology.setRequired(false);
             plannedQuantity.setRequired(false);
@@ -310,8 +309,8 @@ public final class OrderService {
     }
 
     public void disableFormForDoneOrder(final ViewDefinitionState state) {
-        FormComponentState order = (FormComponentState) state.getComponentByReference("form");
-        LookupComponentState technology = (LookupComponentState) state.getComponentByReference("technology");
+        FormComponent order = (FormComponent) state.getComponentByReference("form");
+        FieldComponent technology = (FieldComponent) state.getComponentByReference("technology");
 
         boolean disabled = false;
 

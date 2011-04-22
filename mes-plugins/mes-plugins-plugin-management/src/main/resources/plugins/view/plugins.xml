@@ -137,6 +137,15 @@
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onSetValue: function(selectedEntitiesArray) {
+							this.updateMenu();
+						}
+					});
+				]]>
+			</script>
 		</component>
 	</view>
 	<view name="plugin" plugin="qcadooPlugin" model="plugin"

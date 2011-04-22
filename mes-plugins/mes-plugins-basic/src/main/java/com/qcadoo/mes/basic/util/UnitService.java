@@ -31,8 +31,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.components.FieldComponentState;
-import com.qcadoo.view.components.lookup.LookupComponentState;
+import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class UnitService {
@@ -45,11 +44,11 @@ public class UnitService {
     }
 
     public void fillProductUnitPreRender(final ViewDefinitionState state) {
-        LookupComponentState productState = (LookupComponentState) state.getComponentByReference("product");
-        FieldComponentState unitState = (FieldComponentState) state.getComponentByReference("unit");
+        FieldComponent productState = (FieldComponent) state.getComponentByReference("product");
+        FieldComponent unitState = (FieldComponent) state.getComponentByReference("unit");
         unitState.requestComponentUpdateState();
         if (productState.getFieldValue() != null) {
-            Entity product = dataDefinitionService.get("basic", "product").get(productState.getFieldValue());
+            Entity product = dataDefinitionService.get("basic", "product").get((Long) productState.getFieldValue());
             unitState.setFieldValue(product.getStringField("unit"));
         } else {
             unitState.setFieldValue("");

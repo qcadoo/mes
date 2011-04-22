@@ -343,11 +343,6 @@
 					<artifactId>qcadoo-saas-shop</artifactId>
 					<version>${qcadoo.version}</version>
 				</dependency>
-				<dependency>
-					<groupId>com.qcadoo.saas</groupId>
-					<artifactId>qcadoo-saas-tenant-plugin-management</artifactId>
-					<version>${qcadoo.version}</version>
-				</dependency>
 			</dependencies>
 		</profile>
 	</profiles>

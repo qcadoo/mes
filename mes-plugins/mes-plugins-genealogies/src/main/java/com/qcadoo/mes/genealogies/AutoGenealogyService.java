@@ -47,8 +47,8 @@ import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.components.form.FormComponentState;
 
 @Service
 public class AutoGenealogyService {
@@ -94,7 +94,7 @@ public class AutoGenealogyService {
                 }
             }
         } else {
-            if (state instanceof FormComponentState) {
+            if (state instanceof FormComponent) {
                 state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
                         MessageType.FAILURE);
             } else {
@@ -135,7 +135,7 @@ public class AutoGenealogyService {
                 createGenealogy(state, order, Boolean.parseBoolean(args[0]));
             }
         } else {
-            if (state instanceof FormComponentState) {
+            if (state instanceof FormComponent) {
                 state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
                         MessageType.FAILURE);
             } else {

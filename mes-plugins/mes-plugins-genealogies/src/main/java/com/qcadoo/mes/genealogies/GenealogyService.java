@@ -37,9 +37,8 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.components.FieldComponentState;
-import com.qcadoo.view.components.awesomeDynamicList.AwesomeDynamicListState;
-import com.qcadoo.view.components.form.FormComponentState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public final class GenealogyService {
@@ -69,14 +68,14 @@ public final class GenealogyService {
     }
 
     public void hideComponents(final ViewDefinitionState state) {
-        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
         ComponentState featuresLayout = state.getComponentByReference("featuresLayout");
         ComponentState shiftList = state.getComponentByReference("shiftBorderLayout");
-        FieldComponentState shiftFeaturesList = (FieldComponentState) state.getComponentByReference("shiftFeaturesList");
+        FieldComponent shiftFeaturesList = (FieldComponent) state.getComponentByReference("shiftFeaturesList");
         ComponentState postList = state.getComponentByReference("postBorderLayout");
-        FieldComponentState postFeaturesList = (FieldComponentState) state.getComponentByReference("postFeaturesList");
+        FieldComponent postFeaturesList = (FieldComponent) state.getComponentByReference("postFeaturesList");
         ComponentState otherList = state.getComponentByReference("otherBorderLayout");
-        FieldComponentState otherFeaturesList = (FieldComponentState) state.getComponentByReference("otherFeaturesList");
+        FieldComponent otherFeaturesList = (FieldComponent) state.getComponentByReference("otherFeaturesList");
 
         Entity order = dataDefinitionService.get("orders", "order").get(
                 Long.valueOf(form.getEntity().getField("order").toString()));
@@ -114,9 +113,9 @@ public final class GenealogyService {
     }
 
     public void fillProductInComponents(final ViewDefinitionState state) {
-        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
         ComponentState productGridLayout = state.getComponentByReference("productGridLayout");
-        AwesomeDynamicListState productInComponentsList = (AwesomeDynamicListState) state
+        FieldComponent productInComponentsList = (FieldComponent) state
                 .getComponentByReference("productInComponentsList");
 
         if (form.isValid()) {

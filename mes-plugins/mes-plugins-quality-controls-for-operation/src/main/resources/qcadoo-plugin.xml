@@ -2,7 +2,7 @@
 <plugin plugin="qualityControlsForOperation" version="0.4.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
@@ -11,7 +11,9 @@
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd">
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>MES - Quality Controls For Operation</name>
@@ -43,7 +45,7 @@
 				method="setQualityControlTypeForTechnology" />
 		</model:model-hook>
 		
-		<view:menu-item name="forOperation" category="quality"
+		<menu:menu-item name="forOperation" category="quality"
 			view="qualityControlsForOperation" />
 			
 		<view:view resource="view/qualityControlsForOperation.xml" />

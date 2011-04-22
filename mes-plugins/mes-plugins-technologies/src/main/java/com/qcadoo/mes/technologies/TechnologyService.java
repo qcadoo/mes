@@ -48,12 +48,11 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import com.qcadoo.view.components.FieldComponentState;
-import com.qcadoo.view.components.form.FormComponentState;
-import com.qcadoo.view.components.grid.GridComponentState;
-import com.qcadoo.view.components.select.SelectComponentState;
-import com.qcadoo.view.components.tree.TreeComponentState;
 
 @Service
 public final class TechnologyService {
@@ -110,11 +109,11 @@ public final class TechnologyService {
 
     public void loadProductsForReferencedTechnology(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (!(state instanceof TreeComponentState)) {
+        if (!(state instanceof TreeComponent)) {
             return;
         }
 
-        TreeComponentState tree = (TreeComponentState) state;
+        TreeComponent tree = (TreeComponent) state;
 
         if (tree.getSelectedEntityId() == null) {
             return;
@@ -123,8 +122,8 @@ public final class TechnologyService {
         Entity operationComponent = dataDefinitionService.get("technologies", "technologyOperationComponent").get(
                 tree.getSelectedEntityId());
 
-        GridComponentState outProductsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("outProducts");
-        GridComponentState inProductsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("inProducts");
+        GridComponent outProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("outProducts");
+        GridComponent inProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("inProducts");
 
         if (!"referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
             inProductsGrid.setIsEditable(true);
@@ -162,13 +161,14 @@ public final class TechnologyService {
 
     public void checkQualityControlType(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (!(state instanceof SelectComponentState)) {
+        if (!(state instanceof FieldComponent)) {
             throw new IllegalStateException("component is not select");
         }
 
-        SelectComponentState qualityControlType = (SelectComponentState) state;
+        FieldComponent qualityControlType = (FieldComponent) state;
 
-        FieldComponentState unitSamplingNr = (FieldComponentState) viewDefinitionState.getComponentByReference("unitSamplingNr");
+        FieldComponent unitSamplingNr = (FieldComponent) viewDefinitionState
+                .getComponentByReference("unitSamplingNr");
 
         if (qualityControlType.getFieldValue() != null) {
             if (qualityControlType.getFieldValue().equals("02forUnit")) {
@@ -182,11 +182,11 @@ public final class TechnologyService {
     }
 
     public void generateTechnologyNumber(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
-        if (!(componentState instanceof FieldComponentState)) {
+        if (!(componentState instanceof FieldComponent)) {
             throw new IllegalStateException("component is not FieldComponentState");
         }
-        FieldComponentState number = (FieldComponentState) state.getComponentByReference("number");
-        FieldComponentState productState = (FieldComponentState) componentState;
+        FieldComponent number = (FieldComponent) state.getComponentByReference("number");
+        FieldComponent productState = (FieldComponent) componentState;
 
         if (!numberGeneratorService.checkIfShouldInsertNumber(state, "form", "number")) {
             return;
@@ -202,7 +202,7 @@ public final class TechnologyService {
     }
 
     public void hideReferenceMode(final ViewDefinitionState viewDefinitionState) {
-        FormComponentState form = (FormComponentState) viewDefinitionState.getComponentByReference("form");
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         if (form.getEntityId() != null) {
             ComponentState referenceModeComponent = viewDefinitionState.getComponentByReference("referenceMode");
             referenceModeComponent.setVisible(false);

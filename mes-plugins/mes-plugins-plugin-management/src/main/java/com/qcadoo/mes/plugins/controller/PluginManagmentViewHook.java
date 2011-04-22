@@ -12,7 +12,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.components.grid.GridComponentState;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class PluginManagmentViewHook {
@@ -46,7 +46,7 @@ public class PluginManagmentViewHook {
     private List<String> getPluginIdentifiersFromView(final ViewDefinitionState viewDefinitionState) {
 
         List<String> pluginIdentifiers = new LinkedList<String>();
-        GridComponentState grid = (GridComponentState) viewDefinitionState.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
 
         Preconditions.checkState(grid.getSelectedEntitiesId().size() > 0, "No record selected");
 

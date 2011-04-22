@@ -54,9 +54,8 @@ import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.components.FieldComponentState;
-import com.qcadoo.view.components.awesomeDynamicList.AwesomeDynamicListState;
-import com.qcadoo.view.components.form.FormComponentState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 public class GenealogyServiceTest {
 
@@ -146,7 +145,7 @@ public class GenealogyServiceTest {
     @Test
     public void shouldHideFeaturesIfThereIsNoTechnology() throws Exception {
         // given
-        FormComponentState form = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent form = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
         given(form.getEntity().getField("order").toString()).willReturn("13");
 
         Entity order = mock(Entity.class);
@@ -172,7 +171,7 @@ public class GenealogyServiceTest {
     @Test
     public void shouldHideFeaturesIfTechnologyDoesNotRequireThem() throws Exception {
         // given
-        FormComponentState form = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent form = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
         given(form.getEntity().getField("order").toString()).willReturn("13");
 
         Entity technology = mock(Entity.class);
@@ -212,7 +211,7 @@ public class GenealogyServiceTest {
     @Test
     public void shouldNotHideFeaturesIfAnyFeatureIsRequired() throws Exception {
         // given
-        FormComponentState form = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent form = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
         given(form.getEntity().getField("order").toString()).willReturn("13");
 
         Entity technology = mock(Entity.class);
@@ -226,7 +225,7 @@ public class GenealogyServiceTest {
         given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         ComponentState features = mock(ComponentState.class);
-        FieldComponentState shiftFeature = mock(FieldComponentState.class);
+        FieldComponent shiftFeature = mock(FieldComponent.class);
         ComponentState postFeature = mock(ComponentState.class);
         ComponentState otherFeature = mock(ComponentState.class);
 
@@ -252,7 +251,7 @@ public class GenealogyServiceTest {
     @Test
     public void shouldSetRequiredOnFeaturesList() throws Exception {
         // given
-        FormComponentState form = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent form = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
         given(form.getEntity().getField("order").toString()).willReturn("13");
 
         Entity technology = mock(Entity.class);
@@ -266,9 +265,9 @@ public class GenealogyServiceTest {
         given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
 
         ComponentState features = mock(ComponentState.class);
-        FieldComponentState shiftFeature = mock(FieldComponentState.class);
-        FieldComponentState postFeature = mock(FieldComponentState.class);
-        FieldComponentState otherFeature = mock(FieldComponentState.class);
+        FieldComponent shiftFeature = mock(FieldComponent.class);
+        FieldComponent postFeature = mock(FieldComponent.class);
+        FieldComponent otherFeature = mock(FieldComponent.class);
 
         ViewDefinitionState state = mock(ViewDefinitionState.class);
         given(state.getComponentByReference("featuresLayout")).willReturn(features);
@@ -292,7 +291,7 @@ public class GenealogyServiceTest {
     @Test
     public void shouldNoFillProductInComponentsIfFormIsNotValid() throws Exception {
         // given
-        FormComponentState form = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent form = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
         given(form.isValid()).willReturn(false);
 
         ViewDefinitionState state = mock(ViewDefinitionState.class);
@@ -311,7 +310,7 @@ public class GenealogyServiceTest {
         // given
         ComponentState products = mock(ComponentState.class);
 
-        FormComponentState form = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent form = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
         given(form.isValid()).willReturn(true);
         given(form.getEntity().getField("order").toString()).willReturn("13");
 
@@ -338,7 +337,7 @@ public class GenealogyServiceTest {
         // given
         ComponentState products = mock(ComponentState.class);
 
-        FormComponentState form = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent form = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
         given(form.isValid()).willReturn(true);
         given(form.getEntity().getField("order").toString()).willReturn("13");
 
@@ -372,13 +371,13 @@ public class GenealogyServiceTest {
         // given
         ComponentState products = mock(ComponentState.class);
 
-        AwesomeDynamicListState productsList = mock(AwesomeDynamicListState.class);
+        FieldComponent productsList = mock(FieldComponent.class);
 
         List<Entity> expectedGenealogyProductInComponents = prepareExpectedGenealogyProductInComponents();
         EntityList existingGenealogyProductInComponents = prepareExistingGenealogyProductInComponents();
         EntityTree operationProductInComponents = prepareOperationProductInComponents();
 
-        FormComponentState form = mock(FormComponentState.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent form = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
         given(form.isValid()).willReturn(true);
         given(form.getEntityId()).willReturn(11L);
         given(form.getEntity().getField("order").toString()).willReturn("13");

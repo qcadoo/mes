@@ -12,9 +12,8 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.components.FieldComponentState;
-import com.qcadoo.view.components.form.FormComponentState;
-import com.qcadoo.view.components.lookup.LookupComponentState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class GenealogyTechnologyService {
@@ -23,16 +22,16 @@ public class GenealogyTechnologyService {
     private DataDefinitionService dataDefinitionService;
 
     public void checkBatchNrReq(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (!(state instanceof LookupComponentState)) {
+        if (!(state instanceof FieldComponent)) {
             throw new IllegalStateException("component is not lookup");
         }
 
-        LookupComponentState product = (LookupComponentState) state;
+        FieldComponent product = (FieldComponent) state;
 
-        FieldComponentState batchReq = (FieldComponentState) viewDefinitionState.getComponentByReference("batchRequired");
+        FieldComponent batchReq = (FieldComponent) viewDefinitionState.getComponentByReference("batchRequired");
 
         if (product.getFieldValue() != null) {
-            if (batchRequired(product.getFieldValue())) {
+            if (batchRequired((Long) product.getFieldValue())) {
                 batchReq.setFieldValue("1");
             } else {
                 batchReq.setFieldValue("0");
@@ -42,7 +41,7 @@ public class GenealogyTechnologyService {
 
     public void checkAttributesReq(final ViewDefinitionState viewDefinitionState) {
 
-        FormComponentState form = (FormComponentState) viewDefinitionState.getComponentByReference("form");
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
 
         if (form.getEntityId() != null) {
             // form is already saved
@@ -60,21 +59,21 @@ public class GenealogyTechnologyService {
 
             Boolean shiftReq = (Boolean) currentAttribute.getField("shiftReq");
             if (shiftReq != null && shiftReq) {
-                FieldComponentState req = (FieldComponentState) viewDefinitionState
+                FieldComponent req = (FieldComponent) viewDefinitionState
                         .getComponentByReference("shiftFeatureRequired");
                 req.setFieldValue("1");
             }
 
             Boolean postReq = (Boolean) currentAttribute.getField("postReq");
             if (postReq != null && postReq) {
-                FieldComponentState req = (FieldComponentState) viewDefinitionState
+                FieldComponent req = (FieldComponent) viewDefinitionState
                         .getComponentByReference("postFeatureRequired");
                 req.setFieldValue("1");
             }
 
             Boolean otherReq = (Boolean) currentAttribute.getField("otherReq");
             if (otherReq != null && otherReq) {
-                FieldComponentState req = (FieldComponentState) viewDefinitionState
+                FieldComponent req = (FieldComponent) viewDefinitionState
                         .getComponentByReference("otherFeatureRequired");
                 req.setFieldValue("1");
             }
@@ -83,9 +82,9 @@ public class GenealogyTechnologyService {
     }
 
     public void disableBatchRequiredForTechnology(final ViewDefinitionState state) {
-        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        ComponentState form = state.getComponentByReference("form");
         if (form.getFieldValue() != null) {
-            FieldComponentState batchRequired = (FieldComponentState) state.getComponentByReference("batchRequired");
+            FieldComponent batchRequired = (FieldComponent) state.getComponentByReference("batchRequired");
             if (checkProductInComponentsBatchRequired((Long) form.getFieldValue())) {
                 batchRequired.setEnabled(false);
                 batchRequired.setFieldValue("1");

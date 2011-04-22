@@ -19,7 +19,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
-import com.qcadoo.view.components.grid.GridComponentState;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class OrderReportService {
@@ -82,11 +82,11 @@ public class OrderReportService {
 
     private Entity printForOrder(final ComponentState state, final String plugin, final String entityName,
             final String detailEntityName, final Map<String, Object> entityFieldsMap, final OrderValidator orderValidator) {
-        if (!(state instanceof GridComponentState)) {
+        if (!(state instanceof GridComponent)) {
             throw new IllegalStateException("method avalible only for grid");
         }
 
-        GridComponentState gridState = (GridComponentState) state;
+        GridComponent gridState = (GridComponent) state;
         Set<Entity> ordersEntities = new HashSet<Entity>();
         if (gridState.getSelectedEntitiesId().size() == 0) {
             state.addMessage(translationService.translate("core.message.noRecordSelected", state.getLocale()),
