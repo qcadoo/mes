@@ -30,22 +30,6 @@
 				<option type="correspondingView" value="menu/menuCategory" />
 				<option type="correspondingComponent" value="form" />
 				<option type="fullscreen" value="true" />
-				<script><![CDATA[
-					var deleteButton = #{window}.getRibbonItem("actions.delete");
-					this.addOnChangeListener({
-						onChange: function(selectedEntitiesArray) {
-							if (selectedEntitiesArray && selectedEntitiesArray.length == 1) {
-								if (selectedEntitiesArray[0].fields.pluginIdentifier && selectedEntitiesArray[0].fields.pluginIdentifier != "") {
-									deleteButton.disable();
-								} else {
-									deleteButton.enable();
-								}
-							} else {
-								deleteButton.disable();
-							}
-						}
-					});
-				]]></script>
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
@@ -95,21 +79,6 @@
 						<option type="width" value="400" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
-						<script><![CDATA[
-							this.addOnChangeListener({
-								onChange: function(selectedEntitiesArray) {
-									if (selectedEntitiesArray && selectedEntitiesArray.length == 1) {
-										if (selectedEntitiesArray[0].fields.pluginIdentifier && selectedEntitiesArray[0].fields.pluginIdentifier != "") {
-											this.setDeleteEnabled(false);
-										} else {
-											this.setDeleteEnabled(true);
-										}
-									} else {
-										this.setDeleteEnabled(false);
-									}
-								}
-							});
-						]]></script>
 					</component>
 				</layoutElement>
 			</component>

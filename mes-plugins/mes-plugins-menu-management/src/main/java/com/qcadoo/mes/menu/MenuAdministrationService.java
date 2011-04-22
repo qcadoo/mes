@@ -116,8 +116,6 @@ public class MenuAdministrationService {
         ribbon.getGroupByName("actions").getItemByName("saveBack").setShouldBeUpdated(true);
         ribbon.getGroupByName("actions").getItemByName("cancel").setEnabled(false);
         ribbon.getGroupByName("actions").getItemByName("cancel").setShouldBeUpdated(true);
-        ribbon.getGroupByName("actions").getItemByName("delete").setEnabled(false);
-        ribbon.getGroupByName("actions").getItemByName("delete").setShouldBeUpdated(true);
         window.requestRibbonRender();
     }
 }
