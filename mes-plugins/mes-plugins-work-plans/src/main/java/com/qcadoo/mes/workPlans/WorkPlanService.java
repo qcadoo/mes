@@ -52,9 +52,9 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.components.FieldComponentState;
-import com.qcadoo.view.components.form.FormComponentState;
 
 @Service
 public final class WorkPlanService {
@@ -104,7 +104,7 @@ public final class WorkPlanService {
     }
 
     public void generateWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (state instanceof FormComponentState) {
+        if (state instanceof FormComponent) {
             ComponentState generated = viewDefinitionState.getComponentByReference("generated");
             ComponentState date = viewDefinitionState.getComponentByReference("date");
             ComponentState worker = viewDefinitionState.getComponentByReference("worker");
@@ -135,7 +135,7 @@ public final class WorkPlanService {
 
             state.performEvent(viewDefinitionState, "save", new String[0]);
 
-            if (state.getFieldValue() == null || !((FormComponentState) state).isValid()) {
+            if (state.getFieldValue() == null || !((FormComponent) state).isValid()) {
                 worker.setFieldValue(null);
                 generated.setFieldValue("0");
                 date.setFieldValue(null);
@@ -179,7 +179,7 @@ public final class WorkPlanService {
                         false, false);
             }
         } else {
-            if (state instanceof FormComponentState) {
+            if (state instanceof FormComponent) {
                 state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
                         MessageType.FAILURE);
             } else {
@@ -192,7 +192,7 @@ public final class WorkPlanService {
     public void disableFormForExistingWorkPlan(final ViewDefinitionState state) {
         ComponentState name = state.getComponentByReference("name");
         ComponentState workPlanComponents = state.getComponentByReference("workPlanComponents");
-        FieldComponentState generated = (FieldComponentState) state.getComponentByReference("generated");
+        FieldComponent generated = (FieldComponent) state.getComponentByReference("generated");
 
         if ("1".equals(generated.getFieldValue())) {
             name.setEnabled(false);

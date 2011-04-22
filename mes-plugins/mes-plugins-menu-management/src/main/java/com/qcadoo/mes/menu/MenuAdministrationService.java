@@ -15,10 +15,10 @@ import com.qcadoo.report.api.Pair;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.MenuService;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
-import com.qcadoo.view.components.form.FormComponentState;
-import com.qcadoo.view.components.grid.GridComponentState;
-import com.qcadoo.view.components.window.WindowComponentState;
 
 @Service
 public class MenuAdministrationService {
@@ -39,7 +39,7 @@ public class MenuAdministrationService {
 
     public void addRestrictionToCategoriesGrid(final ViewDefinitionState viewDefinitionState) {
 
-        GridComponentState categoriesGrid = (GridComponentState) viewDefinitionState.getComponentByReference("grid");
+        GridComponent categoriesGrid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
 
         Restriction[] categoryRestrictions = new Restriction[disabledCategories.size()];
         int index = 0;
@@ -56,7 +56,7 @@ public class MenuAdministrationService {
     }
 
     public void translateCategoriesGrid(final ViewDefinitionState viewDefinitionState) {
-        GridComponentState categoriesGrid = (GridComponentState) viewDefinitionState.getComponentByReference("grid");
+        GridComponent categoriesGrid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
         for (Entity categoryEntity : categoriesGrid.getEntities()) {
             if (categoryEntity.getStringField("pluginIdentifier") != null) {
                 categoryEntity.setField("name",
@@ -66,7 +66,7 @@ public class MenuAdministrationService {
     }
 
     public void translateCategoryForm(final ViewDefinitionState viewDefinitionState) {
-        FormComponentState categoryForm = (FormComponentState) viewDefinitionState.getComponentByReference("form");
+        FormComponent categoryForm = (FormComponent) viewDefinitionState.getComponentByReference("form");
         Entity categoryEntity = null;
         if (categoryForm.getEntity() != null) {
             categoryEntity = dataDefinitionService.get("qcadooView", "category").get(categoryForm.getEntity().getId());
@@ -80,7 +80,7 @@ public class MenuAdministrationService {
             disableWinfowButtons(viewDefinitionState);
         }
 
-        GridComponentState categoryItemsGrid = (GridComponentState) viewDefinitionState.getComponentByReference("itemsGrid");
+        GridComponent categoryItemsGrid = (GridComponent) viewDefinitionState.getComponentByReference("itemsGrid");
         for (Entity itemEntity : categoryItemsGrid.getEntities()) {
             if (itemEntity.getStringField("pluginIdentifier") != null) {
                 itemEntity.setField("name", menuService.getItemTranslation(itemEntity, viewDefinitionState.getLocale()));
@@ -89,7 +89,7 @@ public class MenuAdministrationService {
     }
 
     public void translateItemForm(final ViewDefinitionState viewDefinitionState) {
-        FormComponentState itemForm = (FormComponentState) viewDefinitionState.getComponentByReference("form");
+        FormComponent itemForm = (FormComponent) viewDefinitionState.getComponentByReference("form");
         Entity itemEntity = null;
         if (itemForm.getEntity() != null) {
             itemEntity = dataDefinitionService.get("qcadooView", "item").get(itemForm.getEntity().getId());
@@ -108,7 +108,7 @@ public class MenuAdministrationService {
     }
 
     private void disableWinfowButtons(final ViewDefinitionState viewDefinitionState) {
-        WindowComponentState window = (WindowComponentState) viewDefinitionState.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference("window");
         Ribbon ribbon = window.getRibbon();
         ribbon.getGroupByName("actions").getItemByName("save").setEnabled(false);
         ribbon.getGroupByName("actions").getItemByName("save").setShouldBeUpdated(true);

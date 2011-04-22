@@ -67,11 +67,11 @@ import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.components.form.FormComponentState;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ FormComponentState.class, GenealogyService.class, TransactionAspectSupport.class })
+@PrepareForTest({ GenealogyService.class, TransactionAspectSupport.class })
 public class AutoGenealogyServiceTest {
 
     private AutoGenealogyService autoGenealogyService;
@@ -122,7 +122,7 @@ public class AutoGenealogyServiceTest {
     @Test
     public void shouldFailAutoCreateGenealogyIfFormHasNoIdentifier() throws Exception {
         // given
-        FormComponentState state = mock(FormComponentState.class);
+        FormComponent state = mock(FormComponent.class);
         given(state.getFieldValue()).willReturn(null);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
@@ -502,7 +502,7 @@ public class AutoGenealogyServiceTest {
     @Test
     public void shouldFailAutoCreateGenealogyOnChangeOrderStatusIfFormHasNoIdentifier() throws Exception {
         // given
-        FormComponentState state = mock(FormComponentState.class);
+        FormComponent state = mock(FormComponent.class);
         given(state.getFieldValue()).willReturn(null);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);

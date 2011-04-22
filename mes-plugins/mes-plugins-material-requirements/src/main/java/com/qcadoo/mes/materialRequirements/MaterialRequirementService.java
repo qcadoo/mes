@@ -24,9 +24,9 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.components.FieldComponentState;
-import com.qcadoo.view.components.form.FormComponentState;
 
 @Service
 public final class MaterialRequirementService {
@@ -91,7 +91,7 @@ public final class MaterialRequirementService {
         ComponentState name = state.getComponentByReference("name");
         ComponentState onlyComponents = state.getComponentByReference("onlyComponents");
         ComponentState materialRequirementComponents = state.getComponentByReference("materialRequirementComponents");
-        FieldComponentState generated = (FieldComponentState) state.getComponentByReference("generated");
+        FieldComponent generated = (FieldComponent) state.getComponentByReference("generated");
 
         if ("1".equals(generated.getFieldValue())) {
             name.setEnabled(false);
@@ -113,7 +113,7 @@ public final class MaterialRequirementService {
 
     public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (state instanceof FormComponentState) {
+        if (state instanceof FormComponent) {
             ComponentState generated = viewDefinitionState.getComponentByReference("generated");
             ComponentState date = viewDefinitionState.getComponentByReference("date");
             ComponentState worker = viewDefinitionState.getComponentByReference("worker");
@@ -147,7 +147,7 @@ public final class MaterialRequirementService {
 
             state.performEvent(viewDefinitionState, "save", new String[0]);
 
-            if (state.getFieldValue() == null || !((FormComponentState) state).isValid()) {
+            if (state.getFieldValue() == null || !((FormComponent) state).isValid()) {
                 worker.setFieldValue(null);
                 generated.setFieldValue("0");
                 date.setFieldValue(null);
@@ -186,7 +186,7 @@ public final class MaterialRequirementService {
                         "/materialRequirements/materialRequirement." + args[0] + "?id=" + state.getFieldValue(), false, false);
             }
         } else {
-            if (state instanceof FormComponentState) {
+            if (state instanceof FormComponent) {
                 state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
                         MessageType.FAILURE);
             } else {

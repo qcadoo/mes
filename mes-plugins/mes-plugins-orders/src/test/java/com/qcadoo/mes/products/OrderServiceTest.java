@@ -71,15 +71,13 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import com.qcadoo.view.components.FieldComponentState;
-import com.qcadoo.view.components.form.FormComponentState;
-import com.qcadoo.view.components.grid.GridComponentState;
-import com.qcadoo.view.components.lookup.LookupComponentState;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ FormComponentState.class, LookupComponentState.class, FieldComponentState.class, EntityTreeImpl.class,
-        EntityListImpl.class, GridComponentState.class })
+@PrepareForTest({ EntityTreeImpl.class, EntityListImpl.class })
 public class OrderServiceTest {
 
     private OrderService orderService;
@@ -180,7 +178,7 @@ public class OrderServiceTest {
     @Test
     public void shouldFailPrintIfFormHasNoIdentifier() throws Exception {
         // given
-        FormComponentState state = mock(FormComponentState.class);
+        FormComponent state = mock(FormComponent.class);
         given(state.getFieldValue()).willReturn(null);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
@@ -197,9 +195,9 @@ public class OrderServiceTest {
     @Test
     public void shouldChangeOrderProductToNull() throws Exception {
         // given
-        LookupComponentState product = mock(LookupComponentState.class);
-        LookupComponentState technology = mock(LookupComponentState.class);
-        FieldComponentState defaultTechnology = mock(FieldComponentState.class);
+        FieldComponent product = mock(FieldComponent.class);
+        FieldComponent technology = mock(FieldComponent.class);
+        FieldComponent defaultTechnology = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
@@ -217,9 +215,9 @@ public class OrderServiceTest {
     public void shouldChangeOrderProductWithoutDefaultTechnology() throws Exception {
         // given
         SearchResult searchResult = mock(SearchResult.class);
-        LookupComponentState product = mock(LookupComponentState.class);
-        LookupComponentState technology = mock(LookupComponentState.class);
-        FieldComponentState defaultTechnology = mock(FieldComponentState.class);
+        FieldComponent product = mock(FieldComponent.class);
+        FieldComponent technology = mock(FieldComponent.class);
+        FieldComponent defaultTechnology = mock(FieldComponent.class);
         FieldDefinition masterField = mock(FieldDefinition.class);
         FieldDefinition productField = mock(FieldDefinition.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
@@ -250,9 +248,9 @@ public class OrderServiceTest {
         // given
         SearchResult searchResult = mock(SearchResult.class);
         Entity entity = mock(Entity.class);
-        LookupComponentState product = mock(LookupComponentState.class);
-        LookupComponentState technology = mock(LookupComponentState.class);
-        FieldComponentState defaultTechnology = mock(FieldComponentState.class);
+        FieldComponent product = mock(FieldComponent.class);
+        FieldComponent technology = mock(FieldComponent.class);
+        FieldComponent defaultTechnology = mock(FieldComponent.class);
         FieldDefinition masterField = mock(FieldDefinition.class);
         FieldDefinition productField = mock(FieldDefinition.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
@@ -283,8 +281,8 @@ public class OrderServiceTest {
     @Test
     public void shouldSetAndDisableState() throws Exception {
         // given
-        FormComponentState form = mock(FormComponentState.class);
-        FieldComponentState orderState = mock(FieldComponentState.class);
+        FormComponent form = mock(FormComponent.class);
+        FieldComponent orderState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("form")).willReturn(form);
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
@@ -301,8 +299,8 @@ public class OrderServiceTest {
     @Test
     public void shouldDisableState() throws Exception {
         // given
-        FormComponentState form = mock(FormComponentState.class);
-        FieldComponentState orderState = mock(FieldComponentState.class);
+        FormComponent form = mock(FormComponent.class);
+        FieldComponent orderState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("form")).willReturn(form);
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
@@ -331,8 +329,8 @@ public class OrderServiceTest {
     @Test
     public void shouldNotFillDefaultTechnologyIfThereIsNoProduct() throws Exception {
         // given
-        LookupComponentState product = mock(LookupComponentState.class);
-        FieldComponentState defaultTechnology = mock(FieldComponentState.class);
+        FieldComponent product = mock(FieldComponent.class);
+        FieldComponent defaultTechnology = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("product")).willReturn(product);
         given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
@@ -348,8 +346,8 @@ public class OrderServiceTest {
     @Test
     public void shouldNotFillDefaultTechnologyIfThereIsNoDefaultTechnology() throws Exception {
         // given
-        LookupComponentState product = mock(LookupComponentState.class);
-        FieldComponentState defaultTechnology = mock(FieldComponentState.class);
+        FieldComponent product = mock(FieldComponent.class);
+        FieldComponent defaultTechnology = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("product")).willReturn(product);
         given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
@@ -379,8 +377,8 @@ public class OrderServiceTest {
     @Test
     public void shouldFillDefaultTechnology() throws Exception {
         // given
-        LookupComponentState product = mock(LookupComponentState.class);
-        FieldComponentState defaultTechnology = mock(FieldComponentState.class);
+        FieldComponent product = mock(FieldComponent.class);
+        FieldComponent defaultTechnology = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("product")).willReturn(product);
         given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
@@ -412,10 +410,10 @@ public class OrderServiceTest {
     @Test
     public void shouldDisableTechnologyIfThereIsNoProduct() throws Exception {
         // given
-        LookupComponentState product = mock(LookupComponentState.class);
-        LookupComponentState technology = mock(LookupComponentState.class);
-        FieldComponentState defaultTechnology = mock(FieldComponentState.class);
-        FieldComponentState plannedQuantity = mock(FieldComponentState.class);
+        FieldComponent product = mock(FieldComponent.class);
+        FieldComponent technology = mock(FieldComponent.class);
+        FieldComponent defaultTechnology = mock(FieldComponent.class);
+        FieldComponent plannedQuantity = mock(FieldComponent.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("product")).willReturn(product);
@@ -437,10 +435,10 @@ public class OrderServiceTest {
     @Test
     public void shouldDisableTechnologyIfProductHasNoTechnologies() throws Exception {
         // given
-        LookupComponentState product = mock(LookupComponentState.class);
-        LookupComponentState technology = mock(LookupComponentState.class);
-        FieldComponentState defaultTechnology = mock(FieldComponentState.class);
-        FieldComponentState plannedQuantity = mock(FieldComponentState.class);
+        FieldComponent product = mock(FieldComponent.class);
+        FieldComponent technology = mock(FieldComponent.class);
+        FieldComponent defaultTechnology = mock(FieldComponent.class);
+        FieldComponent plannedQuantity = mock(FieldComponent.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("product")).willReturn(product);
@@ -471,10 +469,10 @@ public class OrderServiceTest {
     @Test
     public void shouldSetTechnologyAndPlannedQuantityAsRequired() throws Exception {
         // given
-        LookupComponentState product = mock(LookupComponentState.class);
-        LookupComponentState technology = mock(LookupComponentState.class);
-        FieldComponentState defaultTechnology = mock(FieldComponentState.class);
-        FieldComponentState plannedQuantity = mock(FieldComponentState.class);
+        FieldComponent product = mock(FieldComponent.class);
+        FieldComponent technology = mock(FieldComponent.class);
+        FieldComponent defaultTechnology = mock(FieldComponent.class);
+        FieldComponent plannedQuantity = mock(FieldComponent.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("product")).willReturn(product);
@@ -504,8 +502,8 @@ public class OrderServiceTest {
     @Test
     public void shouldNotDisableFormIfThereIsNoIdentifier() throws Exception {
         // given
-        FormComponentState order = mock(FormComponentState.class);
-        LookupComponentState technology = mock(LookupComponentState.class);
+        FormComponent order = mock(FormComponent.class);
+        FieldComponent technology = mock(FieldComponent.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("form")).willReturn(order);
@@ -523,8 +521,8 @@ public class OrderServiceTest {
     @Test
     public void shouldNotDisableFormIfThereIsNoOrder() throws Exception {
         // given
-        FormComponentState order = mock(FormComponentState.class);
-        LookupComponentState technology = mock(LookupComponentState.class);
+        FormComponent order = mock(FormComponent.class);
+        FieldComponent technology = mock(FieldComponent.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("form")).willReturn(order);
@@ -543,8 +541,8 @@ public class OrderServiceTest {
     @Test
     public void shouldNotDisableFormIfOrderIsNotDone() throws Exception {
         // given
-        FormComponentState order = mock(FormComponentState.class);
-        LookupComponentState technology = mock(LookupComponentState.class);
+        FormComponent order = mock(FormComponent.class);
+        FieldComponent technology = mock(FieldComponent.class);
         Entity entity = mock(Entity.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
@@ -566,8 +564,8 @@ public class OrderServiceTest {
     @Test
     public void shouldNotDisableFormIfOrderIsNotValid() throws Exception {
         // given
-        FormComponentState order = mock(FormComponentState.class);
-        LookupComponentState technology = mock(LookupComponentState.class);
+        FormComponent order = mock(FormComponent.class);
+        FieldComponent technology = mock(FieldComponent.class);
         Entity entity = mock(Entity.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
@@ -589,8 +587,8 @@ public class OrderServiceTest {
     @Test
     public void shouldNotDisableFormForDoneOrder() throws Exception {
         // given
-        FormComponentState order = mock(FormComponentState.class);
-        LookupComponentState technology = mock(LookupComponentState.class);
+        FormComponent order = mock(FormComponent.class);
+        FieldComponent technology = mock(FieldComponent.class);
         Entity entity = mock(Entity.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
@@ -1014,7 +1012,7 @@ public class OrderServiceTest {
     @Test
     public void shouldFailActivationOrderIfFormHasNoIdentifier() throws Exception {
         // given
-        FormComponentState state = mock(FormComponentState.class);
+        FormComponent state = mock(FormComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(translationService.translate("core.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
@@ -1030,8 +1028,8 @@ public class OrderServiceTest {
     @Test
     public void shouldSetStateAsInProgressForFormOrderActivation() throws Exception {
         // given
-        FormComponentState state = mock(FormComponentState.class);
-        FieldComponentState orderState = mock(FieldComponentState.class);
+        FormComponent state = mock(FormComponent.class);
+        FieldComponent orderState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
@@ -1048,7 +1046,7 @@ public class OrderServiceTest {
         // given
         Entity order = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        GridComponentState state = mock(GridComponentState.class);
+        GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
@@ -1068,8 +1066,8 @@ public class OrderServiceTest {
         // given
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        FormComponentState state = mock(FormComponentState.class);
-        FieldComponentState orderState = mock(FieldComponentState.class);
+        FormComponent state = mock(FormComponent.class);
+        FieldComponent orderState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
@@ -1097,7 +1095,7 @@ public class OrderServiceTest {
         // given
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        GridComponentState state = mock(GridComponentState.class);
+        GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
@@ -1125,8 +1123,8 @@ public class OrderServiceTest {
         // given
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        FormComponentState state = mock(FormComponentState.class);
-        FieldComponentState orderState = mock(FieldComponentState.class);
+        FormComponent state = mock(FormComponent.class);
+        FieldComponent orderState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
@@ -1157,7 +1155,7 @@ public class OrderServiceTest {
         // given
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        GridComponentState state = mock(GridComponentState.class);
+        GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
@@ -1186,8 +1184,8 @@ public class OrderServiceTest {
         // given
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        FormComponentState state = mock(FormComponentState.class);
-        FieldComponentState orderState = mock(FieldComponentState.class);
+        FormComponent state = mock(FormComponent.class);
+        FieldComponent orderState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
@@ -1209,8 +1207,8 @@ public class OrderServiceTest {
         // given
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        FormComponentState state = mock(FormComponentState.class);
-        FieldComponentState orderState = mock(FieldComponentState.class);
+        FormComponent state = mock(FormComponent.class);
+        FieldComponent orderState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
@@ -1237,7 +1235,7 @@ public class OrderServiceTest {
         // given
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        GridComponentState state = mock(GridComponentState.class);
+        GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
@@ -1260,7 +1258,7 @@ public class OrderServiceTest {
         // given
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        GridComponentState state = mock(GridComponentState.class);
+        GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);

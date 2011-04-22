@@ -29,11 +29,10 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.components.ButtonComponentState;
-import com.qcadoo.view.components.FieldComponentState;
-import com.qcadoo.view.components.PasswordComponentState;
-import com.qcadoo.view.components.form.FormComponentState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public final class UserService {
@@ -42,10 +41,10 @@ public final class UserService {
     private boolean setAsDemoEnviroment;
 
     public void setPasswordAndOldPasswordAdRequired(final ViewDefinitionState state) {
-        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByReference("viewIdentifierHiddenInput");
-        PasswordComponentState oldPassword = (PasswordComponentState) state.getComponentByReference("oldPasswordTextInput");
-        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("passwordTextInput");
-        PasswordComponentState passwordConfirmation = (PasswordComponentState) state
+        FieldComponent viewIdentifier = (FieldComponent) state.getComponentByReference("viewIdentifierHiddenInput");
+        FieldComponent oldPassword = (FieldComponent) state.getComponentByReference("oldPasswordTextInput");
+        FieldComponent password = (FieldComponent) state.getComponentByReference("passwordTextInput");
+        FieldComponent passwordConfirmation = (FieldComponent) state
                 .getComponentByReference("passwordConfirmationTextInput");
 
         oldPassword.setRequired(true);
@@ -56,16 +55,15 @@ public final class UserService {
 
     public void removeChangePasswordButtonWhenNotAllowed(final ViewDefinitionState state) {
         if (setAsDemoEnviroment) {
-            ButtonComponentState changePasswordButton = (ButtonComponentState) state
-                    .getComponentByReference("changePasswordButton");
+            ComponentState changePasswordButton = state.getComponentByReference("changePasswordButton");
             changePasswordButton.setVisible(false);
         }
     }
 
     public void setPasswordAsRequired(final ViewDefinitionState state) {
-        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByReference("viewIdentifierHiddenInput");
-        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("passwordTextInput");
-        PasswordComponentState passwordConfirmation = (PasswordComponentState) state
+        FieldComponent viewIdentifier = (FieldComponent) state.getComponentByReference("viewIdentifierHiddenInput");
+        FieldComponent password = (FieldComponent) state.getComponentByReference("passwordTextInput");
+        FieldComponent passwordConfirmation = (FieldComponent) state
                 .getComponentByReference("passwordConfirmationTextInput");
 
         password.setRequired(true);
@@ -74,11 +72,11 @@ public final class UserService {
     }
 
     public void hidePasswordOnUpdateForm(final ViewDefinitionState state) {
-        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
-        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("passwordTextInput");
-        PasswordComponentState passwordConfirmation = (PasswordComponentState) state
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
+        FieldComponent password = (FieldComponent) state.getComponentByReference("passwordTextInput");
+        FieldComponent passwordConfirmation = (FieldComponent) state
                 .getComponentByReference("passwordConfirmationTextInput");
-        ButtonComponentState changePasswordButton = (ButtonComponentState) state.getComponentByReference("changePasswordButton");
+        ComponentState changePasswordButton = state.getComponentByReference("changePasswordButton");
 
         password.setRequired(true);
         passwordConfirmation.setRequired(true);

@@ -51,10 +51,10 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.components.FieldComponentState;
-import com.qcadoo.view.components.form.FormComponentState;
-import com.qcadoo.view.components.grid.GridComponentState;
 
 @Service
 public class QualityControlsReportService {
@@ -67,9 +67,9 @@ public class QualityControlsReportService {
 
     public final void printQualityControlReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (state instanceof FormComponentState) {
-            FieldComponentState dateFrom = (FieldComponentState) viewDefinitionState.getComponentByReference("dateFrom");
-            FieldComponentState dateTo = (FieldComponentState) viewDefinitionState.getComponentByReference("dateTo");
+        if (state instanceof FormComponent) {
+            FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom");
+            FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
             if (dateFrom != null && dateTo != null && dateFrom.getFieldValue() != null && dateTo.getFieldValue() != null) {
                 viewDefinitionState.redirectTo("/qualityControl/qualityControlByDates." + args[0] + "?type=" + args[1]
                         + "&dateFrom=" + dateFrom.getFieldValue() + "&dateTo=" + dateTo.getFieldValue(), true, false);
@@ -85,10 +85,10 @@ public class QualityControlsReportService {
 
     public final void printQualityControlReportForOrder(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
-        if (!(state instanceof GridComponentState)) {
+        if (!(state instanceof GridComponent)) {
             throw new IllegalStateException("method only for grid");
         }
-        GridComponentState gridState = (GridComponentState) state;
+        GridComponent gridState = (GridComponent) state;
         if (gridState.getSelectedEntitiesId().size() == 0) {
             state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()), MessageType.FAILURE);
             return;

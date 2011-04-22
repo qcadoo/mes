@@ -39,10 +39,10 @@ import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.components.form.FormComponentState;
-import com.qcadoo.view.components.grid.GridComponentState;
-import com.qcadoo.view.components.lookup.LookupComponentState;
 
 @Service
 public class ReportService {
@@ -52,8 +52,8 @@ public class ReportService {
 
     public void generateReportForComponent(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (state instanceof FormComponentState) {
-            GridComponentState batchState = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
+        if (state instanceof FormComponent) {
+            FieldComponent batchState = (FieldComponent) viewDefinitionState.getComponentByReference("batches");
             if (batchState != null && batchState.getFieldValue() != null) {
                 viewDefinitionState.redirectTo(
                         "/genealogiesForComponents/genealogyForComponent.pdf?value=" + batchState.getFieldValue(), true, false);
@@ -70,19 +70,19 @@ public class ReportService {
     }
 
     public void changeProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (!(state instanceof LookupComponentState)) {
+        if (!(state instanceof FieldComponent)) {
             return;
         }
 
-        GridComponentState batches = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
+        GridComponent batches = (GridComponent) viewDefinitionState.getComponentByReference("batches");
 
         batches.setSelectedEntityId(null);
         batches.setSelectedEntitiesId(new HashSet<Long>());
     }
 
     public void addRestrictionToGenealogyGrid(final ViewDefinitionState viewDefinitionState) {
-        final LookupComponentState product = (LookupComponentState) viewDefinitionState.getComponentByReference("product");
-        final GridComponentState batches = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
+        final FieldComponent product = (FieldComponent) viewDefinitionState.getComponentByReference("product");
+        final GridComponent batches = (GridComponent) viewDefinitionState.getComponentByReference("batches");
 
         batches.setCustomRestriction(new CustomRestriction() {
 
@@ -97,8 +97,8 @@ public class ReportService {
     }
 
     public void addRestrictionToComponentGrid(final ViewDefinitionState viewDefinitionState) {
-        final LookupComponentState product = (LookupComponentState) viewDefinitionState.getComponentByReference("product");
-        final GridComponentState batches = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
+        final FieldComponent product = (FieldComponent) viewDefinitionState.getComponentByReference("product");
+        final GridComponent batches = (GridComponent) viewDefinitionState.getComponentByReference("batches");
 
         batches.setCustomRestriction(new CustomRestriction() {
 
@@ -128,8 +128,8 @@ public class ReportService {
 
     public void generateReportForProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        GridComponentState batchState = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
-        if (state instanceof FormComponentState) {
+        FieldComponent batchState = (FieldComponent) viewDefinitionState.getComponentByReference("batches");
+        if (state instanceof FormComponent) {
             if (batchState != null && batchState.getFieldValue() != null) {
                 viewDefinitionState.redirectTo("/genealogies/genealogyForProduct.pdf?value=" + batchState.getFieldValue(), true,
                         false);
