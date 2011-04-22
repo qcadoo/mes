@@ -41,8 +41,8 @@
 				model="workPlanComponent" joinField="order" cascade="none" />
 		</model:model-field>
 
-		<menu:menu-item name="workPlans" category="reports"
-			view="workPlans" />
+		<menu:menu-category name="reports" />
+		<menu:menu-item name="workPlans" category="reports" view="workPlans" />
 
 		<view:view resource="view/workPlans.xml" />
 

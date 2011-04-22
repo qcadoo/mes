@@ -43,6 +43,7 @@
 				model="materialRequirementComponent" joinField="order" cascade="none" />
 		</model:model-field>
 
+		<menu:menu-category name="reports" />
 		<menu:menu-item name="materialRequirements" category="reports"
 			view="materialRequirements" />
 
