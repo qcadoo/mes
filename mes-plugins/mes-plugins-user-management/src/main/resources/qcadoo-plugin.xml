@@ -11,7 +11,9 @@
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd">
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>User Management</name>
@@ -25,9 +27,9 @@
 	<modules>
 		<localization:translation path="locales" />
 
-		<view:menu-item name="users" category="administration"
+		<menu:menu-item name="users" category="administration"
 			view="users" />
-		<view:menu-item-url name="profile" category="home"
+		<menu:menu-item-url name="profile" category="home"
 			url="/userProfile.html" />
 
 		<view:view resource="view/users.xml" />

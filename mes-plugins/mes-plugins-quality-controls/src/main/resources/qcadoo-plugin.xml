@@ -11,7 +11,9 @@
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd">
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>MES - Quality Controls</name>
@@ -58,13 +60,13 @@
 				method="generateOnSaveQualityControl" />
 		</model:model-hook>
 
-		<view:menu-category name="quality" />
+		<menu:menu-category name="quality" />
 
-		<view:menu-item name="qualityControlReport" category="reports"
+		<menu:menu-item name="qualityControlReport" category="reports"
 			view="qualityControlReport" />
-		<view:menu-item name="forOrder" category="quality"
+		<menu:menu-item name="forOrder" category="quality"
 			view="qualityControlsForOrder" />
-		<view:menu-item name="forUnits" category="quality"
+		<menu:menu-item name="forUnits" category="quality"
 			view="qualityControlsForUnit" />
 
 		<view:view resource="view/qualityControls.xml" />

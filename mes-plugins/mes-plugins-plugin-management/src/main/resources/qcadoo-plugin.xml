@@ -11,7 +11,9 @@
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd">
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>Plugin Management</name>
@@ -38,7 +40,7 @@
 				method="updatePluginData" />
 		</model:model-hook>
 
-		<view:menu-item name="plugins" category="administration"
+		<menu:menu-item name="plugins" category="administration"
 			view="plugins" />
 
 		<view:view resource="view/plugins.xml" />

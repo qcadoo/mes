@@ -11,7 +11,9 @@
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd">
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>Technologies</name>
@@ -58,11 +60,11 @@
 				model="technology" joinField="product" cascade="delete" />
 		</model:model-field>
 
-		<view:menu-category name="technology" />
+		<menu:menu-category name="technology" />
 
-		<view:menu-item name="technologies" category="technology"
+		<menu:menu-item name="technologies" category="technology"
 			view="technologies" />
-		<view:menu-item name="operations" category="technology"
+		<menu:menu-item name="operations" category="technology"
 			view="operations" />
 
 		<view:view resource="view/technologies.xml" />

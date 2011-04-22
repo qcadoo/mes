@@ -11,7 +11,9 @@
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd">
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>Work Plans</name>
@@ -39,7 +41,7 @@
 				model="workPlanComponent" joinField="order" cascade="none" />
 		</model:model-field>
 
-		<view:menu-item name="workPlans" category="reports"
+		<menu:menu-item name="workPlans" category="reports"
 			view="workPlans" />
 
 		<view:view resource="view/workPlans.xml" />

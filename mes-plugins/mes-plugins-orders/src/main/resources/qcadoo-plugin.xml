@@ -11,7 +11,9 @@
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd">
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>MES - Orders</name>
@@ -48,9 +50,9 @@
 			<model:validatesWith class="com.qcadoo.mes.orders.OrdersTechnologyExtensionService" method="checkExistingOrders"/>
 		</model:model-hook>
 
-		<view:menu-category name="orders" />
+		<menu:menu-category name="orders" />
 
-		<view:menu-item name="productionOrders" category="orders"
+		<menu:menu-item name="productionOrders" category="orders"
 			view="orders" />
 
 		<view:view resource="view/orders.xml" />

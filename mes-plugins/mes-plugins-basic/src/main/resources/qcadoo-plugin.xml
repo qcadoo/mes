@@ -11,7 +11,9 @@
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd">
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>MES - Basic</name>
@@ -22,12 +24,12 @@
 	</information>
 
 	<modules>
-		<localization:locale locale="en" label="English" />
-		<localization:locale locale="pl" label="Polski" />
+		<localization:translation-locale locale="en" label="English" />
+		<localization:translation-locale locale="pl" label="Polski" />
 
-		<localization:group name="commons" prefix="commons" />
-		<localization:group name="security" prefix="security" />
-		<localization:group name="dashboard" prefix="core.dashboard" />
+		<localization:translation-group name="commons" prefix="commons" />
+		<localization:translation-group name="security" prefix="security" />
+		<localization:translation-group name="dashboard" prefix="core.dashboard" />
 
 		<localization:translation path="locales" basename="basic"/>
 
@@ -44,19 +46,19 @@
 		<model:dictionary name="posts" />
 		<model:dictionary name="units" />
 
-		<view:menu-category name="home" />
-		<view:menu-category name="basic" />
-		<view:menu-category name="administration" />
-		<view:menu-category name="reports" />
+		<menu:menu-category name="home" />
+		<menu:menu-category name="basic" />
+		<menu:menu-category name="administration" />
+		<menu:menu-category name="reports" />
 
-		<view:menu-item-url name="home" category="home"
+		<menu:menu-item-url name="home" category="home"
 			url="/homePage.html" />
-		<view:menu-item name="machines" category="basic" view="machines" />
-		<view:menu-item name="staff" category="basic" view="staffs" />
-		<view:menu-item name="products" category="basic" view="products" />
-		<view:menu-item-url name="systemParameters"
+		<menu:menu-item name="machines" category="basic" view="machines" />
+		<menu:menu-item name="staff" category="basic" view="staffs" />
+		<menu:menu-item name="products" category="basic" view="products" />
+		<menu:menu-item-url name="systemParameters"
 			category="basic" url="/parameter.html" />
-		<view:menu-item-url name="systemInfo" category="administration"
+		<menu:menu-item-url name="systemInfo" category="administration"
 			url="/systemInfo.html" />
 
 		<view:view resource="view/basic.xml" />

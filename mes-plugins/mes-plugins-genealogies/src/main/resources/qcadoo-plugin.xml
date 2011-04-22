@@ -11,7 +11,9 @@
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd">
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>MES - Genealogies</name>
@@ -71,9 +73,9 @@
 				default="01none" />
 		</model:model-field>
 
-		<view:menu-item-url name="genealogyAttributes"
+		<menu:menu-item-url name="genealogyAttributes"
 			category="basic" url="genealogyAttribute.html" />
-		<view:menu-item name="genealogyForProduct" category="reports"
+		<menu:menu-item name="genealogyForProduct" category="reports"
 			view="genealogyForProduct" />
 
 		<view:view resource="view/genealogies.xml" />
