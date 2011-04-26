@@ -67,8 +67,8 @@ import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
-import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ GenealogyService.class, TransactionAspectSupport.class })
@@ -107,8 +107,8 @@ public class AutoGenealogyServiceTest {
         // given
         ComponentState state = mock(ComponentState.class);
         given(state.getFieldValue()).willReturn(null);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
         given(translationService.translate("core.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
                 "core.grid.noRowSelectedError.pl");
 
@@ -124,8 +124,8 @@ public class AutoGenealogyServiceTest {
         // given
         FormComponent state = mock(FormComponent.class);
         given(state.getFieldValue()).willReturn(null);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
         given(translationService.translate("core.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
                 "core.form.entityWithoutIdentifier.pl");
 
@@ -141,8 +141,8 @@ public class AutoGenealogyServiceTest {
         // given
         ComponentState state = mock(ComponentState.class);
         given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
 
         given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(null);
 
@@ -487,8 +487,8 @@ public class AutoGenealogyServiceTest {
         // given
         ComponentState state = mock(ComponentState.class);
         given(state.getFieldValue()).willReturn(null);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
         given(translationService.translate("core.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
                 "core.grid.noRowSelectedError.pl");
 
@@ -504,8 +504,8 @@ public class AutoGenealogyServiceTest {
         // given
         FormComponent state = mock(FormComponent.class);
         given(state.getFieldValue()).willReturn(null);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
         given(translationService.translate("core.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
                 "core.form.entityWithoutIdentifier.pl");
 
@@ -521,8 +521,8 @@ public class AutoGenealogyServiceTest {
         // given
         ComponentState state = mock(ComponentState.class);
         given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
 
         given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(null);
 
