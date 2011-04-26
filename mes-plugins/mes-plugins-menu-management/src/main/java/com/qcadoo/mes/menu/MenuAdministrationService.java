@@ -33,8 +33,8 @@ public class MenuAdministrationService {
 
     static {
         disabledCategories = new LinkedList<Pair<String, String>>();
-        disabledCategories.add(Pair.of("basic", "home"));
-        disabledCategories.add(Pair.of("basic", "administration"));
+        disabledCategories.add(Pair.of("qcadooView", "home"));
+        disabledCategories.add(Pair.of("qcadooView", "administration"));
     }
 
     public void addRestrictionToCategoriesGrid(final ViewDefinitionState viewDefinitionState) {

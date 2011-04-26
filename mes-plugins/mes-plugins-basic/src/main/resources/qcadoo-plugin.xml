@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="basic" system="true" version="0.4.0"
+<plugin plugin="basic" system="false" version="0.4.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -24,11 +24,6 @@
 	</information>
 
 	<modules>
-		<localization:translation-locale locale="en" label="English" />
-		<localization:translation-locale locale="pl" label="Polski" />
-
-		<localization:translation-group name="commons" prefix="commons" />
-		<localization:translation-group name="security" prefix="security" />
 		<localization:translation-group name="dashboard" prefix="core.dashboard" />
 
 		<localization:translation path="locales" basename="basic"/>
