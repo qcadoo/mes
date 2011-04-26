@@ -46,20 +46,13 @@
 		<model:dictionary name="posts" />
 		<model:dictionary name="units" />
 
-		<!-- IMPORTANT - HOME AND ADMINISTRATION MUST BE ADDED FIRST -->
-		<menu:menu-category name="home" />
-		<menu:menu-category name="administration" /> 
 		<menu:menu-category name="basic" />
 
-		<menu:menu-item-url name="home" category="home"
-			url="/homePage.html" />
 		<menu:menu-item name="machines" category="basic" view="machines" />
 		<menu:menu-item name="staff" category="basic" view="staffs" />
 		<menu:menu-item name="products" category="basic" view="products" />
 		<menu:menu-item-url name="systemParameters"
 			category="basic" url="/parameter.html" />
-		<menu:menu-item-url name="systemInfo" category="administration"
-			url="/systemInfo.html" />
 
 		<view:view resource="view/basic.xml" />
 		<view:view resource="view/products.xml" />

@@ -48,8 +48,6 @@
 			
 		<view:view-ribbon-group resource="view/viewExtension.xml" />
 
-		<!-- TODO remove after implementing import data -->
-		<databasePreparation />
 	</modules>
 
 </plugin>

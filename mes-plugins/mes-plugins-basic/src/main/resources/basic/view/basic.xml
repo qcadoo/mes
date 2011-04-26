@@ -135,14 +135,4 @@
 			</component>
 		</component>
 	</view>
-	<view name="systemInfo" menuAccessible="true">
-		<component type="window" name="window">
-			<ribbon>
-			</ribbon>
-			<component type="staticPage" name="systemInfo">
-				<option type="page" value="core/systemInfo.jsp" />
-			</component>
-			<option type="header" value="true" />
-		</component>
-	</view>
 </views>

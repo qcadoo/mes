@@ -29,6 +29,7 @@
     	<module>mes-plugins-quality-controls-for-operation</module>
     	<module>mes-plugins-quality-controls-for-batch</module>
     	<module>mes-plugins-genealogies-for-components</module>
+    	<module>mes-plugins-samples</module>
   </modules>
 
 </project>
