@@ -47,8 +47,8 @@ import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
-import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class AutoGenealogyService {
@@ -74,7 +74,7 @@ public class AutoGenealogyService {
         if (state.getFieldValue() instanceof Long) {
             Entity order = dataDefinitionService.get("orders", "order").get((Long) state.getFieldValue());
             if (order == null) {
-                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                state.addMessage(translationService.translate("core.message.entityNotFound", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             } else {
                 boolean inProgressState = Boolean.parseBoolean(args[0]);
@@ -95,10 +95,11 @@ public class AutoGenealogyService {
             }
         } else {
             if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                state.addMessage(
+                        translationService.translate("core.form.entityWithoutIdentifier", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             } else {
-                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                state.addMessage(translationService.translate("core.grid.noRowSelectedError", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             }
         }
@@ -129,17 +130,18 @@ public class AutoGenealogyService {
         if (state.getFieldValue() instanceof Long) {
             Entity order = dataDefinitionService.get("orders", "order").get((Long) state.getFieldValue());
             if (order == null) {
-                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                state.addMessage(translationService.translate("core.message.entityNotFound", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             } else {
                 createGenealogy(state, order, Boolean.parseBoolean(args[0]));
             }
         } else {
             if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                state.addMessage(
+                        translationService.translate("core.form.entityWithoutIdentifier", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             } else {
-                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                state.addMessage(translationService.translate("core.grid.noRowSelectedError", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             }
         }
