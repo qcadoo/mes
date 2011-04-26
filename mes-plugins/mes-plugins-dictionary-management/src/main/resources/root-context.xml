@@ -44,24 +44,8 @@
        http://www.springframework.org/schema/aop 
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<context:property-placeholder location="file:${QCADOO_CONF}/db.properties,file:${QCADOO_CONF}/report.properties,file:${QCADOO_CONF}/mes.properties,classpath*:hibernate.properties,classpath*:build.properties" />
-
 	<context:component-scan base-package="com.qcadoo.mes">
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 	</context:component-scan>
-
-	<bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetClass">
-			<value>org.springframework.util.Log4jConfigurer</value>
-		</property>
-		<property name="targetMethod">
-			<value>initLogging</value>
-		</property>
-		<property name="arguments">
-			<list>
-				<value>file:${QCADOO_CONF}/log4j.xml</value>
-			</list>
-		</property>
-	</bean>
 
 </beans>

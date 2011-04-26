@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.Restrictions;
@@ -13,10 +14,10 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 
 @Service
-public class DictionaryService {
+public class ViewDictionaryService {
 
     @Autowired
-    com.qcadoo.model.api.DictionaryService dictionaryService;
+    DictionaryService dictionaryService;
 
     public void translateLabel(final ViewDefinitionState state) {
         GridComponent grid = (GridComponent) state.getComponentByReference("grid");

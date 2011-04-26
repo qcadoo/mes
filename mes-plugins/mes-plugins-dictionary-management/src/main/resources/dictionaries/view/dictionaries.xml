@@ -32,9 +32,8 @@
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.dictionaries.DictionaryService" method="addRestrictionToDictionariesGrid" />
-		<preRenderHook bean="com.qcadoo.mes.dictionaries.DictionaryService"
-			method="translateLabel" />
+		<preRenderHook bean="com.qcadoo.mes.dictionaries.ViewDictionaryService" method="addRestrictionToDictionariesGrid" />
+		<preRenderHook bean="com.qcadoo.mes.dictionaries.ViewDictionaryService" method="translateLabel" />
 	</view>
 	<view name="dictionary" plugin="qcadooModel" model="dictionary" defaultAuthorizationRole="ROLE_SUPERVISOR">
 		<component type="window" name="window">
