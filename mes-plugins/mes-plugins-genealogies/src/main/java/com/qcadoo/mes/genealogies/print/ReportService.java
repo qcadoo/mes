@@ -39,10 +39,10 @@ import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class ReportService {
@@ -58,14 +58,12 @@ public class ReportService {
                 viewDefinitionState.redirectTo(
                         "/genealogiesForComponents/genealogyForComponent.pdf?value=" + batchState.getFieldValue(), true, false);
             } else {
-                state.addMessage(
-                        translationService.translate("genealogiesForComponents.genealogyForComponent.report.noBatch",
-                                state.getLocale()), MessageType.FAILURE);
+                state.addMessage(translationService.translate("genealogiesForComponents.genealogyForComponent.report.noBatch",
+                        viewDefinitionState.getLocale()), MessageType.FAILURE);
             }
         } else {
-            state.addMessage(
-                    translationService.translate("genealogiesForComponents.genealogyForComponent.report.noBatch",
-                            state.getLocale()), MessageType.FAILURE);
+            state.addMessage(translationService.translate("genealogiesForComponents.genealogyForComponent.report.noBatch",
+                    viewDefinitionState.getLocale()), MessageType.FAILURE);
         }
     }
 
@@ -76,7 +74,6 @@ public class ReportService {
 
         GridComponent batches = (GridComponent) viewDefinitionState.getComponentByReference("batches");
 
-        batches.setSelectedEntityId(null);
         batches.setSelectedEntitiesId(new HashSet<Long>());
     }
 
@@ -135,12 +132,13 @@ public class ReportService {
                         false);
             } else {
                 state.addMessage(
-                        translationService.translate("genealogies.genealogyForProduct.report.noBatch", state.getLocale()),
-                        MessageType.FAILURE);
+                        translationService.translate("genealogies.genealogyForProduct.report.noBatch",
+                                viewDefinitionState.getLocale()), MessageType.FAILURE);
             }
         } else {
-            state.addMessage(translationService.translate("genealogies.genealogyForProduct.report.noBatch", state.getLocale()),
-                    MessageType.FAILURE);
+            state.addMessage(
+                    translationService.translate("genealogies.genealogyForProduct.report.noBatch",
+                            viewDefinitionState.getLocale()), MessageType.FAILURE);
         }
     }
 }
