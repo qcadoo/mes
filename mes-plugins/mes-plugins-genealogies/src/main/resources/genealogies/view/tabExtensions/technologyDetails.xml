@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd" 
+	plugin="technologies"
+	view="technology">
+	
+	<windowTab name="genealogyTab" reference="genealogyTab">
+		<component type="gridLayout" name="genealogyLayout" columns="3" rows="4">
+			<layoutElement column="1" row="1">
+				<component type="checkbox" name="batchRequired" reference="batchRequired" field="#{form}.batchRequired">
+					<option type="labelWidth" value="50" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="2">
+				<component type="checkbox" name="shiftFeatureRequired" reference="shiftFeatureRequired" field="#{form}.shiftFeatureRequired">
+					<option type="labelWidth" value="50" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="3">	
+				<component type="checkbox" name="postFeatureRequired" reference="postFeatureRequired" field="#{form}.postFeatureRequired">
+					<option type="labelWidth" value="50" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="4">
+				<component type="checkbox" name="otherFeatureRequired" reference="otherFeatureRequired" field="#{form}.otherFeatureRequired">
+					<option type="labelWidth" value="50" />
+				</component>
+			</layoutElement>
+		</component>
+	</windowTab>
+</windowTabExtension>

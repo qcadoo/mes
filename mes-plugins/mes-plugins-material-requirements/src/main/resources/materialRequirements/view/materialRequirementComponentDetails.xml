@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="materialRequirementComponent"
+	modelName="materialRequirementComponent">
+	
+	<component type="window" name="window">
+		<ribbon>
+			<group template="navigation" />
+			<group template="formSaveAction" />
+		</ribbon>
+		<component type="form" name="materialRequirementComponent"
+			reference="form">
+			<component type="gridLayout" name="gridLayout" columns="1"
+				rows="1">
+				<layoutElement column="1" row="1">
+					<component type="lookup" name="order" field="order">
+						<option type="column" name="name" fields="name" link="true"
+							width="200" />
+						<option type="column" name="dateFrom" fields="dateFrom"
+							link="false" width="100" />
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+						<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+						<option type="fieldCode" value="number" />
+					</component>
+				</layoutElement>
+			</component>
+			<option type="header" value="true" />
+			<option type="expression" value="#name" />
+		</component>
+	</component>
+</view>

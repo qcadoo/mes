@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="profile"
+	modelPlugin="qcadooSecurity"
+	modelName="user">
+	
+	<component type="window" name="window">
+		<ribbon>
+			<group name="actions">
+				<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
+			</group>
+		</ribbon>
+		<component type="form" name="user" reference="form">
+			<component type="gridLayout" name="gridLayout" columns="3"
+				rows="8">
+				<layoutElement column="1" row="1">
+					<component type="input" name="login" field="userName"
+						defaultEnabled="false" />
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="input" name="role" field="role" defaultEnabled="false" />
+				</layoutElement>
+				<layoutElement column="1" row="3">
+					<component type="input" name="email" field="email" />
+				</layoutElement>
+				<layoutElement column="1" row="4">
+					<component type="input" name="firstName" field="firstName" />
+				</layoutElement>
+				<layoutElement column="1" row="5">
+					<component type="input" name="lastName" field="lastName" />
+				</layoutElement>
+				<layoutElement column="1" row="6" height="2">
+					<component type="textarea" name="description" field="description" />
+				</layoutElement>
+				<layoutElement column="1" row="8">
+					<component type="button" name="changePasswordButton"
+						reference="changePasswordButton" source="#{form}">
+						<option type="correspondingView" value="users/profileChangePassword" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+					</component>
+				</layoutElement>
+			</component>
+			<option type="header" value="true" />
+			<option type="expression" value="' '" />
+		</component>
+	</component>
+	<preRenderHook bean="com.qcadoo.mes.users.UserService"
+		method="removeChangePasswordButtonWhenNotAllowed" />
+</view>

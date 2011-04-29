@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
+	plugin="orders"
+	view="orders">
+	
+	<group name="exportPlan">
+		<smallButtons name="pdfWorker" icon="pdfIcon16.png"
+			action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForWorker);"
+			state="disabled">
+			<smallButton name="pdfMachine" icon="pdfIcon16.png"
+				action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForMachine);"
+				state="disabled" />
+			<smallButton name="pdfProduct" icon="pdfIcon16.png"
+				action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForProduct);"
+				state="disabled" />
+			<script>
+				<![CDATA[
+					var pdfWorker = #{window}.getRibbonItem("exportPlan.pdfWorker");
+					var xlsWorker = #{window}.getRibbonItem("exportPlan.xlsWorker");
+					var pdfMachine = #{window}.getRibbonItem("exportPlan.pdfWorker.pdfMachine");
+					var xlsMachine = #{window}.getRibbonItem("exportPlan.xlsWorker.xlsMachine");
+					var pdfProduct = #{window}.getRibbonItem("exportPlan.pdfWorker.pdfProduct");
+					var xlsProduct = #{window}.getRibbonItem("exportPlan.xlsWorker.xlsProduct");
+					#{grid}.addOnChangeListener({
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								pdfWorker.disable();
+								xlsWorker.disable();
+								pdfMachine.disable();
+								xlsMachine.disable();
+								pdfProduct.disable();
+								xlsProduct.disable();
+							} else {
+								pdfWorker.enable();
+								xlsWorker.enable();
+								pdfMachine.enable();
+								xlsMachine.enable();
+								pdfProduct.enable();
+								xlsProduct.enable();
+							}
+						}
+					});
+				]]>
+			</script>
+		</smallButtons>
+		<smallButtons name="xlsWorker" icon="xlsIcon16.png"
+			action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);"
+			state="disabled">
+			<smallButton name="xlsMachine" icon="xlsIcon16.png"
+				action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForMachine);"
+				state="disabled" />
+			<smallButton name="xlsProduct" icon="xlsIcon16.png"
+				action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);"
+				state="disabled" />
+		</smallButtons>
+	</group>
+</ribbonExtension>

@@ -30,7 +30,9 @@
 		<menu:menu-item name="dictionaries" category="administration"
 			view="dictionaries" />
 
-		<view:view resource="view/dictionaries.xml" />
+		<view:view resource="view/dictionariesList.xml" />
+		<view:view resource="view/dictionaryDetails.xml" />
+		<view:view resource="view/dictionaryItemDetails.xml" />
 	</modules>
 
 </plugin>

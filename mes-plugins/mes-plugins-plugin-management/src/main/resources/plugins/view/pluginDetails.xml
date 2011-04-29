@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="plugin"
+	modelPlugin="qcadooPlugin"
+	modelName="plugin"
+	windowHeight="450"
+	defaultAuthorizationRole="ROLE_ADMIN">
+	
+	<component type="window" name="window">
+		<ribbon>
+			<group template="navigation" />
+		</ribbon>
+		<component type="form" name="plugin" reference="form">
+			<component type="gridLayout" name="gridLayout" columns="2"
+				rows="7">
+				<layoutElement column="1" row="1" height="1">
+					<component type="input" name="identifier" field="identifier"
+						defaultEnabled="false" />
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="input" name="version" field="version"
+						defaultEnabled="false" />
+				</layoutElement>
+				<layoutElement column="2" row="1">
+					<component type="select" name="state" field="state"
+						defaultEnabled="false" />
+				</layoutElement>
+				<layoutElement column="2" row="2">
+				</layoutElement>
+				<layoutElement column="1" row="3" width="2">
+					<component type="input" name="name" field="name"
+						defaultEnabled="false" />
+				</layoutElement>
+				<layoutElement column="1" row="4" width="2" height="2">
+					<component type="textarea" name="description" field="description"
+						defaultEnabled="false" />
+				</layoutElement>
+				<layoutElement column="1" row="6" width="2">
+					<component type="input" name="vendor" field="vendor"
+						defaultEnabled="false" />
+				</layoutElement>
+				<layoutElement column="1" row="7" width="2">
+					<component type="input" name="vendorUrl" field="vendorUrl"
+						defaultEnabled="false" />
+				</layoutElement>
+			</component>
+			<option type="header" value="true" />
+			<option type="expression" value="#identifier" />
+		</component>
+	</component>
+</view>

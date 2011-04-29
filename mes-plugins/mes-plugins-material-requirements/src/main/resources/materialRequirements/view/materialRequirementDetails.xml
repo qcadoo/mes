@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="materialRequirement"
+	modelName="materialRequirement">
+	
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<group template="navigation" />
+			<group template="formSaveCopyAndRemoveActions" />
+			<group name="generate">
+				<!--<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" 
+					state="disabled" /> -->
+				<!--<bigButton name="copy" icon="copyIcon24.png" action="#{form}.performCopy;" 
+					state="disabled"/> -->
+				<bigButton name="generate" icon="generateIcon24.png"
+					action="#{form}.fireEvent(generateMaterialRequirement);" state="disabled" />
+			</group>
+			<group name="export">
+				<smallButton name="pdf" icon="pdfIcon16.png"
+					action="#{form}.fireEvent(printMaterialRequirement,pdf);" state="disabled" />
+				<smallButton name="xls" icon="xlsIcon16.png"
+					action="#{form}.fireEvent(printMaterialRequirement,xls);" state="disabled" />
+			</group>
+		</ribbon>
+		<component type="form" name="materialRequirement"
+			reference="form">
+			<script>
+				<![CDATA[
+					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
+					var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
+					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
+					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+					
+					var containsAtLeastOneOrder = false;
+					var entityExists = false;
+					
+					this.addOnChangeListener({
+						onSetValue: function(value) {
+							if (!value || !value.content) {
+								return;
+							}
+							if (value.content.entityId) {
+								entityExists = true;
+							} else {
+								entityExists = false;
+							}
+							updateRibbon();
+						}
+					});
+					#{materialRequirementComponents}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (value.content.totalEntities > 0) {
+								containsAtLeastOneOrder = true;
+							} else {
+								containsAtLeastOneOrder = false;
+							}
+							updateRibbon();
+						}
+					});
+					
+					function updateRibbon() {
+						if (entityExists) {
+							var isGeneratedCheckboxValue = #{generated}.getValue();
+							copyRibbonItem.enable();
+							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+								xlsRibbonItem.enable();
+								pdfRibbonItem.enable();
+								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
+							} else {
+								xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								saveRibbonItem.enable();
+							}
+						} else {
+							copyRibbonItem.disable("#{translate(recordNotCreated)}");
+							xlsRibbonItem.disable("#{translate(recordNotCreated)}");
+							pdfRibbonItem.disable("#{translate(recordNotCreated)}");
+							saveRibbonItem.enable();
+						}
+					}
+				]]>
+			</script>
+			<component type="gridLayout" name="gridLayout" columns="3" rows="6">
+				<layoutElement column="1" row="1">
+					<component type="checkbox" name="generated" reference="generated"
+						field="generated" defaultEnabled="false">
+						<option type="textRepresentationOnDisabled" value="false" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="input" name="date" reference="date"
+						field="date" defaultEnabled="false">
+						<option type="textRepresentationOnDisabled" value="false" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="3">
+					<component type="input" name="worker" reference="worker"
+						field="worker" defaultEnabled="false">
+						<option type="textRepresentationOnDisabled" value="false" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="4" height="2">
+					<component type="textarea" name="name" reference="name"
+						field="name" />
+				</layoutElement>
+				<layoutElement column="1" row="6">
+					<component type="checkbox" name="onlyComponents"
+						reference="onlyComponents" field="onlyComponents">
+						<option type="labelWidth" value="55" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1" width="2" height="6">
+					<component type="grid" name="materialRequirementComponents"
+						reference="materialRequirementComponents" source="#{form}.orders">
+						<option type="column" name="number" fields="order"
+							expression="#order['number']" width="50" />
+						<option type="column" name="name" fields="order"
+							expression="#order['name']" />
+						<option type="order" column="number" direction="desc" />
+						<option type="correspondingView" value="materialRequirements/materialRequirementComponent" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="paginable" value="false" />
+						<option type="multiselect" value="true" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="height" value="200" />
+						<option type="width" value="350" />
+					</component>
+				</layoutElement>
+			</component>
+			<option type="header" value="true" />
+			<option type="expression" value="#name" />
+			<listener event="printMaterialRequirement"
+				bean="com.qcadoo.mes.materialRequirements.MaterialRequirementService" method="printMaterialRequirement" />
+			<listener event="generateMaterialRequirement"
+				bean="com.qcadoo.mes.materialRequirements.MaterialRequirementService" method="generateMaterialRequirement" />
+		</component>
+	</component>
+	<preRenderHook bean="com.qcadoo.mes.materialRequirements.MaterialRequirementService"
+		method="disableFormForExistingMaterialRequirement" />
+	<preRenderHook bean="com.qcadoo.mes.materialRequirements.MaterialRequirementService"
+		method="setGenerateButtonState" />
+</view>

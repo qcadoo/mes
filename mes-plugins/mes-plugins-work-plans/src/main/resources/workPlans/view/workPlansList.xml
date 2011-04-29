@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="workPlans"
+	modelName="workPlan"
+	menuAccessible="true">
+	
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<group template="gridNewCopyAndRemoveAction" />
+			<group name="exportWorker">
+				<smallButton name="pdfWorker" icon="pdfIcon16.png"
+					action="#{grid}.fireEvent(printWorkPlan,pdf,ForWorker);" state="disabled" />
+				<smallButton name="xlsWorker" icon="xlsIcon16.png"
+					action="#{grid}.fireEvent(printWorkPlan,xls,ForWorker);" state="disabled" />
+			</group>
+			<group name="exportMachine">
+				<smallButton name="pdfMachine" icon="pdfIcon16.png"
+					action="#{grid}.fireEvent(printWorkPlan,pdf,ForMachine);" state="disabled" />
+				<smallButton name="xlsMachine" icon="xlsIcon16.png"
+					action="#{grid}.fireEvent(printWorkPlan,xls,ForMachine);" state="disabled" />
+			</group>
+			<group name="exportProduct">
+				<smallButton name="pdfProduct" icon="pdfIcon16.png"
+					action="#{grid}.fireEvent(printWorkPlan,pdf,ForProduct);" state="disabled" />
+				<smallButton name="xlsProduct" icon="xlsIcon16.png"
+					action="#{grid}.fireEvent(printWorkPlan,xls,ForProduct);" state="disabled" />
+			</group>
+		</ribbon>
+		<component type="grid" name="workPlans" reference="grid">
+			<option type="column" name="name" fields="name" link="true"
+				width="300" />
+			<option type="column" name="generated" fields="generated"
+				link="false" width="100" />
+			<option type="column" name="worker" fields="worker" width="200" />
+			<option type="order" column="name" direction="asc" />
+			<option type="correspondingView" value="workPlans/workPlan" />
+			<option type="correspondingComponent" value="form" />
+			<option type="searchable" value="name,generated,worker" />
+			<option type="orderable" value="name,generated,worker" />
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+			<listener event="printWorkPlan" bean="com.qcadoo.mes.workPlans.WorkPlanService"
+				method="printWorkPlan" />
+			<script>
+				<![CDATA[
+					var pdfWorker = #{window}.getRibbonItem("exportWorker.pdfWorker");
+					var xlsWorker = #{window}.getRibbonItem("exportWorker.xlsWorker");
+					var pdfMachine = #{window}.getRibbonItem("exportMachine.pdfMachine");
+					var xlsMachine = #{window}.getRibbonItem("exportMachine.xlsMachine");
+					var pdfProduct = #{window}.getRibbonItem("exportProduct.pdfProduct");
+					var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								pdfWorker.disable();
+								xlsWorker.disable();
+								pdfMachine.disable();
+								xlsMachine.disable();
+								pdfProduct.disable();
+								xlsProduct.disable();
+							} else if (selectedEntitiesArray.length > 1) {
+								pdfWorker.disable("#{translate(moreThanOneRecordSelected)}");
+								xlsWorker.disable("#{translate(moreThanOneRecordSelected)}");
+								pdfMachine.disable("#{translate(moreThanOneRecordSelected)}");
+								xlsMachine.disable("#{translate(moreThanOneRecordSelected)}");
+								pdfProduct.disable("#{translate(moreThanOneRecordSelected)}");
+								xlsProduct.disable("#{translate(moreThanOneRecordSelected)}");	
+							} else if (selectedEntitiesArray[0].fields.generated == '0') {
+								pdfWorker.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								xlsWorker.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								pdfMachine.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								xlsMachine.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								pdfProduct.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								xlsProduct.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");								
+							} else {
+								pdfWorker.enable();
+								xlsWorker.enable();
+								pdfMachine.enable();
+								xlsMachine.enable();
+								pdfProduct.enable();
+								xlsProduct.enable();
+							}
+						}
+					}
+					this.addOnChangeListener(listener);
+				]]>
+			</script>
+		</component>
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+	<preRenderHook bean="com.qcadoo.mes.workPlans.WorkPlanService"
+		method="setGridGenerateButtonState" />
+</view>

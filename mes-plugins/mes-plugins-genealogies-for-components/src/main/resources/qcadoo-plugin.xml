@@ -62,9 +62,10 @@
 		<menu:menu-item name="genealogyForComponent" category="reports"
 			view="genealogyForComponent" />
 			
-		<view:view resource="view/genealogiesForComponent.xml" />
+		<view:view resource="view/genealogyForComponent.xml" />
 			
-		<view:view-tab resource="view/viewExtension.xml" />
+		<view:view-tab resource="view/tabExtensions/operationProductInComponentDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/orderGenealogyDetails.xml" />
 		
 		<view:view-hook plugin="technologies"
 			view="technology" hookType="preRenderHook"

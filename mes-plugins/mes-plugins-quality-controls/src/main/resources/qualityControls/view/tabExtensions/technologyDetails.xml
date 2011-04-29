@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd" 
+	plugin="technologies"
+	view="technology">
+	
+	<windowTab name="qualityControlTab" reference="qualityControlTab">
+		<component type="gridLayout" name="genealogyLayout" columns="3" rows="4">
+			<layoutElement column="1" row="1">
+				<component type="select" name="qualityControlType" reference="qualityControlType" field="#{form}.qualityControlType" >
+					<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.technologies.TechnologyService" method="checkQualityControlType"/>									
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="2">	
+				<component type="input" name="unitSamplingNr" reference="unitSamplingNr" field="#{form}.unitSamplingNr" />
+			</layoutElement>
+			<layoutElement column="1" row="3" height="2">
+				<component type="textarea" name="qualityControlInstruction" reference="qualityControlInstruction" field="#{form}.qualityControlInstruction" />
+			</layoutElement>
+		</component>
+	</windowTab>
+</windowTabExtension>

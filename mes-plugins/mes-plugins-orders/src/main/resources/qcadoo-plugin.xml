@@ -55,7 +55,8 @@
 		<menu:menu-item name="productionOrders" category="orders"
 			view="orders" />
 
-		<view:view resource="view/orders.xml" />
+		<view:view resource="view/ordersList.xml" />
+		<view:view resource="view/orderDetails.xml" />
 
 	</modules>
 

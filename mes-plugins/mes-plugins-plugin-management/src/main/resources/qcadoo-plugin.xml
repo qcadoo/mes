@@ -43,7 +43,11 @@
 		<menu:menu-item name="plugins" category="administration"
 			view="plugins" />
 
-		<view:view resource="view/plugins.xml" />
+		<view:view resource="view/pluginsList.xml" />
+		<view:view resource="view/pluginDetails.xml" />
+		<view:view resource="view/pluginDownload.xml" />
+		<view:view resource="view/pluginInfo.xml" />
+		<view:view resource="view/restartView.xml" />
 
 		<view:resource uri="public/**/*" />
 

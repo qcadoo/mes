@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
+	plugin="orders"
+	view="order">
+	
+	<group name="qualityContol">
+		<bigButton name="generateQualityControl" icon="qualityControlIcon24.png" state="disabled">
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('generateQualityControl', []);
+							}
+						}
+					});
+					#{form}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (! value || ! value.content) {
+								return;
+							}
+							var state = #{state}.getValue().content.value;
+							if (! value.content.entityId || ! state) {
+								this.disable();
+							} else if (state == "03done") {
+								this.disable("#{translate(orders.order.ribbon.message.stateIsDone)}");
+							} else {
+								this.enable();
+							}
+						}
+					});					
+				]]>
+			</script>
+		</bigButton>
+	</group>
+</ribbonExtension>

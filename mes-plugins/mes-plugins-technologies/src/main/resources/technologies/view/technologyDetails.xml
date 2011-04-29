@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="technology"
+	modelName="technology">
+	
+	<component type="window" name="window">
+		<ribbon>
+			<group template="navigation" />
+			<group template="formSaveCopyAndRemoveActions" />
+		</ribbon>
+		<component type="form" name="technology" reference="form">
+			<component type="gridLayout" name="gridsLayout" columns="3"
+				rows="5" hasBorders="false">
+				<layoutElement column="1" row="1">
+					<component type="checkbox" name="master" field="master" />
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="input" name="number" field="number"
+						reference="number" hasDescription="true" />
+				</layoutElement>
+				<layoutElement column="1" row="3" height="2">
+					<component type="textarea" name="name" field="name" />
+				</layoutElement>
+				<layoutElement column="2" row="1">
+					<component type="lookup" name="product" field="product"
+						reference="product">
+						<option type="column" name="name" fields="name" link="true"
+							width="200" />
+						<option type="column" name="ean" fields="ean" />
+						<option type="searchable" value="name,ean" />
+						<option type="orderable" value="name,ean" />
+						<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+						<option type="fieldCode" value="number" />
+						<listener event="onSelectedEntityChange"
+							bean="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyNumber" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="2" height="2">
+					<component type="textarea" name="description" field="description" />
+				</layoutElement>
+				<layoutElement column="2" row="4">
+					<component type="select" name="componentQuantityAlgorithm"
+						field="componentQuantityAlgorithm" />
+				</layoutElement>
+			</component>
+			<option type="header" value="true" />
+			<option type="expression" value="#name" />
+		</component>
+		<component type="borderLayout" name="treeBorderLayout"
+			reference="treeBorderLayout">
+			<option type="label" value="treeLayoutLabel" />
+			<component type="gridLayout" name="gridsLayout" columns="3"
+				rows="5" hasBorders="false">
+				<layoutElement column="1" row="1" height="5">
+					<component type="tree" name="technologyTree" reference="technologyTree"
+						field="#{form}.operationComponents">
+						<dataType name="operation">
+							<option type="nodeLabelExpression"
+								value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
+							<option type="correspondingView" value="technologies/technologyOperationComponent" />
+							<option type="correspondingComponent" value="form" />
+							<option type="correspondingViewInModal" value="true" />
+							<option type="nodeIcon" value="/technologies/public/css/icons/operationIcon16.png" />
+							<option type="newIcon" value="/technologies/public/css/icons/newOperationIcon16.png" />
+						</dataType>
+						<dataType name="referenceTechnology">
+							<option type="nodeLabelExpression"
+								value="'&lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + '&lt;/span&gt; ' + #referenceTechnology['name']" />
+							<option type="correspondingView"
+								value="technologies/technologyReferenceTechnologyComponent" />
+							<option type="correspondingComponent" value="form" />
+							<option type="correspondingViewInModal" value="true" />
+							<option type="nodeIcon" value="/technologies/public/css/icons/technologyIcon16.png" />
+							<option type="newIcon" value="/technologies/public/css/icons/newTechnologyIcon16.png" />
+							<option type="canHaveChildren" value="false" />
+						</dataType>
+						<listener event="select"
+							bean="com.qcadoo.mes.technologies.TechnologyService" method="loadProductsForReferencedTechnology" />
+						<script>
+							<![CDATA[
+								this.addOnChangeListener({
+									onMoveModeChange: function(isMoveMode) {
+										if (isMoveMode) {
+											#{treeBorderLayout}.setBackground(QCD.components.containers.layout.Layout.COLOR_DISABLED);
+										} else {
+											#{treeBorderLayout}.setBackground(QCD.components.containers.layout.Layout.COLOR_NORMAL);
+										}
+									}
+								});
+							]]>
+						</script>
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1" height="5">
+					<component type="grid" name="inProducts" reference="inProducts"
+						source="#{technologyTree}.operationProductInComponents">
+						<option type="column" name="number" fields="product"
+							expression="#product['number']" link="true" width="100" />
+						<option type="column" name="name" fields="product"
+							expression="#product['name']" link="true" width="200" />
+						<option type="column" name="quantity" fields="quantity"
+							width="100" />
+						<option type="column" name="unit" fields="product"
+							expression="#product['unit']" link="false" width="70" />
+						<option type="order" column="number" direction="desc" />
+						<option type="correspondingView" value="technologies/operationProductInComponent" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="paginable" value="false" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="true" />
+					</component>
+				</layoutElement>
+				<layoutElement column="3" row="1" height="5">
+					<component type="grid" name="outProducts" reference="outProducts"
+						source="#{technologyTree}.operationProductOutComponents">
+						<option type="column" name="number" fields="product"
+							expression="#product['number']" link="true" />
+						<option type="column" name="name" fields="product"
+							expression="#product['name']" link="true" />
+						<option type="column" name="quantity" fields="quantity" />
+						<option type="column" name="unit" fields="product"
+							expression="#product['unit']" link="false" width="70" />
+						<option type="order" column="number" direction="desc" />
+						<option type="correspondingView" value="technologies/operationProductOutComponent" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="paginable" value="false" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="true" />
+					</component>
+				</layoutElement>
+			</component>
+		</component>
+	</component>
+</view>

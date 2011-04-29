@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="orders"
+	modelName="order"
+	menuAccessible="true"
+	defaultAuthorizationRole="ROLE_SUPERVISOR">
+	
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<group name="actions">
+				<bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.performNew;"/>
+				<smallButton name="copy" icon="copyIcon16.png" action="#{grid}.performCopy;" state="disabled" />
+				<smallButton name="delete" icon="deleteIcon16.png" action="#{grid}.performDelete;" state="disabled" />
+			</group>
+			<group name="status">
+				<bigButton name="activateOrder" icon="startIcon24.png"
+					state="disabled">
+					<script>
+						<![CDATA[
+							this.element.width(100);
+							this.addOnChangeListener({
+								onClick: function() {
+									this.element.width(100);
+									if (this.state == "begin") {
+										if (window.confirm("#{translate(orders.orders.window.ribbon.status.activateOrder.confirm)}")) {
+											#{grid}.performEvent('activateOrder', [true]);
+										};
+									} else if (this.state == "finish") {
+										if (window.confirm("#{translate(orders.orders.window.ribbon.status.finishOrder.confirm)}")) {
+											#{grid}.performEvent('activateOrder', [false]);
+										};
+									}
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
+			</group>
+			<group name="export">
+				<smallButton name="print" icon="pdfIcon16.png"
+					action="#{grid}.fireEvent(printOrder,pdf);" state="disabled" />
+			</group>
+		</ribbon>
+		<component type="grid" name="orders" reference="grid">
+			<script>
+				<![CDATA[
+					var print = #{window}.getRibbonItem("export.print");
+					var activateOrder = #{window}.getRibbonItem("status.activateOrder");
+					var deleteButton = #{window}.getRibbonItem("actions.delete");
+					var copyButton = #{window}.getRibbonItem("actions.copy");
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								print.disable();
+								activateOrder.disable();
+								deleteButton.disable();
+								copyButton.disable();
+							} else {
+								if (selectedEntitiesArray.length == 1) {
+									print.enable();
+									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
+									if (selectedEntityStatus == '01pending') {
+										activateOrder.enable();
+										activateOrder.state = "begin";
+										activateOrder.setLabel("#{translate(orders.orders.window.ribbon.status.activateOrder)}");
+										activateOrder.setIcon('startIcon24.png');
+									} else if (selectedEntityStatus == '02inProgress') {
+										activateOrder.enable();
+										activateOrder.state = "finish";
+										activateOrder.setLabel("#{translate(orders.orders.window.ribbon.status.finishOrder)}");
+										activateOrder.setIcon('acceptIcon24.png');
+									} else {
+										activateOrder.disable();
+									}
+								} else {
+									print.disable("#{translate(moreThanOneRecordSelected)}");
+									activateOrder.disable("#{translate(moreThanOneRecordSelected)}");
+								}
+								copyButton.enable();
+								var noneClosed = true;
+								for (var i in selectedEntitiesArray) {
+									if (selectedEntitiesArray[i].fields.state == "03done") {
+										noneClosed = false;
+										break;
+									}
+								}
+								if (noneClosed) {
+									deleteButton.enable();
+								} else {
+									deleteButton.disable("#{translate(orders.orders.ribbon.message.someStateIsDone)}");
+								}
+							}
+						}
+					}
+					this.addOnChangeListener(listener);
+				]]>
+			</script>
+			<option type="column" name="number" fields="number" link="true"
+				width="50" />
+			<option type="column" name="name" fields="name" link="true" />
+			<option type="column" name="state" fields="state" width="40" />
+			<option type="column" name="dateFrom" fields="dateFrom"
+				width="40" />
+			<option type="column" name="dateTo" fields="dateTo" width="40" />
+			<option type="order" column="number" direction="desc" />
+			<option type="correspondingView" value="orders/order" />
+			<option type="correspondingComponent" value="form" />
+			<option type="searchable" value="name,number,state,dateFrom,dateTo" />
+			<option type="orderable" value="name,number,state,dateFrom,dateTo" />
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+			<option type="hasPredefinedFilters" value="true" />
+			<predefinedFilters>
+				<predefinedFilter name="all">
+				</predefinedFilter>
+				<predefinedFilter name="pending">
+					<filterRestriction column="state" value="01pending" />
+					<filterOrder column="dateFrom" direction="asc" />
+				</predefinedFilter>
+				<predefinedFilter name="inProgress">
+					<filterRestriction column="state" value="02inProgress" />
+					<filterOrder column="dateTo" direction="asc" />
+				</predefinedFilter>
+				<predefinedFilter name="overduePending">
+					<filterRestriction column="state" value="01pending" />
+					<filterRestriction column="dateTo" value="&lt;= @{yesterday}" />
+				</predefinedFilter>
+				<predefinedFilter name="overdueInProgress">
+					<filterRestriction column="state" value="02inProgress" />
+					<filterRestriction column="dateTo" value="&lt;= @{yesterday}" />
+				</predefinedFilter>
+				<predefinedFilter name="startingToday">
+					<filterRestriction column="state" value="01pending" />
+					<filterRestriction column="dateFrom" value="@{today}" />
+				</predefinedFilter>
+				<predefinedFilter name="startingTomorrow">
+					<filterRestriction column="state" value="01pending" />
+					<filterRestriction column="dateFrom" value="@{tomorrow}" />
+				</predefinedFilter>
+			</predefinedFilters>
+			<listener event="printOrder" bean="com.qcadoo.mes.orders.OrderService"
+				method="printOrder" />
+			<listener event="activateOrder" bean="com.qcadoo.mes.orders.OrderService"
+				method="activateOrder" />
+		</component>
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+</view>

@@ -32,7 +32,11 @@
 		<menu:menu-item-url name="profile" category="home"
 			url="/userProfile.html" />
 
-		<view:view resource="view/users.xml" />
+		<view:view resource="view/usersList.xml" />
+		<view:view resource="view/userDetails.xml" />
+		<view:view resource="view/userChangePassword.xml" />
+		<view:view resource="view/profile.xml" />
+		<view:view resource="view/profileChangePassword.xml" />
 	</modules>
 
 </plugin>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd" 
+	plugin="technologies"
+	view="technologyOperationComponent">
+	
+	<windowTab name="qualityControlTab" reference="qualityControlTab">
+		<component type="gridLayout" name="qualityControlGridLayout" columns="1" rows="1">
+			<layoutElement column="1" row="1">
+					<component type="checkbox" name="qualityControlRequired" reference="qualityControlRequired" field="#{form}.qualityControlRequired" />
+				</layoutElement>
+		</component>
+	</windowTab>
+</windowTabExtension>

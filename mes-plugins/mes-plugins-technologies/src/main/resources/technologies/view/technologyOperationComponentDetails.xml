@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="technologyOperationComponent"
+	modelName="technologyOperationComponent">
+	
+	<component type="window" name="window">
+		<ribbon>
+			<group template="navigation" />
+			<group template="formSaveAndBackAndRemoveActions" />
+		</ribbon>
+		<component type="form" name="form" reference="form">
+			<component type="gridLayout" name="gridLayout" columns="1"
+				rows="2">
+				<layoutElement column="1" row="1">
+					<component type="lookup" name="operation" field="operation"
+						reference="operation">
+						<option type="column" name="name" fields="name" width="300" />
+						<option type="searchable" value="name" />
+						<option type="orderable" value="name" />
+						<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+						<option type="fieldCode" value="number" />
+						<option type="required" value="true" />
+					</component>
+				</layoutElement>
+			</component>
+			<option type="header" value="true" />
+			<option type="expression" value="#operation['name']" />
+		</component>
+	</component>
+</view>

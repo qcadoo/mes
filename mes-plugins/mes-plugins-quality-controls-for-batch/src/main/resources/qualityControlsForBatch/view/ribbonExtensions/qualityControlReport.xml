@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
+	plugin="qualityControls"
+	view="qualityControlReport">
+	
+	<group name="reportsForBatch">
+		<smallButton name="pdfBatch" icon="pdfIcon16.png"
+			action="#{form}.fireEvent(printQualityControlReport,pdf,batch);"
+			state="disabled" />
+		<smallButton name="xlsBatch" icon="xlsIcon16.png"
+			action="#{form}.fireEvent(printQualityControlReport,xls,batch);"
+			state="disabled">
+			<script>
+				<![CDATA[
+					var pdfBatch = #{window}.getRibbonItem("reportsForBatch.pdfBatch");
+					var xlsBatch = #{window}.getRibbonItem("reportsForBatch.xlsBatch");
+					var dateFromElement = #{dateFrom};
+					var dateToElement = #{dateTo};
+					var buttonUpdate = {
+						onChange: function(selectedValue) {
+							if (dateFromElement.getDate() == null || dateFromElement.getDate() == 0 || dateToElement.getDate() == null || dateToElement.getDate() == 0) {
+								pdfBatch.disable();
+								xlsBatch.disable();
+							} else {
+								pdfBatch.enable();
+								xlsBatch.enable();
+							}
+						}
+					}
+					dateFromElement.addOnChangeListener(buttonUpdate);
+					dateToElement.addOnChangeListener(buttonUpdate);
+				]]>
+			</script>
+		</smallButton>
+	</group>
+</ribbonExtension>

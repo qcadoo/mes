@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="menuViewDefinitionItem"
+	modelPlugin="qcadooView"
+	modelName="item"
+	defaultAuthorizationRole="ROLE_ADMIN">
+	
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<group template="navigation" />
+			<group template="formSaveAndRemoveActions" />
+		</ribbon>
+		<component type="form" name="menuViewDefinitionItem"
+			reference="form">
+			<component type="gridLayout" name="gridLayout" columns="1"
+				rows="3">
+				<layoutElement column="1" row="1">
+					<component type="input" name="name" field="name"
+						hasDescription="false" reference="itemName"/>
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="lookup" name="viewDefinition" field="view" reference="itemView">
+						<option type="column" name="pluginIdentifier" fields="pluginIdentifier" />
+						<option type="searchable" value="pluginIdentifier" />
+						<option type="orderable" value="pluginIdentifier" />
+						<option type="expression" value="#name + ' (' + #pluginIdentifier + ')'" />
+						<option type="fieldCode" value="name" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="3">
+					<component type="checkbox" name="active" field="active" reference="itemActive"/>
+				</layoutElement>
+			</component>
+			<option type="header" value="true" />
+			<option type="expression"
+				value="#name + ' - ' + #category['name'] + '[' + #succession + ']'" />
+		</component>
+	</component>
+	<preRenderHook bean="com.qcadoo.mes.menu.MenuAdministrationService" method="translateItemForm" />
+</view>

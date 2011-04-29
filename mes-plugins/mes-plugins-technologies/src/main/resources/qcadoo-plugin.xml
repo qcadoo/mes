@@ -67,7 +67,14 @@
 		<menu:menu-item name="operations" category="technology"
 			view="operations" />
 
-		<view:view resource="view/technologies.xml" />
+		<view:view resource="view/operationsList.xml" />
+		<view:view resource="view/operationDetails.xml" />
+		<view:view resource="view/technologiesList.xml" />
+		<view:view resource="view/technologyDetails.xml" />
+		<view:view resource="view/technologyOperationComponentDetails.xml" />
+		<view:view resource="view/technologyReferenceTechnologyComponentDetails.xml" />
+		<view:view resource="view/operationProductInComponentDetails.xml" />
+		<view:view resource="view/operationProductOutComponentDetails.xml" />
 
 		<view:resource uri="public/**/*" />
 

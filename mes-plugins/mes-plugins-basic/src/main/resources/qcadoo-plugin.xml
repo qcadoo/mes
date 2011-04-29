@@ -49,8 +49,15 @@
 		<menu:menu-item-url name="systemParameters"
 			category="basic" url="/parameter.html" />
 
-		<view:view resource="view/basic.xml" />
-		<view:view resource="view/products.xml" />
+		<view:view resource="view/machinesList.xml" />
+		<view:view resource="view/machineDetails.xml" />
+		<view:view resource="view/staffsList.xml" />
+		<view:view resource="view/staffDetails.xml" />
+		<view:view resource="view/productsList.xml" />
+		<view:view resource="view/productDetails.xml" />
+		<view:view resource="view/productSubstituteDetails.xml" />
+		<view:view resource="view/productSubstituteComponentDetails.xml" />
+		<view:view resource="view/parameters.xml" />
 	</modules>
 
 </plugin>

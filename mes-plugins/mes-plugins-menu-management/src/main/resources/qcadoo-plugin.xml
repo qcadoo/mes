@@ -30,7 +30,9 @@
 		<menu:menu-item name="menu" category="administration"
 			view="menuCategories" />
 
-		<view:view resource="view/menu.xml" />
+		<view:view resource="view/menuCategoriesList.xml" />
+		<view:view resource="view/menuCategoryDetails.xml" />
+		<view:view resource="view/menuViewDefinitionItemDetails.xml" />
 
 	</modules>
 

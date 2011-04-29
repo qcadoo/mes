@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd" 
+	plugin="basic"
+	view="product">
+	
+	<windowTab name="genealogyTab" reference="genealogyTab">
+		<component type="gridLayout" name="genealogyLayout" columns="3" rows="2">
+			<layoutElement column="1" row="1">
+				<component type="input" name="batch" field="#{form}.batch" />	
+			</layoutElement>
+			<layoutElement column="1" row="2">
+				<component type="checkbox" name="genealogyBatchReq" field="#{form}.genealogyBatchReq">
+					<option type="labelWidth" value="60" />
+				</component>
+			</layoutElement>
+		</component>
+	</windowTab>
+</windowTabExtension>
