@@ -514,7 +514,7 @@ public class OrderServiceTest {
         orderService.disableFormForDoneOrder(viewDefinitionState);
 
         // then
-        verify(order).setEnabledWithChildren(true);
+        verify(order).setFormEnabled(true);
         verify(technology).setEnabled(true);
     }
 
@@ -534,7 +534,7 @@ public class OrderServiceTest {
         orderService.disableFormForDoneOrder(viewDefinitionState);
 
         // then
-        verify(order).setEnabledWithChildren(true);
+        verify(order).setFormEnabled(true);
         verify(technology).setEnabled(true);
     }
 
@@ -557,7 +557,7 @@ public class OrderServiceTest {
         orderService.disableFormForDoneOrder(viewDefinitionState);
 
         // then
-        verify(order).setEnabledWithChildren(true);
+        verify(order).setFormEnabled(true);
         verify(technology).setEnabled(true);
     }
 
@@ -580,7 +580,7 @@ public class OrderServiceTest {
         orderService.disableFormForDoneOrder(viewDefinitionState);
 
         // then
-        verify(order).setEnabledWithChildren(true);
+        verify(order).setFormEnabled(true);
         verify(technology).setEnabled(true);
     }
 
@@ -603,7 +603,7 @@ public class OrderServiceTest {
         orderService.disableFormForDoneOrder(viewDefinitionState);
 
         // then
-        verify(order).setEnabledWithChildren(false);
+        verify(order).setFormEnabled(false);
         verify(technology).setEnabled(false);
     }
 

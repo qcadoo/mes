@@ -487,7 +487,7 @@ public final class QualityControlService {
             }
         }
 
-        qualityControl.setEnabledWithChildren(!disabled);
+        qualityControl.setFormEnabled(!disabled);
     }
 
     public boolean clearQualityControlOnCopy(final DataDefinition dataDefinition, final Entity entity) {

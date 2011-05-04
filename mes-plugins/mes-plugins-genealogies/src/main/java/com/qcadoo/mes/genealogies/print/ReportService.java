@@ -74,7 +74,7 @@ public class ReportService {
 
         GridComponent batches = (GridComponent) viewDefinitionState.getComponentByReference("batches");
 
-        batches.setSelectedEntitiesId(new HashSet<Long>());
+        batches.setSelectedEntitiesIds(new HashSet<Long>());
     }
 
     public void addRestrictionToGenealogyGrid(final ViewDefinitionState viewDefinitionState) {

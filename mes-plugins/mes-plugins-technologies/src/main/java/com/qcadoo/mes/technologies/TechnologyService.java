@@ -126,8 +126,8 @@ public final class TechnologyService {
         GridComponent inProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("inProducts");
 
         if (!"referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
-            inProductsGrid.setIsEditable(true);
-            outProductsGrid.setIsEditable(true);
+            inProductsGrid.setEditable(true);
+            outProductsGrid.setEditable(true);
             return;
         }
 
@@ -154,9 +154,9 @@ public final class TechnologyService {
 
         inProductsGrid.setEntities(inProducts);
         inProductsGrid.setEnabled(false);
-        inProductsGrid.setIsEditable(false);
+        inProductsGrid.setEditable(false);
         outProductsGrid.setEnabled(false);
-        outProductsGrid.setIsEditable(false);
+        outProductsGrid.setEditable(false);
     }
 
     public void checkQualityControlType(final ViewDefinitionState viewDefinitionState, final ComponentState state,

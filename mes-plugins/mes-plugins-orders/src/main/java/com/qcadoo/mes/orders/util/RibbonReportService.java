@@ -89,8 +89,8 @@ public class RibbonReportService {
                 }
             }
         }
-        generateButton.setShouldBeUpdated(true);
-        deleteButton.setShouldBeUpdated(true);
+        generateButton.requestUpdate(true);
+        deleteButton.requestUpdate(true);
         window.requestRibbonRender();
     }
 
@@ -101,12 +101,12 @@ public class RibbonReportService {
         GridComponent grid = (GridComponent) state.getComponentByReference("grid");
         RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
 
-        if (grid.getSelectedEntitiesId() == null || grid.getSelectedEntitiesId().size() == 0) {
+        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
             deleteButton.setMessage(null);
             deleteButton.setEnabled(false);
         } else {
             boolean canDelete = true;
-            for (Long entityId : grid.getSelectedEntitiesId()) {
+            for (Long entityId : grid.getSelectedEntitiesIds()) {
                 Entity materialRequirementEntity = dataDefinitionService.get(plugin, entityName).get(entityId);
                 List<Entity> orderComponents = (List<Entity>) materialRequirementEntity.getField("orders");
                 boolean isAnyOrderClosed = false;
@@ -131,7 +131,7 @@ public class RibbonReportService {
             }
         }
 
-        deleteButton.setShouldBeUpdated(true);
+        deleteButton.requestUpdate(true);
         window.requestRibbonRender();
     }
 }
