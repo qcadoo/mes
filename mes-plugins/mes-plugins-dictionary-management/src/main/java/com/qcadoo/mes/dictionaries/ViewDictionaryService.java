@@ -25,7 +25,7 @@ public class ViewDictionaryService {
         List<Entity> entities = grid.getEntities();
 
         for (Entity entity : entities) {
-            entity.setField("name", dictionaryService.translate(entity.getStringField("name"), state.getLocale()));
+            entity.setField("name", dictionaryService.getName(entity.getStringField("name"), state.getLocale()));
         }
     }
 
