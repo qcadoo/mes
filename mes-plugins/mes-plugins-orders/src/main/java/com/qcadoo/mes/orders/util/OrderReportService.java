@@ -88,13 +88,13 @@ public class OrderReportService {
 
         GridComponent gridState = (GridComponent) state;
         Set<Entity> ordersEntities = new HashSet<Entity>();
-        if (gridState.getSelectedEntitiesId().size() == 0) {
+        if (gridState.getSelectedEntitiesIds().size() == 0) {
             state.addMessage(translationService.translate("core.message.noRecordSelected", state.getLocale()),
                     MessageType.FAILURE);
             return null;
         }
         List<String> errors = new LinkedList<String>();
-        for (Long orderId : gridState.getSelectedEntitiesId()) {
+        for (Long orderId : gridState.getSelectedEntitiesIds()) {
             Entity order = dataDefinitionService.get("orders", "order").get(orderId);
             if (order == null) {
                 errors.add(translationService.translate("core.message.entityNotFound", state.getLocale()));

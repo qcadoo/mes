@@ -91,14 +91,14 @@
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 			<listener event="closeQualityControl"
-				bean="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl" />
+				class="com.qcadoo.mes.qualityControls.QualityControlService" method="closeQualityControl" />
 			<listener event="printQualityControlReport"
-				bean="com.qcadoo.mes.qualityControls.print.QualityControlsReportService"
+				class="com.qcadoo.mes.qualityControls.print.QualityControlsReportService"
 				method="printQualityControlReportForOrder" />
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
-	<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService"
+	<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
 		method="addRestrictionToQualityControlGrid" />
 </view>

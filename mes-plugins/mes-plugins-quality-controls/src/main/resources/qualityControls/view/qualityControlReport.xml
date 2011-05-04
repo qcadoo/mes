@@ -116,10 +116,10 @@
 			<option type="header" value="true" />
 			<option type="expression" value="' '" />
 			<listener event="printQualityControlReport"
-				bean="com.qcadoo.mes.qualityControls.print.QualityControlsReportService"
+				class="com.qcadoo.mes.qualityControls.print.QualityControlsReportService"
 				method="printQualityControlReport" />
 		</component>
 	</component>
-	<preRenderHook bean="com.qcadoo.mes.qualityControls.QualityControlService"
+	<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
 		method="enableCalendarsOnRender" />
 </view>

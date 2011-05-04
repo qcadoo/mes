@@ -96,6 +96,6 @@
 		</windowTab>
 	</component>
 
-	<preRenderHook bean="com.qcadoo.mes.genealogies.GenealogyService"
+	<beforeRender class="com.qcadoo.mes.genealogies.GenealogyService"
 		method="hideComponents" />
 </view>

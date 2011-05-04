@@ -41,7 +41,7 @@
 						<option type="orderable" value="name,ean" />
 						<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 						<option type="fieldCode" value="number" />
-						<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.genealogies.print.ReportService" method="changeProduct"/>
+						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.genealogies.print.ReportService" method="changeProduct"/>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="3" height="6">
@@ -60,8 +60,8 @@
 			</component>
 			<option type="header" value="true"/>
 			<option type="expression" value="' '"/>
-			<listener event="generateReportForComponent" bean="com.qcadoo.mes.genealogies.print.ReportService" method="generateReportForComponent" />
+			<listener event="generateReportForComponent" class="com.qcadoo.mes.genealogies.print.ReportService" method="generateReportForComponent" />
 		</component>
 	</component>
-	<preRenderHook bean="com.qcadoo.mes.genealogies.print.ReportService" method="addRestrictionToComponentGrid" />	
+	<beforeRender class="com.qcadoo.mes.genealogies.print.ReportService" method="addRestrictionToComponentGrid" />	
 </view>

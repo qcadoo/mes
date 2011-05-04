@@ -113,7 +113,7 @@
 					</layoutElement>-->
 					<layoutElement column="1" row="6">
 						<component type="calendar" name="dateFrom" field="dateFrom">
-							<listener event="onChange" bean="com.qcadoo.mes.orders.OrderService"
+							<listener event="onChange" class="com.qcadoo.mes.orders.OrderService"
 								method="changeDateFrom" />
 							<option type="labelWidth" value="55" />
 						</component>
@@ -135,12 +135,12 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.orders.OrderService"
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
 								method="changeOrderProduct" />
-							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.orders.OrderService"
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
 								method="setDefaultNameUsingProduct" />
 							<listener event="onSelectedEntityChange"
-								bean="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnit" />
+								class="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnit" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
@@ -183,7 +183,7 @@
 				</component>
 				<option type="header" value="true" />
 				<option type="expression" value="#name + ' - ' + #number" />
-				<listener event="activateOrder" bean="com.qcadoo.mes.orders.OrderService"
+				<listener event="activateOrder" class="com.qcadoo.mes.orders.OrderService"
 					method="activateOrder" />
 			</component>
 		</windowTab>
@@ -209,16 +209,16 @@
 			</component>
 		</windowTab>
 	</component>
-	<preRenderHook bean="com.qcadoo.mes.orders.OrderService"
+	<beforeRender class="com.qcadoo.mes.orders.OrderService"
 		method="generateOrderNumber" />
-	<preRenderHook bean="com.qcadoo.mes.orders.OrderService"
+	<beforeRender class="com.qcadoo.mes.orders.OrderService"
 		method="fillDefaultTechnology" />
-	<preRenderHook bean="com.qcadoo.mes.orders.OrderService"
+	<beforeRender class="com.qcadoo.mes.orders.OrderService"
 		method="disableFormForDoneOrder" />
-	<preRenderHook bean="com.qcadoo.mes.orders.OrderService"
+	<beforeRender class="com.qcadoo.mes.orders.OrderService"
 		method="disableTechnologiesIfProductDoesNotAny" />
-	<preRenderHook bean="com.qcadoo.mes.orders.OrderService"
+	<beforeRender class="com.qcadoo.mes.orders.OrderService"
 		method="setAndDisableState" />
-	<preRenderHook bean="com.qcadoo.mes.basic.util.UnitService"
+	<beforeRender class="com.qcadoo.mes.basic.util.UnitService"
 		method="fillProductUnitPreRender" />
 </view>

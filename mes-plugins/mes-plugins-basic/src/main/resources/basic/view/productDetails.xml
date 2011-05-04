@@ -77,6 +77,6 @@
 			</component>
 		</windowTab>
 	</component>
-	<preRenderHook bean="com.qcadoo.mes.basic.ProductService"
+	<beforeRender class="com.qcadoo.mes.basic.ProductService"
 		method="generateProductNumber" />
 </view>

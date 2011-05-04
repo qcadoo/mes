@@ -35,7 +35,7 @@
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
 						<listener event="onSelectedEntityChange"
-							bean="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyNumber" />
+							class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyNumber" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="2" height="2">
@@ -78,7 +78,7 @@
 							<option type="canHaveChildren" value="false" />
 						</dataType>
 						<listener event="select"
-							bean="com.qcadoo.mes.technologies.TechnologyService" method="loadProductsForReferencedTechnology" />
+							class="com.qcadoo.mes.technologies.TechnologyService" method="loadProductsForReferencedTechnology" />
 						<script>
 							<![CDATA[
 								this.addOnChangeListener({

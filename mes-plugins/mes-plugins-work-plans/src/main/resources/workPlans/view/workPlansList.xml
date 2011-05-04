@@ -41,7 +41,7 @@
 			<option type="orderable" value="name,generated,worker" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
-			<listener event="printWorkPlan" bean="com.qcadoo.mes.workPlans.WorkPlanService"
+			<listener event="printWorkPlan" class="com.qcadoo.mes.workPlans.WorkPlanService"
 				method="printWorkPlan" />
 			<script>
 				<![CDATA[
@@ -91,6 +91,6 @@
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
-	<preRenderHook bean="com.qcadoo.mes.workPlans.WorkPlanService"
+	<beforeRender class="com.qcadoo.mes.workPlans.WorkPlanService"
 		method="setGridGenerateButtonState" />
 </view>

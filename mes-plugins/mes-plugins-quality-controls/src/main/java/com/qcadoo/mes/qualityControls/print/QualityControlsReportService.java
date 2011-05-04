@@ -89,7 +89,7 @@ public class QualityControlsReportService {
             throw new IllegalStateException("method only for grid");
         }
         GridComponent gridState = (GridComponent) state;
-        if (gridState.getSelectedEntitiesId().size() == 0) {
+        if (gridState.getSelectedEntitiesIds().size() == 0) {
             state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()), MessageType.FAILURE);
             return;
         }
@@ -98,7 +98,7 @@ public class QualityControlsReportService {
         redirectUrl.append(args[0]);
         redirectUrl.append("?type=");
         redirectUrl.append(args[1]);
-        for (Long entityId : gridState.getSelectedEntitiesId()) {
+        for (Long entityId : gridState.getSelectedEntitiesIds()) {
             redirectUrl.append("&id=");
             redirectUrl.append(entityId);
         }
