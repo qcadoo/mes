@@ -9,7 +9,7 @@
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
        http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd
+       /Users/mnawalany/Documents/workspace/qcadoo/qcadoo-view/src/main/resources/com/qcadoo/view/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
        http://schema.qcadoo.org/modules/localization.xsd
        http://schema.qcadoo.org/modules/menu
@@ -52,7 +52,7 @@
 
 		<view:view-listener plugin="orders"
 			view="ordersList" component="grid" event="printWorkPlanForOrder"
-			bean="com.qcadoo.mes.workPlans.WorkPlanService" method="printWorkPlanForOrder" />
+			class="com.qcadoo.mes.workPlans.WorkPlanService" method="printWorkPlanForOrder" />
 
 
 	</modules>

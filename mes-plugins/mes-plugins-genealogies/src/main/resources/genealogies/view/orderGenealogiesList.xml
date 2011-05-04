@@ -18,7 +18,7 @@
 			</group>
 		</ribbon>
 		<component type="form" name="order" reference="order">
-			<listener event="autocompleteGenealogy" bean="com.qcadoo.mes.genealogies.AutoGenealogyService" method="autocompleteGenealogy" />
+			<listener event="autocompleteGenealogy" class="com.qcadoo.mes.genealogies.AutoGenealogyService" method="autocompleteGenealogy" />
 		</component>
 		<component type="grid" name="genealogies" reference="grid" source="#{order}.genealogies">
 			<option type="column" name="batch" fields="batch" link="true" />

@@ -25,7 +25,7 @@
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
 						<listener event="onSelectedEntityChange"
-							bean="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnit" />
+							class="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnit" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
@@ -40,6 +40,6 @@
 			<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 		</component>
 	</component>
-	<preRenderHook bean="com.qcadoo.mes.basic.util.UnitService"
+	<beforeRender class="com.qcadoo.mes.basic.util.UnitService"
 		method="fillProductUnitPreRender" />
 </view>

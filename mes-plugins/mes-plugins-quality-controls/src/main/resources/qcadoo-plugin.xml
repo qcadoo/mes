@@ -9,7 +9,7 @@
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
        http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd
+       /Users/mnawalany/Documents/workspace/qcadoo/qcadoo-view/src/main/resources/com/qcadoo/view/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
        http://schema.qcadoo.org/modules/localization.xsd
        http://schema.qcadoo.org/modules/menu
@@ -83,22 +83,22 @@
 		<view:view-tab resource="view/tabExtensions/technologyDetails.xml" />
 
 		<view:view-hook plugin="technologies" view="technologyDetails"
-			hookType="preRenderHook" bean="com.qcadoo.mes.qualityControls.QualityControlService"
+			type="beforeRender" class="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="changeQualityControlType" />
 
 		<view:view-listener plugin="orders"
 			view="ordersList" component="grid" event="activateOrder"
-			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
+			class="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
 		<view:view-listener plugin="orders"
 			view="ordersList" component="grid" event="generateQualityControl"
-			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
+			class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
 
 		<view:view-listener plugin="orders"
 			view="orderDetails" component="form" event="activateOrder"
-			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
+			class="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
 		<view:view-listener plugin="orders"
 			view="orderDetails" component="form" event="generateQualityControl"
-			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
+			class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
 
 
 

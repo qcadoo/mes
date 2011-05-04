@@ -140,9 +140,9 @@
 					<filterRestriction column="dateFrom" value="@{tomorrow}" />
 				</predefinedFilter>
 			</predefinedFilters>
-			<listener event="printOrder" bean="com.qcadoo.mes.orders.OrderService"
+			<listener event="printOrder" class="com.qcadoo.mes.orders.OrderService"
 				method="printOrder" />
-			<listener event="activateOrder" bean="com.qcadoo.mes.orders.OrderService"
+			<listener event="activateOrder" class="com.qcadoo.mes.orders.OrderService"
 				method="activateOrder" />
 		</component>
 		<option type="fixedHeight" value="true" />
