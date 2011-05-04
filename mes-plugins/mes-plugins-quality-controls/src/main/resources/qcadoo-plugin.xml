@@ -66,9 +66,9 @@
 		<menu:menu-item name="qualityControlReport" category="reports"
 			view="qualityControlReport" />
 		<menu:menu-item name="forOrder" category="quality"
-			view="qualityControlsForOrder" />
+			view="qualityControlsForOrderList" />
 		<menu:menu-item name="forUnits" category="quality"
-			view="qualityControlsForUnit" />
+			view="qualityControlsForUnitList" />
 
 		<view:view resource="view/qualityControlsForOrderList.xml" />
 		<view:view resource="view/qualityControlForOrderDetails.xml" />
@@ -82,22 +82,22 @@
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/technologyDetails.xml" />
 
-		<view:view-hook plugin="technologies" view="technology"
+		<view:view-hook plugin="technologies" view="technologyDetails"
 			hookType="preRenderHook" bean="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="changeQualityControlType" />
 
 		<view:view-listener plugin="orders"
-			view="orders" component="grid" event="activateOrder"
+			view="ordersList" component="grid" event="activateOrder"
 			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
 		<view:view-listener plugin="orders"
-			view="orders" component="grid" event="generateQualityControl"
+			view="ordersList" component="grid" event="generateQualityControl"
 			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
 
 		<view:view-listener plugin="orders"
-			view="order" component="form" event="activateOrder"
+			view="orderDetails" component="form" event="activateOrder"
 			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
 		<view:view-listener plugin="orders"
-			view="order" component="form" event="generateQualityControl"
+			view="orderDetails" component="form" event="generateQualityControl"
 			bean="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
 
 

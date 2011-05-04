@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="products"
+	name="productsList"
 	modelName="product"
 	menuAccessible="true">
 	
@@ -18,7 +18,7 @@
 			<option type="column" name="typeOfMaterial" fields="typeOfMaterial" />
 			<option type="column" name="ean" fields="ean" />
 			<option type="order" column="name" direction="asc" />
-			<option type="correspondingView" value="basic/product" />
+			<option type="correspondingView" value="basic/productDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="searchable" value="name,number,typeOfMaterial,ean" />
 			<option type="orderable" value="name,number,typeOfMaterial,ean" />

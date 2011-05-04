@@ -3,7 +3,7 @@
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd" 
 	plugin="basic"
-	view="product">
+	view="productDetails">
 	
 	<windowTab name="genealogyTab" reference="genealogyTab">
 		<component type="gridLayout" name="genealogyLayout" columns="3" rows="2">

@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="technologies"
+	name="technologiesList"
 	modelName="technology"
 	menuAccessible="true">
 	
@@ -17,7 +17,7 @@
 			<option type="column" name="product" fields="product"
 				expression="#product['name']" />
 			<option type="order" column="number" direction="desc" />
-			<option type="correspondingView" value="technologies/technology" />
+			<option type="correspondingView" value="technologies/technologyDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="searchable" value="name,number,product" />
 			<option type="orderable" value="name,number,product" />

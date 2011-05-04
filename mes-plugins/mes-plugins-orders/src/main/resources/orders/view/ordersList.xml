@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="orders"
+	name="ordersList"
 	modelName="order"
 	menuAccessible="true"
 	defaultAuthorizationRole="ROLE_SUPERVISOR">
@@ -105,7 +105,7 @@
 				width="40" />
 			<option type="column" name="dateTo" fields="dateTo" width="40" />
 			<option type="order" column="number" direction="desc" />
-			<option type="correspondingView" value="orders/order" />
+			<option type="correspondingView" value="orders/orderDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="searchable" value="name,number,state,dateFrom,dateTo" />
 			<option type="orderable" value="name,number,state,dateFrom,dateTo" />

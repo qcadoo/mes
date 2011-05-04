@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="workPlan"
+	name="workPlanDetails"
 	modelName="workPlan">
 	
 	<component type="window" name="window" reference="window">
@@ -137,7 +137,7 @@
 						<option type="column" name="name" fields="order"
 							expression="#order['name']" />
 						<option type="order" column="number" direction="desc" />
-						<option type="correspondingView" value="workPlans/workPlanComponent" />
+						<option type="correspondingView" value="workPlans/workPlanComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 						<option type="paginable" value="false" />

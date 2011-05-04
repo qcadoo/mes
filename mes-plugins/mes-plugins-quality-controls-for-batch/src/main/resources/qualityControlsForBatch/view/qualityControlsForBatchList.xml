@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="qualityControlsForBatch"
+	name="qualityControlsForBatchList"
 	modelPlugin="qualityControls"
 	modelName="qualityControl"
 	menuAccessible="true">
@@ -84,7 +84,7 @@
 				width="100" />
 			<option type="order" column="number,order,batchNr,closed"
 				direction="desc" />
-			<option type="correspondingView" value="qualityControlsForBatch/qualityControlForBatch" />
+			<option type="correspondingView" value="qualityControlsForBatch/qualityControlForBatchDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="searchable" value="number,order,batchNr,closed" />
 			<option type="orderable" value="number,order,batchNr,closed" />

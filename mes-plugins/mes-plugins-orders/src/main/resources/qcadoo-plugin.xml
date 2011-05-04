@@ -53,7 +53,7 @@
 		<menu:menu-category name="orders" />
 
 		<menu:menu-item name="productionOrders" category="orders"
-			view="orders" />
+			view="ordersList" />
 
 		<view:view resource="view/ordersList.xml" />
 		<view:view resource="view/orderDetails.xml" />

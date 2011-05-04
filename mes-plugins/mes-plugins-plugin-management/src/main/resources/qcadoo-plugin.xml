@@ -41,7 +41,7 @@
 		</model:model-hook>
 
 		<menu:menu-item name="plugins" category="administration"
-			view="plugins" />
+			view="pluginsList" />
 
 		<view:view resource="view/pluginsList.xml" />
 		<view:view resource="view/pluginDetails.xml" />

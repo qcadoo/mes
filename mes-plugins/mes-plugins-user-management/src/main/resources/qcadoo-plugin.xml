@@ -28,7 +28,7 @@
 		<localization:translation path="locales" />
 
 		<menu:menu-item name="users" category="administration"
-			view="users" />
+			view="usersList" />
 		<menu:menu-item-url name="profile" category="home"
 			url="/userProfile.html" />
 
