@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="workPlans"
+	name="workPlansList"
 	modelName="workPlan"
 	menuAccessible="true">
 	
@@ -35,7 +35,7 @@
 				link="false" width="100" />
 			<option type="column" name="worker" fields="worker" width="200" />
 			<option type="order" column="name" direction="asc" />
-			<option type="correspondingView" value="workPlans/workPlan" />
+			<option type="correspondingView" value="workPlans/workPlanDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="searchable" value="name,generated,worker" />
 			<option type="orderable" value="name,generated,worker" />

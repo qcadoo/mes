@@ -28,7 +28,7 @@
 		<localization:translation path="locales" />
 
 		<menu:menu-item name="menu" category="administration"
-			view="menuCategories" />
+			view="menuCategoriesList" />
 
 		<view:view resource="view/menuCategoriesList.xml" />
 		<view:view resource="view/menuCategoryDetails.xml" />

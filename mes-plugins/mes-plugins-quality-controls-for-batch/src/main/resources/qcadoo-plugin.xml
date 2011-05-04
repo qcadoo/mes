@@ -42,7 +42,7 @@
 		<model:model-enum-value plugin="technologies" model="technology" enum="qualityControlType" value="01forBatch" />
 
 		<menu:menu-item name="forBatch" category="quality"
-			view="qualityControlsForBatch" />
+			view="qualityControlsForBatchList" />
 		
 		<view:view resource="view/qualityControlsForBatchList.xml" />	
 		<view:view resource="view/qualityControlForBatchDetails.xml" />

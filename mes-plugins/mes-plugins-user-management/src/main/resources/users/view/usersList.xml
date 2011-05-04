@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="users"
+	name="usersList"
 	modelPlugin="qcadooSecurity"
 	modelName="user"
 	menuAccessible="true"
@@ -24,7 +24,7 @@
 			<option type="order" column="login" direction="asc" />
 			<option type="orderable" value="login,email,firstName,lastName,role" />
 			<option type="searchable" value="login,email,firstName,lastName,role" />
-			<option type="correspondingView" value="users/user" />
+			<option type="correspondingView" value="users/userDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />

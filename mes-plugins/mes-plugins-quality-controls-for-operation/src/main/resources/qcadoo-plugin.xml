@@ -46,7 +46,7 @@
 		</model:model-hook>
 		
 		<menu:menu-item name="forOperation" category="quality"
-			view="qualityControlsForOperation" />
+			view="qualityControlsForOperationList" />
 			
 		<view:view resource="view/qualityControlsForOperationList.xml" />
 		<view:view resource="view/qualityControlForOperationDetails.xml" />

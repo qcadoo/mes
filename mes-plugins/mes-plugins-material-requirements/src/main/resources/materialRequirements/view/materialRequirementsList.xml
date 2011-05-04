@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="materialRequirements"
+	name="materialRequirementsList"
 	modelName="materialRequirement"
 	menuAccessible="true">
 	
@@ -28,7 +28,7 @@
 			<option type="order" column="name" direction="asc" />
 			<option type="searchable" value="name,generated,worker" />
 			<option type="orderable" value="name,generated,worker" />
-			<option type="correspondingView" value="materialRequirements/materialRequirement" />
+			<option type="correspondingView" value="materialRequirements/materialRequirementDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
