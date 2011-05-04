@@ -322,7 +322,7 @@ public final class OrderService {
             }
         }
 
-        order.setEnabledWithChildren(!disabled);
+        order.setFormEnabled(!disabled);
         technology.setEnabled(!disabled);
     }
 
