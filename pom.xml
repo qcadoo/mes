@@ -68,8 +68,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo</groupId>
-			<artifactId>qcadoo-plugins-dictionary
-			-management</artifactId>
+			<artifactId>qcadoo-plugins-dictionary-management</artifactId>
 			<version>${qcadoo.version}</version>
 		</dependency>
 		<dependency>
