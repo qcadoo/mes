@@ -204,8 +204,6 @@
 					<instrumentation>
 						<excludes>
 							<exclude>com/qcadoo/mes/beans/**/*.class</exclude>
-							<exclude>com/qcadoo/mes/application/TestDataLoader.class</exclude>
-							<exclude>com/qcadoo/mes/application/DatabasePreparationService.class</exclude>
 						</excludes>
 					</instrumentation>
 				</configuration>

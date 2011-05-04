@@ -15,10 +15,6 @@
 	<name>Qcadoo MES :: Plugins</name>
 
 	<modules>
-		<module>mes-plugins-user-management</module>
-		<module>mes-plugins-dictionary-management</module>
-		<module>mes-plugins-plugin-management</module>
-		<module>mes-plugins-menu-management</module>
 		<module>mes-plugins-orders</module>
 		<module>mes-plugins-basic</module>
 		<module>mes-plugins-genealogies</module>
