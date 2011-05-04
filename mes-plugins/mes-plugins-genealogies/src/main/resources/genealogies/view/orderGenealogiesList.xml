@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="orderGenealogies"
+	name="orderGenealogiesList"
 	modelPlugin="orders"
 	modelName="order">
 	
@@ -25,7 +25,7 @@
 			<option type="order" column="batch" direction="desc" />
 			<option type="searchable" value="batch" />
 			<option type="orderable" value="batch" />
-			<option type="correspondingView" value="genealogies/orderGenealogy" />
+			<option type="correspondingView" value="genealogies/orderGenealogyDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="height" value="100" />
 			<option type="fullscreen" value="true" />

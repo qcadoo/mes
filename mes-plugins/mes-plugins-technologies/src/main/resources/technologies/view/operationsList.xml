@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="operations"
+	name="operationsList"
 	modelName="operation"
 	menuAccessible="true">
 	
@@ -15,7 +15,7 @@
 			<option type="column" name="name" fields="name" link="true"
 				width="200" />
 			<option type="order" column="number" direction="desc" />
-			<option type="correspondingView" value="technologies/operation" />
+			<option type="correspondingView" value="technologies/operationDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="searchable" value="number, name" />
 			<option type="orderable" value="number, name" />

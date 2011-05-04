@@ -63,9 +63,9 @@
 		<menu:menu-category name="technology" />
 
 		<menu:menu-item name="technologies" category="technology"
-			view="technologies" />
+			view="technologiesList" />
 		<menu:menu-item name="operations" category="technology"
-			view="operations" />
+			view="operationsList" />
 
 		<view:view resource="view/operationsList.xml" />
 		<view:view resource="view/operationDetails.xml" />

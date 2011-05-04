@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="dictionary"
+	name="dictionaryDetails"
 	modelPlugin="qcadooModel"
 	modelName="dictionary"
 	defaultAuthorizationRole="ROLE_SUPERVISOR">
@@ -27,7 +27,7 @@
 			<option type="orderable" value="name,description" />
 			<option type="paginable" value="false" />
 			<option type="height" value="250" />
-			<option type="correspondingView" value="dictionaries/dictionaryItem" />
+			<option type="correspondingView" value="dictionaries/dictionaryItemDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="deletable" value="false" />
 			<option type="creatable" value="false" />

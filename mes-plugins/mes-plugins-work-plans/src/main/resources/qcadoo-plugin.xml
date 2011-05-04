@@ -42,7 +42,7 @@
 		</model:model-field>
 
 		<menu:menu-category name="reports" />
-		<menu:menu-item name="workPlans" category="reports" view="workPlans" />
+		<menu:menu-item name="workPlans" category="reports" view="workPlansList" />
 
 		<view:view resource="view/workPlansList.xml" />
 		<view:view resource="view/workPlanDetails.xml" />
@@ -51,7 +51,7 @@
 		<view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
 
 		<view:view-listener plugin="orders"
-			view="orders" component="grid" event="printWorkPlanForOrder"
+			view="ordersList" component="grid" event="printWorkPlanForOrder"
 			bean="com.qcadoo.mes.workPlans.WorkPlanService" method="printWorkPlanForOrder" />
 
 

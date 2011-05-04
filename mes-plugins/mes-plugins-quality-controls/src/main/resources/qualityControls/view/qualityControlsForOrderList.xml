@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="qualityControlsForOrder"
+	name="qualityControlsForOrderList"
 	modelName="qualityControl"
 	menuAccessible="true">
 	
@@ -81,7 +81,7 @@
 			<option type="column" name="closed" fields="closed" link="false"
 				width="100" />
 			<option type="order" column="number,order,closed" direction="desc" />
-			<option type="correspondingView" value="qualityControls/qualityControlForOrder" />
+			<option type="correspondingView" value="qualityControls/qualityControlForOrderDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="searchable" value="number,order,closed" />
 			<option type="orderable" value="number,order,closed" />

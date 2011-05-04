@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="product"
+	name="productDetails"
 	modelName="product">
 	
 	<component type="window" name="window">
@@ -43,7 +43,7 @@
 						<option type="column" name="number" fields="number" link="true" width="50"/>
 						<option type="column" name="name" fields="name" link="true" width="100"/>
 						<option type="order" column="priority" direction="asc"/>
-						<option type="correspondingView" value="basic/substitute" />
+						<option type="correspondingView" value="basic/productSubstituteDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 						<option type="paginable" value="false" />
@@ -64,7 +64,7 @@
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" link="false" width="30"/>
 						<option type="order" column="number" direction="desc"/>
-						<option type="correspondingView" value="basic/substituteComponent" />
+						<option type="correspondingView" value="basic/productSubstituteComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 						<option type="paginable" value="false" />

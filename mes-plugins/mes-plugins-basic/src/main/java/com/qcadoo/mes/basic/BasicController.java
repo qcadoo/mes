@@ -46,11 +46,11 @@ public class BasicController {
     @Autowired
     private ParameterService parameterService;
 
-    @RequestMapping(value = "parameter", method = RequestMethod.GET)
+    @RequestMapping(value = "parameters", method = RequestMethod.GET)
     public ModelAndView getParameterPageView(final Locale locale) {
         JSONObject json = new JSONObject(ImmutableMap.of("form.id", parameterService.getParameterId().toString()));
         Map<String, String> arguments = ImmutableMap.of("context", json.toString());
-        return crudController.prepareView("basic", "parameter", arguments, locale);
+        return crudController.prepareView("basic", "parameters", arguments, locale);
     }
 
 }

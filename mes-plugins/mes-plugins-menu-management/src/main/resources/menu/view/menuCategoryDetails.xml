@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="menuCategory"
+	name="menuCategoryDetails"
 	modelPlugin="qcadooView"
 	modelName="category"
 	defaultAuthorizationRole="ROLE_ADMIN">
@@ -33,7 +33,7 @@
 					<option type="column" name="active" fields="active" link="false" />
 					<option type="column" name="pluginIdentifier" fields="pluginIdentifier" link="false" width="300" />
 					<option type="order" column="succession" direction="asc" />
-					<option type="correspondingView" value="menu/menuViewDefinitionItem" />
+					<option type="correspondingView" value="menu/menuViewDefinitionItemDetails" />
 					<option type="correspondingComponent" value="form" />
 					<option type="correspondingViewInModal" value="true" />
 					<option type="paginable" value="false" />

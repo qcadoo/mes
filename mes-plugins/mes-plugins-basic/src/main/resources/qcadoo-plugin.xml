@@ -43,11 +43,11 @@
 
 		<menu:menu-category name="basic" />
 
-		<menu:menu-item name="machines" category="basic" view="machines" />
-		<menu:menu-item name="staff" category="basic" view="staffs" />
-		<menu:menu-item name="products" category="basic" view="products" />
+		<menu:menu-item name="machines" category="basic" view="machinesList" />
+		<menu:menu-item name="staff" category="basic" view="staffsList" />
+		<menu:menu-item name="products" category="basic" view="productsList" />
 		<menu:menu-item-url name="systemParameters"
-			category="basic" url="/parameter.html" />
+			category="basic" url="/parameters.html" />
 
 		<view:view resource="view/machinesList.xml" />
 		<view:view resource="view/machineDetails.xml" />

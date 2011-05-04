@@ -2,7 +2,7 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="qualityControlsForOperation"
+	name="qualityControlsForOperationList"
 	modelPlugin="qualityControls"
 	modelName="qualityControl"
 	menuAccessible="true">
@@ -88,7 +88,7 @@
 			<option type="order"
 				column="number,order,operationNumber,operationName,closed"
 				direction="desc" />
-			<option type="correspondingView" value="qualityControlsForOperation/qualityControlForOperation" />
+			<option type="correspondingView" value="qualityControlsForOperation/qualityControlForOperationDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="searchable"
 				value="number,order,operationNumber,operationName,closed" />
