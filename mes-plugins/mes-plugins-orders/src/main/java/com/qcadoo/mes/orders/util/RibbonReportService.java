@@ -89,8 +89,8 @@ public class RibbonReportService {
                 }
             }
         }
-        generateButton.setShouldBeUpdated(true);
-        deleteButton.setShouldBeUpdated(true);
+        generateButton.requestUpdate(true);
+        deleteButton.requestUpdate(true);
         window.requestRibbonRender();
     }
 
@@ -131,7 +131,7 @@ public class RibbonReportService {
             }
         }
 
-        deleteButton.setShouldBeUpdated(true);
+        deleteButton.requestUpdate(true);
         window.requestRibbonRender();
     }
 }
