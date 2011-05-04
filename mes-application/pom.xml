@@ -189,7 +189,7 @@
 								${basedir}/../mes-plugins/mes-plugins-plugin-management/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-basic/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
-								${basedir}/../../qcadoo-saas/qcadoo-saas-tenant-plugin-management/src/main/resources;
+								${basedir}/../../qcadoo-saas/qcadoo-saas-plugins-plugin-management/src/main/resources;
 							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>
@@ -272,7 +272,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
-					<artifactId>qcadoo-saas-tenant-plugin-management</artifactId>
+					<artifactId>qcadoo-saas-plugins-plugin-management</artifactId>
 					<version>${qcadoo.version}</version>
 				</dependency>
 			</dependencies>
