@@ -17,21 +17,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-dictionary-management</artifactId>
-			<version>0.4.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-user-management</artifactId>
-			<version>0.4.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-menu-management</artifactId>
-			<version>0.4.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-orders</artifactId>
 			<version>0.4.0-SNAPSHOT</version>
 		</dependency>
@@ -186,7 +171,7 @@
 							<resourcesAsCSV>
 								${basedir}/src/main/webapp;
 								${basedir}/../../qcadoo/qcadoo-view/src/main/resources;
-								${basedir}/../mes-plugins/mes-plugins-plugin-management/src/main/resources;
+								${basedir}/../../qcadoo/qcadoo-plugins-plugin-management/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-basic/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
 								${basedir}/../../qcadoo-saas/qcadoo-saas-plugins-plugin-management/src/main/resources;
@@ -255,8 +240,8 @@
 			</activation>
 			<dependencies>
 				<dependency>
-					<groupId>com.qcadoo.mes</groupId>
-					<artifactId>mes-plugins-plugin-management</artifactId>
+					<groupId>com.qcadoo</groupId>
+					<artifactId>qcadoo-plugins-plugin-management</artifactId>
 					<version>0.4.0-SNAPSHOT</version>
 				</dependency>
 			</dependencies>
