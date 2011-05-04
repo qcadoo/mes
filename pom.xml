@@ -57,6 +57,21 @@
 			<version>${qcadoo.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-plugins-menu-management</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-plugins-user-management</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-plugins-dictionary-management</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
@@ -204,8 +219,6 @@
 					<instrumentation>
 						<excludes>
 							<exclude>com/qcadoo/mes/beans/**/*.class</exclude>
-							<exclude>com/qcadoo/mes/application/TestDataLoader.class</exclude>
-							<exclude>com/qcadoo/mes/application/DatabasePreparationService.class</exclude>
 						</excludes>
 					</instrumentation>
 				</configuration>
