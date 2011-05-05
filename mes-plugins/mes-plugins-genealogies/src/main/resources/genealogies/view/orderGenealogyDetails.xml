@@ -96,6 +96,7 @@
 		</windowTab>
 	</component>
 
-	<beforeRender class="com.qcadoo.mes.genealogies.GenealogyService"
-		method="hideComponents" />
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.genealogies.GenealogyService" method="hideComponents" />
+	</hooks>
 </view>

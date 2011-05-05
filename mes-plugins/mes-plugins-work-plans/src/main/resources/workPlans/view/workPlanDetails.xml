@@ -157,8 +157,10 @@
 				method="generateWorkPlan" />
 		</component>
 	</component>
-	<beforeRender class="com.qcadoo.mes.workPlans.WorkPlanService"
-		method="disableFormForExistingWorkPlan" />
-	<beforeRender class="com.qcadoo.mes.workPlans.WorkPlanService"
-		method="setGenerateButtonState" />
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.workPlans.WorkPlanService"
+			method="disableFormForExistingWorkPlan" />
+		<beforeRender class="com.qcadoo.mes.workPlans.WorkPlanService"
+			method="setGenerateButtonState" />
+	</hooks>
 </view>

@@ -37,6 +37,8 @@
 			<option type="expression" value="#technology['name']" />
 		</component>
 	</component>
-	<beforeRender class="com.qcadoo.mes.technologies.TechnologyService"
-		method="hideReferenceMode" />
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.technologies.TechnologyService"
+			method="hideReferenceMode" />
+	</hooks>
 </view>
