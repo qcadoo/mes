@@ -49,7 +49,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.search.RestrictionOperator;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.internal.DefaultEntity;
@@ -207,8 +206,8 @@ public class QualityControlServiceTest {
         given(viewDefinitionState.getComponentByReference("staff")).willReturn(staff);
         given(viewDefinitionState.getComponentByReference("date")).willReturn(date);
         given(viewDefinitionState.getComponentByReference("qualityControlType")).willReturn(qualityControlType);
-        given(((FieldComponent) viewDefinitionState.getComponentByReference("qualityControlType")).getFieldValue())
-                .willReturn("qualityControlsForUnit");
+        given(((FieldComponent) viewDefinitionState.getComponentByReference("qualityControlType")).getFieldValue()).willReturn(
+                "qualityControlsForUnit");
         given(qualityControlType.getFieldValue().equals("qualityControlsForOrder")).willReturn(false);
         given(qualityControlType.getFieldValue().equals("qualityControlsForOperation")).willReturn(false);
         given(controlResult.getFieldValue()).willReturn("03objection");
@@ -270,8 +269,8 @@ public class QualityControlServiceTest {
         given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
         given(controlResult.getFieldValue()).willReturn(null);
         given(viewDefinitionState.getComponentByReference("qualityControlType")).willReturn(qualityControlType);
-        given(((FieldComponent) viewDefinitionState.getComponentByReference("qualityControlType")).getFieldValue())
-                .willReturn("qualityControlsForOrder");
+        given(((FieldComponent) viewDefinitionState.getComponentByReference("qualityControlType")).getFieldValue()).willReturn(
+                "qualityControlsForOrder");
         given(qualityControlType.getFieldValue()).willReturn("qualityControlsForOrder");
         given(qualityControlType.getFieldValue()).willReturn("qualityControlsForOperation");
         given(translationService.translate("qualityControls.quality.control.result.missing", Locale.ENGLISH)).willReturn(
@@ -535,10 +534,7 @@ public class QualityControlServiceTest {
 
         given(dataDefinitionService.get("orders", "order")).willReturn(orderDD);
 
-        given(
-                orderDD.find().setMaxResults(1)
-                        .addRestriction(Restrictions.idRestriction(Mockito.anyLong(), RestrictionOperator.EQ))).willReturn(
-                searchCriteria);
+        given(orderDD.find().setMaxResults(1).addRestriction(Restrictions.idEq(Mockito.anyLong()))).willReturn(searchCriteria);
 
         given(searchCriteria.list().getEntities()).willReturn(orders);
 

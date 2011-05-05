@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.RestrictionOperator;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
@@ -59,22 +58,19 @@ public class GenealogyTechnologyService {
 
             Boolean shiftReq = (Boolean) currentAttribute.getField("shiftReq");
             if (shiftReq != null && shiftReq) {
-                FieldComponent req = (FieldComponent) viewDefinitionState
-                        .getComponentByReference("shiftFeatureRequired");
+                FieldComponent req = (FieldComponent) viewDefinitionState.getComponentByReference("shiftFeatureRequired");
                 req.setFieldValue("1");
             }
 
             Boolean postReq = (Boolean) currentAttribute.getField("postReq");
             if (postReq != null && postReq) {
-                FieldComponent req = (FieldComponent) viewDefinitionState
-                        .getComponentByReference("postFeatureRequired");
+                FieldComponent req = (FieldComponent) viewDefinitionState.getComponentByReference("postFeatureRequired");
                 req.setFieldValue("1");
             }
 
             Boolean otherReq = (Boolean) currentAttribute.getField("otherReq");
             if (otherReq != null && otherReq) {
-                FieldComponent req = (FieldComponent) viewDefinitionState
-                        .getComponentByReference("otherFeatureRequired");
+                FieldComponent req = (FieldComponent) viewDefinitionState.getComponentByReference("otherFeatureRequired");
                 req.setFieldValue("1");
             }
         }
@@ -117,8 +113,7 @@ public class GenealogyTechnologyService {
     private Entity getProductById(final Long productId) {
         DataDefinition instructionDD = dataDefinitionService.get("basic", "product");
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1)
-                .addRestriction(Restrictions.idRestriction(productId, RestrictionOperator.EQ));
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).addRestriction(Restrictions.idEq(productId));
 
         SearchResult searchResult = searchCriteria.list();
         if (searchResult.getTotalNumberOfEntities() == 1) {
