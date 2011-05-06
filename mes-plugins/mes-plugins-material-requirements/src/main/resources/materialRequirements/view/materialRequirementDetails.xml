@@ -139,8 +139,10 @@
 				class="com.qcadoo.mes.materialRequirements.MaterialRequirementService" method="generateMaterialRequirement" />
 		</component>
 	</component>
-	<beforeRender class="com.qcadoo.mes.materialRequirements.MaterialRequirementService"
-		method="disableFormForExistingMaterialRequirement" />
-	<beforeRender class="com.qcadoo.mes.materialRequirements.MaterialRequirementService"
-		method="setGenerateButtonState" />
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.materialRequirements.MaterialRequirementService"
+			method="disableFormForExistingMaterialRequirement" />
+		<beforeRender class="com.qcadoo.mes.materialRequirements.MaterialRequirementService"
+			method="setGenerateButtonState" />
+	</hooks>
 </view>

@@ -209,16 +209,12 @@
 			</component>
 		</windowTab>
 	</component>
-	<beforeRender class="com.qcadoo.mes.orders.OrderService"
-		method="generateOrderNumber" />
-	<beforeRender class="com.qcadoo.mes.orders.OrderService"
-		method="fillDefaultTechnology" />
-	<beforeRender class="com.qcadoo.mes.orders.OrderService"
-		method="disableFormForDoneOrder" />
-	<beforeRender class="com.qcadoo.mes.orders.OrderService"
-		method="disableTechnologiesIfProductDoesNotAny" />
-	<beforeRender class="com.qcadoo.mes.orders.OrderService"
-		method="setAndDisableState" />
-	<beforeRender class="com.qcadoo.mes.basic.util.UnitService"
-		method="fillProductUnitPreRender" />
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="generateOrderNumber" />
+		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="fillDefaultTechnology" />
+		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="disableFormForDoneOrder" />
+		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="disableTechnologiesIfProductDoesNotAny" />
+		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="setAndDisableState" />
+		<beforeRender class="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnitPreRender" />
+	</hooks>
 </view>

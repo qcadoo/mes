@@ -41,7 +41,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.CustomRestriction;
-import com.qcadoo.model.api.search.RestrictionOperator;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
@@ -99,8 +98,7 @@ public final class QualityControlService {
     public void checkIfCommentIsRequiredBasedOnDefects(final ViewDefinitionState state) {
         FieldComponent comment = (FieldComponent) state.getComponentByReference("comment");
 
-        FieldComponent acceptedDefectsQuantity = (FieldComponent) state
-                .getComponentByReference("acceptedDefectsQuantity");
+        FieldComponent acceptedDefectsQuantity = (FieldComponent) state.getComponentByReference("acceptedDefectsQuantity");
 
         if (acceptedDefectsQuantity.getFieldValue() != null
                 && !acceptedDefectsQuantity.getFieldValue().toString().isEmpty()
@@ -179,11 +177,10 @@ public final class QualityControlService {
     public void closeQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state.getFieldValue() != null) {
             if (state instanceof FormComponent) {
-                FieldComponent controlResult = (FieldComponent) viewDefinitionState
-                        .getComponentByReference("controlResult");
+                FieldComponent controlResult = (FieldComponent) viewDefinitionState.getComponentByReference("controlResult");
 
-                String qualityControlType = ((FieldComponent) viewDefinitionState
-                        .getComponentByReference("qualityControlType")).getFieldValue().toString();
+                String qualityControlType = ((FieldComponent) viewDefinitionState.getComponentByReference("qualityControlType"))
+                        .getFieldValue().toString();
 
                 if (hasControlResult(qualityControlType) && controlResult != null
                         && (controlResult.getFieldValue() == null || ((String) controlResult.getFieldValue()).isEmpty())) {
@@ -339,8 +336,7 @@ public final class QualityControlService {
         }
 
         FieldComponent order = (FieldComponent) state;
-        FieldComponent controlInstruction = (FieldComponent) viewDefinitionState
-                .getComponentByReference("controlInstruction");
+        FieldComponent controlInstruction = (FieldComponent) viewDefinitionState.getComponentByReference("controlInstruction");
 
         if (controlInstruction != null) {
             controlInstruction.setFieldValue("");
@@ -365,11 +361,9 @@ public final class QualityControlService {
     }
 
     public void setQuantitiesToDefaulIfEmpty(final ViewDefinitionState state) {
-        FieldComponent takenForControlQuantity = (FieldComponent) state
-                .getComponentByReference("takenForControlQuantity");
+        FieldComponent takenForControlQuantity = (FieldComponent) state.getComponentByReference("takenForControlQuantity");
         FieldComponent rejectedQuantity = (FieldComponent) state.getComponentByReference("rejectedQuantity");
-        FieldComponent acceptedDefectsQuantity = (FieldComponent) state
-                .getComponentByReference("acceptedDefectsQuantity");
+        FieldComponent acceptedDefectsQuantity = (FieldComponent) state.getComponentByReference("acceptedDefectsQuantity");
 
         if (takenForControlQuantity.getFieldValue() == null || takenForControlQuantity.getFieldValue().toString().isEmpty()) {
             takenForControlQuantity.setFieldValue(BigDecimal.ONE);
@@ -402,8 +396,7 @@ public final class QualityControlService {
     public void setQualityControlTypeHiddenField(final ViewDefinitionState viewDefinitionState) {
         FormComponent qualityControlsForm = (FormComponent) viewDefinitionState.getComponentByReference("form");
         String qualityControlTypeString = qualityControlsForm.getName().replace("Control", "Controls");
-        FieldComponent qualityControlType = (FieldComponent) viewDefinitionState
-                .getComponentByReference("qualityControlType");
+        FieldComponent qualityControlType = (FieldComponent) viewDefinitionState.getComponentByReference("qualityControlType");
 
         qualityControlType.setFieldValue(qualityControlTypeString);
     }
@@ -557,8 +550,7 @@ public final class QualityControlService {
     private String getInstructionForOrder(final Long fieldValue) {
         DataDefinition orderDD = dataDefinitionService.get("orders", "order");
 
-        SearchCriteriaBuilder searchCriteria = orderDD.find().setMaxResults(1)
-                .addRestriction(Restrictions.idRestriction(fieldValue, RestrictionOperator.EQ));
+        SearchCriteriaBuilder searchCriteria = orderDD.find().setMaxResults(1).addRestriction(Restrictions.idEq(fieldValue));
 
         return (String) searchCriteria.list().getEntities().get(0).getBelongsToField("technology")
                 .getField("qualityControlInstruction");

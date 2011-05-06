@@ -120,6 +120,8 @@
 				method="printQualityControlReport" />
 		</component>
 	</component>
-	<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
-		method="enableCalendarsOnRender" />
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
+			method="enableCalendarsOnRender" />
+	</hooks>
 </view>

@@ -42,7 +42,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
-import com.qcadoo.model.api.search.RestrictionOperator;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
@@ -94,7 +93,7 @@ public final class TechnologyService {
                 .addRestriction(Restrictions.belongsTo(dataDefinition.getField("product"), entity.getField("product")));
 
         if (entity.getId() != null) {
-            searchCriteria.addRestriction(Restrictions.idRestriction(entity.getId(), RestrictionOperator.NE));
+            searchCriteria.addRestriction(Restrictions.idNe(entity.getId()));
         }
 
         SearchResult searchResult = searchCriteria.list();
@@ -167,8 +166,7 @@ public final class TechnologyService {
 
         FieldComponent qualityControlType = (FieldComponent) state;
 
-        FieldComponent unitSamplingNr = (FieldComponent) viewDefinitionState
-                .getComponentByReference("unitSamplingNr");
+        FieldComponent unitSamplingNr = (FieldComponent) viewDefinitionState.getComponentByReference("unitSamplingNr");
 
         if (qualityControlType.getFieldValue() != null) {
             if (qualityControlType.getFieldValue().equals("02forUnit")) {
@@ -212,8 +210,7 @@ public final class TechnologyService {
     private Entity getProductById(final Long productId) {
         DataDefinition instructionDD = dataDefinitionService.get("basic", "product");
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1)
-                .addRestriction(Restrictions.idRestriction(productId, RestrictionOperator.EQ));
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).addRestriction(Restrictions.idEq(productId));
 
         SearchResult searchResult = searchCriteria.list();
         if (searchResult.getTotalNumberOfEntities() == 1) {

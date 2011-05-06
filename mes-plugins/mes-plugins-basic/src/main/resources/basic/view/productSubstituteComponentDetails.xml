@@ -41,6 +41,8 @@
 			<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 		</component>
 	</component>
-	<beforeRender class="com.qcadoo.mes.basic.util.UnitService"
-		method="fillProductUnitPreRender" />
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.util.UnitService"
+			method="fillProductUnitPreRender" />
+	</hooks>
 </view>

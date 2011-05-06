@@ -91,6 +91,8 @@
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
-	<beforeRender class="com.qcadoo.mes.workPlans.WorkPlanService"
-		method="setGridGenerateButtonState" />
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.workPlans.WorkPlanService"
+			method="setGridGenerateButtonState" />
+	</hooks>
 </view>

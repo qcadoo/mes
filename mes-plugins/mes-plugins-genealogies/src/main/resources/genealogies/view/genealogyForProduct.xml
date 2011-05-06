@@ -63,5 +63,7 @@
 			<listener event="generateReportForProduct" class="com.qcadoo.mes.genealogies.print.ReportService" method="generateReportForProduct" />
 		</component>
 	</component>
-	<beforeRender class="com.qcadoo.mes.genealogies.print.ReportService" method="addRestrictionToGenealogyGrid" />
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.genealogies.print.ReportService" method="addRestrictionToGenealogyGrid" />
+	</hooks>
 </view>

@@ -105,6 +105,8 @@
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
-	<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
-		method="addRestrictionToQualityControlGrid" />
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
+			method="addRestrictionToQualityControlGrid" />
+	</hooks>
 </view>

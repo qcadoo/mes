@@ -140,12 +140,14 @@
 			<option type="expression" value="#name" />
 		</component>
 	</component>
-	<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
-		method="checkIfCommentIsRequiredBasedOnDefects" />
-	<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
-		method="setQuantitiesToDefaulIfEmpty" />
-	<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
-		method="setQualityControlTypeHiddenField" />
-	<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
-		method="disableFormForClosedControl" />
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
+			method="checkIfCommentIsRequiredBasedOnDefects" />
+		<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
+			method="setQuantitiesToDefaulIfEmpty" />
+		<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
+			method="setQualityControlTypeHiddenField" />
+		<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
+			method="disableFormForClosedControl" />
+	</hooks>
 </view>
