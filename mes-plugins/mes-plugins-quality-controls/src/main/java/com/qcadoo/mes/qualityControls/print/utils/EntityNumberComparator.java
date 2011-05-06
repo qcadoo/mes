@@ -34,7 +34,7 @@ public class EntityNumberComparator implements Comparator<Entity>, Serializable 
     private static final long serialVersionUID = 6299937240797213900L;
 
     @Override
-    public int compare(final Entity o1, final Entity o2) {
+    public final int compare(final Entity o1, final Entity o2) {
         return o1.getField("number").toString().compareTo(o2.getField("number").toString());
     }
 
