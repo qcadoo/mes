@@ -24,11 +24,11 @@
 								onClick: function() {
 									this.element.width(100);
 									if (this.state == "begin") {
-										if (window.confirm("#{translate(orders.orders.window.ribbon.status.activateOrder.confirm)}")) {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.activateOrder.confirm)}")) {
 											#{grid}.performEvent('activateOrder', [true]);
 										};
 									} else if (this.state == "finish") {
-										if (window.confirm("#{translate(orders.orders.window.ribbon.status.finishOrder.confirm)}")) {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.finishOrder.confirm)}")) {
 											#{grid}.performEvent('activateOrder', [false]);
 										};
 									}
@@ -64,12 +64,12 @@
 									if (selectedEntityStatus == '01pending') {
 										activateOrder.enable();
 										activateOrder.state = "begin";
-										activateOrder.setLabel("#{translate(orders.orders.window.ribbon.status.activateOrder)}");
+										activateOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.activateOrder)}");
 										activateOrder.setIcon('startIcon24.png');
 									} else if (selectedEntityStatus == '02inProgress') {
 										activateOrder.enable();
 										activateOrder.state = "finish";
-										activateOrder.setLabel("#{translate(orders.orders.window.ribbon.status.finishOrder)}");
+										activateOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.finishOrder)}");
 										activateOrder.setIcon('acceptIcon24.png');
 									} else {
 										activateOrder.disable();
