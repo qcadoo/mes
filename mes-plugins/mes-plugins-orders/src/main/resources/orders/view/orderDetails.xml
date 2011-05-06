@@ -20,13 +20,13 @@
 								onClick: function() {
 									this.element.width(100);
 									if (this.state == "begin") {
-										if (window.confirm("#{translate(orders.ordersDetails.window.ribbon.status.activateOrder.confirm)}")) {
+										if (window.confirm("#{translate(orders.orderDetails.window.ribbon.status.activateOrder.confirm)}")) {
 											if(window.canClose()) {
 												#{form}.performEvent('activateOrder', [true]);
 											}
 										};
 									} else if (this.state == "finish") {
-										if (window.confirm("#{translate(orders.ordersDetails.window.ribbon.status.finishOrder.confirm)}")) {
+										if (window.confirm("#{translate(orders.orderDetails.window.ribbon.status.finishOrder.confirm)}")) {
 											if(window.canClose()) {
 												#{form}.performEvent('activateOrder', [false]);
 											}
