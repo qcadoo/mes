@@ -53,7 +53,7 @@ public final class GenealogyService {
         Long orderId = (Long) triggerState.getFieldValue();
 
         if (orderId != null) {
-            String url = "../page/genealogies/orderGenealogies.html?context={\"order.id\":\"" + orderId + "\"}";
+            String url = "../page/genealogies/orderGenealogiesList.html?context={\"order.id\":\"" + orderId + "\"}";
             viewDefinitionState.redirectTo(url, false, true);
         }
     }
@@ -62,7 +62,7 @@ public final class GenealogyService {
         Long orderId = (Long) triggerState.getFieldValue();
 
         if (orderId != null) {
-            String url = "../page/genealogies/orderGenealogy.html?context={\"form.order\":\"" + orderId + "\"}";
+            String url = "../page/genealogies/orderGenealogyDetails.html?context={\"form.order\":\"" + orderId + "\"}";
             viewDefinitionState.redirectTo(url, false, true);
         }
     }
@@ -115,8 +115,7 @@ public final class GenealogyService {
     public void fillProductInComponents(final ViewDefinitionState state) {
         FormComponent form = (FormComponent) state.getComponentByReference("form");
         ComponentState productGridLayout = state.getComponentByReference("productGridLayout");
-        FieldComponent productInComponentsList = (FieldComponent) state
-                .getComponentByReference("productInComponentsList");
+        FieldComponent productInComponentsList = (FieldComponent) state.getComponentByReference("productInComponentsList");
 
         if (form.isValid()) {
             Entity genealogy = null;

@@ -82,8 +82,8 @@ public class GenealogyServiceTest {
         genealogyService.showGenealogy(viewDefinitionState, triggerState, new String[0]);
 
         // then
-        verify(viewDefinitionState).redirectTo("../page/genealogies/orderGenealogies.html?context={\"order.id\":\"13\"}", false,
-                true);
+        verify(viewDefinitionState).redirectTo("../page/genealogies/orderGenealogiesList.html?context={\"order.id\":\"13\"}",
+                false, true);
         verify(triggerState).getFieldValue();
         verifyNoMoreInteractions(triggerState);
         verifyNoMoreInteractions(viewDefinitionState);
@@ -118,8 +118,8 @@ public class GenealogyServiceTest {
         genealogyService.newGenealogy(viewDefinitionState, triggerState, new String[0]);
 
         // then
-        verify(viewDefinitionState).redirectTo("../page/genealogies/orderGenealogy.html?context={\"form.order\":\"13\"}", false,
-                true);
+        verify(viewDefinitionState).redirectTo("../page/genealogies/orderGenealogyDetails.html?context={\"form.order\":\"13\"}",
+                false, true);
         verify(triggerState).getFieldValue();
         verifyNoMoreInteractions(triggerState);
         verifyNoMoreInteractions(viewDefinitionState);
