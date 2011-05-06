@@ -42,7 +42,9 @@
 		<model:dictionary name="units" />
 
 		<menu:menu-category name="basic" />
-
+		
+		<menu:menu-item-url name="home" category="home" url="/dashboard.html" />
+		
 		<menu:menu-item name="machines" category="basic" view="machinesList" />
 		<menu:menu-item name="staff" category="basic" view="staffsList" />
 		<menu:menu-item name="products" category="basic" view="productsList" />
