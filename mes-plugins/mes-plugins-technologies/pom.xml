@@ -12,7 +12,7 @@
 	<artifactId>mes-plugins-technologies</artifactId>
 
 	<groupId>com.qcadoo.mes</groupId>
-	<packaging>jar</packaging>
+	<packaging>qcadoo-plugin</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Technologies</name>
 	

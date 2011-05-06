@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>mes-plugins-work-plans</artifactId>
-	<packaging>jar</packaging>
+	<packaging>qcadoo-plugin</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Work Plans</name>
 	
