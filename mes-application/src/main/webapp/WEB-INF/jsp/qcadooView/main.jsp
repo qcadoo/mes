@@ -152,10 +152,10 @@
 
 	<div id="mainTopMenu">
 		<div id="topLevelMenu">
-			<img id="logoImage" src="/qcadooView/public/css/core/images/logo_small.png" onclick="windowController.goToMenuPosition('home.home')"></img>
+			<img id="logoImage" src="/qcadooView/public/css/core/images/logo_small.png" onclick="windowController.goToDashboard()"></img>
 			<div id="topRightPanel">
 				<span id="userInfo">${userLogin}</span>
-				<a href='#' id="profileButton" onclick="windowController.goToMenuPosition('home.profile')">${commonTranslations["commons.button.userProfile"] }</a>
+				<a href='#' id="profileButton" onclick="windowController.goToMenuPosition('administration.profile')">${commonTranslations["commons.button.userProfile"] }</a>
 				<a href='#' onclick="windowController.performLogout()">${commonTranslations["commons.button.logout"] }</a>
 			</div>
 		</div>
