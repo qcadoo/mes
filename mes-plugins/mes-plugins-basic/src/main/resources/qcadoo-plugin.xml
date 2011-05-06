@@ -24,6 +24,8 @@
 	</information>
 
 	<modules>
+		<localization:translation-group name="dashboard" prefix="basic.dashboard" />
+		<localization:translation-group name="security" prefix="core.dashboard" />
 		<localization:translation-group name="dashboard" prefix="core.dashboard" />
 
 		<localization:translation path="locales" basename="basic"/>

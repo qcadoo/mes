@@ -87,14 +87,14 @@
 	<div id="contentWrapperMiddle">
 	<div id="dashboardContentWrapper">
 		<div id="userElement">
-			${translationsMap['core.dashboard.hello']} <span id="userLogin">${userLogin}</span>
+			${translationsMap['basic.dashboard.hello']} <span id="userLogin">${userLogin}</span>
 		</div>
 		<div id="descriptionElement">
 			<div id="descriptionHeader">
-				${translationsMap['core.dashboard.header']}
+				${translationsMap['basic.dashboard.header']}
 			</div>
 			<div id="descriptionContent">
-				${translationsMap['core.dashboard.content']}
+				${translationsMap['basic.dashboard.content']}
 			</div>
 		</div>
 		<div id="buttonsElement">
@@ -102,13 +102,13 @@
 				<div class="dashboardButtonIcon icon1"></div>
 				<div class="dashboardButtonContent">
 					<div class="dashboardButtonContentHeader">
-						${translationsMap['core.dashboard.organize.header']}
+						${translationsMap['basic.dashboard.organize.header']}
 					</div>
 					<div class="dashboardButtonContentText">
-					 	${translationsMap['core.dashboard.organize.content']}
+					 	${translationsMap['basic.dashboard.organize.content']}
 					</div>
 					<div class="dashboardButtonContentLink" id="productionOrdersLink" style="display: none;">
-						<a href="#" onclick="goToMenuPosition('orders.productionOrders')">${translationsMap['core.dashboard.organize.link']}</a>
+						<a href="#" onclick="goToMenuPosition('orders.productionOrders')">${translationsMap['basic.dashboard.organize.link']}</a>
 					</div>
 				</div>
 			</div>
@@ -116,13 +116,13 @@
 				<div class="dashboardButtonIcon icon2"></div>
 				<div class="dashboardButtonContent">
 					<div class="dashboardButtonContentHeader">
-						${translationsMap['core.dashboard.define.header']}
+						${translationsMap['basic.dashboard.define.header']}
 					</div>
 					<div class="dashboardButtonContentText">
-					 	${translationsMap['core.dashboard.define.content']}
+					 	${translationsMap['basic.dashboard.define.content']}
 					</div>
 					<div class="dashboardButtonContentLink" id="technologiesLink" style="display: none;">
-						<a href="#" onclick="goToMenuPosition('technology.technologies')">${translationsMap['core.dashboard.define.link']}</a>
+						<a href="#" onclick="goToMenuPosition('technology.technologies')">${translationsMap['basic.dashboard.define.link']}</a>
 					</div>
 				</div>
 			</div>
@@ -130,13 +130,13 @@
 				<div class="dashboardButtonIcon icon3"></div>
 				<div class="dashboardButtonContent">
 					<div class="dashboardButtonContentHeader">
-						${translationsMap['core.dashboard.react.header']}
+						${translationsMap['basic.dashboard.react.header']}
 					</div>
 					<div class="dashboardButtonContentText">
-					 	${translationsMap['core.dashboard.react.content']}
+					 	${translationsMap['basic.dashboard.react.content']}
 					</div>
 					<div class="dashboardButtonContentLink" id="materialRequirementsLink" style="display: none;">
-						<a href="#" onclick="goToMenuPosition('reports.materialRequirements')">${translationsMap['core.dashboard.react.link']}</a>
+						<a href="#" onclick="goToMenuPosition('reports.materialRequirements')">${translationsMap['basic.dashboard.react.link']}</a>
 					</div>
 				</div>
 			</div>

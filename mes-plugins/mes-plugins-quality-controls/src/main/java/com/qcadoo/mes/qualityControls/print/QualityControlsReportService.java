@@ -278,10 +278,10 @@ public class QualityControlsReportService {
                         .find()
                         .addRestriction(
                                 Restrictions.ge(dataDef.getField("date"),
-                                        DateUtils.parseDate(model.get("dateFrom").toString(), false)))
+                                        DateUtils.parseAndComplete(model.get("dateFrom").toString(), false)))
                         .addRestriction(
                                 Restrictions.le(dataDef.getField("date"),
-                                        DateUtils.parseDate(model.get("dateTo").toString(), true)))
+                                        DateUtils.parseAndComplete(model.get("dateTo").toString(), true)))
                         .addRestriction(Restrictions.eq("qualityControlType", type))
                         .addRestriction(Restrictions.eq("closed", true)).list();
                 return result.getEntities();
