@@ -51,7 +51,7 @@ public class WorkPlanReportDataService {
     private SecurityService securityService;
 
     @Autowired
-    ReportDataService reportDataService;
+    private ReportDataService reportDataService;
 
     public final void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {
         for (Entity operationComponent : entityTree) {
