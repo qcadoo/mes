@@ -45,7 +45,8 @@ public final class ProductService {
     private NumberGeneratorService numberGeneratorService;
 
     public void generateProductNumber(final ViewDefinitionState state) {
-        numberGeneratorService.generateAndInsertNumber(state, "basic", "product", "form", "number");
+        numberGeneratorService.generateAndInsertNumber(state, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
+                "form", "number");
     }
 
     public boolean checkIfSubstituteIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
@@ -55,7 +56,8 @@ public final class ProductService {
             return true;
         }
 
-        Entity substituteEntity = dataDefinitionService.get("basic", "substitute").get(substitute.getId());
+        Entity substituteEntity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBSTITUTE)
+                .get(substitute.getId());
 
         if (substituteEntity == null) {
             entity.addGlobalError("core.message.belongsToNotFound");
@@ -93,7 +95,8 @@ public final class ProductService {
             return true;
         }
 
-        Entity productEntity = dataDefinitionService.get("basic", "product").get(product.getId());
+        Entity productEntity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                product.getId());
 
         if (productEntity == null) {
             entity.addGlobalError("core.message.belongsToNotFound");
@@ -104,21 +107,4 @@ public final class ProductService {
         }
     }
 
-    public boolean checkIfTechnologyIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
-        Entity technology = entity.getBelongsToField("technology");
-
-        if (technology == null || technology.getId() == null) {
-            return true;
-        }
-
-        Entity technologyEntity = dataDefinitionService.get("technologies", "technology").get(technology.getId());
-
-        if (technologyEntity == null) {
-            entity.addGlobalError("core.message.belongsToNotFound");
-            entity.setField("technology", null);
-            return false;
-        } else {
-            return true;
-        }
-    }
 }

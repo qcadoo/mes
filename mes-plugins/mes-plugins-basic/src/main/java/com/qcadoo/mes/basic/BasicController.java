@@ -50,7 +50,7 @@ public class BasicController {
     public ModelAndView getParameterPageView(final Locale locale) {
         JSONObject json = new JSONObject(ImmutableMap.of("form.id", parameterService.getParameterId().toString()));
         Map<String, String> arguments = ImmutableMap.of("context", json.toString());
-        return crudController.prepareView("basic", "parameters", arguments, locale);
+        return crudController.prepareView(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.VIEW_PARAMETERS, arguments, locale);
     }
 
 }
