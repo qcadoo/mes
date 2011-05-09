@@ -39,7 +39,7 @@ import com.qcadoo.model.api.Entity;
 public class MaterialRequirementReportDataService {
 
     @Autowired
-    ReportDataService reportDataService;
+    private ReportDataService reportDataService;
 
     public final Map<Entity, BigDecimal> prepareTechnologySeries(final Entity entity) {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
