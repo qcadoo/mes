@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.technologies.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -132,8 +133,7 @@ public final class OrderService {
 
         FieldComponent product = (FieldComponent) state;
         FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
-        FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState
-                .getComponentByReference("defaultTechnology");
+        FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
 
         defaultTechnology.setFieldValue("");
         technology.setFieldValue(null);
@@ -515,6 +515,25 @@ public final class OrderService {
             }
         }
         return true;
+    }
+
+    public boolean checkIfTechnologyIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
+        Entity technology = entity.getBelongsToField("technology");
+
+        if (technology == null || technology.getId() == null) {
+            return true;
+        }
+
+        Entity technologyEntity = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY).get(technology.getId());
+
+        if (technologyEntity == null) {
+            entity.addGlobalError("core.message.belongsToNotFound");
+            entity.setField("technology", null);
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

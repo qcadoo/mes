@@ -57,7 +57,6 @@ public final class DashboardController {
         mav.addObject("userLogin", securityService.getCurrentUserName());
 
         mav.addObject("translationsMap", translationService.getMessagesGroup("basic.dashboard", locale));
-
         mav.setViewName("basic/dashboard");
         mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
         return mav;

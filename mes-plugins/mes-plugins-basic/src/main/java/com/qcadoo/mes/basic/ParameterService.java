@@ -42,7 +42,8 @@ public class ParameterService {
     @Transactional
     public Long getParameterId() {
 
-        DataDefinition dataDefinition = dataDefinitionService.get("basic", "parameter");
+        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_PARAMETER);
         SearchResult searchResult = dataDefinition.find().setMaxResults(1).list();
 
         if (searchResult.getEntities().size() > 0) {

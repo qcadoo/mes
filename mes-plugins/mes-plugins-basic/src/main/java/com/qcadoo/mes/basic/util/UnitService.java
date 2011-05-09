@@ -27,6 +27,7 @@ package com.qcadoo.mes.basic.util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.BasicConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -48,7 +49,8 @@ public class UnitService {
         FieldComponent unitState = (FieldComponent) state.getComponentByReference("unit");
         unitState.requestComponentUpdateState();
         if (productState.getFieldValue() != null) {
-            Entity product = dataDefinitionService.get("basic", "product").get((Long) productState.getFieldValue());
+            Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                    (Long) productState.getFieldValue());
             unitState.setFieldValue(product.getStringField("unit"));
         } else {
             unitState.setFieldValue("");
