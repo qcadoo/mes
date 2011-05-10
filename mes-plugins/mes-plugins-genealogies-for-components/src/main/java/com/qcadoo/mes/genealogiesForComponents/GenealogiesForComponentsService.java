@@ -140,7 +140,7 @@ public class GenealogiesForComponentsService {
     public void generateReportForComponent(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
-            FieldComponent batchState = (FieldComponent) viewDefinitionState.getComponentByReference("batches");
+            GridComponent batchState = (GridComponent) viewDefinitionState.getComponentByReference("batches");
             if (batchState != null && batchState.getFieldValue() != null) {
                 viewDefinitionState.redirectTo(
                         "/genealogiesForComponents/genealogyForComponent.pdf?value=" + batchState.getFieldValue(), true, false);
