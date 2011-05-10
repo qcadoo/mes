@@ -134,7 +134,7 @@ public final class QualityControlService {
 
             String comment = (String) entity.getField("comment");
             if (comment == null || comment.isEmpty()) {
-                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addGlobalError("qcadooView.validate.global.error.custom");
                 entity.addError(dataDefinition.getField("comment"),
                         "qualityControls.quality.control.validate.global.error.comment");
                 return false;
@@ -151,7 +151,7 @@ public final class QualityControlService {
             String comment = (String) entity.getField("comment");
 
             if ((comment == null || comment.isEmpty()) && acceptedDefectsQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addGlobalError("qcadooView.validate.global.error.custom");
                 entity.addError(dataDefinition.getField("comment"),
                         "qualityControls.quality.control.validate.global.error.comment");
                 return false;
@@ -242,10 +242,10 @@ public final class QualityControlService {
                     MessageType.SUCCESS);
         } else {
             if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
                         MessageType.FAILURE);
             } else {
-                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
                         MessageType.FAILURE);
             }
         }
@@ -307,10 +307,10 @@ public final class QualityControlService {
 
         } else {
             if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
                         MessageType.FAILURE);
             } else {
-                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
                         MessageType.FAILURE);
             }
         }
@@ -420,7 +420,7 @@ public final class QualityControlService {
             Object operation = entity.getField("operation");
 
             if (operation == null) {
-                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addGlobalError("qcadooView.validate.global.error.custom");
                 entity.addError(dataDefinition.getField("operation"),
                         "qualityControls.quality.control.validate.global.error.operation");
                 return false;
@@ -453,14 +453,14 @@ public final class QualityControlService {
             }
 
             if (rejectedQuantity.compareTo(takenForControlQuantity) > 0) {
-                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addGlobalError("qcadooView.validate.global.error.custom");
                 entity.addError(dataDefinition.getField("rejectedQuantity"),
                         "qualityControls.quality.control.validate.global.error.rejectedQuantity.tooLarge");
                 return false;
             }
 
             if (acceptedDefectsQuantity.compareTo(takenForControlQuantity.subtract(rejectedQuantity)) > 0) {
-                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addGlobalError("qcadooView.validate.global.error.custom");
                 entity.addError(dataDefinition.getField("acceptedDefectsQuantity"),
                         "qualityControls.quality.control.validate.global.error.acceptedDefectsQuantity.tooLarge");
                 return false;

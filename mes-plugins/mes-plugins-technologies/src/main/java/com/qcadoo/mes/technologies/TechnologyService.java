@@ -314,12 +314,12 @@ public final class TechnologyService {
         boolean isValid = true;
         if ("operation".equals(entity.getStringField("entityType"))) {
             if (entity.getField("operation") == null) {
-                entity.addError(dataDefinition.getField("operation"), "core.validate.field.error.missing");
+                entity.addError(dataDefinition.getField("operation"), "qcadooView.validate.field.error.missing");
                 isValid = false;
             }
         } else if ("referenceTechnology".equals(entity.getStringField("entityType"))) {
             if (entity.getField("referenceTechnology") == null) {
-                entity.addError(dataDefinition.getField("referenceTechnology"), "core.validate.field.error.missing");
+                entity.addError(dataDefinition.getField("referenceTechnology"), "qcadooView.validate.field.error.missing");
                 isValid = false;
             }
             if (entity.getField("referenceMode") == null) {
@@ -350,7 +350,7 @@ public final class TechnologyService {
             BigDecimal unitSamplingNr = (BigDecimal) entity.getField("unitSamplingNr");
             if (unitSamplingNr == null || unitSamplingNr.scale() > 3 || unitSamplingNr.compareTo(BigDecimal.ZERO) < 0
                     || unitSamplingNr.precision() > 7) {
-                entity.addGlobalError("core.validate.global.error.custom");
+                entity.addGlobalError("qcadooView.validate.global.error.custom");
                 entity.addError(dataDefinition.getField("unitSamplingNr"),
                         "technologies.technology.validate.global.error.unitSamplingNr");
                 return false;

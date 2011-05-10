@@ -60,7 +60,7 @@ public final class ProductService {
                 .get(substitute.getId());
 
         if (substituteEntity == null) {
-            entity.addGlobalError("core.message.belongsToNotFound");
+            entity.addGlobalError("qcadooView.message.belongsToNotFound");
             entity.setField("substitute", null);
             return false;
         } else {
@@ -98,7 +98,7 @@ public final class ProductService {
                 product.getId());
 
         if (productEntity == null) {
-            entity.addGlobalError("core.message.belongsToNotFound");
+            entity.addGlobalError("qcadooView.message.belongsToNotFound");
             entity.setField("product", null);
             return false;
         } else {

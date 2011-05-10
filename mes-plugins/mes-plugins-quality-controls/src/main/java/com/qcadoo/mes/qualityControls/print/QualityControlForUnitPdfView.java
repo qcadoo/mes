@@ -80,7 +80,7 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
             addProductSeries(document, entry, locale);
         }
 
-        String text = getTranslationService().translate("core.report.endOfReport", locale);
+        String text = getTranslationService().translate("qcadooView.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("qualityControls.qualityControlForUnit.report.fileName", locale);
     }

@@ -42,7 +42,7 @@ public class OrderReportService {
         GridComponent gridState = (GridComponent) state;
         Set<Entity> ordersEntities = new HashSet<Entity>();
         if (gridState.getSelectedEntitiesIds().size() == 0) {
-            state.addMessage(translationService.translate("core.message.noRecordSelected", state.getLocale()),
+            state.addMessage(translationService.translate("qcadooView.message.noRecordSelected", state.getLocale()),
                     MessageType.FAILURE);
             return null;
         }
@@ -50,7 +50,7 @@ public class OrderReportService {
         for (Long orderId : gridState.getSelectedEntitiesIds()) {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
             if (order == null) {
-                errors.add(translationService.translate("core.message.entityNotFound", state.getLocale()));
+                errors.add(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()));
                 continue;
             }
             String validateMessage = orderValidator.validateOrder(order);
