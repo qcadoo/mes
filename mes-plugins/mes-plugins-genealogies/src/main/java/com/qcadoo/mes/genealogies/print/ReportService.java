@@ -67,7 +67,7 @@ public class ReportService {
 
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.isEq("order.product.id", product.getFieldValue());
+                searchCriteriaBuilder.belongsTo("order.product", product.getFieldValue());
             }
 
         });

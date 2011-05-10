@@ -259,8 +259,8 @@ public class AutoGenealogyServiceTest {
         list.add(mock(Entity.class));
         given(
                 dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find()
-                        .isEq("batch", "test").isEq("order.id", order.getId()).setMaxResults(1).list().getEntities()).willReturn(
-                list);
+                        .isEq("batch", "test").belongsTo("order", order.getId()).setMaxResults(1).list().getEntities())
+                .willReturn(list);
 
         given(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.genealogyExist.pl");

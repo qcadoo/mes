@@ -390,7 +390,7 @@ public class QualityControlServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(state.getFieldValue()).willReturn(7L);
         given(dataDefinitionService.get("genealogies", "genealogy")).willReturn(genealogyDataDefinition);
-        given(genealogyDataDefinition.find().isEq("order.id", 7L)).willReturn(searchCriteria);
+        given(genealogyDataDefinition.find().belongsTo("order", 7L)).willReturn(searchCriteria);
         given(searchCriteria.list().getEntities()).willReturn(genealogies);
         given(
                 numberGeneratorService.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,

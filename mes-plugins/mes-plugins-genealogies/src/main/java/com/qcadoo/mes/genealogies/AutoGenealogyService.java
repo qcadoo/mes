@@ -263,7 +263,7 @@ public class AutoGenealogyService {
     private boolean checkIfExistGenealogyWithBatch(final Entity order, final String batch) {
         SearchResult searchResult = dataDefinitionService
                 .get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find().isEq("batch", batch)
-                .isEq("order.id", order.getId()).setMaxResults(1).list();
+                .belongsTo("order", order.getId()).setMaxResults(1).list();
 
         if (searchResult.getEntities().size() > 0) {
             return true;
