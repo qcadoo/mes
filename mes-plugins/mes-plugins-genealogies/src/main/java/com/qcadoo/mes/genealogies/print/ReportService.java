@@ -67,7 +67,7 @@ public class ReportService {
 
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.isEq("order.product.id", product.getFieldValue());
+                searchCriteriaBuilder.belongsTo("order.product", product.getFieldValue());
             }
 
         });
@@ -90,7 +90,7 @@ public class ReportService {
 
     public void generateReportForProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FieldComponent batchState = (FieldComponent) viewDefinitionState.getComponentByReference("batches");
+        GridComponent batchState = (GridComponent) viewDefinitionState.getComponentByReference("batches");
         if (state instanceof FormComponent) {
             if (batchState != null && batchState.getFieldValue() != null) {
                 viewDefinitionState.redirectTo("/genealogies/genealogyForProduct.pdf?value=" + batchState.getFieldValue(), true,

@@ -869,7 +869,7 @@ public class SamplesLoaderModule extends Module {
             return null;
         }
         List<Entity> technologies = dataDefinitionService.get("technologies", "technology").find()
-                .isEq("product.id", product.getId()).isEq("master", true).setMaxResults(1).list().getEntities();
+                .belongsTo("product", product.getId()).isEq("master", true).setMaxResults(1).list().getEntities();
         if (technologies.size() > 0) {
             return technologies.get(0);
         } else {
@@ -890,9 +890,10 @@ public class SamplesLoaderModule extends Module {
     private String getRandomDictionaryItem(final String dictionaryName) {
         Entity dictionary = getDictionaryByName(dictionaryName);
         Long total = (long) dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
-                .isEq("dictionary.id", dictionary.getId()).list().getTotalNumberOfEntities();
-        Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").find().isEq("dictionary.id", dictionary.getId())
-                .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).list().getEntities().get(0);
+                .belongsTo("dictionary", dictionary.getId()).list().getTotalNumberOfEntities();
+        Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
+                .belongsTo("dictionary", dictionary.getId()).setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1)
+                .list().getEntities().get(0);
         return item.getField("name").toString();
     }
 

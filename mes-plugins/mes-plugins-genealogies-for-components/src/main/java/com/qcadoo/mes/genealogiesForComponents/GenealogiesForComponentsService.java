@@ -132,7 +132,7 @@ public class GenealogiesForComponentsService {
     private boolean checkProductInComponentsBatchRequired(final Long entityId) {
         SearchResult searchResult = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).find()
-                .isEq("operationComponent.technology.id", entityId).isEq("batchRequired", true).setMaxResults(1).list();
+                .belongsTo("operationComponent.technology", entityId).isEq("batchRequired", true).setMaxResults(1).list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
     }
@@ -140,7 +140,7 @@ public class GenealogiesForComponentsService {
     public void generateReportForComponent(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
-            FieldComponent batchState = (FieldComponent) viewDefinitionState.getComponentByReference("batches");
+            GridComponent batchState = (GridComponent) viewDefinitionState.getComponentByReference("batches");
             if (batchState != null && batchState.getFieldValue() != null) {
                 viewDefinitionState.redirectTo(
                         "/genealogiesForComponents/genealogyForComponent.pdf?value=" + batchState.getFieldValue(), true, false);
@@ -162,7 +162,7 @@ public class GenealogiesForComponentsService {
 
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.isEq("productInComponent.productInComponent.product.id", product.getFieldValue());
+                searchCriteriaBuilder.belongsTo("productInComponent.productInComponent.product", product.getFieldValue());
             }
 
         });

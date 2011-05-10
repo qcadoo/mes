@@ -534,7 +534,7 @@ public final class QualityControlService {
 
         SearchResult searchResult = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
-                .isEq("technology.id", entityId).isEq("qualityControlRequired", true).setMaxResults(1).list();
+                .belongsTo("technology", entityId).isEq("qualityControlRequired", true).setMaxResults(1).list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
 
@@ -731,7 +731,7 @@ public final class QualityControlService {
     private List<Entity> getGenealogiesForOrder(final Long id) {
         DataDefinition genealogyDD = dataDefinitionService.get("genealogies", "genealogy");
 
-        SearchCriteriaBuilder searchCriteria = genealogyDD.find().isEq("order.id", id);
+        SearchCriteriaBuilder searchCriteria = genealogyDD.find().belongsTo("order", id);
 
         return searchCriteria.list().getEntities();
     }
