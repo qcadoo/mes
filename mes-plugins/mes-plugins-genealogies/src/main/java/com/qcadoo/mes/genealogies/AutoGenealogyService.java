@@ -37,8 +37,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.BasicConstants;
-import com.qcadoo.mes.orders.OrdersConstants;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;

@@ -41,7 +41,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.qcadoo.mes.genealogies.GenealogiesConstants;
+import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.mes.genealogies.print.util.BatchOrderNrComparator;
 import com.qcadoo.mes.genealogies.print.util.EntityNumberComparator;
 import com.qcadoo.model.api.DataDefinitionService;

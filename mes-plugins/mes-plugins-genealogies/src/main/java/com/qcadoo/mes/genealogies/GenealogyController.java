@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
+import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.view.api.crud.CrudService;
 
 @Controller

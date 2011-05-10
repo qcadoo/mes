@@ -1,4 +1,4 @@
-package com.qcadoo.mes.qualityControlsForBatch;
+package com.qcadoo.mes.qualityControlsForBatch.constants;
 
 public interface QualityControlsForBatchConstants {
 

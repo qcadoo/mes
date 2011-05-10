@@ -19,9 +19,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.qcadoo.mes.genealogies.GenealogiesConstants;
 import com.qcadoo.mes.genealogies.GenealogyService;
-import com.qcadoo.mes.orders.OrdersConstants;
+import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;

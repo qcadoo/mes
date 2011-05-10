@@ -1,4 +1,4 @@
-package com.qcadoo.mes.genealogies;
+package com.qcadoo.mes.genealogies.constants;
 
 public interface GenealogiesConstants {
 

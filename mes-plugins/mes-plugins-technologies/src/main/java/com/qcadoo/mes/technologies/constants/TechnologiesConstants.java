@@ -1,4 +1,4 @@
-package com.qcadoo.mes.technologies;
+package com.qcadoo.mes.technologies.constants;
 
 public interface TechnologiesConstants {
 

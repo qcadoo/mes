@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;

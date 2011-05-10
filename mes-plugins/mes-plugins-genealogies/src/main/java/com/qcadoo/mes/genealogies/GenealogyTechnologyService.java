@@ -3,7 +3,8 @@ package com.qcadoo.mes.genealogies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.BasicConstants;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
