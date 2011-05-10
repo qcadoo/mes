@@ -2,7 +2,6 @@ package com.qcadoo.mes.materialRequirements;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -25,7 +24,6 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
-import com.qcadoo.model.internal.search.Restriction;
 
 public class MaterialRequirementReportDataServiceTest {
 
@@ -168,7 +166,7 @@ public class MaterialRequirementReportDataServiceTest {
         List<Entity> components = new ArrayList<Entity>();
         components.add(materialRequirementComponent);
 
-        given(dataDefinition.find().addRestriction(any(Restriction.class)).list().getEntities()).willReturn(components);
+        given(dataDefinition.find().list().getEntities()).willReturn(components);
 
         // when
         Map<Entity, BigDecimal> products = materialRequirementsReportDataService.prepareTechnologySeries(materialRequirement);
@@ -191,7 +189,7 @@ public class MaterialRequirementReportDataServiceTest {
         List<Entity> components = new ArrayList<Entity>();
         components.add(materialRequirementComponent);
 
-        given(dataDefinition.find().addRestriction(any(Restriction.class)).list().getEntities()).willReturn(components);
+        given(dataDefinition.find().list().getEntities()).willReturn(components);
 
         // when
         Map<Entity, BigDecimal> products = materialRequirementsReportDataService.prepareTechnologySeries(materialRequirement);
@@ -214,7 +212,7 @@ public class MaterialRequirementReportDataServiceTest {
         List<Entity> components = new ArrayList<Entity>();
         components.add(materialRequirementComponent);
 
-        given(dataDefinition.find().addRestriction(any(Restriction.class)).list().getEntities()).willReturn(components);
+        given(dataDefinition.find().list().getEntities()).willReturn(components);
 
         // when
         Map<Entity, BigDecimal> products = materialRequirementsReportDataService.prepareTechnologySeries(materialRequirement);

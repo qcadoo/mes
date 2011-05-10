@@ -43,7 +43,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
@@ -74,7 +73,7 @@ public final class TechnologyService {
     public void setFirstTechnologyAsDefault(final DataDefinition dataDefinition, final Entity entity) {
         if (!(Boolean) entity.getField("master") && entity.getField("product") != null) {
             SearchCriteriaBuilder searchCriteria = dataDefinition.find().setMaxResults(1)
-                    .addRestriction(Restrictions.belongsTo(dataDefinition.getField("product"), entity.getField("product")));
+                    .belongsTo("product", entity.getField("product"));
 
             if (searchCriteria.list().getTotalNumberOfEntities() == 0) {
                 entity.setField("master", Boolean.TRUE);
@@ -211,7 +210,7 @@ public final class TechnologyService {
     private Entity getProductById(final Long productId) {
         DataDefinition instructionDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).addRestriction(Restrictions.idEq(productId));
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isIdEq(productId);
 
         SearchResult searchResult = searchCriteria.list();
         if (searchResult.getTotalNumberOfEntities() == 1) {

@@ -1,7 +1,6 @@
 package com.qcadoo.mes.genealogiesForComponents;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -192,14 +191,10 @@ public class GenealogiesForComponentsServiceTest {
         productsEntities3.add(craeteOperationProductInComponent(104L, false));
 
         DataDefinition treeDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(
-                treeDataDefinition.find().addRestriction(any(com.qcadoo.model.internal.search.Restriction.class))
-                        .orderAscBy(eq("priority")).list().getEntities()).willReturn(entities, subEntities);
+        given(treeDataDefinition.find().orderAscBy(eq("priority")).list().getEntities()).willReturn(entities, subEntities);
 
         DataDefinition listDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(
-                listDataDefinition.find().addRestriction(any(com.qcadoo.model.internal.search.Restriction.class)).list()
-                        .getEntities()).willReturn(productsEntities1, productsEntities3);
+        given(listDataDefinition.find().list().getEntities()).willReturn(productsEntities1, productsEntities3);
 
         EntityTree subOperationComponents = new EntityTreeImpl(treeDataDefinition, "joinField", 13L);
 
@@ -241,9 +236,7 @@ public class GenealogiesForComponentsServiceTest {
         existingEntities.add(craeteGenealogyProductInComponent(102L, craeteOperationProductInComponent(102L, true)));
 
         DataDefinition existingListDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(
-                existingListDataDefinition.find().addRestriction(any(com.qcadoo.model.internal.search.Restriction.class)).list()
-                        .getEntities()).willReturn(existingEntities);
+        given(existingListDataDefinition.find().list().getEntities()).willReturn(existingEntities);
 
         EntityList existingOperationComponents = new EntityListImpl(existingListDataDefinition, "joinField", 11L);
         return existingOperationComponents;

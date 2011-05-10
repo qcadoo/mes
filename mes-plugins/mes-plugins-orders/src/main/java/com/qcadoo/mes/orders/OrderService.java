@@ -38,7 +38,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
@@ -410,9 +409,8 @@ public final class OrderService {
         DataDefinition instructionDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1)
-                .addRestriction(Restrictions.eq(instructionDD.getField("master"), true))
-                .addRestriction(Restrictions.belongsTo(instructionDD.getField("product"), selectedProductId));
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isEq("master", true)
+                .belongsTo("product", selectedProductId);
 
         SearchResult searchResult = searchCriteria.list();
 
@@ -427,8 +425,7 @@ public final class OrderService {
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 
-        SearchCriteriaBuilder searchCriteria = technologyDD.find().setMaxResults(1)
-                .addRestriction(Restrictions.belongsTo(technologyDD.getField("product"), selectedProductId));
+        SearchCriteriaBuilder searchCriteria = technologyDD.find().setMaxResults(1).belongsTo("product", selectedProductId);
 
         SearchResult searchResult = searchCriteria.list();
 

@@ -68,7 +68,6 @@ import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
-import com.qcadoo.model.internal.search.Restriction;
 import com.qcadoo.model.internal.types.BooleanType;
 import com.qcadoo.model.internal.types.StringType;
 import com.qcadoo.security.api.SecurityService;
@@ -233,9 +232,7 @@ public class OrderServiceTest {
         given(product.getFieldValue()).willReturn(13L);
         given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
                 .willReturn(dataDefinition);
-        given(
-                dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class))
-                        .addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
+        given(dataDefinition.find().setMaxResults(1).list()).willReturn(searchResult);
         given(dataDefinition.getField("master")).willReturn(masterField);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(masterField.getType()).willReturn(new BooleanType());
@@ -267,9 +264,8 @@ public class OrderServiceTest {
         given(product.getFieldValue()).willReturn(13L);
         given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
                 .willReturn(dataDefinition);
-        given(
-                dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class))
-                        .addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
+        given(dataDefinition.find().setMaxResults(1).isEq(anyString(), any()).belongsTo(anyString(), any()).list()).willReturn(
+                searchResult);
         given(dataDefinition.getField("master")).willReturn(masterField);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(masterField.getType()).willReturn(new BooleanType());
@@ -368,9 +364,7 @@ public class OrderServiceTest {
         SearchResult searchResult = mock(SearchResult.class);
         given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
                 .willReturn(dataDefinition);
-        given(
-                dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class))
-                        .addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
+        given(dataDefinition.find().setMaxResults(1).list()).willReturn(searchResult);
         given(dataDefinition.getField("master")).willReturn(masterField);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(masterField.getType()).willReturn(new BooleanType());
@@ -401,9 +395,8 @@ public class OrderServiceTest {
         SearchResult searchResult = mock(SearchResult.class);
         given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
                 .willReturn(dataDefinition);
-        given(
-                dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class))
-                        .addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
+        given(dataDefinition.find().setMaxResults(1).isEq(anyString(), any()).belongsTo(anyString(), any()).list()).willReturn(
+                searchResult);
         given(dataDefinition.getField("master")).willReturn(masterField);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(masterField.getType()).willReturn(new BooleanType());
@@ -463,7 +456,7 @@ public class OrderServiceTest {
         SearchResult searchResult = mock(SearchResult.class);
         given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
                 .willReturn(dataDefinition);
-        given(dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
+        given(dataDefinition.find().setMaxResults(1).list()).willReturn(searchResult);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(productField.getType()).willReturn(new StringType());
         given(searchResult.getTotalNumberOfEntities()).willReturn(0);
@@ -498,7 +491,7 @@ public class OrderServiceTest {
         SearchResult searchResult = mock(SearchResult.class);
         given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
                 .willReturn(dataDefinition);
-        given(dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
+        given(dataDefinition.find().setMaxResults(1).belongsTo(anyString(), any()).list()).willReturn(searchResult);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(productField.getType()).willReturn(new StringType());
         given(searchResult.getTotalNumberOfEntities()).willReturn(1);
@@ -781,7 +774,7 @@ public class OrderServiceTest {
         SearchResult searchResult = mock(SearchResult.class);
         given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
                 .willReturn(dataDefinition);
-        given(dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
+        given(dataDefinition.find().setMaxResults(1).list()).willReturn(searchResult);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(productField.getType()).willReturn(new StringType());
         given(searchResult.getTotalNumberOfEntities()).willReturn(0);
@@ -808,7 +801,7 @@ public class OrderServiceTest {
         SearchResult searchResult = mock(SearchResult.class);
         given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
                 .willReturn(dataDefinition);
-        given(dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
+        given(dataDefinition.find().setMaxResults(1).belongsTo(anyString(), any()).list()).willReturn(searchResult);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(productField.getType()).willReturn(new StringType());
         given(searchResult.getTotalNumberOfEntities()).willReturn(1);
@@ -1322,9 +1315,7 @@ public class OrderServiceTest {
             DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
             given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("01forBatch");
             given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
-            given(
-                    dataDefinition.find().addRestriction(any(Restriction.class)).addRestriction(any(Restriction.class)).list()
-                            .getTotalNumberOfEntities()).willReturn(0);
+            given(dataDefinition.find().list().getTotalNumberOfEntities()).willReturn(0);
         } else {
             given(order.getBelongsToField("technology").getField("qualityControlType")).willReturn(null);
         }
@@ -1369,9 +1360,7 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("02forUnit");
         given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
-        given(
-                dataDefinition.find().addRestriction(any(Restriction.class)).addRestriction(any(Restriction.class)).list()
-                        .getTotalNumberOfEntities()).willReturn(0);
+        given(dataDefinition.find().list().getTotalNumberOfEntities()).willReturn(0);
 
         // when
         boolean results = callCheckIfAllQualityControlsAreClosed(order);
@@ -1396,9 +1385,7 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("03forOrder");
         given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
-        given(
-                dataDefinition.find().addRestriction(any(Restriction.class)).addRestriction(any(Restriction.class)).list()
-                        .getTotalNumberOfEntities()).willReturn(0);
+        given(dataDefinition.find().list().getTotalNumberOfEntities()).willReturn(0);
 
         boolean results = callCheckIfAllQualityControlsAreClosed(order);
 

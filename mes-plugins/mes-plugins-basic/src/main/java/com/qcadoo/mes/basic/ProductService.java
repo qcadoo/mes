@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
@@ -76,9 +75,8 @@ public final class ProductService {
             return false;
         }
 
-        SearchResult searchResult = dataDefinition.find()
-                .addRestriction(Restrictions.belongsTo(dataDefinition.getField("product"), product.getId()))
-                .addRestriction(Restrictions.belongsTo(dataDefinition.getField("substitute"), substitute.getId())).list();
+        SearchResult searchResult = dataDefinition.find().belongsTo("product", product.getId())
+                .belongsTo("substitute", substitute.getId()).list();
 
         if (searchResult.getTotalNumberOfEntities() > 0 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
             entity.addError(dataDefinition.getField("product"), "basic.validate.global.error.substituteComponentDuplicated");

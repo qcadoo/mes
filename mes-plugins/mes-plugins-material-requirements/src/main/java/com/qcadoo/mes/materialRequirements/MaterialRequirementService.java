@@ -21,7 +21,6 @@ import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -73,12 +72,8 @@ public final class MaterialRequirementService {
             return false;
         }
 
-        SearchResult searchResult = dataDefinition
-                .find()
-                .addRestriction(Restrictions.belongsTo(dataDefinition.getField("order"), order.getId()))
-                .addRestriction(
-                        Restrictions.belongsTo(dataDefinition.getField("materialRequirement"), materialRequirement.getId()))
-                .list();
+        SearchResult searchResult = dataDefinition.find().belongsTo("order", order.getId())
+                .belongsTo("materialRequirement", materialRequirement.getId()).list();
 
         if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
             entity.addError(dataDefinition.getField("order"),
