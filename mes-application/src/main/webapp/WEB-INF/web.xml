@@ -34,18 +34,17 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
+			/WEB-INF/root-context.xml
 			classpath*:qcadoo-model-database-context.xml
 			classpath*:qcadoo-tenant-context.xml
 			classpath*:qcadoo-plugin-context.xml
 			classpath*:qcadoo-localization-context.xml
-			classpath*:qcadoo-model-context.xml
-			/WEB-INF/root-context.xml
+			classpath*:qcadoo-model-context.xml		
 			classpath*:qcadoo-security-context.xml
 			classpath*:qcadoo-view-context.xml
 			classpath*:qcadoo-shop-context.xml
 			classpath*:qcadoo-web-context.xml
 			classpath*:root-context.xml
-			/WEB-INF/web-context.xml
 			classpath*:web-context.xml
 		</param-value>
 	</context-param>
