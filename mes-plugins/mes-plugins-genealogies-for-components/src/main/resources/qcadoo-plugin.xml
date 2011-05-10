@@ -54,7 +54,7 @@
 		</model:model-field>
 		
 		<model:model-hook plugin="technologies" model="operationProductInComponent">
-			<model:onSave class="com.qcadoo.mes.genealogies.GenealogyService"
+			<model:onSave class="com.qcadoo.mes.genealogiesForComponents.GenealogiesForComponentsService"
 				method="fillBatchRequiredForTechnology" />
 		</model:model-hook>
 		
@@ -69,11 +69,11 @@
 		
 		<view:view-hook plugin="technologies"
 			view="technologyDetails" type="beforeRender"
-			class="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="disableBatchRequiredForTechnology" />
+			class="com.qcadoo.mes.genealogiesForComponents.GenealogiesForComponentsService" method="disableBatchRequiredForTechnology" />
 			
 		<view:view-hook plugin="genealogies"
 			view="orderGenealogyDetails" type="beforeRender"
-			class="com.qcadoo.mes.genealogies.GenealogyService" method="fillProductInComponents" />
+			class="com.qcadoo.mes.genealogiesForComponents.GenealogiesForComponentsService" method="fillProductInComponents" />
 			
 			
 		<view:view-listener plugin="technologies"

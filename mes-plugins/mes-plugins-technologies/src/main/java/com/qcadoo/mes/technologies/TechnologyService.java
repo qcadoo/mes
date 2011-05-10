@@ -35,6 +35,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.BasicConstants;
 import com.qcadoo.mes.technologies.print.ReportDataService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -117,8 +118,8 @@ public final class TechnologyService {
             return;
         }
 
-        Entity operationComponent = dataDefinitionService.get("technologies", "technologyOperationComponent").get(
-                tree.getSelectedEntityId());
+        Entity operationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(tree.getSelectedEntityId());
 
         GridComponent outProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("outProducts");
         GridComponent inProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("inProducts");
@@ -143,7 +144,8 @@ public final class TechnologyService {
         reportDataService.countQuantityForProductsIn(inProductsWithCount, technology, BigDecimal.ONE, false);
 
         for (Map.Entry<Entity, BigDecimal> inProductWithCount : inProductsWithCount.entrySet()) {
-            Entity inProduct = dataDefinitionService.get("technologies", "operationProductInComponent").create();
+            Entity inProduct = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
             inProduct.setField("operationComponent", rootOperation);
             inProduct.setField("product", inProductWithCount.getKey());
             inProduct.setField("quantity", inProductWithCount.getValue());
@@ -207,7 +209,7 @@ public final class TechnologyService {
     }
 
     private Entity getProductById(final Long productId) {
-        DataDefinition instructionDD = dataDefinitionService.get("basic", "product");
+        DataDefinition instructionDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
 
         SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).addRestriction(Restrictions.idEq(productId));
 

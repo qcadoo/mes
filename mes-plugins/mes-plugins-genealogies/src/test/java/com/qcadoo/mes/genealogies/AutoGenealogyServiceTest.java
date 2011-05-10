@@ -54,6 +54,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.BasicConstants;
+import com.qcadoo.mes.orders.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -142,7 +144,8 @@ public class AutoGenealogyServiceTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
 
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(null);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L))
+                .willReturn(null);
 
         given(translationService.translate("core.message.entityNotFound", Locale.ENGLISH)).willReturn(
                 "core.message.entityNotFound.pl");
@@ -165,7 +168,8 @@ public class AutoGenealogyServiceTest {
         Entity order = mock(Entity.class);
         given(order.getBelongsToField("product")).willReturn(null);
 
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
 
         given(translationService.translate("genealogies.message.autoGenealogy.failure.product", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.failure.product.pl");
@@ -190,7 +194,8 @@ public class AutoGenealogyServiceTest {
         given(order.getBelongsToField("product")).willReturn(product);
         given(order.getBelongsToField("technology")).willReturn(null);
 
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
 
         given(translationService.translate("genealogies.message.autoGenealogy.failure.product", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.failure.product.pl");
@@ -218,7 +223,8 @@ public class AutoGenealogyServiceTest {
         given(product.getField("number")).willReturn("test");
         given(product.getField("name")).willReturn("test");
 
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
 
         given(translationService.translate("genealogies.message.autoGenealogy.missingMainBatch", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.missingMainBatch.pl");
@@ -245,13 +251,15 @@ public class AutoGenealogyServiceTest {
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(product.getField("batch")).willReturn("test");
 
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
 
         List<Entity> list = new ArrayList<Entity>();
         list.add(mock(Entity.class));
         given(
-                dataDefinitionService.get("genealogies", "genealogy").find().isEq("batch", "test")
-                        .isEq("order.id", order.getId()).setMaxResults(1).list().getEntities()).willReturn(list);
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find()
+                        .isEq("batch", "test").isEq("order.id", order.getId()).setMaxResults(1).list().getEntities()).willReturn(
+                list);
 
         given(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.genealogyExist.pl");
@@ -272,15 +280,18 @@ public class AutoGenealogyServiceTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         Entity order = mock(Entity.class);
         Entity genealogy = new DefaultEntity(null);
-        given(dataDefinitionService.get("genealogies", "genealogy").create()).willReturn(genealogy);
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).create())
+                .willReturn(genealogy);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
         given(order.getBelongsToField("product")).willReturn(product);
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(product.getField("batch")).willReturn("test");
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
-                .willReturn(getCurrentAttribute());
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
+                        .find().setMaxResults(1).list().getEntities()).willReturn(getCurrentAttribute());
 
         given(technology.getField("shiftFeatureRequired")).willReturn(true);
         given(technology.getField("postFeatureRequired")).willReturn(true);
@@ -300,7 +311,9 @@ public class AutoGenealogyServiceTest {
             }
         }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
 
-        given(dataDefinitionService.get("genealogies", "genealogy").save(any(Entity.class)).isValid()).willReturn(true);
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY)
+                        .save(any(Entity.class)).isValid()).willReturn(true);
 
         given(translationService.translate("genealogies.message.autoGenealogy.success", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.success.pl");
@@ -322,16 +335,20 @@ public class AutoGenealogyServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         Entity order = mock(Entity.class);
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
         Entity genealogy = new DefaultEntity(null);
-        given(dataDefinitionService.get("genealogies", "genealogy").create()).willReturn(genealogy);
+        given(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).create())
+                .willReturn(genealogy);
         given(order.getBelongsToField("product")).willReturn(product);
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(product.getField("lastUsedBatch")).willReturn("test");
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
-                .willReturn(getCurrentAttribute());
+
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
+                        .find().setMaxResults(1).list().getEntities()).willReturn(getCurrentAttribute());
 
         given(technology.getField("shiftFeatureRequired")).willReturn(true);
         given(technology.getField("postFeatureRequired")).willReturn(true);
@@ -351,7 +368,9 @@ public class AutoGenealogyServiceTest {
             }
         }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
 
-        given(dataDefinitionService.get("genealogies", "genealogy").save(any(Entity.class)).isValid()).willReturn(true);
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY)
+                        .save(any(Entity.class)).isValid()).willReturn(true);
 
         given(translationService.translate("genealogies.message.autoGenealogy.success", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.success.pl");
@@ -373,22 +392,30 @@ public class AutoGenealogyServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         Entity order = mock(Entity.class);
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
         Entity shift = new DefaultEntity(null);
         Entity post = new DefaultEntity(null);
         Entity other = new DefaultEntity(null);
-        given(dataDefinitionService.get("genealogies", "shiftFeature").create()).willReturn(shift);
-        given(dataDefinitionService.get("genealogies", "postFeature").create()).willReturn(post);
-        given(dataDefinitionService.get("genealogies", "otherFeature").create()).willReturn(other);
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_SHIFT_FEATURE)
+                        .create()).willReturn(shift);
+        given(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_POST_FEATURE).create())
+                .willReturn(post);
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_OTHER_FEATURE)
+                        .create()).willReturn(other);
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
         Entity genealogy = new DefaultEntity(null);
-        given(dataDefinitionService.get("genealogies", "genealogy").create()).willReturn(genealogy);
+        given(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).create())
+                .willReturn(genealogy);
         given(order.getBelongsToField("product")).willReturn(product);
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(product.getField("lastUsedBatch")).willReturn("test");
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
-                .willReturn(new ArrayList<Entity>());
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
+                        .find().setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
         given(technology.getField("shiftFeatureRequired")).willReturn(true);
         given(technology.getField("postFeatureRequired")).willReturn(true);
         given(technology.getField("otherFeatureRequired")).willReturn(true);
@@ -447,7 +474,8 @@ public class AutoGenealogyServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         Entity order = mock(Entity.class);
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
         given(order.getBelongsToField("product")).willReturn(product);
@@ -460,9 +488,12 @@ public class AutoGenealogyServiceTest {
         given(translationService.translate("genealogies.message.autoGenealogy.failure", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.failure.pl");
 
-        given(dataDefinitionService.get("genealogies", "genealogy").create().isValid()).willReturn(true);
-        given(dataDefinitionService.get("genealogies", "genealogy").save(any(Entity.class)).getGlobalErrors().isEmpty())
-                .willReturn(true);
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).create()
+                        .isValid()).willReturn(true);
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY)
+                        .save(any(Entity.class)).getGlobalErrors().isEmpty()).willReturn(true);
 
         mockStatic(TransactionAspectSupport.class);
 
@@ -521,7 +552,8 @@ public class AutoGenealogyServiceTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
 
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(null);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L))
+                .willReturn(null);
 
         given(translationService.translate("core.message.entityNotFound", Locale.ENGLISH)).willReturn(
                 "core.message.entityNotFound.pl");
@@ -543,7 +575,8 @@ public class AutoGenealogyServiceTest {
 
         Entity order = mock(Entity.class);
 
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
 
         given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
                 getParameter("02active"));
@@ -551,7 +584,8 @@ public class AutoGenealogyServiceTest {
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
         Entity genealogy = new DefaultEntity(null);
-        given(dataDefinitionService.get("genealogies", "genealogy").create()).willReturn(genealogy);
+        given(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).create())
+                .willReturn(genealogy);
         given(order.getBelongsToField("product")).willReturn(product);
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(product.getField("batch")).willReturn("test");
@@ -574,7 +608,9 @@ public class AutoGenealogyServiceTest {
             }
         }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
 
-        given(dataDefinitionService.get("genealogies", "genealogy").save(any(Entity.class)).isValid()).willReturn(true);
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY)
+                        .save(any(Entity.class)).isValid()).willReturn(true);
 
         given(translationService.translate("genealogies.message.autoGenealogy.success", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.success.pl");
@@ -599,7 +635,8 @@ public class AutoGenealogyServiceTest {
 
         Entity order = mock(Entity.class);
 
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
 
         given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
                 getParameter("03lastUsed"));
@@ -607,7 +644,8 @@ public class AutoGenealogyServiceTest {
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
         Entity genealogy = new DefaultEntity(null);
-        given(dataDefinitionService.get("genealogies", "genealogy").create()).willReturn(genealogy);
+        given(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).create())
+                .willReturn(genealogy);
         given(order.getBelongsToField("product")).willReturn(product);
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(product.getField("lastUsedBatch")).willReturn("test");
@@ -630,7 +668,9 @@ public class AutoGenealogyServiceTest {
             }
         }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
 
-        given(dataDefinitionService.get("genealogies", "genealogy").save(any(Entity.class)).isValid()).willReturn(true);
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY)
+                        .save(any(Entity.class)).isValid()).willReturn(true);
 
         given(translationService.translate("genealogies.message.autoGenealogy.success", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.success.pl");
@@ -655,7 +695,8 @@ public class AutoGenealogyServiceTest {
 
         Entity order = mock(Entity.class);
 
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
 
         // when
         autoGenealogyService.generateGenalogyOnChangeOrderStatusForDone(viewDefinitionState, state, new String[] { "true" });
@@ -677,10 +718,12 @@ public class AutoGenealogyServiceTest {
 
         Entity order = mock(Entity.class);
 
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
 
-        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
-                new ArrayList<Entity>());
+        given(
+                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                        .setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
 
         // when
         autoGenealogyService.generateGenalogyOnChangeOrderStatusForDone(viewDefinitionState, state, new String[] { "false" });
@@ -703,16 +746,19 @@ public class AutoGenealogyServiceTest {
         List<Entity> featureEntities = new ArrayList<Entity>();
         featureEntities.add(feature);
 
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
-                .willReturn(featureEntities);
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
+                        .find().setMaxResults(1).list().getEntities()).willReturn(featureEntities);
         given(securityService.getCurrentUserName()).willReturn("newTest");
 
         // when
         autoGenealogyService.fillLastUsedShiftFeature(dataDefinition, entity);
         // then
-        verify(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities().get(0))
-                .setField(anyString(), anyString());
-        verify(dataDefinitionService.get("genealogies", "currentAttribute")).save(any(Entity.class));
+        verify(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
+                        .find().setMaxResults(1).list().getEntities().get(0)).setField(anyString(), anyString());
+        verify(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE))
+                .save(any(Entity.class));
         assertNotNull(entity.getField("date"));
         assertNotNull(entity.getField("worker"));
     }
@@ -724,14 +770,16 @@ public class AutoGenealogyServiceTest {
 
         Entity entity = new DefaultEntity(dataDefinition);
 
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
-                .willReturn(new ArrayList<Entity>());
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
+                        .find().setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
         given(securityService.getCurrentUserName()).willReturn("newTest");
 
         // when
         autoGenealogyService.fillLastUsedShiftFeature(dataDefinition, entity);
         // then
-        verify(dataDefinitionService.get("genealogies", "currentAttribute"), never()).save(any(Entity.class));
+        verify(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE),
+                never()).save(any(Entity.class));
     }
 
     @Test
@@ -744,16 +792,19 @@ public class AutoGenealogyServiceTest {
         List<Entity> featureEntities = new ArrayList<Entity>();
         featureEntities.add(feature);
 
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
-                .willReturn(featureEntities);
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
+                        .find().setMaxResults(1).list().getEntities()).willReturn(featureEntities);
         given(securityService.getCurrentUserName()).willReturn("newTest");
 
         // when
         autoGenealogyService.fillLastUsedOtherFeature(dataDefinition, entity);
         // then
-        verify(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities().get(0))
-                .setField(anyString(), anyString());
-        verify(dataDefinitionService.get("genealogies", "currentAttribute")).save(any(Entity.class));
+        verify(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
+                        .find().setMaxResults(1).list().getEntities().get(0)).setField(anyString(), anyString());
+        verify(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE))
+                .save(any(Entity.class));
         assertNotNull(entity.getField("date"));
         assertNotNull(entity.getField("worker"));
     }
@@ -765,14 +816,16 @@ public class AutoGenealogyServiceTest {
 
         Entity entity = new DefaultEntity(dataDefinition);
 
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
-                .willReturn(new ArrayList<Entity>());
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
+                        .find().setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
         given(securityService.getCurrentUserName()).willReturn("newTest");
 
         // when
         autoGenealogyService.fillLastUsedOtherFeature(dataDefinition, entity);
         // then
-        verify(dataDefinitionService.get("genealogies", "currentAttribute"), never()).save(any(Entity.class));
+        verify(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE),
+                never()).save(any(Entity.class));
     }
 
     @Test
@@ -785,16 +838,19 @@ public class AutoGenealogyServiceTest {
         List<Entity> featureEntities = new ArrayList<Entity>();
         featureEntities.add(feature);
 
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
-                .willReturn(featureEntities);
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
+                        .find().setMaxResults(1).list().getEntities()).willReturn(featureEntities);
         given(securityService.getCurrentUserName()).willReturn("newTest");
 
         // when
         autoGenealogyService.fillLastUsedPostFeature(dataDefinition, entity);
         // then
-        verify(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities().get(0))
-                .setField(anyString(), anyString());
-        verify(dataDefinitionService.get("genealogies", "currentAttribute")).save(any(Entity.class));
+        verify(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
+                        .find().setMaxResults(1).list().getEntities().get(0)).setField(anyString(), anyString());
+        verify(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE))
+                .save(any(Entity.class));
         assertNotNull(entity.getField("date"));
         assertNotNull(entity.getField("worker"));
     }
@@ -806,14 +862,16 @@ public class AutoGenealogyServiceTest {
 
         Entity entity = new DefaultEntity(dataDefinition);
 
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
-                .willReturn(new ArrayList<Entity>());
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
+                        .find().setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
         given(securityService.getCurrentUserName()).willReturn("newTest");
 
         // when
         autoGenealogyService.fillLastUsedPostFeature(dataDefinition, entity);
         // then
-        verify(dataDefinitionService.get("genealogies", "currentAttribute"), never()).save(any(Entity.class));
+        verify(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE),
+                never()).save(any(Entity.class));
     }
 
     @Test
@@ -832,8 +890,9 @@ public class AutoGenealogyServiceTest {
 
         // then
         verify(entity, times(2)).setField(anyString(), any());
-        verify(dataDefinitionService.get("basic", "product").get(anyLong())).setField(anyString(), anyString());
-        verify(dataDefinitionService.get("basic", "product")).save(any(Entity.class));
+        verify(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(anyLong()))
+                .setField(anyString(), anyString());
+        verify(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)).save(any(Entity.class));
     }
 
     @Test
@@ -849,8 +908,9 @@ public class AutoGenealogyServiceTest {
         autoGenealogyService.fillLastUsedBatchForGenealogy(dataDefinition, entity);
 
         // then
-        verify(dataDefinitionService.get("basic", "product").get(anyLong())).setField(anyString(), anyString());
-        verify(dataDefinitionService.get("basic", "product")).save(any(Entity.class));
+        verify(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(anyLong()))
+                .setField(anyString(), anyString());
+        verify(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)).save(any(Entity.class));
     }
 
     private Entity createOperationComponent(final boolean withoutBatch) {

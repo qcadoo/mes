@@ -3,6 +3,7 @@ package com.qcadoo.mes.genealogies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -46,7 +47,9 @@ public class GenealogyTechnologyService {
             return;
         }
 
-        SearchResult searchResult = dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list();
+        SearchResult searchResult = dataDefinitionService
+                .get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE).find()
+                .setMaxResults(1).list();
         Entity currentAttribute = null;
 
         if (searchResult.getEntities().size() > 0) {
@@ -76,29 +79,6 @@ public class GenealogyTechnologyService {
 
     }
 
-    public void disableBatchRequiredForTechnology(final ViewDefinitionState state) {
-        ComponentState form = state.getComponentByReference("form");
-        if (form.getFieldValue() != null) {
-            FieldComponent batchRequired = (FieldComponent) state.getComponentByReference("batchRequired");
-            if (checkProductInComponentsBatchRequired((Long) form.getFieldValue())) {
-                batchRequired.setEnabled(false);
-                batchRequired.setFieldValue("1");
-                batchRequired.requestComponentUpdateState();
-            } else {
-                batchRequired.setEnabled(true);
-            }
-        }
-
-    }
-
-    private boolean checkProductInComponentsBatchRequired(final Long entityId) {
-        SearchResult searchResult = dataDefinitionService.get("technologies", "operationProductInComponent").find()
-                .isEq("operationComponent.technology.id", entityId).isEq("batchRequired", true).setMaxResults(1).list();
-
-        return (searchResult.getTotalNumberOfEntities() > 0);
-
-    }
-
     private boolean batchRequired(final Long selectedProductId) {
         Entity product = getProductById(selectedProductId);
         if (product != null) {
@@ -109,7 +89,7 @@ public class GenealogyTechnologyService {
     }
 
     private Entity getProductById(final Long productId) {
-        DataDefinition instructionDD = dataDefinitionService.get("basic", "product");
+        DataDefinition instructionDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
 
         SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isIdEq(productId);
 

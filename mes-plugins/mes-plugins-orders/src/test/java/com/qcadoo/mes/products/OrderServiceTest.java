@@ -56,7 +56,10 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.BasicConstants;
 import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.OrdersConstants;
+import com.qcadoo.mes.technologies.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -132,7 +135,8 @@ public class OrderServiceTest {
         ComponentState state = mock(ComponentState.class);
         given(state.getFieldValue()).willReturn(13L);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(order);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
 
         // when
         orderService.printOrder(viewDefinitionState, state, new String[] { "pdf" });
@@ -148,7 +152,8 @@ public class OrderServiceTest {
         given(state.getFieldValue()).willReturn(13L);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(dataDefinitionService.get("orders", "order").get(13L)).willReturn(null);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L))
+                .willReturn(null);
         given(translationService.translate("core.message.entityNotFound", Locale.ENGLISH)).willReturn(
                 "core.message.entityNotFound.pl");
 
@@ -226,7 +231,8 @@ public class OrderServiceTest {
         given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
         given(product.getFieldValue()).willReturn(13L);
-        given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
+                .willReturn(dataDefinition);
         given(
                 dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class))
                         .addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
@@ -259,7 +265,8 @@ public class OrderServiceTest {
         given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
         given(product.getFieldValue()).willReturn(13L);
-        given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
+                .willReturn(dataDefinition);
         given(
                 dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class))
                         .addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
@@ -324,7 +331,8 @@ public class OrderServiceTest {
         orderService.generateOrderNumber(viewDefinitionState);
 
         // then
-        verify(numberGeneratorService).generateAndInsertNumber(viewDefinitionState, "orders", "order", "form", "number");
+        verify(numberGeneratorService).generateAndInsertNumber(viewDefinitionState, OrdersConstants.PLUGIN_IDENTIFIER,
+                OrdersConstants.MODEL_ORDER, "form", "number");
     }
 
     @Test
@@ -358,7 +366,8 @@ public class OrderServiceTest {
         FieldDefinition productField = mock(FieldDefinition.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         SearchResult searchResult = mock(SearchResult.class);
-        given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
+                .willReturn(dataDefinition);
         given(
                 dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class))
                         .addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
@@ -390,7 +399,8 @@ public class OrderServiceTest {
         FieldDefinition productField = mock(FieldDefinition.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         SearchResult searchResult = mock(SearchResult.class);
-        given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
+                .willReturn(dataDefinition);
         given(
                 dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class))
                         .addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
@@ -451,7 +461,8 @@ public class OrderServiceTest {
         FieldDefinition productField = mock(FieldDefinition.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         SearchResult searchResult = mock(SearchResult.class);
-        given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
+                .willReturn(dataDefinition);
         given(dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(productField.getType()).willReturn(new StringType());
@@ -485,7 +496,8 @@ public class OrderServiceTest {
         FieldDefinition productField = mock(FieldDefinition.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         SearchResult searchResult = mock(SearchResult.class);
-        given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
+                .willReturn(dataDefinition);
         given(dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(productField.getType()).willReturn(new StringType());
@@ -529,7 +541,8 @@ public class OrderServiceTest {
         given(viewDefinitionState.getComponentByReference("form")).willReturn(order);
         given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(order.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get("orders", "order").get(117L)).willReturn(null);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
+                null);
 
         // when
         orderService.disableFormForDoneOrder(viewDefinitionState);
@@ -550,7 +563,8 @@ public class OrderServiceTest {
         given(viewDefinitionState.getComponentByReference("form")).willReturn(order);
         given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(order.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get("orders", "order").get(117L)).willReturn(entity);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
+                entity);
         given(entity.getStringField("state")).willReturn("01pending");
         given(order.isValid()).willReturn(true);
 
@@ -573,7 +587,8 @@ public class OrderServiceTest {
         given(viewDefinitionState.getComponentByReference("form")).willReturn(order);
         given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(order.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get("orders", "order").get(117L)).willReturn(entity);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
+                entity);
         given(entity.getStringField("state")).willReturn("03done");
         given(order.isValid()).willReturn(false);
 
@@ -596,7 +611,8 @@ public class OrderServiceTest {
         given(viewDefinitionState.getComponentByReference("form")).willReturn(order);
         given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(order.getEntityId()).willReturn(117L);
-        given(dataDefinitionService.get("orders", "order").get(117L)).willReturn(entity);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
+                entity);
         given(entity.getStringField("state")).willReturn("03done");
         given(order.isValid()).willReturn(true);
 
@@ -763,7 +779,8 @@ public class OrderServiceTest {
         FieldDefinition productField = mock(FieldDefinition.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         SearchResult searchResult = mock(SearchResult.class);
-        given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
+                .willReturn(dataDefinition);
         given(dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(productField.getType()).willReturn(new StringType());
@@ -789,7 +806,8 @@ public class OrderServiceTest {
         FieldDefinition productField = mock(FieldDefinition.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         SearchResult searchResult = mock(SearchResult.class);
-        given(dataDefinitionService.get("technologies", "technology")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
+                .willReturn(dataDefinition);
         given(dataDefinition.find().setMaxResults(1).addRestriction(any(Restriction.class)).list()).willReturn(searchResult);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(productField.getType()).willReturn(new StringType());
@@ -1050,7 +1068,8 @@ public class OrderServiceTest {
         GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+                dataDefinition);
         given(dataDefinition.get(117L)).willReturn(order);
 
         // when
@@ -1071,7 +1090,8 @@ public class OrderServiceTest {
         FieldComponent orderState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+                dataDefinition);
         given(dataDefinition.get(117L)).willReturn(order);
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
         prepareCheckRequiredBatch(order, false);
@@ -1079,8 +1099,10 @@ public class OrderServiceTest {
         given(translationService.translate("genealogies.message.batchNotFound", Locale.ENGLISH)).willReturn(
                 "genealogies.message.batchNotFound.pl");
         Entity parameter = mock(Entity.class);
-        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
-                Collections.singletonList(parameter));
+
+        given(
+                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                        .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
         given(parameter.getField("batchForDoneOrder")).willReturn("02");
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
@@ -1099,15 +1121,17 @@ public class OrderServiceTest {
         GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+                dataDefinition);
         given(dataDefinition.get(117L)).willReturn(order);
         prepareCheckRequiredBatch(order, false);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(translationService.translate("genealogies.message.batchNotFound", Locale.ENGLISH)).willReturn(
                 "genealogies.message.batchNotFound.pl");
         Entity parameter = mock(Entity.class);
-        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
-                Collections.singletonList(parameter));
+        given(
+                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                        .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
         given(parameter.getField("batchForDoneOrder")).willReturn("02");
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
@@ -1128,7 +1152,8 @@ public class OrderServiceTest {
         FieldComponent orderState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+                dataDefinition);
         given(dataDefinition.get(117L)).willReturn(order);
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
         prepareCheckRequiredBatch(order, true);
@@ -1138,8 +1163,9 @@ public class OrderServiceTest {
         given(translationService.translate("qualityControls.qualityControls.not.closed", Locale.ENGLISH)).willReturn(
                 "qualityControls.qualityControls.not.closed.pl");
         Entity parameter = mock(Entity.class);
-        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
-                Collections.singletonList(parameter));
+        given(
+                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                        .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
         given(parameter.getField("batchForDoneOrder")).willReturn("02");
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
@@ -1159,7 +1185,8 @@ public class OrderServiceTest {
         GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+                dataDefinition);
         given(dataDefinition.get(117L)).willReturn(order);
         prepareCheckRequiredBatch(order, true);
         prepareIsQualityControlAutoCheckEnabled(true);
@@ -1168,8 +1195,9 @@ public class OrderServiceTest {
         given(translationService.translate("qualityControls.qualityControls.not.closed", Locale.ENGLISH)).willReturn(
                 "qualityControls.qualityControls.not.closed.pl");
         Entity parameter = mock(Entity.class);
-        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
-                Collections.singletonList(parameter));
+        given(
+                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                        .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
         given(parameter.getField("batchForDoneOrder")).willReturn("02");
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
@@ -1189,7 +1217,8 @@ public class OrderServiceTest {
         FieldComponent orderState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+                dataDefinition);
         given(dataDefinition.get(117L)).willReturn(order);
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
         prepareCheckRequiredBatch(order, true);
@@ -1212,15 +1241,17 @@ public class OrderServiceTest {
         FieldComponent orderState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+                dataDefinition);
         given(dataDefinition.get(117L)).willReturn(order);
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
         prepareCheckRequiredBatch(order, true);
         prepareIsQualityControlAutoCheckEnabled(true);
         prepareCheckIfAllQualityControlsAreClosed(order, true);
         Entity parameter = mock(Entity.class);
-        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
-                Collections.singletonList(parameter));
+        given(
+                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                        .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
         given(parameter.getField("batchForDoneOrder")).willReturn("02");
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
@@ -1239,7 +1270,8 @@ public class OrderServiceTest {
         GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+                dataDefinition);
         given(dataDefinition.get(117L)).willReturn(order);
         prepareCheckRequiredBatch(order, true);
         prepareIsQualityControlAutoCheckEnabled(false);
@@ -1262,14 +1294,16 @@ public class OrderServiceTest {
         GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+                dataDefinition);
         given(dataDefinition.get(117L)).willReturn(order);
         prepareCheckRequiredBatch(order, true);
         prepareIsQualityControlAutoCheckEnabled(true);
         prepareCheckIfAllQualityControlsAreClosed(order, true);
         Entity parameter = mock(Entity.class);
-        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
-                Collections.singletonList(parameter));
+        given(
+                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                        .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
         given(parameter.getField("batchForDoneOrder")).willReturn("02");
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
@@ -1282,6 +1316,7 @@ public class OrderServiceTest {
         verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
     }
 
+    // TODO mina move
     private void prepareCheckIfAllQualityControlsAreClosed(final Entity order, final boolean expected) {
         if (expected) {
             DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
@@ -1301,13 +1336,16 @@ public class OrderServiceTest {
             List<Entity> entities = new ArrayList<Entity>();
             entities.add(entity);
             given(entity.getField("checkDoneOrderForQuality")).willReturn(true);
-            given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities().size())
-                    .willReturn(1);
-            given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
-                    entities);
+            given(
+                    dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                            .setMaxResults(1).list().getEntities().size()).willReturn(1);
+            given(
+                    dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                            .setMaxResults(1).list().getEntities()).willReturn(entities);
         } else {
-            given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities().size())
-                    .willReturn(0);
+            given(
+                    dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                            .setMaxResults(1).list().getEntities().size()).willReturn(0);
         }
     }
 
@@ -1323,6 +1361,7 @@ public class OrderServiceTest {
         }
     }
 
+    // TODO mina move
     @Test
     public void shouldReturnTrueIfThereIsNoOpenQualityForUnit() throws Exception {
         // given
@@ -1349,6 +1388,7 @@ public class OrderServiceTest {
         return results;
     }
 
+    // TODO mina move
     @Test
     public void shouldReturnTrueIfThereIsNoOpenQualityForOrder() throws Exception {
         // given
@@ -1366,6 +1406,7 @@ public class OrderServiceTest {
         assertTrue(results);
     }
 
+    // TODO mina move
     @Test
     public void shouldReturnFalseIfThereIsOpenQualityForOperation() throws Exception {
         // given

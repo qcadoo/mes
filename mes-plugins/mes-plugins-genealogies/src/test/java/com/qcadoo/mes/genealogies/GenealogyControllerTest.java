@@ -46,7 +46,9 @@ public class GenealogyControllerTest {
         Map<String, String> arguments = ImmutableMap.of("context", "{\"form.id\":\"13\"}");
         ModelAndView expectedMav = mock(ModelAndView.class);
         CrudService crudController = mock(CrudService.class);
-        given(crudController.prepareView("genealogies", "currentAttribute", arguments, Locale.ENGLISH)).willReturn(expectedMav);
+        given(
+                crudController.prepareView(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.VIEW_CURRENT_ATTRIBUTE,
+                        arguments, Locale.ENGLISH)).willReturn(expectedMav);
 
         GenealogyAttributeService genealogyAttributeService = mock(GenealogyAttributeService.class);
         given(genealogyAttributeService.getGenealogyAttributeId()).willReturn(13L);

@@ -41,6 +41,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.qcadoo.mes.genealogies.GenealogiesConstants;
 import com.qcadoo.mes.genealogies.print.util.BatchOrderNrComparator;
 import com.qcadoo.mes.genealogies.print.util.EntityNumberComparator;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -65,7 +66,8 @@ public class GenealogyForProductView extends ReportPdfView {
     @Override
     protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
-        Entity entity = dataDefinitionService.get("genealogies", "genealogy").get(Long.valueOf(model.get("value").toString()));
+        Entity entity = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY)
+                .get(Long.valueOf(model.get("value").toString()));
         String documentTitle = getTranslationService().translate("genealogies.genealogyForProduct.report.title", locale);
         String documentAuthor = getTranslationService().translate("genealogies.genealogyForProduct.report.author", locale);
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
@@ -111,6 +113,7 @@ public class GenealogyForProductView extends ReportPdfView {
         }
     }
 
+    // TODO mina move
     private void addComponentSeries(final Document document, final List<Entity> orders, final Locale locale)
             throws DocumentException {
         for (Entity order : orders) {
@@ -170,8 +173,11 @@ public class GenealogyForProductView extends ReportPdfView {
 
     private List<Entity> getOrders(final Entity entity) {
         List<Entity> orders = new ArrayList<Entity>();
-        List<Entity> genealogyList = dataDefinitionService.get("genealogies", "genealogy").find()
+
+        List<Entity> genealogyList = dataDefinitionService
+                .get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find()
                 .isEq("batch", entity.getField("batch")).list().getEntities();
+
         for (Entity genealogy : genealogyList) {
             Entity order = (Entity) genealogy.getField("order");
             if (!orders.contains(order)) {

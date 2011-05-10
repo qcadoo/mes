@@ -1,7 +1,6 @@
 package com.qcadoo.mes.orders.util;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.orders.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -33,54 +33,7 @@ public class OrderReportService {
     @Autowired
     private TranslationService translationService;
 
-    public Entity printWorkPlanForOrder(final ComponentState state) {
-
-        OrderValidator orderValidator = new OrderValidator() {
-
-            @Override
-            public String validateOrder(final Entity order) {
-                if (order.getField("technology") == null) {
-                    return order.getField("number")
-                            + ": "
-                            + translationService.translate("orders.validate.global.error.orderMustHaveTechnology",
-                                    state.getLocale());
-                } else if (order.getBelongsToField("technology").getTreeField("operationComponents").isEmpty()) {
-                    return order.getField("number")
-                            + ": "
-                            + translationService.translate("orders.validate.global.error.orderTechnologyMustHaveOperation",
-                                    state.getLocale());
-                }
-                return null;
-            }
-        };
-
-        return printForOrder(state,"workPlans", "workPlan", "workPlanComponent", null, orderValidator);
-    }
-
-    public Entity printMaterialReqForOrder(final ComponentState state) {
-
-        Map<String, Object> entityFieldsMap = new HashMap<String, Object>();
-        entityFieldsMap.put("onlyComponents", false);
-
-        OrderValidator orderValidator = new OrderValidator() {
-
-            @Override
-            public String validateOrder(final Entity order) {
-                if (order.getField("technology") == null) {
-                    return order.getField("number")
-                            + ": "
-                            + translationService.translate("orders.validate.global.error.orderMustHaveTechnology",
-                                    state.getLocale());
-                }
-                return null;
-            }
-        };
-
-        return printForOrder(state, "materialRequirements", "materialRequirement", "materialRequirementComponent",
-                entityFieldsMap, orderValidator);
-    }
-
-    private Entity printForOrder(final ComponentState state, final String plugin, final String entityName,
+    public Entity printForOrder(final ComponentState state, final String plugin, final String entityName,
             final String detailEntityName, final Map<String, Object> entityFieldsMap, final OrderValidator orderValidator) {
         if (!(state instanceof GridComponent)) {
             throw new IllegalStateException("method avalible only for grid");
@@ -95,7 +48,7 @@ public class OrderReportService {
         }
         List<String> errors = new LinkedList<String>();
         for (Long orderId : gridState.getSelectedEntitiesIds()) {
-            Entity order = dataDefinitionService.get("orders", "order").get(orderId);
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
             if (order == null) {
                 errors.add(translationService.translate("core.message.entityNotFound", state.getLocale()));
                 continue;
@@ -175,7 +128,7 @@ public class OrderReportService {
         return materialReqName.toString();
     }
 
-    interface OrderValidator {
+    public static interface OrderValidator {
 
         String validateOrder(Entity order);
     }

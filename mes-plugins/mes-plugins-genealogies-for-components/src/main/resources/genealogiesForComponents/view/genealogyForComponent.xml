@@ -60,10 +60,10 @@
 			</component>
 			<option type="header" value="true"/>
 			<option type="expression" value="' '"/>
-			<listener event="generateReportForComponent" class="com.qcadoo.mes.genealogies.print.ReportService" method="generateReportForComponent" />
+			<listener event="generateReportForComponent" class="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="generateReportForComponent" />
 		</component>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.genealogies.print.ReportService" method="addRestrictionToComponentGrid" />
+		<beforeRender class="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="addRestrictionToComponentGrid" />
 	</hooks>	
 </view>

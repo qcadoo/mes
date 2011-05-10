@@ -230,7 +230,9 @@ public class QualityControlServiceTest {
         DataDefinition qualityControlDD = mock(DataDefinition.class);
         FieldComponent controlResult = mock(FieldComponent.class);
         given(qualityControl.getField("qualityControlType")).willReturn("qualityControlsForUnit");
-        given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(qualityControlDD);
+        given(
+                dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn(qualityControlDD);
         given(qualityControlDD.get(7L)).willReturn(qualityControl);
         given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
         given(qualityControl.getField("controlResult")).willReturn("01correct");
@@ -263,7 +265,9 @@ public class QualityControlServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(state.getFieldValue()).willReturn(7L);
         given(qualityControl.getField("controlResult")).willReturn("");
-        given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(qualityControlDD);
+        given(
+                dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn(qualityControlDD);
         given(qualityControlDD.get(7L)).willReturn(qualityControl);
         given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
         given(controlResult.getFieldValue()).willReturn(null);
@@ -298,7 +302,9 @@ public class QualityControlServiceTest {
         given(qualityControlDD.getField("controlResult")).willReturn(controlResultField);
         given(state.getFieldValue()).willReturn(7L);
         given(qualityControl.getField("controlResult")).willReturn("");
-        given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(qualityControlDD);
+        given(
+                dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn(qualityControlDD);
         given(qualityControlDD.get(7L)).willReturn(qualityControl);
         given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
         given(controlResult.getFieldValue()).willReturn(null);
@@ -374,7 +380,9 @@ public class QualityControlServiceTest {
         SearchCriteriaBuilder searchCriteria = mock(SearchCriteriaBuilder.class, RETURNS_DEEP_STUBS);
 
         given(dataDefinitionService.get("orders", "order")).willReturn(orderDataDefinition);
-        given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(qualityForBatchDataDefinition);
+        given(
+                dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn(qualityForBatchDataDefinition);
         given(orderDataDefinition.get(7L)).willReturn(order);
         given(order.getField("technology")).willReturn(technology);
         given(technology.getField("qualityControlType")).willReturn("01forBatch");
@@ -383,7 +391,9 @@ public class QualityControlServiceTest {
         given(dataDefinitionService.get("genealogies", "genealogy")).willReturn(genealogyDataDefinition);
         given(genealogyDataDefinition.find().isEq("order.id", 7L)).willReturn(searchCriteria);
         given(searchCriteria.list().getEntities()).willReturn(genealogies);
-        given(numberGeneratorService.generateNumber("qualityControls", "qualityControl")).willReturn("1");
+        given(
+                numberGeneratorService.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn("1");
         given(order.getField("plannedQuantity")).willReturn(new BigDecimal("1"));
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
@@ -418,7 +428,9 @@ public class QualityControlServiceTest {
                 "qualityControls.qualityControls.generated.success.pl");
         given(technology.getField("unitSamplingNr")).willReturn(new BigDecimal("2"));
         given(order.getField("plannedQuantity")).willReturn(new BigDecimal("5"));
-        given(numberGeneratorService.generateNumber("qualityControls", "qualityControl")).willReturn("1");
+        given(
+                numberGeneratorService.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn("1");
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
 

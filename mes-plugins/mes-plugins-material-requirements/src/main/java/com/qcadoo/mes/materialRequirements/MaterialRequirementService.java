@@ -3,6 +3,8 @@ package com.qcadoo.mes.materialRequirements;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,9 +26,9 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public final class MaterialRequirementService {
@@ -104,11 +106,13 @@ public final class MaterialRequirementService {
     }
 
     public void setGenerateButtonState(final ViewDefinitionState state) {
-        ribbonReportService.setGenerateButtonState(state, state.getLocale(), "materialRequirements", "materialRequirement");
+        ribbonReportService.setGenerateButtonState(state, state.getLocale(), MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
+                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT);
     }
 
     public void setGridGenerateButtonState(final ViewDefinitionState state) {
-        ribbonReportService.setGridGenerateButtonState(state, state.getLocale(), "materialRequirements", "materialRequirement");
+        ribbonReportService.setGridGenerateButtonState(state, state.getLocale(), MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
+                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT);
     }
 
     public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -118,8 +122,8 @@ public final class MaterialRequirementService {
             ComponentState date = viewDefinitionState.getComponentByReference("date");
             ComponentState worker = viewDefinitionState.getComponentByReference("worker");
 
-            Entity materialRequirement = dataDefinitionService.get("materialRequirements", "materialRequirement").get(
-                    (Long) state.getFieldValue());
+            Entity materialRequirement = dataDefinitionService.get(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
+                    MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT).get((Long) state.getFieldValue());
 
             if (materialRequirement == null) {
                 String message = translationService.translate("core.message.entityNotFound", state.getLocale());
@@ -154,8 +158,8 @@ public final class MaterialRequirementService {
                 return;
             }
 
-            materialRequirement = dataDefinitionService.get("materialRequirements", "materialRequirement").get(
-                    (Long) state.getFieldValue());
+            materialRequirement = dataDefinitionService.get(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
+                    MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT).get((Long) state.getFieldValue());
 
             try {
                 generateMaterialReqDocuments(state, materialRequirement);
@@ -172,8 +176,8 @@ public final class MaterialRequirementService {
             final String[] args) {
 
         if (state.getFieldValue() instanceof Long) {
-            Entity materialRequirement = dataDefinitionService.get("materialRequirements", "materialRequirement").get(
-                    (Long) state.getFieldValue());
+            Entity materialRequirement = dataDefinitionService.get(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
+                    MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT).get((Long) state.getFieldValue());
             if (materialRequirement == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
@@ -198,7 +202,7 @@ public final class MaterialRequirementService {
 
     public void printMaterialReqForOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        Entity materialRequirement = orderReportService.printMaterialReqForOrder(state);
+        Entity materialRequirement = printMaterialReqForOrder(state);
         if (materialRequirement == null) {
             return;
         }
@@ -216,7 +220,8 @@ public final class MaterialRequirementService {
     private void generateMaterialReqDocuments(final ComponentState state, final Entity materialRequirement) throws IOException,
             DocumentException {
         Entity materialRequirementWithFileName = updateFileName(materialRequirement,
-                getFullFileName((Date) materialRequirement.getField("date"), "Material_requirement"), "materialRequirement");
+                getFullFileName((Date) materialRequirement.getField("date"), "Material_requirement"),
+                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT);
         materialRequirementPdfService.generateDocument(materialRequirementWithFileName, state.getLocale());
         materialRequirementXlsService.generateDocument(materialRequirementWithFileName, state.getLocale());
     }
@@ -227,7 +232,31 @@ public final class MaterialRequirementService {
 
     private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
         entity.setField("fileName", fileName);
-        return dataDefinitionService.get("materialRequirements", entityName).save(entity);
+        return dataDefinitionService.get(MaterialRequirementsConstants.PLUGIN_IDENTIFIER, entityName).save(entity);
+    }
+
+    private Entity printMaterialReqForOrder(final ComponentState state) {
+
+        Map<String, Object> entityFieldsMap = new HashMap<String, Object>();
+        entityFieldsMap.put("onlyComponents", false);
+
+        OrderReportService.OrderValidator orderValidator = new OrderReportService.OrderValidator() {
+
+            @Override
+            public String validateOrder(final Entity order) {
+                if (order.getField("technology") == null) {
+                    return order.getField("number")
+                            + ": "
+                            + translationService.translate("orders.validate.global.error.orderMustHaveTechnology",
+                                    state.getLocale());
+                }
+                return null;
+            }
+        };
+
+        return orderReportService.printForOrder(state, MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
+                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT,
+                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT_COMPONENT, entityFieldsMap, orderValidator);
     }
 
 }

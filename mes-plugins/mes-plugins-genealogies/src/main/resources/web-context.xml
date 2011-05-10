@@ -39,7 +39,7 @@
 	</context:component-scan>
 	
 	<bean id="genealogyForComponentView"
-  		class="com.qcadoo.mes.genealogies.print.GenealogyForComponentView"/>
+  		class="com.qcadoo.mes.genealogiesForComponents.GenealogyForComponentView"/>
   		
   	<bean id="genealogyForProductView"
   		class="com.qcadoo.mes.genealogies.print.GenealogyForProductView"/>

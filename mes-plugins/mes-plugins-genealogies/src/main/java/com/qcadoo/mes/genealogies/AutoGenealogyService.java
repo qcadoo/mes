@@ -37,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.BasicConstants;
+import com.qcadoo.mes.orders.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -71,14 +73,16 @@ public class AutoGenealogyService {
     public void generateGenalogyOnChangeOrderStatusForDone(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
         if (state.getFieldValue() instanceof Long) {
-            Entity order = dataDefinitionService.get("orders", "order").get((Long) state.getFieldValue());
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                    (Long) state.getFieldValue());
             if (order == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             } else {
                 boolean inProgressState = Boolean.parseBoolean(args[0]);
                 if (!inProgressState) {
-                    SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list();
+                    SearchResult searchResult = dataDefinitionService
+                            .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).list();
                     Entity parameter = null;
                     if (searchResult.getEntities().size() > 0) {
                         parameter = searchResult.getEntities().get(0);
@@ -108,7 +112,7 @@ public class AutoGenealogyService {
         fillUserAndDate(entity);
         Entity product = entity.getBelongsToField("productInComponent").getBelongsToField("productInComponent")
                 .getBelongsToField("product");
-        DataDefinition productInDef = dataDefinitionService.get("basic", "product");
+        DataDefinition productInDef = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
         Entity productEntity = productInDef.get(product.getId());
         productEntity.setField("lastUsedBatch", entity.getField("batch"));
         productInDef.save(productEntity);
@@ -117,7 +121,7 @@ public class AutoGenealogyService {
     public void fillLastUsedBatchForGenealogy(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
         Entity product = entity.getBelongsToField("order").getBelongsToField("product");
-        DataDefinition productInDef = dataDefinitionService.get("basic", "product");
+        DataDefinition productInDef = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
         Entity productEntity = productInDef.get(product.getId());
         productEntity.setField("lastUsedBatch", entity.getField("batch"));
         productInDef.save(productEntity);
@@ -127,7 +131,8 @@ public class AutoGenealogyService {
     public void autocompleteGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state.getFieldValue() instanceof Long) {
-            Entity order = dataDefinitionService.get("orders", "order").get((Long) state.getFieldValue());
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                    (Long) state.getFieldValue());
             if (order == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
@@ -148,7 +153,8 @@ public class AutoGenealogyService {
 
     public void fillLastUsedShiftFeature(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
-        DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
+        DataDefinition featureDef = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
+                GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE);
         SearchResult searchResult = featureDef.find().setMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
             Entity currentAttribute = searchResult.getEntities().get(0);
@@ -159,7 +165,8 @@ public class AutoGenealogyService {
 
     public void fillLastUsedPostFeature(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
-        DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
+        DataDefinition featureDef = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
+                GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE);
         SearchResult searchResult = featureDef.find().setMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
             Entity currentAttribute = searchResult.getEntities().get(0);
@@ -170,7 +177,8 @@ public class AutoGenealogyService {
 
     public void fillLastUsedOtherFeature(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
-        DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
+        DataDefinition featureDef = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
+                GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE);
         SearchResult searchResult = featureDef.find().setMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
             Entity currentAttribute = searchResult.getEntities().get(0);
@@ -214,7 +222,8 @@ public class AutoGenealogyService {
                     + " " + mainBatch, MessageType.INFO);
             return;
         }
-        DataDefinition genealogyDef = dataDefinitionService.get("genealogies", "genealogy");
+        DataDefinition genealogyDef = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
+                GenealogiesConstants.MODEL_GENEALOGY);
         Entity genealogy = genealogyDef.create();
         genealogy.setField("order", order);
         genealogy.setField("batch", mainBatch);
@@ -248,8 +257,10 @@ public class AutoGenealogyService {
     }
 
     private boolean checkIfExistGenealogyWithBatch(final Entity order, final String batch) {
-        SearchResult searchResult = dataDefinitionService.get("genealogies", "genealogy").find().isEq("batch", batch)
+        SearchResult searchResult = dataDefinitionService
+                .get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find().isEq("batch", batch)
                 .isEq("order.id", order.getId()).setMaxResults(1).list();
+
         if (searchResult.getEntities().size() > 0) {
             return true;
         }
@@ -257,13 +268,16 @@ public class AutoGenealogyService {
     }
 
     private void completeAttributesForGenealogy(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
-        SearchResult searchResult = dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list();
+        SearchResult searchResult = dataDefinitionService
+                .get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE).find()
+                .setMaxResults(1).list();
         Entity currentAttribute = null;
         if (searchResult.getEntities().size() > 0) {
             currentAttribute = searchResult.getEntities().get(0);
         }
         if ((Boolean) technology.getField("shiftFeatureRequired")) {
-            Entity shift = dataDefinitionService.get("genealogies", "shiftFeature").create();
+            Entity shift = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
+                    GenealogiesConstants.MODEL_SHIFT_FEATURE).create();
             shift.setField("genealogy", genealogy);
             if (currentAttribute == null) {
                 shift.setField("value", null);
@@ -279,7 +293,8 @@ public class AutoGenealogyService {
             }
         }
         if ((Boolean) technology.getField("otherFeatureRequired")) {
-            Entity other = dataDefinitionService.get("genealogies", "otherFeature").create();
+            Entity other = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
+                    GenealogiesConstants.MODEL_OTHER_FEATURE).create();
             other.setField("genealogy", genealogy);
             if (currentAttribute == null) {
                 other.setField("value", null);
@@ -295,7 +310,8 @@ public class AutoGenealogyService {
             }
         }
         if ((Boolean) technology.getField("postFeatureRequired")) {
-            Entity post = dataDefinitionService.get("genealogies", "postFeature").create();
+            Entity post = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
+                    GenealogiesConstants.MODEL_POST_FEATURE).create();
             post.setField("genealogy", genealogy);
             if (currentAttribute == null) {
                 post.setField("value", null);
@@ -312,6 +328,7 @@ public class AutoGenealogyService {
         }
     }
 
+    // TODO mina move
     @SuppressWarnings("unchecked")
     private void completeBatchForComponents(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
         genealogy.setField("productInComponents", new ArrayList<Entity>());
@@ -327,7 +344,6 @@ public class AutoGenealogyService {
                             .create();
                     productIn.setField("genealogy", genealogy);
                     productIn.setField("productInComponent", operationProductComponent);
-
                     Entity product = (Entity) operationProductComponent.getField("product");
                     Object batch = null;
                     if (lastUsedMode) {
@@ -335,7 +351,6 @@ public class AutoGenealogyService {
                     } else {
                         batch = product.getField("batch");
                     }
-
                     if (batch != null) {
                         Entity productBatch = dataDefinitionService.get("genealogiesForComponents", "productInBatch").create();
                         productBatch.setField("batch", batch);
@@ -347,7 +362,6 @@ public class AutoGenealogyService {
                             componentsWithoutBatch.add(value);
                         }
                     }
-
                     ((List<Entity>) genealogy.getField("productInComponents")).add(productIn);
                 }
             }
@@ -357,4 +371,5 @@ public class AutoGenealogyService {
                     componentsWithoutBatch.toArray(new String[componentsWithoutBatch.size()]));
         }
     }
+
 }
