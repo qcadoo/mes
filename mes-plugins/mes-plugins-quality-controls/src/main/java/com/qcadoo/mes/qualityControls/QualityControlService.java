@@ -150,7 +150,7 @@ public final class QualityControlService {
             String comment = (String) entity.getField("comment");
 
             if ((comment == null || comment.isEmpty()) && acceptedDefectsQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                entity.addGlobalError("qcadooViewvalidate.global.error.custom");
+                entity.addGlobalError("qcadooView.validate.global.error.custom");
                 entity.addError(dataDefinition.getField("comment"),
                         "qualityControls.quality.control.validate.global.error.comment");
                 return false;

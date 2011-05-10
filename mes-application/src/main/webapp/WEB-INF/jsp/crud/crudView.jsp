@@ -34,6 +34,11 @@
 <html>
 <head>
 
+	<meta http-equiv="Pragma" content="no-cache">
+ 	<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+ 	<meta http-equiv="Cache-Control" content="post-check=0, pre-check=0">
+ 	<meta http-equiv="Expires" content="Tue, 03 Jul 2001 06:00:00 GMT">
+
 	<c:choose>
 		<c:when test="${useCompressedStaticResources}">
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/qcadoo-min.css" type="text/css" />
