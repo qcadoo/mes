@@ -35,7 +35,6 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -68,7 +67,7 @@ public class ReportService {
 
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.addRestriction(Restrictions.eq("order.product.id", product.getFieldValue()));
+                searchCriteriaBuilder.isEq("order.product.id", product.getFieldValue());
             }
 
         });

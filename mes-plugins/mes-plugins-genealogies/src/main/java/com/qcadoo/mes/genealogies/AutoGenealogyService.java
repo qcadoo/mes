@@ -42,7 +42,6 @@ import com.qcadoo.mes.orders.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.plugin.api.PluginAccessor;
@@ -262,9 +261,9 @@ public class AutoGenealogyService {
 
     private boolean checkIfExistGenealogyWithBatch(final Entity order, final String batch) {
         SearchResult searchResult = dataDefinitionService
-                .get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find()
-                .addRestriction(Restrictions.eq("batch", batch)).addRestriction(Restrictions.eq("order.id", order.getId()))
-                .setMaxResults(1).list();
+                .get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find().isEq("batch", batch)
+                .isEq("order.id", order.getId()).setMaxResults(1).list();
+
         if (searchResult.getEntities().size() > 0) {
             return true;
         }

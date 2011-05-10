@@ -51,6 +51,7 @@ import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -64,10 +65,10 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.search.Restriction;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
+import com.qcadoo.model.internal.search.Restriction;
 import com.qcadoo.model.internal.types.BooleanType;
 import com.qcadoo.model.internal.types.StringType;
 import com.qcadoo.security.api.SecurityService;
@@ -1414,7 +1415,7 @@ public class OrderServiceTest {
         given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("04forOperation");
         given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
         given(
-                dataDefinition.find().addRestriction(any(Restriction.class)).addRestriction(any(Restriction.class)).list()
+                dataDefinition.find().belongsTo(eq("order"), Mockito.anyInt()).isEq("closed", false).list()
                         .getTotalNumberOfEntities()).willReturn(1);
 
         boolean results = callCheckIfAllQualityControlsAreClosed(order);

@@ -166,9 +166,10 @@ public final class OrderService {
     public void activateOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state.getFieldValue() != null) {
 
-            // TODO mady
+            // TODO FIXME mady cannot close order if genealogy plugin is not enabled
             DataDefinition orderDataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
                     OrdersConstants.MODEL_ORDER);
+
             Entity order = orderDataDefinition.get((Long) state.getFieldValue());
 
             if (state instanceof FormComponent) {
@@ -246,12 +247,8 @@ public final class OrderService {
             qualityControlDD = dataDefinitionService.get("qualityControls", "qualityControl");
 
             if (qualityControlDD != null) {
-                SearchCriteriaBuilder searchCriteria = qualityControlDD.find()
-                        .addRestriction(Restrictions.belongsTo(qualityControlDD.getField("order"), order.getId()))
-                        .addRestriction(Restrictions.eq("closed", false));
-
-                SearchResult searchResult = searchCriteria.list();
-
+                SearchResult searchResult = qualityControlDD.find().belongsTo("order", order.getId()).isEq("closed", false)
+                        .list();
                 return (searchResult.getTotalNumberOfEntities() <= 0);
             } else {
                 return false;

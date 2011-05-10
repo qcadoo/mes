@@ -17,7 +17,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
@@ -132,8 +131,7 @@ public class GenealogiesForComponentsService {
     private boolean checkProductInComponentsBatchRequired(final Long entityId) {
         SearchResult searchResult = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).find()
-                .addRestriction(Restrictions.eq("operationComponent.technology.id", entityId))
-                .addRestriction(Restrictions.eq("batchRequired", true)).setMaxResults(1).list();
+                .isEq("operationComponent.technology.id", entityId).isEq("batchRequired", true).setMaxResults(1).list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
     }
@@ -163,8 +161,7 @@ public class GenealogiesForComponentsService {
 
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.addRestriction(Restrictions.eq("productInComponent.productInComponent.product.id",
-                        product.getFieldValue()));
+                searchCriteriaBuilder.isEq("productInComponent.productInComponent.product.id", product.getFieldValue());
             }
 
         });

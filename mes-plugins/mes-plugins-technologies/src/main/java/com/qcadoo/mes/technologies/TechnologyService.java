@@ -89,12 +89,11 @@ public final class TechnologyService {
             return true;
         }
 
-        SearchCriteriaBuilder searchCriteria = dataDefinition.find().setMaxResults(1)
-                .addRestriction(Restrictions.eq(dataDefinition.getField("master"), true))
-                .addRestriction(Restrictions.belongsTo(dataDefinition.getField("product"), entity.getField("product")));
+        SearchCriteriaBuilder searchCriteria = dataDefinition.find().setMaxResults(1).isEq("master", true)
+                .belongsTo("product", entity.getField("product"));
 
         if (entity.getId() != null) {
-            searchCriteria.addRestriction(Restrictions.idNe(entity.getId()));
+            searchCriteria.isIdNe(entity.getId());
         }
 
         SearchResult searchResult = searchCriteria.list();

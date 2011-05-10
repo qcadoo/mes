@@ -59,8 +59,6 @@ import com.qcadoo.mes.orders.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.Restriction;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
@@ -260,9 +258,8 @@ public class AutoGenealogyServiceTest {
         list.add(mock(Entity.class));
         given(
                 dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find()
-                        .addRestriction(Restrictions.eq("batch", "test"))
-                        .addRestriction(Restrictions.eq("order.id", order.getId())).setMaxResults(1).list().getEntities())
-                .willReturn(list);
+                        .isEq("batch", "test").isEq("order.id", order.getId()).setMaxResults(1).list().getEntities()).willReturn(
+                list);
 
         given(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.genealogyExist.pl");
@@ -924,7 +921,7 @@ public class AutoGenealogyServiceTest {
         productsEntities.add(createOperationProductInComponent(3L, true, withoutBatch));
         productsEntities.add(createOperationProductInComponent(4L, true, withoutBatch));
         DataDefinition listDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(listDataDefinition.find().addRestriction(any(Restriction.class)).list().getEntities()).willReturn(productsEntities);
+        given(listDataDefinition.find().belongsTo(anyString(), any()).list().getEntities()).willReturn(productsEntities);
 
         EntityListImpl operationProductInComponents = new EntityListImpl(listDataDefinition, "joinField", 1L);
 

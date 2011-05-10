@@ -7,7 +7,6 @@ import com.qcadoo.mes.basic.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
@@ -92,7 +91,7 @@ public class GenealogyTechnologyService {
     private Entity getProductById(final Long productId) {
         DataDefinition instructionDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).addRestriction(Restrictions.idEq(productId));
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isIdEq(productId);
 
         SearchResult searchResult = searchCriteria.list();
         if (searchResult.getTotalNumberOfEntities() == 1) {
