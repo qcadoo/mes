@@ -257,14 +257,15 @@ public final class QualityControlService {
     public void generateOnSaveQualityControl(final DataDefinition dataDefinition, final Entity entity) {
         Entity order = entity.getBelongsToField("order");
         Entity technology = order.getBelongsToField("technology");
+        if (technology != null) {
+            Object qualityControl = technology.getField("qualityControlType");
 
-        Object qualityControl = technology.getField("qualityControlType");
+            if (qualityControl != null) {
+                boolean qualityControlType = "01forBatch".equals(technology.getField("qualityControlType").toString());
 
-        if (qualityControl != null) {
-            boolean qualityControlType = "01forBatch".equals(technology.getField("qualityControlType").toString());
-
-            if (isQualityControlAutoGenEnabled() || qualityControlType) {
-                createAndSaveControlForSingleBatch(order, entity);
+                if (isQualityControlAutoGenEnabled() || qualityControlType) {
+                    createAndSaveControlForSingleBatch(order, entity);
+                }
             }
         }
     }
