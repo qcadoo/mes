@@ -49,7 +49,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.security.api.SecurityService;
@@ -534,7 +533,7 @@ public class QualityControlServiceTest {
 
         given(dataDefinitionService.get("orders", "order")).willReturn(orderDD);
 
-        given(orderDD.find().setMaxResults(1).addRestriction(Restrictions.idEq(Mockito.anyLong()))).willReturn(searchCriteria);
+        given(orderDD.find().setMaxResults(1).isIdEq(Mockito.anyLong())).willReturn(searchCriteria);
 
         given(searchCriteria.list().getEntities()).willReturn(orders);
 

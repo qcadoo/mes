@@ -60,7 +60,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
-import com.qcadoo.model.internal.search.Restriction;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityService;
@@ -862,7 +861,7 @@ public class AutoGenealogyServiceTest {
         productsEntities.add(createOperationProductInComponent(3L, true, withoutBatch));
         productsEntities.add(createOperationProductInComponent(4L, true, withoutBatch));
         DataDefinition listDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(listDataDefinition.find().addRestriction(any(Restriction.class)).list().getEntities()).willReturn(productsEntities);
+        given(listDataDefinition.find().belongsTo(anyString(), any()).list().getEntities()).willReturn(productsEntities);
 
         EntityListImpl operationProductInComponents = new EntityListImpl(listDataDefinition, "joinField", 1L);
 

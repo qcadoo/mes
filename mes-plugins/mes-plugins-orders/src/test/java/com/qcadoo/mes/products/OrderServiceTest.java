@@ -51,6 +51,7 @@ import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -1373,7 +1374,7 @@ public class OrderServiceTest {
         given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("04forOperation");
         given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
         given(
-                dataDefinition.find().addRestriction(any(Restriction.class)).addRestriction(any(Restriction.class)).list()
+                dataDefinition.find().belongsTo(eq("order"), Mockito.anyInt()).isEq("closed", false).list()
                         .getTotalNumberOfEntities()).willReturn(1);
 
         boolean results = callCheckIfAllQualityControlsAreClosed(order);

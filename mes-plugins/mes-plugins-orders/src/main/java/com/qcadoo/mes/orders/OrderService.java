@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.technologies.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -162,7 +163,7 @@ public final class OrderService {
     public void activateOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state.getFieldValue() != null) {
 
-            // TODO mady
+            // TODO FIXME mady cannot close order in genealogy plugin is not enabled
             DataDefinition orderDataDefinition = dataDefinitionService.get("orders", "order");
             Entity order = orderDataDefinition.get((Long) state.getFieldValue());
 

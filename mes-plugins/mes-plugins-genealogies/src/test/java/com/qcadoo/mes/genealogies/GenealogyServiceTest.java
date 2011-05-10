@@ -51,7 +51,6 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
-import com.qcadoo.model.internal.search.Restriction;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -424,12 +423,12 @@ public class GenealogyServiceTest {
         productsEntities3.add(craeteOperationProductInComponent(104L, false));
 
         DataDefinition treeDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(treeDataDefinition.find().addRestriction(any(Restriction.class)).orderAscBy(eq("priority")).list().getEntities())
+        given(treeDataDefinition.find().belongsTo(anyString(), any()).orderAscBy(eq("priority")).list().getEntities())
                 .willReturn(entities, subEntities);
 
         DataDefinition listDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(listDataDefinition.find().addRestriction(any(Restriction.class)).list().getEntities()).willReturn(
-                productsEntities1, productsEntities3);
+        given(listDataDefinition.find().belongsTo(anyString(), any()).list().getEntities()).willReturn(productsEntities1,
+                productsEntities3);
 
         EntityTree subOperationComponents = new EntityTreeImpl(treeDataDefinition, "joinField", 13L);
 
@@ -471,8 +470,7 @@ public class GenealogyServiceTest {
         existingEntities.add(craeteGenealogyProductInComponent(102L, craeteOperationProductInComponent(102L, true)));
 
         DataDefinition existingListDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(existingListDataDefinition.find().addRestriction(any(Restriction.class)).list().getEntities()).willReturn(
-                existingEntities);
+        given(existingListDataDefinition.find().belongsTo(anyString(), any()).list().getEntities()).willReturn(existingEntities);
 
         EntityList existingOperationComponents = new EntityListImpl(existingListDataDefinition, "joinField", 11L);
         return existingOperationComponents;
