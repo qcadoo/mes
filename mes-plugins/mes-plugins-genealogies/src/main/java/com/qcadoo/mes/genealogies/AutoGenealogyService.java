@@ -121,10 +121,13 @@ public class AutoGenealogyService {
     public void fillLastUsedBatchForGenealogy(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
         Entity product = entity.getBelongsToField("order").getBelongsToField("product");
-        DataDefinition productInDef = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
-        Entity productEntity = productInDef.get(product.getId());
-        productEntity.setField("lastUsedBatch", entity.getField("batch"));
-        productInDef.save(productEntity);
+        if (product != null) {
+            DataDefinition productInDef = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                    BasicConstants.MODEL_PRODUCT);
+            Entity productEntity = productInDef.get(product.getId());
+            productEntity.setField("lastUsedBatch", entity.getField("batch"));
+            productInDef.save(productEntity);
+        }
     }
 
     @Transactional
