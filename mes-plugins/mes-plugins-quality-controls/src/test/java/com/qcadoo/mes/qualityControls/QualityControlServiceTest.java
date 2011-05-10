@@ -45,6 +45,7 @@ import org.mockito.Mockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.qualityControls.constants.QualityControlsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -162,7 +163,7 @@ public class QualityControlServiceTest {
         qualityControlService.checkIfCommentForResultOrQuantityIsReq(dataDefinition, entity);
 
         // then
-        verify(entity).addGlobalError("core.validate.global.error.custom");
+        verify(entity).addGlobalError("qcadooView.validate.global.error.custom");
         verify(entity).addError(dataDefinition.getField("comment"),
                 "qualityControls.quality.control.validate.global.error.comment");
     }
@@ -181,7 +182,7 @@ public class QualityControlServiceTest {
         qualityControlService.checkIfCommentForResultOrQuantityIsReq(dataDefinition, entity);
 
         // then
-        verify(entity).addGlobalError("core.validate.global.error.custom");
+        verify(entity).addGlobalError("qcadooView.validate.global.error.custom");
         verify(entity).addError(dataDefinition.getField("comment"),
                 "qualityControls.quality.control.validate.global.error.comment");
     }
@@ -330,14 +331,14 @@ public class QualityControlServiceTest {
 
         given(state.getFieldValue()).willReturn(null);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("core.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
-                "core.form.entityWithoutIdentifier.pl");
+        given(translationService.translate("qcadooView.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
+                "qcadooView.form.entityWithoutIdentifier.pl");
 
         // when
         qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityControls" });
 
         // then
-        verify(state).addMessage("core.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
     }
 
     @Test
@@ -348,14 +349,14 @@ public class QualityControlServiceTest {
 
         given(state.getFieldValue()).willReturn(null);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("core.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
-                "core.grid.noRowSelectedError.pl");
+        given(translationService.translate("qcadooView.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
+                "qcadooView.grid.noRowSelectedError.pl");
 
         // when
         qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityControls" });
 
         // then
-        verify(state).addMessage("core.grid.noRowSelectedError.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.grid.noRowSelectedError.pl", MessageType.FAILURE);
     }
 
     @Test
@@ -606,7 +607,7 @@ public class QualityControlServiceTest {
         qualityControlService.checkIfOperationIsRequired(qualityControlDD, qualityControl);
 
         // then
-        verify(qualityControl).addGlobalError("core.validate.global.error.custom");
+        verify(qualityControl).addGlobalError("qcadooView.validate.global.error.custom");
         verify(qualityControl).addError(qualityControlDD.getField("operation"),
                 "qualityControls.quality.control.validate.global.error.operation");
     }
@@ -647,7 +648,7 @@ public class QualityControlServiceTest {
         qualityControlService.checkIfQuantitiesAreCorrect(qualityControlDD, entity);
 
         // then
-        verify(entity).addGlobalError("core.validate.global.error.custom");
+        verify(entity).addGlobalError("qcadooView.validate.global.error.custom");
         verify(entity).addError(qualityControlDD.getField("rejectedQuantity"),
                 "qualityControls.quality.control.validate.global.error.rejectedQuantity.tooLarge");
     }
@@ -667,7 +668,7 @@ public class QualityControlServiceTest {
         qualityControlService.checkIfQuantitiesAreCorrect(qualityControlDD, entity);
 
         // then
-        verify(entity).addGlobalError("core.validate.global.error.custom");
+        verify(entity).addGlobalError("qcadooView.validate.global.error.custom");
         verify(entity).addError(qualityControlDD.getField("acceptedDefectsQuantity"),
                 "qualityControls.quality.control.validate.global.error.acceptedDefectsQuantity.tooLarge");
     }

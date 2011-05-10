@@ -8,11 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.genealogies.GenealogiesConstants;
 import com.qcadoo.mes.genealogies.GenealogyService;
+import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.mes.genealogies.print.ReportService;
-import com.qcadoo.mes.orders.OrdersConstants;
-import com.qcadoo.mes.technologies.TechnologiesConstants;
+import com.qcadoo.mes.genealogiesForComponents.constants.GenealogiesForComponentsConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;

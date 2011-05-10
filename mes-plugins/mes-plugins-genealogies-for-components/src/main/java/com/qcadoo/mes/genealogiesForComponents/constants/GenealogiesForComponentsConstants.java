@@ -1,4 +1,4 @@
-package com.qcadoo.mes.genealogiesForComponents;
+package com.qcadoo.mes.genealogiesForComponents.constants;
 
 public interface GenealogiesForComponentsConstants {
 

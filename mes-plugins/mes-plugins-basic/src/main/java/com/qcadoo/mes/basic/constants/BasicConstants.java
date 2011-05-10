@@ -1,4 +1,4 @@
-package com.qcadoo.mes.basic;
+package com.qcadoo.mes.basic.constants;
 
 public interface BasicConstants {
 

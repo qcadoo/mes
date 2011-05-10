@@ -1,4 +1,4 @@
-package com.qcadoo.mes.qualityControls;
+package com.qcadoo.mes.qualityControls.constants;
 
 public interface QualityControlsConstants {
 

@@ -27,6 +27,7 @@ package com.qcadoo.mes.basic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -59,7 +60,7 @@ public final class ProductService {
                 .get(substitute.getId());
 
         if (substituteEntity == null) {
-            entity.addGlobalError("core.message.belongsToNotFound");
+            entity.addGlobalError("qcadooView.message.belongsToNotFound");
             entity.setField("substitute", null);
             return false;
         } else {
@@ -97,7 +98,7 @@ public final class ProductService {
                 product.getId());
 
         if (productEntity == null) {
-            entity.addGlobalError("core.message.belongsToNotFound");
+            entity.addGlobalError("qcadooView.message.belongsToNotFound");
             entity.setField("product", null);
             return false;
         } else {

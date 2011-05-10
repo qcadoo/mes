@@ -39,6 +39,7 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.util.OrderReportService;
 import com.qcadoo.mes.orders.util.OrderReportService.OrderValidator;
 import com.qcadoo.mes.orders.util.RibbonReportService;
+import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.mes.workPlans.print.pdf.WorkPlanForMachinePdfService;
 import com.qcadoo.mes.workPlans.print.pdf.WorkPlanForProductPdfService;
 import com.qcadoo.mes.workPlans.print.pdf.WorkPlanForWorkerPdfService;
@@ -113,7 +114,7 @@ public final class WorkPlanService {
                     .get((Long) state.getFieldValue());
 
             if (workPlan == null) {
-                String message = translationService.translate("core.message.entityNotFound", state.getLocale());
+                String message = translationService.translate("qcadooView.message.entityNotFound", state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;
             } else if (StringUtils.hasText(workPlan.getStringField("fileName"))) {
@@ -173,7 +174,7 @@ public final class WorkPlanService {
             Entity workPlan = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_WORK_PLAN)
                     .get((Long) state.getFieldValue());
             if (workPlan == null) {
-                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
             } else if (!StringUtils.hasText(workPlan.getStringField("fileName"))) {
                 state.addMessage(
@@ -185,10 +186,10 @@ public final class WorkPlanService {
             }
         } else {
             if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
                         MessageType.FAILURE);
             } else {
-                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
                         MessageType.FAILURE);
             }
         }

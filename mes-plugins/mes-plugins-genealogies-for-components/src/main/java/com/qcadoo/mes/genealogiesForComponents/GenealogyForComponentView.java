@@ -41,6 +41,7 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.genealogies.print.util.EntityOrderNumberComparator;
+import com.qcadoo.mes.genealogiesForComponents.constants.GenealogiesForComponentsConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfUtil;
@@ -66,7 +67,7 @@ public class GenealogyForComponentView extends ReportPdfView {
                 locale);
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
         addTables(document, entity, locale);
-        String text = getTranslationService().translate("core.report.endOfReport", locale);
+        String text = getTranslationService().translate("qcadooView.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("genealogiesForComponents.genealogyForComponent.report.fileName", locale);
     }

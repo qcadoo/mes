@@ -50,33 +50,33 @@
 
 <script type="text/JavaScript">
 	jQuery(document).ready(function(){
-		window.mainController.setWindowHeader("${translationsMap['core.systemInfo.header']}");	
+		window.mainController.setWindowHeader("${translationsMap['qcadooView.systemInfo.header']}");	
 	});
 </script>
 
 <div id="systemInfoContent">
 	<div class="systemInfoItem">
-		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildApplicationName.label']}</span>
+		<span class="systemInfoItemLabel">${translationsMap['qcadooView.systemInfo.buildApplicationName.label']}</span>
 		<span class="systemInfoItemValue">${buildApplicationName}</span>
 	</div>
 	<div class="systemInfoItem">
-		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildApplicationVersion.label']}</span>
+		<span class="systemInfoItemLabel">${translationsMap['qcadooView.systemInfo.buildApplicationVersion.label']}</span>
 		<span class="systemInfoItemValue">${buildApplicationVersion}</span>
 	</div>
 	<div class="systemInfoItem">
-		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildFrameworkVersion.label']}</span>
+		<span class="systemInfoItemLabel">${translationsMap['qcadooView.systemInfo.buildFrameworkVersion.label']}</span>
 		<span class="systemInfoItemValue">${buildFrameworkVersion}</span>
 	</div>
 	<div class="systemInfoItem">
-		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildNumber.label']}</span>
+		<span class="systemInfoItemLabel">${translationsMap['qcadooView.systemInfo.buildNumber.label']}</span>
 		<span class="systemInfoItemValue">${buildNumber}</span>
 	</div>
 	<div class="systemInfoItem">
-		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildTime.label']}</span>
+		<span class="systemInfoItemLabel">${translationsMap['qcadooView.systemInfo.buildTime.label']}</span>
 		<span class="systemInfoItemValue">${buildTime}</span>
 	</div>
 	<div class="systemInfoItem">
-		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildRevision.label']}</span>
+		<span class="systemInfoItemLabel">${translationsMap['qcadooView.systemInfo.buildRevision.label']}</span>
 		<span class="systemInfoItemValue">${buildRevision}</span>
 	</div>
 </div>

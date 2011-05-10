@@ -1,4 +1,4 @@
-package com.qcadoo.mes.samples;
+package com.qcadoo.mes.samples.constants;
 
 public interface SamplesConstants {
 

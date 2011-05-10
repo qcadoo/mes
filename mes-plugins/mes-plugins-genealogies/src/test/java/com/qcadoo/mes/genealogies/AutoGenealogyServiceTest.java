@@ -54,8 +54,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.BasicConstants;
-import com.qcadoo.mes.orders.OrdersConstants;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -109,14 +110,14 @@ public class AutoGenealogyServiceTest {
         given(state.getFieldValue()).willReturn(null);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("core.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
-                "core.grid.noRowSelectedError.pl");
+        given(translationService.translate("qcadooView.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
+                "qcadooView.grid.noRowSelectedError.pl");
 
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
         // then
-        verify(state).addMessage("core.grid.noRowSelectedError.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.grid.noRowSelectedError.pl", MessageType.FAILURE);
     }
 
     @Test
@@ -126,14 +127,14 @@ public class AutoGenealogyServiceTest {
         given(state.getFieldValue()).willReturn(null);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("core.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
-                "core.form.entityWithoutIdentifier.pl");
+        given(translationService.translate("qcadooView.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
+                "qcadooView.form.entityWithoutIdentifier.pl");
 
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
         // then
-        verify(state).addMessage("core.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
     }
 
     @Test
@@ -147,14 +148,14 @@ public class AutoGenealogyServiceTest {
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L))
                 .willReturn(null);
 
-        given(translationService.translate("core.message.entityNotFound", Locale.ENGLISH)).willReturn(
-                "core.message.entityNotFound.pl");
+        given(translationService.translate("qcadooView.message.entityNotFound", Locale.ENGLISH)).willReturn(
+                "qcadooView.message.entityNotFound.pl");
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
         // then
         verify(state, times(2)).getFieldValue();
-        verify(state).addMessage("core.message.entityNotFound.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.message.entityNotFound.pl", MessageType.FAILURE);
     }
 
     @Test
@@ -517,14 +518,14 @@ public class AutoGenealogyServiceTest {
         given(state.getFieldValue()).willReturn(null);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("core.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
-                "core.grid.noRowSelectedError.pl");
+        given(translationService.translate("qcadooView.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
+                "qcadooView.grid.noRowSelectedError.pl");
 
         // when
         autoGenealogyService.generateGenalogyOnChangeOrderStatusForDone(viewDefinitionState, state, new String[] { "false" });
 
         // then
-        verify(state).addMessage("core.grid.noRowSelectedError.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.grid.noRowSelectedError.pl", MessageType.FAILURE);
     }
 
     @Test
@@ -534,14 +535,14 @@ public class AutoGenealogyServiceTest {
         given(state.getFieldValue()).willReturn(null);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("core.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
-                "core.form.entityWithoutIdentifier.pl");
+        given(translationService.translate("qcadooView.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
+                "qcadooView.form.entityWithoutIdentifier.pl");
 
         // when
         autoGenealogyService.generateGenalogyOnChangeOrderStatusForDone(viewDefinitionState, state, new String[] { "false" });
 
         // then
-        verify(state).addMessage("core.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
     }
 
     @Test
@@ -555,14 +556,14 @@ public class AutoGenealogyServiceTest {
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L))
                 .willReturn(null);
 
-        given(translationService.translate("core.message.entityNotFound", Locale.ENGLISH)).willReturn(
-                "core.message.entityNotFound.pl");
+        given(translationService.translate("qcadooView.message.entityNotFound", Locale.ENGLISH)).willReturn(
+                "qcadooView.message.entityNotFound.pl");
         // when
         autoGenealogyService.generateGenalogyOnChangeOrderStatusForDone(viewDefinitionState, state, new String[] { "false" });
 
         // then
         verify(state, times(2)).getFieldValue();
-        verify(state).addMessage("core.message.entityNotFound.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.message.entityNotFound.pl", MessageType.FAILURE);
     }
 
     @Test

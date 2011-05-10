@@ -56,10 +56,10 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.BasicConstants;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.OrderService;
-import com.qcadoo.mes.orders.OrdersConstants;
-import com.qcadoo.mes.technologies.TechnologiesConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -153,14 +153,14 @@ public class OrderServiceTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L))
                 .willReturn(null);
-        given(translationService.translate("core.message.entityNotFound", Locale.ENGLISH)).willReturn(
-                "core.message.entityNotFound.pl");
+        given(translationService.translate("qcadooView.message.entityNotFound", Locale.ENGLISH)).willReturn(
+                "qcadooView.message.entityNotFound.pl");
 
         // when
         orderService.printOrder(viewDefinitionState, state, new String[] { "pdf" });
 
         // then
-        verify(state).addMessage("core.message.entityNotFound.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.message.entityNotFound.pl", MessageType.FAILURE);
     }
 
     @Test
@@ -170,14 +170,14 @@ public class OrderServiceTest {
         given(state.getFieldValue()).willReturn(null);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(translationService.translate("core.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
-                "core.grid.noRowSelectedError.pl");
+        given(translationService.translate("qcadooView.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
+                "qcadooView.grid.noRowSelectedError.pl");
 
         // when
         orderService.printOrder(viewDefinitionState, state, new String[] { "pdf" });
 
         // then
-        verify(state).addMessage("core.grid.noRowSelectedError.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.grid.noRowSelectedError.pl", MessageType.FAILURE);
     }
 
     @Test
@@ -187,14 +187,14 @@ public class OrderServiceTest {
         given(state.getFieldValue()).willReturn(null);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(translationService.translate("core.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
-                "core.form.entityWithoutIdentifier.pl");
+        given(translationService.translate("qcadooView.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
+                "qcadooView.form.entityWithoutIdentifier.pl");
 
         // when
         orderService.printOrder(viewDefinitionState, state, new String[] { "pdf" });
 
         // then
-        verify(state).addMessage("core.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
     }
 
     @Test
@@ -1011,14 +1011,14 @@ public class OrderServiceTest {
         ComponentState state = mock(ComponentState.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("core.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
-                "core.grid.noRowSelectedError.pl");
+        given(translationService.translate("qcadooView.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
+                "qcadooView.grid.noRowSelectedError.pl");
 
         // when
         orderService.activateOrder(viewDefinitionState, state, new String[0]);
 
         // then
-        verify(state).addMessage("core.grid.noRowSelectedError.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.grid.noRowSelectedError.pl", MessageType.FAILURE);
     }
 
     @Test
@@ -1027,14 +1027,14 @@ public class OrderServiceTest {
         FormComponent state = mock(FormComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("core.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
-                "core.form.entityWithoutIdentifier.pl");
+        given(translationService.translate("qcadooView.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
+                "qcadooView.form.entityWithoutIdentifier.pl");
 
         // when
         orderService.activateOrder(viewDefinitionState, state, new String[0]);
 
         // then
-        verify(state).addMessage("core.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
     }
 
     @Test

@@ -1,4 +1,4 @@
-package com.qcadoo.mes.materialRequirements;
+package com.qcadoo.mes.materialRequirements.constants;
 
 public interface MaterialRequirementsConstants {
 

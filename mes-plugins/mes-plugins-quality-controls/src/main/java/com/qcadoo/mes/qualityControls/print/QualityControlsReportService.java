@@ -43,7 +43,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.qualityControls.QualityControlsConstants;
+import com.qcadoo.mes.qualityControls.constants.QualityControlsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -90,7 +90,7 @@ public class QualityControlsReportService {
         }
         GridComponent gridState = (GridComponent) state;
         if (gridState.getSelectedEntitiesIds().size() == 0) {
-            state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()), MessageType.FAILURE);
+            state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()), MessageType.FAILURE);
             return;
         }
         StringBuilder redirectUrl = new StringBuilder();
