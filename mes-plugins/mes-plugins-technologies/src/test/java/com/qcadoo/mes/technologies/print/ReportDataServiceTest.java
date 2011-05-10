@@ -44,11 +44,11 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.search.Restriction;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
+import com.qcadoo.model.internal.search.Restriction;
 import com.qcadoo.report.api.Pair;
 
 public class ReportDataServiceTest {
@@ -293,10 +293,10 @@ public class ReportDataServiceTest {
 
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -335,10 +335,10 @@ public class ReportDataServiceTest {
 
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -375,7 +375,7 @@ public class ReportDataServiceTest {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(new ArrayList<Entity>());
+                        .orderAscBy("priority").list().getEntities()).willReturn(new ArrayList<Entity>());
 
         // when
         reportDataService.countQuantityForProductsIn(products, technologyForQuantityPerOutProductsAlghorithm, new BigDecimal(2),
@@ -391,7 +391,7 @@ public class ReportDataServiceTest {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -414,7 +414,7 @@ public class ReportDataServiceTest {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -444,7 +444,7 @@ public class ReportDataServiceTest {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -474,7 +474,7 @@ public class ReportDataServiceTest {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -520,7 +520,7 @@ public class ReportDataServiceTest {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -582,7 +582,7 @@ public class ReportDataServiceTest {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -647,7 +647,7 @@ public class ReportDataServiceTest {
         products.put(product3, new BigDecimal("2"));
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -710,11 +710,11 @@ public class ReportDataServiceTest {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
 
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -777,11 +777,11 @@ public class ReportDataServiceTest {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListSubTechnologyWithoutRoot);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListSubTechnologyWithoutRoot);
 
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(new ArrayList<Entity>());
+                        .orderAscBy("priority").list().getEntities()).willReturn(new ArrayList<Entity>());
 
         given(
                 dataDefinition
@@ -845,11 +845,11 @@ public class ReportDataServiceTest {
 
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListTechnologyWithoutRoot);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListTechnologyWithoutRoot);
 
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(new ArrayList<Entity>());
+                        .orderAscBy("priority").list().getEntities()).willReturn(new ArrayList<Entity>());
 
         // when
         reportDataService.countQuantityForProductsIn(products, technologyForQuantityPerOutProductsAlghorithm, new BigDecimal(5),
@@ -866,7 +866,7 @@ public class ReportDataServiceTest {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -950,10 +950,10 @@ public class ReportDataServiceTest {
 
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -990,10 +990,10 @@ public class ReportDataServiceTest {
                         .list().getEntities()).willReturn(components);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -1072,10 +1072,10 @@ public class ReportDataServiceTest {
                         .list().getEntities()).willReturn(components);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -1155,10 +1155,10 @@ public class ReportDataServiceTest {
                         .list().getEntities()).willReturn(components);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -1238,10 +1238,10 @@ public class ReportDataServiceTest {
                         .list().getEntities()).willReturn(componentsOutProducts);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -1320,10 +1320,10 @@ public class ReportDataServiceTest {
                         .list().getEntities()).willReturn(componentsOutProducts);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -1403,10 +1403,10 @@ public class ReportDataServiceTest {
                         .list().getEntities()).willReturn(componentsOutProducts);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -1486,10 +1486,10 @@ public class ReportDataServiceTest {
                         .list().getEntities()).willReturn(componentsOutProducts2);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -1568,7 +1568,7 @@ public class ReportDataServiceTest {
                         .list().getEntities()).willReturn(componentsOutProducts);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -1594,7 +1594,7 @@ public class ReportDataServiceTest {
 
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -1626,7 +1626,7 @@ public class ReportDataServiceTest {
                         .list().getEntities()).willReturn(componentsOutProducts);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition
@@ -1674,7 +1674,7 @@ public class ReportDataServiceTest {
                         .list().getEntities()).willReturn(componentsOutProducts);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListSubTechnologyWithoutRoot);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListSubTechnologyWithoutRoot);
 
         given(
                 dataDefinition

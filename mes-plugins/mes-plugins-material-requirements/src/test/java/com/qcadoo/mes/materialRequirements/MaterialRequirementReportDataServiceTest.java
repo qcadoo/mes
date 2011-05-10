@@ -21,11 +21,11 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.search.Restriction;
 import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
+import com.qcadoo.model.internal.search.Restriction;
 
 public class MaterialRequirementReportDataServiceTest {
 
@@ -245,10 +245,10 @@ public class MaterialRequirementReportDataServiceTest {
 
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         given(
                 dataDefinition

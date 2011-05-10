@@ -48,10 +48,10 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.search.Restriction;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
+import com.qcadoo.model.internal.search.Restriction;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -424,7 +424,7 @@ public class GenealogyServiceTest {
         productsEntities3.add(craeteOperationProductInComponent(104L, false));
 
         DataDefinition treeDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(treeDataDefinition.find().addRestriction(any(Restriction.class)).setOrderAscBy(eq("priority")).list().getEntities())
+        given(treeDataDefinition.find().addRestriction(any(Restriction.class)).orderAscBy(eq("priority")).list().getEntities())
                 .willReturn(entities, subEntities);
 
         DataDefinition listDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);

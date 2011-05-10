@@ -116,10 +116,10 @@ public class WorkPlanReportDataServiceTest {
 
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(1)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeList);
         given(
                 dataDefinition.find().addRestriction(Restrictions.belongsTo(dataDefinition.getField("technology"), new Long(2)))
-                        .setOrderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
+                        .orderAscBy("priority").list().getEntities()).willReturn(entityTreeListWithoutTechnology);
 
         // when
         workPlanReportDataService.addOperationsFromSubtechnologiesToList(entityTree, operationComponents);
