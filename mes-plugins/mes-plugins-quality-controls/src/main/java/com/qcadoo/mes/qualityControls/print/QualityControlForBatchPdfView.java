@@ -93,12 +93,21 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
             throws DocumentException {
         List<String> qualityHeader = new ArrayList<String>();
         qualityHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.product.number", locale));
-        qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForBatch.controlledQuantity.label", locale));
-        qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForBatch.rejectedQuantity.label", locale));
-        qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForBatch.acceptedDefectsQuantity.label", locale));
+        qualityHeader
+                .add(getTranslationService()
+                        .translate(
+                                "qualityControlsForBatch.qualityControlForBatchDetails.window.mainTab.qualityControlForBatch.controlledQuantity.label",
+                                locale));
+        qualityHeader
+                .add(getTranslationService()
+                        .translate(
+                                "qualityControlsForBatch.qualityControlForBatchDetails.window.mainTab.qualityControlForBatch.rejectedQuantity.label",
+                                locale));
+        qualityHeader
+                .add(getTranslationService()
+                        .translate(
+                                "qualityControlsForBatch.qualityControlForBatchDetails.window.mainTab.qualityControlForBatch.acceptedDefectsQuantity.label",
+                                locale));
         PdfPTable table = PdfUtil.createTableWithHeader(4, qualityHeader, false);
         for (Entry<Entity, List<BigDecimal>> entry : quantities.entrySet()) {
             table.addCell(new Phrase(entry.getKey() != null ? entry.getKey().getField("number").toString() : "", PdfUtil

@@ -67,23 +67,31 @@ public class QualityControlForBatchXlsView extends ReportXlsView {
         cell0.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell1 = header.createCell(1);
         cell1.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlsForBatch.window.qualityControlsForBatch.column.batchNr", locale));
+                "qualityControlsForBatch.qualityControlsForBatchList.window.mainTab.qualityControlsForBatch.column.batchNr",
+                locale));
         cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell2 = header.createCell(2);
         cell2.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlsForBatch.window.qualityControlsForBatch.column.number", locale));
+                "qualityControlsForBatch.qualityControlsForBatchList.window.mainTab.qualityControlsForBatch.column.number",
+                locale));
         cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell3 = header.createCell(3);
-        cell3.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForBatch.controlledQuantity.label", locale));
+        cell3.setCellValue(getTranslationService()
+                .translate(
+                        "qualityControlsForBatch.qualityControlForBatchDetails.window.mainTab.qualityControlForBatch.controlledQuantity.label",
+                        locale));
         cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell4 = header.createCell(4);
-        cell4.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForBatch.rejectedQuantity.label", locale));
+        cell4.setCellValue(getTranslationService()
+                .translate(
+                        "qualityControlsForBatch.qualityControlForBatchDetails.window.mainTab.qualityControlForBatch.rejectedQuantity.label",
+                        locale));
         cell4.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell5 = header.createCell(5);
-        cell5.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlForBatch.window.qualityControlForBatch.acceptedDefectsQuantity.label", locale));
+        cell5.setCellValue(getTranslationService()
+                .translate(
+                        "qualityControlsForBatch.qualityControlForBatchDetails.window.mainTab.qualityControlForBatch.acceptedDefectsQuantity.label",
+                        locale));
         cell5.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
     }
 

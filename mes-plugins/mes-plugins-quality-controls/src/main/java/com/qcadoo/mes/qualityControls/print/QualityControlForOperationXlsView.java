@@ -63,12 +63,16 @@ public class QualityControlForOperationXlsView extends ReportXlsView {
         cell0.setCellValue(getTranslationService().translate("qualityControls.qualityControl.report.operation.number", locale));
         cell0.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell1 = header.createCell(1);
-        cell1.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlForOperation.window.qualityControlForOperation.number.label", locale));
+        cell1.setCellValue(getTranslationService()
+                .translate(
+                        "qualityControlsForOperation.qualityControlForOperationDetails.window.mainTab.qualityControlForOperation.number.label",
+                        locale));
         cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell2 = header.createCell(2);
-        cell2.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlForOperation.window.qualityControlForOperation.controlResult.label", locale));
+        cell2.setCellValue(getTranslationService()
+                .translate(
+                        "qualityControlsForOperation.qualityControlForOperationDetails.window.mainTab.qualityControlForOperation.controlResult.label",
+                        locale));
         cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
     }
 
