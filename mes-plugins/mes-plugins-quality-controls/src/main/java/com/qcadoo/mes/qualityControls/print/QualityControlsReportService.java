@@ -43,6 +43,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.qualityControls.QualityControlsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -260,7 +261,7 @@ public class QualityControlsReportService {
 
     @SuppressWarnings("unchecked")
     public final List<Entity> getOrderSeries(final Map<String, Object> model, final String type) {
-        DataDefinition dataDef = dataDefinitionService.get("qualityControls", "qualityControl");
+        DataDefinition dataDef = dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER, QualityControlsConstants.MODEL_QUALITY_CONTROL);
         if (model.containsKey("entities")) {
             if (!(model.get("entities") instanceof List<?>)) {
                 throw new IllegalStateException("entities are not list");

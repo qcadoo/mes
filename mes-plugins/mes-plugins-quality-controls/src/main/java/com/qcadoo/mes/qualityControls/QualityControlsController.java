@@ -84,7 +84,8 @@ public class QualityControlsController {
     }
 
     private List<Entity> getQualityControlEntities(final Long[] ids) {
-        DataDefinition qualityControlDataDefinition = dataDefinitionService.get("qualityControls", "qualityControl");
+        DataDefinition qualityControlDataDefinition = dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                QualityControlsConstants.MODEL_QUALITY_CONTROL);
         List<Entity> result = new LinkedList<Entity>();
         for (Long entityId : ids) {
             result.add(qualityControlDataDefinition.get(entityId));
