@@ -1,4 +1,4 @@
-package com.qcadoo.mes.orders;
+package com.qcadoo.mes.orders.constants;
 
 public interface OrdersConstants {
 

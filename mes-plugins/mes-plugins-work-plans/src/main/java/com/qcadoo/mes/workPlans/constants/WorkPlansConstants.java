@@ -1,4 +1,4 @@
-package com.qcadoo.mes.workPlans;
+package com.qcadoo.mes.workPlans.constants;
 
 public interface WorkPlansConstants {
 
