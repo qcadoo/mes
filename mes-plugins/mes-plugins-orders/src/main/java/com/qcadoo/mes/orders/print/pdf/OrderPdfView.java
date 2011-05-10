@@ -57,7 +57,7 @@ public final class OrderPdfView extends ReportPdfView {
                 securityService.getCurrentUserName());
         addMainTable(document, entity, locale);
         addDetailTable(document, entity, locale);
-        String text = getTranslationService().translate("core.report.endOfReport", locale);
+        String text = getTranslationService().translate("qcadooView.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("orders.order.report.fileName", locale) + "_" + entity.getField("number");
     }

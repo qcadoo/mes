@@ -82,7 +82,7 @@ public final class OrderService {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     (Long) state.getFieldValue());
             if (order == null) {
-                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo("/orders/order." + args[0] + "?id=" + state.getFieldValue(), true, false);
@@ -90,10 +90,10 @@ public final class OrderService {
 
         } else {
             if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
                         MessageType.FAILURE);
             } else {
-                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
                         MessageType.FAILURE);
             }
         }
@@ -226,10 +226,10 @@ public final class OrderService {
             }
         } else {
             if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
                         MessageType.FAILURE);
             } else {
-                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
                         MessageType.FAILURE);
             }
         }
@@ -533,7 +533,7 @@ public final class OrderService {
                 TechnologiesConstants.MODEL_TECHNOLOGY).get(technology.getId());
 
         if (technologyEntity == null) {
-            entity.addGlobalError("core.message.belongsToNotFound");
+            entity.addGlobalError("qcadooView.message.belongsToNotFound");
             entity.setField("technology", null);
             return false;
         } else {

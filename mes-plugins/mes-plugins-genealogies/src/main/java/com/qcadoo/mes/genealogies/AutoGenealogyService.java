@@ -76,7 +76,7 @@ public class AutoGenealogyService {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     (Long) state.getFieldValue());
             if (order == null) {
-                state.addMessage(translationService.translate("core.message.entityNotFound", viewDefinitionState.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.message.entityNotFound", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             } else {
                 boolean inProgressState = Boolean.parseBoolean(args[0]);
@@ -99,10 +99,10 @@ public class AutoGenealogyService {
         } else {
             if (state instanceof FormComponent) {
                 state.addMessage(
-                        translationService.translate("core.form.entityWithoutIdentifier", viewDefinitionState.getLocale()),
+                        translationService.translate("qcadooView.form.entityWithoutIdentifier", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             } else {
-                state.addMessage(translationService.translate("core.grid.noRowSelectedError", viewDefinitionState.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             }
         }
@@ -137,7 +137,7 @@ public class AutoGenealogyService {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     (Long) state.getFieldValue());
             if (order == null) {
-                state.addMessage(translationService.translate("core.message.entityNotFound", viewDefinitionState.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.message.entityNotFound", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             } else {
                 createGenealogy(state, order, Boolean.parseBoolean(args[0]));
@@ -145,10 +145,10 @@ public class AutoGenealogyService {
         } else {
             if (state instanceof FormComponent) {
                 state.addMessage(
-                        translationService.translate("core.form.entityWithoutIdentifier", viewDefinitionState.getLocale()),
+                        translationService.translate("qcadooView.form.entityWithoutIdentifier", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             } else {
-                state.addMessage(translationService.translate("core.grid.noRowSelectedError", viewDefinitionState.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             }
         }

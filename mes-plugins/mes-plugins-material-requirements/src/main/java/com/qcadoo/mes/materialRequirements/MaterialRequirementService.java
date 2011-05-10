@@ -121,7 +121,7 @@ public final class MaterialRequirementService {
                     MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT).get((Long) state.getFieldValue());
 
             if (materialRequirement == null) {
-                String message = translationService.translate("core.message.entityNotFound", state.getLocale());
+                String message = translationService.translate("qcadooView.message.entityNotFound", state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;
             } else if (StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
@@ -174,7 +174,7 @@ public final class MaterialRequirementService {
             Entity materialRequirement = dataDefinitionService.get(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
                     MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT).get((Long) state.getFieldValue());
             if (materialRequirement == null) {
-                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
             } else if (!StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
                 state.addMessage(translationService.translate(
@@ -186,10 +186,10 @@ public final class MaterialRequirementService {
             }
         } else {
             if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
                         MessageType.FAILURE);
             } else {
-                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
                         MessageType.FAILURE);
             }
         }

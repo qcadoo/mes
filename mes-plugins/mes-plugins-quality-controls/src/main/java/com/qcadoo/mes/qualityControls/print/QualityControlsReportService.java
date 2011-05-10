@@ -90,7 +90,7 @@ public class QualityControlsReportService {
         }
         GridComponent gridState = (GridComponent) state;
         if (gridState.getSelectedEntitiesIds().size() == 0) {
-            state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()), MessageType.FAILURE);
+            state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()), MessageType.FAILURE);
             return;
         }
         StringBuilder redirectUrl = new StringBuilder();
