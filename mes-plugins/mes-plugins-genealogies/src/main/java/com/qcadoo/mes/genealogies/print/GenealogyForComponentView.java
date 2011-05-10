@@ -43,7 +43,6 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.genealogies.print.util.EntityOrderNumberComparator;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 import com.qcadoo.security.api.SecurityService;
@@ -131,7 +130,7 @@ public class GenealogyForComponentView extends ReportPdfView {
     private List<Entity> getGenealogies(final Entity entity) {
         List<Entity> genealogies = new ArrayList<Entity>();
         List<Entity> batchList = dataDefinitionService.get("genealogiesForComponents", "productInBatch").find()
-                .addRestriction(Restrictions.eq("batch", entity.getField("batch"))).list().getEntities();
+                .isEq("batch", entity.getField("batch")).list().getEntities();
         for (Entity batch : batchList) {
             Entity genealogy = ((Entity) ((Entity) batch.getField("productInComponent")).getField("genealogy"));
             if (!genealogies.contains(genealogy)) {

@@ -382,7 +382,7 @@ public class QualityControlServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(state.getFieldValue()).willReturn(7L);
         given(dataDefinitionService.get("genealogies", "genealogy")).willReturn(genealogyDataDefinition);
-        given(genealogyDataDefinition.find().addRestriction(Restrictions.eq("order.id", 7L))).willReturn(searchCriteria);
+        given(genealogyDataDefinition.find().isEq("order.id", 7L)).willReturn(searchCriteria);
         given(searchCriteria.list().getEntities()).willReturn(genealogies);
         given(numberGeneratorService.generateNumber("qualityControls", "qualityControl")).willReturn("1");
         given(order.getField("plannedQuantity")).willReturn(new BigDecimal("1"));

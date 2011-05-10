@@ -41,7 +41,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.CustomRestriction;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
@@ -387,7 +386,7 @@ public final class QualityControlService {
 
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.addRestriction(Restrictions.eq("qualityControlType", qualityControlType));
+                searchCriteriaBuilder.isEq("qualityControlType", qualityControlType);
             }
 
         });
@@ -524,8 +523,7 @@ public final class QualityControlService {
             return false;
         }
         SearchResult searchResult = dataDefinitionService.get("technologies", "technologyOperationComponent").find()
-                .addRestriction(Restrictions.eq("technology.id", entityId))
-                .addRestriction(Restrictions.eq("qualityControlRequired", true)).setMaxResults(1).list();
+                .isEq("technology.id", entityId).isEq("qualityControlRequired", true).setMaxResults(1).list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
 
@@ -550,7 +548,7 @@ public final class QualityControlService {
     private String getInstructionForOrder(final Long fieldValue) {
         DataDefinition orderDD = dataDefinitionService.get("orders", "order");
 
-        SearchCriteriaBuilder searchCriteria = orderDD.find().setMaxResults(1).addRestriction(Restrictions.idEq(fieldValue));
+        SearchCriteriaBuilder searchCriteria = orderDD.find().setMaxResults(1).isIdEq(fieldValue);
 
         return (String) searchCriteria.list().getEntities().get(0).getBelongsToField("technology")
                 .getField("qualityControlInstruction");
@@ -712,7 +710,7 @@ public final class QualityControlService {
     private List<Entity> getGenealogiesForOrder(final Long id) {
         DataDefinition genealogyDD = dataDefinitionService.get("genealogies", "genealogy");
 
-        SearchCriteriaBuilder searchCriteria = genealogyDD.find().addRestriction(Restrictions.eq("order.id", id));
+        SearchCriteriaBuilder searchCriteria = genealogyDD.find().isEq("order.id", id);
 
         return searchCriteria.list().getEntities();
     }

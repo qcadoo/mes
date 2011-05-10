@@ -46,15 +46,14 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class QualityControlsReportService {
@@ -274,16 +273,10 @@ public class QualityControlsReportService {
             return entities;
         } else {
             try {
-                SearchResult result = dataDef
-                        .find()
-                        .addRestriction(
-                                Restrictions.ge(dataDef.getField("date"),
-                                        DateUtils.parseAndComplete(model.get("dateFrom").toString(), false)))
-                        .addRestriction(
-                                Restrictions.le(dataDef.getField("date"),
-                                        DateUtils.parseAndComplete(model.get("dateTo").toString(), true)))
-                        .addRestriction(Restrictions.eq("qualityControlType", type))
-                        .addRestriction(Restrictions.eq("closed", true)).list();
+                SearchResult result = dataDef.find()
+                        .isGe("date", DateUtils.parseAndComplete(model.get("dateFrom").toString(), false))
+                        .isLe("date", DateUtils.parseAndComplete(model.get("dateTo").toString(), true))
+                        .isEq("qualityControlType", type).isEq("closed", true).list();
                 return result.getEntities();
             } catch (ParseException e) {
                 return Collections.emptyList();

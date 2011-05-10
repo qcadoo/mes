@@ -57,7 +57,6 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
@@ -252,9 +251,8 @@ public class AutoGenealogyServiceTest {
         List<Entity> list = new ArrayList<Entity>();
         list.add(mock(Entity.class));
         given(
-                dataDefinitionService.get("genealogies", "genealogy").find().addRestriction(Restrictions.eq("batch", "test"))
-                        .addRestriction(Restrictions.eq("order.id", order.getId())).setMaxResults(1).list().getEntities())
-                .willReturn(list);
+                dataDefinitionService.get("genealogies", "genealogy").find().isEq("batch", "test")
+                        .isEq("order.id", order.getId()).setMaxResults(1).list().getEntities()).willReturn(list);
 
         given(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.genealogyExist.pl");

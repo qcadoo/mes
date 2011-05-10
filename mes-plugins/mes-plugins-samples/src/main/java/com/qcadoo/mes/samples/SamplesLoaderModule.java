@@ -55,7 +55,6 @@ import org.xml.sax.SAXException;
 
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityRole;
@@ -847,8 +846,7 @@ public class SamplesLoaderModule extends Module {
     }
 
     private Entity getMachine(final String id) {
-        List<Entity> machines = dataDefinitionService.get("basic", "machine").find()
-                .addRestriction(Restrictions.eq("number", id)).list().getEntities();
+        List<Entity> machines = dataDefinitionService.get("basic", "machine").find().isEq("number", id).list().getEntities();
         if (machines.size() > 0) {
             return machines.get(0);
         } else {
@@ -857,8 +855,8 @@ public class SamplesLoaderModule extends Module {
     }
 
     private Entity getTechnologyByName(final String name) {
-        List<Entity> technologies = dataDefinitionService.get("technologies", "technology").find()
-                .addRestriction(Restrictions.eq("name", name)).setMaxResults(1).list().getEntities();
+        List<Entity> technologies = dataDefinitionService.get("technologies", "technology").find().isEq("name", name)
+                .setMaxResults(1).list().getEntities();
         if (technologies.size() > 0) {
             return technologies.get(0);
         } else {
@@ -871,8 +869,7 @@ public class SamplesLoaderModule extends Module {
             return null;
         }
         List<Entity> technologies = dataDefinitionService.get("technologies", "technology").find()
-                .addRestriction(Restrictions.eq("product.id", product.getId())).addRestriction(Restrictions.eq("master", true))
-                .setMaxResults(1).list().getEntities();
+                .isEq("product.id", product.getId()).isEq("master", true).setMaxResults(1).list().getEntities();
         if (technologies.size() > 0) {
             return technologies.get(0);
         } else {
@@ -881,28 +878,27 @@ public class SamplesLoaderModule extends Module {
     }
 
     private Entity getProductByNumber(final String number) {
-        return dataDefinitionService.get("basic", "product").find().addRestriction(Restrictions.eq("number", number))
-                .setMaxResults(1).list().getEntities().get(0);
+        return dataDefinitionService.get("basic", "product").find().isEq("number", number).setMaxResults(1).list().getEntities()
+                .get(0);
     }
 
     private Entity getOperationByNumber(final String number) {
-        return dataDefinitionService.get("technologies", "operation").find().addRestriction(Restrictions.eq("number", number))
-                .setMaxResults(1).list().getEntities().get(0);
+        return dataDefinitionService.get("technologies", "operation").find().isEq("number", number).setMaxResults(1).list()
+                .getEntities().get(0);
     }
 
     private String getRandomDictionaryItem(final String dictionaryName) {
         Entity dictionary = getDictionaryByName(dictionaryName);
         Long total = (long) dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
-                .addRestriction(Restrictions.eq("dictionary.id", dictionary.getId())).list().getTotalNumberOfEntities();
-        Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
-                .addRestriction(Restrictions.eq("dictionary.id", dictionary.getId()))
+                .isEq("dictionary.id", dictionary.getId()).list().getTotalNumberOfEntities();
+        Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").find().isEq("dictionary.id", dictionary.getId())
                 .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).list().getEntities().get(0);
         return item.getField("name").toString();
     }
 
     private Entity getDictionaryByName(final String name) {
-        return dataDefinitionService.get("qcadooModel", "dictionary").find().addRestriction(Restrictions.eq("name", name))
-                .setMaxResults(1).list().getEntities().get(0);
+        return dataDefinitionService.get("qcadooModel", "dictionary").find().isEq("name", name).setMaxResults(1).list()
+                .getEntities().get(0);
     }
 
     private Entity getRandomProduct() {

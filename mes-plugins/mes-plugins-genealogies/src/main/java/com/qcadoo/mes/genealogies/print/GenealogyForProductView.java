@@ -45,7 +45,6 @@ import com.qcadoo.mes.genealogies.print.util.BatchOrderNrComparator;
 import com.qcadoo.mes.genealogies.print.util.EntityNumberComparator;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.report.api.Pair;
 import com.qcadoo.report.api.pdf.PdfUtil;
@@ -172,7 +171,7 @@ public class GenealogyForProductView extends ReportPdfView {
     private List<Entity> getOrders(final Entity entity) {
         List<Entity> orders = new ArrayList<Entity>();
         List<Entity> genealogyList = dataDefinitionService.get("genealogies", "genealogy").find()
-                .addRestriction(Restrictions.eq("batch", entity.getField("batch"))).list().getEntities();
+                .isEq("batch", entity.getField("batch")).list().getEntities();
         for (Entity genealogy : genealogyList) {
             Entity order = (Entity) genealogy.getField("order");
             if (!orders.contains(order)) {

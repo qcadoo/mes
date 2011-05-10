@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.Restrictions;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
@@ -94,8 +93,7 @@ public class GenealogyTechnologyService {
 
     private boolean checkProductInComponentsBatchRequired(final Long entityId) {
         SearchResult searchResult = dataDefinitionService.get("technologies", "operationProductInComponent").find()
-                .addRestriction(Restrictions.eq("operationComponent.technology.id", entityId))
-                .addRestriction(Restrictions.eq("batchRequired", true)).setMaxResults(1).list();
+                .isEq("operationComponent.technology.id", entityId).isEq("batchRequired", true).setMaxResults(1).list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
 
@@ -113,7 +111,7 @@ public class GenealogyTechnologyService {
     private Entity getProductById(final Long productId) {
         DataDefinition instructionDD = dataDefinitionService.get("basic", "product");
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).addRestriction(Restrictions.idEq(productId));
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isIdEq(productId);
 
         SearchResult searchResult = searchCriteria.list();
         if (searchResult.getTotalNumberOfEntities() == 1) {
