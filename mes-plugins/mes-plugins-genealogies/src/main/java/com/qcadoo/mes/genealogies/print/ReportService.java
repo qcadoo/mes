@@ -50,23 +50,6 @@ public class ReportService {
     @Autowired
     private TranslationService translationService;
 
-    public void generateReportForComponent(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        if (state instanceof FormComponent) {
-            FieldComponent batchState = (FieldComponent) viewDefinitionState.getComponentByReference("batches");
-            if (batchState != null && batchState.getFieldValue() != null) {
-                viewDefinitionState.redirectTo(
-                        "/genealogiesForComponents/genealogyForComponent.pdf?value=" + batchState.getFieldValue(), true, false);
-            } else {
-                state.addMessage(translationService.translate("genealogiesForComponents.genealogyForComponent.report.noBatch",
-                        viewDefinitionState.getLocale()), MessageType.FAILURE);
-            }
-        } else {
-            state.addMessage(translationService.translate("genealogiesForComponents.genealogyForComponent.report.noBatch",
-                    viewDefinitionState.getLocale()), MessageType.FAILURE);
-        }
-    }
-
     public void changeProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof FieldComponent)) {
             return;
@@ -93,24 +76,7 @@ public class ReportService {
         batches.setEntities(setDistinctBatch(batches.getEntities()));
     }
 
-    public void addRestrictionToComponentGrid(final ViewDefinitionState viewDefinitionState) {
-        final FieldComponent product = (FieldComponent) viewDefinitionState.getComponentByReference("product");
-        final GridComponent batches = (GridComponent) viewDefinitionState.getComponentByReference("batches");
-
-        batches.setCustomRestriction(new CustomRestriction() {
-
-            @Override
-            public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.addRestriction(Restrictions.eq("productInComponent.productInComponent.product.id",
-                        product.getFieldValue()));
-            }
-
-        });
-
-        batches.setEntities(setDistinctBatch(batches.getEntities()));
-    }
-
-    private List<Entity> setDistinctBatch(final List<Entity> entities) {
+    public List<Entity> setDistinctBatch(final List<Entity> entities) {
         List<Entity> distinctEntities = new LinkedList<Entity>();
         Set<String> usedBatches = new HashSet<String>();
         for (Entity genealogyEntity : entities) {

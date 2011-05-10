@@ -53,7 +53,8 @@ public class GenealogyController {
         JSONObject json = new JSONObject(ImmutableMap.of("form.id", genealogyService.getGenealogyAttributeId().toString()));
 
         Map<String, String> arguments = ImmutableMap.of("context", json.toString());
-        return crudController.prepareView("genealogies", "currentAttribute", arguments, locale);
+        return crudController.prepareView(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.VIEW_CURRENT_ATTRIBUTE,
+                arguments, locale);
     }
 
     @RequestMapping(value = "genealogiesForComponents/genealogyForComponent.pdf", method = RequestMethod.GET)

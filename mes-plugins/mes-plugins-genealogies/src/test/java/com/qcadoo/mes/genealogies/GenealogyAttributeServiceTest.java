@@ -51,8 +51,9 @@ public class GenealogyAttributeServiceTest {
         entities.add(new DefaultEntity(null, 14L));
 
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
-        given(dataDefinitionService.get("genealogies", "currentAttribute").find().setMaxResults(1).list().getEntities())
-                .willReturn(entities);
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
+                        .find().setMaxResults(1).list().getEntities()).willReturn(entities);
 
         GenealogyAttributeService genealogyAttributeService = new GenealogyAttributeService();
         setField(genealogyAttributeService, "dataDefinitionService", dataDefinitionService);
@@ -70,7 +71,8 @@ public class GenealogyAttributeServiceTest {
         Entity newEntity = mock(Entity.class);
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(dataDefinitionService.get("genealogies", "currentAttribute")).willReturn(dataDefinition);
+        given(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE))
+                .willReturn(dataDefinition);
         given(dataDefinition.create()).willReturn(newEntity);
 
         Entity savedEntity = new DefaultEntity(dataDefinition, 15L);
@@ -85,7 +87,8 @@ public class GenealogyAttributeServiceTest {
         Long id = genealogyAttributeService.getGenealogyAttributeId();
 
         // then
-        verify(dataDefinitionService.get("genealogies", "currentAttribute")).save(newEntity);
+        verify(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE))
+                .save(newEntity);
         verify(newEntity).setField("shift", "");
         verify(newEntity).setField("post", "");
         verify(newEntity).setField("other", "");

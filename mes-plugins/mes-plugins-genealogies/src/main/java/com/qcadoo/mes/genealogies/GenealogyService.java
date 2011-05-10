@@ -24,14 +24,12 @@
 
 package com.qcadoo.mes.genealogies;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.mes.orders.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
@@ -77,7 +75,7 @@ public final class GenealogyService {
         ComponentState otherList = state.getComponentByReference("otherBorderLayout");
         FieldComponent otherFeaturesList = (FieldComponent) state.getComponentByReference("otherFeaturesList");
 
-        Entity order = dataDefinitionService.get("orders", "order").get(
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 Long.valueOf(form.getEntity().getField("order").toString()));
         Entity technology = order.getBelongsToField("technology");
 
@@ -112,65 +110,7 @@ public final class GenealogyService {
         }
     }
 
-    public void fillProductInComponents(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference("form");
-        ComponentState productGridLayout = state.getComponentByReference("productGridLayout");
-        FieldComponent productInComponentsList = (FieldComponent) state.getComponentByReference("productInComponentsList");
-
-        if (form.isValid()) {
-            Entity genealogy = null;
-            List<Entity> existingProductInComponents = Collections.emptyList();
-
-            if (form.getEntityId() != null) {
-                genealogy = dataDefinitionService.get("genealogies", "genealogy").get(form.getEntityId());
-                existingProductInComponents = genealogy.getHasManyField("productInComponents");
-            }
-
-            Entity order = dataDefinitionService.get("orders", "order").get(
-                    Long.valueOf(form.getEntity().getField("order").toString()));
-            Entity technology = order.getBelongsToField("technology");
-
-            if (technology != null) {
-                List<Entity> targetProductInComponents = new ArrayList<Entity>();
-
-                List<Entity> operationComponents = new ArrayList<Entity>();
-                addOperationsFromSubtechnologiesToList(technology.getTreeField("operationComponents"), operationComponents);
-                for (Entity operationComponent : operationComponents) {
-                    for (Entity operationProductInComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                        if ((Boolean) operationProductInComponent.getField("batchRequired")) {
-                            targetProductInComponents.add(createGenealogyProductInComponent(genealogy,
-                                    operationProductInComponent, existingProductInComponents));
-                        }
-                    }
-                }
-
-                if (targetProductInComponents.isEmpty()) {
-                    productGridLayout.setVisible(false);
-                } else {
-                    productInComponentsList.setFieldValue(targetProductInComponents);
-                }
-            } else {
-                productGridLayout.setVisible(false);
-            }
-        }
-    }
-
-    private Entity createGenealogyProductInComponent(final Entity genealogy, final Entity operationProductInComponent,
-            final List<Entity> existingProductInComponents) {
-        for (Entity e : existingProductInComponents) {
-            if (e.getBelongsToField("productInComponent").getId().equals(operationProductInComponent.getId())) {
-                return e;
-            }
-        }
-        Entity genealogyProductInComponent = dataDefinitionService.get("genealogiesForComponents", "genealogyProductInComponent")
-                .create();
-        genealogyProductInComponent.setField("genealogy", genealogy);
-        genealogyProductInComponent.setField("productInComponent", operationProductInComponent);
-        genealogyProductInComponent.setField("batch", new ArrayList<Entity>());
-        return genealogyProductInComponent;
-    }
-
-    void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {
+    public void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {
         for (Entity operationComponent : entityTree) {
             if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
                 operationComponents.add(operationComponent);
@@ -178,18 +118,6 @@ public final class GenealogyService {
                 addOperationsFromSubtechnologiesToList(
                         operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents"),
                         operationComponents);
-            }
-        }
-    }
-
-    public void fillBatchRequiredForTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getField("batchRequired") != null && (Boolean) entity.getField("batchRequired")) {
-            Entity technology = entity.getBelongsToField("operationComponent").getBelongsToField("technology");
-            DataDefinition technologyInDef = dataDefinitionService.get("technologies", "technology");
-            Entity technologyEntity = technologyInDef.get(technology.getId());
-            if (!(Boolean) technologyEntity.getField("batchRequired")) {
-                technologyEntity.setField("batchRequired", true);
-                technologyInDef.save(technologyEntity);
             }
         }
     }

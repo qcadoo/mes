@@ -53,7 +53,8 @@ public class WorkPlanController {
 
     @RequestMapping(value = "workPlans/workPlanForWorker.pdf", method = RequestMethod.GET)
     public void workPlanForWorkerPdf(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
-        DataDefinition dataDefinition = dataDefinitionService.get("workPlans", "workPlan");
+        DataDefinition dataDefinition = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_WORK_PLAN);
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
         ReportUtil.sentTranslatedFileName(workPlan, translationService.translate("workPlans.workPlan.report.fileName", locale),
                 translationService.translate("workPlans.workPlan.report.fileName.suffix.forWorker", locale),
@@ -64,7 +65,8 @@ public class WorkPlanController {
 
     @RequestMapping(value = "workPlans/workPlanForProduct.pdf", method = RequestMethod.GET)
     public void workPlanForProductPdf(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
-        DataDefinition dataDefinition = dataDefinitionService.get("workPlans", "workPlan");
+        DataDefinition dataDefinition = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_WORK_PLAN);
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
         ReportUtil.sentTranslatedFileName(workPlan, translationService.translate("workPlans.workPlan.report.fileName", locale),
                 translationService.translate("workPlans.workPlan.report.fileName.suffix.forProduct", locale),
@@ -75,7 +77,8 @@ public class WorkPlanController {
 
     @RequestMapping(value = "workPlans/workPlanForMachine.pdf", method = RequestMethod.GET)
     public void workPlanForMachinePdf(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
-        DataDefinition dataDefinition = dataDefinitionService.get("workPlans", "workPlan");
+        DataDefinition dataDefinition = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_WORK_PLAN);
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
         ReportUtil.sentTranslatedFileName(workPlan, translationService.translate("workPlans.workPlan.report.fileName", locale),
                 translationService.translate("workPlans.workPlan.report.fileName.suffix.forMachine", locale),
@@ -86,7 +89,8 @@ public class WorkPlanController {
 
     @RequestMapping(value = "workPlans/workPlanForWorker.xls", method = RequestMethod.GET)
     public void workPlanForWorkerXls(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
-        DataDefinition dataDefinition = dataDefinitionService.get("workPlans", "workPlan");
+        DataDefinition dataDefinition = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_WORK_PLAN);
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
         ReportUtil.sentTranslatedFileName(workPlan, translationService.translate("workPlans.workPlan.report.fileName", locale),
                 translationService.translate("workPlans.workPlan.report.fileName.suffix.forWorker", locale),
@@ -97,7 +101,8 @@ public class WorkPlanController {
 
     @RequestMapping(value = "workPlans/workPlanForProduct.xls", method = RequestMethod.GET)
     public void workPlanForProductXls(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
-        DataDefinition dataDefinition = dataDefinitionService.get("workPlans", "workPlan");
+        DataDefinition dataDefinition = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_WORK_PLAN);
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
         ReportUtil.sentTranslatedFileName(workPlan, translationService.translate("workPlans.workPlan.report.fileName", locale),
                 translationService.translate("workPlans.workPlan.report.fileName.suffix.forProduct", locale),
@@ -108,7 +113,8 @@ public class WorkPlanController {
 
     @RequestMapping(value = "workPlans/workPlanForMachine.xls", method = RequestMethod.GET)
     public void workPlanForMachineXls(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
-        DataDefinition dataDefinition = dataDefinitionService.get("workPlans", "workPlan");
+        DataDefinition dataDefinition = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_WORK_PLAN);
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
         ReportUtil.sentTranslatedFileName(workPlan, translationService.translate("workPlans.workPlan.report.fileName", locale),
                 translationService.translate("workPlans.workPlan.report.fileName.suffix.forMachine", locale),

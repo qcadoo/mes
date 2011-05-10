@@ -41,7 +41,8 @@ public class GenealogyAttributeService {
     private DataDefinitionService dataDefinitionService;
 
     public Long getGenealogyAttributeId() {
-        DataDefinition dataDefinition = dataDefinitionService.get("genealogies", "currentAttribute");
+        DataDefinition dataDefinition = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
+                GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE);
 
         SearchResult searchResult = dataDefinition.find().setMaxResults(1).list();
 

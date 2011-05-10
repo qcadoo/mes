@@ -46,7 +46,9 @@ public class BasicControllerTest {
         Map<String, String> arguments = ImmutableMap.of("context", "{\"form.id\":\"13\"}");
         ModelAndView expectedMav = mock(ModelAndView.class);
         CrudService crudController = mock(CrudService.class);
-        given(crudController.prepareView("basic", "parameters", arguments, Locale.ENGLISH)).willReturn(expectedMav);
+        given(
+                crudController.prepareView(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.VIEW_PARAMETERS, arguments,
+                        Locale.ENGLISH)).willReturn(expectedMav);
 
         ParameterService parameterService = mock(ParameterService.class);
         given(parameterService.getParameterId()).willReturn(13L);

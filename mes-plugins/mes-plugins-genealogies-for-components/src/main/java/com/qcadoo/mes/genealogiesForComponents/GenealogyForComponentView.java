@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.genealogies.print;
+package com.qcadoo.mes.genealogiesForComponents;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,8 +59,8 @@ public class GenealogyForComponentView extends ReportPdfView {
     @Override
     protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
-        Entity entity = dataDefinitionService.get("genealogiesForComponents", "productInBatch").get(
-                Long.valueOf(model.get("value").toString()));
+        Entity entity = dataDefinitionService.get(GenealogiesForComponentsConstants.PLUGIN_IDENTIFIER,
+                GenealogiesForComponentsConstants.MODEL_PRODUCT_IN_BATCH).get(Long.valueOf(model.get("value").toString()));
         String documentTitle = getTranslationService().translate("genealogiesForComponents.genealogyForComponent.report.title",
                 locale);
         String documentAuthor = getTranslationService().translate("genealogiesForComponents.genealogyForComponent.report.author",
@@ -130,7 +130,9 @@ public class GenealogyForComponentView extends ReportPdfView {
 
     private List<Entity> getGenealogies(final Entity entity) {
         List<Entity> genealogies = new ArrayList<Entity>();
-        List<Entity> batchList = dataDefinitionService.get("genealogiesForComponents", "productInBatch").find()
+        List<Entity> batchList = dataDefinitionService
+                .get(GenealogiesForComponentsConstants.PLUGIN_IDENTIFIER,
+                        GenealogiesForComponentsConstants.MODEL_PRODUCT_IN_BATCH).find()
                 .addRestriction(Restrictions.eq("batch", entity.getField("batch"))).list().getEntities();
         for (Entity batch : batchList) {
             Entity genealogy = ((Entity) ((Entity) batch.getField("productInComponent")).getField("genealogy"));

@@ -42,7 +42,7 @@ public class OrderController {
 
     @RequestMapping(value = "orders/order.pdf", method = RequestMethod.GET)
     public ModelAndView orderPdf(@RequestParam("id") final String id) {
-        DataDefinition dataDefinition = dataDefinitionService.get("orders", "order");
+        DataDefinition dataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
         ModelAndView mav = new ModelAndView();
         mav.setViewName("orderPdfView");
         mav.addObject("value", dataDefinition.get(Long.parseLong(id)));

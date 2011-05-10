@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.BasicConstants;
 import com.qcadoo.mes.technologies.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -79,7 +80,8 @@ public final class OrderService {
 
     public void printOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state.getFieldValue() instanceof Long) {
-            Entity order = dataDefinitionService.get("orders", "order").get((Long) state.getFieldValue());
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                    (Long) state.getFieldValue());
             if (order == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
@@ -120,7 +122,8 @@ public final class OrderService {
         FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference("name");
 
         if (!StringUtils.hasText((String) name.getFieldValue())) {
-            Entity entity = dataDefinitionService.get("basic", "product").get((Long) product.getFieldValue());
+            Entity entity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                    (Long) product.getFieldValue());
             name.setFieldValue(translationService.translate("orders.order.name.default", state.getLocale(),
                     entity.getStringField("number")));
         }
@@ -164,7 +167,8 @@ public final class OrderService {
         if (state.getFieldValue() != null) {
 
             // TODO mady
-            DataDefinition orderDataDefinition = dataDefinitionService.get("orders", "order");
+            DataDefinition orderDataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
+                    OrdersConstants.MODEL_ORDER);
             Entity order = orderDataDefinition.get((Long) state.getFieldValue());
 
             if (state instanceof FormComponent) {
@@ -231,6 +235,7 @@ public final class OrderService {
         }
     }
 
+    // TODO mina move
     private boolean checkIfAllQualityControlsAreClosed(final Entity order) {
 
         Object controlTypeField = order.getBelongsToField("technology").getField("qualityControlType");
@@ -257,7 +262,8 @@ public final class OrderService {
     }
 
     private boolean isQualityControlAutoCheckEnabled() {
-        SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list();
+        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
+                .find().setMaxResults(1).list();
 
         Entity parameter = null;
         if (searchResult.getEntities().size() > 0) {
@@ -272,7 +278,8 @@ public final class OrderService {
     }
 
     public void generateOrderNumber(final ViewDefinitionState state) {
-        numberGeneratorService.generateAndInsertNumber(state, "orders", "order", "form", "number");
+        numberGeneratorService.generateAndInsertNumber(state, OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER,
+                "form", "number");
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState state) {
@@ -315,7 +322,8 @@ public final class OrderService {
         boolean disabled = false;
 
         if (order.getEntityId() != null) {
-            Entity entity = dataDefinitionService.get("orders", "order").get(order.getEntityId());
+            Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                    order.getEntityId());
 
             if (entity != null && "03done".equals(entity.getStringField("state")) && order.isValid()) {
                 disabled = true;
@@ -402,7 +410,8 @@ public final class OrderService {
     }
 
     private Entity getDefaultTechnology(final Long selectedProductId) {
-        DataDefinition instructionDD = dataDefinitionService.get("technologies", "technology");
+        DataDefinition instructionDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
 
         SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1)
                 .addRestriction(Restrictions.eq(instructionDD.getField("master"), true))
@@ -418,7 +427,8 @@ public final class OrderService {
     }
 
     private boolean hasAnyTechnologies(final Long selectedProductId) {
-        DataDefinition technologyDD = dataDefinitionService.get("technologies", "technology");
+        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
 
         SearchCriteriaBuilder searchCriteria = technologyDD.find().setMaxResults(1)
                 .addRestriction(Restrictions.belongsTo(technologyDD.getField("product"), selectedProductId));
@@ -446,7 +456,8 @@ public final class OrderService {
     }
 
     public boolean checkAutogenealogyRequired() {
-        SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list();
+        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
+                .find().setMaxResults(1).list();
         Entity parameter = null;
         if (searchResult.getEntities().size() > 0) {
             parameter = searchResult.getEntities().get(0);

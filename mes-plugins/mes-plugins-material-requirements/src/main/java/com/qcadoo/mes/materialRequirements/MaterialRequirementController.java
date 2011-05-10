@@ -54,7 +54,8 @@ public class MaterialRequirementController {
     @RequestMapping(value = "materialRequirements/materialRequirement.pdf", method = RequestMethod.GET)
     public void materialRequirementPdf(@RequestParam("id") final String id, final HttpServletResponse response,
             final Locale locale) {
-        DataDefinition dataDefinition = dataDefinitionService.get("materialRequirements", "materialRequirement");
+        DataDefinition dataDefinition = dataDefinitionService.get(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
+                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT);
         Entity materialRequirement = dataDefinition.get(Long.parseLong(id));
         ReportUtil.sentTranslatedFileName(materialRequirement,
                 translationService.translate("materialRequirements.materialRequirement.report.fileName", locale), "",
@@ -66,7 +67,8 @@ public class MaterialRequirementController {
     @RequestMapping(value = "materialRequirements/materialRequirement.xls", method = RequestMethod.GET)
     public void materialRequirementXls(@RequestParam("id") final String id, final HttpServletResponse response,
             final Locale locale) {
-        DataDefinition dataDefinition = dataDefinitionService.get("materialRequirements", "materialRequirement");
+        DataDefinition dataDefinition = dataDefinitionService.get(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
+                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT);
         Entity materialRequirement = dataDefinition.get(Long.parseLong(id));
         ReportUtil.sentTranslatedFileName(materialRequirement,
                 translationService.translate("materialRequirements.materialRequirement.report.fileName", locale), "",

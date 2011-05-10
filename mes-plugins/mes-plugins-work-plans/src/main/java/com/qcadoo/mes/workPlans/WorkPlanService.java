@@ -37,6 +37,7 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.util.OrderReportService;
+import com.qcadoo.mes.orders.util.OrderReportService.OrderValidator;
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.mes.workPlans.print.pdf.WorkPlanForMachinePdfService;
 import com.qcadoo.mes.workPlans.print.pdf.WorkPlanForProductPdfService;
@@ -52,9 +53,9 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public final class WorkPlanService {
@@ -109,7 +110,8 @@ public final class WorkPlanService {
             ComponentState date = viewDefinitionState.getComponentByReference("date");
             ComponentState worker = viewDefinitionState.getComponentByReference("worker");
 
-            Entity workPlan = dataDefinitionService.get("workPlans", "workPlan").get((Long) state.getFieldValue());
+            Entity workPlan = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_WORK_PLAN)
+                    .get((Long) state.getFieldValue());
 
             if (workPlan == null) {
                 String message = translationService.translate("core.message.entityNotFound", state.getLocale());
@@ -142,7 +144,8 @@ public final class WorkPlanService {
                 return;
             }
 
-            workPlan = dataDefinitionService.get("workPlans", "workPlan").get((Long) state.getFieldValue());
+            workPlan = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_WORK_PLAN).get(
+                    (Long) state.getFieldValue());
 
             try {
                 generateWorkPlanDocuments(state, workPlan);
@@ -156,17 +159,20 @@ public final class WorkPlanService {
     }
 
     public void setGenerateButtonState(final ViewDefinitionState state) {
-        ribbonReportService.setGenerateButtonState(state, state.getLocale(), "workPlans", "workPlan");
+        ribbonReportService.setGenerateButtonState(state, state.getLocale(), WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_WORK_PLAN);
     }
 
     public void setGridGenerateButtonState(final ViewDefinitionState state) {
-        ribbonReportService.setGridGenerateButtonState(state, state.getLocale(), "workPlans", "workPlan");
+        ribbonReportService.setGridGenerateButtonState(state, state.getLocale(), WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_WORK_PLAN);
     }
 
     public void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
 
         if (state.getFieldValue() instanceof Long) {
-            Entity workPlan = dataDefinitionService.get("workPlans", "workPlan").get((Long) state.getFieldValue());
+            Entity workPlan = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_WORK_PLAN)
+                    .get((Long) state.getFieldValue());
             if (workPlan == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
@@ -224,7 +230,7 @@ public final class WorkPlanService {
 
     public void printWorkPlanForOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        Entity workPlan = orderReportService.printWorkPlanForOrder(state);
+        Entity workPlan = printWorkPlanForOrder(state);
         if (workPlan == null) {
             return;
         }
@@ -243,7 +249,7 @@ public final class WorkPlanService {
     private void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException,
             DocumentException {
         Entity workPlanWithFileName = updateFileName(workPlan, getFullFileName((Date) workPlan.getField("date"), "Work_plan"),
-                "workPlan");
+                WorkPlansConstants.MODEL_WORK_PLAN);
         workPlanForMachinePdfService.generateDocument(workPlanWithFileName, state.getLocale());
         workPlanForMachineXlsService.generateDocument(workPlanWithFileName, state.getLocale());
         workPlanForWorkerPdfService.generateDocument(workPlanWithFileName, state.getLocale());
@@ -258,7 +264,31 @@ public final class WorkPlanService {
 
     private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
         entity.setField("fileName", fileName);
-        return dataDefinitionService.get("workPlans", entityName).save(entity);
+        return dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, entityName).save(entity);
+    }
+
+    public Entity printWorkPlanForOrder(final ComponentState state) {
+
+        OrderValidator orderValidator = new OrderValidator() {
+
+            @Override
+            public String validateOrder(final Entity order) {
+                if (order.getField("technology") == null) {
+                    return order.getField("number")
+                            + ": "
+                            + translationService.translate("orders.validate.global.error.orderMustHaveTechnology",
+                                    state.getLocale());
+                } else if (order.getBelongsToField("technology").getTreeField("operationComponents").isEmpty()) {
+                    return order.getField("number")
+                            + ": "
+                            + translationService.translate("orders.validate.global.error.orderTechnologyMustHaveOperation",
+                                    state.getLocale());
+                }
+                return null;
+            }
+        };
+
+        return orderReportService.printForOrder(state, "workPlans", "workPlan", "workPlanComponent", null, orderValidator);
     }
 
 }
