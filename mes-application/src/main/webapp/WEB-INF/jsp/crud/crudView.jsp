@@ -121,47 +121,46 @@
 	<script type="text/javascript">
 	<!--//--><![CDATA[//><!--
 
-		var viewName = "${viewName}";
-		var pluginIdentifier = "${pluginIdentifier}";
-		var context = '${context}';
-		var locale = '${locale}';
+	var viewName = "${viewName}";
+	var pluginIdentifier = "${pluginIdentifier}";
+	var context = '${context}';
+	var locale = '${locale}';
 
-		var hasDataDefinition = ${model['hasDataDefinition']};
+	var hasDataDefinition = ${model['hasDataDefinition']};
 
-		var popup = ${popup};
+	var popup = ${popup};
 
-		var controller = null;
+	var controller = null;
 
-		window.init = function(serializationObject) {
-			controller.init(serializationObject);
+	window.init = function(serializationObject) {
+		controller.init(serializationObject);
+	}
+
+	window.canClose = function() {
+		return controller.canClose();
+	}
+
+	window.getComponent = function(componentPath) {
+		return controller.getComponent(componentPath);
+	}
+
+	window.onPopupInit = function() {
+		return controller.onPopupInit();
+	}
+
+	jQuery(document).ready(function(){
+		controller = new QCD.PageController();
+		controller.constructor(viewName, pluginIdentifier, hasDataDefinition, popup);
+		context = $.trim(context);
+		if (context && context != "") {
+			controller.setContext(context);
+		}
+		if (popup && window.opener) {
+			window.opener.onPopupInit();
 		}
 
-		window.canClose = function() {
-			return controller.canClose();
-		}
-
-		window.getComponent = function(componentPath) {
-			return controller.getComponent(componentPath);
-		}
-
-		window.onPopupInit = function() {
-			return controller.onPopupInit();
-		}
-
-		jQuery(document).ready(function(){
-			
-			controller = new QCD.PageController(viewName, pluginIdentifier, hasDataDefinition, popup);
-			
-			context = $.trim(context);
-			if (context && context != "") {
-				controller.setContext(context);
-			}
-			if (popup && window.opener) {
-				window.opener.onPopupInit();
-			}
-
-			window.mainController = controller;
-		});
+		window.mainController = controller;
+	});
 
 	//--><!]]>
 	</script>
