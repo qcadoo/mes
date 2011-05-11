@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -21,6 +20,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
@@ -35,7 +35,7 @@ public class MaterialRequirementReportDataServiceTest {
 
     private final Entity technologyForQuantityPerTechnologyAlghorithm = new DefaultEntity(dataDefinition);
 
-    private final EntityTree entityTree = new EntityTreeImpl(dataDefinition, "technology", new Long(1));
+    private EntityTree entityTree = null;
 
     private final List<Entity> products1 = new ArrayList<Entity>();
 
@@ -57,6 +57,24 @@ public class MaterialRequirementReportDataServiceTest {
     public void init() {
         materialRequirementsReportDataService = new MaterialRequirementReportDataService();
         ReflectionTestUtils.setField(materialRequirementsReportDataService, "reportDataService", reportDataService);
+
+        FieldDefinition operationProductInCompoentFieldDefinition = mock(FieldDefinition.class);
+        given(operationProductInCompoentFieldDefinition.getName()).willReturn("operationProductInComponent");
+        given(dataDefinition.getField("operationProductInComponent")).willReturn(operationProductInCompoentFieldDefinition);
+
+        FieldDefinition operationProductOutCompoentFieldDefinition = mock(FieldDefinition.class);
+        given(operationProductOutCompoentFieldDefinition.getName()).willReturn("operationProductOutComponent");
+        given(dataDefinition.getField("operationProductOutComponent")).willReturn(operationProductOutCompoentFieldDefinition);
+
+        FieldDefinition technologyFieldDefinition = mock(FieldDefinition.class);
+        given(technologyFieldDefinition.getName()).willReturn("technology");
+        given(dataDefinition.getField("technology")).willReturn(technologyFieldDefinition);
+
+        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
+        given(fieldDefinition.getName()).willReturn("joinField");
+        given(dataDefinition.getField("joinField")).willReturn(fieldDefinition);
+
+        entityTree = new EntityTreeImpl(dataDefinition, "technology", new Long(1));
 
         EntityTree entityTreeSubTechnology = new EntityTreeImpl(dataDefinition, "technology", new Long(2));
         EntityList componentsList1 = new EntityListImpl(dataDefinition, "operationProductInComponent", new Long(1));
@@ -222,10 +240,12 @@ public class MaterialRequirementReportDataServiceTest {
     }
 
     @Test
-    @Ignore
-    // TODO masz
     public void shouldReturnNotEmptyMapIfQuantityIsMoreThenZero() {
         // given
+        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
+        given(fieldDefinition.getName()).willReturn("materialRequirement");
+        given(dataDefinition.getField("materialRequirement")).willReturn(fieldDefinition);
+
         Entity materialRequirement = new DefaultEntity(dataDefinition);
         materialRequirement.setField("onlyComponents", false);
         materialRequirement.setId(new Long(15));
@@ -239,18 +259,18 @@ public class MaterialRequirementReportDataServiceTest {
         List<Entity> components = new ArrayList<Entity>();
         components.add(materialRequirementComponent);
 
-        given(dataDefinition.find().belongsTo("orders", new Long(15)).list().getEntities()).willReturn(components);
+        given(dataDefinition.find().belongsTo("materialRequirement", new Long(15)).list().getEntities()).willReturn(components);
 
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeList);
         given(dataDefinition.find().belongsTo("technology", new Long(2)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products1);
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products2);
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products3);
 
         // when

@@ -59,6 +59,7 @@ public class GenealogiesForComponentsService {
 
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     Long.valueOf(form.getEntity().getField("order").toString()));
+
             Entity technology = order.getBelongsToField("technology");
 
             if (technology != null) {
@@ -67,6 +68,7 @@ public class GenealogiesForComponentsService {
                 List<Entity> operationComponents = new ArrayList<Entity>();
                 genealogyService.addOperationsFromSubtechnologiesToList(technology.getTreeField("operationComponents"),
                         operationComponents);
+
                 for (Entity operationComponent : operationComponents) {
                     for (Entity operationProductInComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                         if ((Boolean) operationProductInComponent.getField("batchRequired")) {
