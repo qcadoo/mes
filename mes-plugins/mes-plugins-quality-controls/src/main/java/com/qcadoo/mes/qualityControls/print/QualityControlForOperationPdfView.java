@@ -122,8 +122,11 @@ public class QualityControlForOperationPdfView extends ReportPdfView {
 
         List<String> productHeader = new ArrayList<String>();
         productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.control.number", locale));
-        productHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForOperation.window.qualityControlForOperation.controlResult.label", locale));
+        productHeader
+                .add(getTranslationService()
+                        .translate(
+                                "qualityControlsForOperation.qualityControlForOperationDetails.window.mainTab.qualityControlForOperation.controlResult.label",
+                                locale));
         PdfPTable table = PdfUtil.createTableWithHeader(2, productHeader, false);
         List<Entity> sortedOrders = entry.getValue();
         Collections.sort(sortedOrders, new EntityNumberComparator());

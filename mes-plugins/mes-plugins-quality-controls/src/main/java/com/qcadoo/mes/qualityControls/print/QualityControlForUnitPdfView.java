@@ -95,11 +95,16 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
         List<String> qualityHeader = new ArrayList<String>();
         qualityHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.product.number", locale));
         qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForUnit.window.qualityControlForUnit.controlledQuantity.label", locale));
+                "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.controlledQuantity.label",
+                locale));
         qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForUnit.window.qualityControlForUnit.rejectedQuantity.label", locale));
-        qualityHeader.add(getTranslationService().translate(
-                "qualityControls.qualityControlForUnit.window.qualityControlForUnit.acceptedDefectsQuantity.label", locale));
+                "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.rejectedQuantity.label",
+                locale));
+        qualityHeader
+                .add(getTranslationService()
+                        .translate(
+                                "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.acceptedDefectsQuantity.label",
+                                locale));
         PdfPTable table = PdfUtil.createTableWithHeader(4, qualityHeader, false);
 
         for (Entry<Entity, List<BigDecimal>> entry : quantities.entrySet()) {

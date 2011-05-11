@@ -64,11 +64,11 @@ public class QualityControlForOrderXlsView extends ReportXlsView {
         cell0.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell1 = header.createCell(1);
         cell1.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlsForOrder.window.qualityControlsForOrder.column.number", locale));
+                "qualityControls.qualityControlForOrderDetails.window.mainTab.qualityControlForOrder.number.label", locale));
         cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell2 = header.createCell(2);
         cell2.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlForOrder.window.qualityControlForOrder.controlResult.label", locale));
+                "qualityControls.qualityControlForOrderDetails.window.qualityControlForOrder.controlResult.label", locale));
         cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
     }
 

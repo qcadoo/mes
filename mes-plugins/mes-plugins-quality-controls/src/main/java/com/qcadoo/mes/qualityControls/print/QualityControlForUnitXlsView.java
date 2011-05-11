@@ -66,19 +66,23 @@ public class QualityControlForUnitXlsView extends ReportXlsView {
         cell0.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell1 = header.createCell(1);
         cell1.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlForUnit.window.qualityControlForUnit.number.label", locale));
+                "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.number.label", locale));
         cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell2 = header.createCell(2);
         cell2.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlForUnit.window.qualityControlForUnit.controlledQuantity.label", locale));
+                "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.controlledQuantity.label",
+                locale));
         cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell3 = header.createCell(3);
         cell3.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlForUnit.window.qualityControlForUnit.rejectedQuantity.label", locale));
+                "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.rejectedQuantity.label",
+                locale));
         cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell4 = header.createCell(4);
-        cell4.setCellValue(getTranslationService().translate(
-                "qualityControls.qualityControlForUnit.window.qualityControlForUnit.acceptedDefectsQuantity.label", locale));
+        cell4.setCellValue(getTranslationService()
+                .translate(
+                        "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.acceptedDefectsQuantity.label",
+                        locale));
         cell4.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
     }
 
