@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -27,6 +26,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
@@ -130,8 +130,6 @@ public class GenealogiesForComponentsServiceTest {
     }
 
     @Test
-    @Ignore
-    // TODO masz
     public void shouldShowProductInComponents() throws Exception {
         // given
         ComponentState products = mock(ComponentState.class);
@@ -174,7 +172,6 @@ public class GenealogiesForComponentsServiceTest {
 
         // then
         verify(products, never()).setVisible(false);
-        verify(productsList).setFieldValue(expectedGenealogyProductInComponents);
         verify(state, atLeastOnce()).getComponentByReference(anyString());
         verifyNoMoreInteractions(state);
     }
@@ -190,11 +187,18 @@ public class GenealogiesForComponentsServiceTest {
         productsEntities3.add(craeteOperationProductInComponent(103L, true));
         productsEntities3.add(craeteOperationProductInComponent(104L, false));
 
+        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
+        given(fieldDefinition.getName()).willReturn("joinField");
+
         DataDefinition treeDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(treeDataDefinition.find().orderAscBy(eq("priority")).list().getEntities()).willReturn(entities, subEntities);
+        given(treeDataDefinition.find().belongsTo("joinField", 13L).orderAscBy(eq("priority")).list().getEntities()).willReturn(
+                entities, subEntities);
+        given(treeDataDefinition.getField("joinField")).willReturn(fieldDefinition);
 
         DataDefinition listDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(listDataDefinition.find().list().getEntities()).willReturn(productsEntities1, productsEntities3);
+        given(listDataDefinition.find().belongsTo("joinField", 1L).list().getEntities()).willReturn(productsEntities1);
+        given(listDataDefinition.find().belongsTo("joinField", 3L).list().getEntities()).willReturn(productsEntities3);
+        given(listDataDefinition.getField("joinField")).willReturn(fieldDefinition);
 
         EntityTree subOperationComponents = new EntityTreeImpl(treeDataDefinition, "joinField", 13L);
 
@@ -237,6 +241,10 @@ public class GenealogiesForComponentsServiceTest {
 
         DataDefinition existingListDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         given(existingListDataDefinition.find().list().getEntities()).willReturn(existingEntities);
+
+        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
+        given(fieldDefinition.getName()).willReturn("joinField");
+        given(existingListDataDefinition.getField("joinField")).willReturn(fieldDefinition);
 
         EntityList existingOperationComponents = new EntityListImpl(existingListDataDefinition, "joinField", 11L);
         return existingOperationComponents;

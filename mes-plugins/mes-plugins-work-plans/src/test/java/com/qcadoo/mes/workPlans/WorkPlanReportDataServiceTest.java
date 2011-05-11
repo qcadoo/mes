@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -19,6 +18,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
@@ -35,12 +35,18 @@ public class WorkPlanReportDataServiceTest {
 
     private final List<Entity> entityTreeListWithoutTechnology = new ArrayList<Entity>();
 
-    private final EntityTree entityTree = new EntityTreeImpl(dataDefinition, "technology", new Long(1));
+    private EntityTree entityTree = null;
 
     @Before
     public void init() {
         workPlanReportDataService = new WorkPlanReportDataService();
         ReflectionTestUtils.setField(workPlanReportDataService, "reportDataService", reportDataService);
+
+        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
+        given(fieldDefinition.getName()).willReturn("technology");
+        given(dataDefinition.getField("technology")).willReturn(fieldDefinition);
+
+        entityTree = new EntityTreeImpl(dataDefinition, "technology", new Long(1));
 
         EntityTree entityTreeSubTechnology = new EntityTreeImpl(dataDefinition, "technology", new Long(2));
         EntityList componentsList1 = new EntityListImpl(dataDefinition, "operationProductInComponent", new Long(1));
@@ -110,8 +116,6 @@ public class WorkPlanReportDataServiceTest {
     }
 
     @Test
-    @Ignore
-    // TODO masz
     public void shouldReturnValidList() {
         // given
         List<Entity> operationComponents = new ArrayList<Entity>();
