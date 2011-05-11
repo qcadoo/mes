@@ -51,7 +51,7 @@ import com.qcadoo.model.internal.EntityTreeImpl;
 import com.qcadoo.report.api.Pair;
 
 @Ignore
-// TODO krna
+// TODO krna fix tests after criteria api refactoring
 public class ReportDataServiceTest {
 
     private ReportDataService reportDataService = null;
