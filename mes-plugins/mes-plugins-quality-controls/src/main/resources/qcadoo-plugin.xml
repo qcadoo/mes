@@ -87,14 +87,14 @@
 			method="changeQualityControlType" />
 
 		<view:view-listener plugin="orders"
-			view="ordersList" component="grid" event="activateOrder"
+			view="ordersList" component="grid" event="changeOrderStateForGrid"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
 		<view:view-listener plugin="orders"
 			view="ordersList" component="grid" event="generateQualityControl"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
 
 		<view:view-listener plugin="orders"
-			view="orderDetails" component="form" event="activateOrder"
+			view="orderDetails" component="form" event="changeOrderStateForForm"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
 		<view:view-listener plugin="orders"
 			view="orderDetails" component="form" event="generateQualityControl"
