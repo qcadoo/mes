@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.qcadoo.model.api.DataDefinition;
@@ -50,8 +49,6 @@ import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
 import com.qcadoo.report.api.Pair;
 
-@Ignore
-// TODO krna fix tests after criteria api refactoring
 public class ReportDataServiceTest {
 
     private ReportDataService reportDataService = null;
@@ -112,15 +109,31 @@ public class ReportDataServiceTest {
 
     private final List<Entity> componentsOutProducts2 = new ArrayList<Entity>();
 
+    private final FieldDefinition fieldDefinition = mock(FieldDefinition.class);
+
+    private final FieldDefinition fieldDefinition1 = mock(FieldDefinition.class);
+
+    private final FieldDefinition fieldDefinition2 = mock(FieldDefinition.class);
+
+    private final FieldDefinition fieldDefinition3 = mock(FieldDefinition.class);
+
     @Before
     public void init() {
-        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
+        reportDataService = new ReportDataService();
+
         given(fieldDefinition.getName()).willReturn("technology");
         given(dataDefinition.getField("technology")).willReturn(fieldDefinition);
 
-        entityTree = new EntityTreeImpl(dataDefinition, "technology", new Long(1));
+        given(fieldDefinition1.getName()).willReturn("operationProductInComponent");
+        given(dataDefinition.getField("operationProductInComponent")).willReturn(fieldDefinition1);
 
-        reportDataService = new ReportDataService();
+        given(fieldDefinition2.getName()).willReturn("operationProductOutComponent");
+        given(dataDefinition.getField("operationProductOutComponent")).willReturn(fieldDefinition2);
+
+        given(fieldDefinition3.getName()).willReturn("workPlan");
+        given(dataDefinition.getField("workPlan")).willReturn(fieldDefinition3);
+
+        entityTree = new EntityTreeImpl(dataDefinition, "technology", new Long(1));
 
         EntityTree entityTreeSubTechnology = new EntityTreeImpl(dataDefinition, "technology", new Long(2));
         EntityList componentsList1 = new EntityListImpl(dataDefinition, "operationProductInComponent", new Long(1));
@@ -303,11 +316,11 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(2)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products1);
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products2);
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products3);
 
         // when
@@ -331,11 +344,11 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(2)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products1);
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products2);
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products3);
 
         // when
@@ -370,7 +383,7 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 new ArrayList<Entity>());
 
         // when
@@ -388,10 +401,10 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products1);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products3);
 
         // when
@@ -409,10 +422,10 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products1);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products2);
 
         // when
@@ -430,16 +443,16 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products1);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products4);
 
         // when
@@ -459,22 +472,22 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products2);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products6);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when
@@ -496,22 +509,22 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products2);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when
@@ -536,22 +549,22 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products2);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products6);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when
@@ -577,22 +590,22 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(2)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products9);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products6);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when
@@ -618,22 +631,22 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(2)).orderAscBy("priority").list().getEntities()).willReturn(
                 new ArrayList<Entity>());
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products9);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products6);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when
@@ -676,22 +689,22 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products2);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 new ArrayList<Entity>());
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when
@@ -728,18 +741,18 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnNotEmptyMapIfTechnologyIsNotEmptyForWorkPlan() {
         // given
-        given(dataDefinition.find().belongsTo("orders", new Long(15)).list().getEntities()).willReturn(components);
+        given(dataDefinition.find().belongsTo("workPlan", new Long(15)).list().getEntities()).willReturn(components);
 
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeList);
         given(dataDefinition.find().belongsTo("technology", new Long(2)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products1);
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products2);
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products3);
 
         // when
@@ -753,28 +766,28 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnValidMapPerTechnologyAlgorithmForWorkPlanPerProduct() {
         // given
-        given(dataDefinition.find().belongsTo("orders", new Long(15)).list().getEntities()).willReturn(components);
+        given(dataDefinition.find().belongsTo("workPlan", new Long(15)).list().getEntities()).willReturn(components);
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeList);
         given(dataDefinition.find().belongsTo("technology", new Long(2)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products9);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products6);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when
@@ -807,28 +820,28 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnValidMapPerTechnologyAlgorithmForWorkPlanPerMachine() {
         // given
-        given(dataDefinition.find().belongsTo("orders", new Long(15)).list().getEntities()).willReturn(components);
+        given(dataDefinition.find().belongsTo("workPlan", new Long(15)).list().getEntities()).willReturn(components);
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeList);
         given(dataDefinition.find().belongsTo("technology", new Long(2)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products9);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products6);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when
@@ -862,28 +875,28 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnValidMapPerTechnologyAlgorithmForWorkPlanPerWorker() {
         // given
-        given(dataDefinition.find().belongsTo("orders", new Long(15)).list().getEntities()).willReturn(components);
+        given(dataDefinition.find().belongsTo("workPlan", new Long(15)).list().getEntities()).willReturn(components);
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeList);
         given(dataDefinition.find().belongsTo("technology", new Long(2)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products9);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products6);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when
@@ -917,28 +930,28 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnValidMapPerOutProductsAlgorithmForWorkPlanPerProduct() {
         // given
-        given(dataDefinition.find().belongsTo("orders", new Long(15)).list().getEntities()).willReturn(componentsOutProducts);
+        given(dataDefinition.find().belongsTo("workPlan", new Long(15)).list().getEntities()).willReturn(componentsOutProducts);
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeList);
         given(dataDefinition.find().belongsTo("technology", new Long(2)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products9);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products6);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when
@@ -971,28 +984,28 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnValidMapPerOutProductsAlgorithmForWorkPlanPerMachine() {
         // given
-        given(dataDefinition.find().belongsTo("orders", new Long(15)).list().getEntities()).willReturn(componentsOutProducts);
+        given(dataDefinition.find().belongsTo("workPlan", new Long(15)).list().getEntities()).willReturn(componentsOutProducts);
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeList);
         given(dataDefinition.find().belongsTo("technology", new Long(2)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products9);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products6);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when
@@ -1026,28 +1039,28 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnValidMapPerOutProductsAlgorithmForWorkPlanPerWorker() {
         // given
-        given(dataDefinition.find().belongsTo("orders", new Long(15)).list().getEntities()).willReturn(componentsOutProducts);
+        given(dataDefinition.find().belongsTo("workPlan", new Long(15)).list().getEntities()).willReturn(componentsOutProducts);
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeList);
         given(dataDefinition.find().belongsTo("technology", new Long(2)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products9);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products6);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when
@@ -1081,28 +1094,28 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnValidMapPerOutProductsAlgorithmForWorkPlanPerProductWithAddResults() {
         // given
-        given(dataDefinition.find().belongsTo("orders", new Long(15)).list().getEntities()).willReturn(componentsOutProducts2);
+        given(dataDefinition.find().belongsTo("workPlan", new Long(15)).list().getEntities()).willReturn(componentsOutProducts2);
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeList);
         given(dataDefinition.find().belongsTo("technology", new Long(2)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products9);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 products6);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when
@@ -1139,7 +1152,7 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 new ArrayList<Entity>());
 
         // when
@@ -1158,10 +1171,10 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products1);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products2);
 
         // when
@@ -1175,20 +1188,20 @@ public class ReportDataServiceTest {
     @Test
     public void shouldReturnValidMapPerOutProductsAlgorithmForWorkPlanWithoutPreviousOperation() {
         // given
-        given(dataDefinition.find().belongsTo("orders", new Long(15)).list().getEntities()).willReturn(componentsOutProducts);
+        given(dataDefinition.find().belongsTo("workPlan", new Long(15)).list().getEntities()).willReturn(componentsOutProducts);
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListWithoutTechnology);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products1);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products4);
 
         // when
@@ -1208,22 +1221,22 @@ public class ReportDataServiceTest {
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeListSubTechnologyWithoutRoot);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(1)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(1)).list().getEntities()).willReturn(
                 products9);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(2)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(2)).list().getEntities()).willReturn(
                 products5);
 
-        given(dataDefinition.find().belongsTo("operationProductInComponents", new Long(3)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductInComponent", new Long(3)).list().getEntities()).willReturn(
                 new ArrayList<Entity>());
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(11)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(11)).list().getEntities()).willReturn(
                 products4);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(12)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(12)).list().getEntities()).willReturn(
                 products7);
 
-        given(dataDefinition.find().belongsTo("operationProductOutComponents", new Long(13)).list().getEntities()).willReturn(
+        given(dataDefinition.find().belongsTo("operationProductOutComponent", new Long(13)).list().getEntities()).willReturn(
                 products8);
 
         // when

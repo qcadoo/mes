@@ -25,11 +25,11 @@
 									this.element.width(100);
 									if (this.state == "begin") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.activateOrder.confirm)}")) {
-											#{grid}.performEvent('activateOrder', [true]);
+											#{grid}.performEvent('changeOrderStateForGrid', [true]);
 										};
 									} else if (this.state == "finish") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.finishOrder.confirm)}")) {
-											#{grid}.performEvent('activateOrder', [false]);
+											#{grid}.performEvent('changeOrderStateForGrid', [false]);
 										};
 									}
 								}
@@ -142,8 +142,8 @@
 			</predefinedFilters>
 			<listener event="printOrder" class="com.qcadoo.mes.orders.OrderService"
 				method="printOrder" />
-			<listener event="activateOrder" class="com.qcadoo.mes.orders.OrderService"
-				method="activateOrder" />
+			<listener event="changeOrderStateForGrid" class="com.qcadoo.mes.orders.OrderService"
+				method="changeOrderStateForGrid" />
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
