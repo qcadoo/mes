@@ -44,13 +44,14 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
 import com.qcadoo.report.api.Pair;
 
 @Ignore
-// TODO masz
+// TODO krna fix tests after criteria api refactoring
 public class ReportDataServiceTest {
 
     private ReportDataService reportDataService = null;
@@ -65,7 +66,7 @@ public class ReportDataServiceTest {
 
     private final List<Entity> entityTreeListTechnologyWithoutRoot = new ArrayList<Entity>();
 
-    private final EntityTree entityTree = new EntityTreeImpl(dataDefinition, "technology", new Long(1));
+    private EntityTree entityTree = null;
 
     private final List<Entity> products1 = new ArrayList<Entity>();
 
@@ -113,6 +114,12 @@ public class ReportDataServiceTest {
 
     @Before
     public void init() {
+        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
+        given(fieldDefinition.getName()).willReturn("technology");
+        given(dataDefinition.getField("technology")).willReturn(fieldDefinition);
+
+        entityTree = new EntityTreeImpl(dataDefinition, "technology", new Long(1));
+
         reportDataService = new ReportDataService();
 
         EntityTree entityTreeSubTechnology = new EntityTreeImpl(dataDefinition, "technology", new Long(2));

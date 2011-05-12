@@ -166,7 +166,7 @@ public final class OrderService {
     public void activateOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state.getFieldValue() != null) {
 
-            // TODO FIXME mady cannot close order if genealogy plugin is not enabled
+            // TODO mady divide this method into proper plugins - orders, quality controls and genealogies.
             DataDefinition orderDataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
                     OrdersConstants.MODEL_ORDER);
 
@@ -459,7 +459,7 @@ public final class OrderService {
         if (searchResult.getEntities().size() > 0) {
             parameter = searchResult.getEntities().get(0);
         }
-        if (parameter != null) {
+        if (parameter != null && parameter.getField("batchForDoneOrder") != null) {
             return !(parameter.getField("batchForDoneOrder").toString().equals("01none"));
         } else {
             return false;

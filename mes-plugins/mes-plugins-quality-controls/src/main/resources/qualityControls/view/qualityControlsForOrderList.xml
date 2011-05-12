@@ -51,7 +51,7 @@
 								if (selectedEntitiesArray.length > 1) {
 									qualityControlStatus.disable("#{translate(moreThanOneRecordSelected)}");
 								} else if (selectedEntitiesArray[0].fields.closed == true) {
-									qualityControlStatus.disable("#{translate(qualityControl.qualityControl.ribbon.alreadyClosed)}");
+									qualityControlStatus.disable("#{translate(qualityControls.qualityControls.ribbon.alreadyClosed)}");
 								} else {
 									qualityControlStatus.enable();
 								}
@@ -66,8 +66,8 @@
 									reportsPdf.enable();
 									reportsXls.enable();
 								} else {
-									reportsPdf.disable("#{translate(qualityControl.qualityControl.ribbon.notAllClosedClosed)}");
-									reportsXls.disable("#{translate(qualityControl.qualityControl.ribbon.notAllClosedClosed)}");
+									reportsPdf.disable("#{translate(qualityControls.qualityControls.ribbon.notAllClosedClosed)}");
+									reportsXls.disable("#{translate(qualityControls.qualityControls.ribbon.notAllClosedClosed)}");
 								}
 							}
 						}
