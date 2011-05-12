@@ -236,7 +236,6 @@ public final class OrderService {
         }
     }
 
-    // TODO mina move
     private boolean checkIfAllQualityControlsAreClosed(final Entity order) {
         if (order.getBelongsToField("technology") == null) {
             return true;

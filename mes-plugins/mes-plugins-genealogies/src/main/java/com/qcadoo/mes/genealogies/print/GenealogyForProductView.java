@@ -113,7 +113,6 @@ public class GenealogyForProductView extends ReportPdfView {
         }
     }
 
-    // TODO mina move
     private void addComponentSeries(final Document document, final List<Entity> orders, final Locale locale)
             throws DocumentException {
         for (Entity order : orders) {
