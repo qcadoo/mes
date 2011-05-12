@@ -727,7 +727,6 @@ public final class QualityControlService {
         }
     }
 
-    // TODO mina move
     private List<Entity> getGenealogiesForOrder(final Long id) {
         DataDefinition genealogyDD = dataDefinitionService.get("genealogies", "genealogy");
 

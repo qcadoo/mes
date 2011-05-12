@@ -1309,7 +1309,6 @@ public class OrderServiceTest {
         verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
     }
 
-    // TODO mina move
     private void prepareCheckIfAllQualityControlsAreClosed(final Entity order, final boolean expected) {
         if (expected) {
             DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
@@ -1352,7 +1351,6 @@ public class OrderServiceTest {
         }
     }
 
-    // TODO mina move
     @Test
     public void shouldReturnTrueIfThereIsNoOpenQualityForUnit() throws Exception {
         // given
@@ -1377,7 +1375,6 @@ public class OrderServiceTest {
         return results;
     }
 
-    // TODO mina move
     @Test
     public void shouldReturnTrueIfThereIsNoOpenQualityForOrder() throws Exception {
         // given
@@ -1393,7 +1390,6 @@ public class OrderServiceTest {
         assertTrue(results);
     }
 
-    // TODO mina move
     @Test
     public void shouldReturnFalseIfThereIsOpenQualityForOperation() throws Exception {
         // given

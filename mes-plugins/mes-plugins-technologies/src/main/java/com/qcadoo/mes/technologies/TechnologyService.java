@@ -204,6 +204,7 @@ public final class TechnologyService {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         if (form.getEntityId() != null) {
             ComponentState referenceModeComponent = viewDefinitionState.getComponentByReference("referenceMode");
+            referenceModeComponent.setFieldValue("01reference");
             referenceModeComponent.setVisible(false);
         }
     }
