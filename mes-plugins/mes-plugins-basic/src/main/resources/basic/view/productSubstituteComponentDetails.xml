@@ -43,6 +43,6 @@
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.basic.util.UnitService"
-			method="fillProductUnitPreRender" />
+			method="fillProductUnitBeforeRender" />
 	</hooks>
 </view>

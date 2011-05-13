@@ -41,10 +41,10 @@ public class UnitService {
     private DataDefinitionService dataDefinitionService;
 
     public void fillProductUnit(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        fillProductUnitPreRender(viewDefinitionState);
+        fillProductUnitBeforeRender(viewDefinitionState);
     }
 
-    public void fillProductUnitPreRender(final ViewDefinitionState state) {
+    public void fillProductUnitBeforeRender(final ViewDefinitionState state) {
         FieldComponent productState = (FieldComponent) state.getComponentByReference("product");
         FieldComponent unitState = (FieldComponent) state.getComponentByReference("unit");
         unitState.requestComponentUpdateState();

@@ -4,7 +4,6 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
 	plugin="orders"
 	view="orderDetails">
-	
 	<group name="genealogy">
 		<bigButton name="genealogy" icon="genealogyIcon24.png" state="disabled" >
 			<script>
