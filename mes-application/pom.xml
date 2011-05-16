@@ -180,21 +180,6 @@
 					</webAppConfig>
 				</configuration>
 			</plugin>
-			<!-- plugin>
-				<groupId>com.qcadoo</groupId>
-				<artifactId>qcadoo-maven-plugin</artifactId>
-				<version>${qcadoo.version}</version>
-				<configuration>
-				    <jdbcDriver>${basedir}/driver/postgresql-8.4-701.jdbc4.jar</jdbcDriver>
-				    <profile>standalone</profile>
-				    <configuration>${basedir}/conf/${profile.name}</configuration>
-				    <logs>${basedir}/target/logs</logs>
-				    <temporaryPlugins>${basedir}/target/tmp</temporaryPlugins>
-				    <plugins>${basedir}/target/lib</plugins>
-				    <webapp>${basedir}/src/main/webapp</webapp>
-				    <restartCommand>${basedir}/restart.sh</restartCommand>
-				</configuration>
-			</plugin --> 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -258,7 +243,7 @@
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-plugins-plugin-management</artifactId>
-					<version>${qcadoo.version}</version>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -269,7 +254,7 @@
 					<plugin>
 						<groupId>com.qcadoo</groupId>
 						<artifactId>qcadoo-maven-plugin</artifactId>
-						<version>${qcadoo.version}</version>
+						<version>${qcadoo.maven.plugin.version}</version>
 						<configuration>
 							<jdbcDriver>${basedir}/driver/postgresql-8.4-701.jdbc4.jar</jdbcDriver>
 							<configuration>${basedir}/conf/${profile.name}/</configuration>

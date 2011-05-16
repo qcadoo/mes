@@ -32,7 +32,7 @@
 			<plugin>
 				<groupId>com.qcadoo</groupId>
 				<artifactId>qcadoo-maven-plugin</artifactId>
-				<version>${qcadoo.version}</version>
+				<version>${qcadoo.maven.plugin.version}</version>
 				<extensions>true</extensions>
 			</plugin>
 		</plugins>

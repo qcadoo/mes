@@ -23,8 +23,10 @@
 	</modules>
 
 	<properties>
+		<qcadoo.version>0.4.0</qcadoo.version>
+		<qcadoo.saas.version>0.4.0</qcadoo.saas.version>
+		<qcadoo.maven.plugin.version>0.4.0</qcadoo.maven.plugin.version>
 		<slf4j.version>1.6.1</slf4j.version>
-		<qcadoo.version>0.4.0-SNAPSHOT</qcadoo.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<profile.name>default</profile.name>
 		<sonar.host.url>http://localhost:9000/sonar</sonar.host.url>
@@ -329,32 +331,32 @@
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-model</artifactId>
-					<version>${qcadoo.version}</version>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-tenant</artifactId>
-					<version>${qcadoo.version}</version>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-plugin</artifactId>
-					<version>${qcadoo.version}</version>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-security</artifactId>
-					<version>${qcadoo.version}</version>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-view</artifactId>
-					<version>${qcadoo.version}</version>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-shop</artifactId>
-					<version>${qcadoo.version}</version>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>
