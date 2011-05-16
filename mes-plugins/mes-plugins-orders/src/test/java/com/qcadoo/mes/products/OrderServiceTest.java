@@ -1015,7 +1015,7 @@ public class OrderServiceTest {
                 "qcadooView.grid.noRowSelectedError.pl");
 
         // when
-        orderService.activateOrder(viewDefinitionState, state, new String[0]);
+        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[0]);
 
         // then
         verify(state).addMessage("qcadooView.grid.noRowSelectedError.pl", MessageType.FAILURE);
@@ -1031,7 +1031,7 @@ public class OrderServiceTest {
                 "qcadooView.form.entityWithoutIdentifier.pl");
 
         // when
-        orderService.activateOrder(viewDefinitionState, state, new String[0]);
+        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[0]);
 
         // then
         verify(state).addMessage("qcadooView.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
@@ -1047,7 +1047,7 @@ public class OrderServiceTest {
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
 
         // when
-        orderService.activateOrder(viewDefinitionState, state, new String[] { "true" });
+        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "true" });
 
         // then
         verify(orderState).setFieldValue("02inProgress");
@@ -1066,7 +1066,7 @@ public class OrderServiceTest {
         given(dataDefinition.get(117L)).willReturn(order);
 
         // when
-        orderService.activateOrder(viewDefinitionState, state, new String[] { "true" });
+        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "true" });
 
         // then
         verify(order).setField("state", "02inProgress");
@@ -1100,7 +1100,7 @@ public class OrderServiceTest {
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
-        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "false" });
 
         // then
         verify(state).addMessage("genealogies.message.batchNotFound.pl", MessageType.FAILURE);
@@ -1129,7 +1129,7 @@ public class OrderServiceTest {
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
-        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "false" });
 
         // then
         verify(state).addMessage("genealogies.message.batchNotFound.pl", MessageType.INFO);
@@ -1163,7 +1163,7 @@ public class OrderServiceTest {
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
-        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "false" });
 
         // then
         verify(state).addMessage("qualityControls.qualityControls.not.closed.pl", MessageType.FAILURE);
@@ -1195,7 +1195,7 @@ public class OrderServiceTest {
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
-        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "false" });
 
         // then
         verify(state).addMessage("qualityControls.qualityControls.not.closed.pl", MessageType.FAILURE);
@@ -1219,7 +1219,7 @@ public class OrderServiceTest {
         prepareCheckIfAllQualityControlsAreClosed(order, false);
 
         // when
-        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "false" });
 
         // then
         verify(orderState).setFieldValue("03done");
@@ -1249,7 +1249,7 @@ public class OrderServiceTest {
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
-        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "false" });
 
         // then
         verify(orderState).setFieldValue("03done");
@@ -1271,7 +1271,7 @@ public class OrderServiceTest {
         prepareCheckIfAllQualityControlsAreClosed(order, false);
 
         // when
-        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "false" });
 
         // then
         verify(order).setField("state", "03done");
@@ -1301,7 +1301,7 @@ public class OrderServiceTest {
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
-        orderService.activateOrder(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "false" });
 
         // then
         verify(order).setField("state", "03done");
@@ -1309,7 +1309,6 @@ public class OrderServiceTest {
         verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
     }
 
-    // TODO mina move
     private void prepareCheckIfAllQualityControlsAreClosed(final Entity order, final boolean expected) {
         if (expected) {
             DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
@@ -1352,7 +1351,6 @@ public class OrderServiceTest {
         }
     }
 
-    // TODO mina move
     @Test
     public void shouldReturnTrueIfThereIsNoOpenQualityForUnit() throws Exception {
         // given
@@ -1377,7 +1375,6 @@ public class OrderServiceTest {
         return results;
     }
 
-    // TODO mina move
     @Test
     public void shouldReturnTrueIfThereIsNoOpenQualityForOrder() throws Exception {
         // given
@@ -1393,7 +1390,6 @@ public class OrderServiceTest {
         assertTrue(results);
     }
 
-    // TODO mina move
     @Test
     public void shouldReturnFalseIfThereIsOpenQualityForOperation() throws Exception {
         // given

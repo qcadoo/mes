@@ -42,7 +42,6 @@
 		<model:dictionary name="units" />
 
 		<menu:menu-category name="basic" />
-		<menu:menu-category name="reports" />
 		
 		<menu:menu-item-url name="home" category="home" url="/dashboard.html" />
 		

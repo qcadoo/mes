@@ -47,7 +47,6 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -163,54 +162,67 @@ public final class OrderService {
         orderState.setFieldValue("01pending");
     }
 
-    public void activateOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void changeOrderStateForGrid(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
         if (state.getFieldValue() != null) {
 
-            // TODO mady divide this method into proper plugins - orders, quality controls and genealogies.
             DataDefinition orderDataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
                     OrdersConstants.MODEL_ORDER);
 
             Entity order = orderDataDefinition.get((Long) state.getFieldValue());
 
-            if (state instanceof FormComponent) {
-                state.performEvent(viewDefinitionState, "save", new String[0]);
-
-                if (!state.isHasError()) {
-
-                    FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
-
-                    if (Boolean.parseBoolean(args[0])) {
-                        orderState.setFieldValue("02inProgress");
-                    } else {
-
-                        if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
-                            state.addMessage(
-                                    translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
-                                    MessageType.FAILURE);
-                            return;
-                        }
-                        if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
-                            state.addMessage(
-                                    translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
-                                    MessageType.FAILURE);
-                            return;
-                        }
-
-                        orderState.setFieldValue("03done");
-                    }
-
-                    state.performEvent(viewDefinitionState, "save", new String[0]);
+            if (Boolean.parseBoolean(args[0])) {
+                order.setField("state", "02inProgress");
+            } else {
+                if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
+                    state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
+                            MessageType.INFO);
+                    return;
                 }
-            } else if (state instanceof GridComponent) {
+
+                if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
+                    state.addMessage(
+                            translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
+                            MessageType.FAILURE);
+                    return;
+                }
+
+                order.setField("state", "03done");
+            }
+
+            orderDataDefinition.save(order);
+
+            state.performEvent(viewDefinitionState, "refresh", new String[0]);
+
+        } else {
+            state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
+                    MessageType.FAILURE);
+        }
+    }
+
+    public void changeOrderStateForForm(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (state.getFieldValue() != null) {
+            DataDefinition orderDataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
+                    OrdersConstants.MODEL_ORDER);
+
+            Entity order = orderDataDefinition.get((Long) state.getFieldValue());
+
+            state.performEvent(viewDefinitionState, "save", new String[0]);
+
+            if (!state.isHasError()) {
+
+                FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
+
                 if (Boolean.parseBoolean(args[0])) {
-                    order.setField("state", "02inProgress");
+                    orderState.setFieldValue("02inProgress");
                 } else {
+
                     if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
                         state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
-                                MessageType.INFO);
+                                MessageType.FAILURE);
                         return;
                     }
-
                     if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
                         state.addMessage(
                                 translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
@@ -218,25 +230,18 @@ public final class OrderService {
                         return;
                     }
 
-                    order.setField("state", "03done");
+                    orderState.setFieldValue("03done");
                 }
 
-                orderDataDefinition.save(order);
+                state.performEvent(viewDefinitionState, "save", new String[0]);
+            }
 
-                state.performEvent(viewDefinitionState, "refresh", new String[0]);
-            }
         } else {
-            if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
-                        MessageType.FAILURE);
-            }
+            state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
+                    MessageType.FAILURE);
         }
     }
 
-    // TODO mina move
     private boolean checkIfAllQualityControlsAreClosed(final Entity order) {
         if (order.getBelongsToField("technology") == null) {
             return true;

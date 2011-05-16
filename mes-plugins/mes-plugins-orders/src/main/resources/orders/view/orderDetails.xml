@@ -22,13 +22,13 @@
 									if (this.state == "begin") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.activateOrder.confirm)}")) {
 											if(window.canClose()) {
-												#{form}.performEvent('activateOrder', [true]);
+												#{form}.performEvent('changeOrderStateForForm', [true]);
 											}
 										};
 									} else if (this.state == "finish") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.finishOrder.confirm)}")) {
 											if(window.canClose()) {
-												#{form}.performEvent('activateOrder', [false]);
+												#{form}.performEvent('changeOrderStateForForm', [false]);
 											}
 										};
 									}
@@ -183,8 +183,8 @@
 				</component>
 				<option type="header" value="true" />
 				<option type="expression" value="#name + ' - ' + #number" />
-				<listener event="activateOrder" class="com.qcadoo.mes.orders.OrderService"
-					method="activateOrder" />
+				<listener event="changeOrderStateForForm" class="com.qcadoo.mes.orders.OrderService"
+					method="changeOrderStateForForm" />
 			</component>
 		</windowTab>
 		<windowTab name="detailsTab">
