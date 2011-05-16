@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.3.0
+    Version: 0.4.0
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,6 @@
     ***************************************************************************
 
 -->
-
 <machine>
 	<row ID="1" NAME="Planer" PROD_LINE="false" DESCRIPTION="Planer"/>
 	<row ID="2" NAME="Saw" PROD_LINE="true" DESCRIPTION="Saw"/>

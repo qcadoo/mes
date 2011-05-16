@@ -10,12 +10,23 @@
 
 	<name>Qcadoo MES</name>
 
+	<description />
+
+	<url>https://github.com/qcadoo/mes</url>
+
 	<organization>
 		<name>Qcadoo Limited</name>
 		<url>http://www.qcadoo.com/</url>
 	</organization>
 
-	<url>http://www.qcadoo.com/</url>
+	<inceptionYear>2010</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>GNU Affero General Public License</name>
+			<url>https://github.com/qcadoo/qcadoo/raw/master/licence.txt</url>
+		</license>
+	</licenses>
 
 	<modules>
 		<module>mes-plugins</module>
@@ -288,6 +299,33 @@
 			<url>http://maven.springframework.org/milestone</url>
 		</repository>
 	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>qcadoo-releases-plugin-repository</id>
+			<url>http://nexus.qcadoo.org/content/repositories/releases</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>qcadoo-snapshots-plugin-repository</id>
+			<url>http://emhyr.local/nexus/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>interval:5</updatePolicy>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<scm>
 		<connection>scm:git:ssh://github.com/qcadoo/mes.git</connection>

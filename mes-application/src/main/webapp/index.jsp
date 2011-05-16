@@ -3,7 +3,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.3.0
+    Version: 0.4.0
 
     This file is part of Qcadoo.
 
@@ -23,7 +23,6 @@
     ***************************************************************************
 
 --%>
-
 <html>
 	<head>
 		<meta http-equiv="refresh" content="0;url=/main.html">
