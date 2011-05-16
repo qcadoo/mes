@@ -43,6 +43,7 @@
 		<enum name="referenceMode" values="01reference,02copy" default="01reference"
 			persistent="false" />
 		<priority name="priority" scope="parent" />
+		<file name="attachment" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"

@@ -50,6 +50,9 @@
 						<option type="required" value="true" />
 					</component>
 				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="file" name="attachment" field="attachment" />
+				</layoutElement>
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#operation['name']" />
