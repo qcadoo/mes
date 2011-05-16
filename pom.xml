@@ -10,12 +10,23 @@
 
 	<name>Qcadoo MES</name>
 
+	<description />
+
+	<url>https://github.com/qcadoo/mes</url>
+
 	<organization>
 		<name>Qcadoo Limited</name>
 		<url>http://www.qcadoo.com/</url>
 	</organization>
 
-	<url>http://www.qcadoo.com/</url>
+	<inceptionYear>2010</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>GNU Affero General Public License</name>
+			<url>https://github.com/qcadoo/qcadoo/raw/master/licence.txt</url>
+		</license>
+	</licenses>
 
 	<modules>
 		<module>mes-plugins</module>
