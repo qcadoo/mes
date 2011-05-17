@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.3.0
+    Version: 0.4.1
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,6 @@
     ***************************************************************************
 
 -->
-
 <categories>
 	<row  NAME="categories" ITEM="kategoria 1" />
 	<row  NAME="categories" ITEM="kategoria 2" />

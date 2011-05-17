@@ -5,17 +5,28 @@
 
 	<groupId>com.qcadoo.mes</groupId>
 	<artifactId>mes</artifactId>
-	<version>0.4.0-SNAPSHOT</version>
+	<version>0.4.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Qcadoo MES</name>
+
+	<description />
+
+	<url>https://github.com/qcadoo/mes</url>
 
 	<organization>
 		<name>Qcadoo Limited</name>
 		<url>http://www.qcadoo.com/</url>
 	</organization>
 
-	<url>http://www.qcadoo.com/</url>
+	<inceptionYear>2010</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>GNU Affero General Public License</name>
+			<url>https://github.com/qcadoo/qcadoo/raw/master/licence.txt</url>
+		</license>
+	</licenses>
 
 	<modules>
 		<module>mes-plugins</module>
@@ -23,8 +34,10 @@
 	</modules>
 
 	<properties>
+		<qcadoo.version>0.4.1-SNAPSHOT</qcadoo.version>
+		<qcadoo.saas.version>0.4.1-SNAPSHOT</qcadoo.saas.version>
+		<qcadoo.maven.plugin.version>0.4.1-SNAPSHOT</qcadoo.maven.plugin.version>
 		<slf4j.version>1.6.1</slf4j.version>
-		<qcadoo.version>0.4.0-SNAPSHOT</qcadoo.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<profile.name>default</profile.name>
 		<sonar.host.url>http://localhost:9000/sonar</sonar.host.url>
@@ -141,7 +154,7 @@
 				<artifactId>maven-license-plugin</artifactId>
 				<version>1.9.0</version>
 				<configuration>
-					<header>licence_include.txt</header>
+					<header>licence.txt</header>
 					<strictCheck>true</strictCheck>
 					<aggregate>true</aggregate>
 					<keywords>
@@ -287,6 +300,33 @@
 		</repository>
 	</repositories>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>qcadoo-releases-plugin-repository</id>
+			<url>http://nexus.qcadoo.org/content/repositories/releases</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>qcadoo-snapshots-plugin-repository</id>
+			<url>http://emhyr.local/nexus/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>interval:5</updatePolicy>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<scm>
 		<connection>scm:git:ssh://github.com/qcadoo/mes.git</connection>
    		<developerConnection>scm:git:ssh://git@github.com/qcadoo/mes.git</developerConnection>
@@ -329,32 +369,32 @@
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-model</artifactId>
-					<version>${qcadoo.version}</version>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-tenant</artifactId>
-					<version>${qcadoo.version}</version>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-plugin</artifactId>
-					<version>${qcadoo.version}</version>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-security</artifactId>
-					<version>${qcadoo.version}</version>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-view</artifactId>
-					<version>${qcadoo.version}</version>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-shop</artifactId>
-					<version>${qcadoo.version}</version>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>

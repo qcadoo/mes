@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.3.0
+    Version: 0.4.1
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,6 @@
     ***************************************************************************
 
 -->
-
 <spread_data type="spread">
 <header><form_name>QMES_WIP_ORDER_F</form_name><form_title_id>FRM_QMESV_SPREAD_WIP_ORDER_F</form_title_id>
 <form_title>FRM_QMESV_SPREAD_WIP_ORDER_F</form_title></header><columns>

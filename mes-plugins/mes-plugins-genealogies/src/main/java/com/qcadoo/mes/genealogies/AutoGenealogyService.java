@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.3.0
+ * Version: 0.4.1
  *
  * This file is part of Qcadoo.
  *
@@ -21,7 +21,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-
 package com.qcadoo.mes.genealogies;
 
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
