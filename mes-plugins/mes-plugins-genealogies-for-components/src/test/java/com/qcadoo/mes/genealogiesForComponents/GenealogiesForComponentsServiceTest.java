@@ -159,7 +159,6 @@ public class GenealogiesForComponentsServiceTest {
 
         FieldComponent productsList = mock(FieldComponent.class);
 
-        List<Entity> expectedGenealogyProductInComponents = prepareExpectedGenealogyProductInComponents();
         EntityList existingGenealogyProductInComponents = prepareExistingGenealogyProductInComponents();
         EntityTree operationProductInComponents = prepareOperationProductInComponents();
 
@@ -271,13 +270,6 @@ public class GenealogiesForComponentsServiceTest {
 
         EntityList existingOperationComponents = new EntityListImpl(existingListDataDefinition, "joinField", 11L);
         return existingOperationComponents;
-    }
-
-    private List<Entity> prepareExpectedGenealogyProductInComponents() {
-        List<Entity> expectedEntities = new ArrayList<Entity>();
-        expectedEntities.add(craeteGenealogyProductInComponent(101L, craeteOperationProductInComponent(101L, true)));
-        expectedEntities.add(craeteGenealogyProductInComponent(null, craeteOperationProductInComponent(103L, true)));
-        return expectedEntities;
     }
 
     private Entity craeteGenealogyProductInComponent(final Long id, final Entity operationProductInComponent) {
