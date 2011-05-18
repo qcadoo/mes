@@ -383,16 +383,6 @@
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.saas</groupId>
-					<artifactId>qcadoo-saas-security</artifactId>
-					<version>${qcadoo.saas.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>com.qcadoo.saas</groupId>
-					<artifactId>qcadoo-saas-view</artifactId>
-					<version>${qcadoo.saas.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-shop</artifactId>
 					<version>${qcadoo.saas.version}</version>
 				</dependency>
