@@ -108,7 +108,7 @@
 		<level value="debug" />
 	</logger>
 	<logger name="org.springframework">
-		<level value="info" />
+		<level value="debug" />
 	</logger>
 	<logger name="org.hibernate">
 		<level value="info" />
@@ -117,7 +117,7 @@
 		<level value="info" />
 	</logger>
 	<logger name="org.apache">
-		<level value="info" />
+		<level value="debug" />
 	</logger>
 	<logger name="net.sf.ehcache">
 		<level value="info" />
