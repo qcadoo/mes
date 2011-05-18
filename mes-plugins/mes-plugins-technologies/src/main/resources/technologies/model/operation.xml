@@ -42,6 +42,7 @@
 			lazy="false" />
 		<hasMany name="operationComponents" model="technologyOperationComponent"
 			joinField="operation" cascade="none" />
+		<file name="attachment" />
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />

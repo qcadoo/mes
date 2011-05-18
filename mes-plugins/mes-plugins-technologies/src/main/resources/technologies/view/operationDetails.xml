@@ -37,7 +37,7 @@
 		</ribbon>
 		<component type="form" name="operation" reference="form">
 			<component type="gridLayout" name="gridsLayout" columns="3"
-				rows="7">
+				rows="8">
 				<layoutElement column="1" row="1">
 					<component type="input" name="number" field="number" />
 				</layoutElement>
@@ -72,6 +72,9 @@
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
 					</component>
+				</layoutElement>
+				<layoutElement column="1" row="8">
+					<component type="file" name="attachment" field="attachment" />
 				</layoutElement>
 			</component>
 			<option type="header" value="true" />
