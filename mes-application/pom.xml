@@ -69,6 +69,25 @@
 			<artifactId>mes-plugins-samples</artifactId>
 			<version>0.4.1-SNAPSHOT</version>
 		</dependency>
+		
+		<!-- TODO develop purpose only -->
+		<!--<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-commercial-plugins-integration-commons</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-commercial-plugins-integration-enova</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-commercial-plugins-integration-subiekt</artifactId>
+			<version>1.0.0</version>
+		</dependency>-->
+		<!-- TODO end -->
+		
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
