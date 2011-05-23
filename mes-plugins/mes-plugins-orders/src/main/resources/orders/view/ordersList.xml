@@ -69,7 +69,7 @@
 			</group>
 			<!--<group name="report">
 				<bigButton name="print" icon="pdfIcon16.png"
-					action="#{grid}.generateReportForEntity('orders.testReport','html','test1=1',test2='asd')" state="enabled" />
+					action="#{grid}.generateReportForEntity('orders','testReport','pdf','test1=1',test2='asd')" state="enabled" />
 			</group>-->
 		</ribbon>
 		<component type="grid" name="orders" reference="grid">
