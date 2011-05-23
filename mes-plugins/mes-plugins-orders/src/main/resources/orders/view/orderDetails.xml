@@ -63,6 +63,10 @@
 					</script>
 				</bigButton>
 			</group>
+			<!--<group name="report">
+				<bigButton name="print" icon="pdfIcon16.png"
+					action="#{form}.generateReportForEntity('testTemplate','html')" state="enabled" />
+			</group>-->
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="order" reference="form">
