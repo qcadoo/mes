@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="orders" version="0.4.0"
+<plugin plugin="orders" version="0.4.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -85,7 +85,7 @@
 		<view:view resource="view/ordersList.xml" />
 		<view:view resource="view/orderDetails.xml" />
 		
-		<report:report-template name="testReport" resource="report/JFreeChartReport.jrxml" />
+		<report:report-template name="testReport" resource="report/OrderReport.jrxml" />
 
 	</modules>
 
