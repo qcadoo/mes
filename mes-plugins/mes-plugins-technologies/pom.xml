@@ -35,13 +35,13 @@
 				<version>${qcadoo.maven.plugin.version}</version>
 				<extensions>true</extensions>
 			</plugin>
-			<resources>
-				<resource>
-					<directory>src/main/resources</directory>
-					<filtering>true</filtering>
-				</resource>
-			</resources>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 	</build>
 
 </project>
