@@ -21,15 +21,22 @@
 				</textElement>
 				<text><![CDATA[JFreeChart Sample]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="0" y="50" width="515" height="30"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu" size="22"/>
+				</textElement>
+				<text><![CDATA[na łące koń w ścisku w górę spojżał]]></text>
+			</staticText>
 			<textField>
-				<reportElement x="0" y="50" width="515" height="50"/>
+				<reportElement x="0" y="100" width="515" height="50"/>
 				<textElement textAlignment="Center">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["This sample uses JFreeChart Version 1.0.0-pre2\n" + "Written by David Gilbert (david.gilbert@object-refinery.com) and others.\n" + "(C)opyright 2000-2004, by Object Refinery Limited and Contributors."]]></textFieldExpression>
 			</textField>
 			<image scaleImage="Clip" hAlign="Center" hyperlinkType="Reference">
-				<reportElement x="0" y="110" width="515" height="300"/>
+				<reportElement x="0" y="160" width="515" height="300"/>
 				<graphicElement/>
 				<imageExpression class="net.sf.jasperreports.engine.JRRenderable"><![CDATA[$V{Chart}]]></imageExpression>
 				<hyperlinkReferenceExpression><![CDATA["http://www.jfree.org/jfreechart"]]></hyperlinkReferenceExpression>
