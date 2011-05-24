@@ -43,6 +43,7 @@
 			classpath*:qcadoo-view-context.xml
 			classpath*:qcadoo-shop-context.xml
 			classpath*:qcadoo-web-context.xml
+			classpath*:qcadoo-report-context.xml
 			classpath*:root-context.xml
 			classpath*:web-context.xml
 		</param-value>
@@ -71,6 +72,11 @@
 	<filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>*.xls</url-pattern>
+	</filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>*.csv</url-pattern>
 	</filter-mapping>
 
 	<filter-mapping>
@@ -151,6 +157,11 @@
 	<servlet-mapping>
 		<servlet-name>Qcadoo MES</servlet-name>
 		<url-pattern>*.xls</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>Qcadoo MES</servlet-name>
+		<url-pattern>*.csv</url-pattern>
 	</servlet-mapping>
 	
 	<session-config>
