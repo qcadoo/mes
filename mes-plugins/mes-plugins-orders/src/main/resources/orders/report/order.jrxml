@@ -8,24 +8,7 @@
 	</parameter>
 	<parameter name="EntityIds" class="java.util.List"/>
 	<queryString language="hql">
-		<![CDATA[SELECT
-     orders_order."number" AS orders_order_number,
-     orders_order."name" AS orders_order_name,
-     orders_order."datefrom" AS orders_order_datefrom,
-     orders_order."dateto" AS orders_order_dateto,
-     orders_order."state" AS orders_order_state,
-     orders_order."plannedquantity" AS orders_order_plannedquantity,
-     orders_order."donequantity" AS orders_order_donequantity,
-     orders_order."effectivedatefrom" AS orders_order_effectivedatefrom,
-     orders_order."effectivedateto" AS orders_order_effectivedateto,
-     orders_order."startworker" AS orders_order_startworker,
-     orders_order."endworker" AS orders_order_endworker,
-     technologies_technology."name" AS technologies_technology_name,
-     basic_product."name" AS basic_product_name
-FROM
-     "public"."technologies_technology" technologies_technology INNER JOIN "public"."orders_order" orders_order ON technologies_technology."id" = orders_order."technology_id"
-     INNER JOIN "public"."basic_product" basic_product ON orders_order."product_id" = basic_product."id" WHERE orders_order."id" = 10]]>
-     <![CDATA[from com.qcadoo.model.beans.orders.OrdersOrder order where id in ($P{EntityIds})]]>
+		<![CDATA[from com.qcadoo.model.beans.orders.OrdersOrder order inner join order.technology as technology inner join order.product as product where order.id in ($P{EntityIds})]]>
 	</queryString>
 	<field name="orders_order_number" class="java.lang.String"/>
 	<field name="orders_order_name" class="java.lang.String"/>
