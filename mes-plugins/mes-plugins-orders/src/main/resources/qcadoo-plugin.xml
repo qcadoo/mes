@@ -85,7 +85,7 @@
 		<view:view resource="view/ordersList.xml" />
 		<view:view resource="view/orderDetails.xml" />
 		
-		<report:report-template name="testReport" resource="report/JFreeChartReport.jrxml" />
+		<report:report-template name="testReport" resource="report/OrderReport.jrxml" />
 
 	</modules>
 
