@@ -67,10 +67,10 @@
 				<smallButton name="print" icon="pdfIcon16.png"
 					action="#{grid}.fireEvent(printOrder,pdf);" state="disabled" />
 			</group>
-			<group name="report">
+			<!--  <group name="report">
 				<bigButton name="print" icon="pdfIcon16.png"
 					action="#{grid}.generateReportForEntity('orders','testReport','pdf','ReportTitle=Zlecenie',OrderClause='number')" state="enabled" />
-			</group>
+			</group>-->
 		</ribbon>
 		<component type="grid" name="orders" reference="grid">
 			<script>
