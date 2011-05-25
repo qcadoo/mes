@@ -193,7 +193,7 @@
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_effectivedatefrom}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="false">
+			<textField isBlankWhenNull="true">
 				<reportElement x="9" y="289" width="249" height="31"/>
 				<textElement>
 					<font size="12"/>
