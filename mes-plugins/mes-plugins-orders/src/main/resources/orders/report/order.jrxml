@@ -93,7 +93,7 @@
 				<textElement markup="html">
 					<font size="10" isBold="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["<font color=\"#464646\">" +$R{qcadooReport.commons.generatedBy.label} +"</font>: "+ $P{Author}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["<font color=\"#464646\">" +$R{qcadooReport.commons.generatedBy.label} +"</font> "+ $P{Author}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="9" y="27" width="249" height="20"/>
