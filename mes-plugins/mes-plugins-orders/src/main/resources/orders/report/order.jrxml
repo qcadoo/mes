@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="order" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="order" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="orders/locales/orders">
 	<property name="ireport.zoom" value="1.3310000000000006"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="93"/>
@@ -53,7 +53,7 @@
 				<textElement markup="html">
 					<font size="24"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["<font color=\"#464646\">"+ $R{report.title}+ "</font> " + $F{orders_order_name}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["<font color=\"#464646\">"+ $R{orders.order.report.title}+ "</font> " + $F{orders_order_name}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="0" y="106" width="555" height="1" forecolor="#464646"/>
@@ -66,7 +66,7 @@
 				<textElement textAlignment="Right">
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())]]></textFieldExpression>
+				<textFieldExpression class="java.util.Date"><![CDATA[new Date()]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
 				<reportElement x="550" y="18" width="19" height="16" forecolor="#464646"/>
@@ -101,7 +101,7 @@
 				<textElement markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.orders_order_number}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.number.label}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="9" y="47" width="249" height="31"/>
@@ -115,7 +115,7 @@
 				<textElement markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.orders_order_name}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.name.label}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="9" y="103" width="249" height="31"/>
@@ -136,21 +136,21 @@
 				<textElement markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.basic_product_name}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.product.label}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="287" y="139" width="249" height="20"/>
 				<textElement markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.orders_order_state}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.state.label}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="287" y="27" width="249" height="20"/>
 				<textElement markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.orders_order_datefrom}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.dateFrom.label}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="287" y="103" width="249" height="31"/>
@@ -171,21 +171,21 @@
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{orders_order_state}.startsWith("01"))?$R{report.statePending}:(($F{orders_order_state}.startsWith("02"))?$R{report.stateInProgress}:$R{report.stateDone})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{orders_order_state}.startsWith("01"))?$R{orders.order.state.value.01pending}:(($F{orders_order_state}.startsWith("02"))?$R{orders.order.state.value.02inProgress}:$R{orders.order.state.value.03done})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="287" y="83" width="249" height="20"/>
 				<textElement markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.orders_order_dateto}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.dateTo.label}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="9" y="213" width="249" height="20"/>
 				<textElement markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.orders_order_effectivedatefrom}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.effectiveDateFrom.label}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="9" y="233" width="249" height="31"/>
@@ -206,14 +206,14 @@
 				<textElement markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.orders_order_effectivedateto}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.effectiveDateTo.label}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="9" y="325" width="249" height="20"/>
 				<textElement markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.orders_order_startworker}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.startWorker.label}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="9" y="345" width="249" height="31"/>
@@ -234,7 +234,7 @@
 				<textElement markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.orders_order_endworker}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.endWorker.label}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="287" y="345" width="249" height="31"/>
@@ -248,7 +248,7 @@
 				<textElement markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.orders_order_donequantity}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.doneQuantity.label}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="287" y="233" width="249" height="31"/>
@@ -262,14 +262,14 @@
 				<textElement markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.technologies_technology_name}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.technology.label}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="287" y="213" width="249" height="20"/>
 				<textElement markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.orders_order_plannedquantity}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.plannedQuantity.label}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="287" y="289" width="249" height="31"/>
