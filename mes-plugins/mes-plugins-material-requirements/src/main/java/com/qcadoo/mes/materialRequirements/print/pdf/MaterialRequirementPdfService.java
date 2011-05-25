@@ -67,8 +67,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         String documenTitle = getTranslationService().translate("materialRequirements.materialRequirement.report.title", locale);
-        String documentAuthor = getTranslationService().translate("materialRequirements.materialRequirement.report.author",
-                locale);
+        String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
                 (Date) entity.getField("date"), securityService.getCurrentUserName());
         document.add(Chunk.NEWLINE);

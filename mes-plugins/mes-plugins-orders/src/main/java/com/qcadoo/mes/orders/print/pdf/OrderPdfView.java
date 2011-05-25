@@ -51,12 +51,12 @@ public final class OrderPdfView extends ReportPdfView {
             final PdfWriter writer) throws DocumentException, IOException {
         Entity entity = (Entity) model.get("value");
         String documentTitle = getTranslationService().translate("orders.order.report.order", locale);
-        String documentAuthor = getTranslationService().translate("orders.order.report.author", locale);
+        String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documentTitle, documentAuthor, new Date(),
                 securityService.getCurrentUserName());
         addMainTable(document, entity, locale);
         addDetailTable(document, entity, locale);
-        String text = getTranslationService().translate("qcadooView.report.endOfReport", locale);
+        String text = getTranslationService().translate("qcadooReport.commons.endOfPrint.label", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("orders.order.report.fileName", locale) + "_" + entity.getField("number");
     }

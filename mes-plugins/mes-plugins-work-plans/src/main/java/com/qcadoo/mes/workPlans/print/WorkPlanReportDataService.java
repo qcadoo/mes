@@ -243,7 +243,7 @@ public class WorkPlanReportDataService {
     private List<String> prepareOrderHeader(final Document document, final Entity entity, final Locale locale)
             throws DocumentException {
         String documenTitle = translationService.translate("workPlans.workPlan.report.title", locale);
-        String documentAuthor = translationService.translate("workPlans.workPlan.report.author", locale);
+        String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
                 (Date) entity.getField("date"), securityService.getCurrentUserName());
         // document.add(generateBarcode(entity.getField("name").toString()));
