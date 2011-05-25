@@ -237,7 +237,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.endWorker.label}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="287" y="345" width="249" height="31"/>
+				<reportElement stretchType="RelativeToTallestObject" x="287" y="345" width="249" height="31"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
@@ -250,7 +250,7 @@
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.doneQuantity.label}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.###" isBlankWhenNull="true">
 				<reportElement x="287" y="233" width="249" height="31"/>
 				<textElement>
 					<font size="12"/>
