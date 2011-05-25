@@ -5,7 +5,7 @@
 	<parameter name="OrderClause" class="java.lang.String"/>
 	<parameter name="ReportTitle" class="java.lang.String"/>
 	<queryString language="hql">
-		<![CDATA[from com.qcadoo.model.beans.orders.OrdersOrder order where id in ($P{EntityIds}) order by $P!{OrderClause}]]>
+		<![CDATA[from com.qcadoo.model.beans.orders.OrdersOrder order where id in ($P{EntityIds})]]>
 	</queryString>
 	<field name="id" class="java.lang.Long"/>
 	<field name="number" class="java.lang.String"/>
