@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="order" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.3310000000000006"/>
 	<property name="ireport.x" value="0"/>
@@ -70,9 +71,7 @@
 			</textField>
 			<textField evaluationTime="Report">
 				<reportElement x="550" y="18" width="19" height="16" forecolor="#464646"/>
-				<textElement>
-					<font fontName="Arial"/>
-				</textElement>
+				<textElement/>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
@@ -194,7 +193,7 @@
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_effectivedatefrom}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isBlankWhenNull="false">
 				<reportElement x="9" y="289" width="249" height="31"/>
 				<textElement>
 					<font size="12"/>
@@ -250,7 +249,7 @@
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.doneQuantity.label}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.###" isBlankWhenNull="true">
+			<textField isBlankWhenNull="true">
 				<reportElement x="287" y="233" width="249" height="31"/>
 				<textElement>
 					<font size="12"/>
@@ -304,9 +303,7 @@
 			</textField>
 			<textField evaluationTime="Report">
 				<reportElement x="551" y="3" width="19" height="16" forecolor="#464646"/>
-				<textElement>
-					<font fontName="Arial"/>
-				</textElement>
+				<textElement/>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 		</band>
