@@ -80,7 +80,7 @@
 				<textElement textAlignment="Right">
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.labelPage} + " " + $V{PAGE_NUMBER} + " " +$R{report.labelOf}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.page.label} + " " + $V{PAGE_NUMBER} + " " +$R{qcadooReport.commons.of.label}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -94,7 +94,7 @@
 				<textElement markup="html">
 					<font size="10" isBold="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["<font color=\"#464646\">" +$R{report.generatedbylabel} +"</font>: "+ $P{Author}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["<font color=\"#464646\">" +$R{qcadooReport.commons.generatedBy.label} +"</font>: "+ $P{Author}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="9" y="27" width="249" height="20"/>
@@ -293,14 +293,14 @@
 				<textElement textAlignment="Right" markup="none">
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.labelEndOfPrint}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.endOfPrint.label}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="168" y="3" width="380" height="13" forecolor="#464646"/>
 				<textElement textAlignment="Right">
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{report.labelPage} + " " + $V{PAGE_NUMBER} + " " +$R{report.labelOf}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.page.label} + " " + $V{PAGE_NUMBER} + " " +$R{qcadooReport.commons.of.label}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
 				<reportElement x="551" y="3" width="19" height="16" forecolor="#464646"/>
