@@ -54,7 +54,7 @@
 				<textElement markup="html">
 					<font size="24"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["<font color=\"#464646\">"+ $R{orders.order.report.title}+ "</font> " + $F{orders_order_name}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["<font color=\"#464646\">"+ $R{orders.order.report.order}+ "</font> " + $F{orders_order_name}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="0" y="106" width="555" height="1" forecolor="#464646"/>

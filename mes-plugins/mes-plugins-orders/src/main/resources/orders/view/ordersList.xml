@@ -65,10 +65,6 @@
 			</group>
 			<group name="export">
 				<smallButton name="print" icon="pdfIcon16.png"
-					action="#{grid}.fireEvent(printOrder,pdf);" state="disabled" />
-			</group>
-			<group name="report">
-				<bigButton name="print" icon="pdfIcon16.png"
 					action="#{grid}.generateReportForEntity('orders','order','pdf')" state="enabled" />
 			</group>
 		</ribbon>
@@ -169,8 +165,6 @@
 					<filterRestriction column="dateFrom" value="@{tomorrow}" />
 				</predefinedFilter>
 			</predefinedFilters>
-			<listener event="printOrder" class="com.qcadoo.mes.orders.OrderService"
-				method="printOrder" />
 			<listener event="changeOrderStateForGrid" class="com.qcadoo.mes.orders.OrderService"
 				method="changeOrderStateForGrid" />
 		</component>
