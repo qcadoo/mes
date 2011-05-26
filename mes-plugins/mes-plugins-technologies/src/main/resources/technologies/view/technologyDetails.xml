@@ -32,8 +32,7 @@
 	
 	<component type="window" name="window">
 		<ribbon>
-			<group template="navigation" />
-			<group template="formSaveCopyAndRemoveActions" />
+			<template name="standardFormTemplate" />
 		</ribbon>
 		<component type="form" name="technology" reference="form">
 			<component type="gridLayout" name="gridsLayout" columns="3"

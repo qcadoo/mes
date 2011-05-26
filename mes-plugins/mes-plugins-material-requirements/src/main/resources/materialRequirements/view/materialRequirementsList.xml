@@ -33,7 +33,7 @@
 	
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<group template="gridNewCopyAndRemoveAction" />
+			<template name="standardGridTemplate" />
 			<group name="export">
 				<smallButton name="pdf" icon="pdfIcon16.png"
 					action="#{grid}.fireEvent(printMaterialRequirement,pdf);" state="disabled"

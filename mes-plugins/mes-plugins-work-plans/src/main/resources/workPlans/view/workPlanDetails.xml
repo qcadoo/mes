@@ -32,8 +32,7 @@
 	
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<group template="navigation" />
-			<group template="formSaveCopyAndRemoveActions" />
+			<template name="standardFormTemplate" />
 			<group name="generate">
 				<bigButton name="generate" icon="generateIcon24.png"
 					action="#{form}.fireEvent(generateWorkPlan);" state="disabled" />
