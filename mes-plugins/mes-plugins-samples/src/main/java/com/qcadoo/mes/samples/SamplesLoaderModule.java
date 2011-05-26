@@ -225,6 +225,7 @@ public class SamplesLoaderModule extends Module {
         }
 
         machine = dataDefinitionService.get("basic", "machine").save(machine);
+
         if (!machine.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
@@ -360,6 +361,7 @@ public class SamplesLoaderModule extends Module {
         }
 
         item = dataDefinitionService.get("qcadooModel", "dictionaryItem").save(item);
+
         if (!item.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
