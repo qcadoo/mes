@@ -23,7 +23,7 @@
 		     orders.endWorker as orders_order_endworker,
 		     technology.name as technologies_technology_name,
 		     product.name as basic_product_name
-		from com.qcadoo.model.beans.orders.OrdersOrder as orders inner join orders.technology as technology inner join orders.product as product where orders.id in ($P{EntityIds})]]>
+		from com.qcadoo.model.beans.orders.OrdersOrder as orders left outer join orders.technology as technology left outer join orders.product as product where orders.id in ($P{EntityIds})]]>
 	</queryString>
 	<field name="orders_order_number" class="java.lang.String"/>
 	<field name="orders_order_name" class="java.lang.String"/>
@@ -123,7 +123,7 @@
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_name}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="9" y="159" width="249" height="31"/>
 				<textElement>
 					<font size="12"/>
