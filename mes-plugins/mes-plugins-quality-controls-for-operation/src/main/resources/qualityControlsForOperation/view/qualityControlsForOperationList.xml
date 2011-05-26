@@ -34,7 +34,7 @@
 	
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<group template="gridNewCopyAndRemoveAction" />
+			<template name="standardGridTemplate" />
 			<group name="controlStatus">
 				<bigButton name="closeControl" icon="acceptIcon24.png"
 					state="disabled">

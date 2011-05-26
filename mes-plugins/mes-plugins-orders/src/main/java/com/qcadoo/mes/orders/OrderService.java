@@ -76,28 +76,6 @@ public final class OrderService {
         return true;
     }
 
-    public void printOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (state.getFieldValue() instanceof Long) {
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                    (Long) state.getFieldValue());
-            if (order == null) {
-                state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                viewDefinitionState.redirectTo("/orders/order." + args[0] + "?id=" + state.getFieldValue(), true, false);
-            }
-
-        } else {
-            if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
-                        MessageType.FAILURE);
-            }
-        }
-    }
-
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof FieldComponent)) {
             return;

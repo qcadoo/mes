@@ -61,7 +61,7 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
     protected final String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
         String documentTitle = getTranslationService().translate("qualityControls.qualityControlForUnit.report.title", locale);
-        String documentAuthor = getTranslationService().translate("qualityControls.qualityControl.report.author", locale);
+        String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
         qualityControlsReportService.addQualityControlReportHeader(document, model, locale);
         List<Entity> orders = qualityControlsReportService.getOrderSeries(model, "qualityControlsForUnit");
@@ -79,7 +79,7 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
             addProductSeries(document, entry, locale);
         }
 
-        String text = getTranslationService().translate("qcadooView.report.endOfReport", locale);
+        String text = getTranslationService().translate("qcadooReport.commons.endOfPrint.label", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("qualityControls.qualityControlForUnit.report.fileName", locale);
     }

@@ -62,7 +62,7 @@ public class QualityControlForOperationPdfView extends ReportPdfView {
             final PdfWriter writer) throws DocumentException, IOException {
         String documentTitle = getTranslationService().translate("qualityControls.qualityControlForOperation.report.title",
                 locale);
-        String documentAuthor = getTranslationService().translate("qualityControls.qualityControl.report.author", locale);
+        String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
         qualityControlsReportService.addQualityControlReportHeader(document, model, locale);
 
@@ -82,7 +82,7 @@ public class QualityControlForOperationPdfView extends ReportPdfView {
             addProductSeries(document, entry, locale);
         }
 
-        String text = getTranslationService().translate("qcadooView.report.endOfReport", locale);
+        String text = getTranslationService().translate("qcadooReport.commons.endOfPrint.label", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("qualityControls.qualityControlForOperation.report.fileName", locale);
     }

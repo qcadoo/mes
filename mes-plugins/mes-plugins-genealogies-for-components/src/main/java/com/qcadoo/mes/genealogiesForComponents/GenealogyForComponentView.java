@@ -62,11 +62,10 @@ public class GenealogyForComponentView extends ReportPdfView {
                 GenealogiesForComponentsConstants.MODEL_PRODUCT_IN_BATCH).get(Long.valueOf(model.get("value").toString()));
         String documentTitle = getTranslationService().translate("genealogiesForComponents.genealogyForComponent.report.title",
                 locale);
-        String documentAuthor = getTranslationService().translate("genealogiesForComponents.genealogyForComponent.report.author",
-                locale);
+        String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
         addTables(document, entity, locale);
-        String text = getTranslationService().translate("qcadooView.report.endOfReport", locale);
+        String text = getTranslationService().translate("qcadooReport.commons.endOfPrint.label", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("genealogiesForComponents.genealogyForComponent.report.fileName", locale);
     }
@@ -129,10 +128,11 @@ public class GenealogyForComponentView extends ReportPdfView {
 
     private List<Entity> getGenealogies(final Entity entity) {
         List<Entity> genealogies = new ArrayList<Entity>();
-        
-        List<Entity> batchList = dataDefinitionService.get(GenealogiesForComponentsConstants.PLUGIN_IDENTIFIER,
-                GenealogiesForComponentsConstants.MODEL_PRODUCT_IN_BATCH).find()
-                .isEq("batch", entity.getField("batch")).list().getEntities();
+
+        List<Entity> batchList = dataDefinitionService
+                .get(GenealogiesForComponentsConstants.PLUGIN_IDENTIFIER,
+                        GenealogiesForComponentsConstants.MODEL_PRODUCT_IN_BATCH).find().isEq("batch", entity.getField("batch"))
+                .list().getEntities();
 
         for (Entity batch : batchList) {
             Entity genealogy = ((Entity) ((Entity) batch.getField("productInComponent")).getField("genealogy"));

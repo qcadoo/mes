@@ -32,8 +32,7 @@
 	
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<group template="navigation" />
-			<group template="formSaveCopyAndRemoveActions" />
+			<template name="standardFormTemplate" />
 			<group name="generate">
 				<!--<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" 
 					state="disabled" /> -->

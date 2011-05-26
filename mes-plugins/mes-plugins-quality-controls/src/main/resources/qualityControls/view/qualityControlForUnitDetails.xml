@@ -32,8 +32,7 @@
 	
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<group template="navigation" />
-			<group template="formSaveCopyAndRemoveActions" />
+			<template name="standardFormTemplate" />
 			<group name="controlStatus">
 				<bigButton name="closeControl" icon="acceptIcon24.png"
 					state="disabled">

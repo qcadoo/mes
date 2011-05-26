@@ -33,8 +33,8 @@
 	
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<group template="navigation" />
-			<group template="gridNewCopyAndRemoveAction"/>
+			<template name="standardFormTemplate" includeItems="navigation.back"/>
+			<template name="standardGridTemplate" />
 			<group name="autoGenealogy">
 				<bigButton name="activeComplete" icon="genealogyClockIcon24.png"
 					action="#{order}.fireEvent(autocompleteGenealogy,false);" state="enabled" />
