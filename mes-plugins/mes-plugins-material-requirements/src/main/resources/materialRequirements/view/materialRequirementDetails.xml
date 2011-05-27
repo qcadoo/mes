@@ -158,15 +158,15 @@
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
 			<listener event="printMaterialRequirement"
-				class="com.qcadoo.mes.materialRequirements.MaterialRequirementService" method="printMaterialRequirement" />
+				class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementService" method="printMaterialRequirement" />
 			<listener event="generateMaterialRequirement"
-				class="com.qcadoo.mes.materialRequirements.MaterialRequirementService" method="generateMaterialRequirement" />
+				class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementService" method="generateMaterialRequirement" />
 		</component>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.materialRequirements.MaterialRequirementService"
+		<beforeRender class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementService"
 			method="disableFormForExistingMaterialRequirement" />
-		<beforeRender class="com.qcadoo.mes.materialRequirements.MaterialRequirementService"
+		<beforeRender class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementService"
 			method="setGenerateButtonState" />
 	</hooks>
 </view>

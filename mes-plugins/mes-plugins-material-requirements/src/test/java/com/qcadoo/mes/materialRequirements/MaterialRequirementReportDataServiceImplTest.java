@@ -38,7 +38,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.materialRequirements.print.MaterialRequirementReportDataService;
+import com.qcadoo.mes.materialRequirements.internal.MaterialRequirementReportDataServiceImpl;
 import com.qcadoo.mes.technologies.print.ReportDataService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -51,9 +51,9 @@ import com.qcadoo.model.internal.EntityTreeImpl;
 
 @Ignore
 // TODO masz fix tests
-public class MaterialRequirementReportDataServiceTest {
+public class MaterialRequirementReportDataServiceImplTest {
 
-    private MaterialRequirementReportDataService materialRequirementsReportDataService = null;
+    private MaterialRequirementReportDataServiceImpl materialRequirementsReportDataService = null;
 
     private final ReportDataService reportDataService = mock(ReportDataService.class);
 
@@ -81,7 +81,7 @@ public class MaterialRequirementReportDataServiceTest {
 
     @Before
     public void init() {
-        materialRequirementsReportDataService = new MaterialRequirementReportDataService();
+        materialRequirementsReportDataService = new MaterialRequirementReportDataServiceImpl();
         ReflectionTestUtils.setField(materialRequirementsReportDataService, "reportDataService", reportDataService);
 
         FieldDefinition operationProductInCompoentFieldDefinition = mock(FieldDefinition.class);
