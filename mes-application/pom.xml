@@ -344,7 +344,8 @@
 								<configuration>
 									<serverId>qcadoo-public</serverId>
 									<fromFile>${basedir}/target/${project.artifactId}.zip</fromFile>
-									<url>scp://91.201.155.85/home/virtual/demo/qcadoo-saas.zip</url>
+									<toFile>qcadoo-saas.zip</toFile>
+									<url>scp://91.201.155.85/home/virtual/demo/</url>
 								</configuration>
 							</execution>
 						</executions>
