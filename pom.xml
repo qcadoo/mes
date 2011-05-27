@@ -388,39 +388,6 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		<profile>
-			<id>deployApplication</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>wagon-maven-plugin</artifactId>
-						<version>1.0-beta-3</version>
-						<executions>
-							<execution>
-								<id>deployApplication</id>
-								<phase>deploy</phase>
-								<goals>
-									<goal>upload-single</goal>
-								</goals>
-								<configuration>
-									<serverId>qcadoo-public</serverId>
-									<fromFile>${basedir}/target/${project.artifactId}.zip</fromFile>
-									<url>scp://91.201.155.85/home/virtual/demo/qcadoo-saas.zip</url>
-								</configuration>
-							</execution>
-						</executions>
-						<dependencies>
-							<dependency>
-								<groupId>org.apache.maven.wagon</groupId>
-								<artifactId>wagon-ssh</artifactId>
-								<version>1.0-beta-7</version>
-							</dependency>
-						</dependencies>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
 	</profiles>
 
 </project>
