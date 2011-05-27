@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialRequirements.print.xls;
+package com.qcadoo.mes.materialRequirements.internal.print.xls;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -35,7 +35,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialRequirements.print.MaterialRequirementReportDataService;
+import com.qcadoo.mes.materialRequirements.internal.MaterialRequirementReportDataServiceImpl;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
@@ -46,7 +46,7 @@ import com.qcadoo.report.api.xls.XlsUtil;
 public final class MaterialRequirementXlsService extends XlsDocumentService {
 
     @Autowired
-    private MaterialRequirementReportDataService materialRequirementReportDataService;
+    private MaterialRequirementReportDataServiceImpl materialRequirementReportDataService;
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {

@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialRequirements;
+package com.qcadoo.mes.materialRequirements.internal;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -37,9 +37,9 @@ import org.springframework.util.StringUtils;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementsConstants;
-import com.qcadoo.mes.materialRequirements.print.pdf.MaterialRequirementPdfService;
-import com.qcadoo.mes.materialRequirements.print.xls.MaterialRequirementXlsService;
+import com.qcadoo.mes.materialRequirements.internal.constants.MaterialRequirementsConstants;
+import com.qcadoo.mes.materialRequirements.internal.print.pdf.MaterialRequirementPdfService;
+import com.qcadoo.mes.materialRequirements.internal.print.xls.MaterialRequirementXlsService;
 import com.qcadoo.mes.orders.util.OrderReportService;
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.model.api.DataDefinition;

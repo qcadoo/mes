@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialRequirements;
+package com.qcadoo.mes.materialRequirements.internal;
 
 import java.util.Locale;
 
@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementsConstants;
+import com.qcadoo.mes.materialRequirements.internal.constants.MaterialRequirementsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;

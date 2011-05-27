@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialRequirements.print;
+package com.qcadoo.mes.materialRequirements.internal;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -31,15 +31,17 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.technologies.print.ReportDataService;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class MaterialRequirementReportDataService {
+public class MaterialRequirementReportDataServiceImpl implements MaterialRequirementReportDataService {
 
     @Autowired
     private ReportDataService reportDataService;
 
+    @Override
     public final Map<Entity, BigDecimal> prepareTechnologySeries(final Entity entity) {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         List<Entity> orders = entity.getHasManyField("orders");
