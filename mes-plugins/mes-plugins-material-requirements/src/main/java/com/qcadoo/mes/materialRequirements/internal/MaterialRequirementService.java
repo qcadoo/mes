@@ -150,7 +150,7 @@ public final class MaterialRequirementService {
                 return;
             } else if (StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
                 String message = translationService.translate(
-                        "materialRequirements.materialRequirement.window.materialRequirement.documentsWasGenerated",
+                        "materialRequirements.materialRequirementDetails.window.materialRequirement.documentsWasGenerated",
                         state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;
@@ -202,7 +202,7 @@ public final class MaterialRequirementService {
                         MessageType.FAILURE);
             } else if (!StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
                 state.addMessage(translationService.translate(
-                        "materialRequirements.materialRequirement.window.materialRequirement.documentsWasNotGenerated",
+                        "materialRequirements.materialRequirementDetails.window.materialRequirement.documentsWasNotGenerated",
                         state.getLocale()), MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo(
