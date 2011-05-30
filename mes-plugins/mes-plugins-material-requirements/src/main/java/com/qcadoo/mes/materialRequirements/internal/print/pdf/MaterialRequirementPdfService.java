@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialRequirements.print.pdf;
+package com.qcadoo.mes.materialRequirements.internal.print.pdf;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -42,8 +42,8 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
-import com.qcadoo.mes.materialRequirements.print.MaterialRequirementReportDataService;
-import com.qcadoo.mes.materialRequirements.util.EntityOrderNumberComparator;
+import com.qcadoo.mes.materialRequirements.internal.MaterialRequirementReportDataServiceImpl;
+import com.qcadoo.mes.materialRequirements.internal.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
@@ -62,7 +62,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     private SecurityService securityService;
 
     @Autowired
-    private MaterialRequirementReportDataService materialRequirementReportDataService;
+    private MaterialRequirementReportDataServiceImpl materialRequirementReportDataService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {

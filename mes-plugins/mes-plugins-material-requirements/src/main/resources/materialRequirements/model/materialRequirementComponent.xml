@@ -35,7 +35,7 @@
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
 			method="checkIfOrderHasTechnology" />
-		<validatesWith class="com.qcadoo.mes.materialRequirements.MaterialRequirementService"
+		<validatesWith class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementService"
 			method="checkMaterialRequirementComponentUniqueness" />
 	</hooks>
 	<identifier expression="#order['number'] + ' - ' + #order['name']" />

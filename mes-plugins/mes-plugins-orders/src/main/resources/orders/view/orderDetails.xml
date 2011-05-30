@@ -243,6 +243,6 @@
 		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="disableFormForDoneOrder" />
 		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="disableTechnologiesIfProductDoesNotAny" />
 		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="setAndDisableState" />
-		<beforeRender class="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnitPreRender" />
+		<beforeRender class="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnitBeforeRender" />
 	</hooks>
 </view>
