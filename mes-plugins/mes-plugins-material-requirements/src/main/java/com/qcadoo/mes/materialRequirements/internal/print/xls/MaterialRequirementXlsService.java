@@ -25,6 +25,7 @@ package com.qcadoo.mes.materialRequirements.internal.print.xls;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -68,7 +69,9 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
-        Map<Entity, BigDecimal> products = materialRequirementReportDataService.prepareTechnologySeries(entity);
+        List<Entity> orders = entity.getHasManyField("orders");
+        Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
+        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(orders, onlyComponents);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);

@@ -30,6 +30,7 @@ import static org.mockito.Mockito.mock;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -200,20 +201,12 @@ public class MaterialRequirementReportDataServiceImplTest {
     @Test
     public void shouldReturnEmptyMapIfTechnologyIsEmpty() {
         // given
-        Entity materialRequirement = new DefaultEntity(dataDefinition);
-        Entity materialRequirementComponent = new DefaultEntity(dataDefinition);
         Entity order = new DefaultEntity(dataDefinition);
         order.setField("technology", null);
-        materialRequirementComponent.setField("order", order);
-        EntityList componentsList = new EntityListImpl(dataDefinition, "materialRequirement", new Long(1));
-        materialRequirement.setField("orders", componentsList);
-        List<Entity> components = new ArrayList<Entity>();
-        components.add(materialRequirementComponent);
-
-        given(dataDefinition.find().list().getEntities()).willReturn(components);
 
         // when
-        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.prepareTechnologySeries(materialRequirement);
+        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.getQuantitiesForOrdersTechnologyProducts(
+                Collections.singletonList(order), false);
 
         // then
         assertEquals(products.size(), 0);
@@ -222,21 +215,13 @@ public class MaterialRequirementReportDataServiceImplTest {
     @Test
     public void shouldReturnEmptyMapIfQuantityIsEmpty() {
         // given
-        Entity materialRequirement = new DefaultEntity(dataDefinition);
-        Entity materialRequirementComponent = new DefaultEntity(dataDefinition);
         Entity order = new DefaultEntity(dataDefinition);
         order.setField("technology", new DefaultEntity(dataDefinition));
         order.setField("plannedQuantity", null);
-        materialRequirementComponent.setField("order", order);
-        EntityList componentsList = new EntityListImpl(dataDefinition, "materialRequirement", new Long(1));
-        materialRequirement.setField("orders", componentsList);
-        List<Entity> components = new ArrayList<Entity>();
-        components.add(materialRequirementComponent);
-
-        given(dataDefinition.find().list().getEntities()).willReturn(components);
 
         // when
-        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.prepareTechnologySeries(materialRequirement);
+        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.getQuantitiesForOrdersTechnologyProducts(
+                Collections.singletonList(order), false);
 
         // then
         assertEquals(products.size(), 0);
@@ -245,21 +230,13 @@ public class MaterialRequirementReportDataServiceImplTest {
     @Test
     public void shouldReturnEmptyMapIfQuantityIsLessThenOne() {
         // given
-        Entity materialRequirement = new DefaultEntity(dataDefinition);
-        Entity materialRequirementComponent = new DefaultEntity(dataDefinition);
         Entity order = new DefaultEntity(dataDefinition);
         order.setField("technology", new DefaultEntity(dataDefinition));
         order.setField("plannedQuantity", BigDecimal.ZERO);
-        materialRequirementComponent.setField("order", order);
-        EntityList componentsList = new EntityListImpl(dataDefinition, "materialRequirement", new Long(1));
-        materialRequirement.setField("orders", componentsList);
-        List<Entity> components = new ArrayList<Entity>();
-        components.add(materialRequirementComponent);
-
-        given(dataDefinition.find().list().getEntities()).willReturn(components);
 
         // when
-        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.prepareTechnologySeries(materialRequirement);
+        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.getQuantitiesForOrdersTechnologyProducts(
+                Collections.singletonList(order), false);
 
         // then
         assertEquals(products.size(), 0);
@@ -268,24 +245,10 @@ public class MaterialRequirementReportDataServiceImplTest {
     @Test
     public void shouldReturnNotEmptyMapIfQuantityIsMoreThenZero() {
         // given
-        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
-        given(fieldDefinition.getName()).willReturn("materialRequirement");
-        given(dataDefinition.getField("materialRequirement")).willReturn(fieldDefinition);
 
-        Entity materialRequirement = new DefaultEntity(dataDefinition);
-        materialRequirement.setField("onlyComponents", false);
-        materialRequirement.setId(new Long(15));
-        Entity materialRequirementComponent = new DefaultEntity(dataDefinition);
         Entity order = new DefaultEntity(dataDefinition);
         order.setField("technology", technologyForQuantityPerTechnologyAlghorithm);
         order.setField("plannedQuantity", BigDecimal.ONE);
-        materialRequirementComponent.setField("order", order);
-        EntityList componentsList = new EntityListImpl(dataDefinition, "materialRequirement", new Long(15));
-        materialRequirement.setField("orders", componentsList);
-        List<Entity> components = new ArrayList<Entity>();
-        components.add(materialRequirementComponent);
-
-        given(dataDefinition.find().belongsTo("materialRequirement", new Long(15)).list().getEntities()).willReturn(components);
 
         given(dataDefinition.find().belongsTo("technology", new Long(1)).orderAscBy("priority").list().getEntities()).willReturn(
                 entityTreeList);
@@ -300,7 +263,8 @@ public class MaterialRequirementReportDataServiceImplTest {
                 products3);
 
         // when
-        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.prepareTechnologySeries(materialRequirement);
+        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.getQuantitiesForOrdersTechnologyProducts(
+                Collections.singletonList(order), false);
 
         // then
         assertEquals(products.size(), 3);

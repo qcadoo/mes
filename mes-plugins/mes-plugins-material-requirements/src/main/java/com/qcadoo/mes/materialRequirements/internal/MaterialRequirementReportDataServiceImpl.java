@@ -42,10 +42,8 @@ public class MaterialRequirementReportDataServiceImpl implements MaterialRequire
     private ReportDataService reportDataService;
 
     @Override
-    public final Map<Entity, BigDecimal> prepareTechnologySeries(final Entity entity) {
+    public final Map<Entity, BigDecimal> getQuantitiesForOrdersTechnologyProducts(final List<Entity> orders, final Boolean onlyComponents) {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
-        List<Entity> orders = entity.getHasManyField("orders");
-        Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             Entity technology = (Entity) order.getField("technology");

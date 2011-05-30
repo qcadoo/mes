@@ -93,7 +93,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     private void addTechnologySeries(final Document document, final Entity entity, final List<String> productHeader)
             throws DocumentException {
-        Map<Entity, BigDecimal> products = materialRequirementReportDataService.prepareTechnologySeries(entity);
+        List<Entity> orders = entity.getHasManyField("orders");
+        Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
+        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(orders, onlyComponents);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         PdfPTable table = PdfUtil.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth);
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
