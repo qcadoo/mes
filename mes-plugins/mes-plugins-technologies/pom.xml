@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-basic</artifactId>
-			<version>0.4.2-SNAPSHOT</version>
+			<version>0.4.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
