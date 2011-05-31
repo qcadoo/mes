@@ -37,7 +37,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
-import javax.naming.directory.SearchResult;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -56,9 +55,7 @@ import org.xml.sax.SAXException;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.internal.search.SearchCriteria;
-import com.qcadoo.model.internal.search.SearchCriteriaImpl;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityRole;
@@ -171,8 +168,7 @@ public class SamplesLoaderModule extends Module {
 	private void changeAdminPassword() {
 		DataDefinition userDD = dataDefinitionService.get("qcadooSecurity",
 				"user");
-		Entity user = userDD.find().isEq("name", "admin").list().getEntities()
-				.get(0);
+		Entity user = userDD.find().add(SearchRestrictions.eq("login", "admin")).setMaxResults(1).uniqueResult();
 		user.setField("password", "charon321Demo");
 		userDD.save(user);
 	}
