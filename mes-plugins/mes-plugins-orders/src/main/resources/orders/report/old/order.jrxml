@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="order" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+
+	<property name="ireport.zoom" value="1.3310000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="93"/>
+	<parameter name="Author" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Default author"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="EntityIds" class="java.util.List"/>
+	<queryString language="hql">
+		<![CDATA[select 
+			 orders.number as orders_order_number,
+		     orders.name as orders_order_name,
+		     orders.dateFrom as orders_order_datefrom,
+		     orders.dateTo as orders_order_dateto,
+		     orders.state as orders_order_state,
+		     orders.plannedQuantity as orders_order_plannedquantity,
+		     orders.doneQuantity as orders_order_donequantity,
+		     orders.effectiveDateFrom as orders_order_effectivedatefrom,
+		     orders.effectiveDateTo as orders_order_effectivedateto,
+		     orders.startWorker as orders_order_startworker,
+		     orders.endWorker as orders_order_endworker,
+		     technology.name as technologies_technology_name,
+		     product.name as basic_product_name
+		from com.qcadoo.model.beans.orders.OrdersOrder as orders left outer join orders.technology as technology left outer join orders.product as product where orders.id in ($P{EntityIds})]]>
+	</queryString>
+	<field name="orders_order_number" class="java.lang.String"/>
+	<field name="orders_order_name" class="java.lang.String"/>
+	<field name="orders_order_datefrom" class="java.util.Date"/>
+	<field name="orders_order_dateto" class="java.util.Date"/>
+	<field name="orders_order_state" class="java.lang.String"/>
+	<field name="orders_order_plannedquantity" class="java.math.BigDecimal"/>
+	<field name="orders_order_donequantity" class="java.math.BigDecimal"/>
+	<field name="orders_order_effectivedatefrom" class="java.util.Date"/>
+	<field name="orders_order_effectivedateto" class="java.util.Date"/>
+	<field name="orders_order_startworker" class="java.lang.String"/>
+	<field name="orders_order_endworker" class="java.lang.String"/>
+	<field name="technologies_technology_name" class="java.lang.String"/>
+	<field name="basic_product_name" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="134" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="32" width="555" height="1" forecolor="#4D4D4D"/>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="0" y="45" width="555" height="61"/>
+				<textElement markup="html">
+					<font size="24"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["<font color=\"#464646\">"+ $R{orders.order.report.order}+ "</font> " + $F{orders_order_name}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="106" width="555" height="1" forecolor="#464646"/>
+				<graphicElement>
+					<pen lineWidth="4.0"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="415" y="112" width="140" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="550" y="18" width="19" height="16" forecolor="#464646"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="167" y="18" width="380" height="13" forecolor="#464646"/>
+				<textElement textAlignment="Right">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.page.label} + " " + $V{PAGE_NUMBER} + " " +$R{qcadooReport.commons.of.label}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="491" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="17" width="555" height="179" backcolor="#E6E6E6"/>
+			</rectangle>
+			<textField>
+				<reportElement x="3" y="-22" width="412" height="20"/>
+				<textElement markup="html">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["<font color=\"#464646\">" +$R{qcadooReport.commons.generatedBy.label} +"</font> "+ $P{Author}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="9" y="27" width="249" height="20"/>
+				<textElement markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.number.label}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="9" y="47" width="249" height="31"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_number}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="9" y="83" width="249" height="20"/>
+				<textElement markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.name.label}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="9" y="103" width="249" height="31"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="9" y="159" width="249" height="31"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{basic_product_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="9" y="139" width="249" height="20"/>
+				<textElement markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.product.label}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="287" y="139" width="249" height="20"/>
+				<textElement markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.state.label}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="287" y="27" width="249" height="20"/>
+				<textElement markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.dateFrom.label}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="287" y="103" width="249" height="31"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_dateto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="287" y="47" width="249" height="31"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_datefrom}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="287" y="159" width="249" height="31"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{orders_order_state}.startsWith("01"))?$R{orders.order.state.value.01pending}:(($F{orders_order_state}.startsWith("02"))?$R{orders.order.state.value.02inProgress}:$R{orders.order.state.value.03done})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="287" y="83" width="249" height="20"/>
+				<textElement markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.dateTo.label}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="9" y="213" width="249" height="20"/>
+				<textElement markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.effectiveDateFrom.label}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="9" y="233" width="249" height="31"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_effectivedatefrom}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="9" y="289" width="249" height="31"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_effectivedateto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="9" y="269" width="249" height="20"/>
+				<textElement markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.effectiveDateTo.label}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="9" y="325" width="249" height="20"/>
+				<textElement markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.startWorker.label}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="9" y="345" width="249" height="31"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_startworker}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="9" y="401" width="249" height="31"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_endworker}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="9" y="381" width="249" height="20"/>
+				<textElement markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.endWorker.label}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="287" y="345" width="249" height="31"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{technologies_technology_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="287" y="269" width="249" height="20"/>
+				<textElement markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.doneQuantity.label}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="287" y="233" width="249" height="31"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{orders_order_plannedquantity}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="287" y="325" width="249" height="20"/>
+				<textElement markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.technology.label}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="287" y="213" width="249" height="20"/>
+				<textElement markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.plannedQuantity.label}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="287" y="289" width="249" height="31"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{orders_order_donequantity}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="34" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="-1" width="555" height="1" forecolor="#4D4D4D"/>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="258" y="18" width="297" height="13" forecolor="#464646"/>
+				<textElement textAlignment="Right" markup="none">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.endOfPrint.label}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="168" y="3" width="380" height="13" forecolor="#464646"/>
+				<textElement textAlignment="Right">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.page.label} + " " + $V{PAGE_NUMBER} + " " +$R{qcadooReport.commons.of.label}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="551" y="3" width="19" height="16" forecolor="#464646"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

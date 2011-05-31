@@ -117,7 +117,7 @@ public final class WorkPlanService {
                 state.addMessage(message, MessageType.FAILURE);
                 return;
             } else if (StringUtils.hasText(workPlan.getStringField("fileName"))) {
-                String message = translationService.translate("workPlans.workPlan.window.workPlan.documentsWasGenerated",
+                String message = translationService.translate("workPlans.workPlanDetails.window.workPlan.documentsWasGenerated",
                         state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;
