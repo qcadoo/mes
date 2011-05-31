@@ -168,7 +168,7 @@ public class SamplesLoaderModule extends Module {
 	private void changeAdminPassword() {
 		DataDefinition userDD = dataDefinitionService.get("qcadooSecurity",
 				"user");
-		Entity user = userDD.find().add(SearchRestrictions.eq("login", "admin")).setMaxResults(1).uniqueResult();
+		Entity user = userDD.find().add(SearchRestrictions.eq("userName", "admin")).setMaxResults(1).uniqueResult();
 		user.setField("password", "charon321Demo");
 		userDD.save(user);
 	}
