@@ -34,11 +34,12 @@
 	
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<group name="actions">
+			<group name="orderListActions">
 				<bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.performNew;"/>
 				<smallButton name="copy" icon="copyIcon16.png" action="#{grid}.performCopy;" state="disabled" />
 				<smallButton name="delete" icon="deleteIcon16.png" action="#{grid}.performDelete;" state="disabled" />
 			</group>
+			<template name="standardGridTemplate" excludeGroups="actions"/>
 			<group name="status">
 				<bigButton name="activateOrder" icon="startIcon24.png"
 					state="disabled">
@@ -73,8 +74,8 @@
 				<![CDATA[
 					var print = #{window}.getRibbonItem("export.print");
 					var activateOrder = #{window}.getRibbonItem("status.activateOrder");
-					var deleteButton = #{window}.getRibbonItem("actions.delete");
-					var copyButton = #{window}.getRibbonItem("actions.copy");
+					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
+					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
