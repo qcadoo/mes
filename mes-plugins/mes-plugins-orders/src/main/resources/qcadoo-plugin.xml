@@ -86,7 +86,6 @@
 		<view:view resource="view/orderDetails.xml" />
 		
 		<report:report-template name="order" resource="report/order.jrxml" />
-		<report:report-template name="orderTest" resource="report/orderTest.jrxml" />
 
 	</modules>
 
