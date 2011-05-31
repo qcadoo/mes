@@ -122,6 +122,8 @@ public class SamplesLoaderModule extends Module {
             if (addTestData) {
                 if (!setAsDemoEnviroment) {
                     readDataFromXML("users", USER_ATTRIBUTES);
+                } else {
+                	readDataFromXML("usersForDemo", USER_ATTRIBUTES);
                 }
                 readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
                 if (isEnabled("basic")) {
