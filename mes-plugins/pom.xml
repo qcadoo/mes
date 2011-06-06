@@ -26,6 +26,7 @@
     	<module>mes-plugins-quality-controls-for-batch</module>
     	<module>mes-plugins-genealogies-for-components</module>
     	<module>mes-plugins-samples</module>
+    	<module>mes-plugins-production-scheduling</module>
   </modules>
 
 </project>
