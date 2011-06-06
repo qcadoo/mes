@@ -1,0 +1,34 @@
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xmlns="http://schema.qcadoo.org/view"
+    	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+		name="usedproducts" modelName="order" modelPlugin="orders">
+
+		<component type="window" name="window">
+			<ribbon>
+				<group template="navigation" />
+			</ribbon>
+			<component type="form" name="order" reference="order">
+			</component>
+						
+			<component type="grid" name="usedproducts" reference="grid" source="#{order}.usedproductsV">				
+				<option type="column" name="productNumber" fields="product" link="true" expression="#product['number']" width="30"/>
+				<option type="column" name="productName" fields="product" link="true" expression="#product['name']" />
+				
+				<option type="column" name="plannedQuantity" fields="plannedQuantity" link="true" width="40" />
+				<option type="column" name="usedQuantity" fields="usedQuantity" expression="#usedQuantity==null?'N/A':#usedQuantity" link="true" width="40" />
+				
+				<option type="order" column="product" direction="asc" />
+				
+				<option type="correspondingView" value="usedproducts/usedproductsDetails" />
+				<option type="correspondingComponent" value="form" />
+				<option type="searchable" value="name,number" />
+				<option type="orderable" value="name,number" />
+				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
+			</component>
+			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
+		</component>
+		<hooks>
+		</hooks>
+</view>

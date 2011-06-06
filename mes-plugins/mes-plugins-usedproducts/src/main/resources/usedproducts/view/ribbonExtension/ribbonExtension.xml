@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
+    xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
+    plugin="orders"
+    view="orderDetails">
+
+     <group name="usedproducts">
+          <bigButton name="usedproducts" action="#{form}.fireEvent(showUsedProducts);" icon="../../../../../usedproducts/public/css/icons/iconProducts24.png" />          
+     </group>
+</ribbonExtension>

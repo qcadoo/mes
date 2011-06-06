@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+    xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+        name="stoppageForm" modelName="stoppage">
+ 
+        <component type="window" name="window">
+            <ribbon>
+                <group template="navigation" />
+                <group template="formSaveCopyAndRemoveActions" />
+            </ribbon>
+
+            <component type="form" name="form" reference="form">
+                <component type="input" name="duration" field="duration" />
+                <component type="textarea" name="reason" field="reason" />
+                <option type="expression" value="#reason + ' (' + #duration +' min)'" />
+                <option type="header" value="true" />
+            </component>
+        </component>
+</view>

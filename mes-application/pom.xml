@@ -67,12 +67,22 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-technologies</artifactId>
-			<version>0.4.1</version>
+			<version>0.4.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-samples</artifactId>
-			<version>0.4.1</version>
+			<version>0.4.2-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-stoppage</artifactId>
+			<version>0.4.2-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-usedproducts</artifactId>
+			<version>0.4.2-SNAPSHOT</version>
 		</dependency>
 
 		<!-- TODO develop purpose only -->
@@ -188,6 +198,8 @@
 								${basedir}/../../qcadoo/qcadoo-plugins-export-to-csv/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-basic/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
+								${basedir}/../mes-plugins/mes-plugins-stoppage/src/main/resources;
+								${basedir}/../mes-plugins/mes-plugins-usedproducts/src/main/resources;
 								${basedir}/../../qcadoo-saas/qcadoo-saas-plugins-plugin-management/src/main/resources;
 							</resourcesAsCSV>
 						</baseResource>
