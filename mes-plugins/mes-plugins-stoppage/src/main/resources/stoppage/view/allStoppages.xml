@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xmlns="http://schema.qcadoo.org/view"
+    	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+		name="allStoppages" modelName="stoppage" modelPlugin="stoppage">
+	
+		<component type="window" name="window">
+			<ribbon>
+				<group template="gridNewCopyAndRemoveAction" />
+			</ribbon>
+						
+			<component type="grid" name="stoppage" reference="grid">
+				<option type="column" name="order" fields="order" expression="#order['name']" link="true" width="40" />
+				<option type="column" name="duration" fields="duration" link="true" width="20" />
+				<option type="column" name="reason" fields="reason" link="true" />
+
+				<option type="correspondingView" value="stoppage/allStoppagesForm" />
+				<option type="correspondingComponent" value="form" />
+				<option type="correspondingViewInModal" value="false" />
+				
+				<option type="searchable" value="reason, duration" />
+				<option type="orderable" value="reason, duration" />
+				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
+				<option type="order" column="duration" direction="desc" />
+			</component>
+			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
+		</component>
+</view>

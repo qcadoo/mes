@@ -47,7 +47,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 	</information>
-
+	
 	<modules>
 		<localization:translation-group name="dashboard" prefix="basic.dashboard" />
 
@@ -85,6 +85,7 @@
 		<view:view resource="view/productSubstituteDetails.xml" />
 		<view:view resource="view/productSubstituteComponentDetails.xml" />
 		<view:view resource="view/parameters.xml" />
+		
 	</modules>
 
 </plugin>

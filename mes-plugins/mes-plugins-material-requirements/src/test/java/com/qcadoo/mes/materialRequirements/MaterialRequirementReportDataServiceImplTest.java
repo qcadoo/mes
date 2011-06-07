@@ -205,7 +205,7 @@ public class MaterialRequirementReportDataServiceImplTest {
         order.setField("technology", null);
 
         // when
-        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.getQuantitiesForOrdersTechnologyProducts(
+        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.getQuantitiesForMaterialRequirementProducts(
                 Collections.singletonList(order), false);
 
         // then
@@ -220,7 +220,7 @@ public class MaterialRequirementReportDataServiceImplTest {
         order.setField("plannedQuantity", null);
 
         // when
-        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.getQuantitiesForOrdersTechnologyProducts(
+        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.getQuantitiesForMaterialRequirementProducts(
                 Collections.singletonList(order), false);
 
         // then
@@ -235,7 +235,7 @@ public class MaterialRequirementReportDataServiceImplTest {
         order.setField("plannedQuantity", BigDecimal.ZERO);
 
         // when
-        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.getQuantitiesForOrdersTechnologyProducts(
+        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.getQuantitiesForMaterialRequirementProducts(
                 Collections.singletonList(order), false);
 
         // then
@@ -263,7 +263,7 @@ public class MaterialRequirementReportDataServiceImplTest {
                 products3);
 
         // when
-        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.getQuantitiesForOrdersTechnologyProducts(
+        Map<Entity, BigDecimal> products = materialRequirementsReportDataService.getQuantitiesForMaterialRequirementProducts(
                 Collections.singletonList(order), false);
 
         // then

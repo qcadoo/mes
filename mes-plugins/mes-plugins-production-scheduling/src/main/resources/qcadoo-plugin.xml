@@ -26,9 +26,19 @@
 		</vendor>
 	</information>
 
-
+	<dependencies>
+		<dependency>
+			<plugin>orders</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+	
 	<modules>
 		<localization:translation path="locales" />
+		
+		<view:view resource="view/testGantt.xml" />
+		<menu:menu-item name="testGantt" category="orders" view="testGantt" />
+		
 	</modules>
 
 </plugin>
