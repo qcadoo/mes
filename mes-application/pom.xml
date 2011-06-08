@@ -74,7 +74,7 @@
 			<artifactId>mes-plugins-samples</artifactId>
 			<version>0.4.2-SNAPSHOT</version>
 		</dependency>
-		<!--<dependency>
+		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-stoppage</artifactId>
 			<version>0.4.2-SNAPSHOT</version>
@@ -85,7 +85,7 @@
 			<version>0.4.2-SNAPSHOT</version>
 		</dependency>
 
-		 TODO develop purpose only -->
+		<!-- TODO develop purpose only -->
 		<!--<dependency> <groupId>com.qcadoo.mes</groupId> <artifactId>mes-commercial-plugins-integration-commons</artifactId> 
 			<version>1.0.0</version> </dependency> <dependency> <groupId>com.qcadoo.mes</groupId> 
 			<artifactId>mes-commercial-plugins-integration-enova</artifactId> <version>1.0.0</version> 
