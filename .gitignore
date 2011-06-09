@@ -11,4 +11,5 @@ mes-application/src/main/webapp/js/qcd.min.js
 mes-application/src/main/webapp/js/qcd.all.js
 release.properties
 pom.xml.releaseBackup
+bin
 mes-application/src/main/webapp/WEB-INF/jsp
