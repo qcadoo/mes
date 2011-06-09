@@ -30,5 +30,4 @@
 	<modules>
 		<localization:translation path="locales" />
 	</modules>
-
 </plugin>
