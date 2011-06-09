@@ -33,8 +33,8 @@
 			<validatesRegex pattern="^[a-zA-Z0-9\\_\\.\\(\\)]+$" />
 		</string>
 		<string name="name" required="true" />
-		<date name="dateFrom" required="true" />
-		<date name="dateTo" required="true" />
+		<datetime name="dateFrom" required="true" />
+		<datetime name="dateTo" required="true" />
 		<enum name="state" values="01pending,02inProgress,03done"
 			required="true" />
 		<belongsTo name="product" plugin="basic" model="product" />
@@ -50,8 +50,8 @@
 			<validatesPrecision max="8" />
 			<validatesScale max="3" />
 		</decimal>
-		<date name="effectiveDateFrom" readonly="true" />
-		<date name="effectiveDateTo" readonly="true" />
+		<datetime name="effectiveDateFrom" readonly="true" />
+		<datetime name="effectiveDateTo" readonly="true" />
 		<string name="startWorker" readonly="true" />
 		<string name="endWorker" readonly="true" />
 	</fields>
