@@ -194,6 +194,7 @@
 							<resourcesAsCSV>
 								${basedir}/src/main/webapp;
 								${basedir}/../../qcadoo/qcadoo-view/src/main/resources;
+								${basedir}/../../qcadoo/qcadoo-report/src/main/resources;
 								${basedir}/../../qcadoo/qcadoo-plugins-plugin-management/src/main/resources;
 								${basedir}/../../qcadoo/qcadoo-plugins-export-to-csv/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-basic/src/main/resources;

@@ -143,13 +143,15 @@
 						<component type="calendar" name="dateFrom" field="dateFrom">
 							<listener event="onChange" class="com.qcadoo.mes.orders.OrderService"
 								method="changeDateFrom" />
-							<option type="labelWidth" value="55" />
+							<option type="labelWidth" value="50" />
+							<option type="withTimePicker" value="true" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="7">
 						<component type="calendar" name="dateTo" field="dateTo"
 							reference="dateTo">
-							<option type="labelWidth" value="55" />
+							<option type="labelWidth" value="50" />
+							<option type="withTimePicker" value="true" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">
@@ -220,11 +222,15 @@
 				<layoutElement column="1" row="1">
 					<component type="calendar" name="effectiveDateFrom"
 						field="#{form}.effectiveDateFrom" reference="effectiveDateFrom"
-						defaultEnabled="false" />
+						defaultEnabled="false">
+						<option type="withTimePicker" value="true" />	
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="calendar" name="effectiveDateTo" field="#{form}.effectiveDateTo"
-						reference="effectiveDateTo" defaultEnabled="false" />
+						reference="effectiveDateTo" defaultEnabled="false">
+						<option type="withTimePicker" value="true" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
 					<component type="input" name="startWorker" field="#{form}.startWorker"
