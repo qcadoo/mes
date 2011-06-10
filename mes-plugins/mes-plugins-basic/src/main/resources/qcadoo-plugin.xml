@@ -60,6 +60,7 @@
 		<model:model model="product" resource="model/product.xml" />
 		<model:model model="substitute" resource="model/substitute.xml" />
 		<model:model model="substituteComponent" resource="model/substituteComponent.xml" />
+		<model:model model="company" resource ="model/company.xml"/>
 
 		<model:dictionary name="categories" />
 		<model:dictionary name="shifts" />
@@ -75,6 +76,8 @@
 		<menu:menu-item name="products" category="basic" view="productsList" />
 		<menu:menu-item-url name="systemParameters"
 			category="basic" url="/parameters.html" />
+		<menu:menu-item-url name="companyDetails"
+			category="administration" url="/companyView.html"/>
 
 		<view:view resource="view/machinesList.xml" />
 		<view:view resource="view/machineDetails.xml" />
@@ -85,6 +88,7 @@
 		<view:view resource="view/productSubstituteDetails.xml" />
 		<view:view resource="view/productSubstituteComponentDetails.xml" />
 		<view:view resource="view/parameters.xml" />
+		<view:view resource="view/companyDetails.xml"/>
 		
 	</modules>
 
