@@ -66,13 +66,16 @@
 			</group>
 			<group name="export">
 				<smallButton name="print" icon="pdfIcon16.png"
-					action="#{grid}.generateReportForEntity('orders','order','pdf')" state="enabled" />
+					action="#{grid}.generateReportForEntity('orders','order','pdf')" state="disabled" />
+				<smallButton name="generateListOfOrdersReport" icon="pdfIcon16.png"
+					action="#{grid}.generateReportForEntity('orders','listOfOrdersReport','pdf')" state="disabled" />
 			</group>
 		</ribbon>
 		<component type="grid" name="orders" reference="grid">
 			<script>
 				<![CDATA[
 					var print = #{window}.getRibbonItem("export.print");
+					var generateListOfOrdersReport = #{window}.getRibbonItem("export.generateListOfOrdersReport");
 					var activateOrder = #{window}.getRibbonItem("status.activateOrder");
 					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
 					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
@@ -80,10 +83,12 @@
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 								print.disable();
+								generateListOfOrdersReport.disable();
 								activateOrder.disable();
 								deleteButton.disable();
 								copyButton.disable();
 							} else {
+								generateListOfOrdersReport.enable();
 								if (selectedEntitiesArray.length == 1) {
 									print.enable();
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;

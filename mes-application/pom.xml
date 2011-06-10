@@ -205,14 +205,13 @@
 							<resourcesAsCSV>
 								${basedir}/src/main/webapp;
 								${basedir}/../../qcadoo/qcadoo-view/src/main/resources;
+								${basedir}/../../qcadoo/qcadoo-report/src/main/resources;
 								${basedir}/../../qcadoo/qcadoo-plugins-plugin-management/src/main/resources;
 								${basedir}/../../qcadoo/qcadoo-plugins-export-to-csv/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-basic/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-stoppage/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-usedproducts/src/main/resources;
-								${basedir}/../../qcadoo-saas/qcadoo-saas-plugins-plugin-management/src/main/resources;
-								${basedir}/../../mes_comercial_plugins/mes-commercial-plugins-integration-commons/src/main/resources;
 							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>
