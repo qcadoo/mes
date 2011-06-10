@@ -11,12 +11,9 @@
 
 	<artifactId>mes-plugins-samples</artifactId>
 
-	<groupId>com.qcadoo.mes</groupId>
 	<packaging>qcadoo-plugin</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Samples</name>
-
-	<version>0.4.1</version>
 
 	<build>
 		<plugins>

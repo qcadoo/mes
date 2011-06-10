@@ -11,12 +11,9 @@
 
 	<artifactId>mes-plugins-technologies</artifactId>
 
-	<groupId>com.qcadoo.mes</groupId>
 	<packaging>qcadoo-plugin</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Technologies</name>
-
-	<version>0.4.1</version>
 
 	<dependencies>
 		<dependency>
