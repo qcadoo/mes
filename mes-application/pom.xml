@@ -87,7 +87,7 @@
 		</dependency>
 
 		<!-- TODO develop purpose only -->
-		<dependency>
+		<!--<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-commercial-plugins-integration-commons</artifactId>
 			<version>1.0.0</version>
@@ -101,7 +101,7 @@
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-commercial-plugins-integration-subiekt</artifactId>
 			<version>1.0.0</version>
-		</dependency>
+		</dependency>-->
 		<!-- TODO end -->
 
 		<dependency>
