@@ -32,19 +32,18 @@
 	</background>
 	<title>
 		<band height="134" splitType="Stretch">
-			
 			<textField>
-				<reportElement x="167" y="18" width="380" height="16" style="qcadooPageNumber"/>
-				<textElement textAlignment="Right" />
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.page.label}]]></textFieldExpression>
+				<reportElement style="qcadooPageNumber" x="167" y="18" width="380" height="16"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.page.label} + " " + $V{PAGE_NUMBER} + " " +$R{qcadooReport.commons.of.label}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="550" y="18" width="19" height="16" style="qcadooPageNumber"/>
+				<reportElement style="qcadooPageNumber" x="550" y="18" width="19" height="16"/>
+				<textElement/>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
-			
 			<line>
-				<reportElement x="0" y="32" width="555" height="1" style="qcadooPageNumberLine" />
+				<reportElement style="qcadooPageNumberLine" x="0" y="32" width="555" height="1"/>
 			</line>
 			
 			<textField>
@@ -78,27 +77,27 @@
 				<reportElement x="0" y="0" width="555" height="26" backcolor="#E6E6E6"/>
 			</rectangle>
 			<textField>
-				<reportElement x="3" y="1" width="40" height="23"/>
+				<reportElement style="qcadooLabelSmall" x="3" y="1" width="40" height="23"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.number.label}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="80" y="1" width="40" height="23"/>
+				<reportElement style="qcadooLabelSmall" x="80" y="1" width="40" height="23"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.name.label}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement  x="192" y="1" width="82" height="23"/>
+				<reportElement style="qcadooLabelSmall" x="192" y="1" width="82" height="23"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.product.label}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement  x="296" y="1" width="85" height="35"/>
+				<reportElement  style="qcadooLabelSmall" x="296" y="1" width="85" height="35"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.plannedQuantity.label}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement  x="370" y="2" width="82" height="35"/>
+				<reportElement  style="qcadooLabelSmall" x="370" y="2" width="82" height="35"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.dateFrom.label}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement  x="460" y="2" width="82" height="35"/>
+				<reportElement  style="qcadooLabelSmall" x="460" y="2" width="82" height="35"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.dateTo.label}]]></textFieldExpression>
 			</textField>
 		</band>
@@ -110,27 +109,27 @@
 				<reportElement x="0" y="29" width="555" height="1" forecolor="#464646"/>
 			</line>
 			<textField>
-				<reportElement  x="3" y="1" width="40" height="26"/>
+				<reportElement  style="qcadooValueSmall" x="3" y="1" width="40" height="26"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_number}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement  x="53" y="1" width="122" height="26"/>
+				<reportElement  style="qcadooValueSmall" x="53" y="1" width="122" height="26"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="185" y="1" width="122" height="26"/>
+				<reportElement style="qcadooValueSmall" x="185" y="1" width="122" height="26"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{basic_product_name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement  x="316" y="1" width="50" height="26"/>
+				<reportElement  style="qcadooValueSmall" x="316" y="1" width="50" height="26"/>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{orders_order_plannedquantity}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement  x="367" y="0" width="95" height="26"/>
+				<reportElement  style="qcadooValueSmall" x="367" y="0" width="95" height="26"/>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_datefrom}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="467" y="0" width="95" height="26"/>
+				<reportElement style="qcadooValueSmall" x="467" y="0" width="95" height="26"/>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_dateto}]]></textFieldExpression>
 			</textField>
 		</band>
