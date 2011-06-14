@@ -29,13 +29,18 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
-			<validatesLength max="40" />
+			<validatesLength max="255" />
 		</string>
-		<string name="name" required="true" />
+		<string name="name" required="true" >
+			<validatesLength max="2048" />
+		</string>
+		
 		<belongsTo name="product" plugin="basic" model="product" lazy="false"
 			required="true" />
 		<boolean name="master" default="true" />
-		<string name="description" />
+		<string name="description" >
+			<validatesLength max="2048" />
+		</string>
 		<tree name="operationComponents" model="technologyOperationComponent"
 			joinField="technology" cascade="delete" copyable="true" />
 		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology"
