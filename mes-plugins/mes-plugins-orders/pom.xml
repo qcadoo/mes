@@ -17,7 +17,7 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-technologies</artifactId>
-			<version>0.4.1</version>
+			<version>0.4.3-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

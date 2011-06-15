@@ -1,0 +1,26 @@
+<view name="lcsTranslationDetails" modelName="lcsTranslation" windowHeight="300" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardFormTemplate" />
+		</ribbon>
+		<windowTab name="mainTab">
+			<component type="form" name="lcsTranslationDetails" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="1" rows="1">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="translation" field="translation"
+							reference="translation">
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+							<option type="expression"
+								value="#name" />
+							<option type="fieldCode" value="name" />
+						</component>
+					</layoutElement>				
+				</component>
+				<option type="header" value="true"/>
+				<option type="expression" value="#name" />
+			</component>
+		</windowTab>
+	</component>
+</view>
