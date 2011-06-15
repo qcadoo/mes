@@ -6,7 +6,7 @@
 	<parent>
 	    <artifactId>mes-plugins</artifactId>
 	    <groupId>com.qcadoo.mes</groupId>
-	    <version>0.4.2</version>
+	    <version>0.4.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mes-plugins-production-scheduling</artifactId>
