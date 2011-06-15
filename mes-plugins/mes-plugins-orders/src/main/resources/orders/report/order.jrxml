@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="1.3310000000000006"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="144"/>
-	<template><![CDATA["qcadooReport/report/qcadooStyles.jrxml"]]></template>
+	<template><![CDATA["qcadooReport/report/qcadooStyles.jrtx"]]></template>
 	<parameter name="Author" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["Default author"]]></defaultValueExpression>
 	</parameter>
