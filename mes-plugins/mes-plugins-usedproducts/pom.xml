@@ -18,12 +18,12 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-orders</artifactId>
-			<version>0.4.2-SNAPSHOT</version>
+			<version>${qcadoo.version}</version>
 		</dependency>		
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-material-requirements</artifactId>
-			<version>0.4.2-SNAPSHOT</version>
+			<version>${qcadoo.version}</version>
 		</dependency>
 	</dependencies>
 
