@@ -37,10 +37,10 @@
 		<localization:translation path="locales" />
 		
 		<!-- UNCOMMENT TO SEE TEST GANTT VIEW -->
-		<!-- 
-		<view:view resource="view/testGantt.xml" />
-		<menu:menu-item name="testGantt" category="orders" view="testGantt" />
-		 -->
+		
+		<!-- <view:view resource="view/testGantt.xml" />
+		<menu:menu-item name="testGantt" category="orders" view="testGantt" />  -->
+		
 		
 	</modules>
 </plugin>
