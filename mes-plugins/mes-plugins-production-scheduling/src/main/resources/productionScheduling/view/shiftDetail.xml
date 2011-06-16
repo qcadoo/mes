@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.4.2
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="shiftDetail" 
+	modelName="shift">
+	
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardFormTemplate" />
+			<group name="calendar">
+				<bigButton name="showCalendar" action="" state="enabled" />
+			</group>
+		</ribbon>
+		<component type="form" name="shift" reference="form">
+			<component type="gridLayout" name="gridLayout" columns="3"
+				rows="8">
+				<layoutElement column="1" row="1">
+					<component type="input" name="name" field="name" />
+				</layoutElement>
+				
+				<layoutElement column="1" row="2">
+					<component type="checkbox" name="mondayWorking" field="mondayWorking" reference="mondayWorking">
+						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.ShiftsService"
+								method="onDayCheckboxChange" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="2">
+					<component type="input" name="mondayHours" field="mondayHours" hasLabel="false" reference="mondayHours"/>
+				</layoutElement>
+				
+				<layoutElement column="1" row="3">
+					<component type="checkbox" name="tuesdayWorking" field="tuesdayWorking" />
+				</layoutElement>
+				<layoutElement column="2" row="3">
+					<component type="input" name="tuesdayHours" field="tuesdayHours" hasLabel="false"/>
+				</layoutElement>
+				
+				<layoutElement column="1" row="4">
+					<component type="checkbox" name="wensdayWorking" field="wensdayWorking" />
+				</layoutElement>
+				<layoutElement column="2" row="4">
+					<component type="input" name="wensdayHours" field="wensdayHours" hasLabel="false"/>
+				</layoutElement>
+				
+				<layoutElement column="1" row="5">
+					<component type="checkbox" name="thursdayWorking" field="thursdayWorking" />
+				</layoutElement>
+				<layoutElement column="2" row="5">
+					<component type="input" name="thursdayHours" field="thursdayHours" hasLabel="false"/>
+				</layoutElement>
+				
+				<layoutElement column="1" row="6">
+					<component type="checkbox" name="fridayWorking" field="fridayWorking" />
+				</layoutElement>
+				<layoutElement column="2" row="6">
+					<component type="input" name="fridayHours" field="fridayHours" hasLabel="false"/>
+				</layoutElement>
+				
+				<layoutElement column="1" row="7">
+					<component type="checkbox" name="saturdayWorking" field="saturdayWorking" />
+				</layoutElement>
+				<layoutElement column="2" row="7">
+					<component type="input" name="saturdayHours" field="saturdayHours" hasLabel="false"/>
+				</layoutElement>
+				
+				<layoutElement column="1" row="8">
+					<component type="checkbox" name="sundayWorking" field="sundayWorking" />
+				</layoutElement>
+				<layoutElement column="2" row="8">
+					<component type="input" name="sundayHours" field="sundayHours" hasLabel="false"/>
+				</layoutElement>
+				
+				<layoutElement column="3" row="1" width="1" height="8">
+					<component type="grid" name="timetableExceptions" reference="timetableExceptions" source="#{form}.timetableExceptions">
+						<option type="column" name="name" fields="name" link="true" width="100"/>
+						<option type="column" name="fromDate" fields="fromDate" link="true" width="100"/>
+						<option type="column" name="toDate" fields="toDate" link="true" width="100"/>
+						<option type="column" name="type" fields="type" link="false" width="100"/>
+						<option type="order" column="fromDate" direction="asc"/>
+						<option type="correspondingView" value="productionScheduling/shiftTimetableExceptionDetail" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="paginable" value="false" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="true" />
+					</component>
+				</layoutElement>
+				
+			</component>
+			<option type="header" value="true" />
+			<option type="expression" value="#name" />
+		</component>
+	</component>
+</view>

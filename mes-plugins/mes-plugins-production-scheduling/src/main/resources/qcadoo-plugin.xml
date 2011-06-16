@@ -61,6 +61,16 @@
 	<modules>
 		<localization:translation path="locales" />
 		
+		<model:model model="shift" resource="model/shift.xml"/>
+		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml"/>
+		
+		<view:view resource="view/shiftsList.xml" />
+		<view:view resource="view/shiftDetail.xml" />
+		<view:view resource="view/shiftTimetableExceptionDetail.xml" />
+		
+		<menu:menu-item name="shiftsList" category="administration" view="shiftsList" />
+		
+		
 		<!-- UNCOMMENT TO SEE TEST GANTT VIEW -->
 		
 		<!-- <view:view resource="view/testGantt.xml" />
