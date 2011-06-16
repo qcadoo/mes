@@ -36,7 +36,9 @@
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back"/>
 		</ribbon>
-		<component type="ganttChart" name="gantt" />
+		<component type="ganttChart" name="gantt">
+			<option type="resolver" value="shiftsGanttChartItemResolver" />
+		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
