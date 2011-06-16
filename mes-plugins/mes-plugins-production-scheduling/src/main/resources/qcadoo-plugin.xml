@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.4.2
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
 <plugin plugin="productionScheduling" version="0.4.2"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
@@ -95,18 +120,24 @@
 			<model:string name="timeNextOperation" readonly="true"/>
 		</model:model-field>
 		
-		
-		
-		
 		<view:view-tab resource="view/tabExtensions/normDetails.xml"/>
 		<view:view-tab resource="view/tabExtensions/machineDetails.xml"/>
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml"/>
+
+		<model:model model="shift" resource="model/shift.xml"/>
+		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml"/>
+		
+		<view:view resource="view/shiftsList.xml" />
+		<view:view resource="view/shiftDetail.xml" />
+		<view:view resource="view/shiftTimetableExceptionDetail.xml" />
+		
+		<menu:menu-item name="shiftsList" category="administration" view="shiftsList" />
 		
 		<!-- UNCOMMENT TO SEE TEST GANTT VIEW -->
-		<!-- 
-		<view:view resource="view/testGantt.xml" />
-		<menu:menu-item name="testGantt" category="orders" view="testGantt" />
-		 -->
+		
+		<!-- <view:view resource="view/testGantt.xml" />
+		<menu:menu-item name="testGantt" category="orders" view="testGantt" />  -->
+		
 		
 	</modules>
 </plugin>
