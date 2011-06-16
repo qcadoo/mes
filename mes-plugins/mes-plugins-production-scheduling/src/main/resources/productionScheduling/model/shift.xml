@@ -4,7 +4,7 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="name" required="false" unique="true">
+		<string name="name" required="true" unique="true">
 			<validatesLength max="255" />
 		</string>
 		<boolean name="mondayWorking" default="true" required="true" />

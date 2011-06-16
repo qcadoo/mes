@@ -67,15 +67,9 @@
 		<view:view resource="view/shiftsList.xml" />
 		<view:view resource="view/shiftDetail.xml" />
 		<view:view resource="view/shiftTimetableExceptionDetail.xml" />
+		<view:view resource="view/ganttShiftCalendar.xml" />
 		
-		<menu:menu-item name="shiftsList" category="administration" view="shiftsList" />
-		
-		
-		<!-- UNCOMMENT TO SEE TEST GANTT VIEW -->
-		
-		<!-- <view:view resource="view/testGantt.xml" />
-		<menu:menu-item name="testGantt" category="orders" view="testGantt" />  -->
-		
+		<menu:menu-item name="shiftsList" category="basic" view="shiftsList" />
 		
 	</modules>
 </plugin>
