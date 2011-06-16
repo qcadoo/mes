@@ -61,11 +61,15 @@
 	<modules>
 		<localization:translation path="locales" />
 		
-		<!-- UNCOMMENT TO SEE TEST GANTT VIEW -->
+		<model:model model="shift" resource="model/shift.xml"/>
+		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml"/>
 		
-		<!-- <view:view resource="view/testGantt.xml" />
-		<menu:menu-item name="testGantt" category="orders" view="testGantt" />  -->
+		<view:view resource="view/shiftsList.xml" />
+		<view:view resource="view/shiftDetail.xml" />
+		<view:view resource="view/shiftTimetableExceptionDetail.xml" />
+		<view:view resource="view/ganttShiftCalendar.xml" />
 		
+		<menu:menu-item name="shiftsList" category="basic" view="shiftsList" />
 		
 	</modules>
 </plugin>

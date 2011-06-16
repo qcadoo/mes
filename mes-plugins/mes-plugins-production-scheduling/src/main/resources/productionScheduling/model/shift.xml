@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="shift" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<string name="name" required="true" unique="true">
+			<validatesLength max="255" />
+		</string>
+		<boolean name="mondayWorking" default="true" required="true" />
+		<string name="mondayHours" required="false">
+			<validatesLength max="255" />
+		</string>
+		<boolean name="tuesdayWorking" default="true" required="true" />
+		<string name="tuesdayHours" required="false">
+			<validatesLength max="255" />
+		</string>
+		<boolean name="wensdayWorking" default="true" required="true" />
+		<string name="wensdayHours" required="false">
+			<validatesLength max="255" />
+		</string>
+		<boolean name="thursdayWorking" default="true" required="true" />
+		<string name="thursdayHours" required="false">
+			<validatesLength max="255" />
+		</string>
+		<boolean name="fridayWorking" default="true" required="true" />
+		<string name="fridayHours" required="false">
+			<validatesLength max="255" />
+		</string>
+		<boolean name="saturdayWorking" default="false" required="true" />
+		<string name="saturdayHours" required="false">
+			<validatesLength max="255" />
+		</string>
+		<boolean name="sundayWorking" default="false" required="true" />
+		<string name="sundayHours" required="false">
+			<validatesLength max="255" />
+		</string>
+		<hasMany name="timetableExceptions" model="shiftTimetableException" joinField="shift"
+			cascade="delete" copyable="true" />
+	</fields>
+	<hooks />
+</model>
