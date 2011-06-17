@@ -12,5 +12,7 @@
 		<enum name="type" required="true" values="01freeTime,02workTime" default="01freeTime" />
 		<belongsTo name="shift" model="shift" lazy="false" required="true" />
 	</fields>
-	<hooks />
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.productionScheduling.ShiftsService" method="validateShiftTimetableException"/>
+	</hooks>
 </model>
