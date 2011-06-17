@@ -67,11 +67,96 @@ public class ShiftsGanttChartItemResolver implements GanttChartItemResolver {
         hours.addAll(getHourForDay(shift, dateFrom, dateTo, "saturday", 6));
         hours.addAll(getHourForDay(shift, dateFrom, dateTo, "sunday", 7));
 
+        List<Entity> exceptions = shift.getHasManyField("timetableExceptions");
+
+        addWorkTimeExceptions(hours, exceptions);
+        removeFreeTimeExceptions(hours, exceptions);
+
         Collections.sort(hours, new ShiftHoursComparator());
 
-        // exceptions
+        return mergeOverlappedHours(hours);
+    }
 
-        return hours;
+    private void removeFreeTimeExceptions(final List<ShiftHour> hours, final List<Entity> exceptions) {
+        for (Entity exception : exceptions) {
+            if (!"01freeTime".equals(exception.getStringField("type"))) {
+                continue;
+            }
+
+            Date from = (Date) exception.getField("fromDate");
+            Date to = (Date) exception.getField("toDate");
+
+            List<ShiftHour> hoursToRemove = new ArrayList<ShiftHour>();
+            List<ShiftHour> hoursToAdd = new ArrayList<ShiftHour>();
+
+            for (ShiftHour hour : hours) {
+                if (hour.getDateFrom().after(to)) {
+                    continue;
+                }
+                if (hour.getDateTo().before(from)) {
+                    continue;
+                }
+                if (hour.getDateTo().before(to) && hour.getDateFrom().after(from)) {
+                    hoursToRemove.add(hour);
+                    continue;
+                }
+                if (hour.getDateTo().after(to) && hour.getDateFrom().after(from)) {
+                    hoursToRemove.add(hour);
+                    hoursToAdd.add(new ShiftHour(to, hour.getDateTo()));
+                    continue;
+                }
+                if (hour.getDateTo().before(to) && hour.getDateFrom().before(from)) {
+                    hoursToRemove.add(hour);
+                    hoursToAdd.add(new ShiftHour(hour.getDateFrom(), from));
+                    continue;
+                }
+                if (hour.getDateTo().before(to) && hour.getDateFrom().before(from)) {
+                    hoursToRemove.add(hour);
+                    hoursToAdd.add(new ShiftHour(hour.getDateFrom(), from));
+                    hoursToAdd.add(new ShiftHour(to, hour.getDateTo()));
+                    continue;
+                }
+            }
+
+            hours.removeAll(hoursToRemove);
+            hours.addAll(hoursToAdd);
+        }
+    }
+
+    private void addWorkTimeExceptions(final List<ShiftHour> hours, final List<Entity> exceptions) {
+        for (Entity exception : exceptions) {
+            if (!"02workTime".equals(exception.getStringField("type"))) {
+                continue;
+            }
+
+            Date from = (Date) exception.getField("fromDate");
+            Date to = (Date) exception.getField("toDate");
+
+            hours.add(new ShiftHour(from, to));
+        }
+    }
+
+    private List<ShiftHour> mergeOverlappedHours(final List<ShiftHour> hours) {
+        if (hours.size() < 2) {
+            return hours;
+        }
+
+        List<ShiftHour> mergedHours = new ArrayList<ShiftHour>();
+
+        ShiftHour currentHour = hours.get(0);
+
+        for (int i = 1; i < hours.size(); i++) {
+            if (currentHour.getDateTo().before(hours.get(i).getDateFrom())) {
+                mergedHours.add(currentHour);
+                currentHour = hours.get(i);
+            } else if (currentHour.getDateTo().before(hours.get(i).getDateTo())) {
+                currentHour = new ShiftHour(currentHour.getDateFrom(), hours.get(i).getDateTo());
+            }
+        }
+
+        mergedHours.add(currentHour);
+
+        return mergedHours;
     }
 
     private Collection<ShiftHour> getHourForDay(final Entity shift, final Date dateFrom, final Date dateTo, final String day,
