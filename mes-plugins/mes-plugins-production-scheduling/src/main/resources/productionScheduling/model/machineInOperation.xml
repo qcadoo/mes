@@ -29,8 +29,8 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="tpz" required="true"/>
-		<string name="tj" required="true"/>
+		<decimal name="tpz" required="true"/>
+		<decimal name="tj" required="true"/>
 		<string name="parallel" required="true"/>
 		<boolean name="activeMachine" required="true" />
 		<belongsTo name="machine" plugin="basic" model="machine" required="true" />

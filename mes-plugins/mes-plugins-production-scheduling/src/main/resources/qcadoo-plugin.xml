@@ -53,15 +53,15 @@
 		
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:boolean name="enableNorm" default="true" />
+			<model:boolean name="enableNorm" default="false" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:string name="tpzNorm" />
+			<model:decimal name="tpzNorm" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:string name="tjNorm" />
+			<model:decimal name="tjNorm" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
@@ -74,11 +74,11 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:string name="countMachineNorm" />
+			<model:decimal name="countMachineNorm" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:string name="timeNextOperationNorm" readonly="true" />
+			<model:decimal name="timeNextOperationNorm" readonly="true" />
 		</model:model-field>
 		
 		
@@ -104,10 +104,10 @@
 			<model:boolean name="ofMachine" default="true" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
-			<model:string name="tpzMachine" />
+			<model:decimal name="tpzMachine" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
-			<model:string name="tjMachine" />
+			<model:decimal name="tjMachine" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
 			<model:decimal name="parallelMachine">
@@ -117,10 +117,10 @@
 		</model:model-field>
 
 		<model:model-field plugin="technologies" model="operation">
-			<model:string name="tpzOperation" />
+			<model:decimal name="tpzOperation" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:string name="tjOperation" />
+			<model:decimal name="tjOperation" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="countMachineOperation">
@@ -133,7 +133,7 @@
 				default="01all" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:string name="timeNextOperation"  />
+			<model:decimal name="timeNextOperation"  />
 		</model:model-field>
 		
 		 

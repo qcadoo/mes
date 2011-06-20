@@ -34,16 +34,16 @@
 		<component type="gridLayout" name="gridsLayout" columns="1"
 				rows="8" >
 				<layoutElement column="1" row="1">
-					<component type="checkbox" name="enableNorm" field="#{form}.enableNorm" reference="enableNorm" defaultEnabled="true" >
+					<component type="checkbox" name="enableNorm" field="#{form}.enableNorm" reference="enableNorm" defaultEnabled="true">
 						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.NormService"
 								method="changeEnableNorm" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="input" name="tpzNorm" field="#{form}.tpzNorm" reference="tpzNorm" defaultEnabled="false"/>
+					<component type="time" name="tpzNorm" field="#{form}.tpzNorm" reference="tpzNorm" defaultEnabled="false"/>
 				</layoutElement>
 				<layoutElement column="1" row="3">
-					<component type="input" name="tjNorm" field="#{form}.tjNorm" reference="tjNorm" defaultEnabled="false"/>
+					<component type="time" name="tjNorm" field="#{form}.tjNorm" reference="tjNorm" defaultEnabled="false"/>
 				</layoutElement>
 				<layoutElement column="1" row="4">
 					<component type="checkbox" name="changeNorm" field="#{form}.changeNorm" reference="changeNorm" defaultEnabled="false"/>
@@ -55,10 +55,13 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="6">
-					<component type="input" name="countMachineNorm" field="#{form}.countMachineNorm" reference="countMachineNorm"  hasDescription="true" defaultEnabled="false"/>
+					<component type="input" name="countMachineNorm" field="#{form}.countMachineNorm" reference="countMachineNorm"  hasDescription="true" defaultEnabled="false">
+						<validatesLength max="7" />
+						<validatesPrecision max="3"/>
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="7">
-					<component type="input" name="timeNextOperationNorm" field="#{form}.timeNextOperationNorm" reference="timeNextOperationNorm" 
+					<component type="time" name="timeNextOperationNorm" field="#{form}.timeNextOperationNorm" reference="timeNextOperationNorm" 
 						hasDescription="true" defaultEnabled="false"/>
 				</layoutElement>
 				<layoutElement column="1" row="8">
