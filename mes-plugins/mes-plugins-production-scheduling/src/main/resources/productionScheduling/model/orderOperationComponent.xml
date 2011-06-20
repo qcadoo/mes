@@ -42,7 +42,7 @@
 		<enum name="countRealized" values="01all,02specified" default="01all" />
 		<string name="countMachine" />
 		<string name="timeNextOperation" />
-		<hasMany name="machineInOrderOperationComponent" model="machineInOrderOperationComponent" joinField="orderOperationComponent" />
+		<hasMany name="machineInOrderOperationComponents" model="machineInOrderOperationComponent" joinField="orderOperationComponent" />
 	</fields>
 	<hooks />
 </model>
