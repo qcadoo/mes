@@ -29,12 +29,12 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<decimal name="tpz" required="true"/>
-		<decimal name="tj" required="true"/>
+		<integer name="tpz" required="true"/>
+		<integer name="tj" required="true"/>
 		<string name="parallel" required="true"/>
 		<boolean name="activeMachine" required="true" />
 		<belongsTo name="machine" plugin="basic" model="machine" required="true" />
-		<belongsTo name="operation" plugin="technologies" model="technologyOperationComponent" required="true" />
+		<belongsTo name="operationComponent" plugin="technologies" model="technologyOperationComponent" required="true" />
 	</fields>
 	<hooks />
 	<identifier expression="#name" />

@@ -55,7 +55,7 @@
 				</layoutElement>
 				
 				<layoutElement column="2" row="1" height="5">
-					<component type="grid" name="machine" source="#{form}.machineInOperationComponent">
+					<component type="grid" name="machine" source="#{form}.machineInOperation">
 						<option type="column" name="numberMachine" field="machine"
 							expression="#machine['number']" link="true" width="50"/>
 						<option type="column" name="nameMachine" field="machine"
@@ -63,7 +63,7 @@
 						<option type="order" column="numberMachine" direction="desc" />
 						<option type="searchable" value="numberMachine, nameMachine" />
 						<option type="orderable" value="numberMachine, nameMachine" />
-						<option type="correspondingView" value="productionScheduling/machineInOperationComponentDetails" />
+						<option type="correspondingView" value="productionScheduling/machineInOperationDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true"/>
 						<option type="deletable" value="true" />

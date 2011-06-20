@@ -57,11 +57,11 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:decimal name="tpz" />
+			<model:integer name="tpz" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:decimal name="tj" />
+			<model:integer name="tj" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
@@ -78,21 +78,19 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:decimal name="timeNextOperationNorm" readonly="true" />
+			<model:integer name="timeNextOperationNorm" readonly="true" />
 		</model:model-field>
 
 
 		<model:model-field plugin="technologies" model="operation">
-			<model:hasMany name="machineInOperationComponent"
-				plugin="productionScheduling" model="machineInOperationComponent"
-				joinField="operationComponent">
+			<model:hasMany name="machineInOperation"  plugin="productionScheduling" 
+			model="machineInOperation"  joinField="operationComponent">
 			</model:hasMany>
 		</model:model-field>
 
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
-			<model:hasMany name="machineInOperation" plugin="productionScheduling"
-				model="machineInOperation" joinField="operation">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:hasMany name="machineInOperationComponent" plugin="productionScheduling"
+				model="machineInOperationComponent" joinField="operationComponent">
 			</model:hasMany>
 		</model:model-field>
 
@@ -114,36 +112,36 @@
 			<model:boolean name="ofMachine" default="true" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
-			<model:decimal name="tpz" />
+			<model:integer name="tpz" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
-			<model:decimal name="tj" />
+			<model:integer name="tj" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
-			<model:decimal name="parallel">
+			<model:integer name="parallel">
 				<model:validatesLength max="7" />
 				<model:validatesPrecision max="3" />
-			</model:decimal>
+			</model:integer>
 		</model:model-field>
 
 		<model:model-field plugin="technologies" model="operation">
-			<model:decimal name="tpz" />
+			<model:integer name="tpz" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:decimal name="tj" />
+			<model:integer name="tj" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:decimal name="countMachineOperation">
+			<model:integer name="countMachineOperation">
 				<model:validatesLength max="7" />
 				<model:validatesPrecision max="3" />
-			</model:decimal>
+			</model:integer>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:enum values="01all,02specified" name="countRealizedOperation"
 				default="01all" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:decimal name="timeNextOperation" />
+			<model:integer name="timeNextOperation" />
 		</model:model-field>
 
 
