@@ -29,8 +29,8 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<boolean name="dfltValue" required="true" />
-		<string name="tpz" />
-		<string name="tj" />
+		<decimal name="tpz" />
+		<decimal name="tj" />
 		<string name="parallel" />
 		<boolean name="activeMachine" />
 		

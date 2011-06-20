@@ -59,17 +59,17 @@ public class NormService {
 	public void copyDefaultDataToOperationComponent(final DataDefinition dataDefinition, final Entity entity) {
 
 		Entity operation = entity.getBelongsToField("operation");
-		if (entity.getStringField("tpzOperation") == null
-				|| "".equals(entity.getStringField("tpzOperation"))) {
+		if (entity.getField("tpzOperation") == null
+				|| "".equals(entity.getField("tpzOperation"))) {
 
-			entity.setField("tpzNorm", operation.getStringField("tpzOperation"));
-			entity.setField("tjNorm", operation.getStringField("tjOperation"));
+			entity.setField("tpzNorm", operation.getField("tpzOperation"));
+			entity.setField("tjNorm", operation.getField("tjOperation"));
 			entity.setField("countRealizedNorm",
 					operation.getStringField("countRealizedOperation"));
 			entity.setField("timeNextOperationNorm",
-					operation.getStringField("timeNextOperation"));
+					operation.getField("timeNextOperation"));
 			entity.setField("countMachineNorm",
-					operation.getStringField("countMachineOperation"));
+					operation.getField("countMachineOperation"));
 		} else {
 			return;
 		}
