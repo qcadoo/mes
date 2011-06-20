@@ -27,15 +27,21 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="testGantt"
-	menuAccessible="true"
+	name="ganttOrdersCalendar"
 	modelPlugin="orders"
-	modelName="order">
+	modelName="order"
+	windowHeight="450"
+	windowWidth="900">
 	
 	<component type="window" name="window">
 		<ribbon>
+			<template name="standardFormTemplate" includeItems="navigation.back"/>
 		</ribbon>
-		<component type="ganttChart" name="gantt" />
+		<component type="ganttChart" name="gantt">
+			<option type="resolver" value="ordersGanttChartItemResolver" />
+			<option type="defaultZoomLevel" value="H1" />
+			<option type="defaultEndDay" value="7" />
+		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>

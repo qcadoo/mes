@@ -35,9 +35,9 @@
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
-						<listener event="selectedEntityChange" 
-							class="com.qcadoo.mes.productionScheduling.OperationService"
-							method="selectMachineInOperationComponent" />
+<!--						<listener event="onSelectedEntityChange" -->
+<!--							class="com.qcadoo.mes.productionScheduling.OperationService"-->
+<!--							method="selectMachineInOperationComponent" />-->
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">

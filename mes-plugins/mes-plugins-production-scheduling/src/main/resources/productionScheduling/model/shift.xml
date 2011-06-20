@@ -4,7 +4,7 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="name" required="false" unique="true">
+		<string name="name" required="true" unique="true">
 			<validatesLength max="255" />
 		</string>
 		<boolean name="mondayWorking" default="true" required="true" />
@@ -38,5 +38,7 @@
 		<hasMany name="timetableExceptions" model="shiftTimetableException" joinField="shift"
 			cascade="delete" copyable="true" />
 	</fields>
-	<hooks />
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.productionScheduling.ShiftsService" method="validateShiftHoursField"/>
+	</hooks>
 </model>
