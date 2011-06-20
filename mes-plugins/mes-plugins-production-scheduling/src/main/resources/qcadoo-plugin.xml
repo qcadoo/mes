@@ -47,25 +47,25 @@
 
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model model="machineInOperationComponent" resource="model/machineInOperationComponent.xml" />
 		<model:model model="machineInOperation" resource="model/machineInOperation.xml" />
-		
+
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:boolean name="enableNorm" default="false" />
+			<model:boolean name="useDefaultValue" default="false" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:decimal name="tpzNorm" />
+			<model:decimal name="tpz" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:decimal name="tjNorm" />
+			<model:decimal name="tj" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:boolean name="changeNorm" default="true" />
+			<model:boolean name="useMachineNorm" default="true" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
@@ -80,23 +80,33 @@
 			model="technologyOperationComponent">
 			<model:decimal name="timeNextOperationNorm" readonly="true" />
 		</model:model-field>
-		
-		
+
+
 		<model:model-field plugin="technologies" model="operation">
-			<model:hasMany name="machineInOperationComponent" plugin="productionScheduling" model="machineInOperationComponent" joinField="operationComponent" >
+			<model:hasMany name="machineInOperationComponent"
+				plugin="productionScheduling" model="machineInOperationComponent"
+				joinField="operationComponent">
 			</model:hasMany>
 		</model:model-field>
-		
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
-			<model:hasMany name="machineInOperation" plugin="productionScheduling" model="machineInOperation" joinField="operation" >
+
+		<model:model-field plugin="technologies"
+			model="technologyOperationComponent">
+			<model:hasMany name="machineInOperation" plugin="productionScheduling"
+				model="machineInOperation" joinField="operation">
 			</model:hasMany>
 		</model:model-field>
-		
-			
+
+
 		<model:model-hook plugin="technologies"
 			model="technologyOperationComponent">
 			<model:onSave class="com.qcadoo.mes.productionScheduling.NormService"
 				method="copyDefaultDataToOperationComponent" />
+		</model:model-hook>
+
+		<model:model-hook model="technologyOperationComponent"
+			plugin="technologies">
+			<model:validatesWith
+				class="com.qcadoo.mes.productionScheduling.OperationService" method="checkMachineInOperationComponentUniqueness" />
 		</model:model-hook>
 
 
@@ -104,23 +114,23 @@
 			<model:boolean name="ofMachine" default="true" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
-			<model:decimal name="tpzMachine" />
+			<model:decimal name="tpz" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
-			<model:decimal name="tjMachine" />
+			<model:decimal name="tj" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
-			<model:decimal name="parallelMachine">
+			<model:decimal name="parallel">
 				<model:validatesLength max="7" />
 				<model:validatesPrecision max="3" />
 			</model:decimal>
 		</model:model-field>
 
 		<model:model-field plugin="technologies" model="operation">
-			<model:decimal name="tpzOperation" />
+			<model:decimal name="tpz" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:decimal name="tjOperation" />
+			<model:decimal name="tj" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="countMachineOperation">
@@ -133,14 +143,14 @@
 				default="01all" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:decimal name="timeNextOperation"  />
+			<model:decimal name="timeNextOperation" />
 		</model:model-field>
-		
-		 
+
+
 		<view:view-tab resource="view/tabExtensions/operationComponent.xml" />
 		<view:view-tab resource="view/tabExtensions/machineDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
-		
+
 		<model:model model="shift" resource="model/shift.xml" />
 		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml" />
 
@@ -151,14 +161,16 @@
 		<view:view resource="view/machineInOperationDetails.xml" />
 		<view:view resource="view/ganttShiftCalendar.xml" />
 		<view:view resource="view/ganttOrdersCalendar.xml" />
-		
-		<menu:menu-item name="shiftsList" category="basic" view="shiftsList" />
-		
-		<view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
-		<view:view-listener plugin="orders" view="ordersList" component="window" event="showGanttOrdersCalendar" 
-				class="com.qcadoo.mes.productionScheduling.ShiftsService" method="showGanttOrdersCalendar"/>
 
-		
+		<menu:menu-item name="shiftsList" category="basic"
+			view="shiftsList" />
+
+		<view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
+		<view:view-listener plugin="orders" view="ordersList"
+			component="window" event="showGanttOrdersCalendar"
+			class="com.qcadoo.mes.productionScheduling.ShiftsService" method="showGanttOrdersCalendar" />
+
+
 		<menu:menu-item name="shiftsList" category="administration"
 			view="shiftsList" />
 

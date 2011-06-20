@@ -32,9 +32,9 @@ public class OperationService {
         }
     }
 
-    public void changeDfltValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void v(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
 
-        FieldComponent dfltValue = (FieldComponent) viewDefinitionState.getComponentByReference("dfltValue");
+        FieldComponent dfltValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
         FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
         FieldComponent tj = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
         FieldComponent parallel = (FieldComponent) viewDefinitionState.getComponentByReference("parallel");
@@ -77,20 +77,20 @@ public class OperationService {
         FieldComponent parallel = (FieldComponent) state.getComponentByReference("parallel");
         FieldComponent active = (FieldComponent) state.getComponentByReference("activeMachine");
 
-        if (machine.getField("tpzMachine") != null) {
-            tpz.setFieldValue(machine.getField("tpzMachine"));
+        if (machine.getField("tpz") != null) {
+            tpz.setFieldValue(machine.getField("tpz"));
         } else {
             tpz.setFieldValue("");
         }
 
-        if (machine.getField("tjMachine") != null) {
-            tj.setFieldValue(machine.getField("tjMachine"));
+        if (machine.getField("tj") != null) {
+            tj.setFieldValue(machine.getField("tj"));
         } else {
             tj.setFieldValue("");
         }
 
-        if (machine.getField("parallelMachine") != null) {
-            parallel.setFieldValue(machine.getField("parallelMachine"));
+        if (machine.getField("parallel") != null) {
+            parallel.setFieldValue(machine.getField("parallel"));
         } else {
             parallel.setFieldValue("");
         }

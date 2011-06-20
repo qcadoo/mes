@@ -35,7 +35,9 @@
 						<option type="fieldCode" value="number" />
 					</component>
 				</layoutElement>
-				
+				<layoutElemene>
+					<component type="checkbox" name="useDefaultValue" field="useDefaultValue" reference="useDefaultValue" defauleEnabled="true" />
+				</layoutElemene>
 				<layoutElement column="1" row="3">
 					<component type="time" name="tpz" field="tpz" reference="tpz" />
 				</layoutElement>
