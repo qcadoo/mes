@@ -27,11 +27,12 @@
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
     plugin="technologies"
-    view="technologyOperationComponentDetails">
+    view="technologyOperationComponentDetails"
+    >
 	
 	<windowTab name="norm" reference="norm">
 		<component type="gridLayout" name="gridsLayout" columns="1"
-				rows="7" >
+				rows="8" >
 				<layoutElement column="1" row="1">
 					<component type="checkbox" name="enableNorm" field="#{form}.enableNorm" reference="enableNorm" defaultEnabled="true" >
 						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.NormService"
@@ -57,7 +58,25 @@
 					<component type="input" name="countMachineNorm" field="#{form}.countMachineNorm" reference="countMachineNorm"  hasDescription="true" defaultEnabled="false"/>
 				</layoutElement>
 				<layoutElement column="1" row="7">
-					<component type="input" name="timeNextOperationNorm" field="#{form}.timeNextOperationNorm" reference="timeNextOperationNorm" hasDescription="true" defaultEnabled="false"/>
+					<component type="input" name="timeNextOperationNorm" field="#{form}.timeNextOperationNorm" reference="timeNextOperationNorm" 
+						hasDescription="true" defaultEnabled="false"/>
+				</layoutElement>
+				<layoutElement column="1" row="8">
+				
+				<component type="grid" name="machine" reference="machine" source="#{form}.machineInOperation">
+						<option type="column" name="numberMachine" field="machine"
+							expression="#machine['number']" link="true" width="50"/>
+						<option type="column" name="nameMachine" field="machine"
+							expression="#machine['name']" link="true" width="50"/>
+						<option type="order" column="numberMachine" direction="desc" />
+						<option type="searchable" value="numberMachine, nameMachine" />
+						<option type="orderable" value="numberMachine, nameMachine" />
+						<option type="correspondingView" value="productionScheduling/machineInOperationDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="deletable" value="true" />
+						<option type="creatable" value="true" />
+						<option type="multiselect" value="true" /> 
+					</component>
 				</layoutElement>
 		</component>
 	</windowTab>

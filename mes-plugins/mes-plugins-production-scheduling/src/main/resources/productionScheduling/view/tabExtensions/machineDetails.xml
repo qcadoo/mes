@@ -33,16 +33,16 @@
 		<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="4" >
 				<layoutElement column="1" row="1">
-					<component type="checkbox" name="ofMachine" field="ofMachine"/>
+					<component type="checkbox" name="ofMachine" field="#{form}.ofMachine"/>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="input" name="tpzMachine" field="tpzMachine" reference="tpzMachine" />
+					<component type="input" name="tpzMachine" field="#{form}.tpzMachine" reference="tpzMachine" />
 				</layoutElement>
 				<layoutElement column="1" row="3">
-					<component type="input" name="tjMachine" field="tjMachine" reference="tjMachine" />
+					<component type="input" name="tjMachine" field="#{form}.tjMachine" reference="tjMachine" />
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="input" name="parallelMachine" field="parallelMachine" reference="parallelMachine" hasDescription="true"/>
+					<component type="input" name="parallelMachine" field="#{form}.parallelMachine" reference="parallelMachine" hasDescription="true"/>
 				</layoutElement>
 		</component>
 	</windowTab>

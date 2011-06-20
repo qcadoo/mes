@@ -33,19 +33,40 @@
 		<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="5" >
 				<layoutElement column="1" row="1">
-					<component type="input" name="tpzOperation" field="tpzOperation" reference="tpzOperation" />
+					<component type="input" name="tpzOperation" field="#{form}.tpzOperation" reference="tpzOperation" />
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="input" name="tjOperation" field="tjOperation" reference="tjOperation" />
+					<component type="input" name="tjOperation" field="#{form}.tjOperation" reference="tjOperation" />
 				</layoutElement>
 				<layoutElement column="1" row="3">
-					<component type="select" name="countRealizedOperation" field="countRealizedOperation" reference="countRealizedOperation" hasDescription="true" />
+					<component type="select" name="countRealizedOperation" field="#{form}.countRealizedOperation" reference="countRealizedOperation" hasDescription="true" defaultEnabled="false"> 
+						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionScheduling.OperationService"
+								method="changeCountRealizedOperation" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="input" name="countMachineOperation" field="countMachineOperation" reference="countMachineOperation" hasDescription="true"/>
+					<component type="input" name="countMachineOperation" field="#{form}.countMachineOperation" reference="countMachineOperation" hasDescription="true"/>
 				</layoutElement>
 				<layoutElement column="1" row="5">
-					<component type="input" name="timeNextOperation" field="timeNextOperation" reference="timeNextOperation" hasDescription="true" />
+					<component type="input" name="timeNextOperation" field="#{form}.timeNextOperation" reference="timeNextOperation" hasDescription="true" />
+				</layoutElement>
+				
+				<layoutElement column="2" row="1" height="5">
+				
+				<component type="grid" name="machine" reference="machine" source="#{form}.machineInOperationComponent">
+						<option type="column" name="numberMachine" field="machine"
+							expression="#machine['number']" link="true" width="50"/>
+						<option type="column" name="nameMachine" field="machine"
+							expression="#machine['name']" link="true" width="50"/>
+						<option type="order" column="numberMachine" direction="desc" />
+						<option type="searchable" value="numberMachine, nameMachine" />
+						<option type="orderable" value="numberMachine, nameMachine" />
+						<option type="correspondingView" value="productionScheduling/machineInOperationComponentDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="deletable" value="true" />
+						<option type="creatable" value="true" />
+						<option type="multiselect" value="true" /> 
+					</component>
 				</layoutElement>
 		</component>
 	</windowTab>
