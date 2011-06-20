@@ -33,7 +33,6 @@
 		<decimal name="tj" required="true"/>
 		<string name="parallel" required="true"/>
 		<boolean name="activeMachine" required="true" />
-		
 		<belongsTo name="machine" plugin="basic" model="machine" required="true" />
 		<belongsTo name="operation" plugin="technologies" model="technologyOperationComponent" required="true" />
 	</fields>
