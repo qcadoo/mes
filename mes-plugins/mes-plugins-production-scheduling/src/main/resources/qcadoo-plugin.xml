@@ -167,6 +167,11 @@
 		<!-- <view:view resource="view/testGantt.xml" /> <menu:menu-item name="testGantt" 
 			category="orders" view="testGantt" /> -->
 
+		<model:model-hook plugin="orders"
+			model="order">
+			<model:onSave class="com.qcadoo.mes.productionScheduling.NormService"
+				method="copyDefaultDataToOperationComponent" />
+		</model:model-hook>
 
 	</modules>
 </plugin>
