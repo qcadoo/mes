@@ -69,6 +69,11 @@ public class ShiftsService {
         viewDefinitionState.openModal("../page/productionScheduling/ganttShiftCalendar.html");
     }
 
+    public void showGanttOrdersCalendar(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        viewDefinitionState.openModal("../page/productionScheduling/ganttOrdersCalendar.html");
+    }
+
     public void onDayCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         updateDayFieldsState(viewDefinitionState);
     }
