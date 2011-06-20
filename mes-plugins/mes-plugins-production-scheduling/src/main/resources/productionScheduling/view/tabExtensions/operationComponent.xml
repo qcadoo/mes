@@ -34,19 +34,19 @@
 		<component type="gridLayout" name="gridsLayout" columns="1"
 				rows="8" >
 				<layoutElement column="1" row="1">
-					<component type="checkbox" name="enableNorm" field="#{form}.enableNorm" reference="enableNorm" defaultEnabled="true">
+					<component type="checkbox" name="useDefaultValue" field="#{form}.useDefaultValue" reference="useDefaultValue" defaultEnabled="true">
 						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.NormService"
-								method="changeEnableNorm" />
+								method="changeDefaultValue" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="time" name="tpzNorm" field="#{form}.tpzNorm" reference="tpzNorm" defaultEnabled="false"/>
+					<component type="time" name="tpz" field="#{form}.tpz" reference="tpz" defaultEnabled="false"/>
 				</layoutElement>
 				<layoutElement column="1" row="3">
-					<component type="time" name="tjNorm" field="#{form}.tjNorm" reference="tjNorm" defaultEnabled="false"/>
+					<component type="time" name="tj" field="#{form}.tj" reference="tj" defaultEnabled="false"/>
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="checkbox" name="changeNorm" field="#{form}.changeNorm" reference="changeNorm" defaultEnabled="false"/>
+					<component type="checkbox" name="useMachineNorm" field="#{form}.useMachineNorm" reference="useMachineNorm" defaultEnabled="false"/>
 				</layoutElement>
 				<layoutElement column="1" row="5">
 					<component type="select" name="countRealizedNorm" field="#{form}.countRealizedNorm" reference="countRealizedNorm" hasDescription="true" defaultEnabled="false">
