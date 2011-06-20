@@ -3,8 +3,11 @@ package com.qcadoo.mes.productionScheduling;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -96,6 +99,26 @@ public class OperationService {
             active.setFieldValue(!(Boolean) machine.getField("ofMachine"));
         } else {
             active.setFieldValue(false);
+        }
+    }
+
+    public boolean checkMachineInOperationComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
+        Entity machine = entity.getBelongsToField("machine");
+        Entity operationComponent = entity.getBelongsToField("operationComponent");
+
+        if (operationComponent == null || machine == null) {
+            return false;
+        }
+
+        SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo("machine", machine))
+                .add(SearchRestrictions.belongsTo("operationComponent", operationComponent)).list();
+
+        if (searchResult.getTotalNumberOfEntities() > 0 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
+            entity.addError(dataDefinition.getField("machine"),
+                    "productionScheduling.validate.global.error.machineInOperationDuplicated");
+            return false;
+        } else {
+            return true;
         }
     }
 
