@@ -18,9 +18,8 @@ public class OperationService {
 	@Autowired
 	private DataDefinitionService dataDefinitionService;
 
-	public void changeCountRealizedOperation(
-			final ViewDefinitionState viewDefinitionState,
-			final ComponentState state, final String[] args) {
+	public void controlOfEnableOrDisableCountMachineOperationField(
+			final ViewDefinitionState viewDefinitionState) {
 		FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState
 				.getComponentByReference("countRealizedOperation");
 		FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState
@@ -31,12 +30,62 @@ public class OperationService {
 		} else {
 			countMachineOperation.setEnabled(false);
 		}
+
 	}
 
+	public void changeCountRealizedOperation(
+			final ViewDefinitionState viewDefinitionState,
+			final ComponentState state, final String[] args) {
+		controlOfEnableOrDisableCountMachineOperationField(viewDefinitionState);
+	}
+	
+/*hook*/
+	public void updateCountMachineOperationFieldStateonWindowLoad(
+			final ViewDefinitionState viewDefinitionState) {
+		controlOfEnableOrDisableCountMachineOperationField(viewDefinitionState);
+	}
+
+/*listener*/
 	public void updateFieldsStateWhenDefaultValueCheckboxChanged(
 			final ViewDefinitionState viewDefinitionState,
 			final ComponentState state, final String[] args) {
 		controlOfEnableOrDisableField(viewDefinitionState);
+	}
+	
+	
+/*hook*/
+	public void updateFieldsStateOnWindowLoad(
+			final ViewDefinitionState viewDefinitionState) {
+		controlOfEnableOrDisableField(viewDefinitionState);
+	}
+
+	public void controlOfEnableOrDisableField(
+			final ViewDefinitionState viewDefinitionState) {
+
+		FieldComponent dfltValue = (FieldComponent) viewDefinitionState
+				.getComponentByReference("useDefaultValue");
+		FieldComponent tpz = (FieldComponent) viewDefinitionState
+				.getComponentByReference("tpz");
+		FieldComponent tj = (FieldComponent) viewDefinitionState
+				.getComponentByReference("tj");
+		FieldComponent parallel = (FieldComponent) viewDefinitionState
+				.getComponentByReference("parallel");
+		FieldComponent activeMachine = (FieldComponent) viewDefinitionState
+				.getComponentByReference("activeMachine");
+
+		if (dfltValue.getFieldValue().equals("1")) {
+			tpz.setEnabled(false);
+			tj.setEnabled(false);
+			parallel.setEnabled(false);
+			activeMachine.setEnabled(false);
+
+		} else {
+			tpz.setEnabled(true);
+			tj.setEnabled(true);
+			parallel.setEnabled(true);
+			activeMachine.setEnabled(true);
+		}
+
 	}
 
 	public void selectMachineInOperationComponent(
@@ -123,53 +172,27 @@ public class OperationService {
 		}
 	}
 
-	public void updateFieldsStateOnWindowLoad(
-			final ViewDefinitionState viewDefinitionState) {
-		controlOfEnableOrDisableField(viewDefinitionState);
+	public void refereshGanttChart(
+			final ViewDefinitionState viewDefinitionState,
+			final ComponentState triggerState, final String[] args) {
+		viewDefinitionState.getComponentByReference("gantt").performEvent(
+				viewDefinitionState, "refresh");
 	}
 
-	public void controlOfEnableOrDisableField(
+	public void disableFormWhenNoOrderSelected(
 			final ViewDefinitionState viewDefinitionState) {
-
-		FieldComponent dfltValue = (FieldComponent) viewDefinitionState
-				.getComponentByReference("useDefaultValue");
-		FieldComponent tpz = (FieldComponent) viewDefinitionState
-				.getComponentByReference("tpz");
-		FieldComponent tj = (FieldComponent) viewDefinitionState
-				.getComponentByReference("tj");
-		FieldComponent parallel = (FieldComponent) viewDefinitionState
-				.getComponentByReference("parallel");
-		FieldComponent activeMachine = (FieldComponent) viewDefinitionState
-				.getComponentByReference("activeMachine");
-
-		if (dfltValue.getFieldValue().equals("1")) {
-			tpz.setEnabled(false);
-			tj.setEnabled(false);
-			parallel.setEnabled(false);
-			activeMachine.setEnabled(false);
-
+		if (viewDefinitionState.getComponentByReference("gantt")
+				.getFieldValue() == null) {
+			viewDefinitionState.getComponentByReference("dateFrom").setEnabled(
+					false);
+			viewDefinitionState.getComponentByReference("dateTo").setEnabled(
+					false);
 		} else {
-			tpz.setEnabled(true);
-			tj.setEnabled(true);
-			parallel.setEnabled(true);
-			activeMachine.setEnabled(true);
+			viewDefinitionState.getComponentByReference("dateFrom").setEnabled(
+					true);
+			viewDefinitionState.getComponentByReference("dateTo").setEnabled(
+					true);
 		}
-
 	}
-
-    public void refereshGanttChart(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
-            final String[] args) {
-        viewDefinitionState.getComponentByReference("gantt").performEvent(viewDefinitionState, "refresh");
-    }
-
-    public void disableFormWhenNoOrderSelected(final ViewDefinitionState viewDefinitionState) {
-        if (viewDefinitionState.getComponentByReference("gantt").getFieldValue() == null) {
-            viewDefinitionState.getComponentByReference("dateFrom").setEnabled(false);
-            viewDefinitionState.getComponentByReference("dateTo").setEnabled(false);
-        } else {
-            viewDefinitionState.getComponentByReference("dateFrom").setEnabled(true);
-            viewDefinitionState.getComponentByReference("dateTo").setEnabled(true);
-        }
-    }
 
 }

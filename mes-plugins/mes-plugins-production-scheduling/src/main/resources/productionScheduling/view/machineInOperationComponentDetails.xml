@@ -22,7 +22,6 @@
 		</ribbon>
 		<component type="form" name="machineInOperationComponent"
 			reference="form">
-
 			<component type="gridLayout" name="gridLayout" columns="1"
 				rows="6">
 				<layoutElement column="1" row="1">
@@ -68,6 +67,7 @@
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.productionScheduling.OperationService" method="updateFieldsStateOnWindowLoad" />
+		<beforeRender class="com.qcadoo.mes.productionScheduling.OperationService" method="updateCountMachineOperationFieldStateonWindowLoad"/>
 	</hooks>
 
 </view>

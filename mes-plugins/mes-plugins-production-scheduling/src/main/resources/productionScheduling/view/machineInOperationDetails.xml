@@ -35,7 +35,6 @@
 						<option type="fieldCode" value="number" />
 					</component>
 				</layoutElement>
-				
 				<layoutElement column="1" row="2">
 					<component type="checkbox" name="useDefaultValue" field="useDefaultValue" reference="useDefaultValue" defaultEnabled="true" >
 						<listener event="onChange"
@@ -56,8 +55,6 @@
 						<validatesPrecision max="3"/>
 					</component>
 				</layoutElement>
-				
-				
 				<layoutElement column="1" row="6">
 					<component type="checkbox" name="activeMachine" field="activeMachine"
 						reference="activeMachine" defaultEnabled="false" />
@@ -67,6 +64,7 @@
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.productionScheduling.OperationService" method="updateFieldsStateOnWindowLoad" />
+		<beforeRender class="com.qcadoo.mes.productionScheduling.OperationService" method="updateCountMachineOperationFieldStateonWindowLoad"/>
 	</hooks>
 
 </view>
