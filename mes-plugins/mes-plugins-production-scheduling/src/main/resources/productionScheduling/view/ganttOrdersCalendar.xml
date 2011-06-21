@@ -43,8 +43,9 @@
 			<layoutElement column="1" row="1" height="4">
 				<component type="ganttChart" name="gantt" reference="gantt">
 					<option type="resolver" value="ordersGanttChartItemResolver" />
-					<option type="defaultZoomLevel" value="H3" />
-					<option type="defaultEndDay" value="7" />
+					<option type="defaultZoomLevel" value="H6" />
+					<option type="defaultEndDay" value="14" />
+					<option type="hasPopupInfo" value="false" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="5" height="3">
