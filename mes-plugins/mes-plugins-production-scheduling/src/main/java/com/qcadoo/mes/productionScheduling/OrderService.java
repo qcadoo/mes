@@ -45,21 +45,25 @@ public class OrderService {
 
     @Transactional
     public void copyDefaultDataToOperationComponent(final DataDefinition dataDefinition, final Entity entity) {
+        DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
+        DataDefinition machineInOrderOperationComponentDD = dataDefinitionService.get("productionScheduling",
+                "machineInOrderOperationComponent");
+
+        EntityTree orderOperationComponents = entity.getTreeField("orderOperationComponents");
+
         Entity technology = entity.getBelongsToField("technology");
 
         if (technology == null) {
+            if (orderOperationComponents.size() > 0) {
+                orderOperationComponentDD.delete(orderOperationComponents.getRoot().getId());
+            }
             return;
         }
-
-        EntityTree orderOperationComponents = entity.getTreeField("orderOperationComponents");
 
         if (orderOperationComponents.size() > 0
                 && orderOperationComponents.getRoot().getBelongsToField("technology").getId().equals(technology.getId())) {
             return;
         }
-
-        DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
-        DataDefinition machineInOrderOperationComponentDD = dataDefinitionService.get("productionScheduling", "machineInOrderOperationComponent");
 
         if (orderOperationComponents.size() > 0) {
             orderOperationComponentDD.delete(orderOperationComponents.getRoot().getId());
@@ -79,34 +83,33 @@ public class OrderService {
             orderOperationComponent.setField("parent",
                     newOrderOperationComponents.get(operationComponent.getBelongsToField("parent").getId()));
             orderOperationComponent.setField("priority", operationComponent.getField("priority"));
-            orderOperationComponent.setField("tpz", operationComponent.getField("priority"));
-            orderOperationComponent.setField("tj", operationComponent.getField("priority"));
-            orderOperationComponent.setField("useDefaultValue", operationComponent.getField("priority"));
-            orderOperationComponent.setField("useMachineNorm", operationComponent.getField("priority"));
-            orderOperationComponent.setField("countRealized", operationComponent.getField("priority"));
-            orderOperationComponent.setField("countMachine", operationComponent.getField("priority"));
-            orderOperationComponent.setField("timeNextOperation", operationComponent.getField("priority"));
+            orderOperationComponent.setField("tpz", operationComponent.getField("tpz"));
+            orderOperationComponent.setField("tj", operationComponent.getField("tj"));
+            orderOperationComponent.setField("useDefaultValue", operationComponent.getField("useDefaultValue"));
+            orderOperationComponent.setField("useMachineNorm", operationComponent.getField("useMachineNorm"));
+            orderOperationComponent.setField("countRealized", operationComponent.getField("countRealizedNorm"));
+            orderOperationComponent.setField("countMachine", operationComponent.getField("countMachineNorm"));
+            orderOperationComponent.setField("timeNextOperation", operationComponent.getField("timeNextOperationNorm"));
 
             EntityList machineInOperationComponents = operationComponent.getHasManyField("machineInOperationComponent");
-            
+
             List<Entity> newMachineInOrderOperationComponents = new ArrayList<Entity>();
-            
-            for(Entity machineInOperationComponent : machineInOperationComponents) {
+
+            for (Entity machineInOperationComponent : machineInOperationComponents) {
                 Entity machineInOrderOperationComponent = machineInOrderOperationComponentDD.create();
                 machineInOrderOperationComponent.setField("orderOperationComponent", orderOperationComponent);
                 machineInOrderOperationComponent.setField("machine", machineInOperationComponent.getBelongsToField("machine"));
-                
-                <boolean name="useDefaultValue" required="true" />
-                <string name="tpz" />
-                <string name="tj" />
-                <string name="parallel" />
-                <boolean name="isActive" />
-                <belongsTo name="machine" plugin="basic" model="machine" required="true" />
-                <belongsTo name="orderOperationComponent" model="orderOperationComponent" required="true" />
-                
-                
+                machineInOrderOperationComponent.setField("useDefaultValue",
+                        machineInOperationComponent.getField("useDefaultValue"));
+                machineInOrderOperationComponent.setField("tpz", machineInOperationComponent.getField("tpz"));
+                machineInOrderOperationComponent.setField("tj", machineInOperationComponent.getField("tj"));
+                machineInOrderOperationComponent.setField("parallel", machineInOperationComponent.getField("parallel"));
+                machineInOrderOperationComponent.setField("isActive", machineInOperationComponent.getField("activeMachine"));
+                newMachineInOrderOperationComponents.add(machineInOrderOperationComponent);
             }
-            
+
+            orderOperationComponent.setField("machineInOrderOperationComponents", newMachineInOrderOperationComponents);
+
             newOrderOperationComponents.put(operationComponent.getId(), orderOperationComponent);
         }
     }

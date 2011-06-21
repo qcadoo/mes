@@ -179,6 +179,9 @@
 		<!-- <view:view resource="view/testGantt.xml" /> <menu:menu-item name="testGantt" 
 			category="orders" view="testGantt" /> -->
 
+		<model:model model="orderOperationComponent" resource="model/orderOperationComponent.xml" />
+		<model:model model="machineInOrderOperationComponent" resource="model/machineInOrderOperationComponent.xml" />
+
 		<model:model-hook plugin="orders"
 			model="order">
 			<model:onSave class="com.qcadoo.mes.productionScheduling.NormService"
