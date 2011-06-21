@@ -32,7 +32,7 @@ public class OperationService {
         }
     }
 
-    public void v(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void changeDefaultValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
 
         FieldComponent dfltValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
         FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
@@ -107,13 +107,15 @@ public class OperationService {
         Entity operationComponent = entity.getBelongsToField("operationComponent");
 
         if (operationComponent == null || machine == null) {
-            return false;
+            return true;
         }
 
         SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo("machine", machine))
                 .add(SearchRestrictions.belongsTo("operationComponent", operationComponent)).list();
 
-        if (searchResult.getTotalNumberOfEntities() > 0 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
+        if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
+            return true;
+        } else if (searchResult.getTotalNumberOfEntities() > 0) {
             entity.addError(dataDefinition.getField("machine"),
                     "productionScheduling.validate.global.error.machineInOperationDuplicated");
             return false;

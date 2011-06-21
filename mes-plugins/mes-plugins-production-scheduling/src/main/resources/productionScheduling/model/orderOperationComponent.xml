@@ -40,8 +40,8 @@
 		<boolean name="useDefaultValue" default="true" />
 		<boolean name="useMachineNorm" default="true" />
 		<enum name="countRealized" values="01all,02specified" default="01all" />
-		<string name="countMachine" />
-		<string name="timeNextOperation" />
+		<decimal name="countMachine" />
+		<integer name="timeNextOperation" />
 		<hasMany name="machineInOrderOperationComponents" model="machineInOrderOperationComponent" joinField="orderOperationComponent" />
 	</fields>
 	<hooks />

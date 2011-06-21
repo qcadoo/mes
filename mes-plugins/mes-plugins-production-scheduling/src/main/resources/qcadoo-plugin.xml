@@ -78,7 +78,7 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:integer name="timeNextOperationNorm" readonly="true" />
+			<model:integer name="timeNextOperationNorm" />
 		</model:model-field>
 
 
@@ -118,10 +118,10 @@
 			<model:integer name="tj" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
-			<model:integer name="parallel">
+			<model:decimal name="parallel">
 				<model:validatesLength max="7" />
 				<model:validatesPrecision max="3" />
-			</model:integer>
+			</model:decimal>
 		</model:model-field>
 
 		<model:model-field plugin="technologies" model="operation">
@@ -131,10 +131,10 @@
 			<model:integer name="tj" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:integer name="countMachineOperation">
+			<model:decimal name="countMachineOperation">
 				<model:validatesLength max="7" />
 				<model:validatesPrecision max="3" />
-			</model:integer>
+			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:enum values="01all,02specified" name="countRealizedOperation"
@@ -168,23 +168,22 @@
 			component="window" event="showGanttOrdersCalendar"
 			class="com.qcadoo.mes.productionScheduling.ShiftsService" method="showGanttOrdersCalendar" />
 
-
 		<menu:menu-item name="shiftsList" category="administration"
 			view="shiftsList" />
-
-		<!-- UNCOMMENT TO SEE TEST GANTT VIEW -->
-
-		<!-- <view:view resource="view/testGantt.xml" /> <menu:menu-item name="testGantt" 
-			category="orders" view="testGantt" /> -->
 
 		<model:model model="orderOperationComponent" resource="model/orderOperationComponent.xml" />
 		<model:model model="machineInOrderOperationComponent" resource="model/machineInOrderOperationComponent.xml" />
 
-		<model:model-hook plugin="orders"
-			model="order">
-			<model:onSave class="com.qcadoo.mes.productionScheduling.NormService"
-				method="copyDefaultDataToOperationComponent" />
+		<model:model-hook plugin="orders" model="order">
+			<model:onSave class="com.qcadoo.mes.productionScheduling.NormOrderService"
+				method="createTechnologyInstanceForOrder" />
 		</model:model-hook>
+
+		<model:model-field plugin="orders" model="order">
+			<model:tree name="orderOperationComponents" plugin="productionScheduling" 
+			model="orderOperationComponent" joinField="order" cascade="delete">
+			</model:tree>
+		</model:model-field>
 
 	</modules>
 </plugin>

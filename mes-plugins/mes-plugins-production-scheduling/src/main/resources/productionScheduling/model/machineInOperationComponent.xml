@@ -31,9 +31,8 @@
 		<boolean name="useDefaultValue" required="true" />
 		<integer name="tpz" />
 		<integer name="tj" />
-		<string name="parallel" />
+		<decimal name="parallel" />
 		<boolean name="activeMachine" />
-		
 		<belongsTo name="machine" plugin="basic" model="machine" required="true" />
 		<belongsTo name="operationComponent" plugin="technologies"
 			model="technologyOperationComponent" required="true" />
