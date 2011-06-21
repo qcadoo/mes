@@ -15,6 +15,7 @@
 		     orders.name as orders_order_name,
 		     orders.dateFrom as orders_order_datefrom,
 		     orders.dateTo as orders_order_dateto,
+		     orders.state as orders_order_state,
 		     orders.plannedQuantity as orders_order_plannedquantity,
 		     product.name as basic_product_name
 		from com.qcadoo.model.beans.orders.OrdersOrder as orders left outer join orders.product as product where orders.id in ($P{EntityIds})]]>
@@ -23,6 +24,7 @@
 	<field name="orders_order_name" class="java.lang.String"/>
 	<field name="orders_order_datefrom" class="java.util.Date"/>
 	<field name="orders_order_dateto" class="java.util.Date"/>
+	<field name="orders_order_state" class="java.lang.String"/>
 	<field name="orders_order_plannedquantity" class="java.math.BigDecimal"/>
 	<field name="basic_product_name" class="java.lang.String"/>
 	<background>
@@ -74,29 +76,34 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.number.label}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="qcadooLabelSmall" x="90" y="1" width="50" height="23"/>
+				<reportElement style="qcadooLabelSmall" x="97" y="1" width="50" height="23"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.name.label}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="qcadooLabelSmall" x="192" y="1" width="82" height="23"/>
+				<reportElement style="qcadooLabelSmall" x="210" y="1" width="82" height="23"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.product.label}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="qcadooLabelSmall" x="326" y="1" width="85" height="35"/>
+				<reportElement style="qcadooLabelSmall" x="350" y="1" width="85" height="35"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.plannedQuantity.label}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="qcadooLabelSmall" x="415" y="2" width="82" height="35"/>
+				<reportElement style="qcadooLabelSmall" x="470" y="1" width="82" height="35"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.dateFrom.label}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="qcadooLabelSmall" x="517" y="2" width="82" height="35"/>
+				<reportElement style="qcadooLabelSmall" x="585" y="2" width="82" height="35"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.dateTo.label}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="qcadooLabelSmall" x="700" y="2" width="82" height="35"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.state.label}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnHeader>
@@ -111,29 +118,34 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_number}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="qcadooValueSmall" x="63" y="1" width="132" height="26"/>
+				<reportElement style="qcadooValueSmall" x="70" y="1" width="132" height="26"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="qcadooValueSmall" x="192" y="1" width="122" height="26"/>
+				<reportElement style="qcadooValueSmall" x="210" y="1" width="122" height="26"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{basic_product_name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="qcadooValueSmall" x="326" y="1" width="50" height="26"/>
+				<reportElement style="qcadooValueSmall" x="350" y="1" width="50" height="26"/>
 				<textElement/>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{orders_order_plannedquantity}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="qcadooValueSmall" x="415" y="0" width="95" height="26"/>
+				<reportElement style="qcadooValueSmall" x="470" y="-1" width="95" height="26"/>
 				<textElement/>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_datefrom}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="qcadooValueSmall" x="517" y="0" width="95" height="26"/>
+				<reportElement style="qcadooValueSmall" x="585" y="0" width="95" height="26"/>
 				<textElement/>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_dateto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="qcadooValueSmall" x="700" y="0" width="95" height="26"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{orders_order_state}.startsWith("01"))?$R{orders.order.state.value.01pending}:(($F{orders_order_state}.startsWith("02"))?$R{orders.order.state.value.02inProgress}:$R{orders.order.state.value.03done})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
