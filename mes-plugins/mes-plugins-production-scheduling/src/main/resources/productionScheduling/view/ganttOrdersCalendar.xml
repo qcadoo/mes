@@ -30,19 +30,57 @@
 	name="ganttOrdersCalendar"
 	modelPlugin="orders"
 	modelName="order"
-	windowHeight="450"
+	windowHeight="460"
 	windowWidth="900">
 	
-	<component type="window" name="window">
+	<component type="window" name="window" reference="window">
 		<ribbon>
-			<template name="standardFormTemplate" includeItems="navigation.back"/>
+			<template name="standardFormTemplate" includeItems="navigation.back" />
+			<template name="standardFormTemplate" includeItems="actions.save, actions.cancel" />
 		</ribbon>
-		<component type="ganttChart" name="gantt">
-			<option type="resolver" value="ordersGanttChartItemResolver" />
-			<option type="defaultZoomLevel" value="H1" />
-			<option type="defaultEndDay" value="7" />
+		
+		<component type="gridLayout" name="gridLayout" columns="1" rows="7" hasBorders="true">
+			<layoutElement column="1" row="1" height="4">
+				<component type="ganttChart" name="gantt" reference="gantt">
+					<option type="resolver" value="ordersGanttChartItemResolver" />
+					<option type="defaultZoomLevel" value="H3" />
+					<option type="defaultEndDay" value="7" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="5" height="3">
+				<component type="form" name="order" reference="form" field="#{gantt}">
+					<component type="gridLayout" name="formGridLayout" columns="2" rows="3" hasBorders="false">
+						<layoutElement column="1" row="1">
+							<component type="input" name="number" field="number" defaultEnabled="false" />
+						</layoutElement>
+						<layoutElement column="1" row="2">
+							<component type="input" name="name" field="name" defaultEnabled="false"/>
+						</layoutElement>
+						<layoutElement column="1" row="3">
+							<component type="select" name="state" field="state" defaultEnabled="false" />
+						</layoutElement>
+						<layoutElement column="2" row="1">
+							<component type="calendar" name="dateFrom" field="dateFrom" reference="dateFrom">
+								<listener event="onChange" class="com.qcadoo.mes.orders.OrderService"
+									method="changeDateFrom" />
+								<option type="labelWidth" value="50" />
+								<option type="withTimePicker" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="2" row="2">
+							<component type="calendar" name="dateTo" field="dateTo" reference="dateTo">
+								<option type="labelWidth" value="50" />
+								<option type="withTimePicker" value="true" />
+							</component>
+						</layoutElement>
+					</component>
+					<listener event="save" class="com.qcadoo.mes.productionScheduling.OperationService" method="refereshGanttChart" />			
+				</component>
+			</layoutElement>
 		</component>
-		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.productionScheduling.OperationService" method="disableFormWhenNoOrderSelected" />
+	</hooks>
 </view>
