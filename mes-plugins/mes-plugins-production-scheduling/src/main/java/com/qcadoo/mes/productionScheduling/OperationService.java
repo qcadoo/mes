@@ -15,113 +15,146 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class OperationService {
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+	@Autowired
+	private DataDefinitionService dataDefinitionService;
 
-    public void changeCountRealizedOperation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState
-                .getComponentByReference("countRealizedOperation");
-        FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState
-                .getComponentByReference("countMachineOperation");
+	public void changeCountRealizedOperation(
+			final ViewDefinitionState viewDefinitionState,
+			final ComponentState state, final String[] args) {
+		FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState
+				.getComponentByReference("countRealizedOperation");
+		FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState
+				.getComponentByReference("countMachineOperation");
 
-        if (countRealizedOperation.getFieldValue().equals("02specified")) {
-            countMachineOperation.setEnabled(true);
-        } else {
-            countMachineOperation.setEnabled(false);
-        }
-    }
+		if (countRealizedOperation.getFieldValue().equals("02specified")) {
+			countMachineOperation.setEnabled(true);
+		} else {
+			countMachineOperation.setEnabled(false);
+		}
+	}
 
-    public void changeDefaultValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+	public void updateFieldsStateWhenDefaultValueCheckboxChanged(
+			final ViewDefinitionState viewDefinitionState,
+			final ComponentState state, final String[] args) {
+		controlOfEnableOrDisableField(viewDefinitionState);
+	}
 
-        FieldComponent dfltValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
-        FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
-        FieldComponent tj = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
-        FieldComponent parallel = (FieldComponent) viewDefinitionState.getComponentByReference("parallel");
-        FieldComponent activeMachine = (FieldComponent) viewDefinitionState.getComponentByReference("activeMachine");
+	public void selectMachineInOperationComponent(
+			final ViewDefinitionState state,
+			final ComponentState componentState, final String[] args) {
+		if (!(componentState instanceof FieldComponent)) {
+			throw new IllegalStateException(
+					"component is not FieldComponentState");
+		}
 
-        if (dfltValue.getFieldValue().equals("1")) {
-            tpz.setEnabled(false);
-            tj.setEnabled(false);
-            parallel.setEnabled(false);
-            activeMachine.setEnabled(false);
+		if (componentState.getFieldValue() == null) {
+			return;
+		}
 
-        } else {
-            tpz.setEnabled(true);
-            tj.setEnabled(true);
-            parallel.setEnabled(true);
-            activeMachine.setEnabled(true);
-        }
-    }
+		Long machineId = (Long) componentState.getFieldValue();
 
-    public void selectMachineInOperationComponent(final ViewDefinitionState state, final ComponentState componentState,
-            final String[] args) {
-        if (!(componentState instanceof FieldComponent)) {
-            throw new IllegalStateException("component is not FieldComponentState");
-        }
+		Entity machine = dataDefinitionService.get("basic", "machine").get(
+				machineId);
 
-        if (componentState.getFieldValue() == null) {
-            return;
-        }
+		if (machine == null) {
+			return;
+		}
 
-        Long machineId = (Long) componentState.getFieldValue();
+		FieldComponent tpz = (FieldComponent) state
+				.getComponentByReference("tpz");
+		FieldComponent tj = (FieldComponent) state
+				.getComponentByReference("tj");
+		FieldComponent parallel = (FieldComponent) state
+				.getComponentByReference("parallel");
+		FieldComponent active = (FieldComponent) state
+				.getComponentByReference("activeMachine");
 
-        Entity machine = dataDefinitionService.get("basic", "machine").get(machineId);
+		if (machine.getField("tpz") != null) {
+			tpz.setFieldValue(machine.getField("tpz"));
+		} else {
+			tpz.setFieldValue("");
+		}
 
-        if (machine == null) {
-            return;
-        }
+		if (machine.getField("tj") != null) {
+			tj.setFieldValue(machine.getField("tj"));
+		} else {
+			tj.setFieldValue("");
+		}
 
-        FieldComponent tpz = (FieldComponent) state.getComponentByReference("tpz");
-        FieldComponent tj = (FieldComponent) state.getComponentByReference("tj");
-        FieldComponent parallel = (FieldComponent) state.getComponentByReference("parallel");
-        FieldComponent active = (FieldComponent) state.getComponentByReference("activeMachine");
+		if (machine.getField("parallel") != null) {
+			parallel.setFieldValue(machine.getField("parallel"));
+		} else {
+			parallel.setFieldValue("");
+		}
 
-        if (machine.getField("tpz") != null) {
-            tpz.setFieldValue(machine.getField("tpz"));
-        } else {
-            tpz.setFieldValue("");
-        }
+		if (machine.getField("ofMachine") != null) {
+			active.setFieldValue(!(Boolean) machine.getField("ofMachine"));
+		} else {
+			active.setFieldValue(false);
+		}
+	}
 
-        if (machine.getField("tj") != null) {
-            tj.setFieldValue(machine.getField("tj"));
-        } else {
-            tj.setFieldValue("");
-        }
+	public boolean checkMachineInOperationComponentUniqueness(
+			final DataDefinition dataDefinition, final Entity entity) {
+		Entity machine = entity.getBelongsToField("machine");
+		Entity operationComponent = entity
+				.getBelongsToField("operationComponent");
 
-        if (machine.getField("parallel") != null) {
-            parallel.setFieldValue(machine.getField("parallel"));
-        } else {
-            parallel.setFieldValue("");
-        }
+		if (operationComponent == null || machine == null) {
+			return true;
+		}
 
-        if (machine.getField("ofMachine") != null) {
-            active.setFieldValue(!(Boolean) machine.getField("ofMachine"));
-        } else {
-            active.setFieldValue(false);
-        }
-    }
+		SearchResult searchResult = dataDefinition
+				.find()
+				.add(SearchRestrictions.belongsTo("machine", machine))
+				.add(SearchRestrictions.belongsTo("operationComponent",
+						operationComponent)).list();
 
-    public boolean checkMachineInOperationComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
-        Entity machine = entity.getBelongsToField("machine");
-        Entity operationComponent = entity.getBelongsToField("operationComponent");
+		if (searchResult.getTotalNumberOfEntities() == 1
+				&& !searchResult.getEntities().get(0).getId()
+						.equals(entity.getId())) {
+			return true;
+		} else if (searchResult.getTotalNumberOfEntities() > 0) {
+			entity.addError(dataDefinition.getField("machine"),
+					"productionScheduling.validate.global.error.machineInOperationDuplicated");
+			return false;
+		} else {
+			return true;
+		}
+	}
 
-        if (operationComponent == null || machine == null) {
-            return true;
-        }
+	public void updateFieldsStateOnWindowLoad(
+			final ViewDefinitionState viewDefinitionState) {
+		controlOfEnableOrDisableField(viewDefinitionState);
+	}
 
-        SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo("machine", machine))
-                .add(SearchRestrictions.belongsTo("operationComponent", operationComponent)).list();
+	public void controlOfEnableOrDisableField(
+			final ViewDefinitionState viewDefinitionState) {
 
-        if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
-            return true;
-        } else if (searchResult.getTotalNumberOfEntities() > 0) {
-            entity.addError(dataDefinition.getField("machine"),
-                    "productionScheduling.validate.global.error.machineInOperationDuplicated");
-            return false;
-        } else {
-            return true;
-        }
-    }
+		FieldComponent dfltValue = (FieldComponent) viewDefinitionState
+				.getComponentByReference("useDefaultValue");
+		FieldComponent tpz = (FieldComponent) viewDefinitionState
+				.getComponentByReference("tpz");
+		FieldComponent tj = (FieldComponent) viewDefinitionState
+				.getComponentByReference("tj");
+		FieldComponent parallel = (FieldComponent) viewDefinitionState
+				.getComponentByReference("parallel");
+		FieldComponent activeMachine = (FieldComponent) viewDefinitionState
+				.getComponentByReference("activeMachine");
+
+		if (dfltValue.getFieldValue().equals("1")) {
+			tpz.setEnabled(false);
+			tj.setEnabled(false);
+			parallel.setEnabled(false);
+			activeMachine.setEnabled(false);
+
+		} else {
+			tpz.setEnabled(true);
+			tj.setEnabled(true);
+			parallel.setEnabled(true);
+			activeMachine.setEnabled(true);
+		}
+
+	}
 
 }
