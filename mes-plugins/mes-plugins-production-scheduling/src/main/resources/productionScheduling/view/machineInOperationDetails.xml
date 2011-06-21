@@ -35,19 +35,16 @@
 						<option type="fieldCode" value="number" />
 					</component>
 				</layoutElement>
-				<layoutElemene>
-					<component type="checkbox" name="useDefaultValue" field="useDefaultValue" reference="useDefaultValue" defauleEnabled="true" />
-				</layoutElemene>
-				<layoutElement column="1" row="3">
+				<layoutElement column="1" row="2">
 					<component type="time" name="tpz" field="tpz" reference="tpz" />
 				</layoutElement>
-				<layoutElement column="1" row="4">
+				<layoutElement column="1" row="3">
 					<component type="time" name="tj" field="tj" reference="tj" />
 				</layoutElement>
-				<layoutElement column="1" row="5">
+				<layoutElement column="1" row="4">
 					<component type="input" name="parallel" field="parallel"
 						reference="parallel" >
-						<validatesLength max="7" />
+						<validatesLength max="5" />
 						<validatesPrecision max="3"/>
 					</component>
 				</layoutElement>
