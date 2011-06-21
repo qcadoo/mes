@@ -51,7 +51,7 @@ public class ShiftsGanttChartItemResolver implements GanttChartItemResolver {
         List<GanttChartItem> items = new ArrayList<GanttChartItem>();
 
         for (ShiftHour hour : hours) {
-            items.add(scale.createGanttChartItem(shiftName, shiftName, hour.getDateFrom(), hour.getDateTo()));
+            items.add(scale.createGanttChartItem(shiftName, shiftName, null, hour.getDateFrom(), hour.getDateTo()));
         }
 
         return items;

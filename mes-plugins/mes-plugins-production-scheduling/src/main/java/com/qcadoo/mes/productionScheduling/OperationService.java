@@ -157,4 +157,19 @@ public class OperationService {
 
 	}
 
+    public void refereshGanttChart(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        viewDefinitionState.getComponentByReference("gantt").performEvent(viewDefinitionState, "refresh");
+    }
+
+    public void disableFormWhenNoOrderSelected(final ViewDefinitionState viewDefinitionState) {
+        if (viewDefinitionState.getComponentByReference("gantt").getFieldValue() == null) {
+            viewDefinitionState.getComponentByReference("dateFrom").setEnabled(false);
+            viewDefinitionState.getComponentByReference("dateTo").setEnabled(false);
+        } else {
+            viewDefinitionState.getComponentByReference("dateFrom").setEnabled(true);
+            viewDefinitionState.getComponentByReference("dateTo").setEnabled(true);
+        }
+    }
+
 }
