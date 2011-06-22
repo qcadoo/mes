@@ -159,20 +159,21 @@ public class NormOrderService {
 
     public void changeUseDefaultValue(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-
+        // ignore
     }
 
     public void changeCountRealized(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-
+        // ignore
     }
 
     public void changeUseDefaultValueMachine(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-
+        // ignore
     }
 
     public void selectMachine(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-
+        setParentValuesMachine(viewDefinitionState, (FormComponent) viewDefinitionState.getComponentByReference("form"),
+                (Long) ((FieldComponent) state).getFieldValue());
     }
 
     public void disableComponents(final ViewDefinitionState viewDefinitionState) {
@@ -197,7 +198,13 @@ public class NormOrderService {
             tj.setEnabled(true);
             useMachineNorm.setEnabled(true);
             countRealized.setEnabled(true);
-            countMachine.setEnabled(true);
+
+            if ("02specified".equals(countRealized.getFieldValue())) {
+                countMachine.setEnabled(true);
+            } else {
+                countMachine.setEnabled(false);
+            }
+
             timeNextOperation.setEnabled(true);
         } else {
             tpz.setEnabled(false);
@@ -248,15 +255,12 @@ public class NormOrderService {
 
     public void disableComponentsMachine(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FieldComponent machine = (FieldComponent) viewDefinitionState.getComponentByReference("machine");
         FieldComponent useDefaultValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
         ComponentState tpz = viewDefinitionState.getComponentByReference("tpz");
         ComponentState tj = viewDefinitionState.getComponentByReference("tj");
         ComponentState parallel = viewDefinitionState.getComponentByReference("parallel");
         ComponentState isActive = viewDefinitionState.getComponentByReference("isActive");
-        ComponentState parentTpz = viewDefinitionState.getComponentByReference("parentTpz");
-        ComponentState parentTj = viewDefinitionState.getComponentByReference("parentTj");
-        ComponentState parentParallel = viewDefinitionState.getComponentByReference("parentParallel");
-        ComponentState parentIsActive = viewDefinitionState.getComponentByReference("parentIsActive");
 
         if (useDefaultValue.getFieldValue() == null || !"1".equals(useDefaultValue.getFieldValue())) {
             useDefaultValue.setFieldValue("0");
@@ -271,25 +275,63 @@ public class NormOrderService {
             isActive.setEnabled(false);
         }
 
+        setParentValuesMachine(viewDefinitionState, form, (Long) machine.getFieldValue());
+    }
+
+    private void setParentValuesMachine(final ViewDefinitionState viewDefinitionState, final FormComponent form,
+            final Long machineId) {
+        ComponentState parentTpz = viewDefinitionState.getComponentByReference("parentTpz");
+        ComponentState parentTj = viewDefinitionState.getComponentByReference("parentTj");
+        ComponentState parentParallel = viewDefinitionState.getComponentByReference("parentParallel");
+        ComponentState parentIsActive = viewDefinitionState.getComponentByReference("parentIsActive");
+
+        Entity machine = null;
+
+        if (machineId != null) {
+            machine = dataDefinitionService.get("basic", "machine").get(machineId);
+        }
+
+        if (machine == null) {
+            parentTpz.setFieldValue(null);
+            parentTj.setFieldValue(null);
+            parentParallel.setFieldValue(null);
+            parentIsActive.setFieldValue(null);
+        }
+
         Entity machineInOrderOperationComponent = dataDefinitionService.get("productionScheduling",
                 "machineInOrderOperationComponent").get(form.getEntityId());
-        System.out.println("X1: " + machineInOrderOperationComponent);
         Entity technologyOperationComponent = machineInOrderOperationComponent.getBelongsToField("orderOperationComponent")
                 .getBelongsToField("technologyOperationComponent");
-        System.out.println("X2: " + technologyOperationComponent);
         Entity operation = machineInOrderOperationComponent.getBelongsToField("orderOperationComponent").getBelongsToField(
                 "operation");
-        System.out.println("X3: " + operation);
-        Entity machine = machineInOrderOperationComponent.getBelongsToField("machine");
-        System.out.println("X4: " + machine);
         Entity machineInOperationComponent = dataDefinitionService.get("productionScheduling", "machineInOperationComponent")
                 .find().add(SearchRestrictions.belongsTo("operationComponent", technologyOperationComponent))
                 .add(SearchRestrictions.belongsTo("machine", machine)).uniqueResult();
-        System.out.println("X5: " + machineInOperationComponent);
         Entity machineInOperation = dataDefinitionService.get("productionScheduling", "machineInOperation").find()
                 .add(SearchRestrictions.belongsTo("operation", operation)).add(SearchRestrictions.belongsTo("machine", machine))
                 .uniqueResult();
-        System.out.println("X6: " + machineInOperation);
+
+        if (machineInOperationComponent != null && !(Boolean) machineInOperationComponent.getField("useDefaultValue")) {
+            parentTpz.setFieldValue(machineInOperationComponent.getField("tpz"));
+            parentTj.setFieldValue(machineInOperationComponent.getField("tj"));
+            parentParallel.setFieldValue(machineInOperationComponent.getField("parallel"));
+            parentIsActive.setFieldValue(machineInOperationComponent.getField("activeMachine"));
+        } else if (machineInOperation != null && !(Boolean) machineInOperation.getField("useDefaultValue")) {
+            parentTpz.setFieldValue(machineInOperation.getField("tpz"));
+            parentTj.setFieldValue(machineInOperation.getField("tj"));
+            parentParallel.setFieldValue(machineInOperation.getField("parallel"));
+            parentIsActive.setFieldValue(machineInOperation.getField("activeMachine"));
+        } else if (machine != null) {
+            parentTpz.setFieldValue(machine.getField("tpz"));
+            parentTj.setFieldValue(machine.getField("tj"));
+            parentParallel.setFieldValue(machine.getField("parallel"));
+            parentIsActive.setFieldValue(machine.getField("activeMachine"));
+        }
+
+        convertIntToStringTime(parentTpz);
+        convertIntToStringTime(parentTj);
+        convertBooleanToString(parentIsActive);
+        convertDecimalToString(parentParallel);
     }
 
     private void convertIntToStringTime(final ComponentState component) {

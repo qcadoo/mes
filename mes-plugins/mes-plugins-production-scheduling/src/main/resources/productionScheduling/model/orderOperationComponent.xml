@@ -38,17 +38,17 @@
 		<priority name="priority" scope="parent" />
 		<boolean name="useDefaultValue" default="true" />
 		<integer name="tpz" />
-		<integer name="parentTpz" persistent="false" />
+		<string name="parentTpz" persistent="false" />
 		<integer name="tj" />
-		<integer name="parentTj" persistent="false" />
+		<string name="parentTj" persistent="false" />
 		<boolean name="useMachineNorm" default="true" />
-		<boolean name="parentUseMachineNorm" persistent="false" />
+		<string name="parentUseMachineNorm" persistent="false" />
 		<enum name="countRealized" values="01all,02specified" default="01all" />
-		<enum name="parentCountRealized" values="01all,02specified" persistent="false" />
+		<string name="parentCountRealized" persistent="false" />
 		<decimal name="countMachine" />
-		<decimal name="parentCountMachine" persistent="false" />
+		<string name="parentCountMachine" persistent="false" />
 		<integer name="timeNextOperation" />
-		<integer name="parentTimeNextOperation" persistent="false" />
+		<string name="parentTimeNextOperation" persistent="false" />
 		<hasMany name="machineInOrderOperationComponents" model="machineInOrderOperationComponent" joinField="orderOperationComponent" />
 	</fields>
 	<hooks />
