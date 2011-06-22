@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.2
+    Version: 0.4.1
 
     This file is part of Qcadoo.
 
@@ -24,25 +24,17 @@
     ***************************************************************************
 
 -->
-<model name="machineInOrderOperationComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<boolean name="useDefaultValue" />
-		<priority name="priority" scope="orderOperationComponent" />
-		<integer name="tpz" />
-		<string name="parentTpz" persistent="false" />
-		<integer name="tj" />
-		<string name="parentTj" persistent="false" />
-		<decimal name="parallel"  />
-		<string name="parentParallel" persistent="false" />
-		<boolean name="isActive" />
-		<string name="parentIsActive" persistent="false" />
-		<belongsTo name="machine" plugin="basic" model="machine" required="true" />
-		<belongsTo name="orderOperationComponent" model="orderOperationComponent" required="true" />
-	</fields>
-	<hooks>
-		<validatesWith class="com.qcadoo.mes.productionScheduling.NormOrderService"
-			method="checkMachineInOrderOperationComponentUniqueness" />
-	</hooks>
-</model>
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+    plugin="orders"
+    view="orderDetails">
+	
+	<windowTab name="productionScheduling" reference="productionScheduling">
+		<component type="gridLayout" name="gridsLayout" columns="3"
+				rows="1" >
+				<layoutElement column="1" row="1">
+					<component type="time" name="realizationTime" field="realizationTime" reference="realizationTime" />
+				</layoutElement>
+		</component>
+	</windowTab>
+</windowTabExtension>

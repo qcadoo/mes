@@ -24,25 +24,35 @@
     ***************************************************************************
 
 -->
-<model name="machineInOrderOperationComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<boolean name="useDefaultValue" />
-		<priority name="priority" scope="orderOperationComponent" />
-		<integer name="tpz" />
-		<string name="parentTpz" persistent="false" />
-		<integer name="tj" />
-		<string name="parentTj" persistent="false" />
-		<decimal name="parallel"  />
-		<string name="parentParallel" persistent="false" />
-		<boolean name="isActive" />
-		<string name="parentIsActive" persistent="false" />
-		<belongsTo name="machine" plugin="basic" model="machine" required="true" />
-		<belongsTo name="orderOperationComponent" model="orderOperationComponent" required="true" />
-	</fields>
-	<hooks>
-		<validatesWith class="com.qcadoo.mes.productionScheduling.NormOrderService"
-			method="checkMachineInOrderOperationComponentUniqueness" />
-	</hooks>
-</model>
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
+	plugin="orders"
+	view="orderDetails">
+	<group name="orderParameters">
+		<bigButton name="orderParameters" icon="orderParametersIcon24.png" state="disabled" >
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+								if(window.canClose()) {
+									#{form}.performEvent('showOrderParameters', []);
+								}
+						}
+					});		
+					#{form}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (! value || ! value.content) {
+								return;
+							}
+							if (! value.content.entityId) {
+								this.disable();
+							} else {
+								this.enable();
+							}
+						}
+					});					
+				]]>
+			</script>	
+		</bigButton>
+	</group>
+</ribbonExtension>
