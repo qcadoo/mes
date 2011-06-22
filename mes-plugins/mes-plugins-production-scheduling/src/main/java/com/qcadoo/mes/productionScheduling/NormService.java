@@ -11,28 +11,48 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class NormService {
 
-    public void updateFieldsStateOnWindowLoad(final ViewDefinitionState state) {
-        controlOfEnableOrDisableField(state);
-    }
-
-    public void updateFieldsStateWhenDefaultValueCheckboxChanged(final ViewDefinitionState viewDefinitionState,
-            final ComponentState componentState, final String[] args) {
-        controlOfEnableOrDisableField(viewDefinitionState);
-    }
-
-    public void controlOfEnableOrDisableField(final ViewDefinitionState viewDefinitionState) {
+    public void updateFieldsStateOnWindowLoad(final ViewDefinitionState viewDefinitionState) {
         FieldComponent useDefaultValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
         FieldComponent tpzNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
         FieldComponent tjNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
         FieldComponent countRealizedNorm = (FieldComponent) viewDefinitionState.getComponentByReference("countRealizedNorm");
         FieldComponent useMachineNorm = (FieldComponent) viewDefinitionState.getComponentByReference("useMachineNorm");
+        FieldComponent countMachineNorm = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineNorm");
         FieldComponent timeNextOperationNorm = (FieldComponent) viewDefinitionState
                 .getComponentByReference("timeNextOperationNorm");
 
-        if (useDefaultValue.getFieldValue().equals("1")) {
+        if (useDefaultValue.getFieldValue().equals("true") || useDefaultValue.getFieldValue().equals("1")) {
             tpzNorm.setEnabled(false);
             tjNorm.setEnabled(false);
             countRealizedNorm.setEnabled(false);
+            countMachineNorm.setEnabled(false);
+            useMachineNorm.setEnabled(false);
+            timeNextOperationNorm.setEnabled(false);
+        } else {
+            tpzNorm.setEnabled(true);
+            tjNorm.setEnabled(true);
+            countRealizedNorm.setEnabled(true);
+            useMachineNorm.setEnabled(true);
+            timeNextOperationNorm.setEnabled(true);
+        }
+    }
+
+    public void updateFieldsStateWhenDefaultValueCheckboxChanged(final ViewDefinitionState viewDefinitionState,
+            final ComponentState componentState, final String[] args) {
+        FieldComponent useDefaultValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
+        FieldComponent tpzNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
+        FieldComponent tjNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
+        FieldComponent countRealizedNorm = (FieldComponent) viewDefinitionState.getComponentByReference("countRealizedNorm");
+        FieldComponent countMachineNorm = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineNorm");
+        FieldComponent useMachineNorm = (FieldComponent) viewDefinitionState.getComponentByReference("useMachineNorm");
+        FieldComponent timeNextOperationNorm = (FieldComponent) viewDefinitionState
+                .getComponentByReference("timeNextOperationNorm");
+
+        if (useDefaultValue.getFieldValue().equals("true") || useDefaultValue.getFieldValue().equals("1")) {
+            tpzNorm.setEnabled(false);
+            tjNorm.setEnabled(false);
+            countRealizedNorm.setEnabled(false);
+            countMachineNorm.setEnabled(false);
             useMachineNorm.setEnabled(false);
             timeNextOperationNorm.setEnabled(false);
         } else {
@@ -71,28 +91,16 @@ public class NormService {
         }
     }
 
-    public void changeCountRealizedOperation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        controlOfEnableOrDisableCountMachineOperationField(viewDefinitionState);
-    }
-
     /* hook */
     public void updateCountMachineOperationFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
-        controlOfEnableOrDisableCountMachineOperationField(viewDefinitionState);
-    }
-
-    public void controlOfEnableOrDisableCountMachineOperationField(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState
-                .getComponentByReference("countRealizedOperation");
-        FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState
-                .getComponentByReference("countMachineOperation");
+        FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState.getComponentByReference("countRealizedNorm");
+        FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineNorm");
 
         if (countRealizedOperation.getFieldValue().equals("02specified")) {
             countMachineOperation.setEnabled(true);
         } else {
             countMachineOperation.setEnabled(false);
         }
-
     }
 
 }
