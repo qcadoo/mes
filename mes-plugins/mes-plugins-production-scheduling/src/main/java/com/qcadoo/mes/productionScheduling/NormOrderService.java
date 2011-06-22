@@ -93,17 +93,25 @@ public class NormOrderService {
             final DataDefinition machineInOrderOperationComponentDD) {
         Entity orderOperationComponent = orderOperationComponentDD.create();
 
-        // TODO
-        // if("operation".equals(operationComponent.getField("entityType"))) {
-        // Entity referenceTechnology = operationComponent.getBelongsToField("referenceTechnology");
-        //
-        // } else {
-        //
-        // }
-
         orderOperationComponent.setField("order", order);
         orderOperationComponent.setField("technology", technology);
         orderOperationComponent.setField("parent", parent);
+
+        if ("operation".equals(operationComponent.getField("entityType"))) {
+            createOrCopyOrderOperationComponent(operationComponent, order, technology, orderOperationComponentDD,
+                    machineInOrderOperationComponentDD, orderOperationComponent);
+        } else {
+            Entity referenceTechnology = operationComponent.getBelongsToField("referenceTechnology");
+            createOrCopyOrderOperationComponent(referenceTechnology.getTreeField("operationComponents").getRoot(), order,
+                    technology, orderOperationComponentDD, machineInOrderOperationComponentDD, orderOperationComponent);
+        }
+
+        return orderOperationComponent;
+    }
+
+    private void createOrCopyOrderOperationComponent(final EntityTreeNode operationComponent, final Entity order,
+            final Entity technology, final DataDefinition orderOperationComponentDD,
+            final DataDefinition machineInOrderOperationComponentDD, final Entity orderOperationComponent) {
         orderOperationComponent.setField("operation", operationComponent.getBelongsToField("operation"));
         orderOperationComponent.setField("technologyOperationComponent", operationComponent);
         orderOperationComponent.setField("priority", operationComponent.getField("priority"));
@@ -142,8 +150,6 @@ public class NormOrderService {
         }
 
         orderOperationComponent.setField("children", newOrderOperationComponents);
-
-        return orderOperationComponent;
     }
 
     public void showOrderParameters(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
