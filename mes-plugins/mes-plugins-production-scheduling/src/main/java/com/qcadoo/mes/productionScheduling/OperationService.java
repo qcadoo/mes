@@ -18,6 +18,7 @@ public class OperationService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    /* listener */
     public void changeCountRealizedOperation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState
@@ -30,11 +31,69 @@ public class OperationService {
         } else {
             countMachineOperation.setEnabled(false);
         }
+
     }
 
+    /* hook */
+    public void updateCountMachineOperationFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
+
+        FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState
+                .getComponentByReference("countRealizedOperation");
+        FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState
+                .getComponentByReference("countMachineOperation");
+
+        if (countRealizedOperation.getFieldValue().equals("02specified")) {
+            countMachineOperation.setEnabled(true);
+        } else {
+            countMachineOperation.setEnabled(false);
+        }
+
+    }
+
+    /* listener */
     public void updateFieldsStateWhenDefaultValueCheckboxChanged(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
-        controlOfEnableOrDisableField(viewDefinitionState);
+        FieldComponent dfltValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
+        FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
+        FieldComponent tj = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
+        FieldComponent parallel = (FieldComponent) viewDefinitionState.getComponentByReference("parallel");
+        FieldComponent activeMachine = (FieldComponent) viewDefinitionState.getComponentByReference("activeMachine");
+
+        if (dfltValue.getFieldValue().equals("1")) {
+            tpz.setEnabled(false);
+            tj.setEnabled(false);
+            parallel.setEnabled(false);
+            activeMachine.setEnabled(false);
+
+        } else {
+            tpz.setEnabled(true);
+            tj.setEnabled(true);
+            parallel.setEnabled(true);
+            activeMachine.setEnabled(true);
+        }
+    }
+
+    /* hook */
+    public void updateFieldsStateOnWindowLoad(final ViewDefinitionState viewDefinitionState) {
+        FieldComponent dfltValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
+        FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
+        FieldComponent tj = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
+        FieldComponent parallel = (FieldComponent) viewDefinitionState.getComponentByReference("parallel");
+        FieldComponent activeMachine = (FieldComponent) viewDefinitionState.getComponentByReference("activeMachine");
+
+        if (dfltValue.getFieldValue().equals("1")) {
+
+            tpz.setEnabled(false);
+            tj.setEnabled(false);
+            parallel.setEnabled(false);
+            activeMachine.setEnabled(false);
+
+        } else {
+            tpz.setEnabled(true);
+            tj.setEnabled(true);
+            parallel.setEnabled(true);
+            activeMachine.setEnabled(true);
+        }
     }
 
     public void selectMachineInOperationComponent(final ViewDefinitionState state, final ComponentState componentState,
@@ -127,33 +186,6 @@ public class OperationService {
         } else {
             return true;
         }
-    }
-
-    public void updateFieldsStateOnWindowLoad(final ViewDefinitionState viewDefinitionState) {
-        controlOfEnableOrDisableField(viewDefinitionState);
-    }
-
-    public void controlOfEnableOrDisableField(final ViewDefinitionState viewDefinitionState) {
-
-        FieldComponent dfltValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
-        FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
-        FieldComponent tj = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
-        FieldComponent parallel = (FieldComponent) viewDefinitionState.getComponentByReference("parallel");
-        FieldComponent activeMachine = (FieldComponent) viewDefinitionState.getComponentByReference("activeMachine");
-
-        if (dfltValue.getFieldValue().equals("1")) {
-            tpz.setEnabled(false);
-            tj.setEnabled(false);
-            parallel.setEnabled(false);
-            activeMachine.setEnabled(false);
-
-        } else {
-            tpz.setEnabled(true);
-            tj.setEnabled(true);
-            parallel.setEnabled(true);
-            activeMachine.setEnabled(true);
-        }
-
     }
 
     public void refereshGanttChart(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,

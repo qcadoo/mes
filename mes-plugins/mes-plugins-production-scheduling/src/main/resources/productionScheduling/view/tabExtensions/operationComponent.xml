@@ -34,7 +34,7 @@
 		<component type="gridLayout" name="gridsLayout" columns="1"
 				rows="8" >
 				<layoutElement column="1" row="1">
-					<component type="checkbox" name="useDefaultValue" field="#{form}.useDefaultValue" reference="useDefaultValue" defaultEnabled="true">
+					<component type="checkbox" name="useDefaultValue" field="#{form}.useDefaultValue" reference="useDefaultValue" defaultEnabled="true" >
 						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.NormService"
 								method="updateFieldsStateWhenDefaultValueCheckboxChanged" />
 					</component>
@@ -83,4 +83,5 @@
 				</layoutElement>
 		</component>
 	</windowTab>
+	
 </windowTabExtension>

@@ -22,7 +22,6 @@
 		</ribbon>
 		<component type="form" name="machineInOperationComponent"
 			reference="form">
-
 			<component type="gridLayout" name="gridLayout" columns="1"
 				rows="6">
 				<layoutElement column="1" row="1">

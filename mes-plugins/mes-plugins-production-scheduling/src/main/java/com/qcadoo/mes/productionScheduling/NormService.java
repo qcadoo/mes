@@ -13,9 +13,18 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class NormService {
 
-	public void updateFieldsStateWhenDefaultValueCheckboxChanged(final ViewDefinitionState viewDefinitionState,
-			final ComponentState state, final String[] args) {
+	public void updateFieldsStateOnWindowLoad(final ViewDefinitionState state) {
+		controlOfEnableOrDisableField(state);
+	}
 
+	public void updateFieldsStateWhenDefaultValueCheckboxChanged(
+			final ViewDefinitionState viewDefinitionState,
+			final ComponentState componentState, final String[] args) {
+		controlOfEnableOrDisableField(viewDefinitionState);
+	}
+
+	public void controlOfEnableOrDisableField(
+			final ViewDefinitionState viewDefinitionState) {
 		FieldComponent useDefaultValue = (FieldComponent) viewDefinitionState
 				.getComponentByReference("useDefaultValue");
 		FieldComponent tpzNorm = (FieldComponent) viewDefinitionState
@@ -44,7 +53,8 @@ public class NormService {
 		}
 	}
 
-	public void changeCountRealizedNorm(final ViewDefinitionState viewDefinitionState,
+	public void changeCountRealizedNorm(
+			final ViewDefinitionState viewDefinitionState,
 			final ComponentState state, final String[] args) {
 		FieldComponent countRealizedNorm = (FieldComponent) viewDefinitionState
 				.getComponentByReference("countRealizedNorm");
@@ -58,11 +68,11 @@ public class NormService {
 		}
 	}
 
-	public void copyDefaultDataToOperationComponent(final DataDefinition dataDefinition, final Entity entity) {
+	public void copyDefaultDataToOperationComponent(
+			final DataDefinition dataDefinition, final Entity entity) {
 
 		Entity operation = entity.getBelongsToField("operation");
-		if (entity.getField("tpz") == null
-				|| "".equals(entity.getField("tpz"))) {
+		if (entity.getField("tpz") == null || "".equals(entity.getField("tpz"))) {
 
 			entity.setField("tpz", operation.getField("tpz"));
 			entity.setField("tj", operation.getField("tj"));
@@ -75,6 +85,33 @@ public class NormService {
 		} else {
 			return;
 		}
+	}
+
+	public void changeCountRealizedOperation(
+			final ViewDefinitionState viewDefinitionState,
+			final ComponentState state, final String[] args) {
+		controlOfEnableOrDisableCountMachineOperationField(viewDefinitionState);
+	}
+
+	/* hook */
+	public void updateCountMachineOperationFieldStateonWindowLoad(
+			final ViewDefinitionState viewDefinitionState) {
+		controlOfEnableOrDisableCountMachineOperationField(viewDefinitionState);
+	}
+
+	public void controlOfEnableOrDisableCountMachineOperationField(
+			final ViewDefinitionState viewDefinitionState) {
+		FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState
+				.getComponentByReference("countRealizedOperation");
+		FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState
+				.getComponentByReference("countMachineOperation");
+
+		if (countRealizedOperation.getFieldValue().equals("02specified")) {
+			countMachineOperation.setEnabled(true);
+		} else {
+			countMachineOperation.setEnabled(false);
+		}
+
 	}
 
 }
