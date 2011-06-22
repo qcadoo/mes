@@ -80,6 +80,10 @@
 			model="technologyOperationComponent">
 			<model:integer name="timeNextOperationNorm" />
 		</model:model-field>
+		<model:model-field plugin="orders"
+			model="order">
+			<model:integer name="realizationTime" />
+		</model:model-field>
 
 
 		<model:model-field plugin="technologies" model="operation">
@@ -148,6 +152,7 @@
 		<view:view-tab resource="view/tabExtensions/operationComponent.xml" />
 		<view:view-tab resource="view/tabExtensions/machineDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 
 		<model:model model="shift" resource="model/shift.xml" />
 		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml" />
@@ -184,6 +189,23 @@
 			model="orderOperationComponent" joinField="order" cascade="delete">
 			</model:tree>
 		</model:model-field>
+		
+		
+		<view:view-listener plugin="orders"
+			view="orderDetails" component="technology" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="changeRealizationTime" />
+			
+		<view:view-listener plugin="orders"
+			view="orderDetails" component="plannedQuantity" event="onInputChange"
+			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="changeRealizationTime" />
+			
+		<view:view-listener plugin="orders"
+			view="orderDetails" component="dateFrom" event="onChange"
+			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="changeDateTo" />
+			
+		<view:view-listener plugin="orders"
+			view="orderDetails" component="dateTo" event="onChange"
+			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="changeDateFrom" />
 
 	</modules>
 </plugin>

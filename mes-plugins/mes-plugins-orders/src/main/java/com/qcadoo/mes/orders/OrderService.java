@@ -83,6 +83,8 @@ public final class OrderService {
         FieldComponent dateFrom = (FieldComponent) state;
         FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
 
+        // TODO KRNA what if productionScheduling plugin enabled
+
         if (!StringUtils.hasText((String) dateTo.getFieldValue()) && StringUtils.hasText((String) dateFrom.getFieldValue())) {
             dateTo.setFieldValue(dateFrom.getFieldValue());
         }
