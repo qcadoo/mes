@@ -18,8 +18,10 @@ public class OperationService {
 	@Autowired
 	private DataDefinitionService dataDefinitionService;
 
-	public void controlOfEnableOrDisableCountMachineOperationField(
-			final ViewDefinitionState viewDefinitionState) {
+	/* listener */
+	public void changeCountRealizedOperation(
+			final ViewDefinitionState viewDefinitionState,
+			final ComponentState state, final String[] args) {
 		FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState
 				.getComponentByReference("countRealizedOperation");
 		FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState
@@ -33,35 +35,27 @@ public class OperationService {
 
 	}
 
-	public void changeCountRealizedOperation(
-			final ViewDefinitionState viewDefinitionState,
-			final ComponentState state, final String[] args) {
-		controlOfEnableOrDisableCountMachineOperationField(viewDefinitionState);
-	}
-	
-/*hook*/
+	/* hook */
 	public void updateCountMachineOperationFieldStateonWindowLoad(
 			final ViewDefinitionState viewDefinitionState) {
-		controlOfEnableOrDisableCountMachineOperationField(viewDefinitionState);
+
+		FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState
+				.getComponentByReference("countRealizedOperation");
+		FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState
+				.getComponentByReference("countMachineOperation");
+		
+		if (countRealizedOperation.getFieldValue().equals("02specified")) {
+			countMachineOperation.setEnabled(true);
+		} else {
+			countMachineOperation.setEnabled(false);
+		}
+
 	}
 
-/*listener*/
+	/* listener */
 	public void updateFieldsStateWhenDefaultValueCheckboxChanged(
 			final ViewDefinitionState viewDefinitionState,
 			final ComponentState state, final String[] args) {
-		controlOfEnableOrDisableField(viewDefinitionState);
-	}
-	
-	
-/*hook*/
-	public void updateFieldsStateOnWindowLoad(
-			final ViewDefinitionState viewDefinitionState) {
-		controlOfEnableOrDisableField(viewDefinitionState);
-	}
-
-	public void controlOfEnableOrDisableField(
-			final ViewDefinitionState viewDefinitionState) {
-
 		FieldComponent dfltValue = (FieldComponent) viewDefinitionState
 				.getComponentByReference("useDefaultValue");
 		FieldComponent tpz = (FieldComponent) viewDefinitionState
@@ -85,7 +79,36 @@ public class OperationService {
 			parallel.setEnabled(true);
 			activeMachine.setEnabled(true);
 		}
+	}
 
+	/* hook */
+	public void updateFieldsStateOnWindowLoad(
+			final ViewDefinitionState viewDefinitionState) {
+		FieldComponent dfltValue = (FieldComponent) viewDefinitionState
+				.getComponentByReference("useDefaultValue");
+		FieldComponent tpz = (FieldComponent) viewDefinitionState
+				.getComponentByReference("tpz");
+		FieldComponent tj = (FieldComponent) viewDefinitionState
+				.getComponentByReference("tj");
+		FieldComponent parallel = (FieldComponent) viewDefinitionState
+				.getComponentByReference("parallel");
+		FieldComponent activeMachine = (FieldComponent) viewDefinitionState
+				.getComponentByReference("activeMachine");
+
+		if (dfltValue.getFieldValue().equals("1")) {
+			
+			
+			tpz.setEnabled(false);
+			tj.setEnabled(false);
+			parallel.setEnabled(false);
+			activeMachine.setEnabled(false);
+
+		} else {
+			tpz.setEnabled(true);
+			tj.setEnabled(true);
+			parallel.setEnabled(true);
+			activeMachine.setEnabled(true);
+		}
 	}
 
 	public void selectMachineInOperationComponent(

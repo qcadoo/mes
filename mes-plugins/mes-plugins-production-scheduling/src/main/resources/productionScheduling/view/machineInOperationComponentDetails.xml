@@ -67,7 +67,6 @@
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.productionScheduling.OperationService" method="updateFieldsStateOnWindowLoad" />
-		<beforeRender class="com.qcadoo.mes.productionScheduling.OperationService" method="updateCountMachineOperationFieldStateonWindowLoad"/>
 	</hooks>
 
 </view>
