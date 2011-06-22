@@ -56,7 +56,7 @@ public class OperationService {
 	public void updateFieldsStateWhenDefaultValueCheckboxChanged(
 			final ViewDefinitionState viewDefinitionState,
 			final ComponentState state, final String[] args) {
-		FieldComponent dfltValue = (FieldComponent) viewDefinitionState
+		FieldComponent useDefaultValue = (FieldComponent) viewDefinitionState
 				.getComponentByReference("useDefaultValue");
 		FieldComponent tpz = (FieldComponent) viewDefinitionState
 				.getComponentByReference("tpz");
@@ -67,7 +67,7 @@ public class OperationService {
 		FieldComponent activeMachine = (FieldComponent) viewDefinitionState
 				.getComponentByReference("activeMachine");
 
-		if (dfltValue.getFieldValue().equals("1")) {
+		if (useDefaultValue.getFieldValue().equals("true") || useDefaultValue.getFieldValue().equals("1")) {
 			tpz.setEnabled(false);
 			tj.setEnabled(false);
 			parallel.setEnabled(false);
@@ -84,7 +84,7 @@ public class OperationService {
 	/* hook */
 	public void updateFieldsStateOnWindowLoad(
 			final ViewDefinitionState viewDefinitionState) {
-		FieldComponent dfltValue = (FieldComponent) viewDefinitionState
+		FieldComponent useDefaultValue = (FieldComponent) viewDefinitionState
 				.getComponentByReference("useDefaultValue");
 		FieldComponent tpz = (FieldComponent) viewDefinitionState
 				.getComponentByReference("tpz");
@@ -95,8 +95,12 @@ public class OperationService {
 		FieldComponent activeMachine = (FieldComponent) viewDefinitionState
 				.getComponentByReference("activeMachine");
 
-		if (dfltValue.getFieldValue().equals("1")) {
-			
+		System.out.println("******************"+useDefaultValue.getFieldValue()+ "******************");
+		System.out.println("******************"+tpz.isEnabled()+ "******************");
+		System.out.println("******************"+tj.isEnabled()+ "******************");
+		System.out.println("******************"+activeMachine.isEnabled()+ "******************");
+		
+		if (useDefaultValue.getFieldValue().equals("true") || useDefaultValue.getFieldValue().equals("1")) {
 			
 			tpz.setEnabled(false);
 			tj.setEnabled(false);
