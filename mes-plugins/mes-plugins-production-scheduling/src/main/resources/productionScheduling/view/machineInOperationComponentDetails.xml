@@ -46,27 +46,28 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
-					<component type="time" name="tpz" field="tpz" reference="tpz" defaultEnabled="false"/>
+					<component type="time" name="tpz" field="tpz" reference="tpz" />
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="time" name="tj" field="tj" reference="tj" defaultEnabled="false"/>
+					<component type="time" name="tj" field="tj" reference="tj" />
 				</layoutElement>
 				<layoutElement column="1" row="5">
 					<component type="input" name="parallel" field="parallel"
-						reference="parallel" defaultEnabled="false">
+						reference="parallel" >
 						<validatesLength max="7" />
 						<validatesPrecision max="3"/>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="6">
 					<component type="checkbox" name="activeMachine" field="activeMachine"
-						reference="activeMachine" defaultEnabled="false" />
+						reference="activeMachine" />
 				</layoutElement>
 			</component>
 		</component>
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.productionScheduling.OperationService" method="updateFieldsStateOnWindowLoad" />
+		
 	</hooks>
 
 </view>
