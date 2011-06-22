@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.DataDefinition;
@@ -32,6 +33,45 @@ public class NormOrderService {
 
     @Autowired
     private TranslationService translationService;
+
+    public boolean checkMachineRequiredFields(final DataDefinition dataDefinition, final Entity entity) {
+        if ((Boolean) entity.getField("useDefaultValue")) {
+            return true;
+        }
+
+        checkRequiredField(entity, "tpz");
+        checkRequiredField(entity, "tj");
+        checkRequiredField(entity, "parallel");
+
+        return entity.isValid();
+    }
+
+    private void checkRequiredField(final Entity entity, final String field) {
+        if (entity.getField(field) == null) {
+            entity.addError(entity.getDataDefinition().getField(field), "qcadooView.validate.field.error.missing");
+        }
+    }
+
+    public boolean checkOperationRequiredFields(final DataDefinition dataDefinition, final Entity entity) {
+        if ((Boolean) entity.getField("useDefaultValue")) {
+            return true;
+        }
+
+        checkRequiredField(entity, "timeNextOperation");
+
+        if (!(Boolean) entity.getField("useMachineNorm")) {
+            checkRequiredField(entity, "tpz");
+            checkRequiredField(entity, "tj");
+        }
+
+        checkRequiredField(entity, "countRealized");
+
+        if ("02specified".equals(entity.getStringField("countRealized"))) {
+            checkRequiredField(entity, "countMachine");
+        }
+
+        return entity.isValid();
+    }
 
     public boolean checkMachineInOrderOperationComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
         Entity machine = entity.getBelongsToField("machine");
@@ -172,6 +212,11 @@ public class NormOrderService {
         // ignore
     }
 
+    public void changeUseMachineNorm(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        // ignore
+    }
+
     public void changeUseDefaultValueMachine(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         // ignore
@@ -185,12 +230,12 @@ public class NormOrderService {
     public void disableComponents(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         FieldComponent useDefaultValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
-        ComponentState tpz = viewDefinitionState.getComponentByReference("tpz");
-        ComponentState tj = viewDefinitionState.getComponentByReference("tj");
-        ComponentState useMachineNorm = viewDefinitionState.getComponentByReference("useMachineNorm");
-        ComponentState countRealized = viewDefinitionState.getComponentByReference("countRealized");
-        ComponentState countMachine = viewDefinitionState.getComponentByReference("countMachine");
-        ComponentState timeNextOperation = viewDefinitionState.getComponentByReference("timeNextOperation");
+        FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
+        FieldComponent tj = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
+        FieldComponent useMachineNorm = (FieldComponent) viewDefinitionState.getComponentByReference("useMachineNorm");
+        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
+        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
+        FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference("timeNextOperation");
         ComponentState parentTpz = viewDefinitionState.getComponentByReference("parentTpz");
         ComponentState parentTj = viewDefinitionState.getComponentByReference("parentTj");
         ComponentState parentUseMachineNorm = viewDefinitionState.getComponentByReference("parentUseMachineNorm");
@@ -200,25 +245,49 @@ public class NormOrderService {
 
         if (useDefaultValue.getFieldValue() == null || !"1".equals(useDefaultValue.getFieldValue())) {
             useDefaultValue.setFieldValue("0");
-            tpz.setEnabled(true);
-            tj.setEnabled(true);
             useMachineNorm.setEnabled(true);
+
+            if ("1".equals(useMachineNorm.getFieldValue())) {
+                tpz.setEnabled(false);
+                tpz.setRequired(false);
+                tj.setEnabled(false);
+                tj.setRequired(false);
+            } else {
+                tpz.setEnabled(true);
+                tpz.setRequired(true);
+                tj.setEnabled(true);
+                tj.setRequired(true);
+            }
+
             countRealized.setEnabled(true);
+            countRealized.setRequired(true);
 
             if ("02specified".equals(countRealized.getFieldValue())) {
                 countMachine.setEnabled(true);
+                countMachine.setRequired(true);
+                if (countMachine.getFieldValue() == null || !StringUtils.hasText(String.valueOf(countMachine.getFieldValue()))) {
+                    countMachine.setFieldValue("1");
+                }
             } else {
                 countMachine.setEnabled(false);
+                countMachine.setRequired(false);
             }
 
             timeNextOperation.setEnabled(true);
+            timeNextOperation.setRequired(true);
         } else {
             tpz.setEnabled(false);
+            tpz.setRequired(false);
             tj.setEnabled(false);
+            tj.setRequired(false);
             useMachineNorm.setEnabled(false);
+            useMachineNorm.setRequired(false);
             countRealized.setEnabled(false);
+            countRealized.setRequired(false);
             countMachine.setEnabled(false);
+            countMachine.setRequired(false);
             timeNextOperation.setEnabled(false);
+            timeNextOperation.setRequired(false);
         }
 
         Entity technologyOperationComponent = dataDefinitionService.get("productionScheduling", "orderOperationComponent")
@@ -263,22 +332,30 @@ public class NormOrderService {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         FieldComponent machine = (FieldComponent) viewDefinitionState.getComponentByReference("machine");
         FieldComponent useDefaultValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
-        ComponentState tpz = viewDefinitionState.getComponentByReference("tpz");
-        ComponentState tj = viewDefinitionState.getComponentByReference("tj");
-        ComponentState parallel = viewDefinitionState.getComponentByReference("parallel");
-        ComponentState isActive = viewDefinitionState.getComponentByReference("isActive");
+        FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
+        FieldComponent tj = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
+        FieldComponent parallel = (FieldComponent) viewDefinitionState.getComponentByReference("parallel");
+        FieldComponent isActive = (FieldComponent) viewDefinitionState.getComponentByReference("isActive");
 
         if (useDefaultValue.getFieldValue() == null || !"1".equals(useDefaultValue.getFieldValue())) {
             useDefaultValue.setFieldValue("0");
             tpz.setEnabled(true);
+            tpz.setRequired(true);
             tj.setEnabled(true);
+            tj.setRequired(true);
             parallel.setEnabled(true);
+            parallel.setRequired(true);
             isActive.setEnabled(true);
+            isActive.setRequired(true);
         } else {
             tpz.setEnabled(false);
+            tpz.setRequired(false);
             tj.setEnabled(false);
+            tj.setRequired(false);
             parallel.setEnabled(false);
+            parallel.setRequired(false);
             isActive.setEnabled(false);
+            isActive.setRequired(false);
         }
 
         setParentValuesMachine(viewDefinitionState, form, (Long) machine.getFieldValue());

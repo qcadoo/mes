@@ -51,5 +51,8 @@
 		<string name="parentTimeNextOperation" persistent="false" />
 		<hasMany name="machineInOrderOperationComponents" model="machineInOrderOperationComponent" joinField="orderOperationComponent" />
 	</fields>
-	<hooks />
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.productionScheduling.NormOrderService"
+			method="checkOperationRequiredFields" />
+	</hooks>
 </model>

@@ -46,7 +46,10 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4" width="4">
-						<component type="checkbox" name="useMachineNorm" field="#{form}.useMachineNorm" reference="useMachineNorm" />
+						<component type="checkbox" name="useMachineNorm" field="#{form}.useMachineNorm" reference="useMachineNorm">
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionScheduling.NormOrderService"
+									method="changeUseMachineNorm" />
+						</component>
 					</layoutElement>
 					<layoutElement column="5" row="4">
 						<component type="input" name="parentUseMachineNorm" field="#{form}.parentUseMachineNorm" reference="parentUseMachineNorm" defaultEnabled="false" hasLabel="false">
