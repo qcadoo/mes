@@ -36,7 +36,7 @@
 				<layoutElement column="1" row="1">
 					<component type="checkbox" name="useDefaultValue" field="#{form}.useDefaultValue" reference="useDefaultValue" defaultEnabled="true">
 						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.NormService"
-								method="changeDefaultValue" />
+								method="updateFieldsStateWhenDefaultValueCheckboxChanged" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">

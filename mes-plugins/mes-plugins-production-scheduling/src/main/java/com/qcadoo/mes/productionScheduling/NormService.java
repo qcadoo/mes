@@ -13,7 +13,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class NormService {
 
-	public void changeDefaultValue(final ViewDefinitionState viewDefinitionState,
+	public void updateFieldsStateWhenDefaultValueCheckboxChanged(final ViewDefinitionState viewDefinitionState,
 			final ComponentState state, final String[] args) {
 
 		FieldComponent useDefaultValue = (FieldComponent) viewDefinitionState
@@ -76,24 +76,5 @@ public class NormService {
 			return;
 		}
 	}
-	
-/*	public boolean checkOperationComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
-        Entity machine = entity.getBelongsToField("machine");
-        Entity operationComponent = entity.getBelongsToField("operationComponent");
 
-        if (operationComponent == null || machine == null) {
-            return false;
-        }
-
-        SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo("machine", machine))
-                .add(SearchRestrictions.belongsTo("operationComponent", operationComponent)).list();
-
-        if (searchResult.getTotalNumberOfEntities() > 0 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
-            entity.addError(dataDefinition.getField("machine"),
-                    "productionScheduling.validate.global.error.machineInOperationDuplicated");
-            return false;
-        } else {
-            return true;
-        }
-    }*/
 }
