@@ -109,7 +109,7 @@
 
 
 		<model:model-field plugin="basic" model="machine">
-			<model:boolean name="ofMachine" default="true" />
+			<model:boolean name="activeMachine" default="true" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
 			<model:integer name="tpz" />
@@ -164,6 +164,7 @@
 			view="shiftsList" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
+		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
 		<view:view-listener plugin="orders" view="ordersList"
 			component="window" event="showGanttOrdersCalendar"
 			class="com.qcadoo.mes.productionScheduling.ShiftsService" method="showGanttOrdersCalendar" />
@@ -184,6 +185,14 @@
 			model="orderOperationComponent" joinField="order" cascade="delete">
 			</model:tree>
 		</model:model-field>
+		
+		<view:view-listener plugin="orders"
+			view="orderDetails" component="form" event="showOrderParameters"
+			class="com.qcadoo.mes.productionScheduling.NormOrderService" method="showOrderParameters" />
+
+		<view:view resource="view/orderOperationComponentList.xml" />
+		<view:view resource="view/orderOperationComponentDetails.xml" />
+		<view:view resource="view/machineInOrderOperationComponentDetails.xml" />
 
 	</modules>
 </plugin>

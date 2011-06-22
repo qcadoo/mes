@@ -113,7 +113,7 @@ public class OperationService {
         SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo("machine", machine))
                 .add(SearchRestrictions.belongsTo("operationComponent", operationComponent)).list();
 
-        if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
+        if (searchResult.getTotalNumberOfEntities() == 1 && searchResult.getEntities().get(0).getId().equals(entity.getId())) {
             return true;
         } else if (searchResult.getTotalNumberOfEntities() > 0) {
             entity.addError(dataDefinition.getField("machine"),

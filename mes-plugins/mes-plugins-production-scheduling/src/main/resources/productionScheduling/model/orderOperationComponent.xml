@@ -32,16 +32,23 @@
 		<belongsTo name="technology" plugin="technologies" model="technology" required="true" />
 		<belongsTo name="operation" plugin="technologies" model="operation" required="true" />
 		<belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent" required="true" />
-		<belongsTo name="parent" model="orderOperationComponent" />	
+		<belongsTo name="parent" model="orderOperationComponent" />
+		<enum name="entityType" values="operation" required="true" default="operation" />	
 		<hasMany name="children" model="orderOperationComponent" joinField="parent" cascade="delete" copyable="true" />
 		<priority name="priority" scope="parent" />
-		<integer name="tpz" />
-		<integer name="tj" />
 		<boolean name="useDefaultValue" default="true" />
+		<integer name="tpz" />
+		<integer name="parentTpz" persistent="false" />
+		<integer name="tj" />
+		<integer name="parentTj" persistent="false" />
 		<boolean name="useMachineNorm" default="true" />
+		<boolean name="parentUseMachineNorm" persistent="false" />
 		<enum name="countRealized" values="01all,02specified" default="01all" />
+		<enum name="parentCountRealized" values="01all,02specified" persistent="false" />
 		<decimal name="countMachine" />
+		<decimal name="parentCountMachine" persistent="false" />
 		<integer name="timeNextOperation" />
+		<integer name="parentTimeNextOperation" persistent="false" />
 		<hasMany name="machineInOrderOperationComponents" model="machineInOrderOperationComponent" joinField="orderOperationComponent" />
 	</fields>
 	<hooks />

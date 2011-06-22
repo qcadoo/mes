@@ -29,10 +29,15 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<boolean name="useDefaultValue" required="true" />
+		<priority name="priority" scope="orderOperationComponent" />
 		<integer name="tpz" />
+		<integer name="parentTpz" persistent="false" />
 		<integer name="tj" />
-		<decimal name="parallel" />
+		<integer name="parentTj" persistent="false" />
+		<decimal name="parallel"  />
+		<decimal name="parentParallel" persistent="false" />
 		<boolean name="isActive" />
+		<boolean name="parentIsActive" persistent="false" />
 		<belongsTo name="machine" plugin="basic" model="machine" required="true" />
 		<belongsTo name="orderOperationComponent" model="orderOperationComponent" required="true" />
 	</fields>
