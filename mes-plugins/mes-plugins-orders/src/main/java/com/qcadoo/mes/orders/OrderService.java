@@ -76,20 +76,6 @@ public final class OrderService {
         return true;
     }
 
-    public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (!(state instanceof FieldComponent)) {
-            return;
-        }
-        FieldComponent dateFrom = (FieldComponent) state;
-        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
-
-        // TODO KRNA what if productionScheduling plugin enabled
-
-        if (!StringUtils.hasText((String) dateTo.getFieldValue()) && StringUtils.hasText((String) dateFrom.getFieldValue())) {
-            dateTo.setFieldValue(dateFrom.getFieldValue());
-        }
-    }
-
     public void setDefaultNameUsingProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (!(state instanceof FieldComponent)) {

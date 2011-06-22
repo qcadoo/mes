@@ -27,6 +27,7 @@ public class OrderRealizationTimeService {
         FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom");
         if (StringUtils.hasText((String) dateTo.getFieldValue()) && !StringUtils.hasText((String) dateFrom.getFieldValue())) {
             // TODO KRNA update dateFrom
+            dateFrom.setFieldValue(dateTo.getFieldValue());
         }
         // TODO KRNA value > max
     }
@@ -39,6 +40,7 @@ public class OrderRealizationTimeService {
         FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
         if (!StringUtils.hasText((String) dateTo.getFieldValue()) && StringUtils.hasText((String) dateFrom.getFieldValue())) {
             // TODO KRNA update dateTo
+            dateTo.setFieldValue(dateFrom.getFieldValue());
         }
         // TODO KRNA value > max
     }
