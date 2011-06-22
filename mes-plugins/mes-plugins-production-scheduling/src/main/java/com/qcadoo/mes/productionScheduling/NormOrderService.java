@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionScheduling;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -272,16 +273,23 @@ public class NormOrderService {
 
         Entity machineInOrderOperationComponent = dataDefinitionService.get("productionScheduling",
                 "machineInOrderOperationComponent").get(form.getEntityId());
+        System.out.println("X1: " + machineInOrderOperationComponent);
         Entity technologyOperationComponent = machineInOrderOperationComponent.getBelongsToField("orderOperationComponent")
                 .getBelongsToField("technologyOperationComponent");
+        System.out.println("X2: " + technologyOperationComponent);
         Entity operation = machineInOrderOperationComponent.getBelongsToField("orderOperationComponent").getBelongsToField(
                 "operation");
+        System.out.println("X3: " + operation);
         Entity machine = machineInOrderOperationComponent.getBelongsToField("machine");
+        System.out.println("X4: " + machine);
         Entity machineInOperationComponent = dataDefinitionService.get("productionScheduling", "machineInOperationComponent")
-                .find().add(SearchRestrictions.eq("operationComponent", technologyOperationComponent))
-                .add(SearchRestrictions.eq("machine", machine)).uniqueResult();
+                .find().add(SearchRestrictions.belongsTo("operationComponent", technologyOperationComponent))
+                .add(SearchRestrictions.belongsTo("machine", machine)).uniqueResult();
+        System.out.println("X5: " + machineInOperationComponent);
         Entity machineInOperation = dataDefinitionService.get("productionScheduling", "machineInOperation").find()
-                .add(SearchRestrictions.eq("operation", operation)).add(SearchRestrictions.eq("machine", machine)).uniqueResult();
+                .add(SearchRestrictions.belongsTo("operation", operation)).add(SearchRestrictions.belongsTo("machine", machine))
+                .uniqueResult();
+        System.out.println("X6: " + machineInOperation);
     }
 
     private void convertIntToStringTime(final ComponentState component) {
@@ -289,12 +297,11 @@ public class NormOrderService {
             return;
         }
 
-        int time = (Integer) component.getFieldValue();
+        int time = Integer.valueOf((String) component.getFieldValue());
         int hours = time / 3600;
         int minutes = time / 60 % 60;
         int seconds = time % 60;
-
-        component.setFieldValue("(" + String.format("(%02d:%02d:%02d)", hours, minutes, seconds) + ")");
+        component.setFieldValue(String.format("(%02d:%02d:%02d)", hours, minutes, seconds));
     }
 
     private void convertBooleanToString(final ComponentState component) {
@@ -318,7 +325,7 @@ public class NormOrderService {
         format.setMinimumFractionDigits(3);
         format.setMaximumFractionDigits(3);
 
-        component.setFieldValue("(" + format.format(component.getFieldValue()) + ")");
+        component.setFieldValue("(" + format.format(new BigDecimal((String) component.getFieldValue())) + ")");
     }
 
     private void convertEnumToString(final ComponentState component) {
@@ -326,17 +333,17 @@ public class NormOrderService {
             return;
         }
 
+        String translated = null;
+
         if ("02specified".equals(component.getFieldValue())) {
-            component
-                    .setFieldValue("("
-                            + translationService.translate(
-                                    "productionScheduling.orderOperationComponent.countRealized.value.02specified",
-                                    component.getLocale()) + ")");
+            translated = translationService.translate(
+                    "productionScheduling.orderOperationComponent.countRealized.value.02specified", component.getLocale());
         } else {
-            component.setFieldValue("("
-                    + translationService.translate("productionScheduling.orderOperationComponent.countRealized.value.01all",
-                            component.getLocale()) + ")");
+            translated = translationService.translate("productionScheduling.orderOperationComponent.countRealized.value.01all",
+                    component.getLocale());
         }
+
+        component.setFieldValue("(" + translated + ")");
     }
 
 }
