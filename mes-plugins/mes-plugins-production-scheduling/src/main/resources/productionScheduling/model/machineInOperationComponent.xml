@@ -32,7 +32,7 @@
 		<integer name="tpz" />
 		<integer name="tj" />
 		<decimal name="parallel" />
-		<boolean name="activeMachine" />
+		<boolean name="activeMachine" default="true"/>
 		<belongsTo name="machine" plugin="basic" model="machine" required="true" />
 		<belongsTo name="operationComponent" plugin="technologies"
 			model="technologyOperationComponent" required="true" />

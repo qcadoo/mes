@@ -152,6 +152,11 @@
 			
 		<view:view-hook view="technologyOperationComponentDetails" type="beforeRender" plugin="technologies" class="com.qcadoo.mes.productionScheduling.NormService"
 			 method="updateCountMachineOperationFieldStateonWindowLoad"/>
+			 
+		<view:view-hook view="technologyOperationComponentDetails" type="beforeRender" plugin="technologies" class="com.qcadoo.mes.productionScheduling.NormService" 
+		method="updateFieldsStateOnWindowLoad"/>
+		
+		
 
 		<view:view-tab resource="view/tabExtensions/operationComponent.xml" />
 		<view:view-tab resource="view/tabExtensions/machineDetails.xml" />
