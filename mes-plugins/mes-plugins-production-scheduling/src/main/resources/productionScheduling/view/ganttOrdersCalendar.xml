@@ -62,8 +62,6 @@
 						</layoutElement>
 						<layoutElement column="2" row="1">
 							<component type="calendar" name="dateFrom" field="dateFrom" reference="dateFrom">
-								<listener event="onChange" class="com.qcadoo.mes.orders.OrderService"
-									method="changeDateFrom" />
 								<option type="labelWidth" value="50" />
 								<option type="withTimePicker" value="true" />
 							</component>
