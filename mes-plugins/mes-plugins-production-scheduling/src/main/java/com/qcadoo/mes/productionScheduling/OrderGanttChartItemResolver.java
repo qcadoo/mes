@@ -51,7 +51,7 @@ public class OrderGanttChartItemResolver implements GanttChartItemResolver {
             to = new Date(from.getTime() + diff);
         }
 
-        return scale.createGanttChartItem("", orderName, from, to);
+        return scale.createGanttChartItem("", orderName, order.getId(), from, to);
     }
 
 }

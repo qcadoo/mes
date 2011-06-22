@@ -32,26 +32,9 @@ public class OperationService {
         }
     }
 
-    public void changeDefaultValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-
-        FieldComponent dfltValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
-        FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
-        FieldComponent tj = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
-        FieldComponent parallel = (FieldComponent) viewDefinitionState.getComponentByReference("parallel");
-        FieldComponent activeMachine = (FieldComponent) viewDefinitionState.getComponentByReference("activeMachine");
-
-        if (dfltValue.getFieldValue().equals("1")) {
-            tpz.setEnabled(false);
-            tj.setEnabled(false);
-            parallel.setEnabled(false);
-            activeMachine.setEnabled(false);
-
-        } else {
-            tpz.setEnabled(true);
-            tj.setEnabled(true);
-            parallel.setEnabled(true);
-            activeMachine.setEnabled(true);
-        }
+    public void updateFieldsStateWhenDefaultValueCheckboxChanged(final ViewDefinitionState viewDefinitionState,
+            final ComponentState state, final String[] args) {
+        controlOfEnableOrDisableField(viewDefinitionState);
     }
 
     public void selectMachineInOperationComponent(final ViewDefinitionState state, final ComponentState componentState,
@@ -113,7 +96,7 @@ public class OperationService {
         SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo("machine", machine))
                 .add(SearchRestrictions.belongsTo("operationComponent", operationComponent)).list();
 
-        if (searchResult.getTotalNumberOfEntities() == 1 && searchResult.getEntities().get(0).getId().equals(entity.getId())) {
+        if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
             return true;
         } else if (searchResult.getTotalNumberOfEntities() > 0) {
             entity.addError(dataDefinition.getField("machine"),
@@ -121,6 +104,70 @@ public class OperationService {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public boolean checkMachineInOperationUniqueness(final DataDefinition dataDefinition, final Entity entity) {
+        Entity machine = entity.getBelongsToField("machine");
+        Entity operation = entity.getBelongsToField("operation");
+
+        if (operation == null || machine == null) {
+            return true;
+        }
+
+        SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo("machine", machine))
+                .add(SearchRestrictions.belongsTo("operation", operation)).list();
+
+        if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
+            return true;
+        } else if (searchResult.getTotalNumberOfEntities() > 0) {
+            entity.addError(dataDefinition.getField("machine"),
+                    "productionScheduling.validate.global.error.machineInOperationDuplicated");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public void updateFieldsStateOnWindowLoad(final ViewDefinitionState viewDefinitionState) {
+        controlOfEnableOrDisableField(viewDefinitionState);
+    }
+
+    public void controlOfEnableOrDisableField(final ViewDefinitionState viewDefinitionState) {
+
+        FieldComponent dfltValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
+        FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
+        FieldComponent tj = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
+        FieldComponent parallel = (FieldComponent) viewDefinitionState.getComponentByReference("parallel");
+        FieldComponent activeMachine = (FieldComponent) viewDefinitionState.getComponentByReference("activeMachine");
+
+        if (dfltValue.getFieldValue().equals("1")) {
+            tpz.setEnabled(false);
+            tj.setEnabled(false);
+            parallel.setEnabled(false);
+            activeMachine.setEnabled(false);
+
+        } else {
+            tpz.setEnabled(true);
+            tj.setEnabled(true);
+            parallel.setEnabled(true);
+            activeMachine.setEnabled(true);
+        }
+
+    }
+
+    public void refereshGanttChart(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        viewDefinitionState.getComponentByReference("gantt").performEvent(viewDefinitionState, "refresh");
+    }
+
+    public void disableFormWhenNoOrderSelected(final ViewDefinitionState viewDefinitionState) {
+        if (viewDefinitionState.getComponentByReference("gantt").getFieldValue() == null) {
+            viewDefinitionState.getComponentByReference("dateFrom").setEnabled(false);
+            viewDefinitionState.getComponentByReference("dateTo").setEnabled(false);
+        } else {
+            viewDefinitionState.getComponentByReference("dateFrom").setEnabled(true);
+            viewDefinitionState.getComponentByReference("dateTo").setEnabled(true);
         }
     }
 

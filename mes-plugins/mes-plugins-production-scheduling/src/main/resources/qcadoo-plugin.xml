@@ -84,7 +84,7 @@
 
 		<model:model-field plugin="technologies" model="operation">
 			<model:hasMany name="machineInOperation"  plugin="productionScheduling" 
-			model="machineInOperation"  joinField="operationComponent">
+			model="machineInOperation"  joinField="operation">
 			</model:hasMany>
 		</model:model-field>
 
@@ -100,11 +100,9 @@
 			<model:onSave class="com.qcadoo.mes.productionScheduling.NormService"
 				method="copyDefaultDataToOperationComponent" />
 		</model:model-hook>
-
-		<model:model-hook model="technologyOperationComponent"
-			plugin="technologies">
-			<model:validatesWith
-				class="com.qcadoo.mes.productionScheduling.OperationService" method="checkMachineInOperationComponentUniqueness" />
+		
+		<model:model-hook model="technologyOperationComponent" plugin="technologies">
+			<model:validatesWith class="com.qcadoo.mes.productionScheduling.OperationService" method="checkMachineInOperationComponentUniqueness" />
 		</model:model-hook>
 
 

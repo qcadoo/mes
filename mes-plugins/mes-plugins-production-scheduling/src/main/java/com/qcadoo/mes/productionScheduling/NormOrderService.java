@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionScheduling;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -19,12 +21,16 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class NormOrderService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TranslationService translationService;
 
     public boolean checkMachineInOrderOperationComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
         Entity machine = entity.getBelongsToField("machine");
@@ -169,6 +175,7 @@ public class NormOrderService {
     }
 
     public void disableComponents(final ViewDefinitionState viewDefinitionState) {
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         FieldComponent useDefaultValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
         ComponentState tpz = viewDefinitionState.getComponentByReference("tpz");
         ComponentState tj = viewDefinitionState.getComponentByReference("tj");
@@ -176,12 +183,15 @@ public class NormOrderService {
         ComponentState countRealized = viewDefinitionState.getComponentByReference("countRealized");
         ComponentState countMachine = viewDefinitionState.getComponentByReference("countMachine");
         ComponentState timeNextOperation = viewDefinitionState.getComponentByReference("timeNextOperation");
+        ComponentState parentTpz = viewDefinitionState.getComponentByReference("parentTpz");
+        ComponentState parentTj = viewDefinitionState.getComponentByReference("parentTj");
+        ComponentState parentUseMachineNorm = viewDefinitionState.getComponentByReference("parentUseMachineNorm");
+        ComponentState parentCountRealized = viewDefinitionState.getComponentByReference("parentCountRealized");
+        ComponentState parentCountMachine = viewDefinitionState.getComponentByReference("parentCountMachine");
+        ComponentState parentTimeNextOperation = viewDefinitionState.getComponentByReference("parentTimeNextOperation");
 
-        System.out.println(" --------------------> " + useDefaultValue.getFieldValue());
-
-        if (useDefaultValue.getFieldValue() == null || !(Boolean) useDefaultValue.getFieldValue()) {
-            System.out.println(" --------------------> true");
-            useDefaultValue.setFieldValue(false);
+        if (useDefaultValue.getFieldValue() == null || !"1".equals(useDefaultValue.getFieldValue())) {
+            useDefaultValue.setFieldValue("0");
             tpz.setEnabled(true);
             tj.setEnabled(true);
             useMachineNorm.setEnabled(true);
@@ -189,7 +199,6 @@ public class NormOrderService {
             countMachine.setEnabled(true);
             timeNextOperation.setEnabled(true);
         } else {
-            System.out.println(" --------------------> false");
             tpz.setEnabled(false);
             tj.setEnabled(false);
             useMachineNorm.setEnabled(false);
@@ -197,17 +206,59 @@ public class NormOrderService {
             countMachine.setEnabled(false);
             timeNextOperation.setEnabled(false);
         }
+
+        Entity technologyOperationComponent = dataDefinitionService.get("productionScheduling", "orderOperationComponent")
+                .get(form.getEntityId()).getBelongsToField("technologyOperationComponent");
+
+        if (technologyOperationComponent == null) {
+            parentUseMachineNorm.setFieldValue(null);
+            parentTpz.setFieldValue(null);
+            parentTj.setFieldValue(null);
+            parentCountRealized.setFieldValue(null);
+            parentCountMachine.setFieldValue(null);
+            parentTimeNextOperation.setFieldValue(null);
+            return;
+        }
+
+        parentUseMachineNorm.setFieldValue(technologyOperationComponent.getField("useMachineNorm"));
+
+        if ((Boolean) technologyOperationComponent.getField("useDefaultValue")) {
+            Entity operation = technologyOperationComponent.getBelongsToField("operation");
+            parentTpz.setFieldValue(operation.getField("tpz"));
+            parentTj.setFieldValue(operation.getField("tj"));
+            parentCountRealized.setFieldValue(operation.getField("countRealizedOperation"));
+            parentCountMachine.setFieldValue(operation.getField("countMachineOperation"));
+            parentTimeNextOperation.setFieldValue(operation.getField("timeNextOperation"));
+        } else {
+            parentTpz.setFieldValue(technologyOperationComponent.getField("tpz"));
+            parentTj.setFieldValue(technologyOperationComponent.getField("tj"));
+            parentCountRealized.setFieldValue(technologyOperationComponent.getField("countRealizedNorm"));
+            parentCountMachine.setFieldValue(technologyOperationComponent.getField("countMachineNorm"));
+            parentTimeNextOperation.setFieldValue(technologyOperationComponent.getField("timeNextOperationNorm"));
+        }
+
+        convertIntToStringTime(parentTpz);
+        convertIntToStringTime(parentTj);
+        convertIntToStringTime(parentTimeNextOperation);
+        convertBooleanToString(parentUseMachineNorm);
+        convertDecimalToString(parentCountMachine);
+        convertEnumToString(parentCountRealized);
     }
 
     public void disableComponentsMachine(final ViewDefinitionState viewDefinitionState) {
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         FieldComponent useDefaultValue = (FieldComponent) viewDefinitionState.getComponentByReference("useDefaultValue");
         ComponentState tpz = viewDefinitionState.getComponentByReference("tpz");
         ComponentState tj = viewDefinitionState.getComponentByReference("tj");
         ComponentState parallel = viewDefinitionState.getComponentByReference("parallel");
         ComponentState isActive = viewDefinitionState.getComponentByReference("isActive");
+        ComponentState parentTpz = viewDefinitionState.getComponentByReference("parentTpz");
+        ComponentState parentTj = viewDefinitionState.getComponentByReference("parentTj");
+        ComponentState parentParallel = viewDefinitionState.getComponentByReference("parentParallel");
+        ComponentState parentIsActive = viewDefinitionState.getComponentByReference("parentIsActive");
 
-        if (useDefaultValue.getFieldValue() == null || !(Boolean) useDefaultValue.getFieldValue()) {
-            useDefaultValue.setFieldValue(false);
+        if (useDefaultValue.getFieldValue() == null || !"1".equals(useDefaultValue.getFieldValue())) {
+            useDefaultValue.setFieldValue("0");
             tpz.setEnabled(true);
             tj.setEnabled(true);
             parallel.setEnabled(true);
@@ -217,6 +268,74 @@ public class NormOrderService {
             tj.setEnabled(false);
             parallel.setEnabled(false);
             isActive.setEnabled(false);
+        }
+
+        Entity machineInOrderOperationComponent = dataDefinitionService.get("productionScheduling",
+                "machineInOrderOperationComponent").get(form.getEntityId());
+        Entity technologyOperationComponent = machineInOrderOperationComponent.getBelongsToField("orderOperationComponent")
+                .getBelongsToField("technologyOperationComponent");
+        Entity operation = machineInOrderOperationComponent.getBelongsToField("orderOperationComponent").getBelongsToField(
+                "operation");
+        Entity machine = machineInOrderOperationComponent.getBelongsToField("machine");
+        Entity machineInOperationComponent = dataDefinitionService.get("productionScheduling", "machineInOperationComponent")
+                .find().add(SearchRestrictions.eq("operationComponent", technologyOperationComponent))
+                .add(SearchRestrictions.eq("machine", machine)).uniqueResult();
+        Entity machineInOperation = dataDefinitionService.get("productionScheduling", "machineInOperation").find()
+                .add(SearchRestrictions.eq("operation", operation)).add(SearchRestrictions.eq("machine", machine)).uniqueResult();
+    }
+
+    private void convertIntToStringTime(final ComponentState component) {
+        if (component.getFieldValue() == null) {
+            return;
+        }
+
+        int time = (Integer) component.getFieldValue();
+        int hours = time / 3600;
+        int minutes = time / 60 % 60;
+        int seconds = time % 60;
+
+        component.setFieldValue("(" + String.format("(%02d:%02d:%02d)", hours, minutes, seconds) + ")");
+    }
+
+    private void convertBooleanToString(final ComponentState component) {
+        if (component.getFieldValue() == null) {
+            return;
+        }
+
+        if ("0".equals(component.getFieldValue())) {
+            component.setFieldValue("(" + translationService.translate("qcadooView.false", component.getLocale()) + ")");
+        } else {
+            component.setFieldValue("(" + translationService.translate("qcadooView.true", component.getLocale()) + ")");
+        }
+    }
+
+    private void convertDecimalToString(final ComponentState component) {
+        if (component.getFieldValue() == null) {
+            return;
+        }
+
+        NumberFormat format = NumberFormat.getNumberInstance(component.getLocale());
+        format.setMinimumFractionDigits(3);
+        format.setMaximumFractionDigits(3);
+
+        component.setFieldValue("(" + format.format(component.getFieldValue()) + ")");
+    }
+
+    private void convertEnumToString(final ComponentState component) {
+        if (component.getFieldValue() == null) {
+            return;
+        }
+
+        if ("02specified".equals(component.getFieldValue())) {
+            component
+                    .setFieldValue("("
+                            + translationService.translate(
+                                    "productionScheduling.orderOperationComponent.countRealized.value.02specified",
+                                    component.getLocale()) + ")");
+        } else {
+            component.setFieldValue("("
+                    + translationService.translate("productionScheduling.orderOperationComponent.countRealized.value.01all",
+                            component.getLocale()) + ")");
         }
     }
 
