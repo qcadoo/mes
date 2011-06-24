@@ -87,7 +87,24 @@ public class ShiftsGanttChartItemResolverImpl implements ShiftsGanttChartItemRes
 
         Collections.sort(hours, new ShiftHoursComparator());
 
-        return mergeOverlappedHours(hours);
+        return removeHoursOutOfRange(mergeOverlappedHours(hours), dateFrom, dateTo);
+    }
+
+    private List<ShiftHour> removeHoursOutOfRange(final List<ShiftHour> hours, final Date dateFrom, final Date dateTo) {
+        List<ShiftHour> list = new ArrayList<ShiftHour>();
+
+        for (ShiftHour hour : hours) {
+            if (hour.getDateFrom().compareTo(dateFrom) >= 0 && hour.getDateTo().compareTo(dateTo) <= 0) {
+                list.add(hour);
+            } else if (hour.getDateFrom().compareTo(dateFrom) < 0 && hour.getDateTo().compareTo(dateTo) > 0) {
+                list.add(new ShiftHour(dateFrom, dateTo));
+            } else if (hour.getDateFrom().compareTo(dateFrom) < 0 && hour.getDateTo().compareTo(dateTo) <= 0) {
+                list.add(new ShiftHour(dateFrom, hour.getDateTo()));
+            } else if (hour.getDateFrom().compareTo(dateFrom) >= 0 && hour.getDateTo().compareTo(dateTo) < 0) {
+                list.add(new ShiftHour(hour.getDateFrom(), dateTo));
+            }
+        }
+        return list;
     }
 
     private void removeFreeTimeExceptions(final List<ShiftHour> hours, final List<Entity> exceptions) {
