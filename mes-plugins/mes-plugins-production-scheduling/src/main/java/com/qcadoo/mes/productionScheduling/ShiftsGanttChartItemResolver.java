@@ -57,6 +57,20 @@ public class ShiftsGanttChartItemResolver implements GanttChartItemResolver {
         return items;
     }
 
+    public List<ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo) {
+        List<Entity> shifts = dataDefinitionService.get("productionScheduling", "shift").find().list().getEntities();
+
+        List<ShiftHour> hours = new ArrayList<ShiftHour>();
+
+        for (Entity shift : shifts) {
+            hours.addAll(getHoursForShift(shift, dateFrom, dateTo));
+        }
+
+        Collections.sort(hours, new ShiftHoursComparator());
+
+        return mergeOverlappedHours(hours);
+    }
+
     private List<ShiftHour> getHoursForShift(final Entity shift, final Date dateFrom, final Date dateTo) {
         List<ShiftHour> hours = new ArrayList<ShiftHour>();
         hours.addAll(getHourForDay(shift, dateFrom, dateTo, "monday", 1));
@@ -252,7 +266,7 @@ public class ShiftsGanttChartItemResolver implements GanttChartItemResolver {
 
     }
 
-    private static class ShiftHour {
+    public static class ShiftHour {
 
         private final Date dateTo;
 
