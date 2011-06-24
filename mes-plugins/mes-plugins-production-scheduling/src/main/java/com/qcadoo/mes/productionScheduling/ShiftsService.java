@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
@@ -15,9 +16,8 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class ShiftsService {
 
-    // @Autowired
-    // TODO mina || masz - why autowired is not wotking
-    private final ShiftsGanttChartItemResolver shiftsGanttChartItemResolver = new ShiftsGanttChartItemResolver();
+    @Autowired
+    private ShiftsGanttChartItemResolver shiftsGanttChartItemResolver;
 
     private static final String[] WEEK_DAYS = { "monday", "tuesday", "wensday", "thursday", "friday", "saturday", "sunday" };
 
@@ -63,14 +63,23 @@ public class ShiftsService {
         long start = dateFrom.getTime();
         long remaining = seconds;
 
+        System.out.println(" @@@@@@1 " + dateFrom);
+        System.out.println(" @@@@@@2 " + seconds);
+
         while (remaining > 0) {
-            List<ShiftsGanttChartItemResolver.ShiftHour> hours = shiftsGanttChartItemResolver.getHoursForAllShifts(
+            List<ShiftsGanttChartItemResolverImpl.ShiftHour> hours = shiftsGanttChartItemResolver.getHoursForAllShifts(
                     new Date(start), new Date(start + STEP));
 
-            for (ShiftsGanttChartItemResolver.ShiftHour hour : hours) {
+            System.out.println(" @@@@@@3 " + hours.size());
+
+            for (ShiftsGanttChartItemResolverImpl.ShiftHour hour : hours) {
                 long diff = (hour.getDateTo().getTime() - hour.getDateFrom().getTime()) / 1000;
 
+                System.out.println(" @@@@@@4 " + remaining);
+                System.out.println(" @@@@@@5 " + diff);
+
                 if (diff > remaining) {
+                    System.out.println(" @@@@@@! " + new Date(hour.getDateFrom().getTime() + (remaining * 1000)));
                     return new Date(hour.getDateFrom().getTime() + (remaining * 1000));
                 } else {
                     remaining -= diff;
@@ -80,6 +89,7 @@ public class ShiftsService {
             start += STEP;
 
             if (start > MAX_TIMESTAMP) {
+                System.out.println(" @@@@@@! " + start + " " + MAX_TIMESTAMP);
                 return null;
             }
         }
@@ -92,11 +102,11 @@ public class ShiftsService {
         long remaining = seconds;
 
         while (remaining > 0) {
-            List<ShiftsGanttChartItemResolver.ShiftHour> hours = shiftsGanttChartItemResolver.getHoursForAllShifts(new Date(stop
+            List<ShiftsGanttChartItemResolverImpl.ShiftHour> hours = shiftsGanttChartItemResolver.getHoursForAllShifts(new Date(stop
                     - STEP), new Date(stop));
 
             for (int i = hours.size() - 1; i >= 0; i--) {
-                ShiftsGanttChartItemResolver.ShiftHour hour = hours.get(i);
+                ShiftsGanttChartItemResolverImpl.ShiftHour hour = hours.get(i);
                 long diff = (hour.getDateTo().getTime() - hour.getDateFrom().getTime()) / 1000;
 
                 if (diff > remaining) {

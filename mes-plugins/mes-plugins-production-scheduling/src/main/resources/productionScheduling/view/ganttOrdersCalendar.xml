@@ -42,7 +42,7 @@
 		<component type="gridLayout" name="gridLayout" columns="1" rows="7" hasBorders="true">
 			<layoutElement column="1" row="1" height="4">
 				<component type="ganttChart" name="gantt" reference="gantt">
-					<option type="resolver" value="ordersGanttChartItemResolver" />
+					<option type="resolver" value="com.qcadoo.mes.productionScheduling.OrderGanttChartItemResolver" />
 					<option type="defaultZoomLevel" value="H6" />
 					<option type="defaultEndDay" value="14" />
 					<option type="hasPopupInfo" value="false" />
@@ -62,8 +62,6 @@
 						</layoutElement>
 						<layoutElement column="2" row="1">
 							<component type="calendar" name="dateFrom" field="dateFrom" reference="dateFrom">
-								<listener event="onChange" class="com.qcadoo.mes.orders.OrderService"
-									method="changeDateFrom" />
 								<option type="labelWidth" value="50" />
 								<option type="withTimePicker" value="true" />
 							</component>
