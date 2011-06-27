@@ -24,8 +24,10 @@
 package com.qcadoo.mes.qualityControls.print;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -69,10 +71,22 @@ public class QualityControlsReportService {
         if (state instanceof FormComponent) {
             FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom");
             FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
-            if (dateFrom != null && dateTo != null && dateFrom.getFieldValue() != null && dateTo.getFieldValue() != null) {
+            
+            String from = (String) dateFrom.getFieldValue();
+            String to = (String)dateTo.getFieldValue();
+           
+            if (dateFrom != null && dateTo != null && dateFrom.getFieldValue() != null && dateTo.getFieldValue() != null  ) {
+            	if (!(from.compareTo(to)>0)){
+            	
                 viewDefinitionState.redirectTo("/qualityControl/qualityControlByDates." + args[0] + "?type=" + args[1]
                         + "&dateFrom=" + dateFrom.getFieldValue() + "&dateTo=" + dateTo.getFieldValue(), true, false);
-            } else {
+            	}    
+            	else {
+            		state.addMessage(translationService.translate("qualityControl.report.invalidDates.fromBiggerThanTo", state.getLocale()),
+                        MessageType.FAILURE);
+            	}
+            }
+            else {
                 state.addMessage(translationService.translate("qualityControl.report.invalidDates", state.getLocale()),
                         MessageType.FAILURE);
             }
