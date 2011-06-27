@@ -1,87 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 0.4.1 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+	plugin="technologies" view="technologyOperationComponentDetails">
 
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 0.4.1
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
-<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
-    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-    plugin="technologies"
-    view="technologyOperationComponentDetails"
-    >
-	
 	<windowTab name="norm" reference="norm">
+		
 		<component type="gridLayout" name="gridsLayout" columns="1"
-				rows="8" >
-				<layoutElement column="1" row="1">
-					<component type="checkbox" name="useDefaultValue" field="#{form}.useDefaultValue" reference="useDefaultValue" defaultEnabled="true" >
-						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.NormService"
-								method="updateFieldsStateWhenDefaultValueCheckboxChanged" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="time" name="tpz" field="#{form}.tpz" reference="tpz" defaultEnabled="false"/>
-				</layoutElement>
-				<layoutElement column="1" row="3">
-					<component type="time" name="tj" field="#{form}.tj" reference="tj" defaultEnabled="false"/>
-				</layoutElement>
-				<layoutElement column="1" row="4">
-					<component type="checkbox" name="useMachineNorm" field="#{form}.useMachineNorm" reference="useMachineNorm" defaultEnabled="false"/>
-				</layoutElement>
-				<layoutElement column="1" row="5">
-					<component type="select" name="countRealizedNorm" field="#{form}.countRealizedNorm" reference="countRealizedNorm" hasDescription="true" defaultEnabled="false">
-						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionScheduling.NormService"
-								method="changeCountRealizedNorm" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="6">
-					<component type="input" name="countMachineNorm" field="#{form}.countMachineNorm" reference="countMachineNorm"  hasDescription="true" defaultEnabled="false">
-						<validatesLength max="7" />
-						<validatesPrecision max="3"/>
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="7">
-					<component type="time" name="timeNextOperationNorm" field="#{form}.timeNextOperationNorm" reference="timeNextOperationNorm" 
-						hasDescription="true" defaultEnabled="false"/>
-				</layoutElement>
-				<layoutElement column="1" row="8">
-				
-				<component type="grid" name="machine" reference="machine" source="#{form}.machineInOperationComponent">
-						<option type="column" name="numberMachine" field="machine"
-							expression="#machine['number']" link="true" width="50"/>
-						<option type="column" name="nameMachine" field="machine"
-							expression="#machine['name']" link="true" width="50"/>
-						<option type="order" column="numberMachine" direction="desc" />
-						<option type="searchable" value="numberMachine, nameMachine" />
-						<option type="orderable" value="numberMachine, nameMachine" />
-						<option type="correspondingView" value="productionScheduling/machineInOperationComponentDetails" />
-						<option type="correspondingComponent" value="form" />
-						<option type="deletable" value="true" />
-						<option type="creatable" value="true" />
-						<option type="multiselect" value="true" /> 
-					</component>
-				</layoutElement>
+			rows="8">
+			<layoutElement column="1" row="1">
+				<component type="checkbox" name="useDefaultValue" field="#{form}.useDefaultValue"
+					reference="useDefaultValue" defaultEnabled="true" required="true">
+					<listener event="onChange"
+						class="com.qcadoo.mes.productionScheduling.NormService" method="updateFieldsStateWhenDefaultValueCheckboxChanged" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="2">
+				<component type="checkbox" name="useMachineNorm" field="#{form}.useMachineNorm"
+					reference="useMachineNorm" defaultEnabled="false" required="true">
+					<listener event="onChange"
+						class="com.qcadoo.mes.productionScheduling.NormService" method="updateFieldsStateWhenUseMachineNormCheckboxChanged" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="3">
+				<component type="time" name="tpz" field="#{form}.tpz"
+					reference="tpz" defaultEnabled="false" required="true"/>
+			</layoutElement>
+			<layoutElement column="1" row="4">
+				<component type="time" name="tj" field="#{form}.tj"
+					reference="tj" defaultEnabled="false" required="true"/>
+			</layoutElement>
+			<layoutElement column="1" row="5">
+				<component type="select" name="countRealizedNorm" field="#{form}.countRealizedNorm"
+					reference="countRealizedNorm" hasDescription="true" defaultEnabled="false" required="true">
+					<listener event="onSelectedEntityChange"
+						class="com.qcadoo.mes.productionScheduling.NormService" method="changeCountRealizedNorm" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="6">
+				<component type="input" name="countMachineNorm" field="#{form}.countMachineNorm"
+					reference="countMachineNorm" hasDescription="true" defaultEnabled="false" required="true">
+					<validatesLength max="7" />
+					<validatesPrecision max="3" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="7">
+				<component type="time" name="timeNextOperationNorm"
+					field="#{form}.timeNextOperationNorm" reference="timeNextOperationNorm"
+					hasDescription="true" defaultEnabled="false" required="true"/>
+			</layoutElement>
+			<layoutElement column="1" row="8">
+
+				<component type="grid" name="machine" reference="machine"
+					source="#{form}.machineInOperationComponent">
+					<option type="column" name="numberMachine" field="machine"
+						expression="#machine['number']" link="true" width="50" />
+					<option type="column" name="nameMachine" field="machine"
+						expression="#machine['name']" link="true" width="50" />
+					<option type="order" column="numberMachine" direction="desc" />
+					<option type="searchable" value="numberMachine, nameMachine" />
+					<option type="orderable" value="numberMachine, nameMachine" />
+					<option type="correspondingView"
+						value="productionScheduling/machineInOperationComponentDetails" />
+					<option type="correspondingComponent" value="form" />
+					<option type="deletable" value="true" />
+					<option type="creatable" value="true" />
+					<option type="multiselect" value="true" />
+				</component>
+			</layoutElement>
 		</component>
 	</windowTab>
-	
+
 </windowTabExtension>

@@ -65,7 +65,7 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:boolean name="useMachineNorm" default="true" />
+			<model:boolean name="useMachineNorm" default="false" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
@@ -93,7 +93,6 @@
 		</model:model-field>
 		
 		
-
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:hasMany name="machineInOperationComponent" plugin="productionScheduling"
 				model="machineInOperationComponent" joinField="operationComponent">
@@ -156,7 +155,8 @@
 		<view:view-hook view="technologyOperationComponentDetails" type="beforeRender" plugin="technologies" class="com.qcadoo.mes.productionScheduling.NormService" 
 		method="updateFieldsStateOnWindowLoad"/>
 		
-		
+<!--		<view:view-listener view="technologyOperationComponentDetails" component="useMachineNorm" -->
+<!--			plugin="technologies" event="onChange" class="com.qcadoo.mes.productionScheduling.NormService" method="updateFieldsStateWhenUseMachineNormCheckboxChanged"/>-->
 
 		<view:view-tab resource="view/tabExtensions/operationComponent.xml" />
 		<view:view-tab resource="view/tabExtensions/machineDetails.xml" />
@@ -173,7 +173,7 @@
 		<view:view resource="view/machineInOperationDetails.xml" />
 		<view:view resource="view/ganttShiftCalendar.xml" />
 		<view:view resource="view/ganttOrdersCalendar.xml" />
-
+		
 		<menu:menu-item name="shiftsList" category="basic"
 			view="shiftsList" />
 

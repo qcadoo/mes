@@ -30,6 +30,8 @@ public class NormService {
 		FieldComponent timeNextOperationNorm = (FieldComponent) viewDefinitionState
 				.getComponentByReference("timeNextOperationNorm");
 
+		
+		
 		if (useDefaultValue.getFieldValue().equals("true")
 				|| useDefaultValue.getFieldValue().equals("1")) {
 			tpzNorm.setEnabled(false);
@@ -39,47 +41,34 @@ public class NormService {
 			useMachineNorm.setEnabled(false);
 			timeNextOperationNorm.setEnabled(false);
 		} else {
-			tpzNorm.setEnabled(true);
-			tjNorm.setEnabled(true);
+			if (useMachineNorm.getFieldValue().equals("true")
+					|| useMachineNorm.getFieldValue().equals("1")) {
+				tpzNorm.setEnabled(false);
+				tjNorm.setEnabled(false);
+				
+			} else {
+				tpzNorm.setEnabled(true);
+				tjNorm.setEnabled(true);
+
+			}
 			countRealizedNorm.setEnabled(true);
 			useMachineNorm.setEnabled(true);
 			timeNextOperationNorm.setEnabled(true);
 		}
+		
 	}
 
 	public void updateFieldsStateWhenDefaultValueCheckboxChanged(
 			final ViewDefinitionState viewDefinitionState,
 			final ComponentState componentState, final String[] args) {
-		FieldComponent useDefaultValue = (FieldComponent) viewDefinitionState
-				.getComponentByReference("useDefaultValue");
-		FieldComponent tpzNorm = (FieldComponent) viewDefinitionState
-				.getComponentByReference("tpz");
-		FieldComponent tjNorm = (FieldComponent) viewDefinitionState
-				.getComponentByReference("tj");
-		FieldComponent countRealizedNorm = (FieldComponent) viewDefinitionState
-				.getComponentByReference("countRealizedNorm");
-		FieldComponent countMachineNorm = (FieldComponent) viewDefinitionState
-		.getComponentByReference("countMachineNorm");
-		FieldComponent useMachineNorm = (FieldComponent) viewDefinitionState
-				.getComponentByReference("useMachineNorm");
-		FieldComponent timeNextOperationNorm = (FieldComponent) viewDefinitionState
-				.getComponentByReference("timeNextOperationNorm");
-
-		if (useDefaultValue.getFieldValue().equals("true")
-				|| useDefaultValue.getFieldValue().equals("1")) {
-			tpzNorm.setEnabled(false);
-			tjNorm.setEnabled(false);
-			countRealizedNorm.setEnabled(false);
-			countMachineNorm.setEnabled(false);
-			useMachineNorm.setEnabled(false);
-			timeNextOperationNorm.setEnabled(false);
-		} else {
-			tpzNorm.setEnabled(true);
-			tjNorm.setEnabled(true);
-			countRealizedNorm.setEnabled(true);
-			useMachineNorm.setEnabled(true);
-			timeNextOperationNorm.setEnabled(true);
-		}
+	
+		/* uruchamia sie hook before render*/
+	}
+	
+	public void updateFieldsStateWhenUseMachineNormCheckboxChanged(
+			final ViewDefinitionState viewDefinitionState,
+			final ComponentState componentState, final String[] args) {
+		/* uruchamia sie hook before render*/
 	}
 
 	public void changeCountRealizedNorm(
