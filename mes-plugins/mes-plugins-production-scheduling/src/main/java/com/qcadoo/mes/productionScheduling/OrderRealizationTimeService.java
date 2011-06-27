@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,11 +12,15 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
@@ -42,7 +47,6 @@ public class OrderRealizationTimeService {
                 dateFrom.setFieldValue(setDateToField(date));
             }
         }
-        // TODO KRNA value > max
     }
 
     public void changeDateTo(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -59,7 +63,6 @@ public class OrderRealizationTimeService {
                 dateTo.setFieldValue(setDateToField(date));
             }
         }
-        // TODO KRNA value > max
     }
 
     private Object setDateToField(final Date date) {
@@ -85,13 +88,15 @@ public class OrderRealizationTimeService {
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
 
         if (technology.getFieldValue() != null && StringUtils.hasText((String) plannedQuantity.getFieldValue())) {
-            realizationTime.setFieldValue(BigDecimal.valueOf(estimateRealizationTime((Long) viewDefinitionState
-                    .getComponentByReference("form").getFieldValue())));
-            // TODO KRNA value > max
+            int time = estimateRealizationTime((Long) viewDefinitionState.getComponentByReference("form").getFieldValue());
+            if (time > 99999 * 60 * 60) {
+                viewDefinitionState.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.INFO);
+            } else {
+                realizationTime.setFieldValue(time);
+            }
         } else {
             realizationTime.setFieldValue(BigDecimal.ZERO);
         }
-        // TODO KRNA what with product lookup ?
     }
 
     private int estimateRealizationTime(final Long id) {
@@ -107,7 +112,12 @@ public class OrderRealizationTimeService {
             int maxPathTime) {
         int pathTime = 0;
         if ((Boolean) operation.getField("useMachineNorm")) {
-            for (Entity machine : operation.getHasManyField("machineInOrderOperationComponents")) {
+            DataDefinition machineInOrderOperationComponentDD = dataDefinitionService.get("productionScheduling",
+                    "machineInOrderOperationComponent");
+            List<Entity> machines = machineInOrderOperationComponentDD.find()
+                    .add(SearchRestrictions.belongsTo("orderOperationComponent", operation))
+                    .addOrder(SearchOrders.asc("priority")).list().getEntities();
+            for (Entity machine : machines) {
                 if ((Boolean) machine.getField("isActive")) {
                     operation.setField("tj", machine.getField("tj"));
                     operation.setField("tpz", machine.getField("tpz"));
