@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,11 +12,15 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
@@ -42,7 +47,6 @@ public class OrderRealizationTimeService {
                 dateFrom.setFieldValue(setDateToField(date));
             }
         }
-        // TODO KRNA value > max
     }
 
     public void changeDateTo(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -59,7 +63,6 @@ public class OrderRealizationTimeService {
                 dateTo.setFieldValue(setDateToField(date));
             }
         }
-        // TODO KRNA value > max
     }
 
     private Object setDateToField(final Date date) {
@@ -85,48 +88,101 @@ public class OrderRealizationTimeService {
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
 
         if (technology.getFieldValue() != null && StringUtils.hasText((String) plannedQuantity.getFieldValue())) {
-            // realizationTime.setFieldValue(BigDecimal.valueOf(estimateRealizationTime((Long) viewDefinitionState
-            // .getComponentByReference("form").getFieldValue())));
-            // TODO KRNA value > max
+            int time = estimateRealizationTime((Long) viewDefinitionState.getComponentByReference("form").getFieldValue());
+            if (time > 99999 * 60 * 60) {
+                viewDefinitionState.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.INFO);
+            } else {
+                realizationTime.setFieldValue(time);
+            }
         } else {
             realizationTime.setFieldValue(BigDecimal.ZERO);
         }
-        // TODO KRNA what with product lookup ?
     }
 
     private int estimateRealizationTime(final Long id) {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
         EntityTree tree = order.getTreeField("orderOperationComponents");
-        EntityTreeNode node = tree.getRoot();
+        int maxPathTime = 0;
+        estimateRealizationTimeForOperation(tree.getRoot(), (BigDecimal) order.getField("plannedQuantity"), maxPathTime);
+        return maxPathTime;
 
+    }
+
+    private void estimateRealizationTimeForOperation(final EntityTreeNode operation, final BigDecimal plannedQuantity,
+            int maxPathTime) {
         int pathTime = 0;
-
-        if ((Boolean) node.getField("useMachineNorm")) {
-            node.setField("tj", "1");
-            node.setField("tpz", "1");
-            // TODO KRNA machines
+        if (operation.getField("useMachineNorm") != null && (Boolean) operation.getField("useMachineNorm")) {
+            DataDefinition machineInOrderOperationComponentDD = dataDefinitionService.get("productionScheduling",
+                    "machineInOrderOperationComponent");
+            List<Entity> machines = machineInOrderOperationComponentDD.find()
+                    .add(SearchRestrictions.belongsTo("orderOperationComponent", operation))
+                    .addOrder(SearchOrders.asc("priority")).list().getEntities();
+            for (Entity machine : machines) {
+                if ((Boolean) machine.getField("isActive")) {
+                    operation.setField("tj", machine.getField("tj"));
+                    operation.setField("tpz", machine.getField("tpz"));
+                    break;
+                }
+            }
         }
-        if (node.getChildren().size() == 0) {
-            // TODO KRNA empty parent
+        if (operation.getChildren().size() == 0) {
             boolean operationHasParent = true;
-            Entity parent = node.getBelongsToField("parent");
-            if ("01all".equals(parent.getField("countRealized"))) {
-                pathTime += (((BigDecimal) order.getField("plannedQuantity")).multiply(BigDecimal.valueOf((Integer) node
-                        .getField("tj")))).intValue()
-                        + (Integer) node.getField("tpz")
-                        + (Integer) node.getField("timeNextOperation");
+            Entity parent = operation.getBelongsToField("parent");
+            if (parent == null) {
+                operationHasParent = false;
+            }
+            if ("01all".equals(operation.getField("countRealized"))) {
+                pathTime += (plannedQuantity.multiply(BigDecimal.valueOf(operation.getField("tj") != null ? (Integer) operation
+                        .getField("tj") : 0))).intValue()
+                        + (operation.getField("tpz") != null ? (Integer) operation.getField("tpz") : Integer.valueOf(0))
+                        + (operation.getField("timeNextOperation") != null ? (Integer) operation.getField("timeNextOperation")
+                                : Integer.valueOf(0));
             } else {
-                pathTime += (((BigDecimal) order.getField("countMachine")).multiply(BigDecimal.valueOf((Integer) node
-                        .getField("tj")))).intValue()
-                        + (Integer) node.getField("tpz")
-                        + (Integer) node.getField("timeNextOperation");
+                pathTime += ((operation.getField("countMachine") != null ? (BigDecimal) operation.getField("countMachine")
+                        : BigDecimal.ZERO).multiply(BigDecimal.valueOf(operation.getField("tj") != null ? (Integer) operation
+                        .getField("tj") : 0))).intValue()
+                        + (operation.getField("tpz") != null ? (Integer) operation.getField("tpz") : Integer.valueOf(0))
+                        + (operation.getField("timeNextOperation") != null ? (Integer) operation.getField("timeNextOperation")
+                                : Integer.valueOf(0));
+
             }
 
             while (operationHasParent) {
-                operationHasParent = false;
+                if (parent.getField("operationOffSet") != null
+                        && ((Integer) parent.getField("operationOffSet")).compareTo(pathTime) < 0) {
+                    parent.setField("operationOffSet", pathTime);
+                }
+
+                if ("01all".equals(parent.getField("countRealized"))) {
+                    pathTime += (plannedQuantity.multiply(BigDecimal.valueOf(parent.getField("tj") != null ? (Integer) parent
+                            .getField("tj") : 0))).intValue()
+                            + (parent.getField("tpz") != null ? (Integer) parent.getField("tpz") : Integer.valueOf(0))
+                            + (parent.getField("timeNextparent") != null ? (Integer) parent.getField("timeNextOperation")
+                                    : Integer.valueOf(0));
+                } else {
+                    pathTime += ((parent.getField("countMachine") != null ? (BigDecimal) parent.getField("countMachine")
+                            : BigDecimal.ZERO).multiply(BigDecimal.valueOf(parent.getField("tj") != null ? (Integer) parent
+                            .getField("tj") : 0))).intValue()
+                            + (parent.getField("tpz") != null ? (Integer) parent.getField("tpz") : Integer.valueOf(0))
+                            + (parent.getField("timeNextOperation") != null ? (Integer) parent.getField("timeNextOperation")
+                                    : Integer.valueOf(0));
+                }
+
+                if (parent.getBelongsToField("parent") != null) {
+                    operationHasParent = true;
+                    parent = parent.getBelongsToField("parent");
+                } else {
+                    operationHasParent = false;
+                    if (pathTime > maxPathTime) {
+                        maxPathTime = pathTime;
+                    }
+                    pathTime = 0;
+                }
+            }
+        } else {
+            for (EntityTreeNode child : operation.getChildren()) {
+                estimateRealizationTimeForOperation(child, plannedQuantity, maxPathTime);
             }
         }
-
-        return 1;
     }
 }

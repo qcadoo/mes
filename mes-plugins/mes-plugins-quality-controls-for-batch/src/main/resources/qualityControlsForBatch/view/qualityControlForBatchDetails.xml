@@ -63,6 +63,10 @@
 
 					this.addOnChangeListener({
 						onSetValue: function(value) {
+							if (! value || ! value.content || ! value.content.valid) {
+								return;
+							}
+							
 							var closed = #{closed}.getValue().content.value;
 							if (closed && closed == false) {
 								qualityControlStatus.enable();

@@ -29,7 +29,7 @@
 	plugin="orders"
 	view="orderDetails">
 	<group name="orderParameters">
-		<bigButton name="orderParameters" icon="orderParametersIcon24.png" state="disabled" >
+		<bigButton name="orderParameters" icon="settingsIcon24.png" state="disabled" >
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({
