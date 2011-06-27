@@ -65,12 +65,12 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:boolean name="useMachineNorm" default="true" />
+			<model:boolean name="useMachineNorm" default="false" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
 			<model:enum values="01all,02specified" name="countRealizedNorm"
-				default="01all" />
+				default="01all" required="true"/>
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
@@ -93,7 +93,6 @@
 		</model:model-field>
 		
 		
-
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:hasMany name="machineInOperationComponent" plugin="productionScheduling"
 				model="machineInOperationComponent" joinField="operationComponent">
@@ -106,6 +105,12 @@
 			<model:onSave class="com.qcadoo.mes.productionScheduling.NormService"
 				method="copyDefaultDataToOperationComponent" />
 		</model:model-hook>
+		<model:model-hook model="technologyOperationComponent" plugin="technologies">
+			<model:onSave class="com.qcadoo.mes.productionScheduling.NormService" method="copyDefaultDataFromOperationToTechnology"/>
+		</model:model-hook>
+		
+		
+		
 		
 		<model:model-hook model="technologyOperationComponent" plugin="technologies">
 			<model:validatesWith class="com.qcadoo.mes.productionScheduling.OperationService" method="checkMachineInOperationComponentUniqueness" />
@@ -121,9 +126,10 @@
 			<model:integer name="tj" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
-			<model:decimal name="parallel">
+			<model:decimal name="parallel" >
 				<model:validatesLength max="7" />
 				<model:validatesPrecision max="3" />
+				<model:validatesRange from="0"/>
 			</model:decimal>
 		</model:model-field>
 
@@ -134,14 +140,14 @@
 			<model:integer name="tj" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:decimal name="countMachineOperation">
+			<model:decimal name="countMachineOperation" >
 				<model:validatesLength max="7" />
 				<model:validatesPrecision max="3" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:enum values="01all,02specified" name="countRealizedOperation"
-				default="01all" />
+				default="01all" required="true"/>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:integer name="timeNextOperation" />
@@ -156,13 +162,16 @@
 		<view:view-hook view="technologyOperationComponentDetails" type="beforeRender" plugin="technologies" class="com.qcadoo.mes.productionScheduling.NormService" 
 		method="updateFieldsStateOnWindowLoad"/>
 		
+		<view:view-hook view="operationDetails" type="beforeRender" plugin="technologies" class="com.qcadoo.mes.productionScheduling.OperationService" 
+		method="setCountRealizedOperationValue"/>
+		
 		
 
 		<view:view-tab resource="view/tabExtensions/operationComponent.xml" />
 		<view:view-tab resource="view/tabExtensions/machineDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
-
+		
 		<model:model model="shift" resource="model/shift.xml" />
 		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml" />
 
@@ -173,7 +182,7 @@
 		<view:view resource="view/machineInOperationDetails.xml" />
 		<view:view resource="view/ganttShiftCalendar.xml" />
 		<view:view resource="view/ganttOrdersCalendar.xml" />
-
+		
 		<menu:menu-item name="shiftsList" category="basic"
 			view="shiftsList" />
 
