@@ -100,7 +100,7 @@ public class ShiftsGanttChartItemResolverImpl implements ShiftsGanttChartItemRes
                 list.add(new ShiftHour(dateFrom, dateTo));
             } else if (hour.getDateFrom().compareTo(dateFrom) < 0 && hour.getDateTo().compareTo(dateTo) <= 0) {
                 list.add(new ShiftHour(dateFrom, hour.getDateTo()));
-            } else if (hour.getDateFrom().compareTo(dateFrom) >= 0 && hour.getDateTo().compareTo(dateTo) < 0) {
+            } else if (hour.getDateFrom().compareTo(dateFrom) >= 0 && hour.getDateTo().compareTo(dateTo) > 0) {
                 list.add(new ShiftHour(hour.getDateFrom(), dateTo));
             }
         }

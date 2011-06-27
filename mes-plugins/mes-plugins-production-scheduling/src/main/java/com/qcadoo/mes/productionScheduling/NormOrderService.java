@@ -363,6 +363,10 @@ public class NormOrderService {
 
     private void setParentValuesMachine(final ViewDefinitionState viewDefinitionState, final FormComponent form,
             final Long machineId) {
+        if (form.getEntityId() == null) {
+            return;
+        }
+
         ComponentState parentTpz = viewDefinitionState.getComponentByReference("parentTpz");
         ComponentState parentTj = viewDefinitionState.getComponentByReference("parentTj");
         ComponentState parentParallel = viewDefinitionState.getComponentByReference("parentParallel");

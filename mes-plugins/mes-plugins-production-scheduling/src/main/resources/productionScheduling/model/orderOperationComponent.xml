@@ -49,7 +49,7 @@
 		<string name="parentCountMachine" persistent="false" />
 		<integer name="timeNextOperation" />
 		<string name="parentTimeNextOperation" persistent="false" />
-		<hasMany name="machineInOrderOperationComponents" model="machineInOrderOperationComponent" joinField="orderOperationComponent" />
+		<hasMany name="machineInOrderOperationComponents" model="machineInOrderOperationComponent" joinField="orderOperationComponent" cascade="delete" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.productionScheduling.NormOrderService"

@@ -30,19 +30,20 @@
     view="machineDetails">
 	
 	<windowTab name="norm" reference="norm">
+		
 		<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="4" >
 				<layoutElement column="1" row="1">
-					<component type="checkbox" name="activeMachine" field="#{form}.activeMachine" defaultValue="true"/>
+					<component type="checkbox" name="activeMachine" field="#{form}.activeMachine" defaultValue="true"  />
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="time" name="tpz" field="#{form}.tpz" reference="tpz" />
+					<component type="time" name="tpz" field="#{form}.tpz" reference="tpz"  />
 				</layoutElement>
 				<layoutElement column="1" row="3">
-					<component type="time" name="tj" field="#{form}.tj" reference="tj" />
+					<component type="time" name="tj" field="#{form}.tj" reference="tj"  />
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="input" name="parallel" field="#{form}.parallel" reference="parallel" hasDescription="true">
+					<component type="input" name="parallel" field="#{form}.parallel" reference="parallel" hasDescription="true" >
 						<validatesLength max="7" />
 						<validatesPrecision max="3"/>
 					</component>
