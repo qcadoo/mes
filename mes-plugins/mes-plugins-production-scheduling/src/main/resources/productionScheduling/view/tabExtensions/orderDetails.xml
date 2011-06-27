@@ -33,7 +33,7 @@
 		<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="1" >
 				<layoutElement column="1" row="1">
-					<component type="time" name="realizationTime" field="realizationTime" reference="realizationTime" />
+					<component type="time" name="realizationTime" field="#{form}.realizationTime" reference="realizationTime" />
 				</layoutElement>
 		</component>
 	</windowTab>
