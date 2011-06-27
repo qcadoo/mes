@@ -42,7 +42,7 @@
 		<component type="gridLayout" name="gridLayout" columns="1" rows="7" hasBorders="true">
 			<layoutElement column="1" row="1" height="4">
 				<component type="ganttChart" name="gantt" reference="gantt">
-					<option type="resolver" value="ordersGanttChartItemResolver" />
+					<option type="resolver" value="com.qcadoo.mes.productionScheduling.OrderGanttChartItemResolver" />
 					<option type="defaultZoomLevel" value="H6" />
 					<option type="defaultEndDay" value="14" />
 					<option type="hasPopupInfo" value="false" />

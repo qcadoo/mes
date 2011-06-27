@@ -37,7 +37,7 @@
 			<template name="standardFormTemplate" includeItems="navigation.back"/>
 		</ribbon>
 		<component type="ganttChart" name="gantt">
-			<option type="resolver" value="shiftsGanttChartItemResolver" />
+			<option type="resolver" value="com.qcadoo.mes.productionScheduling.ShiftsGanttChartItemResolver" />
 			<option type="defaultZoomLevel" value="H1" />
 			<option type="defaultEndDay" value="7" />
 		</component>
