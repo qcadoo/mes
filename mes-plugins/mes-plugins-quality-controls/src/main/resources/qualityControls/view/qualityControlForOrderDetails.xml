@@ -62,7 +62,7 @@
 
 					this.addOnChangeListener({
 						onSetValue: function(value) {
-							if (! value || ! value.content) {
+							if (! value || ! value.content || ! value.content.valid) {
 								return;
 							}
 						
