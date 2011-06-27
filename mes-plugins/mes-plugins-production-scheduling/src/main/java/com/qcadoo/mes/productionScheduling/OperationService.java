@@ -229,4 +229,12 @@ public class OperationService {
         }
     }
 
+    
+    public void setCountRealizedOperationValue(final ViewDefinitionState viewDefinitionState){
+    	FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState.getComponentByReference("countRealizedOperation");
+    	if(!"02specified".equals(countRealizedOperation.getFieldValue())){
+    		countRealizedOperation.setFieldValue("01all");
+    		
+    	}
+    }
 }

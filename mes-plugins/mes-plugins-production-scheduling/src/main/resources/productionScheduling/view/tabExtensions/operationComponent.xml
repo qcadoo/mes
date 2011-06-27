@@ -22,36 +22,36 @@
 			rows="8">
 			<layoutElement column="1" row="1">
 				<component type="checkbox" name="useDefaultValue" field="#{form}.useDefaultValue"
-					reference="useDefaultValue" defaultEnabled="true" required="true">
+					reference="useDefaultValue" defaultEnabled="true" >
 					<listener event="onChange"
 						class="com.qcadoo.mes.productionScheduling.NormService" method="updateFieldsStateWhenDefaultValueCheckboxChanged" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="2">
 				<component type="checkbox" name="useMachineNorm" field="#{form}.useMachineNorm"
-					reference="useMachineNorm" defaultEnabled="false" required="true">
+					reference="useMachineNorm" defaultEnabled="false">
 					<listener event="onChange"
 						class="com.qcadoo.mes.productionScheduling.NormService" method="updateFieldsStateWhenUseMachineNormCheckboxChanged" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="3">
 				<component type="time" name="tpz" field="#{form}.tpz"
-					reference="tpz" defaultEnabled="false" required="true"/>
+					reference="tpz" defaultEnabled="false" />
 			</layoutElement>
 			<layoutElement column="1" row="4">
 				<component type="time" name="tj" field="#{form}.tj"
-					reference="tj" defaultEnabled="false" required="true"/>
+					reference="tj" defaultEnabled="false" />
 			</layoutElement>
 			<layoutElement column="1" row="5">
 				<component type="select" name="countRealizedNorm" field="#{form}.countRealizedNorm"
-					reference="countRealizedNorm" hasDescription="true" defaultEnabled="false" required="true">
+					reference="countRealizedNorm" hasDescription="true" defaultEnabled="false" >
 					<listener event="onSelectedEntityChange"
 						class="com.qcadoo.mes.productionScheduling.NormService" method="changeCountRealizedNorm" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="6">
 				<component type="input" name="countMachineNorm" field="#{form}.countMachineNorm"
-					reference="countMachineNorm" hasDescription="true" defaultEnabled="false" required="true">
+					reference="countMachineNorm" hasDescription="true" defaultEnabled="false" >
 					<validatesLength max="7" />
 					<validatesPrecision max="3" />
 				</component>
@@ -59,7 +59,7 @@
 			<layoutElement column="1" row="7">
 				<component type="time" name="timeNextOperationNorm"
 					field="#{form}.timeNextOperationNorm" reference="timeNextOperationNorm"
-					hasDescription="true" defaultEnabled="false" required="true"/>
+					hasDescription="true" defaultEnabled="false" />
 			</layoutElement>
 			<layoutElement column="1" row="8">
 

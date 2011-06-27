@@ -1,17 +1,22 @@
 package com.qcadoo.mes.productionScheduling;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class NormService {
 
-
+	@Autowired
+    private DataDefinitionService dataDefinitionService;
+	
 	public void updateFieldsStateOnWindowLoad(
 			final ViewDefinitionState viewDefinitionState) {
 		FieldComponent useDefaultValue = (FieldComponent) viewDefinitionState
@@ -28,7 +33,7 @@ public class NormService {
 		.getComponentByReference("countMachineNorm");
 		FieldComponent timeNextOperationNorm = (FieldComponent) viewDefinitionState
 				.getComponentByReference("timeNextOperationNorm");
-
+		Object value = countRealizedNorm.getFieldValue();
 		
 		
 		if (useDefaultValue.getFieldValue().equals("true")
@@ -36,6 +41,8 @@ public class NormService {
 			tpzNorm.setEnabled(false);
 			tjNorm.setEnabled(false);
 			countRealizedNorm.setEnabled(false);
+			if(!"02specified".equals(value)){
+			countRealizedNorm.setFieldValue("01all");}
 			countMachineNorm.setEnabled(false);
 			useMachineNorm.setEnabled(false);
 			timeNextOperationNorm.setEnabled(false);
@@ -51,6 +58,8 @@ public class NormService {
 
 			}
 			countRealizedNorm.setEnabled(true);
+			if(!"02specified".equals(value)){
+			countRealizedNorm.setFieldValue("01all");}
 			useMachineNorm.setEnabled(true);
 			timeNextOperationNorm.setEnabled(true);
 		}
@@ -103,8 +112,27 @@ public class NormService {
 			return;
 		}
 	}
-
-
+	
+	
+	public void copyDefaultDataFromOperationToTechnology(final DataDefinition dataDefinition, final Entity entity){
+		
+		if (entity.getId() != null) {
+			return;
+		}
+		
+		Entity operation = entity.getBelongsToField("operation");
+		
+		
+			entity.setField("tpz", operation.getField("tpz"));
+			entity.setField("tj", operation.getField("tj"));
+			entity.setField("countRealizedNorm",
+					operation.getStringField("countRealizedOperation"));
+			entity.setField("timeNextOperationNorm",
+					operation.getField("timeNextOperation"));
+			entity.setField("countMachineNorm",
+					operation.getField("countMachineOperation"));
+	}
+	
 	/* hook */
 	public void updateCountMachineOperationFieldStateonWindowLoad(
 			final ViewDefinitionState viewDefinitionState) {
