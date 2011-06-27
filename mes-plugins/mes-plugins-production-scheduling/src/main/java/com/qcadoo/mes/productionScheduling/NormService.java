@@ -4,14 +4,13 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class NormService {
+
 
 	public void updateFieldsStateOnWindowLoad(
 			final ViewDefinitionState viewDefinitionState) {

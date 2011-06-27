@@ -44,5 +44,7 @@
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.productionScheduling.NormOrderService"
 			method="checkMachineInOrderOperationComponentUniqueness" />
+		<validatesWith class="com.qcadoo.mes.productionScheduling.NormOrderService"
+			method="checkMachineRequiredFields" />
 	</hooks>
 </model>

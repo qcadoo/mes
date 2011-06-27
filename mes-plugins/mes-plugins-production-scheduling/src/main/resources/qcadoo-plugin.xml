@@ -162,7 +162,7 @@
 		<view:view-tab resource="view/tabExtensions/machineDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
-
+		
 		<model:model model="shift" resource="model/shift.xml" />
 		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml" />
 
