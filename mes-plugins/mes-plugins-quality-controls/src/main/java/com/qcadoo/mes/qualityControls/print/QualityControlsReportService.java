@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.qualityControls.print;
 
+import java.io.ObjectInputStream.GetField;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.text.ParseException;
@@ -72,11 +73,11 @@ public class QualityControlsReportService {
             FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom");
             FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
             
-            String from = (String) dateFrom.getFieldValue();
-            String to = (String)dateTo.getFieldValue();
+            /*String from = (String) dateFrom.getFieldValue();
+            String to = (String)dateTo.getFieldValue();*/
            
             if (dateFrom != null && dateTo != null && dateFrom.getFieldValue() != null && dateTo.getFieldValue() != null  ) {
-            	if (!(from.compareTo(to)>0)){
+            	if (!(dateFrom.getFieldValue().toString().compareTo(dateTo.getFieldValue().toString())>0)){
             	
                 viewDefinitionState.redirectTo("/qualityControl/qualityControlByDates." + args[0] + "?type=" + args[1]
                         + "&dateFrom=" + dateFrom.getFieldValue() + "&dateTo=" + dateTo.getFieldValue(), true, false);
