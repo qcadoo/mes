@@ -102,7 +102,7 @@
 							<option type="creatable" value="true" />
 							<option type="multiselect" value="true" /> 
 							<option type="paginable" value="false" />
-							<option type="height" value="400" />
+							<option type="height" value="200" />
 						</component>
 					</layoutElement>
 				</component>
