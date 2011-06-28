@@ -124,6 +124,7 @@ public class OrderRealizationTimeService {
     private void estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
             final int pathTime, final EntityTreeNode parent) {
         int operationTime = 0;
+        operationComponent.setField("effectiveMachine", null);
         if (operationComponent.getField("useMachineNorm") != null && (Boolean) operationComponent.getField("useMachineNorm")) {
             DataDefinition machineInOrderOperationComponentDD = dataDefinitionService.get("productionScheduling",
                     "machineInOrderOperationComponent");
