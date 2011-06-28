@@ -44,7 +44,8 @@
 			</layoutElement>
 			<layoutElement column="1" row="5">
 				<component type="select" name="countRealizedNorm" field="#{form}.countRealizedNorm"
-					reference="countRealizedNorm" hasDescription="true" defaultEnabled="false" >
+					reference="countRealizedNorm" hasDescription="true" defaultEnabled="false">
+					<option type="required" value="true" />
 					<listener event="onSelectedEntityChange"
 						class="com.qcadoo.mes.productionScheduling.NormService" method="changeCountRealizedNorm" />
 				</component>

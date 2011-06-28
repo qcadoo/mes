@@ -31,6 +31,23 @@
     view="orderDetails">
 
      <group name="usedproducts">
-          <bigButton name="usedproducts" action="#{form}.fireEvent(showUsedProducts);" icon="../../../../../usedproducts/public/css/icons/iconProducts24.png" />          
+          <bigButton name="usedproducts" action="#{form}.fireEvent(showUsedProducts);" state="disabled" icon="../../../../../usedproducts/public/css/icons/iconProducts24.png">
+            <script>
+				<![CDATA[
+					#{form}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (! value || ! value.content) {
+								return;
+							}
+							if (! value.content.entityId) {
+								this.disable();
+							} else {
+								this.enable();
+							}
+						}
+					});					
+				]]>
+			</script>
+          </bigButton>          
      </group>
 </ribbonExtension>

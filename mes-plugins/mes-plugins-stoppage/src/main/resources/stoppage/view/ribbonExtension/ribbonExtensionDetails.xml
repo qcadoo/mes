@@ -31,6 +31,23 @@
     view="orderDetails">
 
      <group name="stoppage">
-          <bigButton name="stoppage" action="#{form}.fireEvent(showStoppage);" icon="../../../../../stoppage/public/css/icons/iconStop24.png" />          
+          <bigButton name="stoppage" action="#{form}.fireEvent(showStoppage);" state="disabled" icon="../../../../../stoppage/public/css/icons/iconStop24.png">
+          	<script>
+				<![CDATA[
+					#{form}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (! value || ! value.content) {
+								return;
+							}
+							if (! value.content.entityId) {
+								this.disable();
+							} else {
+								this.enable();
+							}
+						}
+					});					
+				]]>
+			</script>
+          </bigButton>          
      </group>
 </ribbonExtension>
