@@ -31,10 +31,22 @@
 	
 	<windowTab name="productionScheduling" reference="productionScheduling">
 		<component type="gridLayout" name="gridsLayout" columns="3"
-				rows="1" >
+				rows="3" >
 				<layoutElement column="1" row="1">
+					<component type="label" name="alert" reference="alert" defaultVisible="true" />
+				</layoutElement>
+				<layoutElement column="1"  row="2">
 					<component type="time" name="realizationTime" field="#{form}.realizationTime" reference="realizationTime" />
+				</layoutElement>
+				<layoutElement column="1" row="3" >
+					<component type="button" name="calculate"
+						reference="calculate" source="#{form}">
+						<option type="correspondingView" value="orders/timeTechnologyDetailsInOrder" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+					</component>
 				</layoutElement>
 		</component>
 	</windowTab>
+	
 </windowTabExtension>

@@ -24,17 +24,19 @@
     ***************************************************************************
 
 -->
-<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
-    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-    plugin="technologies" view="technologyDetails">
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="timeTechnologyInOrderDetails"
+	modelName="timeTechnologyInOrder" >
 	
-	<windowTab name="timeOfTechnology" reference="timeOfTechnology">
+	<component type="window" name="window">
 		<ribbon>
-			<group name="timeOfTechnology">
-		<bigButton name="countTimeOfTechnology"  icon="calculateTimeIcon24.png" action="#{form}.fireEvent(countTimeOfTechnology);" />
-	</group>
+			<template name="standardFormTemplate" />
+<!--			<group name="timeOfTechnology">-->
+<!--				<bigButton name="countTimeOfTechnology"  icon="calculateTimeIcon24.png"  action="#{form}.fireEvent(countTimeOfTechnology);" />-->
+<!--			</group>-->
 		</ribbon>
-		<component type="gridLayout" name="gridsLayout" columns="3"
+		<component type="gridLayout" name="gridsLayout" columns="1"
 				rows="4" >
 				<layoutElement column="1" row="1">
 					<component type="input" name="value" field="value" reference="value" />
@@ -49,5 +51,5 @@
 					<component type="calendar" name="stopTime" field="stopTime" reference="stopTime" />
 				</layoutElement>
 		</component>
-	</windowTab>
-</windowTabExtension>
+	</component>
+</view>
