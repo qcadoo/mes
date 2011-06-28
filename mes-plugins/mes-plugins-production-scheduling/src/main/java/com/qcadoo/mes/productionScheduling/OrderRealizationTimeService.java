@@ -112,9 +112,11 @@ public class OrderRealizationTimeService {
     }
 
     private int estimateRealizationTime(final Long id, final BigDecimal plannedQuantity) {
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
-        EntityTree tree = order.getTreeField("orderOperationComponents");
-        estimateRealizationTimeForOperation(tree.getRoot(), plannedQuantity);
+        if (id != null) {
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
+            EntityTree tree = order.getTreeField("orderOperationComponents");
+            estimateRealizationTimeForOperation(tree.getRoot(), plannedQuantity);
+        }
         return maxPathTime;
 
     }
