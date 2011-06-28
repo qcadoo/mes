@@ -216,7 +216,7 @@ public class NormOrderService {
         if (orderId != null) {
             String url = "../page/productionScheduling/ganttOrderOperationsCalendar.html?context={\"gantt.orderId\":\"" + orderId
                     + "\"}";
-            viewDefinitionState.openModal(url);
+            viewDefinitionState.redirectTo(url, false, true);
         }
     }
 
