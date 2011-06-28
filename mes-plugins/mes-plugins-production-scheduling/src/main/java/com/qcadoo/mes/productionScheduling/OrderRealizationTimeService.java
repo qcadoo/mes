@@ -39,7 +39,7 @@ public class OrderRealizationTimeService {
     @Autowired
     private TranslationService translationService;
 
-    int maxPathTime = 0;
+    private int maxPathTime = 0;
 
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof FieldComponent)) {
@@ -96,29 +96,27 @@ public class OrderRealizationTimeService {
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
 
         if (technology.getFieldValue() != null && StringUtils.hasText((String) plannedQuantity.getFieldValue())) {
-            int time = estimateRealizationTime((Long) viewDefinitionState.getComponentByReference("form").getFieldValue(),
+            estimateRealizationTime((Long) viewDefinitionState.getComponentByReference("form").getFieldValue(),
                     getBigDecimalFromField(plannedQuantity.getFieldValue(), viewDefinitionState.getLocale()));
-            maxPathTime = 0;
-            if (time > 99999 * 60 * 60) {
+            if (maxPathTime > 99999 * 60 * 60) {
                 viewDefinitionState.getComponentByReference("form").addMessage(
                         translationService.translate("orders.validate.global.error.RealizationTimeIsToLong",
                                 viewDefinitionState.getLocale()), MessageType.INFO);
             } else {
-                realizationTime.setFieldValue(time);
+                realizationTime.setFieldValue(maxPathTime);
             }
+            maxPathTime = 0;
         } else {
             realizationTime.setFieldValue(0);
         }
     }
 
-    private int estimateRealizationTime(final Long id, final BigDecimal plannedQuantity) {
+    private void estimateRealizationTime(final Long id, final BigDecimal plannedQuantity) {
         if (id != null) {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
             EntityTree tree = order.getTreeField("orderOperationComponents");
             estimateRealizationTimeForOperation(tree.getRoot(), plannedQuantity, 0, null);
         }
-        return maxPathTime;
-
     }
 
     private void estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
