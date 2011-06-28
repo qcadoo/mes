@@ -1,15 +1,18 @@
 package com.qcadoo.mes.productionScheduling;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -32,6 +35,11 @@ public class OrderRealizationTimeService {
 
     @Autowired
     private ShiftsService shiftsService;
+
+    @Autowired
+    private TranslationService translationService;
+
+    int maxPathTime = 0;
 
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof FieldComponent)) {
@@ -88,70 +96,72 @@ public class OrderRealizationTimeService {
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
 
         if (technology.getFieldValue() != null && StringUtils.hasText((String) plannedQuantity.getFieldValue())) {
-            int time = estimateRealizationTime((Long) viewDefinitionState.getComponentByReference("form").getFieldValue());
+            int time = estimateRealizationTime((Long) viewDefinitionState.getComponentByReference("form").getFieldValue(),
+                    getBigDecimalFromField(plannedQuantity.getFieldValue(), viewDefinitionState.getLocale()));
+            maxPathTime = 0;
             if (time > 99999 * 60 * 60) {
-                viewDefinitionState.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.INFO);
+                viewDefinitionState.getComponentByReference("form").addMessage(
+                        translationService.translate("orders.validate.global.error.RealizationTimeIsToLong",
+                                viewDefinitionState.getLocale()), MessageType.INFO);
             } else {
                 realizationTime.setFieldValue(time);
             }
         } else {
-            realizationTime.setFieldValue(BigDecimal.ZERO);
+            realizationTime.setFieldValue(0);
         }
     }
 
-    private int estimateRealizationTime(final Long id) {
+    private int estimateRealizationTime(final Long id, final BigDecimal plannedQuantity) {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
         EntityTree tree = order.getTreeField("orderOperationComponents");
-        int maxPathTime = 0;
-        estimateRealizationTimeForOperation(tree.getRoot(), (BigDecimal) order.getField("plannedQuantity"), maxPathTime);
+        estimateRealizationTimeForOperation(tree.getRoot(), plannedQuantity);
         return maxPathTime;
 
     }
 
-    private void estimateRealizationTimeForOperation(final EntityTreeNode operation, final BigDecimal plannedQuantity,
-            int maxPathTime) {
+    private void estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity) {
         int pathTime = 0;
         int operationTime = 0;
-        if (operation.getField("useMachineNorm") != null && (Boolean) operation.getField("useMachineNorm")) {
+        if (operationComponent.getField("useMachineNorm") != null && (Boolean) operationComponent.getField("useMachineNorm")) {
             DataDefinition machineInOrderOperationComponentDD = dataDefinitionService.get("productionScheduling",
                     "machineInOrderOperationComponent");
             List<Entity> machineComponents = machineInOrderOperationComponentDD.find()
-                    .add(SearchRestrictions.belongsTo("orderOperationComponent", operation))
+                    .add(SearchRestrictions.belongsTo("orderOperationComponent", operationComponent))
                     .addOrder(SearchOrders.asc("priority")).list().getEntities();
             for (Entity machineComponent : machineComponents) {
                 if ((Boolean) machineComponent.getField("isActive")) {
-                    operation.setField("tj", machineComponent.getField("tj"));
-                    operation.setField("tpz", machineComponent.getField("tpz"));
-                    operation.setField("effectiveMachine", machineComponent.getBelongsToField("machine"));
+                    operationComponent.setField("tj", machineComponent.getField("tj"));
+                    operationComponent.setField("tpz", machineComponent.getField("tpz"));
+                    operationComponent.setField("effectiveMachine", machineComponent.getBelongsToField("machine"));
                     break;
                 }
             }
         }
-        if (operation.getChildren().size() == 0) {
+        if (operationComponent.getChildren().size() == 0) {
             boolean operationHasParent = true;
-            Entity parent = operation.getBelongsToField("parent");
-            if (parent == null) {
-                operationHasParent = false;
-            }
-            if ("01all".equals(operation.getField("countRealized"))) {
-                operationTime = (plannedQuantity
-                        .multiply(BigDecimal.valueOf(operation.getField("tj") != null ? (Integer) operation.getField("tj") : 0)))
-                        .intValue()
-                        + (operation.getField("tpz") != null ? (Integer) operation.getField("tpz") : Integer.valueOf(0))
-                        + (operation.getField("timeNextOperation") != null ? (Integer) operation.getField("timeNextOperation")
-                                : Integer.valueOf(0));
-            } else {
-                operationTime = ((operation.getField("countMachine") != null ? (BigDecimal) operation.getField("countMachine")
-                        : BigDecimal.ZERO).multiply(BigDecimal.valueOf(operation.getField("tj") != null ? (Integer) operation
-                        .getField("tj") : 0))).intValue()
-                        + (operation.getField("tpz") != null ? (Integer) operation.getField("tpz") : Integer.valueOf(0))
-                        + (operation.getField("timeNextOperation") != null ? (Integer) operation.getField("timeNextOperation")
-                                : Integer.valueOf(0));
+            Entity parent = operationComponent.getBelongsToField("parent");
 
+            if ("01all".equals(operationComponent.getField("countRealized"))) {
+                operationTime = (plannedQuantity.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj")))))
+                        .intValue()
+                        + getIntegerValue(operationComponent.getField("tpz"))
+                        + getIntegerValue(operationComponent.getField("timeNextOperation"));
+            } else {
+                operationTime = ((operationComponent.getField("countMachine") != null ? (BigDecimal) operationComponent
+                        .getField("countMachine") : BigDecimal.ZERO).multiply(BigDecimal
+                        .valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue()
+                        + getIntegerValue(operationComponent.getField("tpz"))
+                        + getIntegerValue(operationComponent.getField("timeNextOperation"));
             }
-            operation.setField("effectiveOperationRealizationTime", operationTime);
+            operationComponent.setField("effectiveOperationRealizationTime", operationTime);
             pathTime += operationTime;
 
+            if (parent == null) {
+                operationHasParent = false;
+                if (pathTime > maxPathTime) {
+                    maxPathTime = pathTime;
+                }
+            }
             while (operationHasParent) {
                 int parentOperationTime = 0;
                 if (parent.getField("operationOffSet") != null
@@ -160,20 +170,15 @@ public class OrderRealizationTimeService {
                 }
 
                 if ("01all".equals(parent.getField("countRealized"))) {
-                    parentOperationTime = (plannedQuantity
-                            .multiply(BigDecimal.valueOf(parent.getField("tj") != null ? (Integer) parent.getField("tj") : 0)))
+                    parentOperationTime = (plannedQuantity.multiply(BigDecimal.valueOf(getIntegerValue(parent.getField("tj")))))
                             .intValue()
-                            + (parent.getField("tpz") != null ? (Integer) parent.getField("tpz") : Integer.valueOf(0))
-                            + (parent.getField("timeNextparent") != null ? (Integer) parent.getField("timeNextOperation")
-                                    : Integer.valueOf(0));
+                            + getIntegerValue(parent.getField("tpz"))
+                            + getIntegerValue(parent.getField("timeNextOperation"));
                 } else {
                     parentOperationTime = ((parent.getField("countMachine") != null ? (BigDecimal) parent
-                            .getField("countMachine") : BigDecimal.ZERO)
-                            .multiply(BigDecimal.valueOf(parent.getField("tj") != null ? (Integer) parent.getField("tj") : 0)))
-                            .intValue()
-                            + (parent.getField("tpz") != null ? (Integer) parent.getField("tpz") : Integer.valueOf(0))
-                            + (parent.getField("timeNextOperation") != null ? (Integer) parent.getField("timeNextOperation")
-                                    : Integer.valueOf(0));
+                            .getField("countMachine") : BigDecimal.ZERO).multiply(BigDecimal.valueOf(getIntegerValue(parent
+                            .getField("tj"))))).intValue()
+                            + getIntegerValue(parent.getField("tpz")) + getIntegerValue(parent.getField("timeNextOperation"));
                 }
                 parent.setField("effectiveOperationRealizationTime", parentOperationTime);
                 pathTime += parentOperationTime;
@@ -190,9 +195,23 @@ public class OrderRealizationTimeService {
                 }
             }
         } else {
-            for (EntityTreeNode child : operation.getChildren()) {
-                estimateRealizationTimeForOperation(child, plannedQuantity, maxPathTime);
+            for (EntityTreeNode child : operationComponent.getChildren()) {
+                estimateRealizationTimeForOperation(child, plannedQuantity);
             }
+        }
+    }
+
+    private Integer getIntegerValue(final Object value) {
+        return value != null ? (Integer) value : Integer.valueOf(0);
+    }
+
+    private BigDecimal getBigDecimalFromField(final Object value, final Locale locale) {
+        try {
+            DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);
+            format.setParseBigDecimal(true);
+            return new BigDecimal(format.parse(value.toString()).doubleValue());
+        } catch (ParseException e) {
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
 }
