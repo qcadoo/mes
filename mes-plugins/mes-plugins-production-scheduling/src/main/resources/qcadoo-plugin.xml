@@ -153,17 +153,17 @@
 			<model:integer name="timeNextOperation" />
 		</model:model-field>
 
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
-			<model:integer name="startTime" />
+		<model:model-field plugin="technologies" model="technology">
+			<model:date name="startTime" />
 		</model:model-field>
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technology">
 			<model:integer name="value" />
 		</model:model-field>
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
-			<model:integer name="timeMadeElements" />
+		<model:model-field plugin="technologies" model="technology">
+			<model:integer name="timeOfMadeElements" />
 		</model:model-field>
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
-			<model:integer name="stopTime" />
+		<model:model-field plugin="technologies" model="technology">
+			<model:date name="stopTime" />
 		</model:model-field>
 		
 		
@@ -185,6 +185,7 @@
 		<view:view-tab resource="view/tabExtensions/machineDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/timeTechnologyDetails.xml"/>
 		
 		<model:model model="shift" resource="model/shift.xml" />
 		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml" />
