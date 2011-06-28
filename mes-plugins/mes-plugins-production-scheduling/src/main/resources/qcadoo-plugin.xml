@@ -216,6 +216,7 @@
 		<view:view resource="view/orderOperationComponentList.xml" />
 		<view:view resource="view/orderOperationComponentDetails.xml" />
 		<view:view resource="view/machineInOrderOperationComponentDetails.xml" />
+		<view:view resource="view/ganttOrderOperationsCalendar.xml" />
 		
 		<view:view-listener plugin="orders"
 			view="orderDetails" component="technology" event="onSelectedEntityChange"

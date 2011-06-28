@@ -203,6 +203,17 @@ public class NormOrderService {
         }
     }
 
+    public void showOperationsGantt(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        Long orderId = (Long) triggerState.getFieldValue();
+
+        if (orderId != null) {
+            String url = "../page/productionScheduling/ganttOrderOperationsCalendar.html?context={\"gantt.orderId\":\"" + orderId
+                    + "\"}";
+            viewDefinitionState.redirectTo(url, false, true);
+        }
+    }
+
     public void changeUseDefaultValue(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         // ignore
