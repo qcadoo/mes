@@ -7,11 +7,13 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.IllegalFieldValueException;
 import org.joda.time.LocalTime;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +32,7 @@ public class ShiftsGanttChartItemResolverImpl implements ShiftsGanttChartItemRes
 
     @Override
     @Transactional
-    public Map<String, List<GanttChartItem>> resolve(final GanttChartScale scale) {
+    public Map<String, List<GanttChartItem>> resolve(final GanttChartScale scale, final JSONObject context, final Locale locale) {
         List<Entity> shifts = dataDefinitionService.get("productionScheduling", "shift").find().list().getEntities();
         Map<String, List<GanttChartItem>> items = new LinkedHashMap<String, List<GanttChartItem>>();
 
