@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
@@ -85,6 +86,7 @@ public class OrderRealizationTimeService {
         }
     }
 
+    @Transactional
     public void changeRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (!(state instanceof FieldComponent)) {
@@ -151,14 +153,17 @@ public class OrderRealizationTimeService {
                     + getIntegerValue(operationComponent.getField("timeNextOperation"));
         }
         operationComponent.setField("effectiveOperationRealizationTime", operationTime);
+        operationComponent.setField("operationOffSet", 0);
+        DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
+        orderOperationComponentDD.save(operationComponent);
 
-        if (parent != null && parent.getField("operationOffSet") != null
-                && ((Integer) parent.getField("operationOffSet")).compareTo(pathTime + operationTime) < 0) {
+        if (parent != null && getIntegerValue(parent.getField("operationOffSet")).compareTo(pathTime + operationTime) < 0) {
             parent.setField("operationOffSet", pathTime + operationTime);
+            orderOperationComponentDD.save(parent);
         }
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
-            estimateRealizationTimeForOperation(child, plannedQuantity, pathTime + operationTime, parent);
+            estimateRealizationTimeForOperation(child, plannedQuantity, pathTime + operationTime, operationComponent);
         }
 
         if (operationComponent.getChildren().size() == 0) {
