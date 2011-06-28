@@ -70,10 +70,6 @@ public class QualityControlsReportService {
             FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom");
             FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
 
-            /*
-             * String from = (String) dateFrom.getFieldValue(); String to = (String)dateTo.getFieldValue();
-             */
-
             if (dateFrom != null && dateTo != null && dateFrom.getFieldValue() != null && dateTo.getFieldValue() != null) {
                 if (!(dateFrom.getFieldValue().toString().compareTo(dateTo.getFieldValue().toString()) > 0)) {
 
@@ -84,6 +80,7 @@ public class QualityControlsReportService {
                             state.getLocale()), MessageType.FAILURE);
                 }
             } else {
+
                 state.addMessage(translationService.translate("qualityControl.report.invalidDates", state.getLocale()),
                         MessageType.FAILURE);
             }
