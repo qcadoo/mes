@@ -50,6 +50,8 @@
 		<integer name="timeNextOperation" />
 		<string name="parentTimeNextOperation" persistent="false" />
 		<integer name="operationOffSet" />
+		<integer name="effectiveOperationRealizationTime" />
+		<belongsTo name="effectiveMachine" plugin="basic" model="machine" />
 		<hasMany name="machineInOrderOperationComponents" model="machineInOrderOperationComponent" joinField="orderOperationComponent" cascade="delete" />
 	</fields>
 	<hooks>
