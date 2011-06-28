@@ -54,7 +54,7 @@
 				]]>
 			</script>	
 		</bigButton>
-		<bigButton name="operationsGantt" icon="operationsGanttIcon24.png" state="disabled">
+		<bigButton name="operationsGantt" icon="calendarIcon24.png" state="disabled">
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({

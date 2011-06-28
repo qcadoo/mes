@@ -52,6 +52,8 @@
 		<integer name="operationOffSet" />
 		<integer name="effectiveOperationRealizationTime" />
 		<belongsTo name="effectiveMachine" plugin="basic" model="machine" />
+		<datetime name="effectiveDateFrom" />
+		<datetime name="effectiveDateTo" />
 		<hasMany name="machineInOrderOperationComponents" model="machineInOrderOperationComponent" joinField="orderOperationComponent" cascade="delete" />
 	</fields>
 	<hooks>

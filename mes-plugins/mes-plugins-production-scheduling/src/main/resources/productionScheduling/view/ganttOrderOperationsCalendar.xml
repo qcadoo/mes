@@ -39,7 +39,7 @@
 		<component type="ganttChart" name="gantt" reference="gantt">
 			<option type="resolver" value="com.qcadoo.mes.productionScheduling.OperationsGanttChartItemResolver" />
 			<option type="defaultZoomLevel" value="H1" />
-			<option type="defaultEndDay" value="7" />
+			<option type="allowDateSelection" value="false" />
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
