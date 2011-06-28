@@ -26,14 +26,22 @@
 -->
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-    plugin="orders"
-    view="orderDetails">
+    plugin="technologies" view="technologyOperationComponentDetails">
 	
-	<windowTab name="productionScheduling" reference="productionScheduling">
+	<windowTab name="timeTechnology" reference="timeTechnology">
 		<component type="gridLayout" name="gridsLayout" columns="3"
-				rows="1" >
+				rows="4" >
 				<layoutElement column="1" row="1">
-					<component type="time" name="realizationTime" field="#{form}.realizationTime" reference="realizationTime" />
+					<component type="time" name="startTime" field="startTime" reference="startTime" />
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="input" name="value" field="value" reference="value" />
+				</layoutElement>
+				<layoutElement column="1" row="3">
+					<component type="input" name="timeMadeElements" field="timeMadeElements" reference="timeMadeElements" />
+				</layoutElement>
+				<layoutElement column="1" row="4">
+					<component type="time" name="stopTime" field="stopTime" reference="stopTime" />
 				</layoutElement>
 		</component>
 	</windowTab>
