@@ -35,6 +35,9 @@ public class NormOrderService {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private ShiftsService shiftsService;
+
     public boolean checkMachineRequiredFields(final DataDefinition dataDefinition, final Entity entity) {
         if ((Boolean) entity.getField("useDefaultValue")) {
             return true;
@@ -217,9 +220,6 @@ public class NormOrderService {
         }
     }
 
-    @Autowired
-    private ShiftsService shiftsService;
-
     private void scheduleOrder(final Long orderId) {
         Entity order = dataDefinitionService.get("orders", "order").get(orderId);
 
@@ -245,6 +245,9 @@ public class NormOrderService {
             Integer offset = (Integer) operation.getField("operationOffSet");
             Integer duration = (Integer) operation.getField("effectiveOperationRealizationTime");
 
+            operation.setField("effectiveDateFrom", null);
+            operation.setField("effectiveDateTo", null);
+
             if (offset == null || duration == null || duration.equals(0)) {
                 continue;
             }
@@ -267,7 +270,9 @@ public class NormOrderService {
 
             operation.setField("effectiveDateFrom", dateFrom);
             operation.setField("effectiveDateTo", dateTo);
+        }
 
+        for (Entity operation : operations) {
             dataDefinition.save(operation);
         }
     }
