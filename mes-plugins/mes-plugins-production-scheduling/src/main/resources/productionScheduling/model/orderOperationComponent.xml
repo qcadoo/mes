@@ -43,7 +43,7 @@
 		<string name="parentTj" persistent="false" />
 		<boolean name="useMachineNorm" default="true" />
 		<string name="parentUseMachineNorm" persistent="false" />
-		<enum name="countRealized" values="01all,02specified" default="01all" required="true" />
+		<enum name="countRealized" values="01all,02specified" default="01all" />
 		<string name="parentCountRealized" persistent="false" />
 		<decimal name="countMachine" />
 		<string name="parentCountMachine" persistent="false" />
