@@ -25,29 +25,23 @@
 
 -->
 
-<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
-    xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
-    plugin="orders"
-    view="orderDetails">
-
-     <group name="usedproducts">
-          <bigButton name="usedproducts" action="#{form}.fireEvent(showUsedProducts);" state="disabled" icon="../../../../../usedproducts/public/css/icons/iconProducts24.png">
-            <script>
-				<![CDATA[
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (! value || ! value.content) {
-								return;
-							}
-							if (! value.content.entityId) {
-								this.disable();
-							} else {
-								this.enable();
-							}
-						}
-					});					
-				]]>
-			</script>
-          </bigButton>          
-     </group>
-</ribbonExtension>
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="ganttOrderOperationsCalendar"
+	modelName="shift"
+	windowHeight="450"
+	windowWidth="900">
+	
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardFormTemplate" includeItems="navigation.back"/>
+		</ribbon>
+		<component type="ganttChart" name="gantt" reference="gantt">
+			<option type="resolver" value="com.qcadoo.mes.productionScheduling.OperationsGanttChartItemResolver" />
+			<option type="defaultZoomLevel" value="H1" />
+			<option type="allowDateSelection" value="false" />
+		</component>
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+</view>

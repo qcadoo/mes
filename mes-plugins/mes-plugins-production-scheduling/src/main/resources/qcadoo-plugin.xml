@@ -53,7 +53,7 @@
 
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:boolean name="useDefaultValue" default="true" />
+			<model:boolean name="useDefaultValue" default="false" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
@@ -234,10 +234,15 @@
 		<view:view-listener plugin="orders"
 			view="orderDetails" component="form" event="showOrderParameters"
 			class="com.qcadoo.mes.productionScheduling.NormOrderService" method="showOrderParameters" />
+			
+		<view:view-listener plugin="orders"
+			view="orderDetails" component="form" event="showOperationsGantt"
+			class="com.qcadoo.mes.productionScheduling.NormOrderService" method="showOperationsGantt" />
 
 		<view:view resource="view/orderOperationComponentList.xml" />
 		<view:view resource="view/orderOperationComponentDetails.xml" />
 		<view:view resource="view/machineInOrderOperationComponentDetails.xml" />
+		<view:view resource="view/ganttOrderOperationsCalendar.xml" />
 		
 		<view:view-listener plugin="orders"
 			view="orderDetails" component="technology" event="onSelectedEntityChange"

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class NormOrderService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private ShiftsService shiftsService;
 
     public boolean checkMachineRequiredFields(final DataDefinition dataDefinition, final Entity entity) {
         if ((Boolean) entity.getField("useDefaultValue")) {
@@ -200,6 +204,76 @@ public class NormOrderService {
             String url = "../page/productionScheduling/orderOperationComponentList.html?context={\"form.id\":\"" + orderId
                     + "\"}";
             viewDefinitionState.redirectTo(url, false, true);
+        }
+    }
+
+    public void showOperationsGantt(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        Long orderId = (Long) triggerState.getFieldValue();
+
+        scheduleOrder(orderId);
+
+        if (orderId != null) {
+            String url = "../page/productionScheduling/ganttOrderOperationsCalendar.html?context={\"gantt.orderId\":\"" + orderId
+                    + "\"}";
+            viewDefinitionState.openModal(url);
+        }
+    }
+
+    private void scheduleOrder(final Long orderId) {
+        Entity order = dataDefinitionService.get("orders", "order").get(orderId);
+
+        if (order == null) {
+            return;
+        }
+
+        DataDefinition dataDefinition = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
+
+        List<Entity> operations = dataDefinition.find().add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+
+        Date orderStartDate = null;
+
+        if (order.getField("effectiveDateFrom") != null) {
+            orderStartDate = (Date) order.getField("effectiveDateFrom");
+        } else if (order.getField("dateFrom") != null) {
+            orderStartDate = (Date) order.getField("dateFrom");
+        } else {
+            return;
+        }
+
+        for (Entity operation : operations) {
+            Integer offset = (Integer) operation.getField("operationOffSet");
+            Integer duration = (Integer) operation.getField("effectiveOperationRealizationTime");
+
+            operation.setField("effectiveDateFrom", null);
+            operation.setField("effectiveDateTo", null);
+
+            if (offset == null || duration == null || duration.equals(0)) {
+                continue;
+            }
+
+            Date dateFrom = orderStartDate;
+
+            if (offset > 0) {
+                dateFrom = shiftsService.findDateToForOrder(orderStartDate, offset);
+            }
+
+            if (dateFrom == null) {
+                continue;
+            }
+
+            Date dateTo = shiftsService.findDateToForOrder(orderStartDate, offset + duration);
+
+            if (dateTo == null) {
+                continue;
+            }
+
+            operation.setField("effectiveDateFrom", dateFrom);
+            operation.setField("effectiveDateTo", dateTo);
+        }
+
+        for (Entity operation : operations) {
+            dataDefinition.save(operation);
         }
     }
 

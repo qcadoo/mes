@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,7 @@ public class OrderGanttChartItemResolverImpl implements OrderGanttChartItemResol
 
     @Override
     @Transactional
-    public Map<String, List<GanttChartItem>> resolve(final GanttChartScale scale) {
+    public Map<String, List<GanttChartItem>> resolve(final GanttChartScale scale, final JSONObject context, final Locale locale) {
         List<Entity> orders = dataDefinitionService.get("orders", "order").find().add(SearchRestrictions.ne("state", "03done"))
                 .add(SearchRestrictions.lt("dateFrom", scale.getDateTo()))
                 .add(SearchRestrictions.gt("dateTo", scale.getDateFrom())).list().getEntities();

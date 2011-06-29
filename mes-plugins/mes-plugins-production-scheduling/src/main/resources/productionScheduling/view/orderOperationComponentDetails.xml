@@ -85,14 +85,13 @@
 					</layoutElement>
 				</component>
 				<component type="grid" name="machines" reference="machines" source="#{form}.machineInOrderOperationComponents">
-					<option type="column" name="numberMachine" field="machine"
+					<option type="column" name="numberMachine" fields="machine"
 						expression="#machine['number']" link="true" width="40"/>
-					<option type="column" name="nameMachine" field="machine"
+					<option type="column" name="nameMachine" fields="machine"
 						expression="#machine['name']" link="true" width="40"/>
-					<option type="column" name="activeMachine" field="machine"
-						expression="#isActive" width="20"/>
+					<option type="column" name="isActive" fields="isActive" width="20"/>
 					<option type="order" column="priority" direction="asc"/>
-					<option type="searchable" value="numberMachine, nameMachine,activeMachine" />
+					<option type="searchable" value="numberMachine,nameMachine,isActive" />
 					<option type="correspondingView" value="productionScheduling/machineInOrderOperationComponentDetails" />
 					<option type="correspondingComponent" value="form" />
 					<option type="deletable" value="true" />
