@@ -19,7 +19,6 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -39,8 +38,6 @@ public class OrderRealizationTimeService {
 
     @Autowired
     private TranslationService translationService;
-
-    private int maxPathTime = 0;
 
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof FieldComponent)) {
@@ -97,31 +94,25 @@ public class OrderRealizationTimeService {
         FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
 
+        int maxPathTime = 0;
         if (technology.getFieldValue() != null && StringUtils.hasText((String) plannedQuantity.getFieldValue())) {
-            estimateRealizationTime((Long) viewDefinitionState.getComponentByReference("form").getFieldValue(),
-                    getBigDecimalFromField(plannedQuantity.getFieldValue(), viewDefinitionState.getLocale()));
+            Long orderId = (Long) viewDefinitionState.getComponentByReference("form").getFieldValue();
+            if (orderId != null) {
+                Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                        orderId);
+                maxPathTime = estimateRealizationTimeForOperation(order.getTreeField("orderOperationComponents").getRoot(),
+                        getBigDecimalFromField(plannedQuantity.getFieldValue(), viewDefinitionState.getLocale()), 0, null);
+            }
             if (maxPathTime > 99999 * 60 * 60) {
                 viewDefinitionState.getComponentByReference("form").addMessage(
                         translationService.translate("orders.validate.global.error.RealizationTimeIsToLong",
-                                viewDefinitionState.getLocale()), MessageType.INFO);
-            } else {
-                realizationTime.setFieldValue(maxPathTime);
+                                viewDefinitionState.getLocale()), MessageType.FAILURE);
             }
-            maxPathTime = 0;
-        } else {
-            realizationTime.setFieldValue(0);
         }
+        realizationTime.setFieldValue(maxPathTime);
     }
 
-    private void estimateRealizationTime(final Long id, final BigDecimal plannedQuantity) {
-        if (id != null) {
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
-            EntityTree tree = order.getTreeField("orderOperationComponents");
-            estimateRealizationTimeForOperation(tree.getRoot(), plannedQuantity, 0, null);
-        }
-    }
-
-    private void estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
+    private int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
             final int pathTime, final EntityTreeNode parent) {
         int operationTime = 0;
         operationComponent.setField("effectiveMachine", null);
@@ -153,26 +144,26 @@ public class OrderRealizationTimeService {
                     + getIntegerValue(operationComponent.getField("tpz"))
                     + getIntegerValue(operationComponent.getField("timeNextOperation"));
         }
+
         operationComponent.setField("effectiveOperationRealizationTime", operationTime);
         operationComponent.setField("operationOffSet", 0);
         DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
         orderOperationComponentDD.save(operationComponent);
 
-        if (parent != null && getIntegerValue(parent.getField("operationOffSet")).compareTo(pathTime + operationTime) < 0) {
-            parent.setField("operationOffSet", pathTime + operationTime);
+        operationTime += pathTime;
+        if (parent != null && getIntegerValue(parent.getField("operationOffSet")).compareTo(operationTime) < 0) {
+            parent.setField("operationOffSet", operationTime);
             orderOperationComponentDD.save(parent);
         }
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
-            estimateRealizationTimeForOperation(child, plannedQuantity, pathTime + operationTime, operationComponent);
-        }
-
-        if (operationComponent.getChildren().size() == 0) {
-            if (pathTime + operationTime > maxPathTime) {
-                maxPathTime = pathTime + operationTime;
+            int tmpPathTime = estimateRealizationTimeForOperation(child, plannedQuantity, operationTime, operationComponent);
+            if (tmpPathTime > operationTime) {
+                operationTime = tmpPathTime;
             }
         }
 
+        return operationTime;
     }
 
     private Integer getIntegerValue(final Object value) {
