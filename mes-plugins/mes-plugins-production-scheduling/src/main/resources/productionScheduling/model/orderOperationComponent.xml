@@ -59,5 +59,6 @@
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.productionScheduling.NormOrderService"
 			method="checkOperationRequiredFields" />
+		<onSave class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="changeRealizationTimeForOperationSave"/>
 	</hooks>
 </model>
