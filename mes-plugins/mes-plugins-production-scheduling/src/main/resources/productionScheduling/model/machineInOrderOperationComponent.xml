@@ -34,9 +34,9 @@
 		<string name="parentTpz" persistent="false" />
 		<integer name="tj" />
 		<string name="parentTj" persistent="false" />
-		<decimal name="parallel"  />
+		<decimal name="parallel" default="1" />
 		<string name="parentParallel" persistent="false" />
-		<boolean name="isActive" />
+		<boolean name="isActive" default="true"/>
 		<string name="parentIsActive" persistent="false" />
 		<belongsTo name="machine" plugin="basic" model="machine" required="true" />
 		<belongsTo name="orderOperationComponent" model="orderOperationComponent" required="true" />

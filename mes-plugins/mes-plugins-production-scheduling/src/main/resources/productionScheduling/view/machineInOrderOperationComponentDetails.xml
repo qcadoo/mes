@@ -61,7 +61,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="5" width="4">
-					<component type="input" name="parallel" field="parallel" reference="parallel" />
+					<component type="input" name="parallel" field="parallel" reference="parallel"  hasDescription="true" />
 				</layoutElement>
 				<layoutElement column="5" row="5">
 					<component type="input" name="parentParallel" field="#{form}.parentParallel" reference="parentParallel" defaultEnabled="false" hasLabel="false">
