@@ -112,21 +112,6 @@ public class OrderRealizationTimeService {
         realizationTime.setFieldValue(maxPathTime);
     }
 
-    @Transactional
-    public void changeRealizationTimeForOperationSave(final DataDefinition dataDefinition, final Entity entity) {
-        Entity order = entity.getBelongsToField("order");
-
-        int maxPathTime = 0;
-        if (order.getBelongsToField("technology") != null && StringUtils.hasText((String) order.getField("plannedQuantity"))) {
-            maxPathTime = estimateRealizationTimeForOperation(order.getTreeField("orderOperationComponents").getRoot(),
-                    (BigDecimal) order.getField("plannedQuantity"), 0, null);
-            if (maxPathTime > 99999 * 60 * 60) {
-                order.addGlobalError("orders.validate.global.error.RealizationTimeIsToLong");
-            }
-        }
-        order.setField("realizationTime", maxPathTime);
-    }
-
     private int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
             final int pathTime, final EntityTreeNode parent) {
         int operationTime = 0;
