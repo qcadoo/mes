@@ -156,7 +156,7 @@
 			<model:date name="startTime" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="technology">
-			<model:integer name="value" />
+			<model:integer name="quantity" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="technology">
 			<model:integer name="realizationTime" />
@@ -236,6 +236,14 @@
 		<view:view resource="view/orderOperationComponentDetails.xml" />
 		<view:view resource="view/machineInOrderOperationComponentDetails.xml" />
 		<view:view resource="view/ganttOrderOperationsCalendar.xml" />
+		
+		<view:view-listener plugin="orders"
+			view="orderDetails" component="form" event="changeRealizationTime"
+			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="changeRealizationTime" />
+			
+			<view:view-listener plugin="technologies"
+			view="technologyDetails" component="form" event="countTimeOfTechnology"
+			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="countTimeOfTechnology" />
 			
 		<view:view-listener plugin="orders"
 			view="orderDetails" component="dateFrom" event="onChange"
