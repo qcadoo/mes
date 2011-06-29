@@ -252,11 +252,11 @@ public class NormOrderService {
                 continue;
             }
 
-            Date dateFrom = orderStartDate;
-
-            if (offset > 0) {
-                dateFrom = shiftsService.findDateToForOrder(orderStartDate, offset);
+            if (offset == 0) {
+                offset = 1;
             }
+
+            Date dateFrom = shiftsService.findDateToForOrder(orderStartDate, offset);
 
             if (dateFrom == null) {
                 continue;
