@@ -32,13 +32,19 @@
 					<component type="input" name="quantity" field="#{form}.quantity" reference="quantity" />
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="calendar" name="startTime" field="#{form}.startTime" reference="startTime" />
+					<component type="calendar" name="startTime" field="#{form}.startTime" reference="startTime">
+						<option type="labelWidth" value="50" />
+						<option type="withTimePicker" value="true" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
 					<component type="time" name="realizationTime" field="#{form}.realizationTime" reference="realizationTime" />
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="calendar" name="stopTime" field="#{form}.stopTime" reference="stopTime" />
+					<component type="calendar" name="stopTime" field="#{form}.stopTime" reference="stopTime">
+						<option type="labelWidth" value="50" />
+						<option type="withTimePicker" value="true" />
+					</component>
 				</layoutElement>
 		</component>
 	</windowTab>
