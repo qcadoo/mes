@@ -1,55 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 0.4.1
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 0.4.1 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="timeTechnologyInOrderDetails"
-	modelName="timeTechnologyInOrder" >
-	
+	name="timeTechnologyInOrderDetails" modelName="timeTechnologyInOrder"
+	windowWidth="640"
+	windowHeight = "350"
+	>
+
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
-<!--			<group name="timeOfTechnology">-->
-<!--				<bigButton name="countTimeOfTechnology"  icon="calculateTimeIcon24.png"  action="#{form}.fireEvent(countTimeOfTechnology);" />-->
-<!--			</group>-->
+			 <group name="timeOfTechnology"> 
+			 	<bigButton name="countTimeOfTechnology" icon="calculateTimeIcon24.png" 
+					action="#{form}.fireEvent(changeRealizationTime);"  /> 
+				<bigButton name="copyDateToMainForm"  
+					action="#{form}.fireEvent(copyDateToMainForm);" />
+			 </group> 
 		</ribbon>
-		<component type="gridLayout" name="gridsLayout" columns="1"
-				rows="4" >
+		<component type="form" name="form" reference="form">
+			<component type="gridLayout" name="gridsLayout" columns="1"
+				rows="4">
 				<layoutElement column="1" row="1">
 					<component type="input" name="quantity" field="quantity" reference="quantity" />
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="calendar" name="startTime" field="startTime" reference="startTime" />
+					<component type="calendar" name="startTime" field="startTime" 
+						reference="startTime" >
+						<option type="withTimePicker" value="true" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
-					<component type="time" name="realizationTime" field="realizationTime" reference="realizationTime" />
+					<component type="time" name="realizationTime" field="realizationTime"
+						reference="realizationTime" />
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="calendar" name="stopTime" field="stopTime" reference="stopTime" />
+					<component type="calendar" name="stopTime" field="stopTime"
+						reference="stopTime" >
+						<option type="withTimePicker" value="true" />
+					</component>
 				</layoutElement>
+			</component>
 		</component>
 	</component>
 </view>

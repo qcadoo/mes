@@ -43,7 +43,7 @@
 					<component type="time" name="tj" field="#{form}.tj" reference="tj"  />
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="input" name="parallel" field="#{form}.parallel" reference="parallel" hasDescription="true" >
+					<component type="input" name="parallel" field="#{form}.parallel" reference="parallel" hasDescription="true"  >
 						<validatesLength max="7" />
 						<validatesPrecision max="3"/>
 					</component>

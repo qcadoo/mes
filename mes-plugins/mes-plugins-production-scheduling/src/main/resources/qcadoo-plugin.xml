@@ -50,6 +50,7 @@
 
 		<model:model model="machineInOperationComponent" resource="model/machineInOperationComponent.xml" />
 		<model:model model="machineInOperation" resource="model/machineInOperation.xml" />
+		<model:model model="timeTechnologyInOrder" resource="model/timeTechnologyInOrder.xml"/>
 
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
@@ -130,7 +131,11 @@
 			<model:integer name="tj" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
-			<model:decimal name="parallel" default="1" />
+			<model:decimal name="parallel" default="1,000">
+				<model:validatesLength max="7" />
+				<model:validatesPrecision max="3" />
+				<model:validatesRange from="0"/>
+			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:integer name="tpz" />
@@ -187,6 +192,7 @@
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/timeTechnologyDetails.xml"/>
 		
+		
 		<model:model model="shift" resource="model/shift.xml" />
 		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml" />
 
@@ -233,6 +239,7 @@
 		<view:view resource="view/orderOperationComponentDetails.xml" />
 		<view:view resource="view/machineInOrderOperationComponentDetails.xml" />
 		<view:view resource="view/ganttOrderOperationsCalendar.xml" />
+		<view:view resource="view/timeTechnologyInOrderDetails.xml"/>
 		
 		<view:view-listener plugin="orders"
 			view="orderDetails" component="form" event="changeRealizationTime"
