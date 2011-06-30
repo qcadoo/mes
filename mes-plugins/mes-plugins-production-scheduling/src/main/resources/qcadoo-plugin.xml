@@ -131,7 +131,7 @@
 			<model:integer name="tj" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
-			<model:decimal name="parallel" default="1,000">
+			<model:decimal name="parallel" default="1">
 				<model:validatesLength max="7" />
 				<model:validatesPrecision max="3" />
 				<model:validatesRange from="0"/>
