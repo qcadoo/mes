@@ -207,9 +207,6 @@
 			component="window" event="showGanttOrdersCalendar"
 			class="com.qcadoo.mes.productionScheduling.ShiftsService" method="showGanttOrdersCalendar" />
 
-		<menu:menu-item name="shiftsList" category="administration"
-			view="shiftsList" />
-
 		<model:model model="orderOperationComponent" resource="model/orderOperationComponent.xml" />
 		<model:model model="machineInOrderOperationComponent" resource="model/machineInOrderOperationComponent.xml" />
 
