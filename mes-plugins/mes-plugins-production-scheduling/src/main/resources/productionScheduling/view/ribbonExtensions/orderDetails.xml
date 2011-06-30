@@ -79,7 +79,7 @@
 				]]>
 			</script>	
 		</bigButton>
-		<bigButton name="realizationTime" icon="calendarIcon24.png" state="disabled">
+		<bigButton name="realizationTime" icon="calculateTimeIcon24.png" state="disabled">
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({
