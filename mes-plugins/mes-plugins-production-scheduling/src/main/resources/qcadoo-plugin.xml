@@ -120,8 +120,6 @@
 		<model:model-hook model="technologyOperationComponent" plugin="technologies">
 			<model:validatesWith class="com.qcadoo.mes.productionScheduling.OperationService" method="checkMachineInOperationComponentUniqueness" />
 		</model:model-hook>
-		
-		
 
 		<model:model-field plugin="basic" model="machine">
 			<model:boolean name="activeMachine" default="true" />
@@ -139,7 +137,6 @@
 				<model:validatesRange from="0"/>
 			</model:decimal>
 		</model:model-field>
-
 		<model:model-field plugin="technologies" model="operation">
 			<model:integer name="tpz" />
 		</model:model-field>
@@ -216,9 +213,6 @@
 			component="window" event="showGanttOrdersCalendar"
 			class="com.qcadoo.mes.productionScheduling.ShiftsService" method="showGanttOrdersCalendar" />
 
-		<menu:menu-item name="shiftsList" category="administration"
-			view="shiftsList" />
-
 		<model:model model="orderOperationComponent" resource="model/orderOperationComponent.xml" />
 		<model:model model="machineInOrderOperationComponent" resource="model/machineInOrderOperationComponent.xml" />
 
@@ -248,16 +242,12 @@
 		<view:view resource="view/timeTechnologyInOrderDetails.xml"/>
 		
 		<view:view-listener plugin="orders"
-			view="orderDetails" component="technology" event="onSelectedEntityChange"
+			view="orderDetails" component="form" event="changeRealizationTime"
 			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="changeRealizationTime" />
 			
-		<view:view-listener plugin="orders"
-			view="orderDetails" component="product" event="onSelectedEntityChange"
-			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="changeRealizationTime" />
-			
-		<view:view-listener plugin="orders"
-			view="orderDetails" component="plannedQuantity" event="onInputChange"
-			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="changeRealizationTime" />
+			<view:view-listener plugin="technologies"
+			view="technologyDetails" component="form" event="countTimeOfTechnology"
+			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="countTimeOfTechnology" />
 			
 		<view:view-listener plugin="orders"
 			view="orderDetails" component="dateFrom" event="onChange"

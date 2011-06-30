@@ -31,7 +31,7 @@
 		<boolean name="useDefaultValue" required="true" default="true"/>
 		<integer name="tpz" />
 		<integer name="tj" />
-		<decimal name="parallel" />
+		<decimal name="parallel" default="1" />
 		<boolean name="activeMachine" default="true"/>
 		<belongsTo name="machine" plugin="basic" model="machine" required="true" />
 		<belongsTo name="operationComponent" plugin="technologies"

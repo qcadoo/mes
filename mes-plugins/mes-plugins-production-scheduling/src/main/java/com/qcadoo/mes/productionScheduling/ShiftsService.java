@@ -148,7 +148,7 @@ public class ShiftsService {
 
     public void showGanttOrdersCalendar(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
-        viewDefinitionState.openModal("../page/productionScheduling/ganttOrdersCalendar.html");
+        viewDefinitionState.redirectTo("../page/productionScheduling/ganttOrdersCalendar.html", false, true);
     }
 
     public void onDayCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {

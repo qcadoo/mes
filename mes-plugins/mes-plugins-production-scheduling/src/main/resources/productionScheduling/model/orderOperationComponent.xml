@@ -43,7 +43,7 @@
 		<string name="parentTj" persistent="false" />
 		<boolean name="useMachineNorm" default="true" />
 		<string name="parentUseMachineNorm" persistent="false" />
-		<enum name="countRealized" values="01all,02specified" default="01all" required="true" />
+		<enum name="countRealized" values="01all,02specified" default="01all" />
 		<string name="parentCountRealized" persistent="false" />
 		<decimal name="countMachine" />
 		<string name="parentCountMachine" persistent="false" />
@@ -51,7 +51,6 @@
 		<string name="parentTimeNextOperation" persistent="false" />
 		<integer name="operationOffSet" />
 		<integer name="effectiveOperationRealizationTime" />
-		<belongsTo name="effectiveMachine" plugin="basic" model="machine" />
 		<datetime name="effectiveDateFrom" />
 		<datetime name="effectiveDateTo" />
 		<hasMany name="machineInOrderOperationComponents" model="machineInOrderOperationComponent" joinField="orderOperationComponent" cascade="delete" />

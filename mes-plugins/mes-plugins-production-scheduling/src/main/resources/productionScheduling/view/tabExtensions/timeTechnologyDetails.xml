@@ -27,23 +27,19 @@
 			</group>
 		</ribbon>
 		<component type="gridLayout" name="gridsLayout" columns="3"
-			rows="4">
-			<layoutElement column="1" row="1">
-				<component type="input" name="quantity" field="quantity"
-					reference="quantity" />
-			</layoutElement>
-			<layoutElement column="1" row="2">
-				<component type="calendar" name="startTime" field="startTime"
-					reference="startTime" />
-			</layoutElement>
-			<layoutElement column="1" row="3">
-				<component type="time" name="realizationTime" field="realizationTime"
-					reference="realizationTime" />
-			</layoutElement>
-			<layoutElement column="1" row="4">
-				<component type="calendar" name="stopTime" field="stopTime"
-					reference="stopTime" />
-			</layoutElement>
+				rows="4" >
+				<layoutElement column="1" row="1">
+					<component type="input" name="quantity" field="quantity" reference="quantity" />
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="calendar" name="startTime" field="startTime" reference="startTime" />
+				</layoutElement>
+				<layoutElement column="1" row="3">
+					<component type="time" name="realizationTime" field="realizationTime" reference="realizationTime" />
+				</layoutElement>
+				<layoutElement column="1" row="4">
+					<component type="calendar" name="stopTime" field="stopTime" reference="stopTime" />
+				</layoutElement>
 		</component>
 	</windowTab>
 </windowTabExtension>

@@ -18,41 +18,23 @@
 
 	<windowTab name="productionScheduling" reference="productionScheduling">
 		<component type="gridLayout" name="gridsLayout" columns="3"
-			reference="gridLayout" rows="3">
-			<layoutElement column="1" row="1">
-				<component type="label" name="alert" reference="alert">
-					<script><![CDATA[
-							var dateFrom = #{dateFrom};
-							var dataTo = #{dateTo};
-							var realizationTime = #{realizationTime};
-							
-							QCD.info("cos sie dzieje");
-							QCD.info(dateFrom);
-							dateFrom.addOnChangeListener({
-								isChanged(): function() {
-									alert("***")
-									#{alert}.enable;		
-									}
-								
-							});
-						]]></script>
-				</component>
-			</layoutElement>
-			<layoutElement column="1" row="2">
-				<component type="time" name="realizationTime" field="#{form}.realizationTime"
-					reference="realizationTime">
-					<option type="withTimePicker" value="true" />
-				</component>
-			</layoutElement>
-			<layoutElement column="1" row="3">
-				<component type="button" name="calculate" reference="calculate"><!-- 
-						source="#{form}" -->
-					<option type="correspondingView"
-						value="productionScheduling/timeTechnologyInOrderDetails" />
-					<option type="correspondingComponent" value="window" />
-					<option type="correspondingViewInModal" value="true" />
-				</component>
-			</layoutElement>
+				rows="3" >
+				<layoutElement column="1" row="1">
+					<component type="label" name="alert" reference="alert" defaultVisible="true" />
+				</layoutElement>
+				<layoutElement column="1"  row="2">
+					<component type="time" name="realizationTime" field="#{form}.realizationTime" reference="realizationTime">
+						<option type="noHours" value="5" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="3" >
+					<component type="button" name="calculate"
+						reference="calculate" source="#{form}">
+						<option type="correspondingView" value="orders/timeTechnologyDetailsInOrder" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+					</component>
+				</layoutElement>
 		</component>
 	</windowTab>
 

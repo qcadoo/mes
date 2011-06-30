@@ -32,8 +32,7 @@
 			<component type="gridLayout" name="gridsLayout" columns="1"
 				rows="4">
 				<layoutElement column="1" row="1">
-					<component type="input" name="quantity" field="quantity"
-						reference="quantity" />
+					<component type="input" name="quantity" field="quantity" reference="quantity" />
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="calendar" name="startTime" field="startTime" 

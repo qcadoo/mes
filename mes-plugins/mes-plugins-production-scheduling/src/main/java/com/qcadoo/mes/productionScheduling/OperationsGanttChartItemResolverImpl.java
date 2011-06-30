@@ -1,9 +1,7 @@
 package com.qcadoo.mes.productionScheduling;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -16,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -30,9 +27,6 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Override
     public Map<String, List<GanttChartItem>> resolve(final GanttChartScale scale, final JSONObject context, final Locale locale) {
@@ -73,10 +67,6 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
 
             Map<String, List<GanttChartItem>> items = new TreeMap<String, List<GanttChartItem>>();
 
-            Map<Long, String> machines = new HashMap<Long, String>();
-            machines.put(0L, translationService.translate(
-                    "productionScheduling.ganttOrderOperationsCalendar.gantt.machineNotAssigned", locale));
-
             for (Entity operation : operations) {
                 Date dateFrom = (Date) operation.getField("effectiveDateFrom");
                 Date dateTo = (Date) operation.getField("effectiveDateTo");
@@ -85,27 +75,14 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
                     continue;
                 }
 
-                Entity machine = operation.getBelongsToField("effectiveMachine");
+                String operationName = getDescriptionForOperarion(operation);
 
-                String machineName = null;
+                GanttChartItem item = scale.createGanttChartItem(operationName, operationName, operation.getId(), dateFrom,
+                        dateTo);
 
-                if (machine != null) {
-                    if (!machines.containsKey(machine.getId())) {
-                        machines.put(machine.getId(), getDescriptionForMachine(machine));
-                    }
-                    machineName = machines.get(machine.getId());
-                } else {
-                    machineName = machines.get(0L);
+                if (item != null) {
+                    items.put(operationName, Collections.singletonList(item));
                 }
-
-                GanttChartItem item = scale.createGanttChartItem(machineName, getDescriptionForOperarion(operation),
-                        operation.getId(), dateFrom, dateTo);
-
-                if (!items.containsKey(machineName)) {
-                    items.put(machineName, new ArrayList<GanttChartItem>());
-                }
-
-                items.get(machineName).add(item);
             }
 
             return items;
@@ -121,7 +98,4 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
                 + operation.getBelongsToField("operation").getStringField("name");
     }
 
-    private String getDescriptionForMachine(final Entity machine) {
-        return machine.getStringField("number") + " - " + machine.getStringField("name");
-    }
 }
