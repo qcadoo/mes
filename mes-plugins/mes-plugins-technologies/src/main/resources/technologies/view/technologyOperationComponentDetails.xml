@@ -27,7 +27,8 @@
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="technologyOperationComponentDetails"
-	modelName="technologyOperationComponent">
+	modelName="technologyOperationComponent"
+	windowHeight="495">
 	
 	<component type="window" name="window">
 		<ribbon>
@@ -56,5 +57,6 @@
 			<option type="header" value="true" />
 			<option type="expression" value="#operation['name']" />
 		</component>
+		
 	</component>
 </view>
