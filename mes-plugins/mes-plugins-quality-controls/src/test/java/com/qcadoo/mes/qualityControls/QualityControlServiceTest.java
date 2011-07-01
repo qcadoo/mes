@@ -578,10 +578,12 @@ public class QualityControlServiceTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         FormComponent qualityControlsForm = mock(FormComponent.class);
         FieldComponent qualityControlType = mock(FieldComponent.class);
+        FieldComponent closed = mock(FieldComponent.class);
 
         given(viewDefinitionState.getComponentByReference("form")).willReturn(qualityControlsForm);
         given(qualityControlsForm.getName()).willReturn("qualityControlForBatch");
         given(viewDefinitionState.getComponentByReference("qualityControlType")).willReturn(qualityControlType);
+        given(viewDefinitionState.getComponentByReference("closed")).willReturn(closed);
 
         // when
         qualityControlService.setQualityControlTypeHiddenField(viewDefinitionState);
