@@ -19,7 +19,7 @@
 	<windowTab name="productionScheduling" reference="productionScheduling">
 		<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="3" >
-				<layoutElement column="1" row="1">
+				<layoutElement column="1" row="1" width="2">
 					<component type="label" name="alert" reference="alert" defaultVisible="true" />
 				</layoutElement>
 				<layoutElement column="1"  row="2">
@@ -37,5 +37,4 @@
 				</layoutElement>
 		</component>
 	</windowTab>
-
 </windowTabExtension>
