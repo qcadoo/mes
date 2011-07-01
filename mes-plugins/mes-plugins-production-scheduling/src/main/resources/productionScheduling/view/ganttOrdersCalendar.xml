@@ -45,7 +45,6 @@
 					<option type="resolver" value="com.qcadoo.mes.productionScheduling.OrderGanttChartItemResolver" />
 					<option type="defaultZoomLevel" value="H6" />
 					<option type="defaultEndDay" value="14" />
-					<option type="hasPopupInfo" value="false" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="5" height="3">

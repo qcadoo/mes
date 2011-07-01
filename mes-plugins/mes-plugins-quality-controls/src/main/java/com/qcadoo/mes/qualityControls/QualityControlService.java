@@ -487,6 +487,10 @@ public final class QualityControlService {
         }
 
         qualityControl.setFormEnabled(!disabled);
+        state.getComponentByReference("closed").setEnabled(false);
+        state.getComponentByReference("staff").setEnabled(false);
+        state.getComponentByReference("date").setEnabled(false);
+
     }
 
     public boolean clearQualityControlOnCopy(final DataDefinition dataDefinition, final Entity entity) {
