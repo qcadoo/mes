@@ -29,10 +29,10 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<integer name="quantity"/>
-		<date name="startTime"/>
-		<integer name="realizationTime"/>
-		<date name="stopTime"/>
+		<integer name="quantity" persistent="false"/>
+		<date name="startTime" persistent="false"/>
+		<integer name="realizationTime" persistent="false"/>
+		<date name="stopTime" persistent="false"/>
 	</fields>
 	<hooks>
 		

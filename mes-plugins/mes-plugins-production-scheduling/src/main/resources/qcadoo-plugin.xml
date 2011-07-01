@@ -131,7 +131,7 @@
 			<model:integer name="tj" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="machine">
-			<model:decimal name="parallel" default="1,000">
+			<model:decimal name="parallel" default="1.000">
 				<model:validatesLength max="7" />
 				<model:validatesPrecision max="3" />
 				<model:validatesRange from="0"/>
@@ -158,16 +158,16 @@
 		</model:model-field>
 
 		<model:model-field plugin="technologies" model="technology">
-			<model:date name="startTime" />
+			<model:date name="dateFrom" persistent="false"/>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="technology">
-			<model:integer name="quantity" />
+			<model:integer name="quantity" persistent="false"/>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="technology">
-			<model:integer name="realizationTime" />
+			<model:integer name="realizationTime" persistent="false"/>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="technology">
-			<model:date name="stopTime" />
+			<model:date name="dateTo" persistent="false"/>
 		</model:model-field>
 		
 		
@@ -245,7 +245,7 @@
 			view="orderDetails" component="form" event="changeRealizationTime"
 			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="changeRealizationTime" />
 			
-			<view:view-listener plugin="technologies"
+		<view:view-listener plugin="technologies"
 			view="technologyDetails" component="form" event="countTimeOfTechnology"
 			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="countTimeOfTechnology" />
 			
@@ -256,6 +256,14 @@
 		<view:view-listener plugin="orders"
 			view="orderDetails" component="dateTo" event="onChange"
 			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="changeDateFrom" />
+			
+	  	<!--  <view:view-listener plugin="technologies"
+			view="technologyDetails" component="dateFrom" event="onChange"
+			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="changeDateTo" />
+			
+		<view:view-listener plugin="technologies"
+			view="technologyDetails" component="dateTo" event="onChange"
+			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="changeDateFrom" /> -->
 
 	</modules>
 </plugin>
