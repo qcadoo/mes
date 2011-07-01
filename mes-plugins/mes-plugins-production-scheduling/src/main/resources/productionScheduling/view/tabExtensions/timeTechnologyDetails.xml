@@ -21,10 +21,10 @@
 
 	<windowTab name="timeOfTechnology" reference="timeOfTechnology">
 		<ribbon>
-			<group name="timeOfTechnology">
-				<bigButton name="countTimeOfTechnology" icon="calculateTimeIcon24.png"
-					action="#{form}.fireEvent(countTimeOfTechnology);" />
-			</group>
+<!--			<group name="timeOfTechnology">-->
+<!--				<bigButton name="countTimeOfTechnology" icon="calculateTimeIcon24.png"-->
+<!--					action="#{form}.fireEvent(countTimeOfTechnology);" />-->
+<!--			</group>-->
 		</ribbon>
 		<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="4" >

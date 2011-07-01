@@ -32,7 +32,7 @@
 	<windowTab name="norm" reference="norm">
 		
 		<component type="gridLayout" name="gridsLayout" columns="3"
-				rows="4" >
+				rows="5" >
 				<layoutElement column="1" row="1">
 					<component type="checkbox" name="activeMachine" field="#{form}.activeMachine" defaultValue="true"  />
 				</layoutElement>
