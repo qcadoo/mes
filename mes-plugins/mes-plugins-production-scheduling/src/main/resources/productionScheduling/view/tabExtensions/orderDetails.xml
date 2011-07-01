@@ -30,7 +30,7 @@
 				<layoutElement column="1" row="3" >
 					<component type="button" name="calculate"
 						reference="calculate" source="#{form}">
-						<option type="correspondingView" value="orders/timeTechnologyDetailsInOrder" />
+						<option type="correspondingView" value="productionScheduling/timeTechnologyInOrderDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 					</component>
