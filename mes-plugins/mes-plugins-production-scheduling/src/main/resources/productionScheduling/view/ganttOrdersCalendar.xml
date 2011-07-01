@@ -39,7 +39,7 @@
 			<template name="standardFormTemplate" includeItems="actions.save, actions.cancel" />
 		</ribbon>
 		
-		<component type="gridLayout" name="gridLayout" columns="1" rows="7" hasBorders="true">
+		<component type="gridLayout" name="gridLayout" columns="1" rows="10" hasBorders="true">
 			<layoutElement column="1" row="1" height="4">
 				<component type="ganttChart" name="gantt" reference="gantt">
 					<option type="resolver" value="com.qcadoo.mes.productionScheduling.OrderGanttChartItemResolver" />
