@@ -121,7 +121,7 @@ public class OrderRealizationTimeService {
                 Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                         orderId);
                 maxPathTime = estimateRealizationTimeForOperation(order.getTreeField("orderOperationComponents").getRoot(),
-                        getBigDecimalFromField(plannedQuantity.getFieldValue(), viewDefinitionState.getLocale()), 0, null);
+                        getBigDecimalFromField(plannedQuantity.getFieldValue(), viewDefinitionState.getLocale()));
             }
             if (maxPathTime > 99999 * 60 * 60) {
                 state.addMessage(
@@ -132,10 +132,17 @@ public class OrderRealizationTimeService {
         realizationTime.setFieldValue(maxPathTime);
     }
 
-    private int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
-            final int pathTime, final EntityTreeNode parent) {
+    private int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity) {
         int operationTime = 0;
-        operationComponent.setField("effectiveMachine", null);
+        int pathTime = 0;
+
+        for (EntityTreeNode child : operationComponent.getChildren()) {
+            int tmpPathTime = estimateRealizationTimeForOperation(child, plannedQuantity);
+            if (tmpPathTime > pathTime) {
+                pathTime = tmpPathTime;
+            }
+        }
+
         if (operationComponent.getField("useMachineNorm") != null && (Boolean) operationComponent.getField("useMachineNorm")) {
             DataDefinition machineInOrderOperationComponentDD = dataDefinitionService.get("productionScheduling",
                     "machineInOrderOperationComponent");
@@ -149,7 +156,6 @@ public class OrderRealizationTimeService {
                                     : BigDecimal.ONE).multiply(BigDecimal.valueOf((Integer) machineComponent.getField("tj")))
                                     .intValue());
                     operationComponent.setField("tpz", machineComponent.getField("tpz"));
-                    operationComponent.setField("effectiveMachine", machineComponent.getBelongsToField("machine"));
                     break;
                 }
             }
@@ -157,36 +163,22 @@ public class OrderRealizationTimeService {
 
         if ("01all".equals(operationComponent.getField("countRealized"))) {
             operationTime = (plannedQuantity.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj")))))
-                    .intValue()
-                    + getIntegerValue(operationComponent.getField("tpz"))
-                    + getIntegerValue(operationComponent.getField("timeNextOperation"));
+                    .intValue();
         } else {
             operationTime = ((operationComponent.getField("countMachine") != null ? (BigDecimal) operationComponent
                     .getField("countMachine") : BigDecimal.ZERO).multiply(BigDecimal.valueOf(getIntegerValue(operationComponent
-                    .getField("tj"))))).intValue()
-                    + getIntegerValue(operationComponent.getField("tpz"))
-                    + getIntegerValue(operationComponent.getField("timeNextOperation"));
+                    .getField("tj"))))).intValue();
         }
+        operationTime += getIntegerValue(operationComponent.getField("tpz"))
+                + getIntegerValue(operationComponent.getField("timeNextOperation"));
 
         operationComponent.setField("effectiveOperationRealizationTime", operationTime);
-        operationComponent.setField("operationOffSet", 0);
+        operationComponent.setField("operationOffSet", pathTime);
         DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
         orderOperationComponentDD.save(operationComponent);
 
-        operationTime += pathTime;
-        if (parent != null && getIntegerValue(parent.getField("operationOffSet")).compareTo(operationTime) < 0) {
-            parent.setField("operationOffSet", operationTime);
-            orderOperationComponentDD.save(parent);
-        }
-
-        for (EntityTreeNode child : operationComponent.getChildren()) {
-            int tmpPathTime = estimateRealizationTimeForOperation(child, plannedQuantity, operationTime, operationComponent);
-            if (tmpPathTime > operationTime) {
-                operationTime = tmpPathTime;
-            }
-        }
-
-        return operationTime;
+        pathTime += operationTime;
+        return pathTime;
     }
 
     private int estimateRealizationTimeForTechnologyOperation(final EntityTreeNode operationComponent,
