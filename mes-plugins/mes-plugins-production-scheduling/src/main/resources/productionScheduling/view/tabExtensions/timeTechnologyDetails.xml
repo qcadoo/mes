@@ -17,7 +17,9 @@
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-	plugin="technologies" view="technologyDetails">
+	plugin="technologies" view="technologyDetails"
+	
+	>
 
 	<windowTab name="timeOfTechnology" reference="timeOfTechnology">
 		<ribbon>
@@ -27,7 +29,7 @@
 			</group>
 		</ribbon>
 		<component type="gridLayout" name="gridsLayout" columns="3"
-				rows="4" >
+				rows="7" >
 				<layoutElement column="1" row="1">
 					<component type="input" name="quantity" field="#{form}.quantity" reference="quantity" />
 				</layoutElement>
