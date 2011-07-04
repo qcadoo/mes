@@ -44,7 +44,7 @@
 			</layoutElement>
 			<layoutElement column="1" row="5">
 				<component type="input" name="countMachineNorm" field="#{form}.countMachineNorm"
-					reference="countMachineNorm" hasDescription="true" defaultEnabled="false" >
+					reference="countMachineNorm" hasDescription="true" defaultEnabled="false">
 					<validatesLength max="7" />
 					<validatesPrecision max="3" />
 				</component>
