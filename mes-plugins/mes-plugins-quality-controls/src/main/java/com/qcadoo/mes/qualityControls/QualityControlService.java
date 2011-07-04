@@ -45,6 +45,7 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -291,11 +292,17 @@ public final class QualityControlService {
 
                 String qualityControlType = technology.getField("qualityControlType").toString();
 
-                generateQualityControlForGivenType(qualityControlType, technology, order);
+                if (isQualityControlForOrderExists(order)) {
+                    state.addMessage(
+                            translationService.translate("qualityControls.qualityControls.generated.failure", state.getLocale()),
+                            MessageType.FAILURE);
+                } else {
+                    generateQualityControlForGivenType(qualityControlType, technology, order);
 
-                state.addMessage(
-                        translationService.translate("qualityControls.qualityControls.generated.success", state.getLocale()),
-                        MessageType.SUCCESS);
+                    state.addMessage(
+                            translationService.translate("qualityControls.qualityControls.generated.success", state.getLocale()),
+                            MessageType.SUCCESS);
+                }
 
                 state.performEvent(viewDefinitionState, "refresh", new String[0]);
             } else {
@@ -313,6 +320,12 @@ public final class QualityControlService {
                         MessageType.FAILURE);
             }
         }
+    }
+
+    private boolean isQualityControlForOrderExists(final Entity order) {
+        DataDefinition dataDefinition = dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                QualityControlsConstants.MODEL_QUALITY_CONTROL);
+        return dataDefinition.find().add(SearchRestrictions.belongsTo("order", order)).list().getTotalNumberOfEntities() != 0;
     }
 
     public void checkAcceptedDefectsQuantity(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -652,7 +665,6 @@ public final class QualityControlService {
 
             }
         }
-
     }
 
     private void createAndSaveControlForOperation(final Entity order, final Entity entity) {
