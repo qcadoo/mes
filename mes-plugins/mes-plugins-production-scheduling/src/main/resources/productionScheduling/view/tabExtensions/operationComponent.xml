@@ -17,12 +17,11 @@
 	plugin="technologies" view="technologyOperationComponentDetails">
 
 	<windowTab name="norm" reference="norm">
-		
 		<component type="gridLayout" name="gridsLayout" columns="1"
 			rows="6">
 			<layoutElement column="1" row="1">
 				<component type="checkbox" name="useDefaultValue" field="#{form}.useDefaultValue"
-					reference="useDefaultValue" defaultEnabled="true" >
+					reference="useDefaultValue" defaultEnabled="true" hasDescription="true">
 					<listener event="onChange"
 						class="com.qcadoo.mes.productionScheduling.NormService" method="updateFieldsStateWhenDefaultValueCheckboxChanged" />
 				</component>
@@ -55,42 +54,6 @@
 					field="#{form}.timeNextOperationNorm" reference="timeNextOperationNorm"
 					hasDescription="true" defaultEnabled="false" />
 			</layoutElement>
-			
 		</component>
 	</windowTab>
-	<windowTab name="grid">
-		<component type="gridLayout" name="grids" columns="1"
-			rows="6">
-			<layoutElement column="1" row="1">
-				<component type="checkbox" name="useMachineNorm" field="#{form}.useMachineNorm"
-					reference="useMachineNorm" defaultEnabled="false">
-					<listener event="onChange"
-						class="com.qcadoo.mes.productionScheduling.NormService" method="updateFieldsStateWhenUseMachineNormCheckboxChanged" />
-					<option type="labelWidth" value = "70"/>
-				</component>
-			</layoutElement>
-			<layoutElement column="1" row="2" height="5">
-				<component type="grid" name="machine" reference="machine"
-					source="#{form}.machineInOperationComponent">
-					<option type="column" name="numberMachine" field="machine"
-						expression="#machine['number']" link="true" width="50" />
-					<option type="column" name="nameMachine" field="machine"
-						expression="#machine['name']" link="true" width="50" />
-					<option type="order" column="numberMachine" direction="desc" />
-					<option type="searchable" value="numberMachine, nameMachine" />
-					<option type="orderable" value="numberMachine, nameMachine" />
-					<option type="correspondingView"
-						value="productionScheduling/machineInOperationComponentDetails" />
-					<option type="correspondingComponent" value="form" />
-					<option type="deletable" value="true" />
-					<option type="creatable" value="true" />
-					<option type="multiselect" value="true" />
-					<option type="fullscreen" value="true"/>
-				</component>
-			</layoutElement>
-			
-		</component>
-	</windowTab>
-	
-
 </windowTabExtension>

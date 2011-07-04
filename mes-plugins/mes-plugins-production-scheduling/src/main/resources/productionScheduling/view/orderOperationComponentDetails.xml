@@ -22,87 +22,54 @@
 		</ribbon>
 		<windowTab name="norm" reference="norm">
 			<component type="form" name="orderOperationComponent" reference="form">
-				<component type="gridLayout" name="gridsLayout" columns="2" rows="1" >
-					<layoutElement column="1" row="1">
-						<component type="gridLayout" name="gridsLayout" columns="5" rows="7" >
-							<layoutElement column="1" row="1" width="4">
-								<component type="checkbox" name="useDefaultValue" field="#{form}.useDefaultValue" reference="useDefaultValue">
-									<listener event="onChange" class="com.qcadoo.mes.productionScheduling.NormOrderService"
-											method="changeUseDefaultValue" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" width="4">
-								<component type="time" name="tpz" field="#{form}.tpz" reference="tpz"/>
-							</layoutElement>
-							<layoutElement column="5" row="2">
-								<component type="input" name="parentTpz" field="#{form}.parentTpz" reference="parentTpz" defaultEnabled="false" hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="3" width="4">
-								<component type="time" name="tj" field="#{form}.tj" reference="tj"/>
-							</layoutElement>
-							<layoutElement column="5" row="3">
-								<component type="input" name="parentTj" field="#{form}.parentTj" reference="parentTj" defaultEnabled="false" hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="4" width="4">
-								<component type="checkbox" name="useMachineNorm" field="#{form}.useMachineNorm" reference="useMachineNorm">
-									<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionScheduling.NormOrderService"
-											method="changeUseMachineNorm" />
-								</component>
-							</layoutElement>
-							<layoutElement column="5" row="4">
-								<component type="input" name="parentUseMachineNorm" field="#{form}.parentUseMachineNorm" reference="parentUseMachineNorm" defaultEnabled="false" hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="5" width="4">
-								<component type="select" name="countRealized" field="#{form}.countRealized" reference="countRealized" hasDescription="true">
-									<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionScheduling.NormOrderService"
-											method="changeCountRealized" />
-								</component>
-							</layoutElement>
-							<layoutElement column="5" row="5">
-								<component type="input" name="parentCountRealized" field="#{form}.parentCountRealized" reference="parentCountRealized" defaultEnabled="false" hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="6" width="4">
-								<component type="input" name="countMachine" field="#{form}.countMachine" reference="countMachine" hasDescription="true" />
-							</layoutElement>
-							<layoutElement column="5" row="6">
-								<component type="input" name="parentCountMachine" field="#{form}.parentCountMachine" reference="parentCountMachine" defaultEnabled="false" hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="7" width="4">
-								<component type="time" name="timeNextOperation" field="#{form}.timeNextOperation" reference="timeNextOperation" hasDescription="true" />
-							</layoutElement>
-							<layoutElement column="5" row="7">
-								<component type="input" name="parentTimeNextOperation" field="#{form}.parentTimeNextOperation" reference="parentTimeNextOperation" defaultEnabled="false" hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
+				<component type="gridLayout" name="gridsLayout" columns="5" rows="6" >
+					<layoutElement column="1" row="1" width="4">
+						<component type="checkbox" name="useDefaultValue" field="#{form}.useDefaultValue" reference="useDefaultValue" hasDescription="true">
+							<listener event="onChange" class="com.qcadoo.mes.productionScheduling.NormOrderService"
+									method="changeUseDefaultValue" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="1">
-						<component type="grid" name="machines" reference="machines" source="#{form}.machineInOrderOperationComponents">
-							<option type="column" name="numberMachine" fields="machine"
-								expression="#machine['number']" link="true" width="40"/>
-							<option type="column" name="nameMachine" fields="machine"
-								expression="#machine['name']" link="true" width="40"/>
-							<option type="column" name="isActive" fields="isActive" width="20"/>
-							<option type="order" column="priority" direction="asc"/>
-							<option type="searchable" value="numberMachine,nameMachine,isActive" />
-							<option type="correspondingView" value="productionScheduling/machineInOrderOperationComponentDetails" />
-							<option type="correspondingComponent" value="form" />
-							<option type="deletable" value="true" />
-							<option type="creatable" value="true" />
-							<option type="multiselect" value="true" /> 
-							<option type="paginable" value="false" />
-							<option type="height" value="200" />
+					<layoutElement column="1" row="2" width="4">
+						<component type="time" name="tpz" field="#{form}.tpz" reference="tpz"/>
+					</layoutElement>
+					<layoutElement column="5" row="2">
+						<component type="input" name="parentTpz" field="#{form}.parentTpz" reference="parentTpz" defaultEnabled="false" hasLabel="false">
+							<option type="textRepresentationOnDisabled" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3" width="4">
+						<component type="time" name="tj" field="#{form}.tj" reference="tj"/>
+					</layoutElement>
+					<layoutElement column="5" row="3">
+						<component type="input" name="parentTj" field="#{form}.parentTj" reference="parentTj" defaultEnabled="false" hasLabel="false">
+							<option type="textRepresentationOnDisabled" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4" width="4">
+						<component type="select" name="countRealized" field="#{form}.countRealized" reference="countRealized" hasDescription="true">
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionScheduling.NormOrderService"
+									method="changeCountRealized" />
+						</component>
+					</layoutElement>
+					<layoutElement column="5" row="4">
+						<component type="input" name="parentCountRealized" field="#{form}.parentCountRealized" reference="parentCountRealized" defaultEnabled="false" hasLabel="false">
+							<option type="textRepresentationOnDisabled" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="5" width="4">
+						<component type="input" name="countMachine" field="#{form}.countMachine" reference="countMachine" hasDescription="true" />
+					</layoutElement>
+					<layoutElement column="5" row="5">
+						<component type="input" name="parentCountMachine" field="#{form}.parentCountMachine" reference="parentCountMachine" defaultEnabled="false" hasLabel="false">
+							<option type="textRepresentationOnDisabled" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="6" width="4">
+						<component type="time" name="timeNextOperation" field="#{form}.timeNextOperation" reference="timeNextOperation" hasDescription="true" />
+					</layoutElement>
+					<layoutElement column="5" row="6">
+						<component type="input" name="parentTimeNextOperation" field="#{form}.parentTimeNextOperation" reference="parentTimeNextOperation" defaultEnabled="false" hasLabel="false">
+							<option type="textRepresentationOnDisabled" value="true" />
 						</component>
 					</layoutElement>
 				</component>
