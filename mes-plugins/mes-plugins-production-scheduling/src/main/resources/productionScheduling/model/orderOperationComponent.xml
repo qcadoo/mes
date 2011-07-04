@@ -53,7 +53,6 @@
 		<integer name="effectiveOperationRealizationTime" />
 		<datetime name="effectiveDateFrom" />
 		<datetime name="effectiveDateTo" />
-		<hasMany name="machineInOrderOperationComponents" model="machineInOrderOperationComponent" joinField="orderOperationComponent" cascade="delete" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.productionScheduling.NormOrderService"
