@@ -42,6 +42,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.qualityControls.constants.QualityControlsConstants;
@@ -50,7 +51,10 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.model.internal.api.DataAccessService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -400,6 +404,18 @@ public class QualityControlServiceTest {
         given(translationService.translate("qualityControls.qualityControls.generated.success", Locale.ENGLISH)).willReturn(
                 "qualityControls.qualityControls.generated.success.pl");
 
+        DataAccessService dataAccessService = mock(DataAccessService.class);
+        given(dataAccessService.convertToDatabaseEntity(Mockito.any(Entity.class))).willReturn(new Object());
+
+        DataDefinition qualityControlDD = mock(DataDefinition.class, Mockito.RETURNS_DEEP_STUBS);
+        given(
+                dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn(qualityControlDD);
+        given(qualityControlDD.find().add(Mockito.any(SearchCriterion.class)).list().getTotalNumberOfEntities()).willReturn(0);
+
+        SearchRestrictions searchRestrictions = new SearchRestrictions();
+        ReflectionTestUtils.setField(searchRestrictions, "dataAccessService", dataAccessService);
+
         // when
         qualityControlService.generateQualityControl(viewDefinitionState, state, new String[] { "qualityControls" });
 
@@ -433,6 +449,18 @@ public class QualityControlServiceTest {
                         QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn("1");
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
+
+        DataAccessService dataAccessService = mock(DataAccessService.class);
+        given(dataAccessService.convertToDatabaseEntity(Mockito.any(Entity.class))).willReturn(new Object());
+
+        DataDefinition qualityControlDD = mock(DataDefinition.class, Mockito.RETURNS_DEEP_STUBS);
+        given(
+                dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn(qualityControlDD);
+        given(qualityControlDD.find().add(Mockito.any(SearchCriterion.class)).list().getTotalNumberOfEntities()).willReturn(0);
+
+        SearchRestrictions searchRestrictions = new SearchRestrictions();
+        ReflectionTestUtils.setField(searchRestrictions, "dataAccessService", dataAccessService);
 
         // when
         qualityControlService.generateQualityControl(viewDefinitionState, state, new String[] { "qualityControls" });
