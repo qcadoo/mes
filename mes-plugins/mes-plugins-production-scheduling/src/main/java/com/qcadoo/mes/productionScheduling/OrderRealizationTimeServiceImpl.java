@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -22,9 +20,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeService {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private ShiftsService shiftsService;

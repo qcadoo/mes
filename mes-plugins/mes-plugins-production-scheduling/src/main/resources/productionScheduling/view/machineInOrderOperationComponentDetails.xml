@@ -79,13 +79,11 @@
 				</layoutElement>
 			</component>
 			<option type="header" value="true"/>
-			<option type="expression" value="#machine['number'] + ' - ' + #machine['name'] + ' @productionScheduling.machineInOrderOperationComponentDetails.headerEdit ' + #orderOperationComponent['operation']['number'] + ' - ' + #orderOperationComponent['operation']['name']" />
+			<option type="expression" value="#machine['number'] + ' - ' + #machine['name'] + ' @productionScheduling.machineInOrderOperationComponentDetails.headerEdit ' 
+				+ #orderOperationComponent['operation']['number'] + ' - ' + #orderOperationComponent['operation']['name']" />
 		</component>
 	</component>
-	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.productionScheduling.NormOrderService" method="disableComponentsMachine" />
 	</hooks>
-
-
 </view>
