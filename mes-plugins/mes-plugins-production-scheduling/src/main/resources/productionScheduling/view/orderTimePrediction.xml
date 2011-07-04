@@ -12,7 +12,7 @@
 			<group name="timeOfTechnology">
 				<bigButton name="countTimeOfTechnology" icon="calculateTimeIcon24.png"
 					action="#{window}.fireEvent(countTimeOfTechnology);" state="disabled" />
-				<bigButton name="new" action="#{window}.fireEvent(clearAllField);" />
+				<smallButton name="new" icon="cancelIcon16.png" action="#{window}.fireEvent(clearAllField);" />
 			</group>
 		</ribbon>
 		<component type="gridLayout" name="gridsLayout" columns="3"
@@ -52,6 +52,9 @@
 						this.addOnChangeListener({
 							onChange: window.setCountTimeOfTechnologyButtonState
 						});
+						this.addOnChangeListener({
+							onSetValue: window.setCountTimeOfTechnologyButtonState
+						});
 					]]></script>
 				</component>
 			</layoutElement>
@@ -83,16 +86,13 @@
 			<layoutElement column="1" row="4">
 				<component type="time" name="realizationTime" 
 					reference="realizationTime" defaultEnabled="false" />
-<!--					<listener event="initialize" class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="clearFieldValue" />-->
 			</layoutElement>
 			<layoutElement column="1" row="5">
 				<component type="calendar" name="dateTo" 
 					reference="dateTo" defaultEnabled="false">
 					<option type="withTimePicker" value="true" />
-<!--					<listener event="initialize" class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="clearFieldValue" />-->
 				</component>
 			</layoutElement>
-
 		</component>
 	</component>
 	<hooks>

@@ -33,6 +33,7 @@ public class OrderTimePredictionService {
     private ShiftsService shiftsService;
 
     public void setFieldDisable(final ViewDefinitionState viewDefinitionState) {
+
         FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
         FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom");
         FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
@@ -72,7 +73,6 @@ public class OrderTimePredictionService {
         realizationTime.setFieldValue("");
         technology.setFieldValue("");
         countTimeOfTechnology.setEnabled(false);
-
     }
 
     @Transactional
