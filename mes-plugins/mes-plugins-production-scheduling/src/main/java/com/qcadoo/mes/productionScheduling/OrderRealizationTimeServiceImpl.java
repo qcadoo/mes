@@ -109,11 +109,11 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             operationTime += getIntegerValue(operationComponent.getField("tpz"))
                     + getIntegerValue(operationComponent.getField("timeNextOperation"));
 
-            operationComponent.setField("effectiveOperationRealizationTime", operationTime);
-            operationComponent.setField("operationOffSet", pathTime);
-            DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling",
-                    "orderOperationComponent");
-            orderOperationComponentDD.save(operationComponent);
+            if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
+                operationComponent.setField("effectiveOperationRealizationTime", operationTime);
+                operationComponent.setField("operationOffSet", pathTime);
+                operationComponent.getDataDefinition().save(operationComponent);
+            }
 
             pathTime += operationTime;
             return pathTime;
