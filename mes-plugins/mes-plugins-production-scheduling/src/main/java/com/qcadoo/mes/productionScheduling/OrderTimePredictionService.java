@@ -63,16 +63,11 @@ public class OrderTimePredictionService {
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
         FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
 
-        WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference("window");
-        RibbonActionItem countTimeOfTechnology = window.getRibbon().getGroupByName("timeOfTechnology")
-                .getItemByName("countTimeOfTechnology");
-
         quantity.setFieldValue("");
         dateFrom.setFieldValue("");
         dateTo.setFieldValue("");
         realizationTime.setFieldValue("");
         technology.setFieldValue("");
-        countTimeOfTechnology.setEnabled(false);
     }
 
     @Transactional
@@ -105,7 +100,6 @@ public class OrderTimePredictionService {
                 orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
                         viewDefinitionState.getLocale()));
 
-        System.out.println(maxPathTime + "***ala6");
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage(
                     translationService.translate("orders.validate.global.error.RealizationTimeIsToLong",
@@ -114,17 +108,15 @@ public class OrderTimePredictionService {
             dateTo.setFieldValue(null);
         } else {
             realizationTime.setFieldValue(maxPathTime);
-            System.out.println("***ala10" + maxPathTime);
             Date startTime = orderRealizationTimeService.getDateFromField(dateFrom.getFieldValue());
             Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
             startTime = shiftsService.findDateFromForOrder(stopTime, maxPathTime);
+
             if (startTime != null) {
                 dateFrom.setFieldValue(orderRealizationTimeService.setDateToField(startTime));
-
             } else {
                 dateFrom.setFieldValue(null);
             }
-
             if (stopTime != null) {
                 dateTo.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
             } else {
