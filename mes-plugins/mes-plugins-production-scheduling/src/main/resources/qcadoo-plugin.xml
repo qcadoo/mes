@@ -114,20 +114,7 @@
 			<model:integer name="timeNextOperation" />
 		</model:model-field>
 
-		<model:model-field plugin="technologies" model="technology">
-			<model:date name="dateFrom" persistent="false"/>
-		</model:model-field>
-		<model:model-field plugin="technologies" model="technology">
-			<model:integer name="quantity" persistent="false"/>
-		</model:model-field>
-		<model:model-field plugin="technologies" model="technology">
-			<model:integer name="realizationTime" persistent="false"/>
-		</model:model-field>
-		<model:model-field plugin="technologies" model="technology">
-			<model:date name="dateTo" persistent="false"/>
-		</model:model-field>
-		
-		
+				
 		<view:view-hook view="operationDetails" type="beforeRender" plugin="technologies" 
 			class="com.qcadoo.mes.productionScheduling.OperationService" method="updateCountMachineOperationFieldStateonWindowLoad"/>
 			
@@ -142,11 +129,12 @@
 		
 		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService" method="setVisibleAlert"/>
 		
+		<view:view-hook view="orderTimePrediction" type="beforeRender" plugin="productionScheduling" class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" 
+			method="setFieldDisable"/>
 
 		<view:view-tab resource="view/tabExtensions/operationComponent.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
-		<view:view-tab resource="view/tabExtensions/timeTechnologyDetails.xml"/>
 		
 		
 		<model:model model="shift" resource="model/shift.xml" />
@@ -157,9 +145,12 @@
 		<view:view resource="view/shiftTimetableExceptionDetail.xml" />
 		<view:view resource="view/ganttShiftCalendar.xml" />
 		<view:view resource="view/ganttOrdersCalendar.xml" />
+		<view:view resource="view/orderTimePrediction.xml"/>
 		
 		<menu:menu-item name="shiftsList" category="basic"
 			view="shiftsList" />
+			
+		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction" category="orders"/>
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
@@ -197,9 +188,13 @@
 			view="timeTechnologyInOrderDetails" component="form" event="changeRealizationTime"
 			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService" method="changeRealizationTime" />
 			
-		<view:view-listener plugin="technologies"
-			view="technologyDetails" component="form" event="countTimeOfTechnology"
-			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="countTimeOfTechnology" />
+		<view:view-listener plugin="productionScheduling"
+			view="orderTimePrediction" component="window" event="countTimeOfTechnology"
+			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="changeRealizationTime" />
+		
+		<view:view-listener plugin="productionScheduling"
+			view="orderTimePrediction" component="window" event="clearAllField"
+			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="clearAllField" />
 			
 		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
 			 method="disableRealizationTime"/>

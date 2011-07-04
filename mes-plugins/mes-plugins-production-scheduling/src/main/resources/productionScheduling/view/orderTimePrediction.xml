@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="orderTimePrediction" menuAccessible="true"
+	modelPlugin="orders"
+	modelName="order"
+	>
+
+	<component type="window" name="window" 	reference="window">
+		<ribbon>
+			<group name="timeOfTechnology">
+				<bigButton name="countTimeOfTechnology" icon="calculateTimeIcon24.png"
+					action="#{window}.fireEvent(countTimeOfTechnology);" state="disabled" />
+				<bigButton name="new" action="#{window}.fireEvent(clearAllField);" />
+			</group>
+		</ribbon>
+		<component type="gridLayout" name="gridsLayout" columns="3"
+			rows="9">
+			<layoutElement column="1" row="1"> 
+				<component type="lookup" name="technology" reference="technology"
+							model="technology" plugin="technologies">
+							<option type="required" value="true"/>
+							<option type="column" name="name" fields="name" link="true"
+								width="200" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+					<script><![CDATA[
+						var countTimeOfTechnology = #{window}.getRibbonItem("timeOfTechnology.countTimeOfTechnology");
+						window.setCountTimeOfTechnologyButtonState = function() {
+							var technologyValue = #{technology}.getComponentData();
+							var dateFromValue = #{dateFrom}.getComponentData();
+							var quantityValue = #{quantity}.getComponentData();
+							
+							#{technology}.performUpdateState();
+							#{dateFrom}.performUpdateState();
+							#{quantity}.performUpdateState();
+							
+							if (dateFromValue.value && dateFromValue.value != "" 
+									&& quantityValue.value && quantityValue.value != "" 
+									&& technologyValue.value && technologyValue.value != "") {
+								countTimeOfTechnology.enable();
+							}else{
+								countTimeOfTechnology.disable();
+							}
+							
+						}
+						this.performUpdateState();
+						this.addOnChangeListener({
+							onChange: window.setCountTimeOfTechnologyButtonState
+						});
+					]]></script>
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="2">
+				<component type="input" name="quantity" 
+					reference="quantity" defaultEnabled="true" >
+					<!-- <option type="required" value="true"/>-->
+					<script><![CDATA[
+						this.performUpdateState();
+						this.addOnChangeListener({
+							onChange: window.setCountTimeOfTechnologyButtonState
+						});
+					]]></script>
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="3">
+				<component type="calendar" name="dateFrom" 
+					reference="dateFrom" defaultEnabled="true">
+					<option type="withTimePicker" value="true" />
+					<option type="required" value="true"/>
+					<script><![CDATA[
+						this.performUpdateState();
+						this.addOnChangeListener({
+							onChange: window.setCountTimeOfTechnologyButtonState
+						});
+					]]></script>
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="4">
+				<component type="time" name="realizationTime" 
+					reference="realizationTime" defaultEnabled="false" />
+<!--					<listener event="initialize" class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="clearFieldValue" />-->
+			</layoutElement>
+			<layoutElement column="1" row="5">
+				<component type="calendar" name="dateTo" 
+					reference="dateTo" defaultEnabled="false">
+					<option type="withTimePicker" value="true" />
+<!--					<listener event="initialize" class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="clearFieldValue" />-->
+				</component>
+			</layoutElement>
+
+		</component>
+	</component>
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
+			method="setFieldDisable" />
+	</hooks>
+
+</view>
