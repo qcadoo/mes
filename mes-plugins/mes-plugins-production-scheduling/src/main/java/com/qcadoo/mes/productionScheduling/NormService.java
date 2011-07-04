@@ -63,7 +63,8 @@ public class NormService {
         if (operation != null) {
             tpzNorm.setFieldValue(operation.getField("tpz"));
             tjNorm.setFieldValue(operation.getField("tj"));
-            countRealized.setFieldValue(operation.getField("countRealizedOperation"));
+            countRealized.setFieldValue(operation.getField("countRealizedOperation") != null ? operation
+                    .getField("countRealizedOperation") : "01all");
             countMachine.setFieldValue(operation.getField("countMachineOperation"));
             timeNextOperation.setFieldValue(operation.getField("timeNextOperation"));
         } else {
@@ -79,7 +80,7 @@ public class NormService {
         FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
         FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
 
-        if (countRealizedOperation.getFieldValue().equals("02specified")) {
+        if ("02specified".equals(countRealizedOperation.getFieldValue())) {
             countMachineOperation.setEnabled(true);
         } else {
             countMachineOperation.setEnabled(false);
