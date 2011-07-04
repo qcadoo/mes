@@ -13,41 +13,45 @@
 	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="timeTechnologyInOrderDetails" modelName="timeTechnologyInOrder"
+	name="timeTechnologyInOrderDetails"
+	modelPlugin="orders"
+	modelName="order"
 	windowWidth="640"
-	windowHeight = "350"
-	>
+	windowHeight = "500">
 
 	<component type="window" name="window">
 		<ribbon>
-			<template name="standardFormTemplate" />
-			 <group name="timeOfTechnology"> 
-			 	<bigButton name="countTimeOfTechnology" icon="calculateTimeIcon24.png" 
-					action="#{form}.fireEvent(changeRealizationTime);"  /> 
-				<bigButton name="copyDateToMainForm"  
-					action="#{form}.fireEvent(copyDateToMainForm);" />
-			 </group> 
+			<template name="standardFormTemplate"  includeItems="navigation.back" />
+			<group name="timeOfTechnology"> 
+				<bigButton name="countTimeOfTechnology" icon="calculateTimeIcon24.png" 
+				action="#{form}.fireEvent(changeRealizationTime);"  /> 
+			<bigButton name="copyDateToMainForm" icon="saveIcon24.png"  
+				action="#{form}.performSave; #{window}.performBack;" />
+			</group> 
 		</ribbon>
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridsLayout" columns="1"
-				rows="4">
+				rows="7">
 				<layoutElement column="1" row="1">
-					<component type="input" name="quantity" field="quantity" reference="quantity" />
+					<component type="input" name="quantity" reference="quantity" field="plannedQuantity" />
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="calendar" name="startTime" field="startTime" 
-						reference="startTime" >
+					<component type="calendar" name="startTime" 
+						reference="startTime" field="dateFrom">
 						<option type="withTimePicker" value="true" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
-					<component type="time" name="realizationTime" field="realizationTime"
-						reference="realizationTime" />
+					<component type="time" name="realizationTime"
+						reference="realizationTime" field="realizationTime">
+						<listener event="initialize" class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService" method="clearFieldValue" />	
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="calendar" name="stopTime" field="stopTime"
-						reference="stopTime" >
+					<component type="calendar" name="stopTime"
+						reference="stopTime" field="dateTo" >
 						<option type="withTimePicker" value="true" />
+						<listener event="initialize" class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService" method="clearFieldValue" />
 					</component>
 				</layoutElement>
 			</component>

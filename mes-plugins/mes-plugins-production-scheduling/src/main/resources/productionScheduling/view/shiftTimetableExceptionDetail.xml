@@ -3,7 +3,7 @@
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="shiftTimetableExceptionDetail" 
-	modelName="shiftTimetableException">
+	modelName="shiftTimetableException" windowHeight="450">
 	
 	<component type="window" name="window">
 		<ribbon>
@@ -11,7 +11,7 @@
 		</ribbon>
 		<component type="form" name="shiftTimetableException" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="1"
-				rows="4">
+				rows="7">
 				<layoutElement column="1" row="1">
 					<component type="input" name="name" field="name" />
 				</layoutElement>

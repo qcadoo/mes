@@ -96,6 +96,9 @@ public class ShiftsGanttChartItemResolverImpl implements ShiftsGanttChartItemRes
         List<ShiftHour> list = new ArrayList<ShiftHour>();
 
         for (ShiftHour hour : hours) {
+            if (hour.getDateTo().compareTo(dateFrom) <= 0 || hour.getDateFrom().compareTo(dateTo) >= 0) {
+                continue;
+            }
             if (hour.getDateFrom().compareTo(dateFrom) >= 0 && hour.getDateTo().compareTo(dateTo) <= 0) {
                 list.add(hour);
             } else if (hour.getDateFrom().compareTo(dateFrom) < 0 && hour.getDateTo().compareTo(dateTo) > 0) {

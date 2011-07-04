@@ -61,7 +61,7 @@ public class ShiftsService {
 
     private static final long MAX_TIMESTAMP = new DateTime(2100, 1, 1, 0, 0, 0, 0).toDate().getTime();
 
-    private static final long MIN_TIMESTAMP = System.currentTimeMillis();
+    private static final long MIN_TIMESTAMP = new DateTime(2000, 1, 1, 0, 0, 0, 0).toDate().getTime();
 
     public Date findDateToForOrder(final Date dateFrom, final long seconds) {
         if (dataDefinitionService.get("productionScheduling", "shift").find().list().getTotalNumberOfEntities() == 0) {
