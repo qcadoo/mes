@@ -12,13 +12,14 @@
 			<group name="timeOfTechnology">
 				<bigButton name="countTimeOfTechnology" icon="calculateTimeIcon24.png"
 					action="#{window}.fireEvent(countTimeOfTechnology);" state="disabled" />
+				<bigButton name="new" action="#{window}.fireEvent(clearAllField);" />
 			</group>
 		</ribbon>
 		<component type="gridLayout" name="gridsLayout" columns="3"
 			rows="9">
 			<layoutElement column="1" row="1"> 
 				<component type="lookup" name="technology" reference="technology"
-							model="technology" plugin="technologies" required="true">
+							model="technology" plugin="technologies">
 							<option type="required" value="true"/>
 							<option type="column" name="name" fields="name" link="true"
 								width="200" />
@@ -27,8 +28,6 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-<!--							<listener event="onSelectedEntityChange"-->
-<!--							class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="selectOrder" />-->
 					<script><![CDATA[
 						var countTimeOfTechnology = #{window}.getRibbonItem("timeOfTechnology.countTimeOfTechnology");
 						window.setCountTimeOfTechnologyButtonState = function() {
@@ -58,7 +57,7 @@
 			</layoutElement>
 			<layoutElement column="1" row="2">
 				<component type="input" name="quantity" 
-					reference="quantity" defaultEnabled="true" required="true">
+					reference="quantity" defaultEnabled="true" >
 					<!-- <option type="required" value="true"/>-->
 					<script><![CDATA[
 						this.performUpdateState();
@@ -84,11 +83,13 @@
 			<layoutElement column="1" row="4">
 				<component type="time" name="realizationTime" 
 					reference="realizationTime" defaultEnabled="false" />
+<!--					<listener event="initialize" class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="clearFieldValue" />-->
 			</layoutElement>
 			<layoutElement column="1" row="5">
 				<component type="calendar" name="dateTo" 
 					reference="dateTo" defaultEnabled="false">
 					<option type="withTimePicker" value="true" />
+<!--					<listener event="initialize" class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="clearFieldValue" />-->
 				</component>
 			</layoutElement>
 

@@ -188,7 +188,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         return pathTime;
     }
 
-    private int estimateRealizationTimeForTechnologyOperation(final EntityTreeNode operationComponent,
+    public int estimateRealizationTimeForTechnologyOperation(final EntityTreeNode operationComponent,
             final BigDecimal plannedQuantity) {
         int operationTime = 0;
         int pathTime = 0;

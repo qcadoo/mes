@@ -235,9 +235,13 @@
 			view="timeTechnologyInOrderDetails" component="form" event="changeRealizationTime"
 			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService" method="changeRealizationTime" />
 			
-		<view:view-listener plugin="technologies"
-			view="technologyDetails" component="form" event="countTimeOfTechnology"
-			class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" method="countTimeOfTechnology" />
+		<view:view-listener plugin="productionScheduling"
+			view="orderTimePrediction" component="window" event="countTimeOfTechnology"
+			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="changeRealizationTime" />
+		
+		<view:view-listener plugin="productionScheduling"
+			view="orderTimePrediction" component="window" event="clearAllField"
+			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="clearAllField" />
 			
 		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
 			 method="disableRealizationTime"/>
