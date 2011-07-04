@@ -16,15 +16,9 @@ public interface OrderRealizationTimeService {
 
     void changeDateTo(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args);
 
-    void countTimeOfTechnology(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args);
-
-    void changeRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args);
-
     BigDecimal getBigDecimalFromField(final Object value, final Locale locale);
 
     int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity);
-
-    int estimateRealizationTimeForTechnologyOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity);
 
     Date getDateFromField(final Object value);
 
