@@ -100,7 +100,7 @@ public class OrderTimePredictionService {
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
 
-        maxPathTime = orderRealizationTimeService.estimateRealizationTimeForTechnologyOperation(
+        maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
                 technology.getTreeField("operationComponents").getRoot(),
                 orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
                         viewDefinitionState.getLocale()));
