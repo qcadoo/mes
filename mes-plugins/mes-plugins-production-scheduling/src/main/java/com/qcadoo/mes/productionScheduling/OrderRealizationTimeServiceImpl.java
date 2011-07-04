@@ -101,8 +101,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                         .getField("countMachine") : BigDecimal.ZERO).multiply(BigDecimal
                         .valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue();
             }
-            operationTime += getIntegerValue(operationComponent.getField("tpz"))
-                    + getIntegerValue(operationComponent.getField("timeNextOperation"));
+            operationTime += getIntegerValue(operationComponent.getField("tpz"));
 
             if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
                 operationComponent.setField("effectiveOperationRealizationTime", operationTime);
@@ -110,7 +109,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 operationComponent.getDataDefinition().save(operationComponent);
             }
 
-            pathTime += operationTime;
+            pathTime += operationTime + getIntegerValue(operationComponent.getField("timeNextOperation"));
             return pathTime;
         }
     }
