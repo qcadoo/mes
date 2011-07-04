@@ -23,7 +23,7 @@
 					<component type="label" name="alert" reference="alert" defaultVisible="true" />
 				</layoutElement>
 				<layoutElement column="1"  row="2">
-					<component type="time" name="realizationTime" field="#{form}.realizationTime" reference="realizationTime">
+					<component type="time" name="realizationTime" field="#{form}.realizationTime" reference="realizationTime" hasDescription="true" >
 						<option type="noHours" value="5" />
 					</component>
 				</layoutElement>
