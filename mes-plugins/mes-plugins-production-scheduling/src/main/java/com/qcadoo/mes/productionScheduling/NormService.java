@@ -18,18 +18,17 @@ public class NormService {
     public void updateFieldsStateOnWindowLoad(final ViewDefinitionState viewDefinitionState) {
         FieldComponent tpzNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
         FieldComponent tjNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
-        FieldComponent countRealizedNorm = (FieldComponent) viewDefinitionState.getComponentByReference("countRealizedNorm");
-        FieldComponent timeNextOperationNorm = (FieldComponent) viewDefinitionState
-                .getComponentByReference("timeNextOperationNorm");
-        Object value = countRealizedNorm.getFieldValue();
+        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
+        FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference("timeNextOperation");
+        Object value = countRealized.getFieldValue();
 
         tpzNorm.setEnabled(true);
         tjNorm.setEnabled(true);
-        countRealizedNorm.setEnabled(true);
+        countRealized.setEnabled(true);
         if (!"02specified".equals(value)) {
-            countRealizedNorm.setFieldValue("01all");
+            countRealized.setFieldValue("01all");
         }
-        timeNextOperationNorm.setEnabled(true);
+        timeNextOperation.setEnabled(true);
     }
 
     public void updateFieldsStateWhenDefaultValueCheckboxChanged(final ViewDefinitionState viewDefinitionState,
@@ -39,13 +38,13 @@ public class NormService {
 
     public void changeCountRealizedNorm(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FieldComponent countRealizedNorm = (FieldComponent) viewDefinitionState.getComponentByReference("countRealizedNorm");
-        FieldComponent countMachineNorm = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineNorm");
+        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
+        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
 
-        if (countRealizedNorm.getFieldValue().equals("02specified")) {
-            countMachineNorm.setEnabled(true);
+        if (countRealized.getFieldValue().equals("02specified")) {
+            countMachine.setEnabled(true);
         } else {
-            countMachineNorm.setEnabled(false);
+            countMachine.setEnabled(false);
         }
     }
 
@@ -53,10 +52,9 @@ public class NormService {
             final String[] args) {
         FieldComponent tpzNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
         FieldComponent tjNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
-        FieldComponent countRealizedNorm = (FieldComponent) viewDefinitionState.getComponentByReference("countRealizedNorm");
-        FieldComponent countMachineNorm = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineNorm");
-        FieldComponent timeNextOperationNorm = (FieldComponent) viewDefinitionState
-                .getComponentByReference("timeNextOperationNorm");
+        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
+        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
+        FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference("timeNextOperation");
 
         Long operationId = (Long) componentState.getFieldValue();
 
@@ -65,21 +63,21 @@ public class NormService {
         if (operation != null) {
             tpzNorm.setFieldValue(operation.getField("tpz"));
             tjNorm.setFieldValue(operation.getField("tj"));
-            countRealizedNorm.setFieldValue(operation.getField("countRealizedOperation"));
-            countMachineNorm.setFieldValue(operation.getField("countMachineOperation"));
-            timeNextOperationNorm.setFieldValue(operation.getField("timeNextOperation"));
+            countRealized.setFieldValue(operation.getField("countRealizedOperation"));
+            countMachine.setFieldValue(operation.getField("countMachineOperation"));
+            timeNextOperation.setFieldValue(operation.getField("timeNextOperation"));
         } else {
             tpzNorm.setFieldValue(null);
             tjNorm.setFieldValue(null);
-            countRealizedNorm.setFieldValue("01all");
-            countMachineNorm.setFieldValue(null);
-            timeNextOperationNorm.setFieldValue(null);
+            countRealized.setFieldValue("01all");
+            countMachine.setFieldValue(null);
+            timeNextOperation.setFieldValue(null);
         }
     }
 
     public void updateCountMachineOperationFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState.getComponentByReference("countRealizedNorm");
-        FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineNorm");
+        FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
+        FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
 
         if (countRealizedOperation.getFieldValue().equals("02specified")) {
             countMachineOperation.setEnabled(true);

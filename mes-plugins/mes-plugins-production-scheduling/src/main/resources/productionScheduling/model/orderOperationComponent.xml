@@ -38,7 +38,6 @@
 		<priority name="priority" scope="parent" />
 		<integer name="tpz" />
 		<integer name="tj" />
-		<boolean name="useMachineNorm" default="true" />
 		<enum name="countRealized" values="01all,02specified" default="01all" required="true" />
 		<decimal name="countMachine" />
 		<integer name="timeNextOperation" />

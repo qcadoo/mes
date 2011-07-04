@@ -27,23 +27,23 @@
 					reference="tj" defaultEnabled="false" />
 			</layoutElement>
 			<layoutElement column="1" row="3">
-				<component type="select" name="countRealizedNorm" field="#{form}.countRealizedNorm"
-					reference="countRealizedNorm" hasDescription="true" defaultEnabled="false">
+				<component type="select" name="countRealized" field="#{form}.countRealized"
+					reference="countRealized" hasDescription="true" defaultEnabled="false">
 					<option type="required" value="true" />
 					<listener event="onSelectedEntityChange"
 						class="com.qcadoo.mes.productionScheduling.NormService" method="changeCountRealizedNorm" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="4">
-				<component type="input" name="countMachineNorm" field="#{form}.countMachineNorm"
-					reference="countMachineNorm" hasDescription="true" defaultEnabled="false">
+				<component type="input" name="countMachine" field="#{form}.countMachine"
+					reference="countMachine" hasDescription="true" defaultEnabled="false">
 					<validatesLength max="7" />
 					<validatesPrecision max="3" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="5">
-				<component type="time" name="timeNextOperationNorm"
-					field="#{form}.timeNextOperationNorm" reference="timeNextOperationNorm"
+				<component type="time" name="timeNextOperation"
+					field="#{form}.timeNextOperation" reference="timeNextOperation"
 					hasDescription="true" defaultEnabled="false" />
 			</layoutElement>
 		</component>

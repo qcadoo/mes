@@ -94,10 +94,9 @@ public class NormOrderService {
         orderOperationComponent.setField("tpz", operationComponent.getField("tpz"));
         orderOperationComponent.setField("tj", operationComponent.getField("tj"));
         orderOperationComponent.setField("countRealized",
-                operationComponent.getField("countRealizedNorm") != null ? operationComponent.getField("countRealizedNorm")
-                        : "01all");
-        orderOperationComponent.setField("countMachine", operationComponent.getField("countMachineNorm"));
-        orderOperationComponent.setField("timeNextOperation", operationComponent.getField("timeNextOperationNorm"));
+                operationComponent.getField("countRealized") != null ? operationComponent.getField("countRealized") : "01all");
+        orderOperationComponent.setField("countMachine", operationComponent.getField("countMachine"));
+        orderOperationComponent.setField("timeNextOperation", operationComponent.getField("timeNextOperation"));
 
         List<Entity> newOrderOperationComponents = new ArrayList<Entity>();
 

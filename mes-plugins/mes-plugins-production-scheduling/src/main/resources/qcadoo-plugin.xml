@@ -58,16 +58,16 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:enum values="01all,02specified" name="countRealizedNorm"
+			<model:enum values="01all,02specified" name="countRealized"
 				default="01all" required="true"/>
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:decimal name="countMachineNorm" />
+			<model:decimal name="countMachine" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:integer name="timeNextOperationNorm" />
+			<model:integer name="timeNextOperation" />
 		</model:model-field>
 		<model:model-field plugin="orders"
 			model="order">
