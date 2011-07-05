@@ -33,7 +33,6 @@
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardFormTemplate"/>
-<!--			<template name="standardFormTemplate" excludeItems="actions.save, actions.copy, actions.saveNew"/>-->
 		</ribbon>
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="1"

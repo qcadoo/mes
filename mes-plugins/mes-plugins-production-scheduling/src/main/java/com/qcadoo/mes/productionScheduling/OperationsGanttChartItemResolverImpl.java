@@ -2,6 +2,7 @@ package com.qcadoo.mes.productionScheduling;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -66,6 +67,7 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
             scale.setDateTo(orderEndDate);
 
             Map<String, List<GanttChartItem>> items = new TreeMap<String, List<GanttChartItem>>();
+            Map<String, Integer> counters = new HashMap<String, Integer>();
 
             for (Entity operation : operations) {
                 Date dateFrom = (Date) operation.getField("effectiveDateFrom");
@@ -77,11 +79,19 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
 
                 String operationName = getDescriptionForOperarion(operation);
 
+                int counter = 0;
+
+                if (counters.containsKey(operationName)) {
+                    counter = counters.get(operationName) + 1;
+                    operationName += " (" + counter + ")";
+                }
+
                 GanttChartItem item = scale.createGanttChartItem(operationName, operationName, operation.getId(), dateFrom,
                         dateTo);
 
                 if (item != null) {
                     items.put(operationName, Collections.singletonList(item));
+                    counters.put(operationName, counter);
                 }
             }
 

@@ -5,7 +5,6 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,18 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
@@ -32,13 +22,9 @@ import com.qcadoo.view.api.components.FieldComponent;
 public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeService {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
     private ShiftsService shiftsService;
 
-    @Autowired
-    private TranslationService translationService;
+    private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 
     @Override
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -89,147 +75,43 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     @Override
-    public void countTimeOfTechnology(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
-        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
-
-        int maxPathTime = 0;
-        if (StringUtils.hasText((String) quantity.getFieldValue())) {
-            Long id = (Long) state.getFieldValue();
-            if (id != null) {
-                Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_TECHNOLOGY).get(id);
-                maxPathTime = estimateRealizationTimeForTechnologyOperation(technology.getTreeField("operationComponents")
-                        .getRoot(), getBigDecimalFromField(quantity.getFieldValue(), viewDefinitionState.getLocale()));
-            }
-            if (maxPathTime > MAX_REALIZATION_TIME) {
-                state.addMessage(
-                        translationService.translate("orders.validate.global.error.RealizationTimeIsToLong",
-                                viewDefinitionState.getLocale()), MessageType.FAILURE);
-            }
-        }
-        realizationTime.setFieldValue(maxPathTime);
-    }
-
-    @Override
     @Transactional
-    public void changeRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("plannedQuantity");
-        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
-        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
-
-        int maxPathTime = 0;
-        if (technology.getFieldValue() != null && StringUtils.hasText((String) plannedQuantity.getFieldValue())) {
-            Long orderId = (Long) state.getFieldValue();
-            if (orderId != null) {
-                Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                        orderId);
-                maxPathTime = estimateRealizationTimeForOperation(order.getTreeField("orderOperationComponents").getRoot(),
-                        getBigDecimalFromField(plannedQuantity.getFieldValue(), viewDefinitionState.getLocale()));
-            }
-            if (maxPathTime > MAX_REALIZATION_TIME) {
-                state.addMessage(
-                        translationService.translate("orders.validate.global.error.RealizationTimeIsToLong",
-                                viewDefinitionState.getLocale()), MessageType.FAILURE);
-            }
-        }
-        realizationTime.setFieldValue(maxPathTime);
-    }
-
-    @Override
     public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity) {
-        int operationTime = 0;
-        int pathTime = 0;
+        if (operationComponent.getField("entityType") != null
+                && !OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
+            return estimateRealizationTimeForOperation(
+                    operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot(),
+                    plannedQuantity);
+        } else {
+            int operationTime = 0;
+            int pathTime = 0;
 
-        for (EntityTreeNode child : operationComponent.getChildren()) {
-            int tmpPathTime = estimateRealizationTimeForOperation(child, plannedQuantity);
-            if (tmpPathTime > pathTime) {
-                pathTime = tmpPathTime;
-            }
-        }
-
-        if (operationComponent.getField("useMachineNorm") != null && (Boolean) operationComponent.getField("useMachineNorm")) {
-            DataDefinition machineInOrderOperationComponentDD = dataDefinitionService.get("productionScheduling",
-                    "machineInOrderOperationComponent");
-            List<Entity> machineComponents = machineInOrderOperationComponentDD.find()
-                    .add(SearchRestrictions.belongsTo("orderOperationComponent", operationComponent))
-                    .addOrder(SearchOrders.asc("priority")).list().getEntities();
-            for (Entity machineComponent : machineComponents) {
-                if ((Boolean) machineComponent.getField("isActive")) {
-                    operationComponent.setField("tj",
-                            (machineComponent.getField("parallel") != null ? (BigDecimal) machineComponent.getField("parallel")
-                                    : BigDecimal.ONE).multiply(BigDecimal.valueOf((Integer) machineComponent.getField("tj")))
-                                    .intValue());
-                    operationComponent.setField("tpz", machineComponent.getField("tpz"));
-                    break;
+            for (EntityTreeNode child : operationComponent.getChildren()) {
+                int tmpPathTime = estimateRealizationTimeForOperation(child, plannedQuantity);
+                if (tmpPathTime > pathTime) {
+                    pathTime = tmpPathTime;
                 }
             }
-        }
 
-        if ("01all".equals(operationComponent.getField("countRealized"))) {
-            operationTime = (plannedQuantity.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj")))))
-                    .intValue();
-        } else {
-            operationTime = ((operationComponent.getField("countMachine") != null ? (BigDecimal) operationComponent
-                    .getField("countMachine") : BigDecimal.ZERO).multiply(BigDecimal.valueOf(getIntegerValue(operationComponent
-                    .getField("tj"))))).intValue();
-        }
-        operationTime += getIntegerValue(operationComponent.getField("tpz"))
-                + getIntegerValue(operationComponent.getField("timeNextOperation"));
-
-        operationComponent.setField("effectiveOperationRealizationTime", operationTime);
-        operationComponent.setField("operationOffSet", pathTime);
-        DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
-        orderOperationComponentDD.save(operationComponent);
-
-        pathTime += operationTime;
-        return pathTime;
-    }
-
-    public int estimateRealizationTimeForTechnologyOperation(final EntityTreeNode operationComponent,
-            final BigDecimal plannedQuantity) {
-        int operationTime = 0;
-        int pathTime = 0;
-        // TODO KRNA maszyny
-
-        // TODO KRNA podtechnologie
-
-        for (EntityTreeNode child : operationComponent.getChildren()) {
-            int tmpPathTime = estimateRealizationTimeForTechnologyOperation(child, plannedQuantity);
-            if (tmpPathTime > pathTime) {
-                pathTime = tmpPathTime;
-            }
-        }
-
-        if (operationComponent.getField("useDefaultValue") != null && (Boolean) operationComponent.getField("useDefaultValue")) {
-            Entity operation = operationComponent.getBelongsToField("operation");
-            if ("01all".equals(operation.getField("countRealizedOperation"))) {
-                operationTime = (plannedQuantity.multiply(BigDecimal.valueOf(getIntegerValue(operation.getField("tj")))))
-                        .intValue();
-            } else {
-                operationTime = ((operation.getField("countMachineOperation") != null ? (BigDecimal) operation
-                        .getField("countMachineOperation") : BigDecimal.ZERO).multiply(BigDecimal
-                        .valueOf(getIntegerValue(operation.getField("tj"))))).intValue();
-            }
-            operationTime += getIntegerValue(operation.getField("tpz"))
-                    + getIntegerValue(operation.getField("timeNextOperation"));
-        } else {
-            if ("01all".equals(operationComponent.getField("countRealizedNorm"))) {
+            if ("01all".equals(operationComponent.getField("countRealized"))) {
                 operationTime = (plannedQuantity.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj")))))
                         .intValue();
             } else {
-                operationTime = ((operationComponent.getField("countMachineNorm") != null ? (BigDecimal) operationComponent
-                        .getField("countMachineNorm") : BigDecimal.ZERO).multiply(BigDecimal
+                operationTime = ((operationComponent.getField("countMachine") != null ? (BigDecimal) operationComponent
+                        .getField("countMachine") : BigDecimal.ZERO).multiply(BigDecimal
                         .valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue();
             }
-            operationTime += getIntegerValue(operationComponent.getField("tpz"))
-                    + getIntegerValue(operationComponent.getField("timeNextOperation"));
-        }
+            operationTime += getIntegerValue(operationComponent.getField("tpz"));
 
-        pathTime += operationTime;
-        return pathTime;
+            if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
+                operationComponent.setField("effectiveOperationRealizationTime", operationTime);
+                operationComponent.setField("operationOffSet", pathTime);
+                operationComponent.getDataDefinition().save(operationComponent);
+            }
+
+            pathTime += operationTime + getIntegerValue(operationComponent.getField("timeNextOperation"));
+            return pathTime;
+        }
     }
 
     private Integer getIntegerValue(final Object value) {

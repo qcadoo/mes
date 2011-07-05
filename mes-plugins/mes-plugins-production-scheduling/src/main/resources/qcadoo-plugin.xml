@@ -50,10 +50,6 @@
 
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:boolean name="useDefaultValue" default="true" />
-		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
 			<model:integer name="tpz" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -62,16 +58,18 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
+
 			<model:enum values="01all,02specified" name="countRealizedNorm"
 				default="01all" required="true" />
+
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:decimal name="countMachineNorm" />
+			<model:decimal name="countMachine" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:integer name="timeNextOperationNorm" />
+			<model:integer name="timeNextOperation" />
 		</model:model-field>
 		<model:model-field plugin="orders" model="order">
 			<model:integer name="realizationTime" />
@@ -83,6 +81,7 @@
 			<model:boolean name="calculate" />
 		</model:model-field>
 
+
 		<model:model-hook plugin="technologies"
 			model="technologyOperationComponent">
 			<model:onSave class="com.qcadoo.mes.productionScheduling.NormService"
@@ -93,6 +92,7 @@
 			<model:onSave class="com.qcadoo.mes.productionScheduling.NormService"
 				method="copyDefaultDataFromOperationToTechnology" />
 		</model:model-hook>
+
 		<model:model-field plugin="technologies" model="operation">
 			<model:integer name="tpz" />
 		</model:model-field>
@@ -113,31 +113,24 @@
 			<model:integer name="timeNextOperation" />
 		</model:model-field>
 
-		<view:view-hook view="operationDetails" type="beforeRender"
-			plugin="technologies" class="com.qcadoo.mes.productionScheduling.OperationService"
-			method="updateCountMachineOperationFieldStateonWindowLoad" />
+				
+		<view:view-hook view="operationDetails" type="beforeRender" plugin="technologies" 
+			class="com.qcadoo.mes.productionScheduling.OperationService" method="updateCountMachineOperationFieldStateonWindowLoad"/>
+			
+		<view:view-hook view="technologyOperationComponentDetails" type="beforeRender" plugin="technologies" class="com.qcadoo.mes.productionScheduling.NormService"
+			 method="updateCountMachineOperationFieldStateonWindowLoad"/>
+			 
+		<view:view-hook view="technologyOperationComponentDetails" type="beforeRender" plugin="technologies" class="com.qcadoo.mes.productionScheduling.NormService" 
+		method="updateFieldsStateOnWindowLoad"/>
+		
+		<view:view-hook view="operationDetails" type="beforeRender" plugin="technologies" class="com.qcadoo.mes.productionScheduling.OperationService" 
+		method="setCountRealizedOperationValue"/>
+		
+		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService" method="setVisibleAlert"/>
+		
+		<view:view-hook view="orderTimePrediction" type="beforeRender" plugin="productionScheduling" class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" 
+			method="setFieldDisable"/>
 
-		<view:view-hook view="technologyOperationComponentDetails"
-			type="beforeRender" plugin="technologies"
-			class="com.qcadoo.mes.productionScheduling.NormService" method="updateCountMachineOperationFieldStateonWindowLoad" />
-
-		<view:view-hook view="technologyOperationComponentDetails"
-			type="beforeRender" plugin="technologies"
-			class="com.qcadoo.mes.productionScheduling.NormService" method="updateFieldsStateOnWindowLoad" />
-
-		<view:view-hook view="operationDetails" type="beforeRender"
-			plugin="technologies" class="com.qcadoo.mes.productionScheduling.OperationService"
-			method="setCountRealizedOperationValue" />
-
-		<view:view-hook view="orderDetails" type="beforeRender"
-			plugin="orders"
-			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
-			method="setVisibleAlert" />
-
-		<view:view-hook view="orderTimePrediction" type="beforeRender"
-			plugin="productionScheduling"
-			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
-			method="setFieldDisable" />
 
 		<view:view-tab resource="view/tabExtensions/operationComponent.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
@@ -162,6 +155,7 @@
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
+		<view:view-ribbon-group resource="view/ribbonExtensions/operationComponent.xml" />
 		<view:view-listener plugin="orders" view="ordersList"
 			component="window" event="showGanttOrdersCalendar"
 			class="com.qcadoo.mes.productionScheduling.ShiftsService" method="showGanttOrdersCalendar" />
@@ -204,19 +198,16 @@
 
 		<view:view-listener plugin="productionScheduling"
 			view="orderTimePrediction" component="window" event="clearAllField"
-			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
-			method="clearAllField" />
 
-		<view:view-hook view="orderDetails" type="beforeRender"
-			plugin="orders"
-			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
-			method="disableRealizationTime" />
-
-		<!-- <view:view-listener plugin="technologies" view="technologyDetails" 
-			component="dateFrom" event="onChange" class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" 
-			method="changeDateTo" /> <view:view-listener plugin="technologies" view="technologyDetails" 
-			component="dateTo" event="onChange" class="com.qcadoo.mes.productionScheduling.OrderRealizationTimeService" 
-			method="changeDateFrom" /> -->
+			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="clearAllField" />
+			
+		<view:view-listener plugin="technologies" 
+			view="technologyOperationComponentDetails" component="operation" event="copyNormFromOperation"
+			class="com.qcadoo.mes.productionScheduling.NormService" method="copyNormFromOperation" />
+			
+		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
+			 method="disableRealizationTime"/>
+			
 
 	</modules>
 </plugin>

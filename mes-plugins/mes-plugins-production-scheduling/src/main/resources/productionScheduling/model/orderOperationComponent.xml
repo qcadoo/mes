@@ -36,26 +36,15 @@
 		<enum name="entityType" values="operation" required="true" default="operation" />	
 		<hasMany name="children" model="orderOperationComponent" joinField="parent" cascade="delete" copyable="true" />
 		<priority name="priority" scope="parent" />
-		<boolean name="useDefaultValue" default="true" />
 		<integer name="tpz" />
-		<string name="parentTpz" persistent="false" />
 		<integer name="tj" />
-		<string name="parentTj" persistent="false" />
-		<boolean name="useMachineNorm" default="true" />
-		<string name="parentUseMachineNorm" persistent="false" />
 		<enum name="countRealized" values="01all,02specified" default="01all" required="true" />
-		<string name="parentCountRealized" persistent="false" />
 		<decimal name="countMachine" />
-		<string name="parentCountMachine" persistent="false" />
 		<integer name="timeNextOperation" />
-		<string name="parentTimeNextOperation" persistent="false" />
 		<integer name="operationOffSet" />
 		<integer name="effectiveOperationRealizationTime" />
 		<datetime name="effectiveDateFrom" />
 		<datetime name="effectiveDateTo" />
 	</fields>
-	<hooks>
-		<validatesWith class="com.qcadoo.mes.productionScheduling.NormOrderService"
-			method="checkOperationRequiredFields" />
-	</hooks>
+	<hooks />
 </model>

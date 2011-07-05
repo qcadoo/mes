@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionScheduling;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,10 +96,15 @@ public class OrderTimePredictionService {
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
 
-        maxPathTime = orderRealizationTimeService.estimateRealizationTimeForTechnologyOperation(
-                technology.getTreeField("operationComponents").getRoot(),
-                orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
-                        viewDefinitionState.getLocale()));
+        BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
+                viewDefinitionState.getLocale());
+
+        if (quantity.intValue() < 0) {
+            return;
+        }
+
+        maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
+                technology.getTreeField("operationComponents").getRoot(), quantity);
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage(
@@ -110,7 +116,10 @@ public class OrderTimePredictionService {
             realizationTime.setFieldValue(maxPathTime);
             Date startTime = orderRealizationTimeService.getDateFromField(dateFrom.getFieldValue());
             Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
-            startTime = shiftsService.findDateFromForOrder(stopTime, maxPathTime);
+
+            if (stopTime != null) {
+                startTime = shiftsService.findDateFromForOrder(stopTime, maxPathTime);
+            }
 
             if (startTime != null) {
                 dateFrom.setFieldValue(orderRealizationTimeService.setDateToField(startTime));
