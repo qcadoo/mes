@@ -81,7 +81,12 @@ public class TimeTechnologyInOrderService {
 
             Date dateFrom = orderRealizationTimeService.getDateFromField(startTime.getFieldValue());
             Date dateTo = shiftsService.findDateToForOrder(dateFrom, maxPathTime);
-            dateFrom = shiftsService.findDateFromForOrder(dateTo, maxPathTime);
+
+            if (dateTo != null) {
+                dateFrom = shiftsService.findDateFromForOrder(dateTo, maxPathTime);
+            } else {
+                dateFrom = null;
+            }
 
             if (dateFrom != null) {
                 startTime.setFieldValue(orderRealizationTimeService.setDateToField(dateFrom));

@@ -110,7 +110,12 @@ public class OrderTimePredictionService {
             realizationTime.setFieldValue(maxPathTime);
             Date startTime = orderRealizationTimeService.getDateFromField(dateFrom.getFieldValue());
             Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
-            startTime = shiftsService.findDateFromForOrder(stopTime, maxPathTime);
+
+            if (stopTime != null) {
+                startTime = shiftsService.findDateFromForOrder(stopTime, maxPathTime);
+            } else {
+                startTime = null;
+            }
 
             if (startTime != null) {
                 dateFrom.setFieldValue(orderRealizationTimeService.setDateToField(startTime));
