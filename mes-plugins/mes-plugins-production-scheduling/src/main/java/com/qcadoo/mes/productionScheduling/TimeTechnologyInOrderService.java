@@ -1,10 +1,12 @@
 package com.qcadoo.mes.productionScheduling;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -55,9 +57,20 @@ public class TimeTechnologyInOrderService {
         FieldComponent stopTime = (FieldComponent) viewDefinitionState.getComponentByReference("stopTime");
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
 
-        if (plannedQuantity.getFieldValue() == null || startTime.getFieldValue() == null) {
+        if (!StringUtils.hasText((String) plannedQuantity.getFieldValue())
+                || !StringUtils.hasText((String) startTime.getFieldValue())) {
             realizationTime.setFieldValue(null);
             stopTime.setFieldValue(null);
+            return;
+        }
+
+        BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
+                viewDefinitionState.getLocale());
+
+        if (quantity.intValue() < 0) {
+            realizationTime.setFieldValue(null);
+            stopTime.setFieldValue(null);
+            return;
         }
 
         int maxPathTime = 0;
@@ -84,8 +97,6 @@ public class TimeTechnologyInOrderService {
 
             if (dateTo != null) {
                 dateFrom = shiftsService.findDateFromForOrder(dateTo, maxPathTime);
-            } else {
-                dateFrom = null;
             }
 
             if (dateFrom != null) {
