@@ -29,12 +29,6 @@ public class NormOrderService {
     @Autowired
     private ShiftsService shiftsService;
 
-    private void checkRequiredField(final Entity entity, final String field) {
-        if (entity.getField(field) == null) {
-            entity.addError(entity.getDataDefinition().getField(field), "qcadooView.validate.field.error.missing");
-        }
-    }
-
     @Transactional
     public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity entity) {
         DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
