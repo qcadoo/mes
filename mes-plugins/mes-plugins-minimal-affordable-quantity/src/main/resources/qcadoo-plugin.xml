@@ -45,15 +45,15 @@
 			<model:string name="minimalQuantity"/>
 		</model:model-field>
 		
-<!--		<model:model-hook plugin="orders" model="order" >-->
-<!--			<model:onUpdate class="com.qcadoo.mes.minimalAffordableQuantity.QuantityService" method="checkMinimalAffordableQuantity"/>-->
-<!--		</model:model-hook>-->
+		<model:model-hook plugin="orders" model="order" >
+			<model:onUpdate class="com.qcadoo.mes.minimalAffordableQuantity.QuantityService" method="checkMinimalAffordableQuantity"/>
+		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/minimalAffordableQuantity.xml"/>
 
-		<view:view-hook view="technologyDetails"
-			type="beforeRender" plugin="technologies"
-			class="com.qcadoo.mes.minimalAffordableQuantity.QuantityService" method="checkMinimalAffordableQuantity" />
+<!--		<view:view-hook view="technologyDetails"-->
+<!--			type="beforeRender" plugin="technologies"-->
+<!--			class="com.qcadoo.mes.minimalAffordableQuantity.QuantityService" method="checkMinimalAffordableQuantity" />-->
 
 
 	</modules>
