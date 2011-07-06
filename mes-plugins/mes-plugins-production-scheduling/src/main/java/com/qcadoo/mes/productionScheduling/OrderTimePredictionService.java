@@ -6,6 +6,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -82,26 +83,31 @@ public class OrderTimePredictionService {
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
         FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
 
-        if (plannedQuantity.getFieldValue() == null || dateFrom.getFieldValue() == null) {
+        if (!StringUtils.hasText((String) plannedQuantity.getFieldValue())
+                || !StringUtils.hasText((String) dateFrom.getFieldValue())) {
             realizationTime.setFieldValue(null);
             dateTo.setFieldValue(null);
         }
-
-        int maxPathTime = 0;
-
-        if (technologyLookup.getFieldValue() == null) {
-            return;
-        }
-
-        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
 
         BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
                 viewDefinitionState.getLocale());
 
         if (quantity.intValue() < 0) {
+            realizationTime.setFieldValue(null);
+            dateTo.setFieldValue(null);
             return;
         }
+
+        int maxPathTime = 0;
+
+        if (technologyLookup.getFieldValue() == null) {
+            realizationTime.setFieldValue(null);
+            dateTo.setFieldValue(null);
+            return;
+        }
+
+        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
 
         maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
                 technology.getTreeField("operationComponents").getRoot(), quantity);
