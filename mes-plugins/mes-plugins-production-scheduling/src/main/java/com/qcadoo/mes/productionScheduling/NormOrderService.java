@@ -202,13 +202,14 @@ public class NormOrderService {
         countRealized.setRequired(true);
 
         if ("02specified".equals(countRealized.getFieldValue())) {
+            countMachine.setVisible(true);
             countMachine.setEnabled(true);
             countMachine.setRequired(true);
             if (countMachine.getFieldValue() == null || !StringUtils.hasText(String.valueOf(countMachine.getFieldValue()))) {
                 countMachine.setFieldValue("1");
             }
         } else {
-            countMachine.setEnabled(false);
+            countMachine.setVisible(false);
             countMachine.setRequired(false);
         }
 

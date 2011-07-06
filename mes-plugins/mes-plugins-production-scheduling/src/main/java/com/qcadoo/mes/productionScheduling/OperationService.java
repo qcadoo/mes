@@ -17,9 +17,9 @@ public class OperationService {
                 .getComponentByReference("countMachineOperation");
 
         if (countRealizedOperation.getFieldValue().equals("02specified")) {
-            countMachineOperation.setEnabled(true);
+            countMachineOperation.setVisible(true);
         } else {
-            countMachineOperation.setEnabled(false);
+            countMachineOperation.setVisible(false);
         }
 
     }
@@ -34,9 +34,10 @@ public class OperationService {
         countRealizedOperation.setRequired(true);
 
         if (countRealizedOperation.getFieldValue().equals("02specified")) {
+            countMachineOperation.setVisible(true);
             countMachineOperation.setEnabled(true);
         } else {
-            countMachineOperation.setEnabled(false);
+            countMachineOperation.setVisible(false);
         }
 
     }

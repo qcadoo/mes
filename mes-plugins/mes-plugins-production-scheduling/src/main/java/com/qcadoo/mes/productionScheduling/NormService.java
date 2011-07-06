@@ -42,9 +42,10 @@ public class NormService {
         FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
 
         if (countRealized.getFieldValue().equals("02specified")) {
+            countMachine.setVisible(true);
             countMachine.setEnabled(true);
         } else {
-            countMachine.setEnabled(false);
+            countMachine.setVisible(false);
         }
     }
 
@@ -81,9 +82,10 @@ public class NormService {
         FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
 
         if ("02specified".equals(countRealizedOperation.getFieldValue())) {
+            countMachineOperation.setVisible(true);
             countMachineOperation.setEnabled(true);
         } else {
-            countMachineOperation.setEnabled(false);
+            countMachineOperation.setVisible(false);
         }
     }
 
