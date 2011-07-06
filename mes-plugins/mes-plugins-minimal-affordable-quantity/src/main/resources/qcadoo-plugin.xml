@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="minimalAffordableQuantity" version="0.4.4"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:report="http://schema.qcadoo.org/modules/report"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/report
+       http://schema.qcadoo.org/modules/report.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
+
+	<information>
+		<name>MES - Minimal affordable quantity</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+
+	<dependencies>
+		<dependency>
+			<plugin>technologies</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+		<dependency>
+			<plugin>ordes</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+	
+	<modules>
+		<localization:translation path="locales" />
+
+		<model:model-field plugin="technologies" model="technology">
+			<model:decimal name="minimalQuantity">
+				<model:validatesLength max="7"/>
+				<model:validatesPrecision max="3"/>
+			</model:decimal>			
+		</model:model-field>
+		
+<!--		<model:model-hook plugin="orders" model="order" >-->
+<!--			<model:onSave class="com.qcadoo.mes.minimalAffordableQuantity.QuantityService" method="checkMinimalAffordableQuantity"/>-->
+<!--		</model:model-hook>-->
+
+		<view:view-tab resource="view/tabExtensions/minimalAffordableQuantity.xml"/>
+
+		<view:view-listener plugin="orders" view="orderDetails" component="form" 
+			event="save" class="com.qcadoo.mes.minimalAffordableQuantity.QuantityService" method="checkMinimalAffordableQuantity" />
+
+	</modules>
+
+</plugin>
