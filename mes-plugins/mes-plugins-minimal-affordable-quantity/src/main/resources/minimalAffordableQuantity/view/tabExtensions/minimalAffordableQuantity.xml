@@ -21,9 +21,10 @@
 		<component type="gridLayout" name="gridLayout" columns="3"
 			rows="3">
 			<layoutElement column="1" row="1">
-				<component type="input" name="minimalQuantity" reference="minimalQuantity" field="minimalQuantity"/>
+				<component type="input" name="minimalQuantity" reference="minimalQuantity" field="#{form}.minimalQuantity">
+					
+				</component>
 			</layoutElement>
-			
 		</component>
 	</windowTab>
 </windowTabExtension>
