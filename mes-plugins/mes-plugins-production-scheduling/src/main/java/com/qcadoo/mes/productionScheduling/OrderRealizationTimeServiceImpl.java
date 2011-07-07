@@ -116,7 +116,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 }
             }
 
-            if ("01all".equals(operationComponent.getField("countRealized"))) {
+            if ("01all".equals(operationComponent.getField("countRealized"))
+                    || operationComponent.getBelongsToField("parent") == null) {
                 operationTime = (plannedQuantity.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj")))))
                         .intValue();
             } else {
