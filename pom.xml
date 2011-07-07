@@ -5,7 +5,7 @@
 
 	<groupId>com.qcadoo.mes</groupId>
 	<artifactId>mes</artifactId>
-	<version>0.4.3</version>
+	<version>0.4.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Qcadoo MES</name>
