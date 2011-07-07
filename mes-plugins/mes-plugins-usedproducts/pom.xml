@@ -6,7 +6,7 @@
 	<parent>
 	    <artifactId>mes-plugins</artifactId>
 	    <groupId>com.qcadoo.mes</groupId>
-	    <version>0.4.3</version>
+	    <version>0.4.4-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mes-plugins-usedproducts</artifactId>
@@ -18,12 +18,12 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-orders</artifactId>
-			<version>0.4.3</version>
+			<version>0.4.4-SNAPSHOT</version>
 		</dependency>		
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-material-requirements</artifactId>
-			<version>0.4.3</version>
+			<version>0.4.4-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
