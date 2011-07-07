@@ -15,11 +15,6 @@
 	<name>Qcadoo MES :: Plugins :: Minimal affordable quantity</name>
 	<version>0.4.3-SNAPSHOT</version>
 
-	<properties>
-		<qcadoo.version>0.4.3-SNAPSHOT</qcadoo.version>
-	</properties>
-
-
 	<build>
 		<plugins>
 			<plugin>
