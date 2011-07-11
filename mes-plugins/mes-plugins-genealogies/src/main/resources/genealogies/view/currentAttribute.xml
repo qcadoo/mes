@@ -39,7 +39,12 @@
 		<component type="form" name="currentAttribute" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="3" rows="4" hasBorders="false">
 				<layoutElement column="1" row="1">
-					<component type="select" name="shift" field="shift" />
+					<component type="lookup" name="shift" reference="shift" field="shift">
+						<option type="fieldCode" value="name" />
+						<option type="expression" value="#name" />
+						<option type="searchable" value="name" />
+						<option type="orderable" value="name" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="select" name="post" field="post" />

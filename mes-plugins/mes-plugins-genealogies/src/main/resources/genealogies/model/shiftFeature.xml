@@ -28,9 +28,10 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<dictionary name="value" dictionary="shifts" required="true">
-			<validatesLength max="255" />
-		</dictionary>
+		<belongsTo name="value" model="shift" plugin="productionScheduling" />
+<!-- 		<dictionary name="value" dictionary="shifts" required="true"> -->
+<!-- 			<validatesLength max="255" /> -->
+<!-- 		</dictionary> -->
 		<date name="date" readonly="true" />
 		<string name="worker" readonly="true" />
 		<string name="workerAndDate" expression="#worker + ' (' + #date + ')'"
