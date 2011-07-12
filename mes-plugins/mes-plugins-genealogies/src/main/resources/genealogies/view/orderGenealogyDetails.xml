@@ -41,8 +41,7 @@
 								<component type="gridLayout" name="gridLayout"
 									columns="1" rows="2" fixedRowHeight="false">
 									<layoutElement column="1" row="1">
-<!-- 										<component type="select" name="value" field="value" /> -->
-											<component type="lookup" name="value" reference="value"
+										<component type="lookup" name="value" reference="value"
 												field="value">
 											<option type="fieldCode" value="name" />
 											<option type="expression" value="#name" />
