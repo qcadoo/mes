@@ -54,25 +54,28 @@ public class QuantityService {
         ComponentState form = (ComponentState) viewDefinitionState.getComponentByReference("form");
         FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
         FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("plannedQuantity");
-        Entity technology = dataDefinitionService.get("technologies", "technology").get((Long) technologyLookup.getFieldValue());
+        if (technologyLookup.getFieldValue() != null) {
+            Entity technology = dataDefinitionService.get("technologies", "technology").get(
+                    (Long) technologyLookup.getFieldValue());
 
-        if (technology == null || technology.getId() == null) {
-            return;
-        }
-        Entity technologyEntity = dataDefinitionService.get("technologies", "technology").get(technology.getId());
-        if (technologyEntity.getField("minimalQuantity") == null) {
-            return;
-        } else {
-            BigDecimal plannedQuantityBigDecFormat = getBigDecimalFromField(plannedQuantity.getFieldValue(),
-                    viewDefinitionState.getLocale());
-            BigDecimal technologyBigDecimal = getBigDecimalFromField(technologyEntity.getField("minimalQuantity"),
-                    viewDefinitionState.getLocale());
+            if (technology == null || technology.getId() == null) {
+                return;
+            }
+            Entity technologyEntity = dataDefinitionService.get("technologies", "technology").get(technology.getId());
+            if (technologyEntity.getField("minimalQuantity") == null) {
+                return;
+            } else {
+                BigDecimal plannedQuantityBigDecFormat = getBigDecimalFromField(plannedQuantity.getFieldValue(),
+                        viewDefinitionState.getLocale());
+                BigDecimal technologyBigDecimal = getBigDecimalFromField(technologyEntity.getField("minimalQuantity"),
+                        viewDefinitionState.getLocale());
 
-            if (plannedQuantityBigDecFormat.compareTo(technologyBigDecimal) < 0) {
+                if (plannedQuantityBigDecFormat.compareTo(technologyBigDecimal) < 0) {
 
-                form.addMessage(
-                        translationService.translate("orders.order.report.minimalQuantity", viewDefinitionState.getLocale()),
-                        MessageType.INFO, false);
+                    form.addMessage(
+                            translationService.translate("orders.order.report.minimalQuantity", viewDefinitionState.getLocale()),
+                            MessageType.INFO, false);
+                }
             }
         }
 
