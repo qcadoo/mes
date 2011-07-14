@@ -85,9 +85,9 @@ public class SamplesLoaderModule extends Module {
             "bom_name", "product_nr" };
 
     private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr",
-            "algorithm" };
+            "algorithm", "minimal" };
 
-    private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number" };
+    private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number", "tpz", "tj" };
 
     private static final String[] MACHINE_ATTRIBUTES = new String[] { "id", "name", "prod_line", "description" };
 
@@ -280,6 +280,11 @@ public class SamplesLoaderModule extends Module {
 
         operation.setField("name", values.get("name"));
         operation.setField("number", values.get("number"));
+        /* Albr */
+        operation.setField("tpz", values.get("tpz"));
+        operation.setField("tj", values.get("tj"));
+        operation.setField("countRealized", values.get("countRealized"));
+        /* Albr */
         operation.setField("machine", getMachine(values.get("number")));
         operation.setField("staff", getRandomStaff());
 
@@ -538,6 +543,9 @@ public class SamplesLoaderModule extends Module {
             technology.setField("postFeatureRequired", false);
             technology.setField("otherFeatureRequired", false);
             technology.setField("shiftFeatureRequired", false);
+            if (!values.get("minimal").isEmpty()) {
+                technology.setField("minimalQuantity", values.get("minimal"));
+            }
             if (!values.get("algorithm").isEmpty()) {
                 technology.setField("componentQuantityAlgorithm", values.get("algorithm"));
             }
@@ -694,6 +702,9 @@ public class SamplesLoaderModule extends Module {
         component.setField("parent", parent);
         component.setField("operation", operation);
         component.setField("entityType", "operation");
+        component.setField("tpz", operation.getField("tpz"));
+        component.setField("tj", operation.getField("tj"));
+        component.setField("countRealized", operation.getField("countRealized"));
 
         component = dataDefinitionService.get("technologies", "technologyOperationComponent").save(component);
         if (!component.isValid()) {
