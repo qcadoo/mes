@@ -292,6 +292,7 @@
 						<configuration>
 							<jdbcDriver>${basedir}/driver/postgresql-8.4-701.jdbc4.jar</jdbcDriver>
 							<configuration>${basedir}/conf/${profile.name}/</configuration>
+                                                        <rootFilesDirectory>${basedir}/root/</rootFilesDirectory>
 						</configuration>
 						<executions>
 							<execution>

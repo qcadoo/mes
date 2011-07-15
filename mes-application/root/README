@@ -1,0 +1,59 @@
+qcadoo MES - open source modular manufacturing management system
+
+website: www.qcadoo.com
+authors: Qcadoo Limited and the projects Community
+email: welcome@qcadoo.com
+
+== Installation == 
+
+qcadoo MES is a server web application. Because of this it's not trivial
+to install but once you do it then everyone in your local network will have
+access to the system through a browser.
+
+The installation process requires some basic technical skills. Please read the
+Installation Guide:
+http://wiki.qcadoo.org/display/QCDMESDOC/Installation+Guide
+if you need step by step instructions how to install
+qcadoo MES in to your LAN network
+
+If you would just like to start working with qcadoo MES and not worry about
+the systems configuration, updates and backups then we recommend to buy it as
+a hosted internet application from Qcadoo in the Software as a Service model
+(called SaaS in short). Please see the How to buy page:
+http://www.qcadoo.com/en/how-to-buy.html
+for more details.
+
+== More information ==
+
+Read more about qcadoo MES functionality on the web site:
+http://www.qcadoo.com/en/features.html
+and in the User Documentation:
+http://wiki.qcadoo.org/display/QCDMESUSRDOC/English
+
+If you need any help please feel free to ask questions on out forum:
+http://forum.qcadoo.org
+or report bugs and feature requests on our issue tracker:
+http://issues.qcadoo.org
+You can also plan new modules with us on the blueprints wiki:
+http://wiki.qcadoo.org/display/QCDMESBLP/Home
+
+If you would like to learn how to program modules for qcadoo MES please have a
+look at the Developers Documentation:
+http://wiki.qcadoo.org/display/QCDMESDOC/Home
+
+== News ==
+
+Technical blog:
+http://blog.qcadoo.com/tech
+
+Product blog:
+http://blog.qcadoo.com/
+
+Twitter:
+http://twitter.com/qcadoo
+
+Facebook:
+http://www.facebook.com/qcadoo
+
+
+
