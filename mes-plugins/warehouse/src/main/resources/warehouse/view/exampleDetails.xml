@@ -1,0 +1,19 @@
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+        name="exampleDetails" modelName="example">
+
+        <component type="window" name="window">
+            <ribbon>
+                <group template="navigation" />
+                <group template="formSaveCopyAndRemoveActions" />
+            </ribbon>
+            <component type="form" name="form" reference="form">
+                <component type="input" name="example" field="example" />
+                
+                <option type="header" value="false" />
+            </component>
+        </component>
+        <hooks>
+           
+        </hooks>
+</view>

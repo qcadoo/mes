@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="transfer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/model"
+    xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="resource" model="resource" required="true">
+        </belongsTo>
+        <decimal name="quantity" required="true">
+            <validatesRange from="0" />
+        </decimal>
+        <enum name="type" values="receive,delivery" required="true">
+        </enum>
+        <enum name="status" values="pending,closed" required="true">
+        </enum>
+        <string name="requestWorker" readonly="true" />
+        <string name="confirmWorker" readonly="true" />
+        <datetime name="requestDate" readonly="true" />
+        <datetime name="confirmDate" readonly="true" />
+    </fields>
+    <hooks>
+        <onSave class="com.warehousecorporation.warehouse.WarehouseService" method="setWorkersDatesAndResourceQuantity" />
+        <validatesWith class="com.warehousecorporation.warehouse.WarehouseService" method="checkIfHasEnoughtQuantity" />
+    </hooks>
+</model>

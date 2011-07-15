@@ -82,7 +82,7 @@ public class SamplesLoaderModule extends Module {
 
     private static final String[] ORDER_ATTRIBUTES = new String[] { "scheduled_start_date", "scheduled_end_date",
             "quantity_completed", "started_date", "finished_date", "name", "order_nr", "quantity_scheduled", "machine_nr",
-            "bom_name", "product_nr" };
+            "bom_name", "product_nr", "effective_started_date" };
 
     private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr",
             "algorithm", "minimal" };
@@ -448,37 +448,10 @@ public class SamplesLoaderModule extends Module {
             }
         }
 
-        long effectiveStartDate = startDate + MILLIS_IN_DAY * (RANDOM.nextInt(10) - 5);
-
-        if (!values.get("started_date").isEmpty()) {
-            try {
-                effectiveStartDate = FORMATTER.parse(values.get("started_date")).getTime();
-            } catch (ParseException e) {
-                LOG.warn(e.getMessage(), e);
-            }
-        }
-
-        long effectiveEndDate = effectiveStartDate + (MILLIS_IN_DAY * RANDOM.nextInt(50));
-
-        if (!values.get("finished_date").isEmpty()) {
-            try {
-                effectiveEndDate = FORMATTER.parse(values.get("finished_date")).getTime();
-            } catch (ParseException e) {
-                LOG.warn(e.getMessage(), e);
-            }
-        }
-
         Entity order = dataDefinitionService.get("orders", "order").create();
         order.setField("dateFrom", new Date(startDate));
         order.setField("dateTo", new Date(endDate));
-        order.setField("doneQuantity", values.get("quantity_completed").isEmpty() ? new BigDecimal(100 * RANDOM.nextDouble())
-                : new BigDecimal(values.get("quantity_completed")));
-        if (Integer.parseInt(order.getField("doneQuantity").toString()) == 0) {
-            order.setField("doneQuantity", null);
-        }
-        order.setField("effectiveDateFrom", new Date(effectiveStartDate));
-        order.setField("effectiveDateTo", new Date(effectiveEndDate));
-        order.setField("endWorker", getRandomUser().getField("userName"));
+
         order.setField("technology", getTechnologyByName(values.get("bom_name")));
         order.setField("name",
                 (values.get("name").isEmpty() || values.get("name") == null) ? values.get("order_nr") : values.get("name"));
@@ -488,16 +461,8 @@ public class SamplesLoaderModule extends Module {
         if (Integer.parseInt(order.getField("plannedQuantity").toString()) == 0) {
             order.setField("plannedQuantity", null);
         }
-        order.setField("startWorker", getRandomUser().getField("userName"));
 
-        String state = (RANDOM.nextDouble() > 0.4) ? "02inProgress" : "01pending";
-
-        order.setField("state", state);
-
-        if ("01pending".equals(state)) {
-            order.setField("endWorker", null);
-            order.setField("effectiveDateTo", null);
-        }
+        order.setField("state", "01pending");
 
         Entity product = getProductByNumber(values.get("product_nr"));
 

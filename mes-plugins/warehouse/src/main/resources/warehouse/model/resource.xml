@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="resource"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/model"
+    xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" required="true" unique="true">
+        </string>
+        <belongsTo name="product" model="product" plugin="basic">
+        </belongsTo>
+        <decimal name="quantity" />
+        <hasMany name="transfers" model="transfer" joinField="resource" />
+    </fields>
+    <hooks>
+    </hooks>
+    <identifier expression="#number" />
+</model>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+    xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+        name="correctionDetails" modelName="correction">
+        <component type="window" name="window">
+            <ribbon>
+                <group template="navigation" />
+                <group template="formSaveCopyAndRemoveActions" />
+            </ribbon>
+            <component type="form" name="form" reference="form">
+            	<component type="input" name="number" field="number" />
+            	<component type="calendar" name="date" field="date" />
+                <component type="lookup" name="warehouse" field="warehouse">
+                 	<option type="searchable" value="name" />
+                    <option type="orderable" value=" name" />
+                    <option type="fullScreen" value="true" />
+                    <option type="expression" value="#name" />
+                    <option type="fieldCode" value="name" />
+                </component>
+                 <component type="lookup" name="product" field="product">
+                 	<option type="searchable" value="name" />
+                    <option type="orderable" value=" name" />
+                    <option type="fullScreen" value="true" />
+                    <option type="expression" value="#name" />
+                    <option type="fieldCode" value="name" />
+                </component>
+                <component type="input" name="shouldBe" field="shouldBe" />
+                <component type="input" name="found" field="found" />
+                 <component type="lookup" name="staff" field="staff">
+                 	<option type="searchable" value="name" />
+                    <option type="orderable" value=" name" />
+                    <option type="fullScreen" value="true" />
+                    <option type="expression" value="#name" />
+                    <option type="fieldCode" value="name" />
+                </component>
+
+                <option type="header" value="false" />
+            </component>
+        </component>
+ </view>

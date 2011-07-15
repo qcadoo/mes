@@ -1,0 +1,28 @@
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+        name="resourceDetails" modelName="resource">
+
+        <component type="window" name="window">
+            <ribbon>
+                <group template="navigation" />
+                <group template="formSaveCopyAndRemoveActions" />
+            </ribbon>
+            <component type="form" name="form" reference="form">
+                <component type="input" name="number" field="number" />
+                <component type="lookup" name="product" field="product">
+                    <option type="column" name="name" fields="name" link="true" />
+                    <option type="searchable" value="name,category" />
+                    <option type="orderable" value="name,category" />
+                    <option type="fullScreen" value="true" />
+                    <option type="expression" value="#name" />
+                    <option type="fieldCode" value="number" />
+                </component>
+                <component type="input" name="quantity" field="quantity" reference="quantity" enabled="false" />
+                <option type="expression" value="#quantity + ' x ' + #number + ' (' + #product['name'] + ')'" />
+                <option type="header" value="false" />
+            </component>
+        </component>
+        <hooks>
+            <beforeRender class="com.warehousecorporation.warehouse.WarehouseService" method="setResourceInitialQuantity" />
+        </hooks>
+</view>

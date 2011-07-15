@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="inventory" version="0.1.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd">
+
+	<information>
+		<name>Inventory Module</name>
+		<vendor>
+			<name>Qcadoo Community</name>
+			<url>http://www.qcadoo.com</url>
+		</vendor>
+	</information>
+
+
+	<modules>
+		<localization:translation path="locales" />
+		
+		<model:model model="transfer" resource="model/transfer.xml" />
+		<model:model model="inventory" resource="model/inventory.xml"/>
+		<model:model model="warehouse" resource="model/warehouse.xml"/>
+		<model:model model="correction" resource="model/correction.xml"/>
+		
+		<menu:menu-category name="inventory" />
+
+		<menu:menu-item name="transfers" category="inventory"
+			view="transfers" />
+		<menu:menu-item name="corrections" category="inventory"
+			view="corrections" />
+		<menu:menu-item name="inventory" category="inventory"
+			view="inventory" />
+
+        <view:view resource="view/transferDetails.xml" />
+		<view:view resource="view/transfers.xml" />
+		<view:view resource="view/corrections.xml" />
+		<view:view resource="view/correctionDetails.xml"/>
+		<view:view resource="view/inventoriesList.xml" />
+		
+		<view:resource uri="public/**/*" />
+
+	</modules>
+
+</plugin>
