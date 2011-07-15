@@ -90,12 +90,7 @@
 			<artifactId>mes-plugins-minimal-affordable-quantity</artifactId>
 			<version>0.4.4-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>warehouse</artifactId>
-			<version>0.4.4-SNAPSHOT</version>
-		</dependency>
-
+		
 		<!-- TODO develop purpose only -->
 		<!--<dependency> <groupId>com.qcadoo.mes</groupId> <artifactId>mes-commercial-plugins-integration-commons</artifactId> 
 			<version>1.0.0</version> </dependency> <dependency> <groupId>com.qcadoo.mes</groupId> 
