@@ -36,7 +36,6 @@
         
         <model:model model="resource" resource="model/resource.xml" />
         <model:model model="transfer" resource="model/transfer.xml" />
-        <model:model model="example" resource="model/example.xml" />
         
         <menu:menu-category name="warehouse" />
 
@@ -49,7 +48,6 @@
         <view:view resource="view/resourceDetails.xml" />
         <view:view resource="view/transferList.xml"/>
         <view:view resource="view/transferDetails.xml" />
-        <view:view resource="view/exampleDetails.xml" />
         
         <view:resource uri="public/**/*" />
 
