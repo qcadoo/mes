@@ -42,7 +42,7 @@
 									columns="1" rows="2" fixedRowHeight="false">
 									<layoutElement column="1" row="1">
 										<component type="lookup" name="value" reference="value"
-												field="value">
+												field="value" hasLabel="false">
 											<option type="fieldCode" value="name" />
 											<option type="expression" value="#name" />
 											<option type="searchable" value="name" />
