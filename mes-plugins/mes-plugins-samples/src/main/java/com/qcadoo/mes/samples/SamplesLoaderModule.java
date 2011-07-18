@@ -280,11 +280,9 @@ public class SamplesLoaderModule extends Module {
 
         operation.setField("name", values.get("name"));
         operation.setField("number", values.get("number"));
-        /* Albr */
         operation.setField("tpz", values.get("tpz"));
         operation.setField("tj", values.get("tj"));
         operation.setField("countRealized", values.get("countRealized"));
-        /* Albr */
         operation.setField("machine", getMachine(values.get("number")));
         operation.setField("staff", getRandomStaff());
 
