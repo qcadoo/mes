@@ -280,11 +280,9 @@ public class SamplesLoaderModule extends Module {
 
         operation.setField("name", values.get("name"));
         operation.setField("number", values.get("number"));
-        /* Albr */
         operation.setField("tpz", values.get("tpz"));
         operation.setField("tj", values.get("tj"));
         operation.setField("countRealized", values.get("countRealized"));
-        /* Albr */
         operation.setField("machine", getMachine(values.get("number")));
         operation.setField("staff", getRandomStaff());
 
@@ -934,12 +932,6 @@ public class SamplesLoaderModule extends Module {
     private Entity getRandomOrder() {
         Long total = (long) dataDefinitionService.get("orders", "order").find().list().getTotalNumberOfEntities();
         return dataDefinitionService.get("orders", "order").find().setFirstResult(RANDOM.nextInt(total.intValue()))
-                .setMaxResults(1).list().getEntities().get(0);
-    }
-
-    private Entity getRandomUser() {
-        Long total = (long) dataDefinitionService.get("qcadooSecurity", "user").find().list().getTotalNumberOfEntities();
-        return dataDefinitionService.get("qcadooSecurity", "user").find().setFirstResult(RANDOM.nextInt(total.intValue()))
                 .setMaxResults(1).list().getEntities().get(0);
     }
 
