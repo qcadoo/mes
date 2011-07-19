@@ -935,13 +935,6 @@ public class SamplesLoaderModule extends Module {
                 .setMaxResults(1).list().getEntities().get(0);
     }
 
-    /*
-     * @SuppressWarnings("unused") private Entity getRandomUser() { Long total = (long)
-     * dataDefinitionService.get("qcadooSecurity", "user").find().list().getTotalNumberOfEntities(); return
-     * dataDefinitionService.get("qcadooSecurity", "user").find().setFirstResult(RANDOM.nextInt(total.intValue()))
-     * .setMaxResults(1).list().getEntities().get(0); }
-     */
-
     private String getRandomTypeOfMaterial() {
         return TYPE_OF_MATERIALS[RANDOM.nextInt(TYPE_OF_MATERIALS.length)];
     }

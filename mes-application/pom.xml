@@ -85,16 +85,16 @@
 			<artifactId>mes-plugins-usedproducts</artifactId>
 			<version>0.4.4-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-minimal-affordable-quantity</artifactId>
-			<version>0.4.4-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>warehouse</artifactId>
-			<version>0.4.4-SNAPSHOT</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.qcadoo.mes</groupId> -->
+<!-- 			<artifactId>mes-plugins-minimal-affordable-quantity</artifactId> -->
+<!-- 			<version>0.4.4-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.qcadoo.mes</groupId> -->
+<!-- 			<artifactId>warehouse</artifactId> -->
+<!-- 			<version>0.4.4-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
 		
 		
 		<!-- TODO develop purpose only -->
