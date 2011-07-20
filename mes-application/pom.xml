@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.qcadoo.mes</groupId>
 		<artifactId>mes</artifactId>
-		<version>0.4.4</version>
+		<version>0.4.5-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mes-application</artifactId>
@@ -17,72 +17,72 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-production-scheduling</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-orders</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-basic</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-genealogies</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-genealogies-for-components</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-quality-controls</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-quality-controls-for-operation</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-quality-controls-for-batch</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-material-requirements</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-work-plans</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-technologies</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-samples</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-stoppage</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-usedproducts</artifactId>
-			<version>0.4.4</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 <!-- 		<dependency> -->
 <!-- 			<groupId>com.qcadoo.mes</groupId> -->
