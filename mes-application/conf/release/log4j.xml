@@ -158,7 +158,7 @@
 		<appender-ref ref="performance-log" />
 	</logger>
 	
-	<logger name="TRANSLATION" additivity="true">
+	<logger name="TRANSLATION" additivity="false">
 		<level value="warn" />
 		<appender-ref ref="translation-log" />
 	</logger>
