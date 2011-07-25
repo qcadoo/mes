@@ -61,8 +61,6 @@
 		</string>
 		<hasMany name="timetableExceptions" model="shiftTimetableException" joinField="shift"
 			cascade="delete" copyable="true" />
-		<hasMany name="currentAttribute" model="currentAttribute" plugin="genealogies" joinField="shift"
-			cascade="delete" copyable="true" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.productionScheduling.ShiftsService" method="validateShiftHoursField"/>

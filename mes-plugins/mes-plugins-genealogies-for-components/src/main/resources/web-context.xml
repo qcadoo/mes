@@ -33,11 +33,11 @@
        http://www.springframework.org/schema/context 
        http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<context:component-scan base-package="com.qcadoo.mes.genealogies">
+	<context:component-scan base-package="com.qcadoo.mes.genealogiesForComponents">
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 	</context:component-scan>
 	
-  	<bean id="genealogyForProductView"
-  		class="com.qcadoo.mes.genealogies.print.GenealogyForProductView"/>
-
+	<bean id="genealogyForComponentView"
+  		class="com.qcadoo.mes.genealogiesForComponents.GenealogyForComponentView"/>
+  		
 </beans>

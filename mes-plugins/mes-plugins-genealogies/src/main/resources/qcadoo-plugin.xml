@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 0.4.4
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 0.4.4 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <plugin plugin="genealogies" version="0.4.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
@@ -55,6 +42,10 @@
 		</dependency>
 		<dependency>
 			<plugin>basic</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+		<dependency>
+			<plugin>productionScheduling</plugin>
 			<version>[0.4.0</version>
 		</dependency>
 	</dependencies>
@@ -97,6 +88,16 @@
 			<model:hasMany name="genealogies" plugin="genealogies"
 				model="genealogy" joinField="order" cascade="delete" />
 		</model:model-field>
+		<model:model-field model="shift" plugin="productionScheduling">
+			<model:hasMany name="currentAttribute" model="currentAttribute"
+				plugin="genealogies" joinField="shift" cascade="delete" copyable="true" />
+		</model:model-field>
+		<model:model-field model="shift" plugin="productionScheduling">
+			<model:hasMany name="shiftFeature" model="shiftFeature"
+				plugin="genealogies" joinField="value" cascade="delete" copyable="true" />
+		</model:model-field>
+
+
 		<model:model-field plugin="basic" model="parameter">
 			<model:enum name="batchForDoneOrder" values="01none,02active,03lastUsed"
 				default="01none" />
@@ -120,33 +121,33 @@
 		<view:view-tab resource="view/tabExtensions/productDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/technologyDetails.xml" />
 
-		<view:view-hook plugin="technologies"
-			view="technologyDetails" type="afterInitialize"
-			class="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkAttributesReq" />
-			
-		<view:view-listener plugin="technologies"
-			view="technologyDetails" component="product" event="onSelectedEntityChange"
+		<view:view-hook plugin="technologies" view="technologyDetails"
+			type="afterInitialize" class="com.qcadoo.mes.genealogies.GenealogyTechnologyService"
+			method="checkAttributesReq" />
+
+		<view:view-listener plugin="technologies" view="technologyDetails"
+			component="product" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
 
-		<view:view-listener plugin="orders"
-			view="ordersList" component="grid" event="changeOrderStateForGrid"
+		<view:view-listener plugin="orders" view="ordersList"
+			component="grid" event="changeOrderStateForGrid"
 			class="com.qcadoo.mes.genealogies.AutoGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone" />
-		<view:view-listener plugin="orders"
-			view="ordersList" component="grid" event="showGenealogy"
-			class="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
-		<view:view-listener plugin="orders"
-			view="ordersList" component="grid" event="newGenealogy"
-			class="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
+		<view:view-listener plugin="orders" view="ordersList"
+			component="grid" event="showGenealogy" class="com.qcadoo.mes.genealogies.GenealogyService"
+			method="showGenealogy" />
+		<view:view-listener plugin="orders" view="ordersList"
+			component="grid" event="newGenealogy" class="com.qcadoo.mes.genealogies.GenealogyService"
+			method="newGenealogy" />
 
-		<view:view-listener plugin="orders"
-			view="orderDetails" component="form" event="changeOrderStateForForm"
+		<view:view-listener plugin="orders" view="orderDetails"
+			component="form" event="changeOrderStateForForm"
 			class="com.qcadoo.mes.genealogies.AutoGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone" />
-		<view:view-listener plugin="orders"
-			view="orderDetails" component="form" event="showGenealogy"
-			class="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
-		<view:view-listener plugin="orders"
-			view="orderDetails" component="form" event="newGenealogy"
-			class="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
+		<view:view-listener plugin="orders" view="orderDetails"
+			component="form" event="showGenealogy" class="com.qcadoo.mes.genealogies.GenealogyService"
+			method="showGenealogy" />
+		<view:view-listener plugin="orders" view="orderDetails"
+			component="form" event="newGenealogy" class="com.qcadoo.mes.genealogies.GenealogyService"
+			method="newGenealogy" />
 
 	</modules>
 
