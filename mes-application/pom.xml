@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-minimal-affordable-quantity</artifactId>
-			<version>0.4.4-SNAPSHOT</version>
+			<version>0.4.5-SNAPSHOT</version>
 		</dependency>
 		
 		
