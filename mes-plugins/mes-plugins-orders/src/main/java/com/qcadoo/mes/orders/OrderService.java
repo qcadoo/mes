@@ -173,8 +173,6 @@ public final class OrderService {
 
             Entity order = orderDataDefinition.get((Long) state.getFieldValue());
 
-            state.performEvent(viewDefinitionState, "save", new String[0]);
-
             if (!state.isHasError()) {
 
                 FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
