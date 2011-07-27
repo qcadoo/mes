@@ -93,6 +93,10 @@ public class SamplesLoaderModule extends Module {
 
     private static final String[] STAFF_ATTRIBUTES = new String[] { "id", "name", "surname", "post" };
 
+    private static final String[] SHIFT_ATTRIBUTES = new String[] { "name", "mondayWorking", "mondayHours", "tuesdayWorking",
+            "tuesdayHours", "wensdayWorking", "wensdayHours", "thursdayWorking", "thursdayHours", "fridayWorking", "fridayHours",
+            "saturdayWorking", "saturdayHours", "sundayWorking", "sundayHours" };
+
     private static final Random RANDOM = new Random(System.currentTimeMillis());
 
     @Value("${loadTestData}")
@@ -134,6 +138,7 @@ public class SamplesLoaderModule extends Module {
                     readDataFromXML("staff", STAFF_ATTRIBUTES);
                     readDataFromXML("units", new String[] { "name" });
                     readDataFromXML("products", PRODUCT_ATTRIBUTES);
+                    readDataFromXML("shifts", SHIFT_ATTRIBUTES);
                 }
                 if (isEnabled("technologies")) {
                     readDataFromXML("operations", OPERATION_ATTRIBUTES);
@@ -221,6 +226,8 @@ public class SamplesLoaderModule extends Module {
             addStaff(values);
         } else if ("machines".equals(type)) {
             addMachine(values);
+        } else if ("shifts".equals(type)) {
+            addShifts(values);
         }
     }
 
@@ -286,6 +293,37 @@ public class SamplesLoaderModule extends Module {
         if (!operation.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
+    }
+
+    private void addShifts(final Map<String, String> values) {
+        Entity shift = dataDefinitionService.get("basic", "shift").create();
+        System.out.println("***oooo");
+        shift.setField("name", values.get("name"));
+        shift.setField("mondayWorking", values.get("mondayWorking"));
+        shift.setField("mondayHours", values.get("mondayHours"));
+        shift.setField("tuesdayWorking", values.get("tuesdayWorking"));
+        shift.setField("tuesdayHours", values.get("tuesdayHours"));
+        shift.setField("wensdayWorking", values.get("wensdayWorking"));
+        shift.setField("wensdayHours", values.get("wensdayHours"));
+        shift.setField("thursdayWorking", values.get("thursdayWorking"));
+        shift.setField("thursdayHours", values.get("thursdayHours"));
+        shift.setField("fridayWorking", values.get("fridayWorking"));
+        shift.setField("fridayHours", values.get("fridayHours"));
+        shift.setField("saturdayWorking", values.get("saturdayWorking"));
+        shift.setField("saturdayHours", values.get("saturdayHours"));
+        shift.setField("sundayWorking", values.get("sundayWorking"));
+        shift.setField("sundayHours", values.get("sundayHours"));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test shift item {shift=" + shift.getField("name") + "}");
+        }
+
+        shift = dataDefinitionService.get("basic", "shift").save(shift);
+
+        if (!shift.isValid()) {
+            throw new IllegalStateException("Saved entity have validation errors" + values.get("name"));
+        }
+
     }
 
     private void addProduct(final Map<String, String> values) {
