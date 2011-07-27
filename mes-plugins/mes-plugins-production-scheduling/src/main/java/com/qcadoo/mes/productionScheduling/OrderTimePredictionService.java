@@ -55,7 +55,7 @@ public class OrderTimePredictionService {
     private TranslationService translationService;
 
     @Autowired
-    private ShiftsService shiftsService;
+    private ProductionSchedulingShiftsService shiftsService;
 
     public void setFieldDisable(final ViewDefinitionState viewDefinitionState) {
 

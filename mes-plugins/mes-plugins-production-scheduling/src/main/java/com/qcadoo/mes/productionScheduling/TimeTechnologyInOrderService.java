@@ -51,7 +51,7 @@ public class TimeTechnologyInOrderService {
     private OrderRealizationTimeService orderRealizationTimeService;
 
     @Autowired
-    private ShiftsService shiftsService;
+    private ProductionSchedulingShiftsService shiftsService;
 
     @Autowired
     private TranslationService translationService;

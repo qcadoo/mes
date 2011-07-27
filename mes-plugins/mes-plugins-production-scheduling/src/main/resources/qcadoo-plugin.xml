@@ -56,6 +56,10 @@
 			<plugin>orders</plugin>
 			<version>[0.4.0</version>
 		</dependency>
+		<dependency>
+			<plugin>basic</plugin>
+			<version>[0.4.0</version>
+		</dependency>
 	</dependencies>
 
 	<modules>
@@ -139,19 +143,10 @@
 			<view:column name="realizationTime" fields="realizationTime" orderable="true" searchable="false" width="30" link="false" />
 		</view:view-grid-column>
 		
-		<model:model model="shift" resource="model/shift.xml" />
-		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml" />
-
-		<view:view resource="view/shiftsList.xml" />
-		<view:view resource="view/shiftDetail.xml" />
-		<view:view resource="view/shiftTimetableExceptionDetail.xml" />
 		<view:view resource="view/ganttShiftCalendar.xml" />
 		<view:view resource="view/ganttOrdersCalendar.xml" />
 		<view:view resource="view/orderTimePrediction.xml"/>
 		
-		<menu:menu-item name="shiftsList" category="basic"
-			view="shiftsList" />
-			
 		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction" category="orders"/>
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
@@ -159,13 +154,17 @@
 		<view:view-ribbon-group resource="view/ribbonExtensions/operationComponent.xml" />
 		<view:view-listener plugin="orders" view="ordersList"
 			component="window" event="showGanttOrdersCalendar"
-			class="com.qcadoo.mes.productionScheduling.ShiftsService" method="showGanttOrdersCalendar" />
+			class="com.qcadoo.mes.basic.ShiftsService" method="showGanttOrdersCalendar" />
 
 		<model:model model="orderOperationComponent" resource="model/orderOperationComponent.xml" />
 
 		<model:model-hook plugin="orders" model="order">
 			<model:onSave class="com.qcadoo.mes.productionScheduling.NormOrderService"
 				method="createTechnologyInstanceForOrder" />
+		</model:model-hook>
+		
+		<model:model-hook model="shift" plugin="basic">
+			<model:validatesWith class="com.qcadoo.mes.productionScheduling.ProductionSchedulingShiftsService" method="validateShiftHoursField"/>
 		</model:model-hook>
 
 		<model:model-field plugin="orders" model="order">

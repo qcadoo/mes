@@ -26,7 +26,7 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="shiftDetail" 
+	name="shiftDetails" 
 	modelName="shift">
 	
 	<component type="window" name="window">
@@ -48,7 +48,7 @@
 				<layoutElement column="1" row="2">
 					<component type="checkbox" name="mondayWorking" field="mondayWorking" reference="mondayWorking">
 						<option type="labelWidth" value="70" />
-						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.ShiftsService"
+						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 					</component>
 				</layoutElement>
@@ -59,7 +59,7 @@
 				<layoutElement column="1" row="3">
 					<component type="checkbox" name="tuesdayWorking" field="tuesdayWorking" reference="tuesdayWorking">
 						<option type="labelWidth" value="70" />
-						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.ShiftsService"
+						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 					</component>
 				</layoutElement>
@@ -70,7 +70,7 @@
 				<layoutElement column="1" row="4">
 					<component type="checkbox" name="wensdayWorking" field="wensdayWorking" reference="wensdayWorking">
 						<option type="labelWidth" value="70" />
-						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.ShiftsService"
+						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 						</component>
 				</layoutElement>
@@ -81,7 +81,7 @@
 				<layoutElement column="1" row="5">
 					<component type="checkbox" name="thursdayWorking" field="thursdayWorking" reference="thursdayWorking">
 						<option type="labelWidth" value="70" />
-						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.ShiftsService"
+						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 					</component>
 				</layoutElement>
@@ -92,7 +92,7 @@
 				<layoutElement column="1" row="6">
 					<component type="checkbox" name="fridayWorking" field="fridayWorking" reference="fridayWorking">
 						<option type="labelWidth" value="70" />
-						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.ShiftsService"
+						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 					</component>
 				</layoutElement>
@@ -103,7 +103,7 @@
 				<layoutElement column="1" row="7">
 					<component type="checkbox" name="saturdayWorking" field="saturdayWorking" reference="saturdayWorking">
 						<option type="labelWidth" value="70" />
-						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.ShiftsService"
+						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 					</component>
 				</layoutElement>
@@ -114,7 +114,7 @@
 				<layoutElement column="1" row="8">
 					<component type="checkbox" name="sundayWorking" field="sundayWorking" reference="sundayWorking">
 						<option type="labelWidth" value="70" />
-						<listener event="onChange" class="com.qcadoo.mes.productionScheduling.ShiftsService"
+						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 					</component>
 				</layoutElement>
@@ -129,7 +129,7 @@
 						<option type="column" name="toDate" fields="toDate" link="true" width="100"/>
 						<option type="column" name="type" fields="type" link="false" width="100"/>
 						<option type="order" column="fromDate" direction="desc"/>
-						<option type="correspondingView" value="productionScheduling/shiftTimetableExceptionDetail" />
+						<option type="correspondingView" value="basic/shiftTimetableExceptionDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 						<option type="searchable" value="name,fromDate,toDate,type" />
@@ -145,10 +145,10 @@
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
-			<listener event="showGanttShiftCalendar" class="com.qcadoo.mes.productionScheduling.ShiftsService" method="showGanttShiftCalendar" />
+			<listener event="showGanttShiftCalendar" class="com.qcadoo.mes.basic.ShiftsService" method="showGanttShiftCalendar" />
 		</component>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.productionScheduling.ShiftsService" method="setHourFieldsState" />
+		<beforeRender class="com.qcadoo.mes.basic.ShiftsService" method="setHourFieldsState" />
 	</hooks>
 </view>

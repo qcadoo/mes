@@ -42,13 +42,13 @@
 			<option type="order" column="name" direction="asc" />
 			<option type="searchable" value="name" />
 			<option type="orderable" value="name" />
-			<option type="correspondingView" value="productionScheduling/shiftDetail" />
+			<option type="correspondingView" value="basic/shiftDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="deletable" value="false" />
 			<option type="creatable" value="false" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
-			<listener event="showGanttShiftCalendar" class="com.qcadoo.mes.productionScheduling.ShiftsService" method="showGanttShiftCalendar" />
+			<listener event="showGanttShiftCalendar" class="com.qcadoo.mes.basic.ShiftsService" method="showGanttShiftCalendar" />
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />

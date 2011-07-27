@@ -50,7 +50,7 @@ public class NormOrderService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private ShiftsService shiftsService;
+    private ProductionSchedulingShiftsService shiftsService;
 
     @Transactional
     public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity entity) {
@@ -145,6 +145,7 @@ public class NormOrderService {
         if (orderId != null) {
             String url = "../page/productionScheduling/ganttOrderOperationsCalendar.html?context={\"gantt.orderId\":\"" + orderId
                     + "\"}";
+
             viewDefinitionState.redirectTo(url, false, true);
         }
     }

@@ -34,9 +34,9 @@
 		<datetime name="fromDate" required="true" />
 		<datetime name="toDate" required="true" />
 		<enum name="type" required="true" values="01freeTime,02workTime" default="01freeTime" />
-		<belongsTo name="shift" model="shift" lazy="false" required="true" />
+		<belongsTo name="shift" model="shift" plugin="basic" lazy="false" required="true" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.productionScheduling.ShiftsService" method="validateShiftTimetableException"/>
+		<validatesWith class="com.qcadoo.mes.basic.ShiftsService" method="validateShiftTimetableException"/>
 	</hooks>
 </model>

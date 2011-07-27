@@ -1,3 +1,5 @@
+package com.qcadoo.mes.productionScheduling;
+
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
@@ -21,7 +23,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionScheduling;
 
 import java.util.Date;
 import java.util.List;
@@ -33,12 +34,9 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
-public class ShiftsService {
+public class ProductionSchedulingShiftsService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -68,7 +66,6 @@ public class ShiftsService {
             entity.addError(dataDefinition.getField(day + "Hours"), "qcadooView.validate.field.error.missing");
             return false;
         }
-
         try {
             shiftsGanttChartItemResolver.convertDayHoursToInt(fieldValue);
         } catch (IllegalStateException e) {
@@ -76,7 +73,6 @@ public class ShiftsService {
                     "productionScheduling.validate.global.error.shift.hoursFieldWrongFormat");
             return false;
         }
-
         return true;
     }
 
@@ -87,117 +83,54 @@ public class ShiftsService {
     private static final long MIN_TIMESTAMP = new DateTime(2000, 1, 1, 0, 0, 0, 0).toDate().getTime();
 
     public Date findDateToForOrder(final Date dateFrom, final long seconds) {
-        if (dataDefinitionService.get("productionScheduling", "shift").find().list().getTotalNumberOfEntities() == 0) {
+        if (dataDefinitionService.get("basic", "shift").find().list().getTotalNumberOfEntities() == 0) {
             return null;
         }
-
         long start = dateFrom.getTime();
         long remaining = seconds;
-
         while (remaining > 0) {
             List<ShiftsGanttChartItemResolverImpl.ShiftHour> hours = shiftsGanttChartItemResolver.getHoursForAllShifts(new Date(
                     start), new Date(start + STEP));
-
             for (ShiftsGanttChartItemResolverImpl.ShiftHour hour : hours) {
                 long diff = (hour.getDateTo().getTime() - hour.getDateFrom().getTime()) / 1000;
-
                 if (diff >= remaining) {
                     return new Date(hour.getDateFrom().getTime() + (remaining * 1000));
                 } else {
                     remaining -= diff;
                 }
             }
-
             start += STEP;
-
             if (start > MAX_TIMESTAMP) {
                 return null;
             }
         }
-
         return null;
     }
 
     public Date findDateFromForOrder(final Date dateTo, final long seconds) {
-        if (dataDefinitionService.get("productionScheduling", "shift").find().list().getTotalNumberOfEntities() == 0) {
+        if (dataDefinitionService.get("basic", "shift").find().list().getTotalNumberOfEntities() == 0) {
             return null;
         }
-
         long stop = dateTo.getTime();
         long remaining = seconds;
-
         while (remaining > 0) {
             List<ShiftsGanttChartItemResolverImpl.ShiftHour> hours = shiftsGanttChartItemResolver.getHoursForAllShifts(new Date(
                     stop - STEP), new Date(stop));
-
             for (int i = hours.size() - 1; i >= 0; i--) {
                 ShiftsGanttChartItemResolverImpl.ShiftHour hour = hours.get(i);
                 long diff = (hour.getDateTo().getTime() - hour.getDateFrom().getTime()) / 1000;
-
                 if (diff >= remaining) {
                     return new Date(hour.getDateTo().getTime() - (remaining * 1000));
                 } else {
                     remaining -= diff;
                 }
             }
-
             stop -= STEP;
-
             if (stop < MIN_TIMESTAMP) {
                 return null;
             }
         }
-
         return null;
-    }
-
-    public boolean validateShiftTimetableException(final DataDefinition dataDefinition, final Entity entity) {
-        Date dateFrom = (Date) entity.getField("fromDate");
-        Date dateTo = (Date) entity.getField("toDate");
-        if (dateFrom.compareTo(dateTo) > 0) {
-            entity.addError(dataDefinition.getField("fromDate"),
-                    "productionScheduling.validate.global.error.shiftTimetable.datesError");
-            entity.addError(dataDefinition.getField("toDate"),
-                    "productionScheduling.validate.global.error.shiftTimetable.datesError");
-            return false;
-        }
-        return true;
-    }
-
-    public void showGanttShiftCalendar(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
-            final String[] args) {
-        viewDefinitionState.openModal("../page/productionScheduling/ganttShiftCalendar.html");
-    }
-
-    public void showGanttOrdersCalendar(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
-            final String[] args) {
-        viewDefinitionState.redirectTo("../page/productionScheduling/ganttOrdersCalendar.html", false, true);
-    }
-
-    public void onDayCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        updateDayFieldsState(viewDefinitionState);
-    }
-
-    public void setHourFieldsState(final ViewDefinitionState viewDefinitionState) {
-        updateDayFieldsState(viewDefinitionState);
-    }
-
-    private void updateDayFieldsState(final ViewDefinitionState viewDefinitionState) {
-        for (String day : WEEK_DAYS) {
-            updateDayFieldState(day, viewDefinitionState);
-        }
-    }
-
-    private void updateDayFieldState(final String day, final ViewDefinitionState viewDefinitionState) {
-        FieldComponent mondayWorking = (FieldComponent) viewDefinitionState.getComponentByReference(day + "Working");
-        FieldComponent mondayHours = (FieldComponent) viewDefinitionState.getComponentByReference(day + "Hours");
-        if (mondayWorking.getFieldValue().equals("0")) {
-            mondayHours.setEnabled(false);
-            mondayHours.setRequired(false);
-        } else {
-            mondayHours.setEnabled(true);
-            mondayHours.setRequired(true);
-        }
     }
 
 }

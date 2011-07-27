@@ -57,10 +57,10 @@
 			<plugin>basic</plugin>
 			<version>[0.4.0</version>
 		</dependency>
-		<dependency>
-			<plugin>productionScheduling</plugin>
-			<version>[0.4.0</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<plugin>productionScheduling</plugin> -->
+<!-- 			<version>[0.4.0</version> -->
+<!-- 		</dependency> -->
 	</dependencies>
 
 
@@ -101,11 +101,11 @@
 			<model:hasMany name="genealogies" plugin="genealogies"
 				model="genealogy" joinField="order" cascade="delete" />
 		</model:model-field>
-		<model:model-field model="shift" plugin="productionScheduling">
+		<model:model-field model="shift" plugin="basic">
 			<model:hasMany name="currentAttribute" model="currentAttribute"
 				plugin="genealogies" joinField="shift" cascade="delete" copyable="true" />
 		</model:model-field>
-		<model:model-field model="shift" plugin="productionScheduling">
+		<model:model-field model="shift" plugin="basic">
 			<model:hasMany name="shiftFeature" model="shiftFeature"
 				plugin="genealogies" joinField="value" cascade="delete" copyable="true" />
 		</model:model-field>

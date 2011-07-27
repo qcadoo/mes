@@ -28,6 +28,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="ganttShiftCalendar"
 	modelName="shift"
+	modelPlugin="basic"
 	windowHeight="450"
 	windowWidth="900">
 	

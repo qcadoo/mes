@@ -45,7 +45,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeService {
 
     @Autowired
-    private ShiftsService shiftsService;
+    private ProductionSchedulingShiftsService shiftsService;
 
     private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 

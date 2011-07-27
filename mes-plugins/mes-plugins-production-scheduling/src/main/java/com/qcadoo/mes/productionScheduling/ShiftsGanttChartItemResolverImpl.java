@@ -56,7 +56,7 @@ public class ShiftsGanttChartItemResolverImpl implements ShiftsGanttChartItemRes
     @Override
     @Transactional
     public Map<String, List<GanttChartItem>> resolve(final GanttChartScale scale, final JSONObject context, final Locale locale) {
-        List<Entity> shifts = dataDefinitionService.get("productionScheduling", "shift").find().list().getEntities();
+        List<Entity> shifts = dataDefinitionService.get("basic", "shift").find().list().getEntities();
         Map<String, List<GanttChartItem>> items = new LinkedHashMap<String, List<GanttChartItem>>();
 
         for (Entity shift : shifts) {
@@ -82,7 +82,7 @@ public class ShiftsGanttChartItemResolverImpl implements ShiftsGanttChartItemRes
 
     @Override
     public List<ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo) {
-        List<Entity> shifts = dataDefinitionService.get("productionScheduling", "shift").find().list().getEntities();
+        List<Entity> shifts = dataDefinitionService.get("basic", "shift").find().list().getEntities();
 
         List<ShiftHour> hours = new ArrayList<ShiftHour>();
 

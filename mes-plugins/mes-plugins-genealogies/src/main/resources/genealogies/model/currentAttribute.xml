@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 	
-		<belongsTo name="shift" model="shift" plugin="productionScheduling" />
+		<belongsTo name="shift" model="shift" plugin="basic" />
 		<boolean name="shiftReq" />
 		<dictionary name="post" dictionary="posts" />
 		<boolean name="postReq" />

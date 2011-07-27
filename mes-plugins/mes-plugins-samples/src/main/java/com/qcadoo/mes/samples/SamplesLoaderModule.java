@@ -93,10 +93,6 @@ public class SamplesLoaderModule extends Module {
 
     private static final String[] STAFF_ATTRIBUTES = new String[] { "id", "name", "surname", "post" };
 
-    private static final String[] SHIFT_ATTRIBUTES = new String[] { "id", "name", "monday_working", "monday_hours",
-            "tuesday_working", "tuesday_hours", "wensday_working", "wensday_hours", "thursday_working", "thursday_hours",
-            "friday_working", "friday_hours", "saturday_working", "saturday_hours", "sunday_working", "sunday_hours" };
-
     private static final Random RANDOM = new Random(System.currentTimeMillis());
 
     @Value("${loadTestData}")
@@ -151,9 +147,6 @@ public class SamplesLoaderModule extends Module {
                 }
                 if (isEnabled("workPlans")) {
                     addWorkPlans();
-                }
-                if (isEnabled("productionScheduling")) {
-                    readDataFromXML("shifts", SHIFT_ATTRIBUTES);
                 }
             }
         } else {
@@ -228,8 +221,6 @@ public class SamplesLoaderModule extends Module {
             addStaff(values);
         } else if ("machines".equals(type)) {
             addMachine(values);
-        } else if ("shifts".equals(type)) {
-            addShift(values);
         }
     }
 
@@ -838,7 +829,7 @@ public class SamplesLoaderModule extends Module {
     }
 
     private void addShift(final Map<String, String> values) {
-        Entity shift = dataDefinitionService.get("productionScheduling", "shift").create();
+        Entity shift = dataDefinitionService.get("basic", "shift").create();
         if (values.containsKey("id")) {
             shift.setId(Long.parseLong(values.get("id")));
         }
@@ -851,7 +842,7 @@ public class SamplesLoaderModule extends Module {
             }
             shift.setField(day + "Hours", values.get(day + "_hours"));
         }
-        dataDefinitionService.get("productionScheduling", "shift").save(shift);
+        dataDefinitionService.get("basic", "shift").save(shift);
     }
 
     private Entity getRandomStaff() {
