@@ -71,5 +71,6 @@
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillOrderDatesAndWorkers" />
 		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesAndWorkersOnCopy" />
 	</hooks>
+	
 	<identifier expression="#number + ' - ' + #name" />
 </model>

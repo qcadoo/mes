@@ -81,7 +81,6 @@ public final class OrderService {
         if (!(state instanceof FieldComponent)) {
             return;
         }
-
         FieldComponent product = (FieldComponent) state;
         FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference("name");
 
@@ -97,7 +96,6 @@ public final class OrderService {
         if (!(state instanceof FieldComponent)) {
             return;
         }
-
         FieldComponent product = (FieldComponent) state;
         FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
         FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
@@ -348,15 +346,15 @@ public final class OrderService {
     }
 
     public boolean checkIfOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
-    	Entity product = entity.getBelongsToField("product");
+        Entity product = entity.getBelongsToField("product");
 
         if (product == null) {
             return true;
         }
 
         int count = product.getHasManyField("technologies").size();
-        
-        if(count == 0) {
+
+        if (count == 0) {
             entity.addError(dataDefinition.getField("product"), "orders.validate.global.error.orderMustHaveTechnology");
             return false;
         } else {
