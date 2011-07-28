@@ -54,6 +54,9 @@ public class QuantityService {
         ComponentState form = (ComponentState) viewDefinitionState.getComponentByReference("form");
         FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
         FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("plannedQuantity");
+        if (plannedQuantity == null || "".equals(plannedQuantity.getFieldValue())) {
+            return;
+        }
         if (technologyLookup.getFieldValue() != null) {
             Entity technology = dataDefinitionService.get("technologies", "technology").get(
                     (Long) technologyLookup.getFieldValue());
@@ -78,7 +81,6 @@ public class QuantityService {
                 }
             }
         }
-
     }
 
     public BigDecimal getBigDecimalFromField(final Object value, final Locale locale) {

@@ -826,7 +826,7 @@ public class OrderServiceTest {
         assertTrue(results);
     }
 
-    /*@Test
+    @Test
     public void shouldReturnTrueForTechnologyValidationIfOrderHasTechnology() throws Exception {
         // given
         Entity entity = mock(Entity.class);
@@ -858,7 +858,7 @@ public class OrderServiceTest {
         // then
         assertFalse(results);
         verify(entity).addError(orderField, "orders.validate.global.error.orderMustHaveTechnology");
-    }*/
+    }
 
     @Test
     public void shouldReturnTrueForOperationValidationIfThereIsNoOrder() throws Exception {

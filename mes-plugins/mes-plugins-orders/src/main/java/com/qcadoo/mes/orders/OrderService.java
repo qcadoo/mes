@@ -348,14 +348,16 @@ public final class OrderService {
     }
 
     public boolean checkIfOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        Entity order = entity.getBelongsToField("order");
+    	Entity product = entity.getBelongsToField("product");
 
-        if (order == null) {
+        if (product == null) {
             return true;
         }
 
-        if (order.getField("technology") == null) {
-            entity.addError(dataDefinition.getField("order"), "orders.validate.global.error.orderMustHaveTechnology");
+        int count = product.getHasManyField("technologies").size();
+        
+        if(count == 0) {
+            entity.addError(dataDefinition.getField("product"), "orders.validate.global.error.orderMustHaveTechnology");
             return false;
         } else {
             return true;
