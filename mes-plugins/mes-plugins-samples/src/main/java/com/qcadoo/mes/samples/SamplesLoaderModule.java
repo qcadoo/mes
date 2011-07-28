@@ -111,7 +111,8 @@ public class SamplesLoaderModule extends Module {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Value("${loadTestDataLocale}")
+    // AlBR
+    // @Value("${loadTestDataLocale}")
     private String locale;
 
     @Value("${setAsDemoEnviroment}")
@@ -171,6 +172,10 @@ public class SamplesLoaderModule extends Module {
     }
 
     private InputStream getXmlFile(final String type) throws IOException {
+        locale = Locale.getDefault().toString().substring(0, 2);
+        if (!"pl".equals(locale) && !"en".equals(locale)) {
+            locale = Locale.ENGLISH.toString().substring(0, 2);
+        }
         return SamplesLoaderModule.class.getResourceAsStream("/com/qcadoo/mes/samples/" + type + "_" + locale + ".xml");
     }
 
@@ -297,7 +302,7 @@ public class SamplesLoaderModule extends Module {
 
     private void addShifts(final Map<String, String> values) {
         Entity shift = dataDefinitionService.get("basic", "shift").create();
-        System.out.println("***oooo");
+
         shift.setField("name", values.get("name"));
         shift.setField("mondayWorking", values.get("mondayWorking"));
         shift.setField("mondayHours", values.get("mondayHours"));
@@ -864,23 +869,6 @@ public class SamplesLoaderModule extends Module {
                 throw new IllegalStateException("Saved entity have validation errors");
             }
         }
-    }
-
-    private void addShift(final Map<String, String> values) {
-        Entity shift = dataDefinitionService.get("basic", "shift").create();
-        if (values.containsKey("id")) {
-            shift.setId(Long.parseLong(values.get("id")));
-        }
-        shift.setField("name", values.get("name"));
-        for (String day : new String[] { "monday", "tuesday", "wensday", "thursday", "friday", "saturday", "sunday" }) {
-            if (values.containsKey(day + "_working")) {
-                shift.setField(day + "Working", Boolean.parseBoolean(values.get(day + "_working")));
-            } else {
-                shift.setField(day + "Working", false);
-            }
-            shift.setField(day + "Hours", values.get(day + "_hours"));
-        }
-        dataDefinitionService.get("basic", "shift").save(shift);
     }
 
     private Entity getRandomStaff() {

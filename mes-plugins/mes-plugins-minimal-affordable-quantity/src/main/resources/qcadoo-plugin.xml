@@ -64,11 +64,11 @@
 	
 	<modules>
 		<localization:translation path="locales" />
-
 		<model:model-field plugin="technologies" model="technology">
 			<model:decimal name="minimalQuantity">
-				<model:validatesLength max="7"/>
-				<model:validatesPrecision max="3"/>
+				<model:validatesRange from="0" exclusively="true" />
+				<model:validatesPrecision max="8"/>
+				<model:validatesScale max="3" />
 			</model:decimal>			
 		</model:model-field>
 		
