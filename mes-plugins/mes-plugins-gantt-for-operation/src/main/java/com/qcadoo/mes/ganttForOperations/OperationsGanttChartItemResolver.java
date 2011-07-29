@@ -21,20 +21,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionScheduling;
+package com.qcadoo.mes.ganttForOperations;
 
-import java.util.Date;
-import java.util.List;
-
-import org.joda.time.LocalTime;
-
-import com.qcadoo.mes.productionScheduling.ShiftsGanttChartItemResolverImpl.ShiftHour;
 import com.qcadoo.view.api.components.ganttChart.GanttChartItemResolver;
 
-public interface ShiftsGanttChartItemResolver extends GanttChartItemResolver {
-
-    List<ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo);
-
-    LocalTime[][] convertDayHoursToInt(final String string);
+public interface OperationsGanttChartItemResolver extends GanttChartItemResolver {
 
 }

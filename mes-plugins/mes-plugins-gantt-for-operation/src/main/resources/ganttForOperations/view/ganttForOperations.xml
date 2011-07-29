@@ -26,7 +26,7 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="ganttShiftCalendar"
+	name="ganttForOperations"
 	modelName="shift"
 	modelPlugin="basic"
 	windowHeight="450"
@@ -36,12 +36,13 @@
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back"/>
 		</ribbon>
-		<component type="ganttChart" name="gantt">
-			<option type="resolver" value="com.qcadoo.mes.productionScheduling.ShiftsGanttChartItemResolver" />
+		<component type="ganttChart" name="gantt" reference="gantt">
+			<option type="resolver" value="com.qcadoo.mes.ganttForOperations.OperationsGanttChartItemResolver" />
 			<option type="defaultZoomLevel" value="H1" />
-			<option type="defaultEndDay" value="7" />
+			<option type="allowDateSelection" value="true" />
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
+		
 	</component>
 </view>

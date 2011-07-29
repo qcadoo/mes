@@ -30,6 +30,8 @@
     	<module>mes-plugins-usedproducts</module>
     	<module>mes-plugins-stoppage</module>
     <module>mes-plugins-minimal-affordable-quantity</module>
+    <module>mes-plugins-gantt-for-operation</module>
+    <module>mes-plugins-gantt-for-orders</module>
   </modules>
 
 </project>

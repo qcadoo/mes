@@ -26,7 +26,7 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="ganttOrdersCalendar"
+	name="ganttForOrders"
 	modelPlugin="orders"
 	modelName="order"
 	windowHeight="460"
@@ -41,7 +41,7 @@
 		<component type="gridLayout" name="gridLayout" columns="1" rows="10" hasBorders="true">
 			<layoutElement column="1" row="1" height="4">
 				<component type="ganttChart" name="gantt" reference="gantt">
-					<option type="resolver" value="com.qcadoo.mes.productionScheduling.OrderGanttChartItemResolver" />
+					<option type="resolver" value="com.qcadoo.mes.ganttForOrders.OrderGanttChartItemResolver" />
 					<option type="defaultZoomLevel" value="H6" />
 					<option type="defaultEndDay" value="14" />
 				</component>
@@ -71,13 +71,13 @@
 							</component>
 						</layoutElement>
 					</component>
-					<listener event="save" class="com.qcadoo.mes.productionScheduling.OperationService" method="refereshGanttChart" />			
+					<listener event="save" class="com.qcadoo.mes.ganttForOperations.GanttOperationService" method="refereshGanttChart" />			
 				</component>
 			</layoutElement>
 		</component>
 		<option type="header" value="false" />
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.productionScheduling.OperationService" method="disableFormWhenNoOrderSelected" />
+		<beforeRender class="com.qcadoo.mes.ganttForOperations.GanttOperationService" method="disableFormWhenNoOrderSelected" />
 	</hooks>
 </view>

@@ -24,25 +24,35 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="ganttOrderOperationsCalendar"
-	modelName="shift"
-	modelPlugin="basic"
-	windowHeight="450"
-	windowWidth="900">
-	
-	<component type="window" name="window">
-		<ribbon>
-			<template name="standardFormTemplate" includeItems="navigation.back"/>
-		</ribbon>
-		<component type="ganttChart" name="gantt" reference="gantt">
-			<option type="resolver" value="com.qcadoo.mes.productionScheduling.OperationsGanttChartItemResolver" />
-			<option type="defaultZoomLevel" value="H1" />
-			<option type="allowDateSelection" value="true" />
-		</component>
-		<option type="fixedHeight" value="true" />
-		<option type="header" value="false" />
-		
-	</component>
-</view>
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
+	plugin="orders"
+	view="orderDetails">
+	<group name="orderGantt">
+		<bigButton name="operationsGantt" icon="calendarIcon24.png" state="disabled">
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('showOperationsGantt', []);
+							}
+						}
+					});		
+					#{form}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (! value || ! value.content) {
+								return;
+							}
+							if (! value.content.entityId) {
+								this.disable();
+							} else {
+								this.enable();
+							}
+						}
+					});					
+				]]>
+			</script>	
+		</bigButton>
+	</group>
+</ribbonExtension>

@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -51,7 +52,7 @@ public class TimeTechnologyInOrderService {
     private OrderRealizationTimeService orderRealizationTimeService;
 
     @Autowired
-    private ProductionSchedulingShiftsService shiftsService;
+    private ShiftsService shiftsService;
 
     @Autowired
     private TranslationService translationService;

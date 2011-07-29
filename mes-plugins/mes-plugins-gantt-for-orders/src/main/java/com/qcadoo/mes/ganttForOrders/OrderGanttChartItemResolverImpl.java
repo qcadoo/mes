@@ -1,3 +1,4 @@
+package com.qcadoo.mes.ganttForOrders;
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
@@ -21,7 +22,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionScheduling;
+
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -10,7 +10,7 @@
 
 	<name>Qcadoo MES</name>
 
-	<description />
+	<description/>
 
 	<url>https://github.com/qcadoo/mes</url>
 
@@ -31,7 +31,8 @@
 	<modules>
 		<module>mes-plugins</module>
 		<module>mes-application</module>
-	</modules>
+<!--     <module>mes-plugins-gantt-for-shifts</module> -->
+  </modules>
 
 	<properties>
 		<qcadoo.version>0.4.6-SNAPSHOT</qcadoo.version>
@@ -299,7 +300,7 @@
 			</releases>
 		</repository>
 		<repository>
-			<id>SpringSource Enterprise Bundle Repository – External Bundle Milestones</id>
+			<id>SpringSource Enterprise Bundle Repository � External Bundle Milestones</id>
 			<url>http://maven.springframework.org/milestone</url>
 		</repository>
 	</repositories>

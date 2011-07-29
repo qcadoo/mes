@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -45,7 +46,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeService {
 
     @Autowired
-    private ProductionSchedulingShiftsService shiftsService;
+    private ShiftsService shiftsService;
 
     private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 

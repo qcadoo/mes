@@ -33,9 +33,6 @@
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardGridTemplate" />
-			<group name="calendar">
-				<bigButton name="showCalendar" state="enabled" icon="calendarIcon24.png" action="#{grid}.fireEvent(showGanttShiftCalendar);" />
-			</group>
 		</ribbon>
 		<component type="grid" name="shifts" reference="grid">
 			<option type="column" name="name" fields="name" link="true" />
@@ -48,7 +45,6 @@
 			<option type="creatable" value="false" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
-			<listener event="showGanttShiftCalendar" class="com.qcadoo.mes.basic.ShiftsService" method="showGanttShiftCalendar" />
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />

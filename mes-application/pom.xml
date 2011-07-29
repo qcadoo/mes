@@ -89,6 +89,22 @@
 			<artifactId>mes-plugins-minimal-affordable-quantity</artifactId>
 			<version>0.4.6-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-gantt-for-shifts</artifactId>
+			<version>0.4.6-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-gantt-for-operation</artifactId>
+			<version>0.4.6-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-gantt-for-orders</artifactId>
+			<version>0.4.6-SNAPSHOT</version>
+		</dependency>
+		
 		
 		
 		
