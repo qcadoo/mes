@@ -51,12 +51,8 @@
 
 	<dependencies>
 		<dependency>
-			<plugin>orders</plugin>
-			<version>[0.4.1</version>
-		</dependency>
-		<dependency>
 			<plugin>materialRequirements</plugin>
-			<version>[0.4.1</version>
+			<version>[0.4.0</version>
 		</dependency>
 	</dependencies>
 
@@ -79,9 +75,6 @@
 		
 		<view:view resource="view/producedProducts.xml" />
 		<view:view resource="view/producedProductsDetails.xml" />
-		
-
 	</modules>
-
 
 </plugin>

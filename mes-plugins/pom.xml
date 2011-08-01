@@ -32,6 +32,8 @@
     	<module>mes-plugins-minimal-affordable-quantity</module>
     	<module>mes-plugins-gantt-for-operation</module>
     	<module>mes-plugins-gantt-for-orders</module>
+    	<module>mes-plugins-gantt-for-shifts</module>
+    	<module>mes-plugins-produced-products</module>
   </modules>
 
 </project>
