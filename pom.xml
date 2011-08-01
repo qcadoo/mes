@@ -31,7 +31,6 @@
 	<modules>
 		<module>mes-plugins</module>
 		<module>mes-application</module>
-<!--     <module>mes-plugins-gantt-for-shifts</module> -->
   </modules>
 
 	<properties>

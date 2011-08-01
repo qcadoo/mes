@@ -81,7 +81,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-usedproducts</artifactId>
+			<artifactId>mes-plugins-used-products</artifactId>
 			<version>0.4.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -104,7 +104,11 @@
 			<artifactId>mes-plugins-gantt-for-orders</artifactId>
 			<version>0.4.6-SNAPSHOT</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-produced-products</artifactId>
+			<version>0.4.6-SNAPSHOT</version>
+		</dependency>
 		
 		
 		
@@ -223,7 +227,7 @@
 								${basedir}/../mes-plugins/mes-plugins-basic/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-stoppage/src/main/resources;
-								${basedir}/../mes-plugins/mes-plugins-usedproducts/src/main/resources;
+								${basedir}/../mes-plugins/mes-plugins-used-products/src/main/resources;
 							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>
