@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="inventory" version="0.4.6"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd">
+
+	<information>
+		<name>MES - Inventory Module</name>
+		<vendor>
+			<name>Qcadoo Community</name>
+			<url>http://www.qcadoo.com</url>
+		</vendor>
+	</information>
+	
+	<dependencies>
+        <dependency>
+            <plugin>basic</plugin>
+        </dependency>
+    </dependencies>
+
+
+	<modules>
+		<localization:translation path="locales" />
+		
+		<model:model model="correction" resource="model/correction.xml" />
+		<model:model model="inventory" resource="model/inventory.xml" />
+		<model:model model="transfer" resource="model/transfer.xml" />
+		<model:model model="warehouse" resource="model/warehouse.xml" />
+		
+		<menu:menu-category name="inventory" />
+
+		<menu:menu-item name="corrections" category="inventory"
+			view="correctionList" />
+		<menu:menu-item name="inventory" category="inventory"
+			view="inventoryList" />
+		<menu:menu-item name="transfers" category="inventory"
+			view="transferList" />
+		<menu:menu-item name="warehouses" category="inventory"
+			view="warehouseList" />
+		
+		
+		<view:view resource="view/transferList.xml" />
+		<view:view resource="view/transferDetail.xml" />
+		<view:view resource="view/correctionList.xml" />
+		<view:view resource="view/correctionDetail.xml" />
+		<view:view resource="view/inventoryDetail.xml"/>
+		<view:view resource="view/inventoryList.xml" />
+		<view:view resource="view/warehouseList.xml" />
+		<view:view resource="view/warehouseDetail.xml" />
+		<view:resource uri="public/**/*" />
+
+	</modules>
+
+</plugin>

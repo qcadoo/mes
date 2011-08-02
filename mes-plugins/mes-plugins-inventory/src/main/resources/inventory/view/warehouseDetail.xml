@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="warehouseDetail" modelName="warehouse">
+	<component type="window" name="window">
+		<ribbon>
+			<group template="navigation" />
+			<group template="formSaveCopyAndRemoveActions" />
+		</ribbon>
+		<component type="form" name="form" reference="form">
+			<component type="gridLayout" name="grid" reference="grid"
+				columns="3" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="input" name="number" field="number" />
+				</layoutElement>
+			</component>
+			<option type="header" value="true" />
+		</component>
+	</component>
+</view>

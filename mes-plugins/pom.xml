@@ -34,6 +34,7 @@
     	<module>mes-plugins-gantt-for-orders</module>
     	<module>mes-plugins-gantt-for-shifts</module>
     	<module>mes-plugins-produced-products</module>
+    	<module>mes-plugins-inventory</module>
   </modules>
 
 </project>
