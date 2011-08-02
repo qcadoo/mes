@@ -38,7 +38,8 @@
 								#{form}.performEvent('showOperationsGantt', []);
 							}
 						}
-					});		
+					});	
+						
 					#{form}.addOnChangeListener({
 						onSetValue: function(value) {
 							if (! value || ! value.content) {

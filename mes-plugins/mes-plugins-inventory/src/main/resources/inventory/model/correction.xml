@@ -7,8 +7,8 @@
 			<validatesLength max="40" />
 		</string>
 		<datetime name="correctionDate"  />
-		<belongsTo name="warehouse" model="warehouse" plugin="inventory"/>
-		<belongsTo name="product" model="product" plugin="basic" />
+		<belongsTo name="warehouse" required="true" model="warehouse" plugin="inventory"/>
+		<belongsTo name="product" required="true" model="product" plugin="basic" />
 		<decimal name="shouldBe" required="true"/>
 		<decimal name="found" required="true"/>
 		<belongsTo name="staff" model="staff" plugin="basic" />

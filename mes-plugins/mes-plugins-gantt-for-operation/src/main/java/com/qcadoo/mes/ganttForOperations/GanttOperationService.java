@@ -6,12 +6,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
@@ -22,6 +24,11 @@ public class GanttOperationService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TranslationService translationService;
+
+    private Long orderId;
 
     public void refereshGanttChart(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
@@ -40,7 +47,7 @@ public class GanttOperationService {
 
     public void showOperationsGantt(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
-        Long orderId = (Long) triggerState.getFieldValue();
+        orderId = (Long) triggerState.getFieldValue();
 
         scheduleOrder(orderId);
 
@@ -106,6 +113,21 @@ public class GanttOperationService {
         for (Entity operation : operations) {
             dataDefinition.save(operation);
         }
+    }
+
+    public void checkDoneCalculate(final ViewDefinitionState viewDefinitionState) {
+
+        ComponentState window = (ComponentState) viewDefinitionState.getComponentByReference("form");
+        System.out.println("***ala" + orderId);
+        System.out.println("***ala22" + window);
+        Entity order = dataDefinitionService.get("orders", "order").get(orderId);
+        String realizationTime = order.getStringField("realizationTime");
+        if ("".equals(realizationTime) || realizationTime == null) {
+            window.addMessage(
+                    translationService.translate("orders.order.report.realizationTime", viewDefinitionState.getLocale()),
+                    MessageType.INFO, false);
+        }
+
     }
 
 }
