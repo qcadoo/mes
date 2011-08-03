@@ -12,7 +12,7 @@
 			<component type="grid" name="grid" reference="grid">
 				<option type="column" name="warehouse" fields="warehouse" />
 				<option type="column" name="product" fields="product"
-				expression="#product['name']" />
+				expression="#product==null?'N/A':#product['name']" />
 				<option type="column" name="quantity" fields="quantity" />
 				<option type="order" column="quantity" direction="asc" />
 				<option type="correspondingView" value="inventory/inventoryDetail" /> 

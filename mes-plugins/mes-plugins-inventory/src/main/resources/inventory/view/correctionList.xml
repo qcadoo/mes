@@ -13,11 +13,11 @@
 				<option type="column" name="correctionDate" fields="correctionDate" />
 				<option type="column" name="warehouse" fields="warehouse" />
 				<option type="column" name="product" fields="product"
-				expression="#product['name']" />
+				expression="#product==null?'N/A':#product['name']" />
 				<option type="column" name="shouldBe" fields="shouldBe" />
 				<option type="column" name="found" fields="found" />
 				<option type="column" name="staff" fields="staff"
-				expression="#staff['name']" />
+				expression="#staff==null?'N/A':#staff['name']" />
 				<option type="order" column="number" direction="asc" />
 				<option type="correspondingView" value="inventory/correctionDetail" /> 
  				<option type="correspondingComponent" value="form" /> 

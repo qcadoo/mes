@@ -6,10 +6,10 @@
 		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
 		</string>
-		<datetime name="correctionDate"  />
+		<date name="correctionDate"  />
 		<belongsTo name="warehouse" required="true" model="warehouse" plugin="inventory"/>
 		<belongsTo name="product" required="true" model="product" plugin="basic" />
-		<decimal name="shouldBe" required="true"/>
+		<decimal name="shouldBe" />
 		<decimal name="found" required="true"/>
 		<belongsTo name="staff" model="staff" plugin="basic" />
 	</fields>

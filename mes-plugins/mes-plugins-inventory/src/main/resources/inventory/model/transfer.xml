@@ -7,7 +7,7 @@
 			<validatesLength max="40" />
 		</string>
 		<enum name="type" values="Movement,Consumption,Production" required="true"/>
-		<datetime name="date" readonly="true" />
+		<date name="date" readonly="true" />
 		<belongsTo name="from" model="warehouse" plugin="inventory"/>
 		<belongsTo name="to" model="warehouse" plugin="inventory" />
 		<belongsTo name="product" model="product" plugin="basic" />
