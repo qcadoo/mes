@@ -28,11 +28,6 @@
 		</license>
 	</licenses>
 
-	<modules>
-		<module>mes-plugins</module>
-		<module>mes-application</module>
-  </modules>
-
 	<properties>
 		<qcadoo.version>0.4.6-SNAPSHOT</qcadoo.version>
 		<qcadoo.saas.version>0.4.6-SNAPSHOT</qcadoo.saas.version>
@@ -299,7 +294,7 @@
 			</releases>
 		</repository>
 		<repository>
-			<id>SpringSource Enterprise Bundle Repository � External Bundle Milestones</id>
+			<id>SpringSource Enterprise Bundle Repository ? External Bundle Milestones</id>
 			<url>http://maven.springframework.org/milestone</url>
 		</repository>
 	</repositories>

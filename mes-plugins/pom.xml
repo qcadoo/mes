@@ -35,6 +35,7 @@
     	<module>mes-plugins-gantt-for-shifts</module>
     	<module>mes-plugins-produced-products</module>
     	<module>mes-plugins-inventory</module>
+    	<module>mes-plugins-production-time-norms</module>
   </modules>
 
 </project>
