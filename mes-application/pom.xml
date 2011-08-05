@@ -121,7 +121,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-production-balans</artifactId>
+			<artifactId>mes-plugins-production-balance</artifactId>
 			<version>0.4.6-SNAPSHOT</version>
 		</dependency>
 		

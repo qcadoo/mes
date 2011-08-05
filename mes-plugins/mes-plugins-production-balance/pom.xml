@@ -9,18 +9,13 @@
     <version>0.4.6-SNAPSHOT</version>
   </parent>
 
-	<artifactId>mes-plugins-production-balans</artifactId>
+	<artifactId>mes-plugins-production-balance</artifactId>
 	<packaging>qcadoo-plugin</packaging>
-	<name>Qcadoo MES :: Plugins :: Production Balans</name>
+	<name>Qcadoo MES :: Plugins :: Production Balance</name>
 
 
 
 <dependencies>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-orders</artifactId>
-			<version>0.4.6-SNAPSHOT</version>
-		</dependency>		
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-used-products</artifactId>

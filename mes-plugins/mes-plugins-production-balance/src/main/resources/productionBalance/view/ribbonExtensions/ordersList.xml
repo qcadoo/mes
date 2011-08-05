@@ -30,9 +30,9 @@
     plugin="orders"
     view="ordersList">
 
-     <group name="exportBalans">
-     <bigButton name="printBalans" icon="pdfIcon16.png"
-					action="#{grid}.generateReportForEntity('productionBalans','productionBalans','pdf')" >					
+     <group name="exportBalance">
+     <bigButton name="printBalance" icon="pdfIcon16.png"
+					action="#{grid}.generateReportForEntity('productionBalance','productionBalance','pdf')" >					
 					
 					state="disabled">
 			<script>

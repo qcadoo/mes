@@ -750,4 +750,9 @@ public final class QualityControlService {
         return searchCriteria.list().getEntities();
     }
 
+    public void checkUniqueNumber(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        DataDefinition qualityControl = dataDefinitionService.get("qualityControl", "qualityControl");
+
+    }
+
 }

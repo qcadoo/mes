@@ -246,7 +246,6 @@ public class SamplesLoaderModule extends Module {
         } else if ("shifts".equals(type)) {
             addShifts(values);
         } else if ("producedProducts".equals(type)) {
-            System.out.println("***ala2");
             addProducedProducts(values);
         } else if ("usedProducts".equals(type)) {
             addUsedProducts(values);
@@ -351,7 +350,6 @@ public class SamplesLoaderModule extends Module {
     private void addUsedProducts(final Map<String, String> values) {
         Entity usedProduct = dataDefinitionService.get("usedProducts", "usedProducts").create();
 
-        System.out.println("***ala444");
         usedProduct.setField("id", values.get("id"));
         usedProduct.setField("order", values.get("order"));
         usedProduct.setField("product", values.get("product"));
@@ -371,7 +369,6 @@ public class SamplesLoaderModule extends Module {
 
     private void addProducedProducts(final Map<String, String> values) {
 
-        System.out.println("***ala");
         Entity producedProducts = dataDefinitionService.get("producedProducts", "producedProducts").create();
 
         producedProducts.setField("id", values.get("id"));

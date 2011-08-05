@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="productionBalans" version="0.4.6"
+<plugin plugin="productionBalance" version="0.4.6"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:model="http://schema.qcadoo.org/modules/model"
@@ -18,7 +18,7 @@
        http://schema.qcadoo.org/modules/report.xsd">
 
 	<information>
-		<name>MES - Production balans</name>
+		<name>MES - Production balance</name>
 		<vendor>
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
@@ -46,7 +46,7 @@
 		
 		<view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
 		
-		<report:report-template name="productionBalans" resource="report/productionBalans.jrxml" />
+		<report:report-template name="productionBalance" resource="report/productionBalance.jrxml" />
 
 	</modules>
 

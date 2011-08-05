@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="productionBalans" pageWidth="842" pageHeight="590" orientation="Landscape" columnWidth="820" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="20" isFloatColumnFooter="true">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="productionBalance" pageWidth="842" pageHeight="590" orientation="Landscape" columnWidth="820" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="20" isFloatColumnFooter="true">
 	<property name="ireport.zoom" value="1.3310000000000006"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="93"/>
@@ -45,7 +45,7 @@
 			<textField>
 				<reportElement style="qcadooHeaderTitle" x="0" y="45" width="807" height="61"/>
 				<textElement textAlignment="Center"/>
-				<textFieldExpression class="java.lang.String"><![CDATA["<font color=\"#464646\">"+ $R{productionBalans.productionBalans.report.productionBalans}+ "</font> " + $F{orders_order_name}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["<font color=\"#464646\">"+ $R{productionBalance.productionBalance.report.productionBalance}+ "</font> " + $F{orders_order_name}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement style="qcadooHeaderLine" x="0" y="106" width="807" height="1"/>

@@ -94,6 +94,7 @@
 				rows="11">
 				<layoutElement column="1" row="1">
 					<component type="input" name="number" field="number" />
+<!-- 					<listener event="onSave" class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkUniqueNumber" /> -->
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="lookup" name="order" reference="order"
@@ -143,6 +144,7 @@
 						<option type="textRepresentationOnDisabled" value="false" />
 					</component>
 				</layoutElement>
+				
 			</component>
 			<component type="select" name="qualityControlType"
 				reference="qualityControlType" field="qualityControlType"
