@@ -754,8 +754,8 @@ public final class QualityControlService {
         FieldComponent number = (FieldComponent) viewDefinitionState.getComponentByReference("number");
         FieldComponent quantityControlType = (FieldComponent) viewDefinitionState.getComponentByReference("quantityControlType");
 
-        System.out.println("***ala" + number);
-        System.out.println("***ala" + quantityControlType);
+        // System.out.println("***ala" + number);
+        // System.out.println("***ala" + quantityControlType);
     }
 
 }
