@@ -49,6 +49,7 @@
 			values="qualityControlsForOrder,qualityControlsForUnit,qualityControlsForBatch,qualityControlsForOperation" />
 	</fields>
 	<hooks>
+<!-- 		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkUniqueNumber"/> -->
 		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="checkIfCommentForResultOrQuantityIsReq" />
 		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService"
