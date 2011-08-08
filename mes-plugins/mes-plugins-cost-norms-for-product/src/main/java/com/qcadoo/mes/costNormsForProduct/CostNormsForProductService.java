@@ -2,12 +2,8 @@ package com.qcadoo.mes.costNormsForProduct;
 
 import java.util.Arrays;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -16,11 +12,6 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class CostNormsForProductService {
 
-	@Autowired
-	private DataDefinitionService dataDefinitionService;
-	
-	private final Logger log = LoggerFactory.getLogger("com.qcadoo.plugin");
-	
 	/* ****** VIEW HOOKS ******* */
 	
 	public void fillCostTabUnit(final ViewDefinitionState viewDefinitionState) {
@@ -40,6 +31,7 @@ public class CostNormsForProductService {
 		for(String componentReference : Arrays.asList("nominalCostCurrency", "lastPurchaseCostCurrency", "averageCostCurrency")) {
 			//temporary
 			viewDefinitionState.getComponentByReference(componentReference).setFieldValue("PLN");
+			viewDefinitionState.getComponentByReference(componentReference).setEnabled(false);
 		}
 	}
 	

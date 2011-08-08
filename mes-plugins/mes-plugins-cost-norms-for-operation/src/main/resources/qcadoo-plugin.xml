@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="costNorms" version="0.4.6"
+<plugin plugin="costNormsForOperation" version="0.4.6"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -20,7 +20,7 @@
        http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
-		<name>MES - Cost Norms</name>
+		<name>MES - Cost Norms for Operation</name>
 		<vendor>
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
@@ -55,7 +55,14 @@
             </model:decimal>
         </model:model-field>
         <model:model-field plugin="technologies" model="operation" >
-            <model:decimal name="hourlyCost">
+            <model:decimal name="laborHourlyCost">
+                <validatesRange from="0" exclusively="true" />
+                <validatesPrecision max="7" />
+                <validatesScale max="3" />
+            </model:decimal>
+        </model:model-field>
+        <model:model-field plugin="technologies" model="operation" >
+            <model:decimal name="machineHourlyCost">
                 <validatesRange from="0" exclusively="true" />
                 <validatesPrecision max="7" />
                 <validatesScale max="3" />
@@ -78,7 +85,14 @@
             </model:decimal>
         </model:model-field>
         <model:model-field plugin="productionScheduling" model="orderOperationComponent" >
-            <model:decimal name="hourlyCost">
+            <model:decimal name="laborHourlyCost">
+                <validatesRange from="0" exclusively="true" />
+                <validatesPrecision max="7" />
+                <validatesScale max="3" />
+            </model:decimal>
+        </model:model-field>
+        <model:model-field plugin="productionScheduling" model="orderOperationComponent" >
+            <model:decimal name="machineHourlyCost">
                 <validatesRange from="0" exclusively="true" />
                 <validatesPrecision max="7" />
                 <validatesScale max="3" />
@@ -101,7 +115,14 @@
             </model:decimal>
         </model:model-field>
         <model:model-field plugin="technologies" model="technologyOperationComponent" >
-            <model:decimal name="hourlyCost">
+            <model:decimal name="laborHourlyCost">
+                <validatesRange from="0" exclusively="true" />
+                <validatesPrecision max="7" />
+                <validatesScale max="3" />
+            </model:decimal>
+        </model:model-field>
+        <model:model-field plugin="technologies" model="technologyOperationComponent" >
+            <model:decimal name="machineHourlyCost">
                 <validatesRange from="0" exclusively="true" />
                 <validatesPrecision max="7" />
                 <validatesScale max="3" />
@@ -117,11 +138,11 @@
 
         <!-- operation - technology -->
         <view:view-hook plugin="technologies" view="technologyOperationComponentDetails" type="beforeRender" 
-            class="com.qcadoo.mes.costNorms.CostNormsService" method="inheirtOperationCostValuesFromOperation" />
+            class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService" method="inheirtOperationCostValuesFromOperation" />
         
         <!-- operation - instance of technology -->
         <view:view-hook plugin="productionScheduling" view="orderOperationComponentDetails" type="beforeRender" 
-            class="com.qcadoo.mes.costNorms.CostNormsService" method="inheirtOperationCostValuesFromTechnology" />
+            class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService" method="inheirtOperationCostValuesFromTechnology" />
 
 	</modules>
 

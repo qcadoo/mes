@@ -1,4 +1,4 @@
-package com.qcadoo.mes.costNorms;
+package com.qcadoo.mes.costNormsForOperation;
 
 import java.util.Arrays;
 
@@ -12,7 +12,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public class CostNormsService {
+public class CostNormsForOperationService {
 
 	@Autowired
 	private DataDefinitionService dataDefinitionService;
@@ -41,7 +41,7 @@ public class CostNormsService {
 	
 	private void applyCostValuesFromoperation(final ViewDefinitionState viewDefinitionState, final Entity source) {
 		if (source != null) {
-			for(String componentReference : Arrays.asList("pieceworkCost", "numberOfOperations", "hourlyCost")) {
+			for(String componentReference : Arrays.asList("pieceworkCost", "numberOfOperations", "laborHourlyCost", "machineHourlyCost")) {
 				ComponentState component = (ComponentState) viewDefinitionState.getComponentByReference(componentReference);
 				if (component.getFieldValue().toString().isEmpty()) {
 					component.setFieldValue(source.getField(componentReference));

@@ -9,7 +9,7 @@
 	    <version>0.4.6-SNAPSHOT</version>
 	</parent>	
 
-	<artifactId>mes-plugins-cost-norms</artifactId>
+	<artifactId>mes-plugins-cost-norms-for-operation</artifactId>
 	<packaging>qcadoo-plugin</packaging>
 	
 	

@@ -41,9 +41,9 @@
         <view:view-tab resource="view/productDetails.xml" />
         
         <view:view-hook plugin="basic" view="productDetails" type="beforeRender" 
-            class="com.qcadoo.mes.costNorms.CostNormsService" method="fillCostTabUnit" />
+            class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" method="fillCostTabUnit" />
         <view:view-hook plugin="basic" view="productDetails" type="beforeRender" 
-            class="com.qcadoo.mes.costNorms.CostNormsService" method="fillCostTabCurrency" />
+            class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" method="fillCostTabCurrency" />
         
         <model:model-field plugin="basic" model="product" >
             <model:integer name="costForNumber" default="1" >
