@@ -124,6 +124,7 @@
 			<artifactId>mes-plugins-production-balance</artifactId>
 			<version>0.4.6-SNAPSHOT</version>
 		</dependency>
+	
 		
 		<!-- TODO develop purpose only -->
 		<!--<dependency> <groupId>com.qcadoo.mes</groupId> <artifactId>mes-commercial-plugins-integration-commons</artifactId> 

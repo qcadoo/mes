@@ -751,8 +751,11 @@ public final class QualityControlService {
     }
 
     public void checkUniqueNumber(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        DataDefinition qualityControl = dataDefinitionService.get("qualityControl", "qualityControl");
+        FieldComponent number = (FieldComponent) viewDefinitionState.getComponentByReference("number");
+        FieldComponent quantityControlType = (FieldComponent) viewDefinitionState.getComponentByReference("quantityControlType");
 
+        System.out.println("***ala" + number);
+        System.out.println("***ala" + quantityControlType);
     }
 
 }

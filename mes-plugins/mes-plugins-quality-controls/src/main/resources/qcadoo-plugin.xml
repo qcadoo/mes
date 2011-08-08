@@ -64,6 +64,7 @@
 		<localization:translation path="locales" />
 
 		<model:model model="qualityControl" resource="model/qualityControl.xml" />
+		
 		<model:model-field plugin="technologies" model="technology">
 			<model:enum name="qualityControlType"
 				values="02forUnit,03forOrder" />
