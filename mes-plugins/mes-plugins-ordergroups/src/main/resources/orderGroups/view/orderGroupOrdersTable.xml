@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="orderGroupOrdersTable"
+	modelName="order"
+	modelPlugin="orders" >
+	
+	<component type="window" name="window">
+		<ribbon>
+			<group name="navigation">
+			     <bigButton name="select" icon="acceptIcon24.png">
+			         <script>
+			             <![CDATA[
+			                 var assignedOrders = "";
+			                 var contextJSON = $.parseJSON(context);
+			                 var groupName = decodeURIComponent(escape(contextJSON['window.mainTab.orderGroup.name'])); // UTF-8 (quick)fix
+			                 var groupDateFrom = contextJSON['window.mainTab.orderGroup.dateFrom'];
+			                 var groupDateTo = contextJSON['window.mainTab.orderGroup.dateTo'];
+			                 
+			                 var headerLabel = "#{translate(orderGroups.orderGroupOrdersTable.window.mainTab.orderGroupOrders.headerNew)} <span>" + groupName + " ";
+			                 if(groupDateFrom != "..." || groupDateTo != "...") {
+			                     headerLabel += "( ";
+                                 headerLabel += groupDateFrom;
+                                 headerLabel += " - ";
+                                 headerLabel += groupDateTo;
+                                 headerLabel += " )";       
+                             }                      
+                             headerLabel += "</span>";
+			                 $(".tabWindowHeader").html(headerLabel);
+			                 
+			                 this.addOnChangeListener({
+			                     onClick: function() {
+			                         if(checkAssigment(assignedOrders)) {
+			                             #{form}.fireEvent(this, 'addOrdersToGroup');
+			                         }
+			                     }
+			                 });
+			                 
+			                 #{orders}.addOnChangeListener({
+			                     onChange: function(selectedArray) {
+			                         assignedOrders = "";
+			                         var groupId = contextJSON['window.mainTab.orderGroup.id'];
+			                         
+			                         if(!selectedArray || selectedArray.length == 0) {
+			                             this.disable();
+			                         } else {
+			                             this.enable();
+			                             for(i in selectedArray) {
+                                            if((typeof selectedArray[i]['fields']['orderGroup'] != "undefined") && (groupId != selectedArray[i]['fields']['orderGroupId'])) {
+                                                assignedOrders += '"' + selectedArray[i]['fields']['name'] + '":\n\t"' + selectedArray[i]['fields']['orderGroup'] + '" --> "' + groupName + '"\n';
+                                            }
+                                         }
+			                         }
+			                     }
+			                 });                           
+			                 
+			                 function checkAssigment(assignedOrdersNames) {
+                                if(assignedOrdersNames.length > 0) {
+                                    if(!confirm("#{translate(orderGroups.popup.confirm.confirmOrderTransferText)}" + '\n\n' + assignedOrdersNames)) {
+                                        return false;
+                                    }
+                                }
+                                return true;
+			                 }
+			                 
+			             ]]>
+			         </script>
+			     </bigButton>
+			     <bigButton name="cancel" icon="cancelIcon24.png" action="#{window}.performBack;" />
+			</group>
+		</ribbon>
+		
+		<component type="form" name="orderGroup" reference="orderGroup">
+		</component>
+		
+		<component type="form" name="orderGroupOrders" reference="form">
+			<component type="gridLayout" name="gridLayout" columns="1" rows="2">
+				<layoutElement column="1" row="1">
+					<component type="grid" name="orders" reference="orders" >
+					   <option type="column" name="number" fields="number" width="75" />
+					   <option type="column" name="name" fields="name" width="200" />
+					   <option type="column" name="orderGroup" fields="orderGroup" expression="#orderGroup != null ? #orderGroup['name'] : ''" width="200" />
+					   <option type="column" name="orderGroupId" fields="orderGroup" hidden="true" />
+                       <option type="column" name="dateFromShort" fields="dateFrom" width="160" />
+                       <option type="column" name="dateToShort" fields="dateTo" width="160" />
+                            
+                       <option type="searchable" value="number,name,dateFrom,dateTo" />
+                       <option type="orderable" value="number,name,dateFrom,dateTo" />
+                        
+                       <option type="order" column="number" direction="desc" />
+                       <option type="multiselect" value="true" />
+					</component>
+				</layoutElement>
+			</component>
+			<option type="header" value="false" />
+			<option type="expression" value="#name" />
+			
+			<listener event="addOrdersToGroup" class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="addOrdersToGroup" />
+		</component>
+	</component>
+</view>

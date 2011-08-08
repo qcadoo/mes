@@ -71,7 +71,7 @@
 							</component>
 						</layoutElement>
 					</component>
-<!-- 					<listener event="save" class="com.qcadoo.mes.ganttForOperations.GanttOperationService" method="refereshGanttChart" />			 -->
+					<listener event="save" class="com.qcadoo.mes.ganttForOperations.GanttOperationService" method="refereshGanttChart" />			
 				</component>
 			</layoutElement>
 		</component>
