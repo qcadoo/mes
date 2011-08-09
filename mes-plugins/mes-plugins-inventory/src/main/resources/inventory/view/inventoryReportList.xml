@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="inventoryReportList" 
+	modelName="inventoryReport" 
+	menuAccessible="true">
+		<component type="window" name="window">
+			<ribbon>
+				<template name="standardGridTemplate" />
+				<group name="export">
+				<smallButton name="pdf" icon="pdfIcon16.png"
+					action="#{grid}.fireEvent(printInventory,pdf);" state="disabled"
+					message="noRecordSelected" />
+				<smallButton name="xls" icon="xlsIcon16.png"
+					action="#{grid}.fireEvent(printInventory,xls);" state="disabled"
+					message="noRecordSelected" />
+			</group>
+			</ribbon>
+			<component type="grid" name="inventoryReports" reference="grid">
+				<option type="column" name="name" fields="name" link="true"
+					width="300" />
+				<option type="column" name="generated" fields="generated"
+					link="false" />
+				<option type="column" name="staff" fields="staff" width="200" />
+				<option type="order" column="name" direction="asc" />
+				<option type="searchable" value="name,generated,worker" />
+				<option type="orderable" value="name,generated,worker" />
+				<option type="correspondingView" value="inventory/inventoryReportDetails" />
+				<option type="correspondingComponent" value="form" />
+				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
+<!-- 				<listener event="printInventory" -->
+<!-- 					class="com.qcadoo.mes.inventory.InventoryService" method="printInventory" /> -->
+				
+		</component>
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+	<hooks>
+<!-- 		<beforeRender class="com.qcadoo.mes.inventory.InventoryService" -->
+<!-- 			method="setGridGenerateButtonState" /> -->
+	</hooks>
+</view>

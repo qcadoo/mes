@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="warehouse" version="0.1.1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+    xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+    xmlns:menu="http://schema.qcadoo.org/modules/menu"
+    xmlns:localization="http://schema.qcadoo.org/modules/localization"
+    xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd">
+
+    <information>
+        <name>Warehouse Module</name>
+        <vendor>
+            <name>Warehouse Corp</name>
+            <url>www.warehousecorp.con</url>
+        </vendor>
+    </information>
+    
+    <dependencies>
+        <dependency>
+            <plugin>basic</plugin>
+        </dependency>
+    </dependencies>
+
+
+    <modules>
+        <localization:translation path="locales" />
+        
+        <model:model model="resource" resource="model/resource.xml" />
+        <model:model model="transfer" resource="model/transfer.xml" />
+        
+        <menu:menu-category name="warehouse" />
+
+        <menu:menu-item name="resources" category="warehouse"
+            view="resourceList" />
+        <menu:menu-item name="transfers" category="warehouse"
+            view="transferList" />
+
+        <view:view resource="view/resourceList.xml" />
+        <view:view resource="view/resourceDetails.xml" />
+        <view:view resource="view/transferList.xml"/>
+        <view:view resource="view/transferDetails.xml" />
+        
+        <view:resource uri="public/**/*" />
+
+    </modules>
+
+</plugin>
