@@ -127,15 +127,13 @@
 					this.addOnChangeListener(listener);
 				]]>
 			</script>
-			<option type="column" name="number" fields="number" link="true"
-				width="50" />
+			<option type="column" name="number" fields="number" link="true" width="30" />
 			<option type="column" name="name" fields="name" link="true" />
-			<option type="column" name="state" fields="state" width="40" />
-			<option type="column" name="dateFrom" fields="dateFrom"
-				width="40" />
-			<option type="column" name="dateTo" fields="dateTo" width="40" />
-  			<option type="column" name="product" fields="product" width="25" />
- 			<option type="column" name="technology" fields="technology" width="25" />
+			<option type="column" name="state" fields="state" width="35" />
+			<option type="column" name="dateFrom" fields="dateFrom" width="50" />
+			<option type="column" name="dateTo" fields="dateTo" width="50" />
+  			<option type="column" name="product" fields="product" expression="#product==null?'N/A':#product['name']" />
+ 			<option type="column" name="technology" fields="technology" expression="#technology==null?'N/A':#technology['name']" />
  			<option type="column" name="plannedQuantity" fields="plannedQuantity" width="35" />
  			<option type="column" name="doneQuantity" fields="doneQuantity" width="40" />
 			<option type="order" column="number" direction="desc" />
