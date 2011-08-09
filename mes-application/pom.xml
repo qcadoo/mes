@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -134,9 +135,9 @@
 			<artifactId>mes-plugins-cost-norms</artifactId>
 			<version>0.4.6-SNAPSHOT</version>
 		</dependency>
-	
-		
-		
+
+
+
 		<!-- TODO develop purpose only -->
 		<!--<dependency> <groupId>com.qcadoo.mes</groupId> <artifactId>mes-commercial-plugins-integration-commons</artifactId> 
 			<version>1.0.0</version> </dependency> <dependency> <groupId>com.qcadoo.mes</groupId> 
@@ -253,7 +254,7 @@
 								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-stoppage/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-used-products/src/main/resources;
-							</resourcesAsCSV>
+</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>
 				</configuration>
@@ -270,7 +271,8 @@
 						<configuration>
 							<tasks>
 								<mkdir dir="${basedir}/target/classes" />
-								<exec command="git rev-list --max-count=1 --all" osfamily="unix" outputproperty="build.revision" />
+								<exec command="git rev-list --max-count=1 --all" osfamily="unix"
+									outputproperty="build.revision" />
 								<tstamp>
 									<format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" />
 								</tstamp>
@@ -284,7 +286,7 @@
 									buildNumber = ${build.number}
 									buildRevision =
 									${build.revision}
-								</echo>
+</echo>
 							</tasks>
 						</configuration>
 					</execution>
@@ -337,7 +339,7 @@
 						<configuration>
 							<jdbcDriver>${basedir}/driver/postgresql-8.4-701.jdbc4.jar</jdbcDriver>
 							<configuration>${basedir}/conf/${profile.name}/</configuration>
-                                                        <rootFilesDirectory>${basedir}/root/</rootFilesDirectory>
+							<rootFilesDirectory>${basedir}/root/</rootFilesDirectory>
 						</configuration>
 						<executions>
 							<execution>
@@ -366,7 +368,8 @@
 								<phase>deploy</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/Users/tomcat/deploy/${profile.name}.zip" />
+										<copy file="${basedir}/target/${project.artifactId}.zip"
+											tofile="/Users/tomcat/deploy/${profile.name}.zip" />
 									</target>
 								</configuration>
 								<goals>
