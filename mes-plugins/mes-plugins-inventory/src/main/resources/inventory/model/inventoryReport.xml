@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="inventoryReport" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<string name="name" required="true">
+			<validatesLength max="255" />
+		</string>
+		<date name="inventoryForDate" />
+		<date name="generationDate" />
+		<belongsTo name="staff" model="staff" plugin="basic" />
+		<boolean name="generated" />
+		<belongsTo name="warehouse" model="warehouse" plugin="inventory"/>
+	</fields>
+	<hooks>
+	</hooks>
+</model>
