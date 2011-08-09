@@ -27,37 +27,37 @@
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-	plugin="technologies" view="technologyOperationComponentDetails">
+	plugin="technologies" view="operationDetails">
 
 	<windowTab name="norm" reference="norm">
-		<component type="gridLayout" name="gridsLayout" columns="1" rows="5">
+		<component type="gridLayout" name="gridsLayout" columns="3"
+			rows="5">
 			<layoutElement column="1" row="1">
 				<component type="time" name="tpz" field="#{form}.tpz"
-					reference="tpz" defaultEnabled="false" />
+					reference="tpz" required="true" />
 			</layoutElement>
 			<layoutElement column="1" row="2">
 				<component type="time" name="tj" field="#{form}.tj"
-					reference="tj" defaultEnabled="false" />
+					reference="tj" required="true" />
 			</layoutElement>
 			<layoutElement column="1" row="3">
-				<component type="select" name="countRealized" field="#{form}.countRealized"
-					reference="countRealized" hasDescription="true" defaultEnabled="false">
+				<component type="select" name="countRealizedOperation"
+					field="#{form}.countRealizedOperation" reference="countRealizedOperation"
+					hasDescription="true">
 					<option type="required" value="true" />
 					<listener event="onSelectedEntityChange"
-						class="com.qcadoo.mes.productionScheduling.NormService" method="changeCountRealizedNorm" />
+						class="com.qcadoo.mes.productionTimeNorms.OperationService"
+						method="changeCountRealizedOperation" required="true" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="4">
-				<component type="input" name="countMachine" field="#{form}.countMachine"
-					reference="countMachine" hasDescription="true" defaultEnabled="false">
-					<validatesLength max="7" />
-					<validatesPrecision max="3" />
-				</component>
+				<component type="input" name="countMachineOperation"
+					field="#{form}.countMachineOperation" reference="countMachineOperation"
+					hasDescription="true" defaultEnabled="false" />
 			</layoutElement>
 			<layoutElement column="1" row="5">
-				<component type="time" name="timeNextOperation"
-					field="#{form}.timeNextOperation" reference="timeNextOperation"
-					hasDescription="true" defaultEnabled="false" />
+				<component type="time" name="timeNextOperation" field="#{form}.timeNextOperation"
+					reference="timeNextOperation" hasDescription="true" required="true" />
 			</layoutElement>
 		</component>
 	</windowTab>

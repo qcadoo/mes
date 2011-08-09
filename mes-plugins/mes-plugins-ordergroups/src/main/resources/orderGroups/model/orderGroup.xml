@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="orderGroup" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<string name="number" required="true" unique="true">
+			<validatesLength max="40" />
+			<validatesRegex pattern="^[a-zA-Z0-9\\_\\.\\(\\)]+$" />
+		</string>
+		<string name="name" required="true" />
+		<date name="dateFrom" />
+		<date name="dateTo" />
+        <hasMany name="orders" model="order" plugin="orders" joinField="orderGroup" cascade="delete" />
+	</fields>
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="validateDates" />
+	</hooks>
+	<identifier expression="#number + ' - ' + #name" />
+</model>

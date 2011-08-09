@@ -114,6 +114,27 @@
 			<artifactId>mes-plugins-inventory</artifactId>
 			<version>0.4.6-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-production-time-norms</artifactId>
+			<version>0.4.6-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-production-balance</artifactId>
+			<version>0.4.6-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-cost-norms-for-product</artifactId>
+			<version>0.4.6-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-cost-norms</artifactId>
+			<version>0.4.6-SNAPSHOT</version>
+		</dependency>
+	
 		
 		
 		<!-- TODO develop purpose only -->
