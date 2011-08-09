@@ -118,8 +118,6 @@ public class GanttOperationService {
     public void checkDoneCalculate(final ViewDefinitionState viewDefinitionState) {
 
         ComponentState window = (ComponentState) viewDefinitionState.getComponentByReference("form");
-        System.out.println("***ala" + orderId);
-        System.out.println("***ala22" + window);
         Entity order = dataDefinitionService.get("orders", "order").get(orderId);
         String realizationTime = order.getStringField("realizationTime");
         if ("".equals(realizationTime) || realizationTime == null) {

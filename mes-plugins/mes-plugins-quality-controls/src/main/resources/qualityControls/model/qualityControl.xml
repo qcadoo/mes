@@ -31,7 +31,7 @@
 		<belongsTo name="order" model="order" plugin="orders"
 			required="true" />
 		<belongsTo name="operation" model="operation" plugin="technologies" />
-		<string name="number" required="true" unique="true" />
+		<string name="number" required="true"  />
 		<enum name="controlResult" values="01correct,02incorrect,03objection" />
 		<string name="batchNr" />
 		<string name="comment" />
@@ -49,7 +49,7 @@
 			values="qualityControlsForOrder,qualityControlsForUnit,qualityControlsForBatch,qualityControlsForOperation" />
 	</fields>
 	<hooks>
-<!-- 		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService" method="checkUniqueNumber"/> -->
+		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlForNumberService" method="checkUniqueNumber"/>
 		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="checkIfCommentForResultOrQuantityIsReq" />
 		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService"

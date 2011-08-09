@@ -45,8 +45,6 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
@@ -56,7 +54,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public final class QualityControlService {
@@ -71,7 +68,7 @@ public final class QualityControlService {
     private TranslationService translationService;
 
     @Autowired
-    private NumberGeneratorService numberGeneratorService;
+    private QualityControlForNumberService qualityControlForNumber;
 
     public void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state) {
         FieldComponent comment = (FieldComponent) state.getComponentByReference("comment");
@@ -636,10 +633,8 @@ public final class QualityControlService {
 
                 Entity forUnit = qualityForUnitDataDefinition.create();
                 forUnit.setField("order", order);
-                forUnit.setField("number", numberGeneratorService.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                        QualityControlsConstants.MODEL_QUALITY_CONTROL));
-                // generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                // QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, qualityControlType));
+                forUnit.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlsForUnit"));
                 forUnit.setField("closed", false);
                 forUnit.setField("qualityControlType", "qualityControlsForUnit");
                 forUnit.setField("takenForControlQuantity", BigDecimal.ONE);
@@ -657,17 +652,19 @@ public final class QualityControlService {
                         return;
                     }
                 }
-
                 setControlInstruction(order, forUnit);
-
                 qualityForUnitDataDefinition.save(forUnit);
             }
         } else if ("03forOrder".equals(qualityControlType)) {
             createAndSaveControlForSingleOrder(order);
         } else if ("04forOperation".equals(qualityControlType)) {
+            System.out.println("***alaxxx");
             EntityTree tree = technology.getTreeField("operationComponents");
             for (Entity entity : tree) {
+                System.out.println("***alafor");
                 if (entity.getField("qualityControlRequired") != null && (Boolean) entity.getField("qualityControlRequired")) {
+
+                    System.out.println("***ala");
                     createAndSaveControlForOperation(order, entity);
                 }
 
@@ -676,15 +673,14 @@ public final class QualityControlService {
     }
 
     private void createAndSaveControlForOperation(final Entity order, final Entity entity) {
+        System.out.println("***ala2222");
         DataDefinition qualityForOperationDataDefinition = dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
                 QualityControlsConstants.MODEL_QUALITY_CONTROL);
 
         Entity forOperation = qualityForOperationDataDefinition.create();
         forOperation.setField("order", order);
-        forOperation.setField("number", numberGeneratorService.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                QualityControlsConstants.MODEL_QUALITY_CONTROL));
-        // generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER, QualityControlsConstants.MODEL_QUALITY_CONTROL, 6,
-        // "qualityControlForOperation"));
+        forOperation.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlForOperation"));
         forOperation.setField("operation", entity.getBelongsToField("operation"));
         forOperation.setField("closed", false);
         forOperation.setField("qualityControlType", "qualityControlsForOperation");
@@ -700,10 +696,8 @@ public final class QualityControlService {
 
         Entity forOrder = qualityForOrderDataDefinition.create();
         forOrder.setField("order", order);
-        forOrder.setField("number", numberGeneratorService.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                QualityControlsConstants.MODEL_QUALITY_CONTROL));
-        // generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER, QualityControlsConstants.MODEL_QUALITY_CONTROL, 6,
-        // "qualityControlForOrder"));
+        forOrder.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlsForOrder"));
         forOrder.setField("closed", false);
         forOrder.setField("qualityControlType", "qualityControlsForOrder");
 
@@ -718,10 +712,8 @@ public final class QualityControlService {
 
         Entity forBatch = qualityForBatchDataDefinition.create();
         forBatch.setField("order", order);
-        forBatch.setField("number", numberGeneratorService.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                QualityControlsConstants.MODEL_QUALITY_CONTROL));
-        // generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER, QualityControlsConstants.MODEL_QUALITY_CONTROL, 6,
-        // "qualityControlForBatch"));
+        forBatch.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlsForBatch"));
         forBatch.setField("batchNr", genealogy.getField("batch"));
         forBatch.setField("closed", false);
         forBatch.setField("qualityControlType", "qualityControlsForBatch");
@@ -748,6 +740,10 @@ public final class QualityControlService {
         qualityForBatchDataDefinition.save(forBatch);
     }
 
+    private void createAndSaveControlForUnit() {
+
+    }
+
     private void setControlInstruction(final Entity order, final Entity qualityControl) {
         String qualityControlInstruction = (String) order.getBelongsToField("technology").getField("qualityControlInstruction");
 
@@ -764,46 +760,4 @@ public final class QualityControlService {
         return searchCriteria.list().getEntities();
     }
 
-    public void checkUniqueNumber(final ViewDefinitionState viewDefinitionState, final ComponentState state, String[] args) {
-
-        FieldComponent qualityControlType = (FieldComponent) viewDefinitionState.getComponentByReference("qualityControlType");
-        FieldComponent number = (FieldComponent) viewDefinitionState.getComponentByReference("number");
-
-        DataDefinition quantityControlDD = dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                QualityControlsConstants.MODEL_QUALITY_CONTROL);
-
-        SearchQueryBuilder searchQueryBuilder = quantityControlDD.find("where number = '" + number.getFieldValue()
-                + "' and qualityControlType = '" + qualityControlType.getFieldValue() + "'");
-        if (searchQueryBuilder != null) {
-            SearchResult searchResult = searchQueryBuilder.list();
-
-            System.out.println("***alal" + searchResult);
-
-            if (searchResult != null && searchResult.getTotalNumberOfEntities() > 0) {
-                return;
-            }
-
-        }
-    }
-
-    public String generateNumber(final String plugin, final String entityName, final int digitsNumber,
-            final String qualityControlType) {
-
-        SearchResult results = dataDefinitionService.get(plugin, entityName).find().setMaxResults(1)
-                .addOrder(SearchOrders.desc("id")).list();
-
-        SearchResult searchResult = dataDefinitionService.get(plugin, entityName)
-                .find("number where qualityControlType = '" + qualityControlType + "'").setMaxResults(1).list();
-
-        System.out.println("***ala" + searchResult);
-        long longValue = 0;
-
-        if (results.getEntities().isEmpty()) {
-            longValue++;
-        } else {
-            longValue = results.getEntities().get(0).getId() + 1;
-        }
-
-        return String.format("%0" + digitsNumber + "d", longValue);
-    }
 }
