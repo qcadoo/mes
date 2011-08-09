@@ -13,10 +13,16 @@ public interface InventoryConstants {
 
     public static final String MODEL_WAREHOUSE = "warehouse";
 
+    public static final String MODEL_INVENTORY_REPORT = "inventoryReport";
+
     // VIEW
     public static final String VIEW_CORRECTION_DETAIL = "correctionDetail";
 
     public static final String VIEW_CORRECTION_LIST = "correctionDetail";
+
+    public static final String VIEW_INVENTORY_REPORT_DETAILS = "inventoryReportDetails";
+
+    public static final String VIEW_INVENTORY_REPORT_LIST = "inventoryReportList";
 
     public static final String VIEW_INVENTORY_DETAIL = "inventoryDetail";
 
