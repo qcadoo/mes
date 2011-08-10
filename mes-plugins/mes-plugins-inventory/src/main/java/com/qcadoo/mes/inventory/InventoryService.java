@@ -1,24 +1,56 @@
 package com.qcadoo.mes.inventory;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.lowagie.text.DocumentException;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.inventory.constants.InventoryConstants;
+import com.qcadoo.mes.inventory.print.pdf.InventoryPdfService;
+import com.qcadoo.mes.inventory.print.xls.InventoryXlsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class InventoryService {
 
     @Autowired
     DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private SecurityService securityService;
+
+    @Autowired
+    private InventoryPdfService inventoryPdfService;
+
+    @Autowired
+    private InventoryXlsService inventoryXlsService;
+
+    @Value("${reportPath}")
+    private String path;
 
     BigDecimal calculateShouldBe(String warehouse, String product, String forDate) {
 
@@ -108,16 +140,198 @@ public class InventoryService {
 
     }
 
-    public void printInventory(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    // do zmiany
+    public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+        entity.setField("fileName", null);
+        entity.setField("generated", false);
+        entity.setField("generationDate", null);
+        entity.setField("staff", null);
+        return true;
+    }
 
+    public void setGenerateButtonState(final ViewDefinitionState state) {
+        setGenerateButtonState(state, state.getLocale(), InventoryConstants.PLUGIN_IDENTIFIER,
+                InventoryConstants.MODEL_INVENTORY_REPORT);
+    }
+
+    public void setGridGenerateButtonState(final ViewDefinitionState state) {
+        setGridGenerateButtonState(state, state.getLocale(), InventoryConstants.PLUGIN_IDENTIFIER,
+                InventoryConstants.MODEL_INVENTORY_REPORT);
+    }
+
+    // DO ZMIANY
+    @SuppressWarnings("unchecked")
+    public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
+            final String entityName) {
+        WindowComponent window = (WindowComponent) state.getComponentByReference("window");
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
+        RibbonActionItem generateButton = window.getRibbon().getGroupByName("generate").getItemByName("generate");
+        RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
+
+        if (form.getEntityId() == null) {
+            generateButton.setMessage("recordNotCreated");
+            generateButton.setEnabled(false);
+            deleteButton.setMessage(null);
+            deleteButton.setEnabled(false);
+        } else {
+
+            Entity inventoryReportEntity = dataDefinitionService.get(plugin, entityName).get(form.getEntityId());
+
+            if (inventoryReportEntity.getField("generated") == null)
+                inventoryReportEntity.setField("generated", "0");
+
+            if ("1".equals(inventoryReportEntity.getField("generated"))) {
+                generateButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");
+                generateButton.setEnabled(false);
+                deleteButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");
+                deleteButton.setEnabled(false);
+            } else {
+                generateButton.setMessage(null);
+                generateButton.setEnabled(true);
+                deleteButton.setMessage(null);
+                deleteButton.setEnabled(true);
+            }
+
+        }
+        generateButton.requestUpdate(true);
+        deleteButton.requestUpdate(true);
+        window.requestRibbonRender();
+    }
+
+    // DO ZMIANY
+    @SuppressWarnings("unchecked")
+    public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
+            final String entityName) {
+        WindowComponent window = (WindowComponent) state.getComponentByReference("window");
+        GridComponent grid = (GridComponent) state.getComponentByReference("grid");
+        RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
+
+        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
+            deleteButton.setMessage(null);
+            deleteButton.setEnabled(false);
+        } else {
+            boolean canDelete = true;
+            for (Long entityId : grid.getSelectedEntitiesIds()) {
+                Entity inventoryReportEntity = dataDefinitionService.get(plugin, entityName).get(entityId);
+
+                if ((Boolean) inventoryReportEntity.getField("generated")) {
+                    canDelete = false;
+                    break;
+                }
+            }
+            if (canDelete) {
+                deleteButton.setMessage(null);
+                deleteButton.setEnabled(true);
+            } else {
+                deleteButton.setMessage("orders.ribbon.message.selectedRecordAlreadyGenerated");
+                deleteButton.setEnabled(false);
+            }
+        }
+
+        deleteButton.requestUpdate(true);
+        window.requestRibbonRender();
+    }
+
+    public void printInventory(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (state.getFieldValue() instanceof Long) {
+            Entity inventoryReport = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
+                    InventoryConstants.MODEL_INVENTORY_REPORT).get((Long) state.getFieldValue());
+            if (inventoryReport == null) {
+                state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
+                        MessageType.FAILURE);
+            } else if (!StringUtils.hasText(inventoryReport.getStringField("fileName"))) {
+                state.addMessage(
+                        translationService.translate(
+                                "inventory.inventoryReportDetails.window.materialRequirement.documentsWasNotGenerated",
+                                state.getLocale()), MessageType.FAILURE);
+            } else {
+                viewDefinitionState.redirectTo("/inventory/inventoryReport." + args[0] + "?id=" + state.getFieldValue(), false,
+                        false);
+            }
+        } else {
+            if (state instanceof FormComponent) {
+                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
+                        MessageType.FAILURE);
+            }
+        }
     }
 
     public void generateInventory(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (state instanceof FormComponent) {
+            ComponentState generated = viewDefinitionState.getComponentByReference("generated");
+            ComponentState generationDate = viewDefinitionState.getComponentByReference("generationDate");
 
+            Entity inventoryReport = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
+                    InventoryConstants.MODEL_INVENTORY_REPORT).get((Long) state.getFieldValue());
+
+            if (inventoryReport == null) {
+                String message = translationService.translate("qcadooView.message.entityNotFound", state.getLocale());
+                state.addMessage(message, MessageType.FAILURE);
+                return;
+            } else if (StringUtils.hasText(inventoryReport.getStringField("fileName"))) {
+                String message = translationService.translate(
+                        "inventory.inventoryReportDetails.window.materialRequirement.documentsWasGenerated", state.getLocale());
+                state.addMessage(message, MessageType.FAILURE);
+                return;
+            }
+
+            if ("0".equals(generated.getFieldValue())) {
+                generated.setFieldValue("1");
+                generationDate.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
+            }
+
+            System.out.println("Andrzejek generationDate1" + generationDate.getFieldValue());
+
+            state.performEvent(viewDefinitionState, "save", new String[0]);
+
+            System.out.println("Andrzejek generationDate2" + generationDate.getFieldValue());
+
+            if (state.getFieldValue() == null || !((FormComponent) state).isValid()) {
+                generated.setFieldValue("0");
+                System.out.println("Andrzejek generationDate3" + generationDate.getFieldValue());
+                generationDate.setFieldValue(null);
+                return;
+            }
+
+            System.out.println("Andrzejek generationDate4" + generationDate.getFieldValue());
+
+            inventoryReport = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
+                    InventoryConstants.MODEL_INVENTORY_REPORT).get((Long) state.getFieldValue());
+
+            try {
+                generateMaterialReqDocuments(state, inventoryReport);
+                state.performEvent(viewDefinitionState, "reset", new String[0]);
+            } catch (IOException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            } catch (DocumentException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            }
+        }
     }
 
-    public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
+    private String getFullFileName(final Date date, final String fileName) {
+        System.out.println("Andrzejek date " + date);
+
+        return path + fileName + "_" + new SimpleDateFormat(DateUtils.REPORT_DATE_TIME_FORMAT).format(date);
+        // return path + fileName;
+    }
+
+    private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
+        entity.setField("fileName", fileName);
+        return dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER, entityName).save(entity);
+    }
+
+    private void generateMaterialReqDocuments(final ComponentState state, final Entity inventory) throws IOException,
+            DocumentException {
+
+        Entity inventoryWithFileName = updateFileName(inventory,
+                getFullFileName((Date) inventory.getField("generationDate"), inventory.getStringField("name")),
+                InventoryConstants.MODEL_INVENTORY_REPORT);
+        inventoryPdfService.generateDocument(inventoryWithFileName, state.getLocale());
+        // inventoryXlsService.generateDocument(inventoryWithFileName, state.getLocale());
     }
 
 }

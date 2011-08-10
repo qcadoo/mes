@@ -53,7 +53,7 @@
 			view="transferList" />
 		<menu:menu-item name="warehouses" category="inventory"
 			view="warehouseList" />			
-		<menu:menu-item name="inventory" category="reports"
+		<menu:menu-item name="inventoryReport" category="reports"
 			view="inventoryReportList" />
 		
 		<view:view resource="view/transferList.xml" />

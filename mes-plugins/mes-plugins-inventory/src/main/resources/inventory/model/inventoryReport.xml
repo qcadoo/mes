@@ -7,11 +7,12 @@
 		<string name="name" required="true">
 			<validatesLength max="255" />
 		</string>
-		<date name="inventoryForDate" />
-		<date name="generationDate" />
-		<belongsTo name="staff" model="staff" plugin="basic" />
+		<date name="inventoryForDate" required="true"/>
+		<datetime name="generationDate"  />
+		<belongsTo name="staff" model="staff" plugin="basic" required="true"/>
 		<boolean name="generated" />
-		<belongsTo name="warehouse" model="warehouse" plugin="inventory"/>
+		<string name= "fileName" />
+		<belongsTo name="warehouse" model="warehouse" plugin="inventory" required="true"/>
 	</fields>
 	<hooks>
 	</hooks>
