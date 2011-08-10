@@ -140,12 +140,10 @@ public class InventoryService {
 
     }
 
-    // do zmiany
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
-        entity.setField("generated", false);
-        entity.setField("generationDate", null);
-        entity.setField("staff", null);
+        entity.setField("generated", "0");
+        entity.setField("date", null);
         return true;
     }
 
@@ -159,7 +157,6 @@ public class InventoryService {
                 InventoryConstants.MODEL_INVENTORY_REPORT);
     }
 
-    // DO ZMIANY
     @SuppressWarnings("unchecked")
     public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
             final String entityName) {
@@ -198,7 +195,6 @@ public class InventoryService {
         window.requestRibbonRender();
     }
 
-    // DO ZMIANY
     @SuppressWarnings("unchecked")
     public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
             final String entityName) {
@@ -233,6 +229,7 @@ public class InventoryService {
     }
 
     public void printInventory(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+
         if (state.getFieldValue() instanceof Long) {
             Entity inventoryReport = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
                     InventoryConstants.MODEL_INVENTORY_REPORT).get((Long) state.getFieldValue());
@@ -262,7 +259,7 @@ public class InventoryService {
     public void generateInventory(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state instanceof FormComponent) {
             ComponentState generated = viewDefinitionState.getComponentByReference("generated");
-            ComponentState generationDate = viewDefinitionState.getComponentByReference("generationDate");
+            ComponentState date = viewDefinitionState.getComponentByReference("date");
 
             Entity inventoryReport = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
                     InventoryConstants.MODEL_INVENTORY_REPORT).get((Long) state.getFieldValue());
@@ -280,23 +277,16 @@ public class InventoryService {
 
             if ("0".equals(generated.getFieldValue())) {
                 generated.setFieldValue("1");
-                generationDate.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
+                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
             }
-
-            System.out.println("Andrzejek generationDate1" + generationDate.getFieldValue());
 
             state.performEvent(viewDefinitionState, "save", new String[0]);
 
-            System.out.println("Andrzejek generationDate2" + generationDate.getFieldValue());
-
             if (state.getFieldValue() == null || !((FormComponent) state).isValid()) {
                 generated.setFieldValue("0");
-                System.out.println("Andrzejek generationDate3" + generationDate.getFieldValue());
-                generationDate.setFieldValue(null);
+                date.setFieldValue(null);
                 return;
             }
-
-            System.out.println("Andrzejek generationDate4" + generationDate.getFieldValue());
 
             inventoryReport = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
                     InventoryConstants.MODEL_INVENTORY_REPORT).get((Long) state.getFieldValue());
@@ -313,10 +303,9 @@ public class InventoryService {
     }
 
     private String getFullFileName(final Date date, final String fileName) {
-        System.out.println("Andrzejek date " + date);
 
         return path + fileName + "_" + new SimpleDateFormat(DateUtils.REPORT_DATE_TIME_FORMAT).format(date);
-        // return path + fileName;
+
     }
 
     private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
@@ -328,10 +317,10 @@ public class InventoryService {
             DocumentException {
 
         Entity inventoryWithFileName = updateFileName(inventory,
-                getFullFileName((Date) inventory.getField("generationDate"), inventory.getStringField("name")),
+                getFullFileName((Date) inventory.getField("date"), inventory.getStringField("name")),
                 InventoryConstants.MODEL_INVENTORY_REPORT);
         inventoryPdfService.generateDocument(inventoryWithFileName, state.getLocale());
-        // inventoryXlsService.generateDocument(inventoryWithFileName, state.getLocale());
+        inventoryXlsService.generateDocument(inventoryWithFileName, state.getLocale());
     }
 
 }

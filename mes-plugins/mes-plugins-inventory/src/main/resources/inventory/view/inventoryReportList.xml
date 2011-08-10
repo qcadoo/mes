@@ -21,7 +21,7 @@
 					width="300" />
 				<option type="column" name="generated" fields="generated"
 					link="false" />
-				<option type="column" name="staff" fields="staff" width="200" />
+				<option type="column" name="staff" fields="staff" width="200" expression="#staff==null?'N/A':#staff['name']+ ' ' +#staff['surname']"/>
 				<option type="order" column="name" direction="asc" />
 				<option type="searchable" value="name,generated,worker" />
 				<option type="orderable" value="name,generated,worker" />

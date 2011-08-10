@@ -8,12 +8,14 @@
 			<validatesLength max="255" />
 		</string>
 		<date name="inventoryForDate" required="true"/>
-		<datetime name="generationDate"  />
+		<datetime name="date" />
 		<belongsTo name="staff" model="staff" plugin="basic" required="true"/>
 		<boolean name="generated" />
 		<string name= "fileName" />
 		<belongsTo name="warehouse" model="warehouse" plugin="inventory" required="true"/>
 	</fields>
 	<hooks>
+		<onCopy class="com.qcadoo.mes.inventory.InventoryService"
+			method="clearGeneratedOnCopy" />
 	</hooks>
 </model>

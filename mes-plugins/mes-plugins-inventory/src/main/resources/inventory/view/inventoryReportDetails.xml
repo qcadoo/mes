@@ -76,7 +76,8 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="calendar" name="generationDate" field="generationDate"  reference="generationDate" defaultEnabled="false">										
+					<component type="input" name="date" field="date"  reference="date" defaultEnabled="false">										
+						
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
