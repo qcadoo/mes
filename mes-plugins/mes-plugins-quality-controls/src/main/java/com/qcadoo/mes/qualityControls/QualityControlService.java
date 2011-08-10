@@ -740,10 +740,6 @@ public final class QualityControlService {
         qualityForBatchDataDefinition.save(forBatch);
     }
 
-    private void createAndSaveControlForUnit() {
-
-    }
-
     private void setControlInstruction(final Entity order, final Entity qualityControl) {
         String qualityControlInstruction = (String) order.getBelongsToField("technology").getField("qualityControlInstruction");
 
