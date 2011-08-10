@@ -17,4 +17,12 @@ public class TechnologyController {
         return mav;
     }
 
+    @RequestMapping(value = "technologies/technologyDetailsReport.xls", method = RequestMethod.GET)
+    public final ModelAndView technologiesReportXls(@RequestParam("id") final String id) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("technologiesTechnologyDetailsXlsView");
+        mav.addObject("id", id);
+        return mav;
+    }
+
 }

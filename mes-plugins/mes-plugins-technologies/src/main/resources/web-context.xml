@@ -10,5 +10,7 @@
 	
 	<bean id="technologiesTechnologyDetailsPdfView"
   		class="com.qcadoo.mes.technologies.print.TechnologiesTechnologyDetailsPdfView"/>
+	<bean id="technologiesTechnologyDetailsXlsView"
+  		class="com.qcadoo.mes.technologies.print.TechnologiesTechnologyDetailsXlsView"/>
   		
 </beans>
