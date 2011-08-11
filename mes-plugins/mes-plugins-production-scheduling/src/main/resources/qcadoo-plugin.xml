@@ -119,6 +119,7 @@
 			
 		<view:view resource="view/orderOperationComponentList.xml" />
 		<view:view resource="view/orderOperationComponentDetails.xml" />
+		<view:view resource="view/orderOperationProductInComponentDetails.xml"/>
 		<view:view resource="view/timeTechnologyInOrderDetails.xml"/>
 		
 		<view:view-listener plugin="productionScheduling"
