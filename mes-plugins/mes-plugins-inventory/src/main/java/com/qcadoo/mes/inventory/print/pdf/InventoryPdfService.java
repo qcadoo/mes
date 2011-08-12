@@ -1,5 +1,6 @@
 package com.qcadoo.mes.inventory.print.pdf;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -9,7 +10,6 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Phrase;
@@ -37,17 +37,18 @@ public final class InventoryPdfService extends PdfDocumentService {
             throws DocumentException {
         String documenTitle = getTranslationService().translate("inventory.inventory.report.title", locale);
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
-        PdfUtil.addDocumentHeader(document, "", documenTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
-        document.add(Chunk.NEWLINE);
+        PdfUtil.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) inventoryReport.getField("date"),
+                securityService.getCurrentUserName());
 
         PdfPTable panelTable = PdfUtil.createPanelTable(2);
         PdfUtil.addTableCellAsTable(panelTable,
                 getTranslationService().translate("inventory.inventory.report.panel.inventoryForDate", locale),
-                inventoryReport.getStringField("inventoryForDate"), null, PdfUtil.getArialBold10Dark(),
+                ((Date) inventoryReport.getField("inventoryForDate")).toString(), null, PdfUtil.getArialBold10Dark(),
                 PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(panelTable,
-                getTranslationService().translate("inventory.inventory.report.panel.generationDate", locale),
-                inventoryReport.getStringField("generationDate"), null, PdfUtil.getArialBold10Dark(),
+        PdfUtil.addTableCellAsTable(panelTable, getTranslationService()
+                .translate("inventory.inventory.report.panel.date", locale),
+                ((Date) inventoryReport.getField("date")).toString(), null, PdfUtil.getArialBold10Dark(),
+
                 PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(panelTable,
                 getTranslationService().translate("inventory.inventory.report.panel.warehouse", locale), inventoryReport
@@ -59,6 +60,8 @@ public final class InventoryPdfService extends PdfDocumentService {
                         + " "
                         + inventoryReport.getBelongsToField("staff").getStringField("surname"), null, PdfUtil
                         .getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+
+        panelTable.setSpacingBefore(20);
         panelTable.setSpacingAfter(20);
         document.add(panelTable);
 
@@ -71,14 +74,15 @@ public final class InventoryPdfService extends PdfDocumentService {
 
         DataDefinition dataDefInventory = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
                 InventoryConstants.MODEL_INVENTORY);
-        List<Entity> inventories = dataDefInventory.find("where id = " + Long.toString(inventoryReport.getId())).list()
+        List<Entity> inventories = dataDefInventory
+                .find("where warehouse.id = " + Long.toString(inventoryReport.getBelongsToField("warehouse").getId())).list()
                 .getEntities();
         Collections.sort(inventories, new EntityInventoryComparator());
 
         for (Entity e : inventories) {
-            table.addCell(new Phrase(e.getBelongsToField("product").getStringField("numer"), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField("product").getStringField("number"), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(e.getBelongsToField("product").getStringField("name"), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(e.getStringField("quantity"), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(((BigDecimal) e.getField("quantity")).toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(e.getBelongsToField("product").getStringField("unit"), PdfUtil.getArialRegular9Dark()));
         }
 

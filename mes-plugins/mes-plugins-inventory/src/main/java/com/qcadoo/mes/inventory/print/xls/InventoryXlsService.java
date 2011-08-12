@@ -1,5 +1,6 @@
 package com.qcadoo.mes.inventory.print.xls;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -46,14 +47,15 @@ public final class InventoryXlsService extends XlsDocumentService {
         int rowNum = 1;
         DataDefinition dataDefInventory = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
                 InventoryConstants.MODEL_INVENTORY);
-        List<Entity> inventories = dataDefInventory.find("where id = " + Long.toString(inventoryReport.getId())).list()
+        List<Entity> inventories = dataDefInventory
+                .find("where warehouse.id = " + Long.toString(inventoryReport.getBelongsToField("warehouse").getId())).list()
                 .getEntities();
         Collections.sort(inventories, new EntityInventoryComparator());
         for (Entity e : inventories) {
             HSSFRow row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(e.getBelongsToField("product").getStringField("numer"));
+            row.createCell(0).setCellValue(e.getBelongsToField("product").getStringField("number"));
             row.createCell(1).setCellValue(e.getBelongsToField("product").getStringField("name"));
-            row.createCell(2).setCellValue(e.getStringField("quantity"));
+            row.createCell(2).setCellValue(((BigDecimal) e.getField("quantity")).toString());
             row.createCell(3).setCellValue(e.getBelongsToField("product").getStringField("unit"));
         }
         sheet.autoSizeColumn((short) 0);
@@ -71,5 +73,4 @@ public final class InventoryXlsService extends XlsDocumentService {
     protected String getSuffix() {
         return "";
     }
-
 }

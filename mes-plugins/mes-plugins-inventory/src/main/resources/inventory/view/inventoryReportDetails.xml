@@ -23,6 +23,51 @@
 			</group>
 		</ribbon>
 		<component type="form" name="inventoryReport" reference="form">
+			<script>
+				<![CDATA[
+					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
+					var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
+					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
+					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+					
+					var entityExists = false;
+					
+					this.addOnChangeListener({
+						onSetValue: function(value) {
+							if (!value || !value.content) {
+								return;
+							}
+							if (value.content.entityId) {
+								entityExists = true;
+							} else {
+								entityExists = false;
+							}
+							updateRibbon();
+						}
+					});
+					
+					function updateRibbon() {
+						if (entityExists) {
+							var isGeneratedCheckboxValue = #{generated}.getValue();
+							copyRibbonItem.enable();
+							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+								xlsRibbonItem.enable();
+								pdfRibbonItem.enable();
+								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
+							} else {
+								xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								saveRibbonItem.enable();
+							}
+						} else {
+							copyRibbonItem.disable("#{translate(recordNotCreated)}");
+							xlsRibbonItem.disable("#{translate(recordNotCreated)}");
+							pdfRibbonItem.disable("#{translate(recordNotCreated)}");
+							saveRibbonItem.enable();
+						}
+					}
+				]]>
+			</script>
 			<component type="gridLayout" name="gridLayout" columns="3" rows="6">
 				<layoutElement column="1" row="1">
 					<component type="checkbox" name="generated" reference="generated"
@@ -31,7 +76,8 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="calendar" name="generationDate" field="generationDate"  reference="generationDate">										
+					<component type="input" name="date" field="date"  reference="date" defaultEnabled="false">										
+						
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
@@ -44,7 +90,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="lookup" name="staff" field="staff">
+					<component type="lookup" name="staff" field="staff" reference="staff">
 						<option type="searchable" value="name" />
 						<option type="orderable" value=" name" />
 						<option type="fullScreen" value="true" />
@@ -70,9 +116,7 @@
 		</component>
 	</component>
 	<hooks>
-<!-- 		<beforeRender class="com.qcadoo.mes.inventory.InventoryService" -->
-<!-- 			method="disableFormForExistingInventory" /> -->
-<!-- 		<beforeRender class="com.qcadoo.mes.inventory.InventoryService" -->
-<!-- 			method="setGenerateButtonState" /> -->
+		<beforeRender class="com.qcadoo.mes.inventory.InventoryService"
+ 			method="setGenerateButtonState" /> 
 	</hooks>
 </view>

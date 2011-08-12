@@ -13,4 +13,6 @@
 		<decimal name="found" required="true"/>
 		<belongsTo name="staff" model="staff" plugin="basic" />
 	</fields>
+	<hooks>
+	</hooks>
 </model>

@@ -11,7 +11,7 @@ public class EntityInventoryComparator implements Comparator<Entity>, Serializab
 
     @Override
     public final int compare(final Entity o1, final Entity o2) {
-        int result = o1.getBelongsToField("product").getStringField("numer")
+        int result = o1.getBelongsToField("product").getStringField("number")
                 .compareTo(o2.getBelongsToField("product").getStringField("number"));
         if (result == 0) {
             result = o1.getBelongsToField("product").getStringField("name")

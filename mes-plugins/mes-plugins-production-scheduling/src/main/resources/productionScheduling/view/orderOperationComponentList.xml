@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- *************************************************************************** 
+<!-- 
+	*************************************************************************** 
 	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 0.4.5 This 
 	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
 	and/or modify it under the terms of the GNU Affero General Public License 
@@ -53,15 +54,15 @@
 						expression="#product['number']" link="true" width="100" />
 					<option type="column" name="name" fields="product"
 						expression="#product['name']" link="true" width="200" />
-					<option type="column" name="quantity" fields="quantity"
+					<option type="column" name="quantity" fields="quantity" 
 						link="false" width="200" />
 					<option type="column" name="unit" fields="product"
 						expression="#product['unit']" link="false" width="200" />
 					<option type="order" column="number" direction="desc" />
-					<option type="correspondingView"
-						value="productionScheduling/orderOperationProductInComponentDetails" />
-					<option type="correspondingComponent" value="form" />
-					<option type="correspondingViewInModal" value="true" />
+					<option type="correspondingView" 
+						value="productionScheduling/orderOperationProductInComponentDetails" /> 
+					<option type="correspondingComponent" value="form" /> 
+					<option type="correspondingViewInModal" value="true" /> 
 				</component>
 			</layoutElement>
 		</component>

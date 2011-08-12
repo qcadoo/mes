@@ -33,8 +33,11 @@
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="reports">
-				<bigButton name="pdf" icon="pdfIcon24.png"
+				<smallButton name="pdf" icon="pdfIcon16.png"
 					action="#{form}.fireEvent(printTechnologyDetailsReport,pdf);"
+					state="enabled" />
+				<smallButton name="xls" icon="xlsIcon16.png"
+					action="#{form}.fireEvent(printTechnologyDetailsReport,xls);"
 					state="enabled" />
 			</group>
 		</ribbon>
