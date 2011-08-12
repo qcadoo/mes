@@ -1,4 +1,5 @@
 package com.qcadoo.mes.producedProducts;
+
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
@@ -23,15 +24,11 @@ package com.qcadoo.mes.producedProducts;
  * ***************************************************************************
  */
 
-
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.HashMap;
-import java.util.Iterator;
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,7 +57,7 @@ public class ProducedProductsService {
 
         Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(
                 orderList, true);
-        
+
         List<Entity> producedproducts = dataDefinitionService.get("producedProducts", "producedProducts").find()
                 .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
 
