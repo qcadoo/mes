@@ -47,8 +47,7 @@
 		<view:resource uri="public/**/*" />
 
         <view:view-tab resource="view/productDetails.xml" />
-        <view:view-tab resource="view/operationProductInComponentDetails.xml" />
-        <view:view-tab resource="view/orderOperationProductInComponentDetails.xml" />
+        <view:view-tab resource="view/technologyDetails.xml" />
         
         <view:view-hook plugin="basic" view="productDetails" type="beforeRender" 
             class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" method="fillCostTabUnit" />
@@ -56,17 +55,8 @@
         <view:view-hook plugin="basic" view="productDetails" type="beforeRender" 
             class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" method="fillCostTabCurrency" />
         
-        <view:view-hook plugin="technologies" view="operationProductInComponentDetails" type="beforeRender" 
-            class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" method="fillCostTabUnit" />
-            
-        <view:view-hook plugin="technologies" view="operationProductInComponentDetails" type="beforeRender"
-        	class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" method="fillCostTabCurrency" /> 
-        
-        <view:view-hook plugin="productionScheduling" view="orderOperationProductInComponentDetails" type="beforeRender" 
-            class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" method="fillCostTabUnit" />
-            
-        <view:view-hook plugin="productionScheduling" view="orderOperationProductInComponentDetails" type="beforeRender"
-        	class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" method="fillCostTabCurrency" />
+        <view:view-hook plugin="technologies" view="technologyDetails" type="beforeRender"
+        	class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" method="fillInProductsGrid" />
         
         <!-- product -->
         <model:model-field plugin="basic" model="product" >
@@ -98,65 +88,6 @@
             </model:decimal>
         </model:model-field>
         
-        <!-- product - technology -->
-        <model:model-field plugin="technologies" model="operationProductInComponent" >
-            <model:integer name="costForNumber" default="1" >
-                <validatesRange from="0" exclusively="true" />
-                <validatesPrecision max="7" />
-                <validatesScale max="0" />
-            </model:integer>
-        </model:model-field>
-        <model:model-field plugin="technologies" model="operationProductInComponent" >
-            <model:decimal name="nominalCost">
-                <validatesRange from="0" exclusively="true" />
-                <validatesPrecision max="7" />
-                <validatesScale max="3" />
-            </model:decimal>
-        </model:model-field>
-        <model:model-field plugin="technologies" model="operationProductInComponent" >
-            <model:decimal name="lastPurchaseCost">
-                <validatesRange from="0" exclusively="true" />
-                <validatesPrecision max="7" />
-                <validatesScale max="3" />
-            </model:decimal>
-        </model:model-field>
-        <model:model-field plugin="technologies" model="operationProductInComponent" >
-            <model:decimal name="averageCost">
-                <validatesRange from="0" exclusively="true" />
-                <validatesPrecision max="7" />
-                <validatesScale max="3" />
-            </model:decimal>
-        </model:model-field>
-        
-        <!-- product - instance of technology -->
-<!--        <model:model-field plugin="productionScheduling" model="product" >-->
-<!--            <model:integer name="costForNumber" default="1" >-->
-<!--                <validatesRange from="0" exclusively="true" />-->
-<!--                <validatesPrecision max="7" />-->
-<!--                <validatesScale max="0" />-->
-<!--            </model:integer>-->
-<!--        </model:model-field>-->
-<!--        <model:model-field plugin="basic" model="product" >-->
-<!--            <model:decimal name="nominalCost">-->
-<!--                <validatesRange from="0" exclusively="true" />-->
-<!--                <validatesPrecision max="7" />-->
-<!--                <validatesScale max="3" />-->
-<!--            </model:decimal>-->
-<!--        </model:model-field>-->
-<!--        <model:model-field plugin="basic" model="product" >-->
-<!--            <model:decimal name="lastPurchaseCost">-->
-<!--                <validatesRange from="0" exclusively="true" />-->
-<!--                <validatesPrecision max="7" />-->
-<!--                <validatesScale max="3" />-->
-<!--            </model:decimal>-->
-<!--        </model:model-field>-->
-<!--        <model:model-field plugin="basic" model="product" >-->
-<!--            <model:decimal name="averageCost">-->
-<!--                <validatesRange from="0" exclusively="true" />-->
-<!--                <validatesPrecision max="7" />-->
-<!--                <validatesScale max="3" />-->
-<!--            </model:decimal>-->
-<!--        </model:model-field>-->
 	</modules>
 
 </plugin>
