@@ -11,14 +11,34 @@
 	<parameter name="EntityIds" class="java.util.List"/>
 	<queryString language="hql">
 		<![CDATA[select distinct
+		 	company.companyFullName as companyFullName,
+		 	company.street as street,
+		 	company.house as house,
+		 	company.flat as flat,
+		 	company.zipCode as zipCode,
+		 	company.city as city,
+		 	company.country as country,
+		 	company.tax as tax,
+		 	company.email as email,
+		 	company.phone as phone,
 		 	use.order.name as orders_order_name,
 			use.usedQuantity as used,
 			production.product.name as product_name,
 			production.plannedQuantity as planned,
 			production.producedQuantity as produced
-		from com.qcadoo.model.beans.usedProducts.UsedProductsUsedProducts as use, 
+		from com.qcadoo.model.beans.basic.BasicCompany as company, com.qcadoo.model.beans.usedProducts.UsedProductsUsedProducts as use, 
 		com.qcadoo.model.beans.producedProducts.ProducedProductsProducedProducts as production  where use.order.id in ($P{EntityIds}) and production.order.id=use.order.id]]>
 	</queryString>
+	<field name="companyFullName" class="java.lang.String"/>
+	<field name="street" class="java.lang.String"/>
+	<field name="house" class="java.lang.String"/>
+	<field name="flat" class="java.lang.String"/>
+	<field name="zipCode" class="java.lang.String"/>
+	<field name="city" class="java.lang.String"/>
+	<field name="country" class="java.lang.String"/>
+	<field name="tax" class="java.lang.String"/>
+	<field name="email" class="java.lang.String"/>
+	<field name="phone" class="java.lang.String"/>
 	<field name="orders_order_name" class="java.lang.String"/>
 	<field name="product_name" class="java.lang.String"/>
 	<field name="planned" class="java.math.BigDecimal"/>
@@ -117,10 +137,57 @@
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="34">
+		<band height="46">
 			<line>
 				<reportElement style="qcadooPageNumberLine" x="0" y="-1" width="807" height="1"/>
 			</line>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="3" y="3" width="380" height="13"/>
+				<textElement textAlignment="Left"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{companyFullName} + ($F{tax} != null ? (", " + $R{basic.company.tax.label} + ": " + $F{tax}) : "")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="3" y="18" width="380" height="13"/>
+				<textElement textAlignment="Left"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{street} + " " + $F{house} + ($F{flat} != null ? "/" + $F{flat} : "") + ", " + $F{zipCode} + " " + $F{city} + ($F{country} != null ? ", " + $F{country} : "")) : ($F{email} != null ? "E-mail: " + $F{email} : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="3" y="33" width="380" height="13"/>
+				<textElement textAlignment="Left"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{email} != null ? "E-mail: " + $F{email} : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") : "")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="420" y="3" width="380" height="13"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.page.label} + " " + $V{PAGE_NUMBER} + " " +$R{qcadooReport.commons.of.label}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement style="qcadooPageNumber" x="803" y="3" width="19" height="16"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="46">
+			<line>
+				<reportElement style="qcadooPageNumberLine" x="0" y="-1" width="807" height="1"/>
+			</line>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="3" y="3" width="380" height="13"/>
+				<textElement textAlignment="Left"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{companyFullName} + ($F{tax} != null ? (", " + $R{basic.company.tax.label} + ": " + $F{tax}) : "")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="3" y="18" width="380" height="13"/>
+				<textElement textAlignment="Left"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{street} + " " + $F{house} + ($F{flat} != null ? "/" + $F{flat} : "") + ", " + $F{zipCode} + " " + $F{city} + ($F{country} != null ? ", " + $F{country} : "")) : ($F{email} != null ? "E-mail: " + $F{email} : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="3" y="33" width="380" height="13"/>
+				<textElement textAlignment="Left"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{email} != null ? "E-mail: " + $F{email} : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") : "")]]></textFieldExpression>
+			</textField>
 			<textField>
 				<reportElement style="qcadooPageNumber" x="420" y="3" width="380" height="13"/>
 				<textElement textAlignment="Right"/>
@@ -137,5 +204,5 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.endOfPrint.label}]]></textFieldExpression>
 			</textField>
 		</band>
-	</pageFooter>
+	</lastPageFooter>
 </jasperReport>

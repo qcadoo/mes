@@ -54,4 +54,5 @@ public final class WorkPlanForMachinePdfService extends PdfDocumentService {
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("workPlans.workPlan.report.title", locale);
     }
+
 }
