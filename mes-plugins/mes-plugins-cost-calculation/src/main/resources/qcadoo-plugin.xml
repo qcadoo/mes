@@ -50,6 +50,8 @@
 
 		<view:view resource="view/costCalculationList.xml" />
 		<view:view resource="view/costCalculationDetails.xml" />
+		<view:view resource="view/costCalculationFromOrder.xml" />
+		<view:view resource="view/costCalculationFromTechnology.xml" />
 		
 		<view:view-ribbon-group resource="view/ribbonExtensions/technologyDetails.xml"/>
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>

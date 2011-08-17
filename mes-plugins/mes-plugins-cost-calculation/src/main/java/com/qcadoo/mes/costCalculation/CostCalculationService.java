@@ -1,17 +1,21 @@
 package com.qcadoo.mes.costCalculation;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class CostCalculationService {
@@ -19,16 +23,20 @@ public class CostCalculationService {
     @Autowired
     DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private ExpressionService expressionService;
+
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         Long orderId = (Long) state.getFieldValue();
 
         if (orderId != null) {
-            updateCostCalculationFromOrder(orderId);
-            String url = "../page/costCalculation/costCalculationDetails.html?context={\"order.id\":\"" + orderId + "\"}";
+            String url = "../page/costCalculation/costCalculationFromOrder.html?context={\"orderId.id\":\"" + orderId + "\"}";
             viewDefinitionState.redirectTo(url, false, true);
         }
-
     }
 
     public void showCostCalculateFromTechnology(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -36,55 +44,79 @@ public class CostCalculationService {
         Long technologyId = (Long) state.getFieldValue();
 
         if (technologyId != null) {
-            updateCostCalculationFromTechnology(viewDefinitionState, technologyId);
-            String url = "../page/costCalculation/costCalculationDetails.html?context={\"technology.id\":\"" + technologyId
-                    + "\"}";
+            String url = "../page/costCalculation/costCalculationFromTechnology.html?context={\"technologyId.id\":\""
+                    + technologyId + "\"}";
             viewDefinitionState.redirectTo(url, false, true);
         }
     }
 
-    private void updateCostCalculationFromTechnology(final ViewDefinitionState viewDefinitionState, final Long technologyId) {
-        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY);
-        DataDefinition costCalculationDD = dataDefinitionService.get(CostCalculateConstants.PLUGIN_IDENTIFIER,
-                CostCalculateConstants.MODEL_COST_CALCULATION);
-        Entity technology = technologyDD.get(technologyId);
-        FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
-        System.out.println("***ala111" + technologyId + "     " + technology);
-        // List<Entity> costCalculationOfTechnology = dataDefinitionService
-        // .get(CostCalculateConstants.PLUGIN_IDENTIFIER, CostCalculateConstants.MODEL_COST_CALCULATION).find()
-        // .add(SearchRestrictions.belongsTo("technology", technology)).list().getEntities();
-        Entity costCalculation = costCalculationDD.create();
+    public void fillFieldFromOrder(final ViewDefinitionState state) {
+        FormComponent formOrderId = (FormComponent) state.getComponentByReference("orderId");
 
-        costCalculation.setField("product", "product");
-        costCalculation.setField("order", "name");
-        costCalculation.setField("quantity", "plannedQuantity");
-        costCalculation.setField("technology", "technology");
-        costCalculation.setField("defaultTechnology", "technology");
-        System.out.println("***ala222" + costCalculation);
+        FieldComponent number = (FieldComponent) state.getComponentByReference("number");
+        FieldComponent product = (FieldComponent) state.getComponentByReference("product");
+        FieldComponent quantity = (FieldComponent) state.getComponentByReference("quantity");
+        FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference("defaultTechnology");
+        FieldComponent order = (FieldComponent) state.getComponentByReference("order");
+        FieldComponent technology = (FieldComponent) state.getComponentByReference("technology");
 
-        System.out.println("***ala333");
-        costCalculation.setField("defaultTechnology", technology.getBelongsToField("name"));
-        costCalculationDD.save(costCalculation);
-        System.out.println("***ala444" + costCalculation);
+        Long orderId = (Long) formOrderId.getFieldValue();
+        Entity orderEntity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                orderId);
+
+        if (orderEntity != null) {
+            number.setFieldValue(generateNumber(6));
+            quantity.setFieldValue(orderEntity.getField("plannedQuantity"));
+            order.setFieldValue(orderEntity.getField("name"));
+
+            Entity productEntity = orderEntity.getBelongsToField("product");
+            product.setFieldValue(productEntity.getId());
+
+            Entity defaultTechnologyEntity = orderEntity.getBelongsToField("technology");
+
+            technology.setFieldValue(defaultTechnologyEntity.getId());
+            defaultTechnology.setFieldValue(defaultTechnologyEntity.getId());
+
+        }
     }
 
-    private void updateCostCalculationFromOrder(final Long orderId) {
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-        // List<Entity> costCalculationOfOrder = dataDefinitionService
-        // .get(CostCalculateConstants.PLUGIN_IDENTIFIER, CostCalculateConstants.MODEL_COST_CALCULATION).find()
-        // .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+    public void fillFieldFromTechnology(final ViewDefinitionState state) {
 
-        Entity costCalculation = dataDefinitionService.get(CostCalculateConstants.PLUGIN_IDENTIFIER,
-                CostCalculateConstants.MODEL_COST_CALCULATION).create();
-        costCalculation.setField("product", "product");
-        costCalculation.setField("order", order.getField("name"));
-        costCalculation.setField("quantity", order.getField("plannedQuantity"));
-        costCalculation.setField("technology", order.getBelongsToField("technology"));
-        costCalculation.setField("defaultTechnology", order.getField("technology"));
-        dataDefinitionService.get(CostCalculateConstants.PLUGIN_IDENTIFIER, CostCalculateConstants.MODEL_COST_CALCULATION).save(
-                costCalculation);
+        FormComponent formTechnologyId = (FormComponent) state.getComponentByReference("technologyId");
 
+        FieldComponent number = (FieldComponent) state.getComponentByReference("number");
+        FieldComponent product = (FieldComponent) state.getComponentByReference("product");
+        FieldComponent quantity = (FieldComponent) state.getComponentByReference("quantity");
+        FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference("defaultTechnology");
+        FieldComponent technology = (FieldComponent) state.getComponentByReference("technology");
+
+        Long technologyId = (Long) formTechnologyId.getFieldValue();
+        Entity technologyEntity = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
+
+        if (technologyEntity != null) {
+            number.setFieldValue(generateNumber(6));
+            technology.setFieldValue(technologyEntity.getId());
+            defaultTechnology.setFieldValue(technologyEntity.getId());
+
+            Entity productEntity = technologyEntity.getBelongsToField("product");
+            product.setFieldValue(productEntity.getId());
+            quantity.setFieldValue(technologyEntity.getField("minimalQuantity"));
+        }
+    }
+
+    private String generateNumber(final int digitsNumber) {
+        List<Entity> costs = dataDefinitionService
+                .get(CostCalculateConstants.PLUGIN_IDENTIFIER, CostCalculateConstants.MODEL_COST_CALCULATION).find().list()
+                .getEntities();
+
+        long longValue = 0;
+        if (costs.size() == 0) {
+            longValue++;
+        } else {
+            longValue = costs.size() + 1;
+        }
+        return String.format("%0" + digitsNumber + "d", longValue);
     }
 
 }

@@ -7,27 +7,29 @@
 			<validatesLength max="40" />
 		</string>
 		<belongsTo name="product" model="product" plugin="basic" required="true"/>
-		<string name="defaultTechnology" readonly="true"/>
+		<belongsTo name="defaultTechnology" model="technology" plugin="technologies"/>
 		<belongsTo name="technology" model="technology" plugin="technologies" required="true"/>
 		<decimal name="quantity" required="true"/>
-		<belongsTo name="order" model="order" plugin="orders" readonly="true"/>
+		<belongsTo name="order" model="order" plugin="orders" />
 		<decimal name="materialCost" readonly="true"/>
 		<decimal name="machineHourlyCost" readonly="true"/>
 		<decimal name="laborHourlyCost" readonly="true"/>
-		<decimal name="totalTechnicalProductionCost" readonly="true"/>
+		<decimal name="totalTechnicalProductionCost" />
 		<decimal name="productionCostMargin" />
-		<decimal name="productionCostMarginValue" readonly="true"/>
+		<decimal name="productionCostMarginValue" />
 		<decimal name="materialCostMargin" />		
-		<decimal name="materialCostMarginValue" readonly="true"  />
+		<decimal name="materialCostMarginValue"  />
 		<decimal name="additionalOverhead" />
-		<decimal name="totalOverhead" readonly="true"/>
-		<decimal name="totalCost" readonly="true"/>
-		<decimal name="costPerUnit" readonly="true"/>
+		<decimal name="totalOverhead" />
+		<decimal name="totalCost" />
+		<decimal name="costPerUnit" />
 		<string name="description"/>
 		<boolean name="includeTPZ"/>
 		<enum name="includeCostOfMaterial" values="01nominal,02lastPurchase,03average" />
 		<enum name="includeCostOfOperation" values="01piecework,02hourly" />
 		<date name="dateOfCalculation" />
+		<decimal name="technologyId" persistent="false" />
+		<decimal name="orderId" persistent="false"  />
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />

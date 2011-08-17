@@ -21,8 +21,19 @@
 			<template name="standardFormTemplate" includeItems="navigation.back" />
 		</ribbon>
 		<component type="form" name="order" reference="form" />
-		<component type="form" name="formHelperSecond" reference="formHelperSecond"
-			field="#{orderOperationComponents}.technologyOperationComponent" />
+		<component type="form" name="formHelper" reference="formHelper"
+			field="#{orderOperationComponents}.technologyOperationComponent" >
+			<component type="lookup" name="technology" reference="technology"
+							field="technology">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+		</component>
 
 		<component type="gridLayout" name="gridLayout" rows="5"
 			columns="2" hasBorders="false">
@@ -49,7 +60,7 @@
 			</layoutElement>
 			<layoutElement column="2" row="1" height="5">
 				<component type="grid" name="inProducts" reference="inProducts"
-					source="#{formHelperSecond}.operationProductInComponents">
+					source="#{formHelper}.operationProductInComponents">
 					<option type="column" name="number" fields="product"
 						expression="#product['number']" link="true" width="100" />
 					<option type="column" name="name" fields="product"
