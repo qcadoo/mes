@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.materialRequirements.internal.constants.MaterialRequirementsConstants;
 import com.qcadoo.mes.materialRequirements.internal.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.materialRequirements.internal.print.xls.MaterialRequirementXlsService;
@@ -241,8 +242,10 @@ public final class MaterialRequirementService {
         Entity materialRequirementWithFileName = updateFileName(materialRequirement,
                 getFullFileName((Date) materialRequirement.getField("date"), "Material_requirement"),
                 MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT);
-        materialRequirementPdfService.generateDocument(materialRequirementWithFileName, state.getLocale());
-        materialRequirementXlsService.generateDocument(materialRequirementWithFileName, state.getLocale());
+        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
+                .uniqueResult();
+        materialRequirementPdfService.generateDocument(materialRequirementWithFileName, company, state.getLocale());
+        materialRequirementXlsService.generateDocument(materialRequirementWithFileName, company, state.getLocale());
     }
 
     private String getFullFileName(final Date date, final String fileName) {
