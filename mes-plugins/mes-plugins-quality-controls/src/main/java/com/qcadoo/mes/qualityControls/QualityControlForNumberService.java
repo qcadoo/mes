@@ -34,10 +34,6 @@ public class QualityControlForNumberService {
     }
 
     public String generateNumber(final String plugin, final String model, final int digitsNumber, final String qualityControlType) {
-        System.out.println("<ALA>" + plugin);
-        System.out.println("<ALA>" + model);
-        System.out.println("<ALA>" + digitsNumber);
-        System.out.println("<ALA>" + qualityControlType);
         long longValue = 0;
 
         SearchResult searchResult = dataDefinitionService.get(plugin, model)

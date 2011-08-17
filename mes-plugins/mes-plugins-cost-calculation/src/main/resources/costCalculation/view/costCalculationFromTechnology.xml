@@ -1,4 +1,4 @@
-<view name="costCalculationDetails" modelName="costCalculation"
+<view name="costCalculationFromTechnology" modelName="costCalculation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window">
@@ -9,9 +9,8 @@
 			</group>
 		</ribbon>
 		<windowTab name="mainTab">
-			<component type="form" name="form" reference="form">
-				<component type = "input" name="orderId" reference="orderId" defaultVisible="false"/>
-				<component type = "input" name="technologyId" reference="technologyId" defaultVisible="false"/>
+			<component type = "form" name="technologyId" reference="technologyId" defaultVisible="false"/>
+			<component type="form" name="form"	reference="form">
 				<component type="gridLayout" name="gridLayout" columns="2"
 					rows="10">
 					<layoutElement column="1" row="1">
@@ -31,7 +30,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="input" name="defaultTechnology" field="defaultTechnology"
-							reference="defaultTechnology" expression="#defaultTechnology==null?'N/A':#defaultTechnology['name']" />
+							reference="defaultTechnology" expression="#defaultTechnology==null?'N/A':#defaultTechnology['name']" defaultEnabled="false"/>
 					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="lookup" name="technology" field="technology"
@@ -45,11 +44,11 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5">
-						<component type="input" name="quantity" field="quantity" reference="quantity"/>
+						<component type="input" name="quantity" field="quantity" reference="quantity" />
 					</layoutElement>
 					<layoutElement column="1" row="6">
 						<component type="input" name="order" field="order"
-							reference="order" expression="#order==null?'N/A':#order['number']" />
+							reference="order" expression="#order==null?'N/A':#order['number']" defaultEnabled="false"/>
 					</layoutElement>
 					<layoutElement column="1" row="7">
 						<component type="borderLayout" name="borderLayoutTechnicalProductionCost"
@@ -138,15 +137,15 @@
 							</component>
 						</component>
 					</layoutElement>
-					
-				</component>
 
+				</component>
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 			</component>
 		</windowTab>
 	</component>
 	<hooks>
+		<beforeRender class="com.qcadoo.mes.costCalculation.CostCalculationService" method="fillFieldFromTechnology" />
 	</hooks>
 </view>
 
