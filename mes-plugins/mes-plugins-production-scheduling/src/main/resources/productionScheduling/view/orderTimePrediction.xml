@@ -39,6 +39,41 @@
 			</group>
 		</ribbon>
 		<component type="form" name="form" reference="form">
+			<script>
+				<![CDATA[
+					function setCountTimeOfTechnologyButtonState() {
+						var countTimeOfTechnology = #{window}.getRibbonItem("timeOfTechnology.countTimeOfTechnology");
+						var technologyValue = #{technology}.getComponentData();
+						var dateFromValue = #{dateFrom}.getComponentData();
+						var quantityValue = #{quantity}.getComponentData();
+
+						if (dateFromValue.value && dateFromValue.value != "" 
+								&& quantityValue.value && quantityValue.value != "" 
+								&& technologyValue.value && technologyValue.value != "") {
+							countTimeOfTechnology.enable();
+						} else {
+							countTimeOfTechnology.disable();
+						}
+					}
+
+					var statelessFields = new Array(
+						#{realizationTime},
+						#{technology},
+						#{quantity},
+						#{dateFrom},
+						#{dateTo}
+					);					
+
+					for(var i = 0; i < statelessFields.length; i++) {
+						statelessFields[i].performUpdateState();
+						statelessFields[i].addOnChangeListener({
+							onChange: function() {
+								setCountTimeOfTechnologyButtonState();
+							}
+						});
+					}
+				]]>
+			</script>
 			<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="9">
 				<layoutElement column="1" row="1">
@@ -52,46 +87,11 @@
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
-						<script><![CDATA[
-						var countTimeOfTechnology = #{window}.getRibbonItem("timeOfTechnology.countTimeOfTechnology");
-						window.setCountTimeOfTechnologyButtonState = function() {
-							var technologyValue = #{technology}.getComponentData();
-							var dateFromValue = #{dateFrom}.getComponentData();
-							var quantityValue = #{quantity}.getComponentData();
-							
-							#{technology}.performUpdateState();
-							#{dateFrom}.performUpdateState();
-							#{quantity}.performUpdateState();
-							
-							if (dateFromValue.value && dateFromValue.value != "" 
-									&& quantityValue.value && quantityValue.value != "" 
-									&& technologyValue.value && technologyValue.value != "") {
-								countTimeOfTechnology.enable();
-							}else{
-								countTimeOfTechnology.disable();
-							}
-							
-						}
-						this.performUpdateState();
-						this.addOnChangeListener({
-							onChange: window.setCountTimeOfTechnologyButtonState
-						});
-						this.addOnChangeListener({
-							onSetValue: window.setCountTimeOfTechnologyButtonState
-						});
-					]]></script>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="input" name="quantity" reference="quantity"
 						defaultEnabled="true">
-						<!-- <option type="required" value="true"/> -->
-						<script><![CDATA[
-						this.performUpdateState();
-						this.addOnChangeListener({
-							onChange: window.setCountTimeOfTechnologyButtonState
-						});
-					]]></script>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
@@ -99,17 +99,12 @@
 						defaultEnabled="true">
 						<option type="withTimePicker" value="true" />
 						<option type="required" value="true" />
-						<script><![CDATA[
-						this.performUpdateState();
-						this.addOnChangeListener({
-							onChange: window.setCountTimeOfTechnologyButtonState
-						});
-					]]></script>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4">
 					<component type="time" name="realizationTime" reference="realizationTime"
-						defaultEnabled="false" />
+						defaultEnabled="false" >
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="5">
 					<component type="calendar" name="dateTo" reference="dateTo"
@@ -117,7 +112,6 @@
 						<option type="withTimePicker" value="true" />
 					</component>
 				</layoutElement>
-
 			</component>
 
 			<option type="header" value="true" />

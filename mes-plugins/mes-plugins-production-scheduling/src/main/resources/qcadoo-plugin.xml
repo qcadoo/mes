@@ -81,9 +81,6 @@
 
 		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService" method="setVisibleAlert"/>
 		
-		<view:view-hook view="orderTimePrediction" type="beforeRender" plugin="productionScheduling" class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" 
-			method="setFieldDisable"/>
-
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 		
 		<view:view-grid-column plugin="orders" view="ordersList" component="grid">
