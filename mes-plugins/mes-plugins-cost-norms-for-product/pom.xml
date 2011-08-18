@@ -25,5 +25,18 @@
 		</plugins>
 	</build>
 
+	<dependencies>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+    		<artifactId>mes-plugins-basic</artifactId>
+    		<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+    		<artifactId>mes-plugins-technologies</artifactId>
+    		<version>${qcadoo.version}</version>
+		</dependency>
+	</dependencies>
+
 </project>
 
