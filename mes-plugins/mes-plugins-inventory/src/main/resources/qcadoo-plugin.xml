@@ -3,8 +3,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu"
-	xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"	
+    xmlns:report="http://schema.qcadoo.org/modules/report" 
 	xsi:schemaLocation="
+	   http://schema.qcadoo.org/modules/report 
+	   http://schema.qcadoo.org/modules/report.xsd
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
@@ -68,7 +71,6 @@
 		<view:view resource="view/inventoryReportDetails.xml" />		
 		
 		<view:resource uri="public/**/*" />
-
 	</modules>
 
 </plugin>

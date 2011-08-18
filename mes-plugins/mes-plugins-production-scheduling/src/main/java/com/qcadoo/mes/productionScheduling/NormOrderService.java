@@ -105,6 +105,7 @@ public class NormOrderService {
         orderOperationComponent.setField("entityType", "operation");
         orderOperationComponent.setField("tpz", operationComponent.getField("tpz"));
         orderOperationComponent.setField("tj", operationComponent.getField("tj"));
+        orderOperationComponent.setField("productionInOneCycle", operationComponent.getField("productionInOneCycle"));
         orderOperationComponent.setField("countRealized",
                 operationComponent.getField("countRealized") != null ? operationComponent.getField("countRealized") : "01all");
         orderOperationComponent.setField("countMachine", operationComponent.getField("countMachine"));
@@ -138,6 +139,8 @@ public class NormOrderService {
     public void disableComponents(final ViewDefinitionState viewDefinitionState) {
         FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
         FieldComponent tj = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
+        FieldComponent productionInOneCycle = (FieldComponent) viewDefinitionState
+                .getComponentByReference("productionInOneCycle");
         FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
         FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
         FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference("timeNextOperation");
@@ -146,6 +149,8 @@ public class NormOrderService {
         tpz.setRequired(true);
         tj.setEnabled(true);
         tj.setRequired(true);
+        productionInOneCycle.setEnabled(true);
+        productionInOneCycle.setRequired(true);
         countRealized.setEnabled(true);
         countRealized.setRequired(true);
 
