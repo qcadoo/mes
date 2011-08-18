@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.5
+ * Version: 0.4.6
  *
  * This file is part of Qcadoo.
  *
@@ -117,15 +117,24 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 }
             }
 
+            BigDecimal productionInOneCycle = (BigDecimal) operationComponent.getField("productionInOneCycle");
+            BigDecimal roundUp = plannedQuantity.divide(productionInOneCycle, BigDecimal.ROUND_UP);
+
             if ("01all".equals(operationComponent.getField("countRealized"))
                     || operationComponent.getBelongsToField("parent") == null) {
-                operationTime = (plannedQuantity.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj")))))
+                operationTime = (roundUp.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj")))))
                         .intValue();
             } else {
                 operationTime = ((operationComponent.getField("countMachine") != null ? (BigDecimal) operationComponent
                         .getField("countMachine") : BigDecimal.ZERO).multiply(BigDecimal
                         .valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue();
             }
+
+            System.out.println("Libront productionInOneCycle: " + productionInOneCycle);
+            System.out.println("Libront roundUp: " + roundUp);
+            System.out.println("Libront countMachine: " + operationComponent.getField("countMachine"));
+            System.out.println("Libront plannedQuantity: " + plannedQuantity);
+
             operationTime += getIntegerValue(operationComponent.getField("tpz"));
 
             if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {

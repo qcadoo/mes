@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.5
+ * Version: 0.4.6
  *
  * This file is part of Qcadoo.
  *
@@ -87,7 +87,7 @@ public class SamplesLoaderModule extends Module {
     private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr",
             "algorithm", "minimal" };
 
-    private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number", "tpz", "tj" };
+    private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number", "tpz", "tj", "productionInOneCycle" };
 
     private static final String[] MACHINE_ATTRIBUTES = new String[] { "id", "name", "prod_line", "description" };
 
@@ -117,8 +117,7 @@ public class SamplesLoaderModule extends Module {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    // AlBR
-    // @Value("${loadTestDataLocale}")
+    @Value("${loadTestDataLocale}")
     private String locale;
 
     @Value("${setAsDemoEnviroment}")
@@ -184,9 +183,12 @@ public class SamplesLoaderModule extends Module {
     }
 
     private InputStream getXmlFile(final String type) throws IOException {
-        locale = Locale.getDefault().toString().substring(0, 2);
-        if (!"pl".equals(locale) && !"en".equals(locale)) {
-            locale = Locale.ENGLISH.toString().substring(0, 2);
+        if (locale == null) {
+            locale = Locale.getDefault().toString().substring(0, 2);
+
+            if (!"pl".equals(locale) && !"en".equals(locale)) {
+                locale = Locale.ENGLISH.toString().substring(0, 2);
+            }
         }
         return SamplesLoaderModule.class.getResourceAsStream("/com/qcadoo/mes/samples/" + type + "_" + locale + ".xml");
     }
@@ -301,6 +303,7 @@ public class SamplesLoaderModule extends Module {
         operation.setField("number", values.get("number"));
         operation.setField("tpz", values.get("tpz"));
         operation.setField("tj", values.get("tj"));
+        operation.setField("productionInOneCycle", values.get("productionInOneCycle"));
         operation.setField("countRealized", values.get("countRealized"));
         operation.setField("machine", getMachine(values.get("number")));
         operation.setField("staff", getRandomStaff());
@@ -758,6 +761,7 @@ public class SamplesLoaderModule extends Module {
         component.setField("entityType", "operation");
         component.setField("tpz", operation.getField("tpz"));
         component.setField("tj", operation.getField("tj"));
+        component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
         component.setField("countRealized", operation.getField("countRealized"));
 
         component = dataDefinitionService.get("technologies", "technologyOperationComponent").save(component);

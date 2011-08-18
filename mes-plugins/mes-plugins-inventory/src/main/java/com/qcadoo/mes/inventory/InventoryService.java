@@ -1,3 +1,26 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo MES
+ * Version: 0.4.6
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
 package com.qcadoo.mes.inventory;
 
 import java.io.IOException;
@@ -121,14 +144,15 @@ public class InventoryService {
 
         ComponentState warehouse = (ComponentState) state.getComponentByReference("warehouse");
         ComponentState product = (ComponentState) state.getComponentByReference("product");
-        ComponentState Date = (ComponentState) state.getComponentByReference("correctionDate");
+        ComponentState date = (ComponentState) state.getComponentByReference("correctionDate");
         FieldComponent should = (FieldComponent) state.getComponentByReference("shouldBe");
 
-        if (warehouse.getFieldValue() != null && product.getFieldValue() != null && Date.getFieldValue() != null) {
+        if (warehouse.getFieldValue() != null && warehouse != null && product.getFieldValue() != null && product != null
+                && date.getFieldValue() != null && date != null && !date.getFieldValue().toString().equals("")) {
 
             String warehouseNumber = warehouse.getFieldValue().toString();
             String productNumber = product.getFieldValue().toString();
-            String forDate = Date.getFieldValue().toString();
+            String forDate = date.getFieldValue().toString();
 
             BigDecimal shouldBe = calculateShouldBe(warehouseNumber, productNumber, forDate);
 
@@ -148,14 +172,23 @@ public class InventoryService {
         return true;
     }
 
-    public void setGenerateButtonState(final ViewDefinitionState state) {
-        setGenerateButtonState(state, state.getLocale(), InventoryConstants.PLUGIN_IDENTIFIER,
-                InventoryConstants.MODEL_INVENTORY_REPORT);
-    }
-
     public void setGridGenerateButtonState(final ViewDefinitionState state) {
         setGridGenerateButtonState(state, state.getLocale(), InventoryConstants.PLUGIN_IDENTIFIER,
                 InventoryConstants.MODEL_INVENTORY_REPORT);
+    }
+
+    public boolean validateTransfer(final DataDefinition dataDefinition, final Entity entity) {
+
+        Entity warehouseFrom = (Entity) (entity.getField("warehouseFrom") != null ? entity.getField("warehouseFrom") : null);
+        Entity warehouseTo = (Entity) (entity.getField("warehouseTo") != null ? entity.getField("warehouseTo") : null);
+
+        if (warehouseFrom == null && warehouseTo == null) {
+            entity.addError(dataDefinition.getField("warehouseFrom"), "inventory.validate.global.error.fillAtLeastOneWarehouse");
+            entity.addError(dataDefinition.getField("warehouseTo"), "inventory.validate.global.error.fillAtLeastOneWarehouse");
+            return false;
+        }
+        return true;
+
     }
 
     @SuppressWarnings("unchecked")

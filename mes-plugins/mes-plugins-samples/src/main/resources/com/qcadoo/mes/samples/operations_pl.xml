@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.5
+    Version: 0.4.6
 
     This file is part of Qcadoo.
 
@@ -25,10 +25,10 @@
 
 -->
 <operations>
-	<row NAME="Heblowanie" NUMBER="1" TPZ="900" TJ="300" COUNTREALIZED="01all"/>
-	<row NAME="Piłowanie" NUMBER="2" TPZ="900" TJ="600" COUNTREALIZED="01all"/>
-	<row NAME="Szlifowanie" NUMBER="3" TPZ="1200" TJ="300" COUNTREALIZED="01all"/>
-	<row NAME="Frezowanie" NUMBER="4" TPZ="900" TJ="300" COUNTREALIZED="01all"/>
-	<row NAME="Pakowanie" NUMBER="5" TPZ="900" TJ="1500" COUNTREALIZED="01all"/>
-	<row NAME="Skręcanie" NUMBER="6" TPZ="900" TJ="1800" COUNTREALIZED="01all"/>
+	<row NAME="Heblowanie" NUMBER="1" TPZ="900" TJ="300" COUNTREALIZED="01all" PRODUCTIONINONECYCLE="1"/>
+	<row NAME="Piłowanie" NUMBER="2" TPZ="900" TJ="600" COUNTREALIZED="01all" PRODUCTIONINONECYCLE="1"/>
+	<row NAME="Szlifowanie" NUMBER="3" TPZ="1200" TJ="300" COUNTREALIZED="01all" PRODUCTIONINONECYCLE="1"/>
+	<row NAME="Frezowanie" NUMBER="4" TPZ="900" TJ="300" COUNTREALIZED="01all" PRODUCTIONINONECYCLE="1"/>
+	<row NAME="Pakowanie" NUMBER="5" TPZ="900" TJ="1500" COUNTREALIZED="01all" PRODUCTIONINONECYCLE="1"/>
+	<row NAME="Skręcanie" NUMBER="6" TPZ="900" TJ="1800" COUNTREALIZED="01all" PRODUCTIONINONECYCLE="1"/>
 </operations>

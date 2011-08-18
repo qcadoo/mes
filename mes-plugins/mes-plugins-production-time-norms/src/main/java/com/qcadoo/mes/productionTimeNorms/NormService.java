@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.5
+ * Version: 0.4.6
  *
  * This file is part of Qcadoo.
  *
@@ -41,12 +41,16 @@ public class NormService {
     public void updateFieldsStateOnWindowLoad(final ViewDefinitionState viewDefinitionState) {
         FieldComponent tpzNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
         FieldComponent tjNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
+        FieldComponent productionInOneCycle = (FieldComponent) viewDefinitionState
+                .getComponentByReference("productionInOneCycle");
         FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
         FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference("timeNextOperation");
         Object value = countRealized.getFieldValue();
 
         tpzNorm.setEnabled(true);
         tjNorm.setEnabled(true);
+        productionInOneCycle.setEnabled(true);
+
         countRealized.setEnabled(true);
         if (!"02specified".equals(value)) {
             countRealized.setFieldValue("01all");
@@ -76,6 +80,8 @@ public class NormService {
             final String[] args) {
         FieldComponent tpzNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
         FieldComponent tjNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
+        FieldComponent productionInOneCycle = (FieldComponent) viewDefinitionState
+                .getComponentByReference("productionInOneCycle");
         FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
         FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
         FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference("timeNextOperation");
@@ -87,6 +93,7 @@ public class NormService {
         if (operation != null) {
             tpzNorm.setFieldValue(operation.getField("tpz"));
             tjNorm.setFieldValue(operation.getField("tj"));
+            productionInOneCycle.setFieldValue(operation.getField("productionInOneCycle"));
             countRealized.setFieldValue(operation.getField("countRealizedOperation") != null ? operation
                     .getField("countRealizedOperation") : "01all");
             countMachine.setFieldValue(operation.getField("countMachineOperation"));
@@ -94,6 +101,7 @@ public class NormService {
         } else {
             tpzNorm.setFieldValue(null);
             tjNorm.setFieldValue(null);
+            productionInOneCycle.setFieldValue("1");
             countRealized.setFieldValue("01all");
             countMachine.setFieldValue(null);
             timeNextOperation.setFieldValue(null);

@@ -33,7 +33,7 @@
             <version>[0.4.1</version>
         </dependency>
         <dependency>
-            <plugin>technolgies</plugin>
+            <plugin>technologies</plugin>
             <version>[0.4.1</version>
         </dependency>
         <dependency>
@@ -67,21 +67,21 @@
             </model:integer>
         </model:model-field>
         <model:model-field plugin="basic" model="product" >
-            <model:decimal name="nominalCost">
+            <model:decimal name="nominalCost" default="0">
                 <validatesRange from="0" exclusively="true" />
                 <validatesPrecision max="7" />
                 <validatesScale max="3" />
             </model:decimal>
         </model:model-field>
         <model:model-field plugin="basic" model="product" >
-            <model:decimal name="lastPurchaseCost">
+            <model:decimal name="lastPurchaseCost" default="0">
                 <validatesRange from="0" exclusively="true" />
                 <validatesPrecision max="7" />
                 <validatesScale max="3" />
             </model:decimal>
         </model:model-field>
         <model:model-field plugin="basic" model="product" >
-            <model:decimal name="averageCost">
+            <model:decimal name="averageCost" default="0">
                 <validatesRange from="0" exclusively="true" />
                 <validatesPrecision max="7" />
                 <validatesScale max="3" />

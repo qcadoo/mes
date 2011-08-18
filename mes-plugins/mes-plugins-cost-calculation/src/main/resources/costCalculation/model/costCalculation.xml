@@ -28,9 +28,9 @@
 		<enum name="includeCostOfMaterial" values="01nominal,02lastPurchase,03average" />
 		<enum name="includeCostOfOperation" values="01piecework,02hourly" />
 		<date name="dateOfCalculation" />
-		<decimal name="technologyId" persistent="false" />
-		<decimal name="orderId" persistent="false"  />
 	</fields>
-	<hooks />
+	<hooks >
+		<onSave class="com.qcadoo.mes.costCalculation.CostCalculationService" method="generateDateOfCalculation"/>
+	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

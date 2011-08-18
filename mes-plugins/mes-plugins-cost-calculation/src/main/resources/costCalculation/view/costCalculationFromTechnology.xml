@@ -19,7 +19,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="lookup" name="product" field="product"
-							reference="product" >
+							reference="product"  defaultEnabled="false">
 							<option type="column" name="name" fields="name" link="true"/>
 							<option type="required" value="true" />
 							<option type="searchable" value="number,name" />
@@ -29,12 +29,19 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="input" name="defaultTechnology" field="defaultTechnology"
-							reference="defaultTechnology" expression="#defaultTechnology==null?'N/A':#defaultTechnology['name']" defaultEnabled="false"/>
+						<component type="lookup" name="defaultTechnology" field="defaultTechnology"
+							reference="defaultTechnology"  defaultEnabled="false">
+							<option type="column" name="name" fields="name" />
+							<option type="required" value="true" />
+							<option type="searchable" value="number,name" />
+							<option type="orderable" value="number,name" />
+							<option type="expression" value="#name" />
+							<option type="fieldCode" value="number" />
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="lookup" name="technology" field="technology"
-							reference="technology" >
+							reference="technology"  defaultEnabled="false">
 							<option type="column" name="name" fields="name" />
 							<option type="required" value="true" />
 							<option type="searchable" value="number,name" />
@@ -44,11 +51,18 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5">
-						<component type="input" name="quantity" field="quantity" reference="quantity" />
+						<component type="input" name="quantity" field="quantity" reference="quantity"  defaultEnabled="false"/>
 					</layoutElement>
 					<layoutElement column="1" row="6">
-						<component type="input" name="order" field="order"
-							reference="order" expression="#order==null?'N/A':#order['number']" defaultEnabled="false"/>
+						<component type="lookup" name="order" field="order"
+							reference="order"  defaultEnabled="false">
+							<option type="column" name="name" fields="name" />
+							<option type="required" value="true" />
+							<option type="searchable" value="number,name" />
+							<option type="orderable" value="number,name" />
+							<option type="expression" value="#name" />
+							<option type="fieldCode" value="number" />
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="7">
 						<component type="borderLayout" name="borderLayoutTechnicalProductionCost"

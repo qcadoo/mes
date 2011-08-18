@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.5
+    Version: 0.4.6
 
     This file is part of Qcadoo.
 
@@ -38,6 +38,7 @@
 		<priority name="priority" scope="parent" />
 		<integer name="tpz" />
 		<integer name="tj" />
+		<decimal name="productionInOneCycle" required="true" default="1"/>
 		<enum name="countRealized" values="01all,02specified" default="01all" required="true" />
 		<decimal name="countMachine" />
 		<integer name="timeNextOperation" />
