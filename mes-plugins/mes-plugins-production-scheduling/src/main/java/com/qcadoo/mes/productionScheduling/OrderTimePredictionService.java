@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.5
+ * Version: 0.4.6
  *
  * This file is part of Qcadoo.
  *
@@ -79,7 +79,12 @@ public class OrderTimePredictionService {
         dateTo.setEnabled(false);
         realizationTime.setEnabled(false);
         countTimeOfTechnology.setEnabled(false);
-
+        
+        quantity.requestComponentUpdateState();
+        dateFrom.requestComponentUpdateState();
+        dateTo.requestComponentUpdateState();
+        technology.requestComponentUpdateState();
+        realizationTime.requestComponentUpdateState();
     }
 
     public void clearAllField(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -165,7 +170,8 @@ public class OrderTimePredictionService {
     }
 
     public void disableRealizationTime(final ViewDefinitionState viewDefinitionState) {
-        viewDefinitionState.getComponentByReference("realizationTime").setEnabled(false);
+        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
+        realizationTime.setEnabled(false);
     }
 
     public void clearFieldValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {

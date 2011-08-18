@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.5
+ * Version: 0.4.6
  *
  * This file is part of Qcadoo.
  *
@@ -658,13 +658,10 @@ public final class QualityControlService {
         } else if ("03forOrder".equals(qualityControlType)) {
             createAndSaveControlForSingleOrder(order);
         } else if ("04forOperation".equals(qualityControlType)) {
-            System.out.println("***alaxxx");
             EntityTree tree = technology.getTreeField("operationComponents");
             for (Entity entity : tree) {
-                System.out.println("***alafor");
                 if (entity.getField("qualityControlRequired") != null && (Boolean) entity.getField("qualityControlRequired")) {
 
-                    System.out.println("***ala");
                     createAndSaveControlForOperation(order, entity);
                 }
 
@@ -673,7 +670,6 @@ public final class QualityControlService {
     }
 
     private void createAndSaveControlForOperation(final Entity order, final Entity entity) {
-        System.out.println("***ala2222");
         DataDefinition qualityForOperationDataDefinition = dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
                 QualityControlsConstants.MODEL_QUALITY_CONTROL);
 

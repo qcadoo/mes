@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.4.6
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
 <plugin plugin="inventory" version="0.4.6"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
@@ -38,7 +63,7 @@
 		<localization:translation path="locales" />
 		
 		<model:model model="correction" resource="model/correction.xml" />
-		<model:model model="inventory" resource="model/inventory.xml" />
+<!-- 		<model:model model="inventory" resource="model/inventory.xml" /> -->
 		<model:model model="transfer" resource="model/transfer.xml" />
 		<model:model model="warehouse" resource="model/warehouse.xml" />		
 		<model:model model="inventoryReport" resource="model/inventoryReport.xml" />
@@ -47,11 +72,11 @@
 		<menu:menu-category name="reports" />
 		
 	    <view:view-listener plugin="inventory" view="correctionDetail" component="form" event="refreshShouldBe" class="com.qcadoo.mes.inventory.InventoryService" method="refreshShouldBe" />
-		
+
 		<menu:menu-item name="corrections" category="inventory"
 			view="correctionList" />
-		<menu:menu-item name="inventory" category="inventory"
-			view="inventoryList" />
+<!-- 		<menu:menu-item name="inventory" category="inventory" -->
+<!-- 			view="inventoryList" /> -->
 		<menu:menu-item name="transfers" category="inventory"
 			view="transferList" />
 		<menu:menu-item name="warehouses" category="inventory"
@@ -63,8 +88,8 @@
 		<view:view resource="view/transferDetail.xml" />
 		<view:view resource="view/correctionList.xml" />
 		<view:view resource="view/correctionDetail.xml" />
-		<view:view resource="view/inventoryDetail.xml"/>
-		<view:view resource="view/inventoryList.xml" />
+<!-- 		<view:view resource="view/inventoryDetail.xml"/> -->
+<!-- 		<view:view resource="view/inventoryList.xml" /> -->
 		<view:view resource="view/warehouseList.xml" />
 		<view:view resource="view/warehouseDetail.xml" />
 		<view:view resource="view/inventoryReportList.xml" />

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.5
+ * Version: 0.4.6
  *
  * This file is part of Qcadoo.
  *
@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.util.OrderReportService;
 import com.qcadoo.mes.orders.util.OrderReportService.OrderValidator;
 import com.qcadoo.mes.orders.util.RibbonReportService;
@@ -248,12 +249,14 @@ public final class WorkPlanService {
             DocumentException {
         Entity workPlanWithFileName = updateFileName(workPlan, getFullFileName((Date) workPlan.getField("date"), "Work_plan"),
                 WorkPlansConstants.MODEL_WORK_PLAN);
-        workPlanForMachinePdfService.generateDocument(workPlanWithFileName, state.getLocale());
-        workPlanForMachineXlsService.generateDocument(workPlanWithFileName, state.getLocale());
-        workPlanForWorkerPdfService.generateDocument(workPlanWithFileName, state.getLocale());
-        workPlanForWorkerXlsService.generateDocument(workPlanWithFileName, state.getLocale());
-        workPlanForProductPdfService.generateDocument(workPlanWithFileName, state.getLocale());
-        workPlanForProductXlsService.generateDocument(workPlanWithFileName, state.getLocale());
+        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
+                .uniqueResult();
+        workPlanForMachinePdfService.generateDocument(workPlanWithFileName, company, state.getLocale());
+        workPlanForMachineXlsService.generateDocument(workPlanWithFileName, company, state.getLocale());
+        workPlanForWorkerPdfService.generateDocument(workPlanWithFileName, company, state.getLocale());
+        workPlanForWorkerXlsService.generateDocument(workPlanWithFileName, company, state.getLocale());
+        workPlanForProductPdfService.generateDocument(workPlanWithFileName, company, state.getLocale());
+        workPlanForProductXlsService.generateDocument(workPlanWithFileName, company, state.getLocale());
     }
 
     private String getFullFileName(final Date date, final String fileName) {

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.5
+ * Version: 0.4.6
  *
  * This file is part of Qcadoo.
  *
@@ -26,11 +26,9 @@ package com.qcadoo.mes.genealogies;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,11 +41,8 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.transaction.TransactionStatus;
@@ -61,8 +56,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.internal.DefaultEntity;
-import com.qcadoo.model.internal.EntityListImpl;
-import com.qcadoo.model.internal.EntityTreeImpl;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityService;
@@ -273,207 +266,6 @@ public class AutoGenealogyServiceTest {
     }
 
     @Test
-    @Ignore
-    // TODO masz fix tests
-    public void shouldAutoCreateGenealogyWithActualBatch() {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        Entity order = mock(Entity.class);
-        Entity genealogy = new DefaultEntity(null);
-        given(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).create())
-                .willReturn(genealogy);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
-                order);
-        Entity product = mock(Entity.class);
-        Entity technology = mock(Entity.class);
-        given(order.getBelongsToField("product")).willReturn(product);
-        given(order.getBelongsToField("technology")).willReturn(technology);
-        given(product.getField("batch")).willReturn("test");
-        given(
-                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
-                        .find().setMaxResults(1).list().getEntities()).willReturn(getCurrentAttribute());
-
-        given(technology.getField("shiftFeatureRequired")).willReturn(true);
-        given(technology.getField("postFeatureRequired")).willReturn(true);
-        given(technology.getField("otherFeatureRequired")).willReturn(true);
-
-        doAnswer(new Answer<Object>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Object answer(final InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                return null;
-            }
-        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
-
-        given(
-                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY)
-                        .save(any(Entity.class)).isValid()).willReturn(true);
-
-        given(translationService.translate("genealogies.message.autoGenealogy.success", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.success.pl");
-
-        // when
-        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
-
-        // then
-        verify(state, times(2)).getFieldValue();
-
-        verify(state).addMessage("genealogies.message.autoGenealogy.success.pl", MessageType.SUCCESS);
-    }
-
-    @Test
-    @Ignore
-    // TODO masz fix tests
-    public void shouldAutoCreateGenealogyWithLastUsedBatch() {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        Entity order = mock(Entity.class);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
-                order);
-        Entity product = mock(Entity.class);
-        Entity technology = mock(Entity.class);
-        Entity genealogy = new DefaultEntity(null);
-        given(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).create())
-                .willReturn(genealogy);
-        given(order.getBelongsToField("product")).willReturn(product);
-        given(order.getBelongsToField("technology")).willReturn(technology);
-        given(product.getField("lastUsedBatch")).willReturn("test");
-
-        given(
-                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
-                        .find().setMaxResults(1).list().getEntities()).willReturn(getCurrentAttribute());
-
-        given(technology.getField("shiftFeatureRequired")).willReturn(true);
-        given(technology.getField("postFeatureRequired")).willReturn(true);
-        given(technology.getField("otherFeatureRequired")).willReturn(true);
-
-        doAnswer(new Answer<Object>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Object answer(final InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                return null;
-            }
-        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
-
-        given(
-                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY)
-                        .save(any(Entity.class)).isValid()).willReturn(true);
-
-        given(translationService.translate("genealogies.message.autoGenealogy.success", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.success.pl");
-
-        // when
-        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "true" });
-
-        // then
-        verify(state, times(2)).getFieldValue();
-
-        verify(state).addMessage("genealogies.message.autoGenealogy.success.pl", MessageType.SUCCESS);
-    }
-
-    @Test
-    @Ignore
-    // TODO masz fix tests
-    public void shouldFailAutoCreateGenealogyWithLastUsedBatch() {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        Entity order = mock(Entity.class);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
-                order);
-        Entity shift = new DefaultEntity(null);
-        Entity post = new DefaultEntity(null);
-        Entity other = new DefaultEntity(null);
-        given(
-                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_SHIFT_FEATURE)
-                        .create()).willReturn(shift);
-        given(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_POST_FEATURE).create())
-                .willReturn(post);
-        given(
-                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_OTHER_FEATURE)
-                        .create()).willReturn(other);
-        Entity product = mock(Entity.class);
-        Entity technology = mock(Entity.class);
-        Entity genealogy = new DefaultEntity(null);
-        given(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).create())
-                .willReturn(genealogy);
-        given(order.getBelongsToField("product")).willReturn(product);
-        given(order.getBelongsToField("technology")).willReturn(technology);
-        given(product.getField("lastUsedBatch")).willReturn("test");
-        given(
-                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE)
-                        .find().setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
-        given(technology.getField("shiftFeatureRequired")).willReturn(true);
-        given(technology.getField("postFeatureRequired")).willReturn(true);
-        given(technology.getField("otherFeatureRequired")).willReturn(true);
-
-        doAnswer(new Answer<Object>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Object answer(final InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                ((List<Entity>) args[1]).add(createOperationComponent(true));
-                ((List<Entity>) args[1]).add(createOperationComponent(true));
-                ((List<Entity>) args[1]).add(createOperationComponent(true));
-                ((List<Entity>) args[1]).add(createOperationComponent(true));
-                return null;
-            }
-        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
-
-        given(translationService.translate("genealogies.message.autoGenealogy.missingShift", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.missingShift.pl");
-
-        given(translationService.translate("genealogies.message.autoGenealogy.missingOther", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.missingOther.pl");
-
-        given(translationService.translate("genealogies.message.autoGenealogy.missingPost", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.missingPost.pl");
-
-        given(translationService.translate("genealogies.message.autoGenealogy.missingBatch", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.missingBatch.pl");
-
-        mockStatic(TransactionAspectSupport.class);
-
-        TransactionStatus transactionStatus = mock(TransactionStatus.class);
-
-        given(TransactionAspectSupport.currentTransactionStatus()).willReturn(transactionStatus);
-
-        // when
-        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "true" });
-
-        // then
-        verify(state, times(2)).getFieldValue();
-
-        verify(state).addMessage("genealogies.message.autoGenealogy.missingShift.pl", MessageType.INFO, false);
-        verify(state).addMessage("genealogies.message.autoGenealogy.missingOther.pl", MessageType.INFO, false);
-        verify(state).addMessage("genealogies.message.autoGenealogy.missingPost.pl", MessageType.INFO, false);
-        verify(state).addMessage(
-                "genealogies.message.autoGenealogy.missingBatch.pl\nnumber1-name1; \nnumber3-name3; \nnumber4-name4; ",
-                MessageType.INFO, false);
-    }
-
-    @Test
     public void shouldFailAutoCreateGenealogyWithLastUsedBatchOtherError() {
         // given
         ComponentState state = mock(ComponentState.class);
@@ -570,130 +362,6 @@ public class AutoGenealogyServiceTest {
         // then
         verify(state, times(2)).getFieldValue();
         verify(state).addMessage("qcadooView.message.entityNotFound.pl", MessageType.FAILURE);
-    }
-
-    @Test
-    @Ignore
-    // TODO masz fix tests
-    public void shouldAutoCreateGenealogyOnChangeOrderStatusWithActualBatch() {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-
-        Entity order = mock(Entity.class);
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
-                order);
-
-        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
-                getParameter("02active"));
-
-        Entity product = mock(Entity.class);
-        Entity technology = mock(Entity.class);
-        Entity genealogy = new DefaultEntity(null);
-        given(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).create())
-                .willReturn(genealogy);
-        given(order.getBelongsToField("product")).willReturn(product);
-        given(order.getBelongsToField("technology")).willReturn(technology);
-        given(product.getField("batch")).willReturn("test");
-
-        given(technology.getField("shiftFeatureRequired")).willReturn(false);
-        given(technology.getField("postFeatureRequired")).willReturn(false);
-        given(technology.getField("otherFeatureRequired")).willReturn(false);
-
-        doAnswer(new Answer<Object>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Object answer(final InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                return null;
-            }
-        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
-
-        given(
-                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY)
-                        .save(any(Entity.class)).isValid()).willReturn(true);
-
-        given(translationService.translate("genealogies.message.autoGenealogy.success", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.success.pl");
-
-        // when
-        autoGenealogyService.generateGenalogyOnChangeOrderStatusForDone(viewDefinitionState, state, new String[] { "false" });
-
-        // then
-        verify(state, times(2)).getFieldValue();
-
-        verify(state).addMessage("genealogies.message.autoGenealogy.success.pl", MessageType.SUCCESS);
-
-    }
-
-    @Test
-    @Ignore
-    // TODO masz fix tests
-    public void shouldAutoCreateGenealogyOnChangeOrderStatusWithLastUsedBatch() {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-
-        Entity order = mock(Entity.class);
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
-                order);
-
-        given(dataDefinitionService.get("basic", "parameter").find().setMaxResults(1).list().getEntities()).willReturn(
-                getParameter("03lastUsed"));
-
-        Entity product = mock(Entity.class);
-        Entity technology = mock(Entity.class);
-        Entity genealogy = new DefaultEntity(null);
-        given(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).create())
-                .willReturn(genealogy);
-        given(order.getBelongsToField("product")).willReturn(product);
-        given(order.getBelongsToField("technology")).willReturn(technology);
-        given(product.getField("lastUsedBatch")).willReturn("test");
-
-        given(technology.getField("shiftFeatureRequired")).willReturn(false);
-        given(technology.getField("postFeatureRequired")).willReturn(false);
-        given(technology.getField("otherFeatureRequired")).willReturn(false);
-
-        doAnswer(new Answer<Object>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Object answer(final InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                ((List<Entity>) args[1]).add(createOperationComponent(false));
-                return null;
-            }
-        }).when(genealogyService).addOperationsFromSubtechnologiesToList(any(EntityTreeImpl.class), anyListOf(Entity.class));
-
-        given(
-                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY)
-                        .save(any(Entity.class)).isValid()).willReturn(true);
-
-        given(translationService.translate("genealogies.message.autoGenealogy.success", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.success.pl");
-
-        // when
-        autoGenealogyService.generateGenalogyOnChangeOrderStatusForDone(viewDefinitionState, state, new String[] { "false" });
-
-        // then
-        verify(state, times(2)).getFieldValue();
-
-        verify(state).addMessage("genealogies.message.autoGenealogy.success.pl", MessageType.SUCCESS);
-
     }
 
     @Test
@@ -924,54 +592,4 @@ public class AutoGenealogyServiceTest {
         verify(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)).save(any(Entity.class));
     }
 
-    private Entity createOperationComponent(final boolean withoutBatch) {
-        Entity operationComponent = mock(Entity.class);
-        List<Entity> productsEntities = new ArrayList<Entity>();
-        productsEntities.add(createOperationProductInComponent(1L, true, withoutBatch));
-        productsEntities.add(createOperationProductInComponent(2L, false, withoutBatch));
-        productsEntities.add(createOperationProductInComponent(3L, true, withoutBatch));
-        productsEntities.add(createOperationProductInComponent(4L, true, withoutBatch));
-        DataDefinition listDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(listDataDefinition.find().belongsTo(anyString(), any()).list().getEntities()).willReturn(productsEntities);
-
-        EntityListImpl operationProductInComponents = new EntityListImpl(listDataDefinition, "joinField", 1L);
-
-        given(operationComponent.getHasManyField("operationProductInComponents")).willReturn(operationProductInComponents);
-        return operationComponent;
-    }
-
-    private Entity createOperationProductInComponent(final Long id, final boolean batchRequired, final boolean withoutBatch) {
-        Entity operationProductInComponent = new DefaultEntity(null, id);
-        operationProductInComponent.setField("batchRequired", batchRequired);
-        Entity product = new DefaultEntity(null, id);
-        product.setField("name", "name" + id);
-        product.setField("number", "number" + id);
-        if (!withoutBatch) {
-            product.setField("batch", "batch" + id);
-            product.setField("lastUsedBatch", "batch" + id);
-        }
-        operationProductInComponent.setField("product", product);
-        return operationProductInComponent;
-    }
-
-    private List<Entity> getCurrentAttribute() {
-        List<Entity> list = new ArrayList<Entity>();
-        Entity currentAttribute = new DefaultEntity(null);
-        currentAttribute.setField("shift", "test");
-        currentAttribute.setField("post", "test");
-        currentAttribute.setField("other", "test");
-        currentAttribute.setField("lastUsedShift", "test");
-        currentAttribute.setField("lastUsedPost", "test");
-        currentAttribute.setField("lastUsedOther", "test");
-        list.add(currentAttribute);
-        return list;
-    }
-
-    private List<Entity> getParameter(final String value) {
-        List<Entity> list = new ArrayList<Entity>();
-        Entity currentAttribute = new DefaultEntity(null);
-        currentAttribute.setField("batchForDoneOrder", value);
-        list.add(currentAttribute);
-        return list;
-    }
 }

@@ -1,19 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-	*************************************************************************** 
-	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 0.4.5 This 
-	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
-	and/or modify it under the terms of the GNU Affero General Public License 
-	as published by the Free Software Foundation; either version 3 of the License, 
-	or (at your option) any later version. This program is distributed in the 
-	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
-	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-	GNU Affero General Public License for more details. You should have received 
-	a copy of the GNU Affero General Public License along with this program; 
-	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
-	Floor, Boston, MA 02110-1301 USA 
-	***************************************************************************
- -->
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.4.6
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="orderOperationComponentList" modelPlugin="orders" modelName="order">
@@ -23,12 +33,6 @@
 			<template name="standardFormTemplate" includeItems="navigation.back" />
 		</ribbon>
 		<component type="form" name="order" reference="form" />
-		<component type="form" name="formHelperSecond" reference="formHelperSecond"
-			field="#{orderOperationComponents}.technologyOperationComponent" />
-
-		<component type="gridLayout" name="gridLayout" rows="5"
-			columns="2" hasBorders="false">
-			<layoutElement column="1" row="1" height="5">
 				<component type="tree" name="orderOperationComponents"
 					reference="orderOperationComponents" field="#{form}.orderOperationComponents">
 					<dataType name="operation">
@@ -48,26 +52,6 @@
 					<option type="hasEditButton" value="true" />
 					<option type="hasMoveButton" value="false" />
 				</component>
-			</layoutElement>
-			<layoutElement column="2" row="1" height="5">
-				<component type="grid" name="inProducts" reference="inProducts"
-					source="#{formHelperSecond}.operationProductInComponents">
-					<option type="column" name="number" fields="product"
-						expression="#product['number']" link="true" width="100" />
-					<option type="column" name="name" fields="product"
-						expression="#product['name']" link="true" width="200" />
-					<option type="column" name="quantity" fields="quantity" 
-						link="false" width="200" />
-					<option type="column" name="unit" fields="product"
-						expression="#product['unit']" link="false" width="200" />
-					<option type="order" column="number" direction="desc" />
-					<option type="correspondingView" 
-						value="productionScheduling/orderOperationProductInComponentDetails" /> 
-					<option type="correspondingComponent" value="form" /> 
-					<option type="correspondingViewInModal" value="true" /> 
-				</component>
-			</layoutElement>
-		</component>
 		<option type="fixedHeight" value="false" />
 		<option type="header" value="false" />
 	</component>
