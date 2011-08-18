@@ -36,11 +36,16 @@
 			</ribbon>
 			<component type="grid" name="grid" reference="grid">
 				<option type="column" name="number" fields="number" link="true" width="150" />
+				<option type="column" name="name" fields="name" link="true"/>
 				<option type="order" column="number" direction="asc" />
+ 				<option type="searchable" value="number" /> 
+ 				<option type="orderable" value="number" /> 
 				<option type="correspondingView" value="inventory/warehouseDetail" /> 
  				<option type="correspondingComponent" value="form" /> 
+ 				<option type="multiselect" value="true" /> 
 			</component>
 			<option type="header" value="false" />
+ 			<option type="fixedHeight" value="true" /> 
 		</component>
 </view>
 

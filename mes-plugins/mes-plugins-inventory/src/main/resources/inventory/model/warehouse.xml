@@ -31,7 +31,10 @@
 		<string name="number" required="true" unique="true">
 				<validatesLength max="40" />
 		</string>
+		<string name="name" required="true">
+		</string>
 	</fields>
 	<hooks>
-	</hooks>	
+	</hooks>
+	<identifier expression="#number + ' - ' + #name" />	
 </model>
