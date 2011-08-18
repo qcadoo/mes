@@ -5,12 +5,12 @@
 
 	<groupId>com.qcadoo.mes</groupId>
 	<artifactId>mes</artifactId>
-	<version>0.4.7-SNAPSHOT</version>
+	<version>0.4.6-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Qcadoo MES</name>
 
-	<description />
+	<description/>
 
 	<url>https://github.com/qcadoo/mes</url>
 
