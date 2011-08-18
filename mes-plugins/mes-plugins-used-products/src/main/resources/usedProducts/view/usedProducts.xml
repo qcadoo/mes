@@ -3,7 +3,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.5
+    Version: 0.4.6
 
     This file is part of Qcadoo.
 
