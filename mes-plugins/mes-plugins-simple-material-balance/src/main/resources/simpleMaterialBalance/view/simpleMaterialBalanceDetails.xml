@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="simpleMaterialBalanceDetails" modelName="simpleMaterialBalance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<template name="standardFormTemplate" />
+			<group name="generate">
+				<bigButton name="generate" icon="generateIcon24.png"
+					action="#{form}.fireEvent(generateSimpleMaterialBalance);" state="disabled" />
+			</group>
+			<group name="export">
+				<smallButton name="pdf" icon="pdfIcon16.png"
+					action="#{form}.fireEvent(printSimpleMaterialBalance,pdf);" state="disabled" />
+				<smallButton name="xls" icon="xlsIcon16.png"
+					action="#{form}.fireEvent(printSimpleMaterialBalance,xls);" state="disabled" />
+			</group>
+		</ribbon>
+		<component type="form" name="simpleMaterialBalanceDetails" reference="form">
+			<script>
+				<![CDATA[
+					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
+					var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
+					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
+					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+					
+					var entityExists = false;
+					
+					this.addOnChangeListener({
+						onSetValue: function(value) {
+							if (!value || !value.content) {
+								return;
+							}
+							if (value.content.entityId) {
+								entityExists = true;
+							} else {
+								entityExists = false;
+							}
+							updateRibbon();
+						}
+					});
+					
+					function updateRibbon() {
+						if (entityExists) {
+							var isGeneratedCheckboxValue = #{generated}.getValue();
+							copyRibbonItem.enable();
+							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+								xlsRibbonItem.enable();
+								pdfRibbonItem.enable();
+								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
+							} else {
+								xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								saveRibbonItem.enable();
+							}
+						} else {
+							copyRibbonItem.disable("#{translate(recordNotCreated)}");
+							xlsRibbonItem.disable("#{translate(recordNotCreated)}");
+							pdfRibbonItem.disable("#{translate(recordNotCreated)}");
+							saveRibbonItem.enable();
+						}
+					}
+				]]>
+			</script>
+			<component type="gridLayout" name="gridLayout" columns="5" rows="10">
+				<layoutElement column="1" row="1" width="2">
+					<component type="checkbox" name="generated" reference="generated"
+						field="generated" defaultEnabled="false">
+						<option type="textRepresentationOnDisabled" value="false" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2" width="2">
+					<component type="input" name="date" reference="date" field="date" defaultEnabled="false"/>
+				</layoutElement>
+				<layoutElement column="1" row="3" width="2">
+					<component type="input" name="worker" reference="worker"
+						field="worker" defaultEnabled="false">
+						<option type="textRepresentationOnDisabled" value="false" />
+					</component>
+				</layoutElement>
+				<layoutElement column="3" row="1" width="2" height="2">
+					<component type="textarea" name="name" reference="name" field="name" />
+				</layoutElement>
+				<layoutElement column="3" row="3" width="2">
+					<component type="checkbox" name="onlyComponents" reference="onlyComponents" field="onlyComponents">
+						<option type="labelWidth" value="55" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="4" width="2" height="6">
+					<component type="grid" name="simpleMaterialBalanceOrdersComponent"
+						reference="simpleMaterialBalanceOrdersComponent" source="#{form}.orders">
+						<option type="column" name="number" fields="order"
+							expression="#order['number']" width="50" />
+						<option type="column" name="name" fields="order"
+							expression="#order['name']" />
+						<option type="order" column="number" direction="desc" />
+						<option type="correspondingView" value="simpleMaterialBalance/simpleMaterialBalanceOrdersComponentDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="paginable" value="false" />
+						<option type="multiselect" value="true" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="height" value="200" />
+						<option type="width" value="350" />
+					</component>
+				</layoutElement>
+				<layoutElement column="3" row="4" width="2" height="6">
+					<component type="grid" name="simpleMaterialBalanceWarehousesComponent"
+						reference="simpleMaterialBalanceWarehousesComponent" source="#{form}.warehouses">
+						<option type="column" name="number" fields="warehouse"
+							expression="#warehouse['number']" width="50" />
+						<option type="column" name="name" fields="warehouse"
+							expression="#warehouse['name']" width="50" />
+						<option type="order" column="number" direction="desc" />
+						<option type="correspondingView" value="simpleMaterialBalance/simpleMaterialBalanceWarehousesComponentDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="paginable" value="false" />
+						<option type="multiselect" value="true" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="height" value="200" />
+						<option type="width" value="350" />
+					</component>
+				</layoutElement>
+			</component>
+			<option type="header" value="true"/>
+			<option type="expression" value="#name" />
+			<listener event="printSimpleMaterialBalance"
+				class="com.qcadoo.mes.simpleMaterialBalance.internal.SimpleMaterialBalanceService" method="printSimpleMaterialBalance" />
+			<listener event="generateSimpleMaterialBalance"
+				class="com.qcadoo.mes.simpleMaterialBalance.internal.SimpleMaterialBalanceService" method="generateSimpleMaterialBalance" />
+		</component>
+	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.simpleMaterialBalance.internal.SimpleMaterialBalanceService"
+			method="setGenerateButtonState" />
+	</hooks>
+</view>
