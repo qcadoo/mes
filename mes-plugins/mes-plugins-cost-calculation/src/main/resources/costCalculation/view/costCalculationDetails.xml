@@ -1,9 +1,12 @@
-<view name="costCalculationDetails" modelName="costCalculation"
+<view name="costCalculationDetails" 
+	modelName="costCalculation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	
 	<component type="window" name="window">
 		<ribbon>
-			<template name="standardFormTemplate" />
+			<group template="navigation" />
+			<group template="formSaveCopyAndRemoveActions" />
 			<group name="costCalculate">
 				<bigButton name="costCalculate" icon="calculateTimeIcon24.png" />
 			</group>
@@ -30,8 +33,15 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="input" name="defaultTechnology" field="defaultTechnology"
-							reference="defaultTechnology" expression="#defaultTechnology==null?'N/A':#defaultTechnology['name']" />
+						<component type="lookup" name="defaultTechnology" field="defaultTechnology"
+							reference="defaultTechnology" >
+							<option type="column" name="name" fields="name" />
+							<option type="required" value="true" />
+							<option type="searchable" value="number,name" />
+							<option type="orderable" value="number,name" />
+							<option type="expression" value="#name" />
+							<option type="fieldCode" value="number" />
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="lookup" name="technology" field="technology"
@@ -48,8 +58,15 @@
 						<component type="input" name="quantity" field="quantity" reference="quantity"/>
 					</layoutElement>
 					<layoutElement column="1" row="6">
-						<component type="input" name="order" field="order"
-							reference="order" expression="#order==null?'N/A':#order['number']" />
+						<component type="lookup" name="order" field="order"
+							reference="order" >
+							<option type="column" name="name" fields="name" />
+							<option type="required" value="true" />
+							<option type="searchable" value="number,name" />
+							<option type="orderable" value="number,name" />
+							<option type="expression" value="#name" />
+							<option type="fieldCode" value="number" />
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="7">
 						<component type="borderLayout" name="borderLayoutTechnicalProductionCost"

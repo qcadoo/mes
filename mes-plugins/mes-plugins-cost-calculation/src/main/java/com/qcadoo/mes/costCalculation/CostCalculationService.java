@@ -1,5 +1,6 @@
 package com.qcadoo.mes.costCalculation;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,26 +9,19 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class CostCalculationService {
 
     @Autowired
     DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
-    private ExpressionService expressionService;
 
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -51,6 +45,7 @@ public class CostCalculationService {
     }
 
     public void fillFieldFromOrder(final ViewDefinitionState state) {
+
         FormComponent formOrderId = (FormComponent) state.getComponentByReference("orderId");
 
         FieldComponent number = (FieldComponent) state.getComponentByReference("number");
@@ -67,7 +62,7 @@ public class CostCalculationService {
         if (orderEntity != null) {
             number.setFieldValue(generateNumber(6));
             quantity.setFieldValue(orderEntity.getField("plannedQuantity"));
-            order.setFieldValue(orderEntity.getField("name"));
+            order.setFieldValue(orderEntity.getId());
 
             Entity productEntity = orderEntity.getBelongsToField("product");
             product.setFieldValue(productEntity.getId());
@@ -117,6 +112,12 @@ public class CostCalculationService {
             longValue = costs.size() + 1;
         }
         return String.format("%0" + digitsNumber + "d", longValue);
+    }
+
+    public void generateDateOfCalculation(final DataDefinition dataDefinition, final Entity entity) {
+
+        entity.setField("dateOfCalculation", new Date());
+
     }
 
 }
