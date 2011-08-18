@@ -38,6 +38,9 @@
     	<module>mes-plugins-inventory</module>
     	<module>mes-plugins-production-time-norms</module>
     	<module>mes-plugins-production-balance</module>
+        <module>mes-plugins-cost-norms-for-operation</module>
+        <module>mes-plugins-cost-norms-for-product</module>
+        <module>mes-plugins-cost-calculation</module>
         <module>mes-plugins-simple-material-balance</module>
   </modules>
 
