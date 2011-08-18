@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.5
+ * Version: 0.4.6
  *
  * This file is part of Qcadoo.
  *
@@ -35,7 +35,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.view.api.crud.CrudService;
 
 @Controller
@@ -46,6 +48,9 @@ public class GenealogyController {
 
     @Autowired
     private GenealogyAttributeService genealogyService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @RequestMapping(value = "genealogyAttribute", method = RequestMethod.GET)
     public ModelAndView getGenealogyAttributesPageView(final Locale locale) {
@@ -62,6 +67,8 @@ public class GenealogyController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("genealogyForComponentView");
         mav.addObject("value", value);
+        mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
+                .uniqueResult());
         return mav;
     }
 
@@ -70,6 +77,8 @@ public class GenealogyController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("genealogyForProductView");
         mav.addObject("value", value);
+        mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
+                .uniqueResult());
         return mav;
     }
 }

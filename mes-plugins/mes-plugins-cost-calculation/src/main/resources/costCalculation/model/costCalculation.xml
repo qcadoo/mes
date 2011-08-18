@@ -6,8 +6,31 @@
 		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
 		</string>
-		<string name="name" required="true" />
+		<belongsTo name="product" model="product" plugin="basic" required="true"/>
+		<belongsTo name="defaultTechnology" model="technology" plugin="technologies"/>
+		<belongsTo name="technology" model="technology" plugin="technologies" required="true"/>
+		<decimal name="quantity" required="true"/>
+		<belongsTo name="order" model="order" plugin="orders" />
+		<decimal name="materialCost" readonly="true"/>
+		<decimal name="machineHourlyCost" readonly="true"/>
+		<decimal name="laborHourlyCost" readonly="true"/>
+		<decimal name="totalTechnicalProductionCost" />
+		<decimal name="productionCostMargin" />
+		<decimal name="productionCostMarginValue" />
+		<decimal name="materialCostMargin" />		
+		<decimal name="materialCostMarginValue"  />
+		<decimal name="additionalOverhead" />
+		<decimal name="totalOverhead" />
+		<decimal name="totalCost" />
+		<decimal name="costPerUnit" />
+		<string name="description"/>
+		<boolean name="includeTPZ"/>
+		<enum name="includeCostOfMaterial" values="01nominal,02lastPurchase,03average" />
+		<enum name="includeCostOfOperation" values="01piecework,02hourly" />
+		<date name="dateOfCalculation" />
 	</fields>
-	<hooks />
+	<hooks >
+		<onSave class="com.qcadoo.mes.costCalculation.CostCalculationService" method="generateDateOfCalculation"/>
+	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

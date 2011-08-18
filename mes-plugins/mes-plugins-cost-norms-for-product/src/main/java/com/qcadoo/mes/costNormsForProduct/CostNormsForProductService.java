@@ -5,11 +5,19 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchDisjunction;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class CostNormsForProductService {
@@ -21,19 +29,12 @@ public class CostNormsForProductService {
 	
 	public void fillCostTabUnit(final ViewDefinitionState viewDefinitionState) {
 		FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-		FieldComponent costUnit = (FieldComponent) viewDefinitionState.getComponentByReference("costTabUnit"); 
-		Entity product;
-		
-		//TODO: check formName and get properly product id!
-		if("product".equals(form.getName())) {
-		    product = dataDefinitionService.get("basic", "product").get(form.getEntityId());
-		} else if("form".equals(form.getName())) {
-		    product = dataDefinitionService.get("technologies", "operationProductInComponent").get(form.getEntityId()).getBelongsToField("product");
-		} else {
+		FieldComponent costUnit = (FieldComponent) viewDefinitionState.getComponentByReference("costTabUnit");
+		if(form == null || costUnit == null) {
 		    return;
 		}
 		
-//		Entity product = dataDefinitionService.get("basic", "product").get(form.getEntityId());
+		Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(form.getEntityId());
 		if(product == null) {
 			return;
 		}
@@ -53,10 +54,28 @@ public class CostNormsForProductService {
 		    field.requestComponentUpdateState();
 		}
 	}
+
+	public void fillInProductsGrid(final ViewDefinitionState viewDefinitionState) {
+	    GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("inProductsGrid");
+	    Long technologyId = ((FormComponent) viewDefinitionState.getComponentByReference("form")).getEntityId();
+	    if (technologyId == null || grid == null) {
+	        return;
+	    }
+
+	    Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
+	    DataDefinition dd = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
+	    
+	    SearchDisjunction disjunction = SearchRestrictions.disjunction();
+	    for (Entity operationComponent : technology.getTreeField("operationComponents")) {
+	       disjunction.add(SearchRestrictions.belongsTo("operationComponent", operationComponent));
+	    }
+
+	    SearchResult searchResult = dd.find().add(disjunction).createAlias("product", "product").addOrder(SearchOrders.asc("product.name")).list();
+	    grid.setEntities(searchResult.getEntities());
+	}
 	
 	/* ****** CUSTOM EVENT LISTENER ****** */
 	
-
 	
 	/* ****** VALIDATORS ****** */
 

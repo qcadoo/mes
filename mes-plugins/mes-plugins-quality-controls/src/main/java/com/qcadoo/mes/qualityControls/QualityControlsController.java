@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.5
+ * Version: 0.4.6
  *
  * This file is part of Qcadoo.
  *
@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.qualityControls.constants.QualityControlsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -52,6 +53,8 @@ public class QualityControlsController {
         mav.setViewName("qualityControlFor" + StringUtils.capitalize(type) + "PdfView");
         mav.addObject("dateFrom", dateFrom);
         mav.addObject("dateTo", dateTo);
+        mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
+                .uniqueResult());
         return mav;
     }
 
@@ -71,6 +74,8 @@ public class QualityControlsController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("qualityControlFor" + StringUtils.capitalize(type) + "PdfView");
         mav.addObject("entities", getQualityControlEntities(entities));
+        mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
+                .uniqueResult());
         return mav;
     }
 

@@ -1,3 +1,26 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo MES
+ * Version: 0.4.6
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
 package com.qcadoo.mes.inventory;
 
 import java.io.IOException;
@@ -14,6 +37,7 @@ import org.springframework.util.StringUtils;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.inventory.constants.InventoryConstants;
 import com.qcadoo.mes.inventory.print.pdf.InventoryPdfService;
 import com.qcadoo.mes.inventory.print.xls.InventoryXlsService;
@@ -319,8 +343,10 @@ public class InventoryService {
         Entity inventoryWithFileName = updateFileName(inventory,
                 getFullFileName((Date) inventory.getField("date"), inventory.getStringField("name")),
                 InventoryConstants.MODEL_INVENTORY_REPORT);
-        inventoryPdfService.generateDocument(inventoryWithFileName, state.getLocale());
-        inventoryXlsService.generateDocument(inventoryWithFileName, state.getLocale());
+        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
+                .uniqueResult();
+        inventoryPdfService.generateDocument(inventoryWithFileName, company, state.getLocale());
+        inventoryXlsService.generateDocument(inventoryWithFileName, company, state.getLocale());
     }
 
 }

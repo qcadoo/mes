@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.5
+    Version: 0.4.6
 
     This file is part of Qcadoo.
 
@@ -81,9 +81,6 @@
 
 		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService" method="setVisibleAlert"/>
 		
-		<view:view-hook view="orderTimePrediction" type="beforeRender" plugin="productionScheduling" class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" 
-			method="setFieldDisable"/>
-
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 		
 		<view:view-grid-column plugin="orders" view="ordersList" component="grid">
