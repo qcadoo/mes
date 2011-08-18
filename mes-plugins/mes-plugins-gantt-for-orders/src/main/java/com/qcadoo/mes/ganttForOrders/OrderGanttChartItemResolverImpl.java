@@ -55,7 +55,7 @@ public class OrderGanttChartItemResolverImpl implements OrderGanttChartItemResol
     @Override
     @Transactional
     public Map<String, List<GanttChartItem>> resolve(final GanttChartScale scale, final JSONObject context, final Locale locale) {
-        List<Entity> orders = dataDefinitionService.get("orders", "order").find().add(SearchRestrictions.ne("state", "03done"))
+        List<Entity> orders = dataDefinitionService.get("orders", "order").find().add(SearchRestrictions.ne("state", "04done"))
                 .add(SearchRestrictions.lt("dateFrom", scale.getDateTo()))
                 .add(SearchRestrictions.gt("dateTo", scale.getDateFrom())).list().getEntities();
 

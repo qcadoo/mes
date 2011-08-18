@@ -41,6 +41,7 @@
 			cascade="delete" copyable="true" />
 		<hasMany name="substituteComponents" model="substituteComponent"
 			joinField="product" cascade="none" />
+		<string name="externalNumber" />
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />

@@ -34,6 +34,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
@@ -69,6 +70,7 @@ import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
 import com.qcadoo.model.internal.types.BooleanType;
 import com.qcadoo.model.internal.types.StringType;
+import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -84,6 +86,8 @@ public class OrderServiceTest {
 
     private OrderService orderService;
 
+    private PluginAccessor pluginAccessor;
+
     private SecurityService securityService;
 
     private DataDefinitionService dataDefinitionService;
@@ -98,6 +102,7 @@ public class OrderServiceTest {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         translationService = mock(TranslationService.class);
         numberGeneratorService = mock(NumberGeneratorService.class);
+        pluginAccessor = mock(PluginAccessor.class);
         ExpressionService expressionService = mock(ExpressionService.class);
         orderService = new OrderService();
         setField(orderService, "securityService", securityService);
@@ -105,6 +110,8 @@ public class OrderServiceTest {
         setField(orderService, "translationService", translationService);
         setField(orderService, "numberGeneratorService", numberGeneratorService);
         setField(orderService, "expressionService", expressionService);
+        setField(orderService, "pluginAccessor", pluginAccessor);
+        when(pluginAccessor.getEnabledPlugin("mesPluginsIntegrationErp")).thenReturn(null);
     }
 
     @Test
@@ -117,7 +124,7 @@ public class OrderServiceTest {
         boolean result = orderService.clearOrderDatesAndWorkersOnCopy(dataDefinition, order);
         // then
         assertTrue(result);
-        verify(order).setField("state", "01pending");
+        verify(order).setField("state", "01new");
         verify(order).setField("effectiveDateTo", null);
         verify(order).setField("endWorker", null);
         verify(order).setField("effectiveDateFrom", null);
@@ -225,7 +232,7 @@ public class OrderServiceTest {
 
         // then
         verify(orderState).setEnabled(false);
-        verify(orderState).setFieldValue("01pending");
+        verify(orderState).setFieldValue("01new");
     }
 
     @Test
@@ -243,7 +250,7 @@ public class OrderServiceTest {
 
         // then
         verify(orderState).setEnabled(false);
-        verify(orderState, never()).setFieldValue("01pending");
+        verify(orderState, never()).setFieldValue("01new");
     }
 
     @Test
@@ -486,7 +493,7 @@ public class OrderServiceTest {
         given(order.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
                 entity);
-        given(entity.getStringField("state")).willReturn("01pending");
+        given(entity.getStringField("state")).willReturn("01new");
         given(order.isValid()).willReturn(true);
 
         // when
@@ -510,7 +517,7 @@ public class OrderServiceTest {
         given(order.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
                 entity);
-        given(entity.getStringField("state")).willReturn("03done");
+        given(entity.getStringField("state")).willReturn("04done");
         given(order.isValid()).willReturn(false);
 
         // when
@@ -534,7 +541,7 @@ public class OrderServiceTest {
         given(order.getEntityId()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
                 entity);
-        given(entity.getStringField("state")).willReturn("03done");
+        given(entity.getStringField("state")).willReturn("04done");
         given(order.isValid()).willReturn(true);
 
         // when
@@ -763,7 +770,7 @@ public class OrderServiceTest {
         // given
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        given(entity.getField("state")).willReturn("02inProgress");
+        given(entity.getField("state")).willReturn("03inProgress");
         given(securityService.getCurrentUserName()).willReturn("user");
 
         // when
@@ -779,7 +786,7 @@ public class OrderServiceTest {
         // given
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        given(entity.getField("state")).willReturn("03done");
+        given(entity.getField("state")).willReturn("04done");
         given(securityService.getCurrentUserName()).willReturn("user", "user", "admin");
 
         // when
@@ -797,7 +804,7 @@ public class OrderServiceTest {
         // given
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        given(entity.getField("state")).willReturn("03done");
+        given(entity.getField("state")).willReturn("04done");
         given(entity.getField("effectiveDateFrom")).willReturn(new Date());
         given(entity.getField("effectiveDateTo")).willReturn(new Date());
         given(securityService.getCurrentUserName()).willReturn("user", "admin");
@@ -949,15 +956,35 @@ public class OrderServiceTest {
         // given
         FormComponent state = mock(FormComponent.class);
         FieldComponent orderState = mock(FieldComponent.class);
+        FieldComponent externalSynchronizedState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
+        given(viewDefinitionState.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
 
         // when
-        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "true" });
+        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "begin" });
 
         // then
-        verify(orderState).setFieldValue("02inProgress");
+        verify(orderState).setFieldValue("03inProgress");
+    }
+
+    @Test
+    public void shouldSetStateAsAcceptedForFormOrderActivation() throws Exception {
+        // given
+        FormComponent state = mock(FormComponent.class);
+        FieldComponent orderState = mock(FieldComponent.class);
+        FieldComponent externalSynchronizedState = mock(FieldComponent.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getFieldValue()).willReturn(117L);
+        given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
+        given(viewDefinitionState.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
+
+        // when
+        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "accept" });
+
+        // then
+        verify(orderState).setFieldValue("02accepted");
     }
 
     @Test
@@ -973,10 +1000,31 @@ public class OrderServiceTest {
         given(dataDefinition.get(117L)).willReturn(order);
 
         // when
-        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "true" });
+        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "begin" });
 
         // then
-        verify(order).setField("state", "02inProgress");
+        verify(order).setField("state", "03inProgress");
+        verify(dataDefinition).save(order);
+        verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
+    }
+
+    @Test
+    public void shouldSetStateAsAcceptedForGridOrderActivation() throws Exception {
+        // given
+        Entity order = mock(Entity.class);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        GridComponent state = mock(GridComponent.class);
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        given(state.getFieldValue()).willReturn(117L);
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+                dataDefinition);
+        given(dataDefinition.get(117L)).willReturn(order);
+
+        // when
+        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "accept" });
+
+        // then
+        verify(order).setField("state", "02accepted");
         verify(dataDefinition).save(order);
         verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
     }
@@ -1007,7 +1055,7 @@ public class OrderServiceTest {
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
-        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "finish" });
 
         // then
         verify(state).addMessage("genealogies.message.batchNotFound.pl", MessageType.FAILURE);
@@ -1036,7 +1084,7 @@ public class OrderServiceTest {
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
-        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
 
         // then
         verify(state).addMessage("genealogies.message.batchNotFound.pl", MessageType.INFO);
@@ -1070,7 +1118,7 @@ public class OrderServiceTest {
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
-        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "finish" });
 
         // then
         verify(state).addMessage("qualityControls.qualityControls.not.closed.pl", MessageType.FAILURE);
@@ -1102,7 +1150,7 @@ public class OrderServiceTest {
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
-        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
 
         // then
         verify(state).addMessage("qualityControls.qualityControls.not.closed.pl", MessageType.FAILURE);
@@ -1115,21 +1163,23 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         FormComponent state = mock(FormComponent.class);
         FieldComponent orderState = mock(FieldComponent.class);
+        FieldComponent externalSynchronizedState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
                 dataDefinition);
         given(dataDefinition.get(117L)).willReturn(order);
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
+        given(viewDefinitionState.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
         prepareCheckRequiredBatch(order, true);
         prepareIsQualityControlAutoCheckEnabled(false);
         prepareCheckIfAllQualityControlsAreClosed(order, false);
 
         // when
-        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "finish" });
 
         // then
-        verify(orderState).setFieldValue("03done");
+        verify(orderState).setFieldValue("04done");
     }
 
     @Test
@@ -1139,12 +1189,14 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         FormComponent state = mock(FormComponent.class);
         FieldComponent orderState = mock(FieldComponent.class);
+        FieldComponent externalSynchronizedState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(state.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
                 dataDefinition);
         given(dataDefinition.get(117L)).willReturn(order);
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
+        given(viewDefinitionState.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
         prepareCheckRequiredBatch(order, true);
         prepareIsQualityControlAutoCheckEnabled(true);
         prepareCheckIfAllQualityControlsAreClosed(order, true);
@@ -1156,10 +1208,10 @@ public class OrderServiceTest {
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
-        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "finish" });
 
         // then
-        verify(orderState).setFieldValue("03done");
+        verify(orderState).setFieldValue("04done");
     }
 
     @Test
@@ -1178,10 +1230,10 @@ public class OrderServiceTest {
         prepareCheckIfAllQualityControlsAreClosed(order, false);
 
         // when
-        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
 
         // then
-        verify(order).setField("state", "03done");
+        verify(order).setField("state", "04done");
         verify(dataDefinition).save(order);
         verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
     }
@@ -1208,10 +1260,10 @@ public class OrderServiceTest {
         given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
 
         // when
-        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "false" });
+        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
 
         // then
-        verify(order).setField("state", "03done");
+        verify(order).setField("state", "04done");
         verify(dataDefinition).save(order);
         verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
     }

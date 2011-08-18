@@ -145,7 +145,7 @@
 			<textField>
 				<reportElement style="qcadooValueSmall" x="725" y="1" width="82" height="26"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{orders_order_state}.startsWith("01"))?$R{orders.order.state.value.01pending}:(($F{orders_order_state}.startsWith("02"))?$R{orders.order.state.value.02inProgress}:$R{orders.order.state.value.03done})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{orders_order_state}.startsWith("01"))?$R{orders.order.state.value.01new}:(($F{orders_order_state}.startsWith("02"))?$R{orders.order.state.value.02accepted}:(($F{orders_order_state}.startsWith("03"))?$R{orders.order.state.value.03inProgress}:$R{orders.order.state.value.04done}))]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

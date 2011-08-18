@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="contractor" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<string name="number" />
+		<string name="name" />
+		<string name="externalNumber" />
+	</fields>
+	<hooks>
+	</hooks>
+	<identifier expression="#number + ' - ' + #name" />
+</model>

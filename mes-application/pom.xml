@@ -132,8 +132,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-cost-norms</artifactId>
-			<version>0.4.6-SNAPSHOT</version>
+			<artifactId>mes-commercial-plugins-erp-enova</artifactId>
+			<version>0.4.4-SNAPSHOT</version>
 		</dependency>
 
 

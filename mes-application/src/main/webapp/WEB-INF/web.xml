@@ -63,6 +63,11 @@
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>*.html</url-pattern>
 	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>*.json</url-pattern>
+	</filter-mapping>
 	
 	<filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
@@ -115,6 +120,11 @@
         <url-pattern>*.html</url-pattern>
     </filter-mapping>
 
+    <filter-mapping>
+        <filter-name>encoding-filter</filter-name>
+        <url-pattern>*.json</url-pattern>
+    </filter-mapping>
+
 	<listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>
@@ -147,6 +157,11 @@
 	<servlet-mapping>
 		<servlet-name>Qcadoo MES</servlet-name>
 		<url-pattern>*.html</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Qcadoo MES</servlet-name>
+		<url-pattern>*.json</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

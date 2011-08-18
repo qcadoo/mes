@@ -34,12 +34,14 @@ public interface BasicConstants {
 
     public static final String MODEL_PRODUCT = "product";
 
+    public static final String MODEL_CONTRACTOR = "contractor";
+
     public static final String MODEL_STAFF = "staff";
 
     public static final String MODEL_SUBSTITUTE = "substitute";
 
     public static final String MODEL_SUBSTITUTE_COMPONENT = "substituteComponent";
-    
+
     public static final String MODEL_COMPANY = "company";
 
     // VIEW
@@ -60,8 +62,7 @@ public interface BasicConstants {
     public static final String VIEW_STAFF_DETAILS = "staffDetails";
 
     public static final String VIEW_STAFFS_LIST = "staffsList";
-    
+
     public static final String VIEW_COMPANY_DETAILS = "companyDetails";
-    
 
 }

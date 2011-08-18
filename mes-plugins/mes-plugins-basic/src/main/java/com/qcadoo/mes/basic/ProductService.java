@@ -32,6 +32,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -102,6 +103,27 @@ public final class ProductService {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public void disableProductFormForExternalItems(final ViewDefinitionState state) {
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
+
+        if (form.getEntityId() == null) {
+            return;
+        }
+
+        Entity entity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                form.getEntityId());
+
+        if (entity == null) {
+            return;
+        }
+
+        String externalNumber = entity.getStringField("externalNumber");
+
+        if (externalNumber != null) {
+            form.setFormEnabled(false);
         }
     }
 
