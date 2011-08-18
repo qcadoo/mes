@@ -144,14 +144,15 @@ public class InventoryService {
 
         ComponentState warehouse = (ComponentState) state.getComponentByReference("warehouse");
         ComponentState product = (ComponentState) state.getComponentByReference("product");
-        ComponentState Date = (ComponentState) state.getComponentByReference("correctionDate");
+        ComponentState date = (ComponentState) state.getComponentByReference("correctionDate");
         FieldComponent should = (FieldComponent) state.getComponentByReference("shouldBe");
 
-        if (warehouse.getFieldValue() != null && product.getFieldValue() != null && Date.getFieldValue() != null) {
+        if (warehouse.getFieldValue() != null && warehouse != null && product.getFieldValue() != null && product != null
+                && date.getFieldValue() != null && date != null && !date.getFieldValue().toString().equals("")) {
 
             String warehouseNumber = warehouse.getFieldValue().toString();
             String productNumber = product.getFieldValue().toString();
-            String forDate = Date.getFieldValue().toString();
+            String forDate = date.getFieldValue().toString();
 
             BigDecimal shouldBe = calculateShouldBe(warehouseNumber, productNumber, forDate);
 
@@ -171,14 +172,23 @@ public class InventoryService {
         return true;
     }
 
-    public void setGenerateButtonState(final ViewDefinitionState state) {
-        setGenerateButtonState(state, state.getLocale(), InventoryConstants.PLUGIN_IDENTIFIER,
-                InventoryConstants.MODEL_INVENTORY_REPORT);
-    }
-
     public void setGridGenerateButtonState(final ViewDefinitionState state) {
         setGridGenerateButtonState(state, state.getLocale(), InventoryConstants.PLUGIN_IDENTIFIER,
                 InventoryConstants.MODEL_INVENTORY_REPORT);
+    }
+
+    public boolean validateTransfer(final DataDefinition dataDefinition, final Entity entity) {
+
+        Entity warehouseFrom = (Entity) (entity.getField("warehouseFrom") != null ? entity.getField("warehouseFrom") : null);
+        Entity warehouseTo = (Entity) (entity.getField("warehouseTo") != null ? entity.getField("warehouseTo") : null);
+
+        if (warehouseFrom == null && warehouseTo == null) {
+            entity.addError(dataDefinition.getField("warehouseFrom"), "inventory.validate.global.error.fillAtLeastOneWarehouse");
+            entity.addError(dataDefinition.getField("warehouseTo"), "inventory.validate.global.error.fillAtLeastOneWarehouse");
+            return false;
+        }
+        return true;
+
     }
 
     @SuppressWarnings("unchecked")
