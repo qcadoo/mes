@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.3
+ * Version: 0.4.5
  *
  * This file is part of Qcadoo.
  *
@@ -115,7 +115,6 @@ public class OrderServiceTest {
 
         // when
         boolean result = orderService.clearOrderDatesAndWorkersOnCopy(dataDefinition, order);
-
         // then
         assertTrue(result);
         verify(order).setField("state", "01pending");
@@ -826,40 +825,19 @@ public class OrderServiceTest {
         assertTrue(results);
     }
 
-    @Test
-    public void shouldReturnTrueForTechnologyValidationIfOrderHasTechnology() throws Exception {
-        // given
-        Entity entity = mock(Entity.class);
-        Entity order = mock(Entity.class);
-        Entity technology = mock(Entity.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        given(entity.getBelongsToField("order")).willReturn(order);
-        given(order.getField("technology")).willReturn(technology);
-
-        // when
-        boolean results = orderService.checkIfOrderHasTechnology(dataDefinition, entity);
-
-        // then
-        assertTrue(results);
-    }
-
-    @Test
-    public void shouldReturnFalseForTechnologyValidationIfOrderDoesNotHaveTechnology() throws Exception {
-        // given
-        Entity entity = mock(Entity.class);
-        Entity order = mock(Entity.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        FieldDefinition orderField = mock(FieldDefinition.class);
-        given(entity.getBelongsToField("order")).willReturn(order);
-        given(dataDefinition.getField("order")).willReturn(orderField);
-
-        // when
-        boolean results = orderService.checkIfOrderHasTechnology(dataDefinition, entity);
-
-        // then
-        assertFalse(results);
-        verify(entity).addError(orderField, "orders.validate.global.error.orderMustHaveTechnology");
-    }
+    /*
+     * @Test public void shouldReturnTrueForTechnologyValidationIfOrderHasTechnology() throws Exception { // given Entity entity =
+     * mock(Entity.class); Entity order = mock(Entity.class); Entity technology = mock(Entity.class); DataDefinition
+     * dataDefinition = mock(DataDefinition.class); given(entity.getBelongsToField("order")).willReturn(order);
+     * given(order.getField("technology")).willReturn(technology); // when boolean results =
+     * orderService.checkIfOrderHasTechnology(dataDefinition, entity); // then assertTrue(results); }
+     * @Test public void shouldReturnFalseForTechnologyValidationIfOrderDoesNotHaveTechnology() throws Exception { // given Entity
+     * entity = mock(Entity.class); Entity order = mock(Entity.class); DataDefinition dataDefinition = mock(DataDefinition.class);
+     * FieldDefinition orderField = mock(FieldDefinition.class); given(entity.getBelongsToField("order")).willReturn(order);
+     * given(dataDefinition.getField("order")).willReturn(orderField); // when boolean results =
+     * orderService.checkIfOrderHasTechnology(dataDefinition, entity); // then assertFalse(results);
+     * verify(entity).addError(orderField, "orders.validate.global.error.orderMustHaveTechnology"); }
+     */
 
     @Test
     public void shouldReturnTrueForOperationValidationIfThereIsNoOrder() throws Exception {

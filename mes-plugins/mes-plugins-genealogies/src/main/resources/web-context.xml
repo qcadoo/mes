@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.3
+    Version: 0.4.5
 
     This file is part of Qcadoo.
 
@@ -37,9 +37,6 @@
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 	</context:component-scan>
 	
-	<bean id="genealogyForComponentView"
-  		class="com.qcadoo.mes.genealogiesForComponents.GenealogyForComponentView"/>
-  		
   	<bean id="genealogyForProductView"
   		class="com.qcadoo.mes.genealogies.print.GenealogyForProductView"/>
 

@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.3
+    Version: 0.4.5
 
     This file is part of Qcadoo.
 
@@ -32,6 +32,14 @@
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
+			<group name="reports">
+				<smallButton name="pdf" icon="pdfIcon16.png"
+					action="#{form}.fireEvent(printTechnologyDetailsReport,pdf);"
+					state="enabled" />
+				<smallButton name="xls" icon="xlsIcon16.png"
+					action="#{form}.fireEvent(printTechnologyDetailsReport,xls);"
+					state="enabled" />
+			</group>
 		</ribbon>
 		<component type="form" name="technology" reference="form">
 			<component type="gridLayout" name="gridsLayout" columns="3"
@@ -71,6 +79,9 @@
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
+			<listener event="printTechnologyDetailsReport"
+				class="com.qcadoo.mes.technologies.print.TechnologiesReportService"
+				method="printTechnologyDetailsReport" />
 		</component>
 		<component type="borderLayout" name="treeBorderLayout"
 			reference="treeBorderLayout">

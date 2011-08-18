@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="transfer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<string name="number" required="true" unique="true">
+			<validatesLength max="40" />
+		</string>
+		<enum name="type" values="Movement,Consumption,Production" required="true">
+		</enum>
+		<datetime name="date" readonly="true" />
+		<belongsTo name="from" model="warehouse" >
+		</belongsTo>
+		<belongsTo name="to" model="warehouse" >
+		</belongsTo>
+		<belongsTo name="product" model="product" plugin="basic">
+		</belongsTo>
+		<decimal name="quantity" required="true">
+			<validatesRange from="0" />
+		</decimal>
+		<belongsTo name="staff" model="staff" plugin="basic" />
+	</fields>
+	<hooks />
+	<identifier expression="#number + ' - ' + #name" />
+</model>

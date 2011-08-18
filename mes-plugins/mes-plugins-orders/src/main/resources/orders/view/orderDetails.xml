@@ -1,35 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 0.4.3
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 0.4.5 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="orderDetails"
-	modelName="order"
-	defaultAuthorizationRole="ROLE_SUPERVISOR">
-	
+	name="orderDetails" modelName="order" defaultAuthorizationRole="ROLE_SUPERVISOR">
+
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
@@ -61,10 +46,9 @@
 					</script>
 				</bigButton>
 			</group>
-			<!--<group name="report">
-				<bigButton name="print" icon="pdfIcon16.png"
-					action="#{form}.generateReportForEntity('orders','testReport','html')" state="enabled" />
-			</group>-->
+			<!--<group name="report"> <bigButton name="print" icon="pdfIcon16.png" 
+				action="#{form}.generateReportForEntity('orders','testReport','html')" state="enabled" 
+				/> </group> -->
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="order" reference="form">
@@ -135,11 +119,11 @@
 						<component type="textarea" name="name" field="name"
 							reference="name" hasDescription="true" />
 					</layoutElement>
-					<!--<layoutElement column="1" row="5">
-						<component type="separatorLine" name="line1" />
-					</layoutElement>-->
+					<!--<layoutElement column="1" row="5"> <component type="separatorLine" 
+						name="line1" /> </layoutElement> -->
 					<layoutElement column="1" row="6">
-						<component type="calendar" name="dateFrom" field="dateFrom" reference="dateFrom" >
+						<component type="calendar" name="dateFrom" field="dateFrom"
+							reference="dateFrom">
 							<option type="labelWidth" value="50" />
 							<option type="withTimePicker" value="true" />
 						</component>
@@ -166,8 +150,8 @@
 								method="changeOrderProduct" />
 							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
 								method="setDefaultNameUsingProduct" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnit" />
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.basic.util.UnitService"
+								method="fillProductUnit" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
@@ -187,9 +171,8 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<!--<layoutElement column="2" row="4">
-						<component type="separatorLine" name="line2" />
-					</layoutElement>-->
+					<!--<layoutElement column="2" row="4"> <component type="separatorLine" 
+						name="line2" /> </layoutElement> -->
 					<layoutElement column="2" row="5">
 						<component type="input" name="plannedQuantity"
 							reference="plannedQuantity" field="plannedQuantity">
@@ -215,12 +198,13 @@
 			</component>
 		</windowTab>
 		<windowTab name="detailsTab">
-			<component type="gridLayout" name="detailsTablayout" columns="3" rows="4">
+			<component type="gridLayout" name="detailsTablayout"
+				columns="3" rows="4">
 				<layoutElement column="1" row="1">
 					<component type="calendar" name="effectiveDateFrom"
 						field="#{form}.effectiveDateFrom" reference="effectiveDateFrom"
 						defaultEnabled="false">
-						<option type="withTimePicker" value="true" />	
+						<option type="withTimePicker" value="true" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
@@ -241,11 +225,17 @@
 		</windowTab>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="generateOrderNumber" />
-		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="fillDefaultTechnology" />
-		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="disableFormForDoneOrder" />
-		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="disableTechnologiesIfProductDoesNotAny" />
-		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="setAndDisableState" />
-		<beforeRender class="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnitBeforeRender" />
+		<beforeRender class="com.qcadoo.mes.orders.OrderService"
+			method="generateOrderNumber" />
+		<beforeRender class="com.qcadoo.mes.orders.OrderService"
+			method="fillDefaultTechnology" />
+		<beforeRender class="com.qcadoo.mes.orders.OrderService"
+			method="disableFormForDoneOrder" />
+		<beforeRender class="com.qcadoo.mes.orders.OrderService"
+			method="disableTechnologiesIfProductDoesNotAny" />
+		<beforeRender class="com.qcadoo.mes.orders.OrderService"
+			method="setAndDisableState" />
+		<beforeRender class="com.qcadoo.mes.basic.util.UnitService"
+			method="fillProductUnitBeforeRender" />
 	</hooks>
 </view>

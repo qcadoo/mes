@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.3
+ * Version: 0.4.5
  *
  * This file is part of Qcadoo.
  *
@@ -25,7 +25,6 @@ package com.qcadoo.mes.productionScheduling;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,24 +32,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.TreeComponent;
 
 @Service
 public class NormOrderService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ShiftsService shiftsService;
 
     @Transactional
     public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity entity) {
@@ -136,76 +134,6 @@ public class NormOrderService {
         }
     }
 
-    public void showOperationsGantt(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
-            final String[] args) {
-        Long orderId = (Long) triggerState.getFieldValue();
-
-        scheduleOrder(orderId);
-
-        if (orderId != null) {
-            String url = "../page/productionScheduling/ganttOrderOperationsCalendar.html?context={\"gantt.orderId\":\"" + orderId
-                    + "\"}";
-            viewDefinitionState.redirectTo(url, false, true);
-        }
-    }
-
-    private void scheduleOrder(final Long orderId) {
-        Entity order = dataDefinitionService.get("orders", "order").get(orderId);
-
-        if (order == null) {
-            return;
-        }
-
-        DataDefinition dataDefinition = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
-
-        List<Entity> operations = dataDefinition.find().add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
-
-        Date orderStartDate = null;
-
-        if (order.getField("effectiveDateFrom") != null) {
-            orderStartDate = (Date) order.getField("effectiveDateFrom");
-        } else if (order.getField("dateFrom") != null) {
-            orderStartDate = (Date) order.getField("dateFrom");
-        } else {
-            return;
-        }
-
-        for (Entity operation : operations) {
-            Integer offset = (Integer) operation.getField("operationOffSet");
-            Integer duration = (Integer) operation.getField("effectiveOperationRealizationTime");
-
-            operation.setField("effectiveDateFrom", null);
-            operation.setField("effectiveDateTo", null);
-
-            if (offset == null || duration == null || duration.equals(0)) {
-                continue;
-            }
-
-            if (offset == 0) {
-                offset = 1;
-            }
-
-            Date dateFrom = shiftsService.findDateToForOrder(orderStartDate, offset);
-
-            if (dateFrom == null) {
-                continue;
-            }
-
-            Date dateTo = shiftsService.findDateToForOrder(orderStartDate, offset + duration);
-
-            if (dateTo == null) {
-                continue;
-            }
-
-            operation.setField("effectiveDateFrom", dateFrom);
-            operation.setField("effectiveDateTo", dateTo);
-        }
-
-        for (Entity operation : operations) {
-            dataDefinition.save(operation);
-        }
-    }
-
     public void changeCountRealized(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         // ignore
     }
@@ -239,5 +167,5 @@ public class NormOrderService {
         timeNextOperation.setEnabled(true);
         timeNextOperation.setRequired(true);
     }
-
+    
 }

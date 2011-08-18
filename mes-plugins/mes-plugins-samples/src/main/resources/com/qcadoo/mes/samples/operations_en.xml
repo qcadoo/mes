@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.3
+    Version: 0.4.5
 
     This file is part of Qcadoo.
 
@@ -25,10 +25,10 @@
 
 -->
 <operations>
-	<row NAME="Plane" NUMBER="1" />
-	<row NAME="Saw" NUMBER="2" />
-	<row NAME="Grind" NUMBER="3" />
-	<row NAME="Mill" NUMBER="4" />
-	<row NAME="Packing" NUMBER="5" />
-	<row NAME="Torsion" NUMBER="6" />
+	<row NAME="Plane" NUMBER="1" TPZ="900" TJ="300" COUNTREALIZED="01all"/>
+	<row NAME="Saw" NUMBER="2" TPZ="900" TJ="600" COUNTREALIZED="01all" />
+	<row NAME="Grind" NUMBER="3" TPZ="1200" TJ="300" COUNTREALIZED="01all"/>
+	<row NAME="Mill" NUMBER="4" TPZ="900" TJ="300" COUNTREALIZED="01all" />
+	<row NAME="Packing" NUMBER="5" TPZ="900" TJ="1500" COUNTREALIZED="01all"/>
+	<row NAME="Torsion" NUMBER="6" TPZ="900" TJ="1800" COUNTREALIZED="01all"/>
 </operations>

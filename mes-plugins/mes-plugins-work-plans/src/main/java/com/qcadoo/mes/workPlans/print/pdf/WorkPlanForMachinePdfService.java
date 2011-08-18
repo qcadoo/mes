@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.3
+ * Version: 0.4.5
  *
  * This file is part of Qcadoo.
  *
@@ -54,4 +54,5 @@ public final class WorkPlanForMachinePdfService extends PdfDocumentService {
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("workPlans.workPlan.report.title", locale);
     }
+
 }

@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.3
+    Version: 0.4.5
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<operations>countRealized
+<operations>
 	<row NAME="Heblowanie" NUMBER="1" TPZ="900" TJ="300" COUNTREALIZED="01all"/>
 	<row NAME="Piłowanie" NUMBER="2" TPZ="900" TJ="600" COUNTREALIZED="01all"/>
 	<row NAME="Szlifowanie" NUMBER="3" TPZ="1200" TJ="300" COUNTREALIZED="01all"/>

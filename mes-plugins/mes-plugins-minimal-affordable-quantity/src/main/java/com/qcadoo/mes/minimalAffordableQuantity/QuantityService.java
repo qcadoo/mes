@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.3
+ * Version: 0.4.5
  *
  * This file is part of Qcadoo.
  *
@@ -54,6 +54,9 @@ public class QuantityService {
         ComponentState form = (ComponentState) viewDefinitionState.getComponentByReference("form");
         FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
         FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("plannedQuantity");
+        if (plannedQuantity == null || "".equals(plannedQuantity.getFieldValue())) {
+            return;
+        }
         if (technologyLookup.getFieldValue() != null) {
             Entity technology = dataDefinitionService.get("technologies", "technology").get(
                     (Long) technologyLookup.getFieldValue());
@@ -78,7 +81,6 @@ public class QuantityService {
                 }
             }
         }
-
     }
 
     public BigDecimal getBigDecimalFromField(final Object value, final Locale locale) {

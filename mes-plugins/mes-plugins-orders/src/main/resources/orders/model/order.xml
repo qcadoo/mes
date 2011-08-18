@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.3
+    Version: 0.4.5
 
     This file is part of Qcadoo.
 
@@ -66,8 +66,11 @@
 			method="checkIfProductIsNotRemoved" />
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
 			method="checkIfTechnologyIsNotRemoved" />
+		<validatesWith class="com.qcadoo.mes.orders.OrderService"
+            method="checkIfOrderHasTechnology" />
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillOrderDatesAndWorkers" />
 		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesAndWorkersOnCopy" />
 	</hooks>
+	
 	<identifier expression="#number + ' - ' + #name" />
 </model>

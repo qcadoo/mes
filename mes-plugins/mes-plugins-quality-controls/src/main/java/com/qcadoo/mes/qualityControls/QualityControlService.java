@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.3
+ * Version: 0.4.5
  *
  * This file is part of Qcadoo.
  *
@@ -54,7 +54,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public final class QualityControlService {
@@ -69,7 +68,7 @@ public final class QualityControlService {
     private TranslationService translationService;
 
     @Autowired
-    private NumberGeneratorService numberGeneratorService;
+    private QualityControlForNumberService qualityControlForNumber;
 
     public void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state) {
         FieldComponent comment = (FieldComponent) state.getComponentByReference("comment");
@@ -272,12 +271,14 @@ public final class QualityControlService {
                     createAndSaveControlForSingleBatch(order, entity);
                 }
             }
+
         }
     }
 
     public void generateQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state.getFieldValue() != null) {
+
             DataDefinition orderDataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
                     OrdersConstants.MODEL_ORDER);
             Entity order = orderDataDefinition.get((Long) state.getFieldValue());
@@ -320,6 +321,7 @@ public final class QualityControlService {
                         MessageType.FAILURE);
             }
         }
+
     }
 
     private boolean isQualityControlForOrderExists(final Entity order) {
@@ -609,6 +611,7 @@ public final class QualityControlService {
     }
 
     private void generateQualityControlForGivenType(final String qualityControlType, final Entity technology, final Entity order) {
+
         if ("01forBatch".equals(qualityControlType)) {
             List<Entity> genealogies = getGenealogiesForOrder(order.getId());
 
@@ -630,8 +633,8 @@ public final class QualityControlService {
 
                 Entity forUnit = qualityForUnitDataDefinition.create();
                 forUnit.setField("order", order);
-                forUnit.setField("number", numberGeneratorService.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                        QualityControlsConstants.MODEL_QUALITY_CONTROL));
+                forUnit.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlsForUnit"));
                 forUnit.setField("closed", false);
                 forUnit.setField("qualityControlType", "qualityControlsForUnit");
                 forUnit.setField("takenForControlQuantity", BigDecimal.ONE);
@@ -649,9 +652,7 @@ public final class QualityControlService {
                         return;
                     }
                 }
-
                 setControlInstruction(order, forUnit);
-
                 qualityForUnitDataDefinition.save(forUnit);
             }
         } else if ("03forOrder".equals(qualityControlType)) {
@@ -660,6 +661,7 @@ public final class QualityControlService {
             EntityTree tree = technology.getTreeField("operationComponents");
             for (Entity entity : tree) {
                 if (entity.getField("qualityControlRequired") != null && (Boolean) entity.getField("qualityControlRequired")) {
+
                     createAndSaveControlForOperation(order, entity);
                 }
 
@@ -673,8 +675,8 @@ public final class QualityControlService {
 
         Entity forOperation = qualityForOperationDataDefinition.create();
         forOperation.setField("order", order);
-        forOperation.setField("number", numberGeneratorService.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                QualityControlsConstants.MODEL_QUALITY_CONTROL));
+        forOperation.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlForOperation"));
         forOperation.setField("operation", entity.getBelongsToField("operation"));
         forOperation.setField("closed", false);
         forOperation.setField("qualityControlType", "qualityControlsForOperation");
@@ -690,8 +692,8 @@ public final class QualityControlService {
 
         Entity forOrder = qualityForOrderDataDefinition.create();
         forOrder.setField("order", order);
-        forOrder.setField("number", numberGeneratorService.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                QualityControlsConstants.MODEL_QUALITY_CONTROL));
+        forOrder.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlsForOrder"));
         forOrder.setField("closed", false);
         forOrder.setField("qualityControlType", "qualityControlsForOrder");
 
@@ -706,8 +708,8 @@ public final class QualityControlService {
 
         Entity forBatch = qualityForBatchDataDefinition.create();
         forBatch.setField("order", order);
-        forBatch.setField("number", numberGeneratorService.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                QualityControlsConstants.MODEL_QUALITY_CONTROL));
+        forBatch.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlsForBatch"));
         forBatch.setField("batchNr", genealogy.getField("batch"));
         forBatch.setField("closed", false);
         forBatch.setField("qualityControlType", "qualityControlsForBatch");

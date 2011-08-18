@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.3
+    Version: 0.4.5
 
     This file is part of Qcadoo.
 
@@ -53,6 +53,10 @@
 			<plugin>orders</plugin>
 			<version>[0.4.0</version>
 		</dependency>
+		<dependency>
+			<plugin>genealogies</plugin>
+			<version>[0.4.0</version>
+		</dependency>
 	</dependencies>
 
 
@@ -60,6 +64,7 @@
 		<localization:translation path="locales" />
 
 		<model:model model="qualityControl" resource="model/qualityControl.xml" />
+		
 		<model:model-field plugin="technologies" model="technology">
 			<model:enum name="qualityControlType"
 				values="02forUnit,03forOrder" />

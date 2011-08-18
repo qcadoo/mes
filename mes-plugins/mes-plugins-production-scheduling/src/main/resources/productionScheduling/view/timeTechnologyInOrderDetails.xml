@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.3
+    Version: 0.4.5
 
     This file is part of Qcadoo.
 
@@ -31,8 +31,8 @@
 
 	<component type="window" name="window">
 		<ribbon>
-			<template name="standardFormTemplate" includeItems="navigation.back" />
 			<group name="timeOfTechnology">
+				<bigButton name="back" action="#{window}.closeThisModalWindow;" icon="backIcon24.png"/>
 				<bigButton name="copyDateToMainForm" icon="saveIcon24.png"
 					action="#{form}.performSave; #{window}.performBack;" />
 				<bigButton name="countTimeOfTechnology" icon="calculateTimeIcon24.png"

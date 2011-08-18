@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.3
+ * Version: 0.4.5
  *
  * This file is part of Qcadoo.
  *
@@ -93,9 +93,15 @@ public class SamplesLoaderModule extends Module {
 
     private static final String[] STAFF_ATTRIBUTES = new String[] { "id", "name", "surname", "post" };
 
-    private static final String[] SHIFT_ATTRIBUTES = new String[] { "id", "name", "monday_working", "monday_hours",
-            "tuesday_working", "tuesday_hours", "wensday_working", "wensday_hours", "thursday_working", "thursday_hours",
-            "friday_working", "friday_hours", "saturday_working", "saturday_hours", "sunday_working", "sunday_hours" };
+    private static final String[] SHIFT_ATTRIBUTES = new String[] { "name", "mondayWorking", "mondayHours", "tuesdayWorking",
+            "tuesdayHours", "wensdayWorking", "wensdayHours", "thursdayWorking", "thursdayHours", "fridayWorking", "fridayHours",
+            "saturdayWorking", "saturdayHours", "sundayWorking", "sundayHours" };
+
+    private static final String[] USED_PRODUCTS_ATTRIBUTES = new String[] { "order", "product", "planned_quantity",
+            "used_quantity" };
+
+    private static final String[] PRODUCED_PRODUCTS_ATTRIBUTES = new String[] { "order", "product", "planned_quantity",
+            "produced_quantity" };
 
     private static final Random RANDOM = new Random(System.currentTimeMillis());
 
@@ -111,7 +117,8 @@ public class SamplesLoaderModule extends Module {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Value("${loadTestDataLocale}")
+    // AlBR
+    // @Value("${loadTestDataLocale}")
     private String locale;
 
     @Value("${setAsDemoEnviroment}")
@@ -138,6 +145,7 @@ public class SamplesLoaderModule extends Module {
                     readDataFromXML("staff", STAFF_ATTRIBUTES);
                     readDataFromXML("units", new String[] { "name" });
                     readDataFromXML("products", PRODUCT_ATTRIBUTES);
+                    readDataFromXML("shifts", SHIFT_ATTRIBUTES);
                 }
                 if (isEnabled("technologies")) {
                     readDataFromXML("operations", OPERATION_ATTRIBUTES);
@@ -152,8 +160,11 @@ public class SamplesLoaderModule extends Module {
                 if (isEnabled("workPlans")) {
                     addWorkPlans();
                 }
-                if (isEnabled("productionScheduling")) {
-                    readDataFromXML("shifts", SHIFT_ATTRIBUTES);
+                if (isEnabled("usedProducts")) {
+                    readDataFromXML("usedProducts", USED_PRODUCTS_ATTRIBUTES);
+                }
+                if (isEnabled("producedProducts")) {
+                    readDataFromXML("producedProducts", PRODUCED_PRODUCTS_ATTRIBUTES);
                 }
             }
         } else {
@@ -173,6 +184,10 @@ public class SamplesLoaderModule extends Module {
     }
 
     private InputStream getXmlFile(final String type) throws IOException {
+        locale = Locale.getDefault().toString().substring(0, 2);
+        if (!"pl".equals(locale) && !"en".equals(locale)) {
+            locale = Locale.ENGLISH.toString().substring(0, 2);
+        }
         return SamplesLoaderModule.class.getResourceAsStream("/com/qcadoo/mes/samples/" + type + "_" + locale + ".xml");
     }
 
@@ -229,7 +244,11 @@ public class SamplesLoaderModule extends Module {
         } else if ("machines".equals(type)) {
             addMachine(values);
         } else if ("shifts".equals(type)) {
-            addShift(values);
+            addShifts(values);
+        } else if ("producedProducts".equals(type)) {
+            addProducedProducts(values);
+        } else if ("usedProducts".equals(type)) {
+            addUsedProducts(values);
         }
     }
 
@@ -293,6 +312,78 @@ public class SamplesLoaderModule extends Module {
 
         operation = dataDefinitionService.get("technologies", "operation").save(operation);
         if (!operation.isValid()) {
+            throw new IllegalStateException("Saved entity have validation errors");
+        }
+    }
+
+    private void addShifts(final Map<String, String> values) {
+        Entity shift = dataDefinitionService.get("basic", "shift").create();
+
+        shift.setField("name", values.get("name"));
+        shift.setField("mondayWorking", values.get("mondayWorking"));
+        shift.setField("mondayHours", values.get("mondayHours"));
+        shift.setField("tuesdayWorking", values.get("tuesdayWorking"));
+        shift.setField("tuesdayHours", values.get("tuesdayHours"));
+        shift.setField("wensdayWorking", values.get("wensdayWorking"));
+        shift.setField("wensdayHours", values.get("wensdayHours"));
+        shift.setField("thursdayWorking", values.get("thursdayWorking"));
+        shift.setField("thursdayHours", values.get("thursdayHours"));
+        shift.setField("fridayWorking", values.get("fridayWorking"));
+        shift.setField("fridayHours", values.get("fridayHours"));
+        shift.setField("saturdayWorking", values.get("saturdayWorking"));
+        shift.setField("saturdayHours", values.get("saturdayHours"));
+        shift.setField("sundayWorking", values.get("sundayWorking"));
+        shift.setField("sundayHours", values.get("sundayHours"));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test shift item {shift=" + shift.getField("name") + "}");
+        }
+
+        shift = dataDefinitionService.get("basic", "shift").save(shift);
+
+        if (!shift.isValid()) {
+            throw new IllegalStateException("Saved entity have validation errors" + values.get("name"));
+        }
+
+    }
+
+    private void addUsedProducts(final Map<String, String> values) {
+        Entity usedProduct = dataDefinitionService.get("usedProducts", "usedProducts").create();
+
+        usedProduct.setField("id", values.get("id"));
+        usedProduct.setField("order", values.get("order"));
+        usedProduct.setField("product", values.get("product"));
+        usedProduct.setField("plannedQuantity", values.get("planned_quantity"));
+        usedProduct.setField("usedQuantity", values.get("used_quantity"));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test used product item {used product of order=" + usedProduct.getField("order") + "}");
+        }
+
+        usedProduct = dataDefinitionService.get("usedProducts", "usedProducts").save(usedProduct);
+
+        if (!usedProduct.isValid()) {
+            throw new IllegalStateException("Saved entity have validation errors");
+        }
+    }
+
+    private void addProducedProducts(final Map<String, String> values) {
+
+        Entity producedProducts = dataDefinitionService.get("producedProducts", "producedProducts").create();
+
+        producedProducts.setField("id", values.get("id"));
+        producedProducts.setField("order", values.get("order"));
+        producedProducts.setField("product", values.get("product"));
+        producedProducts.setField("plannedQuantity", values.get("planned_quantity"));
+        producedProducts.setField("producedQuantity", values.get("produced_quantity"));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test used product item {produced product of order=" + producedProducts.getField("order") + "}");
+        }
+
+        producedProducts = dataDefinitionService.get("producedProducts", "producedProducts").save(producedProducts);
+
+        if (!producedProducts.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
         }
     }
@@ -835,23 +926,6 @@ public class SamplesLoaderModule extends Module {
                 throw new IllegalStateException("Saved entity have validation errors");
             }
         }
-    }
-
-    private void addShift(final Map<String, String> values) {
-        Entity shift = dataDefinitionService.get("productionScheduling", "shift").create();
-        if (values.containsKey("id")) {
-            shift.setId(Long.parseLong(values.get("id")));
-        }
-        shift.setField("name", values.get("name"));
-        for (String day : new String[] { "monday", "tuesday", "wensday", "thursday", "friday", "saturday", "sunday" }) {
-            if (values.containsKey(day + "_working")) {
-                shift.setField(day + "Working", Boolean.parseBoolean(values.get(day + "_working")));
-            } else {
-                shift.setField(day + "Working", false);
-            }
-            shift.setField(day + "Hours", values.get(day + "_hours"));
-        }
-        dataDefinitionService.get("productionScheduling", "shift").save(shift);
     }
 
     private Entity getRandomStaff() {

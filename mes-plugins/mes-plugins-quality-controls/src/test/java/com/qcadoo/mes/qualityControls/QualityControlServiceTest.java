@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.3
+ * Version: 0.4.5
  *
  * This file is part of Qcadoo.
  *
@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.qualityControls;
@@ -61,7 +61,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @RunWith(PowerMockRunner.class)
 public class QualityControlServiceTest {
@@ -74,7 +73,7 @@ public class QualityControlServiceTest {
 
     private TranslationService translationService;
 
-    private NumberGeneratorService numberGeneratorService;
+    private QualityControlForNumberService qualityControlForNumber;
 
     @Before
     public void init() {
@@ -82,11 +81,12 @@ public class QualityControlServiceTest {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         qualityControlService = new QualityControlService();
         translationService = mock(TranslationService.class);
-        numberGeneratorService = mock(NumberGeneratorService.class);
+        qualityControlForNumber = mock(QualityControlForNumberService.class);
         setField(qualityControlService, "dataDefinitionService", dataDefinitionService);
         setField(qualityControlService, "securityService", securityService);
         setField(qualityControlService, "translationService", translationService);
-        setField(qualityControlService, "numberGeneratorService", numberGeneratorService);
+        setField(qualityControlService, "qualityControlForNumber", qualityControlForNumber);
+
     }
 
     @Test
@@ -396,8 +396,8 @@ public class QualityControlServiceTest {
         given(genealogyDataDefinition.find().belongsTo("order", 7L)).willReturn(searchCriteria);
         given(searchCriteria.list().getEntities()).willReturn(genealogies);
         given(
-                numberGeneratorService.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                        QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn("1");
+                qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlForBatch")).willReturn("1");
         given(order.getField("plannedQuantity")).willReturn(new BigDecimal("1"));
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
@@ -445,8 +445,8 @@ public class QualityControlServiceTest {
         given(technology.getField("unitSamplingNr")).willReturn(new BigDecimal("2"));
         given(order.getField("plannedQuantity")).willReturn(new BigDecimal("5"));
         given(
-                numberGeneratorService.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                        QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn("1");
+                qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlForUnit")).willReturn("1");
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
 

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.3
+ * Version: 0.4.5
  *
  * This file is part of Qcadoo.
  *
@@ -81,7 +81,6 @@ public final class OrderService {
         if (!(state instanceof FieldComponent)) {
             return;
         }
-
         FieldComponent product = (FieldComponent) state;
         FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference("name");
 
@@ -97,7 +96,6 @@ public final class OrderService {
         if (!(state instanceof FieldComponent)) {
             return;
         }
-
         FieldComponent product = (FieldComponent) state;
         FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
         FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
@@ -172,8 +170,6 @@ public final class OrderService {
                     OrdersConstants.MODEL_ORDER);
 
             Entity order = orderDataDefinition.get((Long) state.getFieldValue());
-
-            state.performEvent(viewDefinitionState, "save", new String[0]);
 
             if (!state.isHasError()) {
 
@@ -350,14 +346,16 @@ public final class OrderService {
     }
 
     public boolean checkIfOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        Entity order = entity.getBelongsToField("order");
+        Entity product = entity.getBelongsToField("product");
 
-        if (order == null) {
+        if (product == null) {
             return true;
         }
 
-        if (order.getField("technology") == null) {
-            entity.addError(dataDefinition.getField("order"), "orders.validate.global.error.orderMustHaveTechnology");
+        int count = product.getHasManyField("technologies").size();
+
+        if (count == 0) {
+            entity.addError(dataDefinition.getField("product"), "orders.validate.global.error.orderMustHaveTechnology");
             return false;
         } else {
             return true;

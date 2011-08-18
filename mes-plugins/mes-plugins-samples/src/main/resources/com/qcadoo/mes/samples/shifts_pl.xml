@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.3
+    Version: 0.4.5
 
     This file is part of Qcadoo.
 
@@ -24,8 +24,7 @@
     ***************************************************************************
 
 -->
-
-<shift>
-	<row NAME="Zmiana 1" MONDAY_WORKING="true" MONDAY_HOURS="9:00-17:00" TUESDAY_WORKING="true" TUESDAY_HOURS="9:00-17:00" 
-			WENSDAY_WORKING="true" WENSDAY_HOURS="9:00-17:00" THURSDAY_WORKING="true" THURSDAY_HOURS="9:00-17:00" FRIDAY_WORKING="true" FRIDAY_HOURS="9:00-17:00"/>
-</shift>
+<shifts>
+	<row NAME="Zmiana 1" MONDAYWORKING="true" MONDAYHOURS="8:00-16:00" TUESDAYWORKING="true" TUESDAYHOURS="8:00-16:00" WENSDAYWORKING="true" WENSDAYHOURS="8:00-16:00" THURSDAYWORKING="true" THURSDAYHOURS="8:00-16:00" FRIDAYWORKING="true" FRIDAYHOURS="8:00-16:00" SATURDAYWORKING="false" SATURDAYHOURS="" SUNDAYWORKING="false" SUNDAYHOURS=""/>
+	<row NAME="Zmiana 2" MONDAYWORKING="true" MONDAYHOURS="9:00-17:00" TUESDAYWORKING="true" TUESDAYHOURS="9:00-17:00" WENSDAYWORKING="true" WENSDAYHOURS="9:00-17:00" THURSDAYWORKING="true" THURSDAYHOURS="9:00-17:00" FRIDAYWORKING="true" FRIDAYHOURS="9:00-17:00" SATURDAYWORKING="false" SATURDAYHOURS="" SUNDAYWORKING="false" SUNDAYHOURS=""/>
+</shifts>

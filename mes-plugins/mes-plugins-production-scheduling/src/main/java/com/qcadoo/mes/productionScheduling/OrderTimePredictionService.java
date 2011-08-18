@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.3
+ * Version: 0.4.5
  *
  * This file is part of Qcadoo.
  *
@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -78,7 +79,12 @@ public class OrderTimePredictionService {
         dateTo.setEnabled(false);
         realizationTime.setEnabled(false);
         countTimeOfTechnology.setEnabled(false);
-
+        
+        quantity.requestComponentUpdateState();
+        dateFrom.requestComponentUpdateState();
+        dateTo.requestComponentUpdateState();
+        technology.requestComponentUpdateState();
+        realizationTime.requestComponentUpdateState();
     }
 
     public void clearAllField(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -164,7 +170,8 @@ public class OrderTimePredictionService {
     }
 
     public void disableRealizationTime(final ViewDefinitionState viewDefinitionState) {
-        viewDefinitionState.getComponentByReference("realizationTime").setEnabled(false);
+        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
+        realizationTime.setEnabled(false);
     }
 
     public void clearFieldValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {

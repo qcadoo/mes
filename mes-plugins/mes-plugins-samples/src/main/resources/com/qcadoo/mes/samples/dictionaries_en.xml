@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.3
+    Version: 0.4.5
 
     This file is part of Qcadoo.
 
@@ -29,8 +29,6 @@
 	<row  NAME="categories" ITEM="category 2" />
 	<row  NAME="categories" ITEM="category 3" />
 	<row  NAME="categories" ITEM="category 4" />
-	<row  NAME="shifts" ITEM="shift 1" />
-	<row  NAME="shifts" ITEM="shift 2" />
 	<row  NAME="posts" ITEM="post 1" />
 	<row  NAME="posts" ITEM="post 2" />
 	<row  NAME="units" ITEM="kg" />

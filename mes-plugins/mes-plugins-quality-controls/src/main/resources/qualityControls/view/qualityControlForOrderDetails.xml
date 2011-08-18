@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.3
+    Version: 0.4.5
 
     This file is part of Qcadoo.
 
@@ -93,7 +93,7 @@
 			<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="11">
 				<layoutElement column="1" row="1">
-					<component type="input" name="number" field="number" />
+					<component type="input" name="number" field="number" reference="number"/>
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="lookup" name="order" reference="order"
@@ -143,6 +143,7 @@
 						<option type="textRepresentationOnDisabled" value="false" />
 					</component>
 				</layoutElement>
+				
 			</component>
 			<component type="select" name="qualityControlType"
 				reference="qualityControlType" field="qualityControlType"

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="costCalculation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<string name="number" required="true" unique="true">
+			<validatesLength max="40" />
+		</string>
+		<belongsTo name="product" model="product" plugin="basic" required="true"/>
+		<belongsTo name="defaultTechnology" model="technology" plugin="technologies"/>
+		<belongsTo name="technology" model="technology" plugin="technologies" required="true"/>
+		<decimal name="quantity" required="true"/>
+		<belongsTo name="order" model="order" plugin="orders" />
+		<decimal name="materialCost" readonly="true"/>
+		<decimal name="machineHourlyCost" readonly="true"/>
+		<decimal name="laborHourlyCost" readonly="true"/>
+		<decimal name="totalTechnicalProductionCost" />
+		<decimal name="productionCostMargin" />
+		<decimal name="productionCostMarginValue" />
+		<decimal name="materialCostMargin" />		
+		<decimal name="materialCostMarginValue"  />
+		<decimal name="additionalOverhead" />
+		<decimal name="totalOverhead" />
+		<decimal name="totalCost" />
+		<decimal name="costPerUnit" />
+		<string name="description"/>
+		<boolean name="includeTPZ"/>
+		<enum name="includeCostOfMaterial" values="01nominal,02lastPurchase,03average" />
+		<enum name="includeCostOfOperation" values="01piecework,02hourly" />
+		<date name="dateOfCalculation" />
+		<decimal name="technologyId" persistent="false" />
+		<decimal name="orderId" persistent="false"  />
+	</fields>
+	<hooks />
+	<identifier expression="#number + ' - ' + #name" />
+</model>

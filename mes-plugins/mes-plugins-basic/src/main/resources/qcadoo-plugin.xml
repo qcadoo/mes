@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.3
+    Version: 0.4.5
 
     This file is part of Qcadoo.
 
@@ -61,9 +61,11 @@
 		<model:model model="substitute" resource="model/substitute.xml" />
 		<model:model model="substituteComponent" resource="model/substituteComponent.xml" />
 		<model:model model="company" resource ="model/company.xml"/>
+		
+		<model:model model="shift" resource ="model/shift.xml"/>
+		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml" />
 
 		<model:dictionary name="categories" />
-		<model:dictionary name="shifts" />
 		<model:dictionary name="posts" />
 		<model:dictionary name="units" />
 
@@ -74,6 +76,7 @@
 		<menu:menu-item name="machines" category="basic" view="machinesList" />
 		<menu:menu-item name="staff" category="basic" view="staffsList" />
 		<menu:menu-item name="products" category="basic" view="productsList" />
+		<menu:menu-item name="shifts" category="basic" view="shiftsList"/>
 		<menu:menu-item-url name="systemParameters"
 			category="basic" url="/parameters.html" />
 		<menu:menu-item-url name="companyDetails"
@@ -89,6 +92,9 @@
 		<view:view resource="view/productSubstituteComponentDetails.xml" />
 		<view:view resource="view/parameters.xml" />
 		<view:view resource="view/companyDetails.xml"/>
+		<view:view resource="view/shiftDetails.xml"/>
+		<view:view resource="view/shiftsList.xml"/>
+		<view:view resource="view/shiftTimetableExceptionDetails.xml" />
 		
 	</modules>
 
