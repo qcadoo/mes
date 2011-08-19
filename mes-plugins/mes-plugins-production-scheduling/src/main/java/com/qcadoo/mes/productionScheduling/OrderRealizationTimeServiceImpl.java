@@ -129,12 +129,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                         .getField("countMachine") : BigDecimal.ZERO).multiply(BigDecimal
                         .valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue();
             }
-
-            System.out.println("Libront productionInOneCycle: " + productionInOneCycle);
-            System.out.println("Libront roundUp: " + roundUp);
-            System.out.println("Libront countMachine: " + operationComponent.getField("countMachine"));
-            System.out.println("Libront plannedQuantity: " + plannedQuantity);
-
             operationTime += getIntegerValue(operationComponent.getField("tpz"));
 
             if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {

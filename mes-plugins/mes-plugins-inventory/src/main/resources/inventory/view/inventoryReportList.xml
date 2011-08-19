@@ -35,10 +35,10 @@
 				<group name="export">
 				<smallButton name="pdf" icon="pdfIcon16.png"
 					action="#{grid}.fireEvent(printInventory,pdf);" state="disabled"
-					message="noRecordSelected" />
+					message="qcadooView.message.noRecordSelected" />
 				<smallButton name="xls" icon="xlsIcon16.png"
 					action="#{grid}.fireEvent(printInventory,xls);" state="disabled"
-					message="noRecordSelected" />
+					message="qcadooView.message.noRecordSelected" />
 			</group>
 			</ribbon>
 			<component type="grid" name="inventoryReports" reference="grid">
@@ -46,7 +46,8 @@
 					width="300" />
 				<option type="column" name="generated" fields="generated"
 					link="false" />
-				<option type="column" name="staff" fields="staff" width="200" expression="#staff==null?'N/A':#staff['name']+ ' ' +#staff['surname']"/>
+				<option type="column" name="worker" fields="worker" width="200" />
+<!-- 				expression="#staff==worker?'N/A':#worker['name']+ ' ' +#worker['surname']" -->
 				<option type="order" column="name" direction="asc" />
 				<option type="searchable" value="name,generated,worker" />
 				<option type="orderable" value="name,generated,worker" />

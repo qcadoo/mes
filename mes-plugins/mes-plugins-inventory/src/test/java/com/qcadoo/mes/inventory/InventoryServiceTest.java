@@ -35,7 +35,7 @@ public class InventoryServiceTest {
         boolean bool = inventoryService.clearGeneratedOnCopy(dataDefinition, entity);
         // then
         assertTrue(bool);
-        verify(entity, Mockito.times(3)).setField(Mockito.anyString(), Mockito.any());
+        verify(entity, Mockito.times(4)).setField(Mockito.anyString(), Mockito.any());
 
     }
 }
