@@ -46,8 +46,8 @@
 		<localization:translation path="locales" />		
 		<view:resource uri="public/**/*" />
 
-        <view:view-tab resource="view/productDetails.xml" />
-        <view:view-tab resource="view/technologyDetails.xml" />
+        <view:view-tab resource="view/tabExtensions/productDetails.xml" />
+        <view:view-tab resource="view/tabExtensions/technologyDetails.xml" />
         
         <view:view resource="view/product.xml"/>
         <view:view-hook plugin="basic" view="productDetails" type="beforeRender" 

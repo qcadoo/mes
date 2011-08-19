@@ -42,9 +42,9 @@
 		<localization:translation path="locales" />		
 		<view:resource uri="public/**/*" />
 
-        <view:view-tab resource="view/operationDetails.xml" />
-        <view:view-tab resource="view/orderOperationComponentDetails.xml" />
-        <view:view-tab resource="view/technologyOperationComponentDetails.xml" />
+        <view:view-tab resource="view/tabExtensions/operationDetails.xml" />
+        <view:view-tab resource="view/tabExtensions/orderOperationComponentDetails.xml" />
+        <view:view-tab resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
 
         <!-- operation -->
         <model:model-field plugin="technologies" model="operation" >

@@ -142,27 +142,32 @@ public class InventoryService {
 
     public void refreshShouldBe(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
 
-        ComponentState warehouse = (ComponentState) state.getComponentByReference("warehouse");
-        ComponentState product = (ComponentState) state.getComponentByReference("product");
-        ComponentState date = (ComponentState) state.getComponentByReference("correctionDate");
-        FieldComponent should = (FieldComponent) state.getComponentByReference("shouldBe");
+        FieldComponent warehouse = (FieldComponent) (state.getComponentByReference("warehouse") != null ? state
+                .getComponentByReference("warehouse") : null);
+        FieldComponent product = (FieldComponent) (state.getComponentByReference("product") != null ? state
+                .getComponentByReference("product") : null);
+        FieldComponent date = (FieldComponent) (state.getComponentByReference("correctionDate") != null ? state
+                .getComponentByReference("correctionDate") : null);
+        FieldComponent should = (FieldComponent) (state.getComponentByReference("shouldBe") != null ? state
+                .getComponentByReference("shouldBe") : null);
 
-        if (warehouse.getFieldValue() != null && warehouse != null && product.getFieldValue() != null && product != null
-                && date.getFieldValue() != null && date != null && !date.getFieldValue().toString().equals("")) {
+        if (warehouse != null && product != null && date != null) {
+            if (warehouse.getFieldValue() != null && product.getFieldValue() != null
+                    && !date.getFieldValue().toString().equals("")) {
+                String warehouseNumber = warehouse.getFieldValue().toString();
+                String productNumber = product.getFieldValue().toString();
+                String forDate = date.getFieldValue().toString();
 
-            String warehouseNumber = warehouse.getFieldValue().toString();
-            String productNumber = product.getFieldValue().toString();
-            String forDate = date.getFieldValue().toString();
+                BigDecimal shouldBe = calculateShouldBe(warehouseNumber, productNumber, forDate);
 
-            BigDecimal shouldBe = calculateShouldBe(warehouseNumber, productNumber, forDate);
+                if (shouldBe != null && shouldBe != BigDecimal.ZERO) {
+                    should.setFieldValue(shouldBe);
+                } else {
+                    should.setFieldValue(BigDecimal.ZERO);
+                }
 
-            if (shouldBe != null && shouldBe != BigDecimal.ZERO) {
-                should.setFieldValue(shouldBe);
-            } else {
-                should.setFieldValue(BigDecimal.ZERO);
             }
         }
-
     }
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
