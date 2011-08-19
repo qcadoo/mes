@@ -132,7 +132,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-commercial-plugins-erp-enova</artifactId>
+			<artifactId>mes-commercial-plugins-integration-erp</artifactId>
 			<version>0.4.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
