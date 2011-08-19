@@ -49,6 +49,7 @@
         <view:view-tab resource="view/productDetails.xml" />
         <view:view-tab resource="view/technologyDetails.xml" />
         
+        <view:view resource="view/product.xml"/>
         <view:view-hook plugin="basic" view="productDetails" type="beforeRender" 
             class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" method="fillCostTabUnit" />
         
