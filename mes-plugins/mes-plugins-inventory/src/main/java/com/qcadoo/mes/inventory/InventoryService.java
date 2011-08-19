@@ -76,7 +76,7 @@ public class InventoryService {
     @Value("${reportPath}")
     private String path;
 
-    BigDecimal calculateShouldBe(String warehouse, String product, String forDate) {
+    public BigDecimal calculateShouldBe(String warehouse, String product, String forDate) {
 
         BigDecimal countProductIn = BigDecimal.ZERO;
         BigDecimal countProductOut = BigDecimal.ZERO;
@@ -102,18 +102,20 @@ public class InventoryService {
 
         if (lastCorrectionDate == null) {
             resultTo = transferTo.find(
-                    "where warehouseTo = " + warehouse + " and product = " + product + " and date <= '" + forDate + "'").list();
+                    "where warehouseTo = '" + warehouse + "' and product = '" + product + "' and date <= '" + forDate + "'")
+                    .list();
 
             resultFrom = transferFrom.find(
-                    "where warehouseFrom = " + warehouse + " and product = " + product + " and date <= '" + forDate + "'").list();
+                    "where warehouseFrom = '" + warehouse + "' and product = '" + product + "' and date <= '" + forDate + "'")
+                    .list();
 
         } else {
             resultTo = transferTo.find(
-                    "where warehouseTo = " + warehouse + " and product = " + product + " and date <= '" + forDate
+                    "where warehouseTo = '" + warehouse + "' and product = '" + product + "' and date <= '" + forDate
                             + "' and date > '" + lastCorrectionDate + "'").list();
 
             resultFrom = transferFrom.find(
-                    "where warehouseFrom = " + warehouse + " and product = " + product + " and date <= '" + forDate
+                    "where warehouseFrom = '" + warehouse + "' and product = '" + product + "' and date <= '" + forDate
                             + "' and date > '" + lastCorrectionDate + "'").list();
         }
 
@@ -174,7 +176,13 @@ public class InventoryService {
         entity.setField("fileName", null);
         entity.setField("generated", "0");
         entity.setField("date", null);
+        entity.setField("worker", null);
         return true;
+    }
+
+    public void setGenerateButtonState(final ViewDefinitionState state) {
+        setGenerateButtonState(state, state.getLocale(), InventoryConstants.PLUGIN_IDENTIFIER,
+                InventoryConstants.MODEL_INVENTORY_REPORT);
     }
 
     public void setGridGenerateButtonState(final ViewDefinitionState state) {
@@ -196,7 +204,6 @@ public class InventoryService {
 
     }
 
-    @SuppressWarnings("unchecked")
     public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
             final String entityName) {
         WindowComponent window = (WindowComponent) state.getComponentByReference("window");
@@ -234,7 +241,6 @@ public class InventoryService {
         window.requestRibbonRender();
     }
 
-    @SuppressWarnings("unchecked")
     public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
             final String entityName) {
         WindowComponent window = (WindowComponent) state.getComponentByReference("window");
@@ -299,6 +305,7 @@ public class InventoryService {
         if (state instanceof FormComponent) {
             ComponentState generated = viewDefinitionState.getComponentByReference("generated");
             ComponentState date = viewDefinitionState.getComponentByReference("date");
+            ComponentState worker = viewDefinitionState.getComponentByReference("worker");
 
             Entity inventoryReport = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
                     InventoryConstants.MODEL_INVENTORY_REPORT).get((Long) state.getFieldValue());
@@ -315,6 +322,7 @@ public class InventoryService {
             }
 
             if ("0".equals(generated.getFieldValue())) {
+                worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
                 date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
             }
@@ -322,6 +330,7 @@ public class InventoryService {
             state.performEvent(viewDefinitionState, "save", new String[0]);
 
             if (state.getFieldValue() == null || !((FormComponent) state).isValid()) {
+                worker.setFieldValue(null);
                 generated.setFieldValue("0");
                 date.setFieldValue(null);
                 return;
@@ -361,7 +370,7 @@ public class InventoryService {
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .uniqueResult();
         inventoryPdfService.generateDocument(inventoryWithFileName, company, state.getLocale());
-        inventoryXlsService.generateDocument(inventoryWithFileName, company, state.getLocale());
+        // inventoryXlsService.generateDocument(inventoryWithFileName, company, state.getLocale());
     }
 
 }

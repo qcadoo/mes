@@ -37,8 +37,9 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
+import com.qcadoo.mes.inventory.InventoryService;
 import com.qcadoo.mes.inventory.constants.InventoryConstants;
-import com.qcadoo.mes.inventory.print.utils.EntityInventoryComparator;
+import com.qcadoo.mes.inventory.print.utils.EntityTransferComparator;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -53,6 +54,9 @@ public final class InventoryPdfService extends PdfDocumentService {
     private SecurityService securityService;
 
     @Autowired
+    private InventoryService inventoryService;
+
+    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Override
@@ -61,7 +65,7 @@ public final class InventoryPdfService extends PdfDocumentService {
         String documenTitle = getTranslationService().translate("inventory.inventory.report.title", locale);
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) inventoryReport.getField("date"),
-                securityService.getCurrentUserName());
+                inventoryReport.getStringField("worker"));
 
         PdfPTable panelTable = PdfUtil.createPanelTable(2);
         PdfUtil.addTableCellAsTable(panelTable,
@@ -78,11 +82,8 @@ public final class InventoryPdfService extends PdfDocumentService {
                         .getBelongsToField("warehouse").getStringField("number"), null, PdfUtil.getArialBold10Dark(), PdfUtil
                         .getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(panelTable,
-                getTranslationService().translate("inventory.inventory.report.panel.worker", locale), inventoryReport
-                        .getBelongsToField("staff").getStringField("name")
-                        + " "
-                        + inventoryReport.getBelongsToField("staff").getStringField("surname"), null, PdfUtil
-                        .getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                getTranslationService().translate("inventory.inventory.report.panel.worker", locale),
+                inventoryReport.getStringField("worker"), null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
 
         panelTable.setSpacingBefore(20);
         panelTable.setSpacingAfter(20);
@@ -95,20 +96,32 @@ public final class InventoryPdfService extends PdfDocumentService {
         tableHeader.add(getTranslationService().translate("inventory.inventory.report.columnHeader.unit", locale));
         PdfPTable table = PdfUtil.createTableWithHeader(4, tableHeader, false);
 
-        DataDefinition dataDefInventory = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
-                InventoryConstants.MODEL_INVENTORY);
-        List<Entity> inventories = dataDefInventory
-                .find("where warehouse.id = " + Long.toString(inventoryReport.getBelongsToField("warehouse").getId())).list()
+        DataDefinition dataDefTransfer = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
+                InventoryConstants.MODEL_TRANSFER);
+        List<Entity> transfers = dataDefTransfer
+                .find("where warehouseTo.id = " + Long.toString(inventoryReport.getBelongsToField("warehouse").getId())).list()
                 .getEntities();
-        Collections.sort(inventories, new EntityInventoryComparator());
+        Collections.sort(transfers, new EntityTransferComparator());
 
-        for (Entity e : inventories) {
-            table.addCell(new Phrase(e.getBelongsToField("product").getStringField("number"), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(e.getBelongsToField("product").getStringField("name"), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(((BigDecimal) e.getField("quantity")).toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(e.getBelongsToField("product").getStringField("unit"), PdfUtil.getArialRegular9Dark()));
+        String warehouseNumber = inventoryReport.getBelongsToField("warehouse").getStringField("number");
+        String forDate = ((Date) inventoryReport.getField("date")).toString();
+
+        String numberBefore = "";
+        for (Entity e : transfers) {
+            String numberNow = e.getBelongsToField("product").getStringField("number");
+
+            if (!numberBefore.equals(numberNow)) {
+                BigDecimal quantity = inventoryService.calculateShouldBe(warehouseNumber.toString(),
+                        e.getBelongsToField("product").getStringField("number"), forDate);
+
+                table.addCell(new Phrase(e.getBelongsToField("product").getStringField("number"), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(e.getBelongsToField("product").getStringField("name"), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(quantity.toString(), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(e.getBelongsToField("product").getStringField("unit"), PdfUtil.getArialRegular9Dark()));
+                numberBefore = numberNow;
+            }
+
         }
-
         document.add(table);
     }
 

@@ -13,10 +13,10 @@
                 <component type="input" name="numberOfOperations" reference="numberOfOperations" field="#{form}.numberOfOperations" />
             </layoutElement>
             <layoutElement column="1" row="2">
-                <component type="input" name="laborHourlyCost" field="#{form}.laborHourlyCost" />
+                <component type="input" name="laborHourlyCost" reference="laborHourlyCost" field="#{form}.laborHourlyCost" />
             </layoutElement>
             <layoutElement column="1" row="3">
-                <component type="input" name="machineHourlyCost" field="#{form}.machineHourlyCost" />
+                <component type="input" name="machineHourlyCost" reference="machineHourlyCost" field="#{form}.machineHourlyCost" />
             </layoutElement>
         </component>
     </windowTab>

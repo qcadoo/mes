@@ -34,7 +34,7 @@
 		</string>
 		<date name="inventoryForDate" required="true"/>
 		<datetime name="date" />
-		<belongsTo name="staff" model="staff" plugin="basic" required="true"/>
+		<string name="worker" />
 		<boolean name="generated" />
 		<string name= "fileName" />
 		<belongsTo name="warehouse" model="warehouse" plugin="inventory" required="true"/>

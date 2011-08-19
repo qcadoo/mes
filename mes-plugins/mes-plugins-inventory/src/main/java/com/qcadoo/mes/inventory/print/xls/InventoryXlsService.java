@@ -25,6 +25,7 @@ package com.qcadoo.mes.inventory.print.xls;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,8 +35,9 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.inventory.InventoryService;
 import com.qcadoo.mes.inventory.constants.InventoryConstants;
-import com.qcadoo.mes.inventory.print.utils.EntityInventoryComparator;
+import com.qcadoo.mes.inventory.print.utils.EntityTransferComparator;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -47,6 +49,9 @@ public final class InventoryXlsService extends XlsDocumentService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private InventoryService inventoryService;
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -68,18 +73,32 @@ public final class InventoryXlsService extends XlsDocumentService {
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity inventoryReport) {
         int rowNum = 1;
-        DataDefinition dataDefInventory = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
-                InventoryConstants.MODEL_INVENTORY);
-        List<Entity> inventories = dataDefInventory
-                .find("where warehouse.id = " + Long.toString(inventoryReport.getBelongsToField("warehouse").getId())).list()
+
+        DataDefinition dataDefTransfer = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
+                InventoryConstants.MODEL_TRANSFER);
+        List<Entity> transfers = dataDefTransfer
+                .find("where warehouseTo.id = " + Long.toString(inventoryReport.getBelongsToField("warehouse").getId())).list()
                 .getEntities();
-        Collections.sort(inventories, new EntityInventoryComparator());
-        for (Entity e : inventories) {
-            HSSFRow row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(e.getBelongsToField("product").getStringField("number"));
-            row.createCell(1).setCellValue(e.getBelongsToField("product").getStringField("name"));
-            row.createCell(2).setCellValue(((BigDecimal) e.getField("quantity")).toString());
-            row.createCell(3).setCellValue(e.getBelongsToField("product").getStringField("unit"));
+        Collections.sort(transfers, new EntityTransferComparator());
+
+        String warehouseNumber = inventoryReport.getBelongsToField("warehouse").getStringField("number");
+        String forDate = ((Date) inventoryReport.getField("date")).toString();
+
+        String numberBefore = "";
+        for (Entity e : transfers) {
+            String numberNow = e.getBelongsToField("product").getStringField("number");
+
+            if (!numberBefore.equals(numberNow)) {
+                BigDecimal quantity = inventoryService.calculateShouldBe(warehouseNumber.toString(),
+                        e.getBelongsToField("product").getStringField("number"), forDate);
+
+                HSSFRow row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(e.getBelongsToField("product").getStringField("number"));
+                row.createCell(1).setCellValue(e.getBelongsToField("product").getStringField("name"));
+                row.createCell(2).setCellValue(quantity.toString());
+                row.createCell(3).setCellValue(e.getBelongsToField("product").getStringField("unit"));
+                numberBefore = numberNow;
+            }
         }
         sheet.autoSizeColumn((short) 0);
         sheet.autoSizeColumn((short) 1);
