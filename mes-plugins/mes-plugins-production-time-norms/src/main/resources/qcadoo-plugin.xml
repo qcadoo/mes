@@ -44,7 +44,7 @@
        http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
-		<name>Qcadoo MES :: Plugins :: Production time norms</name>
+		<name>MES - Production time norms</name>
 		<vendor>
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>

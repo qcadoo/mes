@@ -28,7 +28,7 @@ public class CostCalculationService {
         Long orderId = (Long) state.getFieldValue();
 
         if (orderId != null) {
-            String url = "../page/costCalculation/costCalculationFromOrder.html?context={\"orderId.id\":\"" + orderId + "\"}";
+            String url = "../page/costCalculation/costCalculationDetails.html?context={\"orderId.id\":\"" + orderId + "\"}";
             viewDefinitionState.redirectTo(url, false, true);
         }
     }
@@ -38,16 +38,29 @@ public class CostCalculationService {
         Long technologyId = (Long) state.getFieldValue();
 
         if (technologyId != null) {
-            String url = "../page/costCalculation/costCalculationFromTechnology.html?context={\"technologyId.id\":\""
-                    + technologyId + "\"}";
+            String url = "../page/costCalculation/costCalculationDetails.html?context={\"technologyId.id\":\"" + technologyId
+                    + "\"}";
             viewDefinitionState.redirectTo(url, false, true);
         }
+    }
+
+    public void fillField(final ViewDefinitionState state) {
+        FormComponent formOrderId = (FormComponent) state.getComponentByReference("orderId");
+        FormComponent formTechnologyId = (FormComponent) state.getComponentByReference("technologyId");
+
+        if (formOrderId != null && formOrderId.getFieldValue() != null) {
+            fillFieldFromOrder(state);
+        }
+        if (formTechnologyId != null && formTechnologyId.getFieldValue() != null) {
+            fillFieldFromTechnology(state);
+        }
+
     }
 
     public void fillFieldFromOrder(final ViewDefinitionState state) {
 
         FormComponent formOrderId = (FormComponent) state.getComponentByReference("orderId");
-
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
         FieldComponent number = (FieldComponent) state.getComponentByReference("number");
         FieldComponent product = (FieldComponent) state.getComponentByReference("product");
         FieldComponent quantity = (FieldComponent) state.getComponentByReference("quantity");
@@ -60,6 +73,9 @@ public class CostCalculationService {
                 orderId);
 
         if (orderEntity != null) {
+            formOrderId.getEntity().setId(null);
+            form.getEntity().setId(null);
+
             number.setFieldValue(generateNumber(6));
             quantity.setFieldValue(orderEntity.getField("plannedQuantity"));
             order.setFieldValue(orderEntity.getId());
@@ -72,13 +88,26 @@ public class CostCalculationService {
             technology.setFieldValue(defaultTechnologyEntity.getId());
             defaultTechnology.setFieldValue(defaultTechnologyEntity.getId());
 
+            quantity.setEnabled(false);
+            order.setEnabled(false);
+            product.setEnabled(false);
+            technology.setEnabled(false);
+            defaultTechnology.setEnabled(false);
+
+            quantity.requestComponentUpdateState();
+            number.requestComponentUpdateState();
+            order.requestComponentUpdateState();
+            product.requestComponentUpdateState();
+            technology.requestComponentUpdateState();
+            defaultTechnology.requestComponentUpdateState();
         }
     }
 
     public void fillFieldFromTechnology(final ViewDefinitionState state) {
 
         FormComponent formTechnologyId = (FormComponent) state.getComponentByReference("technologyId");
-
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
+        FieldComponent order = (FieldComponent) state.getComponentByReference("order");
         FieldComponent number = (FieldComponent) state.getComponentByReference("number");
         FieldComponent product = (FieldComponent) state.getComponentByReference("product");
         FieldComponent quantity = (FieldComponent) state.getComponentByReference("quantity");
@@ -90,6 +119,7 @@ public class CostCalculationService {
                 TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
 
         if (technologyEntity != null) {
+            form.getEntity().setId(null);
             number.setFieldValue(generateNumber(6));
             technology.setFieldValue(technologyEntity.getId());
             defaultTechnology.setFieldValue(technologyEntity.getId());
@@ -97,6 +127,17 @@ public class CostCalculationService {
             Entity productEntity = technologyEntity.getBelongsToField("product");
             product.setFieldValue(productEntity.getId());
             quantity.setFieldValue(technologyEntity.getField("minimalQuantity"));
+
+            order.setEnabled(false);
+            product.setEnabled(false);
+            technology.setEnabled(false);
+            defaultTechnology.setEnabled(false);
+
+            quantity.requestComponentUpdateState();
+            number.requestComponentUpdateState();
+            product.requestComponentUpdateState();
+            technology.requestComponentUpdateState();
+            defaultTechnology.requestComponentUpdateState();
         }
     }
 
@@ -118,6 +159,14 @@ public class CostCalculationService {
 
         entity.setField("dateOfCalculation", new Date());
 
+    }
+
+    public void fillFieldDefaultTechnology(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        FieldComponent defalutTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
+        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
+
+        defalutTechnology.setFieldValue(technology);
     }
 
 }

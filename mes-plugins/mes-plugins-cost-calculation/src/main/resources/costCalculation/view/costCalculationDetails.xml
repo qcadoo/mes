@@ -10,7 +10,10 @@
 			<!-- <bigButton name="costCalculate" icon="calculateTimeIcon24.png" /> -->
 			<!-- </group> -->
 		</ribbon>
-
+		<component type="form" name="orderId" reference="orderId"
+			defaultVisible="false" />
+		<component type="form" name="technologyId" reference="technologyId"
+			defaultVisible="false" />
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="2"
 				rows="10">
@@ -31,7 +34,7 @@
 				</layoutElement>
 				<layoutElement column="1" row="3">
 					<component type="lookup" name="defaultTechnology" field="defaultTechnology"
-						reference="defaultTechnology">
+						reference="defaultTechnology" defaultEnabled="false">
 						<option type="column" name="name" fields="name" />
 						<option type="required" value="true" />
 						<option type="searchable" value="number,name" />
@@ -49,6 +52,9 @@
 						<option type="orderable" value="number,name" />
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="number" />
+						<listener event="onChange"
+							class="com.qcadoo.mes.costCalculation.CostCalculationService"
+							method="fillFieldDefaultTechnology" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="5">
@@ -116,54 +122,56 @@
 					<component type="textarea" name="description" field="description"
 						height="2" />
 				</layoutElement>
-<!-- 				<layoutElement column="2" row="1" height="5"> -->
-<!-- 					<component type="borderLayout" name="borderLayoutOverheads" -->
-<!-- 						reference="borderLayoutOverheads"> -->
-<!-- 						<option type="label" value="overheads" /> -->
-<!-- 						<component type="gridLayout" name="gridProductionCostMargin" -->
-<!-- 							columns="2" rows="6"> -->
-<!-- 							<layoutElement column="1" row="1"> -->
-<!-- 								<component type="input" name="productionCostMargin" -->
-<!-- 									field="productionCostMargin" /> -->
-<!-- 							</layoutElement> -->
-<!-- 							<layoutElement column="2" row="1"> -->
-<!-- 								<component type="input" name="productionCostMarginValue" -->
-<!-- 									field="productionCostMarginValue" defaultEnabled="false" /> -->
-<!-- 							</layoutElement> -->
-<!-- 							<layoutElement column="1" row="2"> -->
-<!-- 								<component type="input" name="materialCostMargin" -->
-<!-- 									field="materialCostMargin" /> -->
-<!-- 							</layoutElement> -->
-<!-- 							<layoutElement column="2" row="2"> -->
-<!-- 								<component type="input" name="materialCostMarginValue" -->
-<!-- 									field="productionCostMarginValue" defaultEnabled="false" /> -->
-<!-- 							</layoutElement> -->
-<!-- 							<layoutElement column="1" row="3"> -->
+				<layoutElement column="2" row="1" height="5">
+					<component type="borderLayout" name="borderLayoutOverheads"
+						reference="borderLayoutOverheads">
+						<option type="label" value="overheads" />
+						<component type="gridLayout" name="gridProductionCostMargin"
+							columns="2" rows="6">
+							<layoutElement column="1" row="1">
+								<component type="input" name="productionCostMargin"
+									field="productionCostMargin" />
+							</layoutElement>
+							<layoutElement column="2" row="1">
+								<component type="input" name="productionCostMarginValue"
+									field="productionCostMarginValue" defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="1" row="2">
+								<component type="input" name="materialCostMargin"
+									field="materialCostMargin" />
+							</layoutElement>
+							<layoutElement column="2" row="2">
+								<component type="input" name="materialCostMarginValue"
+									field="productionCostMarginValue" defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="1" row="3">
 
-<!-- 								<component type="input" name="additionalOverhead" -->
-<!-- 									field="additionalOverhead" /> -->
-<!-- 							</layoutElement> -->
-<!-- 							<layoutElement column="1" row="4"> -->
-<!-- 								<component type="input" name="totalOverhead" field="totalOverhead" -->
-<!-- 									defaultEnabled="false" /> -->
-<!-- 							</layoutElement> -->
-<!-- 							<layoutElement column="1" row="5"> -->
-<!-- 								<component type="input" name="totalCost" field="totalCost" -->
-<!-- 									defaultEnabled="false" /> -->
-<!-- 							</layoutElement> -->
-<!-- 							<layoutElement column="1" row="6"> -->
-<!-- 								<component type="input" name="costPerUnit" field="costPerUnit" -->
-<!-- 									defaultEnabled="false" /> -->
-<!-- 							</layoutElement> -->
-<!-- 						</component> -->
-<!-- 					</component> -->
-<!-- 				</layoutElement> -->
+								<component type="input" name="additionalOverhead"
+									field="additionalOverhead" />
+							</layoutElement>
+							<layoutElement column="1" row="4">
+								<component type="input" name="totalOverhead" field="totalOverhead"
+									defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="1" row="5">
+								<component type="input" name="totalCost" field="totalCost"
+									defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="1" row="6">
+								<component type="input" name="costPerUnit" field="costPerUnit"
+									defaultEnabled="false" />
+							</layoutElement>
+						</component>
+					</component>
+				</layoutElement>
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
 		</component>
 	</component>
 	<hooks>
+		<beforeRender class="com.qcadoo.mes.costCalculation.CostCalculationService"
+			method="fillField" />
 	</hooks>
 </view>
 
