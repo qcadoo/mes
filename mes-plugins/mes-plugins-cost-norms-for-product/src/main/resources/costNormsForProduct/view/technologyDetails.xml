@@ -13,28 +13,15 @@
 				<component type="label" name="editWarning" />
 			</layoutElement>
 			<layoutElement column="1" row="2">
-				<component type="grid" name="inProductsGrid" reference="inProductsGrid"
-					source="#{helperForm}.operationProductInComponents"> 
-					<option type="column" name="number" fields="product"
+				<component type="grid" name="inProductsGrid" reference="inProductsGrid">
+					<option type="column" name="product" fields="product" link="true" />
+					<option type="column" name="number" fields="product" 
 						expression="#product['number']" width="100" link="true" />
 					<option type="column" name="name" fields="product"
 						expression="#product['name']" width="200" link="true" />
-
-					<option type="column" name="nominalCost" fields="product"
-						expression="#product['nominalCost'] != null ? 
-							#product['nominalCost'] + ' / ' + #product['costForNumber'] + #product['unit'] : ''" />
-					<option type="column" name="lastPurchaseCost" fields="product"
-						expression="#product['lastPurchaseCost'] != null ? 
-							#product['lastPurchaseCost'] + ' / ' + #product['costForNumber'] + #product['unit'] : ''" />
-					<option type="column" name="averageCost" fields="product" 
-						expression="#product['averageCost'] != null ? 
-							#product['averageCost'] + ' / ' + #product['costForNumber'] + #product['unit'] : ''" />
-
 					<option type="order" column="name" direction="asc" />
-					
 					<option type="correspondingView" value="basic/productDetails" />
 					<option type="correspondingComponent" value="form" />
-<!--					<option type="correspondingViewInModal" value="true" />-->
 				</component>
 			</layoutElement>
 		</component>
