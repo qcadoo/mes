@@ -31,7 +31,6 @@
 	</fields>
 	<hooks >
 		<onSave class="com.qcadoo.mes.costCalculation.CostCalculationService" method="generateDateOfCalculation"/>
-		<onCreate class="com.qcadoo.mes.costCalculation.CostCalculationService" method="onCreate"/>
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

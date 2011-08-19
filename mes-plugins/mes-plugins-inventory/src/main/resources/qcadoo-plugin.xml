@@ -28,8 +28,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu"
-	xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"	
+    xmlns:report="http://schema.qcadoo.org/modules/report" 
 	xsi:schemaLocation="
+	   http://schema.qcadoo.org/modules/report 
+	   http://schema.qcadoo.org/modules/report.xsd
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
@@ -60,7 +63,7 @@
 		<localization:translation path="locales" />
 		
 		<model:model model="correction" resource="model/correction.xml" />
-		<model:model model="inventory" resource="model/inventory.xml" />
+<!-- 		<model:model model="inventory" resource="model/inventory.xml" /> -->
 		<model:model model="transfer" resource="model/transfer.xml" />
 		<model:model model="warehouse" resource="model/warehouse.xml" />		
 		<model:model model="inventoryReport" resource="model/inventoryReport.xml" />
@@ -69,11 +72,11 @@
 		<menu:menu-category name="reports" />
 		
 	    <view:view-listener plugin="inventory" view="correctionDetail" component="form" event="refreshShouldBe" class="com.qcadoo.mes.inventory.InventoryService" method="refreshShouldBe" />
-		
+
 		<menu:menu-item name="corrections" category="inventory"
 			view="correctionList" />
-		<menu:menu-item name="inventory" category="inventory"
-			view="inventoryList" />
+<!-- 		<menu:menu-item name="inventory" category="inventory" -->
+<!-- 			view="inventoryList" /> -->
 		<menu:menu-item name="transfers" category="inventory"
 			view="transferList" />
 		<menu:menu-item name="warehouses" category="inventory"
@@ -85,15 +88,14 @@
 		<view:view resource="view/transferDetail.xml" />
 		<view:view resource="view/correctionList.xml" />
 		<view:view resource="view/correctionDetail.xml" />
-		<view:view resource="view/inventoryDetail.xml"/>
-		<view:view resource="view/inventoryList.xml" />
+<!-- 		<view:view resource="view/inventoryDetail.xml"/> -->
+<!-- 		<view:view resource="view/inventoryList.xml" /> -->
 		<view:view resource="view/warehouseList.xml" />
 		<view:view resource="view/warehouseDetail.xml" />
 		<view:view resource="view/inventoryReportList.xml" />
 		<view:view resource="view/inventoryReportDetails.xml" />		
 		
 		<view:resource uri="public/**/*" />
-
 	</modules>
 
 </plugin>

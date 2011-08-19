@@ -72,6 +72,10 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
+			<model:decimal name="productionInOneCycle" required="true" default="1"/>
+		</model:model-field>
+		<model:model-field plugin="technologies"
+			model="technologyOperationComponent">
 			<model:enum values="01all,02specified" name="countRealized"
 				default="01all" required="true"/>
 		</model:model-field>
@@ -88,6 +92,9 @@
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:integer name="tj" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:decimal name="productionInOneCycle" required="true" default="1"/>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="countMachineOperation">
