@@ -10,9 +10,7 @@
 
 	<artifactId>mes-plugins-simple-material-balance</artifactId>
 	<groupId>com.qcadoo.mes</groupId>
-	<packaging>qcadoo-plugin</packaging>
-	<name>MES - Simple Material Balance Module</name>
-	<version>0.4.7-SNAPSHOT</version>
+	<name>Qcadoo MES :: Plugins :: Simple material balance</name>
 
 	<build>
 		<plugins>
