@@ -14,9 +14,9 @@
 				<component type="grid" name="inProductsGrid" reference="inProductsGrid">
 
 					<option type="column" name="number" fields="number"
-						expression="#product['number']" width="100" />
+						expression="#product['number']" width="100" link="true"/>
 					<option type="column" name="name" fields="product"
-						expression="#product['name']" width="200" />
+						expression="#product['name']" width="200" link="true"/>
 
 					<option type="column" name="nominalCost" fields="product"
 						expression="#product['nominalCost'] != null ? 
@@ -30,9 +30,9 @@
 
 					<option type="order" column="name" direction="asc" />
 					
-<!--					<option type="correspondingView" value="basic/productDetails" />-->
-<!--					<option type="correspondingComponent" value="form" />-->
-<!--					<option type="correspondingViewInModal" value="true" />-->
+					<option type="correspondingView" value="basic/productDetails" />
+					<option type="correspondingComponent" value="form" />
+					<option type="correspondingViewInModal" value="false" />
 				</component>
 			</layoutElement>
 		</component>

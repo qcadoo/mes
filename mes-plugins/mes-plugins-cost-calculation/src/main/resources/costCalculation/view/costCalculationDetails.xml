@@ -116,48 +116,48 @@
 					<component type="textarea" name="description" field="description"
 						height="2" />
 				</layoutElement>
-				<layoutElement column="2" row="1" height="5">
-					<component type="borderLayout" name="borderLayoutOverheads"
-						reference="borderLayoutOverheads">
-						<option type="label" value="overheads" />
-						<component type="gridLayout" name="gridProductionCostMargin"
-							columns="2" rows="6">
-							<layoutElement column="1" row="1">
-								<component type="input" name="productionCostMargin"
-									field="productionCostMargin" />
-							</layoutElement>
-							<layoutElement column="2" row="1">
-								<component type="input" name="productionCostMarginValue"
-									field="productionCostMarginValue" defaultEnabled="false" />
-							</layoutElement>
-							<layoutElement column="1" row="2">
-								<component type="input" name="materialCostMargin"
-									field="materialCostMargin" />
-							</layoutElement>
-							<layoutElement column="2" row="2">
-								<component type="input" name="materialCostMarginValue"
-									field="productionCostMarginValue" defaultEnabled="false" />
-							</layoutElement>
-							<layoutElement column="1" row="3">
+<!-- 				<layoutElement column="2" row="1" height="5"> -->
+<!-- 					<component type="borderLayout" name="borderLayoutOverheads" -->
+<!-- 						reference="borderLayoutOverheads"> -->
+<!-- 						<option type="label" value="overheads" /> -->
+<!-- 						<component type="gridLayout" name="gridProductionCostMargin" -->
+<!-- 							columns="2" rows="6"> -->
+<!-- 							<layoutElement column="1" row="1"> -->
+<!-- 								<component type="input" name="productionCostMargin" -->
+<!-- 									field="productionCostMargin" /> -->
+<!-- 							</layoutElement> -->
+<!-- 							<layoutElement column="2" row="1"> -->
+<!-- 								<component type="input" name="productionCostMarginValue" -->
+<!-- 									field="productionCostMarginValue" defaultEnabled="false" /> -->
+<!-- 							</layoutElement> -->
+<!-- 							<layoutElement column="1" row="2"> -->
+<!-- 								<component type="input" name="materialCostMargin" -->
+<!-- 									field="materialCostMargin" /> -->
+<!-- 							</layoutElement> -->
+<!-- 							<layoutElement column="2" row="2"> -->
+<!-- 								<component type="input" name="materialCostMarginValue" -->
+<!-- 									field="productionCostMarginValue" defaultEnabled="false" /> -->
+<!-- 							</layoutElement> -->
+<!-- 							<layoutElement column="1" row="3"> -->
 
-								<component type="input" name="additionalOverhead"
-									field="additionalOverhead" />
-							</layoutElement>
-							<layoutElement column="1" row="4">
-								<component type="input" name="totalOverhead" field="totalOverhead"
-									defaultEnabled="false" />
-							</layoutElement>
-							<layoutElement column="1" row="5">
-								<component type="input" name="totalCost" field="totalCost"
-									defaultEnabled="false" />
-							</layoutElement>
-							<layoutElement column="1" row="6">
-								<component type="input" name="costPerUnit" field="costPerUnit"
-									defaultEnabled="false" />
-							</layoutElement>
-						</component>
-					</component>
-				</layoutElement>
+<!-- 								<component type="input" name="additionalOverhead" -->
+<!-- 									field="additionalOverhead" /> -->
+<!-- 							</layoutElement> -->
+<!-- 							<layoutElement column="1" row="4"> -->
+<!-- 								<component type="input" name="totalOverhead" field="totalOverhead" -->
+<!-- 									defaultEnabled="false" /> -->
+<!-- 							</layoutElement> -->
+<!-- 							<layoutElement column="1" row="5"> -->
+<!-- 								<component type="input" name="totalCost" field="totalCost" -->
+<!-- 									defaultEnabled="false" /> -->
+<!-- 							</layoutElement> -->
+<!-- 							<layoutElement column="1" row="6"> -->
+<!-- 								<component type="input" name="costPerUnit" field="costPerUnit" -->
+<!-- 									defaultEnabled="false" /> -->
+<!-- 							</layoutElement> -->
+<!-- 						</component> -->
+<!-- 					</component> -->
+<!-- 				</layoutElement> -->
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />

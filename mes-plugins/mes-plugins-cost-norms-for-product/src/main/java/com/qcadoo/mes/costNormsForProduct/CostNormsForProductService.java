@@ -23,61 +23,62 @@ import com.qcadoo.view.api.components.GridComponent;
 public class CostNormsForProductService {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService; 
-    
-	/* ****** VIEW HOOKS ******* */
-	
-	public void fillCostTabUnit(final ViewDefinitionState viewDefinitionState) {
-		FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-		FieldComponent costUnit = (FieldComponent) viewDefinitionState.getComponentByReference("costTabUnit");
-		if(form == null || costUnit == null) {
-		    return;
-		}
-		
-		Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(form.getEntityId());
-		if(product == null) {
-			return;
-		}
+    private DataDefinitionService dataDefinitionService;
 
-		costUnit.setFieldValue(product.getStringField("unit"));
-		costUnit.requestComponentUpdateState();
-		costUnit.setEnabled(false);
-	}
+    /* ****** VIEW HOOKS ******* */
 
-	public void fillCostTabCurrency(final ViewDefinitionState viewDefinitionState) {
-		for(String componentReference : Arrays.asList("nominalCostCurrency", "lastPurchaseCostCurrency", "averageCostCurrency")) {
-		    FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
-		    field.setEnabled(true);
-		    //temporary
-		    field.setFieldValue("PLN");
-		    field.setEnabled(false);
-		    field.requestComponentUpdateState();
-		}
-	}
+    public void fillCostTabUnit(final ViewDefinitionState viewDefinitionState) {
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FieldComponent costUnit = (FieldComponent) viewDefinitionState.getComponentByReference("costTabUnit");
+        if (form == null || costUnit == null) {
+            return;
+        }
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                form.getEntityId());
 
-	public void fillInProductsGrid(final ViewDefinitionState viewDefinitionState) {
-	    GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("inProductsGrid");
-	    Long technologyId = ((FormComponent) viewDefinitionState.getComponentByReference("form")).getEntityId();
-	    if (technologyId == null || grid == null) {
-	        return;
-	    }
+        if (product == null) {
+            return;
+        }
 
-	    Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
-	    DataDefinition dd = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
-	    
-	    SearchDisjunction disjunction = SearchRestrictions.disjunction();
-	    for (Entity operationComponent : technology.getTreeField("operationComponents")) {
-	       disjunction.add(SearchRestrictions.belongsTo("operationComponent", operationComponent));
-	    }
+        costUnit.setFieldValue(product.getStringField("unit"));
+        costUnit.requestComponentUpdateState();
+        costUnit.setEnabled(false);
+    }
 
-	    SearchResult searchResult = dd.find().add(disjunction).createAlias("product", "product").addOrder(SearchOrders.asc("product.name")).list();
-	    grid.setEntities(searchResult.getEntities());
-	}
-	
-	/* ****** CUSTOM EVENT LISTENER ****** */
-	
-	
-	/* ****** VALIDATORS ****** */
+    public void fillCostTabCurrency(final ViewDefinitionState viewDefinitionState) {
+        for (String componentReference : Arrays.asList("nominalCostCurrency", "lastPurchaseCostCurrency", "averageCostCurrency")) {
+            FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
+            field.setEnabled(true);
+            // temporary
+            field.setFieldValue("PLN");
+            field.setEnabled(false);
+            field.requestComponentUpdateState();
+        }
+    }
 
-	
+    public void fillInProductsGrid(final ViewDefinitionState viewDefinitionState) {
+        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("inProductsGrid");
+        Long technologyId = ((FormComponent) viewDefinitionState.getComponentByReference("form")).getEntityId();
+        if (technologyId == null || grid == null) {
+            return;
+        }
+        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
+        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+
+        SearchDisjunction disjunction = SearchRestrictions.disjunction();
+        for (Entity operationComponent : technology.getTreeField("operationComponents")) {
+            disjunction.add(SearchRestrictions.belongsTo("operationComponent", operationComponent));
+        }
+
+        SearchResult searchResult = technologyDD.find().add(disjunction).createAlias("product", "product")
+                .addOrder(SearchOrders.asc("product.name")).list();
+        grid.setEntities(searchResult.getEntities());
+    }
+
+    /* ****** CUSTOM EVENT LISTENER ****** */
+
+    /* ****** VALIDATORS ****** */
+
 }
