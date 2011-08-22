@@ -39,7 +39,6 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class GanttOperationService {
@@ -146,14 +145,9 @@ public class GanttOperationService {
     public void checkDoneCalculate(final ViewDefinitionState viewDefinitionState) {
 
         ComponentState window = (ComponentState) viewDefinitionState.getComponentByReference("form");
-        FieldComponent label = (FieldComponent) viewDefinitionState.getComponentByReference("title");
-
         Entity order = dataDefinitionService.get("orders", "order").get(orderId);
 
-        String title = "Calendar for: " + order.getStringField("name") + " - " + order.getStringField("number");
         String realizationTime = order.getField("realizationTime").toString();
-
-        label.setFieldValue(title);
 
         if ("".equals(realizationTime) || realizationTime == null) {
             window.addMessage(

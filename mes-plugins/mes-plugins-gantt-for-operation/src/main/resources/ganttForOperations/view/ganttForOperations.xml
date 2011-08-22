@@ -34,20 +34,20 @@
 			<template name="standardFormTemplate" includeItems="navigation.back" />
 		</ribbon>
 		<component type="form" name="form" reference="form">
-		<component type="gridLayout" name="gridLayout" columns="1"
-				rows="2" hasBorders="false">
-		<layoutElement column="1" row="1">
-					<component type="label" name="title" reference="title"/>
-		</layoutElement>
-		<layoutElement column="1" row="2">
+<!-- 		<component type="gridLayout" name="gridLayout" columns="1" -->
+<!-- 				rows="2" hasBorders="false"> -->
+<!-- 		<layoutElement column="1" row="1"> -->
+<!-- 					<component type="label" name="title" reference="title"/> -->
+<!-- 		</layoutElement> -->
+<!-- 		<layoutElement column="1" row="2"> -->
 			<component type="ganttChart" name="gantt" reference="gantt">
 				<option type="resolver"
 					value="com.qcadoo.mes.ganttForOperations.OperationsGanttChartItemResolver" />
 				<option type="defaultZoomLevel" value="H1" />
 				<option type="allowDateSelection" value="true" />
 			</component>
-		</layoutElement>
-		</component>
+<!-- 		</layoutElement> -->
+<!-- 		</component> -->
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
