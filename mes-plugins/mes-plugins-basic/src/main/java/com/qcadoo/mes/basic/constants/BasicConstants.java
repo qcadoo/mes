@@ -41,6 +41,8 @@ public interface BasicConstants {
     public static final String MODEL_SUBSTITUTE_COMPONENT = "substituteComponent";
     
     public static final String MODEL_COMPANY = "company";
+    
+    public static final String MODEL_CURRENCY = "currency";
 
     // VIEW
     public static final String VIEW_MACHINE_DETAILS = "machineDetails";
