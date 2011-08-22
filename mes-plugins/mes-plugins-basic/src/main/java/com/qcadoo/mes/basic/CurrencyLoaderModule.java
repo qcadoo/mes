@@ -102,14 +102,18 @@ public class CurrencyLoaderModule extends Module {
         currency.setField("isActive", values.get("ISACTIVE"));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test currency item {currency=" + currency + "}");
+            LOG.debug("Add test currency item {currency=" + currency.getStringField("currency") + "}");
         }
-
-        currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).save(currency);
 
         if (!currency.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors - " + values.get("CURRENCY"));
-        }        
+        } else {
+            currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).save(currency);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Currency saved {currency=" + currency.toString() + "}");
+            }
+        }
     }
     
     private boolean databaseHasToBePrepared() {
