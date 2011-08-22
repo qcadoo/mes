@@ -24,19 +24,17 @@
     ***************************************************************************
 
 -->
-<model name="currency" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" activable="true"
+<model name="currency" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="country" />
 		<string name="currency" />
-<!--		<string name="alphabeticCode" />-->
 		<string name="alphabeticCode" required="true">
 			<validatesLength is="3"/>
 		</string>
 		<integer name="isoCode" />
 		<integer name="minorUnit" required ="true" />
-<!--		<integer name="minorUnit" />-->
 		<boolean name="isActive" />
 	</fields>
 	<hooks />
