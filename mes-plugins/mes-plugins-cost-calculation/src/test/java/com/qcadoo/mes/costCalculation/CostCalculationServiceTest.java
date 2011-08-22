@@ -1,7 +1,9 @@
 package com.qcadoo.mes.costCalculation;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import org.junit.Before;
@@ -43,9 +45,9 @@ public class CostCalculationServiceTest {
     public void shouldReturnCorrectValue() throws Exception {
         // given
 
+        BigDecimal value = costCalc.calculateTotalCost(technology, order, hashMap);
         // then
-
-        // when
+        assertEquals(value, BigDecimal.valueOf(5));
 
     }
 }

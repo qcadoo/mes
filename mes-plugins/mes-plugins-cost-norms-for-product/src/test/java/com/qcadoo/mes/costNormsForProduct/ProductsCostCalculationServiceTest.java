@@ -45,21 +45,25 @@ public class ProductsCostCalculationServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenEntityIsNull() {
         // when
-        productCostCalc.calculateProductsCost(AVERAGE, null);
+        productCostCalc.calculateProductsCost(null, AVERAGE, new BigDecimal(1));
     }
 
     @Test
-    public void shouldReturnCorrectValues() throws Exception {
+    public void shouldReturnCorrectCostValues() throws Exception {
         // given
         when(product.getField(AVERAGE.getStrValue())).thenReturn(15);
         when(product.getField(LAST_PURCHASE.getStrValue())).thenReturn(20);
         when(product.getField(NOMINAL.getStrValue())).thenReturn(10);
 
         // when
-        BigDecimal result = productCostCalc.calculateProductsCost(AVERAGE, technology);
+        BigDecimal averageResult = productCostCalc.calculateProductsCost(technology, AVERAGE, new BigDecimal(1));
+        BigDecimal nominalResult = productCostCalc.calculateProductsCost(technology, NOMINAL, new BigDecimal(1));
+        BigDecimal lastPurchaseResult = productCostCalc.calculateProductsCost(technology, LAST_PURCHASE, new BigDecimal(1));
 
         // then
-        assertEquals(result, BigDecimal.valueOf(45));
+        assertEquals(averageResult, BigDecimal.valueOf(45));
+        assertEquals(nominalResult, BigDecimal.valueOf(30));
+        assertEquals(lastPurchaseResult, BigDecimal.valueOf(60));
     }
 
 }
