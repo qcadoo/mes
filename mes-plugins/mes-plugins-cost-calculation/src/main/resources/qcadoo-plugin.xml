@@ -60,10 +60,10 @@
 		
 		<view:view-listener plugin="orders"
 			view="orderDetails" component="form" event="showCostCalculateFromOrder"
-			class="com.qcadoo.mes.costCalculation.CostCalculationService" method="showCostCalculateFromOrder" />
+			class="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="showCostCalculateFromOrder" />
 		<view:view-listener plugin="technologies"
 			view="technologyDetails" component="form" event="showCostCalculateFromTechnology"
-			class="com.qcadoo.mes.costCalculation.CostCalculationService" method="showCostCalculateFromTechnology" />	
+			class="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="showCostCalculateFromTechnology" />	
 
 	</modules>
 

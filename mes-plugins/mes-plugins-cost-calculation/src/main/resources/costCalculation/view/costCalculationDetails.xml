@@ -52,9 +52,9 @@
 						<option type="orderable" value="number,name" />
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="number" />
-						<listener event="onChange"
-							class="com.qcadoo.mes.costCalculation.CostCalculationService"
-							method="fillFieldDefaultTechnology" />
+						<listener event="onSelectedEntityChange"
+							class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+							method="fillFieldDefaultTechnologyAndDisableOrder" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="5">
@@ -130,36 +130,36 @@
 							columns="2" rows="6">
 							<layoutElement column="1" row="1">
 								<component type="input" name="productionCostMargin"
-									field="productionCostMargin" />
+									field="productionCostMargin" reference="productionCostMargin"/>
 							</layoutElement>
 							<layoutElement column="2" row="1">
 								<component type="input" name="productionCostMarginValue"
-									field="productionCostMarginValue" defaultEnabled="false" />
+									field="productionCostMarginValue" defaultEnabled="false" reference="productionCostMarginValue"/>
 							</layoutElement>
 							<layoutElement column="1" row="2">
 								<component type="input" name="materialCostMargin"
-									field="materialCostMargin" />
+									field="materialCostMargin" reference="materialCostMargin"/>
 							</layoutElement>
 							<layoutElement column="2" row="2">
 								<component type="input" name="materialCostMarginValue"
-									field="productionCostMarginValue" defaultEnabled="false" />
+									field="materialCostMarginValue" defaultEnabled="false" reference="materialCostMarginValue"/>
 							</layoutElement>
 							<layoutElement column="1" row="3">
-
 								<component type="input" name="additionalOverhead"
-									field="additionalOverhead" />
+									field="additionalOverhead" reference="additionalOverhead"/>
 							</layoutElement>
 							<layoutElement column="1" row="4">
 								<component type="input" name="totalOverhead" field="totalOverhead"
-									defaultEnabled="false" />
+									defaultEnabled="false" reference="totalOverhead"/>
 							</layoutElement>
 							<layoutElement column="1" row="5">
 								<component type="input" name="totalCost" field="totalCost"
-									defaultEnabled="false" />
+									defaultEnabled="false" reference="totalCost"/>
 							</layoutElement>
 							<layoutElement column="1" row="6">
 								<component type="input" name="costPerUnit" field="costPerUnit"
-									defaultEnabled="false" />
+									defaultEnabled="false" reference="costPerUnit">
+								</component>
 							</layoutElement>
 						</component>
 					</component>
@@ -170,7 +170,7 @@
 		</component>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.costCalculation.CostCalculationService"
+		<beforeRender class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 			method="fillField" />
 	</hooks>
 </view>
