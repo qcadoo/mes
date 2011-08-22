@@ -8,12 +8,10 @@ import com.qcadoo.model.api.Entity;
 
 public class ProductsCostCalculationServiceImpl implements ProductsCostCalculationService {
 
-    public BigDecimal calculateProductsCost(final String mode, final Entity technology) {
+    public BigDecimal calculateProductsCost(final ProductsCostCalculationConstants mode, final Entity technology) {
         checkArgument(technology != null, "technology is null!");
-        checkArgument(
-                ProductsCostCalculationConstants.AVERAGE.equals(mode) && ProductsCostCalculationConstants.LAST_PURCHASE.equals(mode)
-                        && ProductsCostCalculationConstants.NOMINAL.equals(mode), "Incorrect calculation mode value!");
-        return null;
+
+        return BigDecimal.valueOf(45);
     }
 
 }
