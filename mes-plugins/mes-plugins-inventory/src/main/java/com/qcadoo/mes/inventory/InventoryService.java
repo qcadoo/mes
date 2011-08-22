@@ -361,16 +361,16 @@ public class InventoryService {
         return dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER, entityName).save(entity);
     }
 
-    private void generateMaterialReqDocuments(final ComponentState state, final Entity inventory) throws IOException,
+    private void generateMaterialReqDocuments(final ComponentState state, final Entity inventoryReport) throws IOException,
             DocumentException {
 
-        Entity inventoryWithFileName = updateFileName(inventory,
-                getFullFileName((Date) inventory.getField("date"), inventory.getStringField("name")),
+        Entity inventoryWithFileName = updateFileName(inventoryReport,
+                getFullFileName((Date) inventoryReport.getField("date"), inventoryReport.getStringField("name")),
                 InventoryConstants.MODEL_INVENTORY_REPORT);
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .uniqueResult();
         inventoryPdfService.generateDocument(inventoryWithFileName, company, state.getLocale());
-        // inventoryXlsService.generateDocument(inventoryWithFileName, company, state.getLocale());
+        inventoryXlsService.generateDocument(inventoryWithFileName, company, state.getLocale());
     }
 
 }

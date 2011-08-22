@@ -1,8 +1,19 @@
 package com.qcadoo.mes.costNormsForProduct.constants;
 
 
-public interface ProductsCostCalculationConstants {
-    public final static String AVERAGE = "averageCost";
-    public final static String LAST_PURCHASE = "lastPurchaseCost";
-    public final static String NOMINAL = "nominalCost";
+public enum ProductsCostCalculationConstants {
+    AVERAGE("averageCost"),
+    LAST_PURCHASE("lastPurchaseCost"),
+    NOMINAL("nominalCost");
+    
+    private final String strValue;
+
+    private ProductsCostCalculationConstants(final String strValue) {
+        this.strValue = strValue;
+    }
+    
+    public String getStrValue() {
+        return strValue;
+    }
+    
 }
