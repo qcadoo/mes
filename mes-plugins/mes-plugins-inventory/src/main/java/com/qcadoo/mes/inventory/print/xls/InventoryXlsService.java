@@ -82,7 +82,7 @@ public final class InventoryXlsService extends XlsDocumentService {
         Collections.sort(transfers, new EntityTransferComparator());
 
         String warehouseNumber = inventoryReport.getBelongsToField("warehouse").getStringField("number");
-        String forDate = ((Date) inventoryReport.getField("date")).toString();
+        String forDate = ((Date) inventoryReport.getField("inventoryForDate")).toString();
 
         String numberBefore = "";
         for (Entity e : transfers) {
