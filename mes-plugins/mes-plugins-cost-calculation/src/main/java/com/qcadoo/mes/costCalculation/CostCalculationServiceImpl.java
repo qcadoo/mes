@@ -21,7 +21,8 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         checkArgument(technology != null, "technology is null");
         checkArgument(order != null, "order is null");
         checkArgument(parameters.size() != 0, "parameter is empty");
-        return null;
+
+        return new BigDecimal(0);
     }
 
 }
