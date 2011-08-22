@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="simpleMaterialBalance" version="0.4.6"
+<plugin plugin="simpleMaterialBalance" version="0.4.7"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -32,6 +32,9 @@
 		</dependency>
 		<dependency>
 			<plugin>inventory</plugin>
+		</dependency>
+		<dependency>
+			<plugin>materialRequirements</plugin>
 		</dependency>
     </dependencies>
 

@@ -6,10 +6,10 @@
 			<group name="export">
 				<smallButton name="pdf" icon="pdfIcon16.png"
 					action="#{grid}.fireEvent(printSimpleMaterialBalance,pdf);" state="disabled"
-					message="noRecordSelected" />
+					message="qcadooView.message.noRecordSelected" />
 				<smallButton name="xls" icon="xlsIcon16.png"
 					action="#{grid}.fireEvent(printSimpleMaterialBalance,xls);" state="disabled"
-					message="noRecordSelected" />
+					message="qcadooView.message.noRecordSelected" />
 			</group>
 		</ribbon>
 		<component type="grid" name="simpleMaterialBalanceList" reference="grid">
