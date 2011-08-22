@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.4.6
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="currencyDetails" 
+	modelName="currency">
+	
+	<component type="window" name="window">
+		<ribbon>
+			
+		</ribbon>
+		<component type="form" name="currency" reference="form">
+			<component type="gridLayout" name="gridLayout" columns="1"
+				rows="1" hasBorders="false">
+				<layoutElement column="1" row="1">
+					<component type="lookup" name="currency">
+						<option type="column" name="alphabeticCode" fields="alphabeticCode" />
+						<option type="column" name="currency" fields="currency" />
+						<option type="column" name="country" fields="country" />
+						<option type="column" name="isoCode" fields="isoCode" />
+						
+						<option type="required" value="true" />
+						<option type="searchable" value="currency,country,alphabeticCode,isoCode" />
+						<option type="orderable" value="currency,country,alphabeticCode,isoCode" />
+						<option type="expression" value="#alphabeticCode + ' - ' + #currency + ' (' + #country + ')'" />
+						<option type="fieldCode" value="alphabeticCode" />
+					</component>
+				</layoutElement>
+			</component>
+			<option type="expression" value="#currency" />
+			</component>
+	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.ShiftsService" method="setHourFieldsState" />
+	</hooks>
+</view>

@@ -19,4 +19,5 @@ public class CurrencyService {
         DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
         return dd.find().add(SearchRestrictions.eq("isActive", true)).uniqueResult();
     }
+    
 }
