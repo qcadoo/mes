@@ -115,12 +115,10 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
             table.addCell(new Phrase(entry.getKey().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(entry.getKey().getField("name").toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(getDecimalFormat().format(entry.getValue()), PdfUtil.getArialRegular9Dark()));
-            // TODO sth wrong, wtf
             BigDecimal available = BigDecimal.ZERO;
             for (Entity warehouse : warehouses) {
-                available.add(inventoryService.calculateShouldBe(warehouse.getBelongsToField("warehouse")
-                        .getStringField("number"), entry.getKey().getStringField("number"), simpleMaterialBalance
-                        .getField("date").toString()));
+                available = available.add(inventoryService.calculateShouldBe(warehouse.getBelongsToField("warehouse").getId()
+                        .toString(), entry.getKey().getId().toString(), simpleMaterialBalance.getField("date").toString()));
             }
             table.addCell(new Phrase(getDecimalFormat().format(available), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(getDecimalFormat().format(available.subtract(entry.getValue())), PdfUtil.getArialBold9Dark()));
