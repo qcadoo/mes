@@ -1,5 +1,10 @@
 package com.qcadoo.mes.basic.util;
 
+import java.util.Currency;
+import java.util.Locale;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +20,28 @@ public class CurrencyService {
     @Autowired
     DataDefinitionService dataDefinitionService;
     
+    private static final Logger LOG = LoggerFactory.getLogger(CurrencyService.class);
+    
     public Entity getCurrentCurrency() {
         DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
-        return dd.find().add(SearchRestrictions.eq("isActive", true)).uniqueResult();
+        Entity currency = dd.find().add(SearchRestrictions.eq("isActive", true)).uniqueResult();
+        
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("actual currency = " + currency);
+        }
+        
+        if(currency != null) {
+            return currency;
+        }
+        
+        String alphabeticCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
+        currency = dd.find().add(SearchRestrictions.eq("alphabeticCode", alphabeticCode)).uniqueResult();
+        currency.setField("isActive", true);
+        return dd.save(currency);
+    }
+
+    public String getCurrencyAlphabeticCode() {
+        return getCurrentCurrency().getField("alphabeticCode").toString();
     }
     
 }

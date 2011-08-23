@@ -31,16 +31,28 @@
 	
 	<component type="window" name="window">
 		<ribbon>
-			
+			<group name="navigation">
+				<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack;" />
+			     <bigButton name="select" icon="acceptIcon24.png" >
+			         <script>
+			             <![CDATA[
+			                 this.addOnChangeListener({
+			                     onClick: function() {
+		                             #{form}.fireEvent(this, 'activateSelectedCurrency');
+			                     }
+			                 });
+			             ]]>
+			         </script>
+			     </bigButton>
+			</group>
 		</ribbon>
 		<component type="form" name="currency" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="1"
+			<component type="gridLayout" name="gridLayout" columns="2"
 				rows="1" hasBorders="false">
 				<layoutElement column="1" row="1">
-					<component type="lookup" name="currency">
-						<option type="column" name="alphabeticCode" fields="alphabeticCode" />
-						<option type="column" name="currency" fields="currency" />
-						<option type="column" name="country" fields="country" />
+					<component type="lookup" name="currency" reference="currency">
+						<option type="column" name="currency" fields="currency" link="true" />
+						<option type="column" name="country" fields="country" link="true" />
 						<option type="column" name="isoCode" fields="isoCode" />
 						
 						<option type="required" value="true" />
@@ -52,9 +64,11 @@
 				</layoutElement>
 			</component>
 			<option type="expression" value="#currency" />
-			</component>
+			
+			<listener event="activateSelectedCurrency" class="com.qcadoo.mes.basic.CurrencyViewService" method="activateSelectedCurrency" />
+		</component>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.basic.ShiftsService" method="setHourFieldsState" />
+		<beforeRender class="com.qcadoo.mes.basic.CurrencyViewService" method="applyCurrentCurrency" />
 	</hooks>
 </view>
