@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +25,7 @@ import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 
 //@RunWith(Parameterized.class)
-public class ProductsCostCalculationServiceTest {
+public class ParameterizedProductsCostCalculationServiceTest {
 /*
     private ProductsCostCalculationService productCostCalc;
     private Entity technology;
@@ -98,10 +99,10 @@ public class ProductsCostCalculationServiceTest {
     @Test
     public void shouldReturnCorrectCostValuesUsingTechnology() throws Exception {
         // when
-        BigDecimal result = productCostCalc.calculateProductsCost(technology, validationMode, validationOrderQuantity);
+        Map<String, BigDecimal> result = productCostCalc.calculateProductsCost(technology, validationMode, validationOrderQuantity);
 
         // then
-        assertEquals(validationExpectedResult, result);
+        assertEquals(validationExpectedResult, result.get("materialCost"));
     }
-    */
+*/
 }
