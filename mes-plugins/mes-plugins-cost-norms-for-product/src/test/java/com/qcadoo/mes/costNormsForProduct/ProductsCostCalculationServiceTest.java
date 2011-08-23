@@ -35,22 +35,26 @@ public class ProductsCostCalculationServiceTest {
                         validationInputQuantity,
                         validationOrderQuantity,
                         validationExpectedResult;
+    private Integer validationCostForNumber;
     
     @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                // mode,  average,     lastPurchase, nominal,     input qtty, order qtty, expectedResult
-                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), valueOf(1), valueOf(1), valueOf(30)},
-                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), valueOf(2), valueOf(1), valueOf(60)},
-                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), valueOf(3), valueOf(1), valueOf(90)},
-                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), valueOf(3), valueOf(2), valueOf(180)},
-                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), valueOf(3), valueOf(3), valueOf(270)},
-                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), valueOf(3), valueOf(4), valueOf(360)},
+                // mode,  average,     lastPurchase, nominal,     costForNumber, input qtty, order qtty, expectedResult
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), 1,             valueOf(1), valueOf(1), valueOf(30)},
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), 1,             valueOf(2), valueOf(1), valueOf(60)},
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), 1,             valueOf(3), valueOf(1), valueOf(90)},
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), 1,             valueOf(3), valueOf(2), valueOf(180)},
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), 1,             valueOf(3), valueOf(3), valueOf(270)},
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), 1,             valueOf(3), valueOf(4), valueOf(360)},
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), 2,             valueOf(3), valueOf(2), valueOf(90)},
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), 2,             valueOf(3), valueOf(3), valueOf(135)},
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), 2,             valueOf(3), valueOf(4), valueOf(180)},
         });
     }
     
     public ProductsCostCalculationServiceTest(ProductsCostCalculationConstants mode, 
-            BigDecimal average, BigDecimal lastPurchase, BigDecimal nominal, BigDecimal inputQuantity, 
+            BigDecimal average, BigDecimal lastPurchase, BigDecimal nominal, Integer costForNumber, BigDecimal inputQuantity, 
             BigDecimal orderQuantity, BigDecimal expectedResult) {
         this.validationAverage = average;
         this.validationExpectedResult = expectedResult;
@@ -59,6 +63,7 @@ public class ProductsCostCalculationServiceTest {
         this.validationMode = mode;
         this.validationNominal = nominal;
         this.validationOrderQuantity = orderQuantity;
+        this.validationCostForNumber = costForNumber;
     }
     
     @Before
@@ -86,6 +91,7 @@ public class ProductsCostCalculationServiceTest {
         when(product.getField(AVERAGE.getStrValue())).thenReturn(validationAverage);
         when(product.getField(LAST_PURCHASE.getStrValue())).thenReturn(validationLastPurchase);
         when(product.getField(NOMINAL.getStrValue())).thenReturn(validationNominal);
+        when(product.getField("costForNumber")).thenReturn(validationCostForNumber);
         
     }
 
@@ -97,5 +103,5 @@ public class ProductsCostCalculationServiceTest {
         // then
         assertEquals(validationExpectedResult, result);
     }
-*/    
+    */
 }
