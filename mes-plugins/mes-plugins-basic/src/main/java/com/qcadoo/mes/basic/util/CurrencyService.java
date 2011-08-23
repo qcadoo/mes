@@ -40,4 +40,8 @@ public class CurrencyService {
         return dd.save(currency);
     }
 
+    public String getCurrencyAlphabeticCode() {
+        return getCurrentCurrency().getField("alphabeticCode").toString();
+    }
+    
 }
