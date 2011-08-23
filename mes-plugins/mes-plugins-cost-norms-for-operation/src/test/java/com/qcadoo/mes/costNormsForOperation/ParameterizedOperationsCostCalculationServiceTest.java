@@ -2,7 +2,7 @@ package com.qcadoo.mes.costNormsForOperation;
 
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.*;
 import static java.math.BigDecimal.valueOf;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.AdditionalMatchers.lt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,9 +25,9 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 
-//@RunWith(Parameterized.class)
+@RunWith(Parameterized.class)
 public class ParameterizedOperationsCostCalculationServiceTest {
-/*
+
     private OperationsCostCalculationService operationCostCalculationService;
     private Entity technology;
     private Entity order;
@@ -35,19 +35,34 @@ public class ParameterizedOperationsCostCalculationServiceTest {
     private BigDecimal validateLaborHourlyCost,
                     validateMachineHourlyCost,
                     validatePieceworkCost,
-                    validateNumberOfOperations;
-    private OperationsCostCalculationConstants mode;
+                    validateOrderQuantity,
+                    validateExpectedMachine,
+                    validateExpectedLabor;
+    private Integer validateNumberOfOperations;
+    private OperationsCostCalculationConstants validateMode;
+    private boolean validateIncludeTPZs;
     
     @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-                // mode,    laborHourly,  machineHourly, piecework,    numOfOperations, includeTPZs
-                {HOURLY,    valueOf(20),  valueOf(10),   valueOf(35),  valueOf(1),      false},
+                // mode,     laborHourly,  machineHourly, piecework,    numOfOperations, includeTPZs, order qtty, expectedMachine, expectedLabor
+                { HOURLY,    valueOf(20),  valueOf(10),   valueOf(35),  1,               false,       valueOf(1), valueOf(1),      valueOf(1) }
         });
     }
     
-    public ParameterizedOperationsCostCalculationServiceTest() {
-        
+    public ParameterizedOperationsCostCalculationServiceTest(OperationsCostCalculationConstants mode,
+            BigDecimal laborHourly, BigDecimal machineHourly, BigDecimal pieceWork, 
+            Integer numOfOperations, boolean includeTPZs, BigDecimal orderQuantity, 
+            BigDecimal expectedMachine, BigDecimal expectedLabor) {
+        this.validateIncludeTPZs = includeTPZs;
+        this.validateLaborHourlyCost = laborHourly;
+        this.validateMachineHourlyCost = machineHourly;
+        this.validateNumberOfOperations = numOfOperations;
+        this.validatePieceworkCost = pieceWork;
+        this.validateMode = mode;
+        this.validateOrderQuantity = orderQuantity;
+        this.validateExpectedLabor = expectedLabor;
+        this.validateExpectedMachine = expectedMachine;
     }
     
     @Before
@@ -69,14 +84,23 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         when(technologyDataDefinition.getName()).thenReturn("technology");
 
         when(operationComponents.get(lt(3))).thenReturn(operationComponent);
-        when(operationComponent.getField("laborHourlyCost")).thenReturn(30);
-        when(operationComponent.getField("machineHourlyCost")).thenReturn(20);
-        when(operationComponent.getField("pieceworkCost")).thenReturn(45);
-        when(operationComponent.getField("numberOfOperations")).thenReturn(3);
+        when(operationComponent.getField("laborHourlyCost")).thenReturn(validateLaborHourlyCost);
+        when(operationComponent.getField("machineHourlyCost")).thenReturn(validateMachineHourlyCost);
+        when(operationComponent.getField("pieceworkCost")).thenReturn(validatePieceworkCost);
+        when(operationComponent.getField("numberOfOperations")).thenReturn(validateNumberOfOperations);
 
         operationCostCalculationService = new OperationsCostCalculationServiceImpl();
     }
 
-
-     */
+    @Test
+    public void shouldReturnCorrectValuesUsingTechnology() throws Exception {
+        //when
+        Map<String, BigDecimal> result = operationCostCalculationService
+            .calculateOperationsCost(technology,validateMode, validateIncludeTPZs, validateOrderQuantity);
+        
+        //then
+        assertEquals(validateExpectedLabor, result.get("laborHourlyCost"));
+        assertEquals(validateExpectedMachine, result.get("machineHourlyCost"));
+    }
+     
 }

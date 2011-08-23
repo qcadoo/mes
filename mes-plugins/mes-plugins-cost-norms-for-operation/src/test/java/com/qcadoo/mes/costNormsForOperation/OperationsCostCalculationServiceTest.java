@@ -1,13 +1,11 @@
 package com.qcadoo.mes.costNormsForOperation;
 
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.HOURLY;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.AdditionalMatchers.lt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,14 +17,11 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 
 public class OperationsCostCalculationServiceTest {
-/*
+
     private OperationsCostCalculationService operationCostCalculationService;
 
     private Entity technology;
     private Entity order;
-
-//    private DataDefinition orderDataDefinition;
-//    private DataDefinition technologyDataDefinition;
 
     @Before
     public void init() {
@@ -54,7 +49,7 @@ public class OperationsCostCalculationServiceTest {
 
         operationCostCalculationService = new OperationsCostCalculationServiceImpl();
     }
-/*
+
     /*@Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenQuantityIsLessThanOrEqualZero() throws Exception {
         // when
@@ -68,7 +63,7 @@ public class OperationsCostCalculationServiceTest {
         operationCostCalculationService.calculateOperationsCost(technology, HOURLY, false, null);
 
     }*/
-/*
+
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenGetIncorrectTypeOfSource() throws Exception {
         // given
@@ -80,7 +75,7 @@ public class OperationsCostCalculationServiceTest {
         // when
         operationCostCalculationService.calculateOperationsCost(wrongEntity, HOURLY, false, BigDecimal.valueOf(1));
     }
-
+/*
     @Test
     public void shouldReturnZeroWhenAllValueEqualsZero() throws Exception {
         // given
@@ -90,33 +85,10 @@ public class OperationsCostCalculationServiceTest {
         when(localOperationComponent.getField("pieceworkCost")).thenReturn(0);
         when(localOperationComponent.getField("numberOfOperations")).thenReturn(1);
         // when
-        HashMap<String, BigDecimal> value = operationCostCalculationService.calculateOperationsCost(technology, HOURLY, false,
+        Map<String, BigDecimal> value = operationCostCalculationService.calculateOperationsCost(technology, HOURLY, false,
                 BigDecimal.valueOf(15));
         // then
         assertEquals(value.get("machineHourlyCost"), BigDecimal.valueOf(0));
-    }
+    }*/
 
-    // @Test
-    // public void shouldReturnCorrectCostValuesForHourly() throws Exception {
-    // // when
-    // HashMap<String, BigDecimal> result = operationCostCalculationService.calculateOperationsCost(technology, HOURLY, false,
-    // BigDecimal.valueOf(1));
-    //
-    // // then
-    // assertEquals(BigDecimal.valueOf(50), result.get("machineHourlyCost"));
-    //
-    // }
-    //
-    // @Test
-    // public void shouldReturnCorrectCostValuesForPiecework() throws Exception {
-    // // when
-    // HashMap<String, BigDecimal> result = operationCostCalculationService.calculateOperationsCost(technology, PIECEWORK,
-    // false, BigDecimal.valueOf(1));
-    //
-    // // then
-    // assertEquals(BigDecimal.valueOf(50), result.get("laborHourlyCost"));
-    //
-    // }
-
-     */
 }

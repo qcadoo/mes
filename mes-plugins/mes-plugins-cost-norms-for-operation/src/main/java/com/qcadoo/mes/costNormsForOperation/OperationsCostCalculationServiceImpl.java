@@ -12,9 +12,8 @@ import com.qcadoo.model.api.Entity;
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
 
     @Override
-    public HashMap<String, BigDecimal> calculateOperationsCost(Entity source, OperationsCostCalculationConstants mode,
+    public Map<String, BigDecimal> calculateOperationsCost(Entity source, OperationsCostCalculationConstants mode,
             boolean includeTPZs, BigDecimal quantity) {
-        Map<String, BigDecimal> result = new HashMap<String, BigDecimal>();
         checkArgument(source != null, "source is null");
         checkArgument(
                 "order".equals(source.getDataDefinition().getName()) || "technology".equals(source.getDataDefinition().getName()),
@@ -22,8 +21,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         checkArgument(quantity != null, "quantity is null");
         checkArgument(quantity.compareTo(BigDecimal.valueOf(0)) == 1, "quantity should be greather than 0");
 
-        result.put("machineHourlyCost", BigDecimal.valueOf(0));
-        result.put("laborHourlyCost", BigDecimal.valueOf(0));
-        return (HashMap<String, BigDecimal>) result;
+        Map<String, BigDecimal> result = new HashMap<String, BigDecimal>();
+        
+        result.put("machineHourlyCost", BigDecimal.valueOf(1));
+        result.put("laborHourlyCost", BigDecimal.valueOf(1));
+        return result;
     }
 }
