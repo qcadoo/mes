@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchDisjunction;
 import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchProjection;
+import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -24,6 +27,9 @@ public class CostNormsForProductService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+    
+    @Autowired
+    private CurrencyService currencyService;
 
     /* ****** VIEW HOOKS ******* */
 
@@ -46,11 +52,11 @@ public class CostNormsForProductService {
     }
 
     public void fillCostTabCurrency(final ViewDefinitionState viewDefinitionState) {
+        String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
         for (String componentReference : Arrays.asList("nominalCostCurrency", "lastPurchaseCostCurrency", "averageCostCurrency")) {
             FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
             field.setEnabled(true);
-            // temporary
-            field.setFieldValue("PLN");
+            field.setFieldValue(currencyAlphabeticCode);
             field.setEnabled(false);
             field.requestComponentUpdateState();
         }
@@ -64,16 +70,19 @@ public class CostNormsForProductService {
         }
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
-        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY);
+        
+        DataDefinition dd = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
 
         SearchDisjunction disjunction = SearchRestrictions.disjunction();
         for (Entity operationComponent : technology.getTreeField("operationComponents")) {
             disjunction.add(SearchRestrictions.belongsTo("operationComponent", operationComponent));
         }
-
-        SearchResult searchResult = technologyDD.find().add(disjunction).createAlias("product", "product")
+        
+        SearchResult searchResult = dd.find()
+                .add(disjunction)
+                .createAlias("product", "product")
                 .addOrder(SearchOrders.asc("product.name")).list();
+        
         grid.setEntities(searchResult.getEntities());
     }
 
