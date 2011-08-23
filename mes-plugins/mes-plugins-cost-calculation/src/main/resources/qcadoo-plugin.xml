@@ -27,16 +27,13 @@
 	</information>
 
 	<dependencies>
-		<dependency>
-			<plugin>technologies</plugin>
-			<version>[0.4.1</version>
-		</dependency>
+		
 		<dependency>
 			<plugin>orders</plugin>
 			<version>[0.4.1</version>
 		</dependency>
 		<dependency>
-			<plugin>productionScheduling</plugin>
+			<plugin>technologies</plugin>
 			<version>[0.4.1</version>
 		</dependency>
 	</dependencies>

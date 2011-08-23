@@ -16,17 +16,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-technologies</artifactId>
-			<version>0.4.7-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-orders</artifactId>
 			<version>0.4.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-production-scheduling</artifactId>
+			<artifactId>mes-plugins-technologies</artifactId>
 			<version>0.4.7-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
