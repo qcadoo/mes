@@ -1,29 +1,66 @@
 package com.qcadoo.mes.costNormsForProduct;
 
+import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.AVERAGE;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.LAST_PURCHASE;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.NOMINAL;
+import static java.math.BigDecimal.valueOf;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 
+//@RunWith(Parameterized.class)
 public class ProductsCostCalculationServiceTest {
-
+/*
     private ProductsCostCalculationService productCostCalc;
-
     private Entity technology;
-
-    private Entity product;
-
+    private ProductsCostCalculationConstants validationMode;
+    private BigDecimal validationAverage, 
+                        validationLastPurchase, 
+                        validationNominal, 
+                        validationInputQuantity,
+                        validationOrderQuantity,
+                        validationExpectedResult;
+    
+    @Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                // mode,  average,     lastPurchase, nominal,     input qtty, order qtty, expectedResult
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), valueOf(1), valueOf(1), valueOf(30)},
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), valueOf(2), valueOf(1), valueOf(60)},
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), valueOf(3), valueOf(1), valueOf(90)},
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), valueOf(3), valueOf(2), valueOf(180)},
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), valueOf(3), valueOf(3), valueOf(270)},
+                {AVERAGE, valueOf(10), valueOf(5),   valueOf(15), valueOf(3), valueOf(4), valueOf(360)},
+        });
+    }
+    
+    public ProductsCostCalculationServiceTest(ProductsCostCalculationConstants mode, 
+            BigDecimal average, BigDecimal lastPurchase, BigDecimal nominal, BigDecimal inputQuantity, 
+            BigDecimal orderQuantity, BigDecimal expectedResult) {
+        this.validationAverage = average;
+        this.validationExpectedResult = expectedResult;
+        this.validationInputQuantity = inputQuantity;
+        this.validationLastPurchase = lastPurchase;
+        this.validationMode = mode;
+        this.validationNominal = nominal;
+        this.validationOrderQuantity = orderQuantity;
+    }
+    
     @Before
     public void init() {
         productCostCalc = new ProductsCostCalculationServiceImpl();
@@ -32,38 +69,33 @@ public class ProductsCostCalculationServiceTest {
         EntityTree operationComponents = mock(EntityTree.class);
         Entity operationComponent = mock(Entity.class);
         EntityList inputProducts = mock(EntityList.class);
-        product = mock(Entity.class);
+        Entity inputProduct = mock(Entity.class);
+        Entity product = mock(Entity.class);
 
         when(technology.getTreeField("operationComponents")).thenReturn(operationComponents);
         when(operationComponents.get(0)).thenReturn(operationComponent);
         when(operationComponent.getHasManyField("operationProductInComponents")).thenReturn(inputProducts);
-        when(inputProducts.get(0)).thenReturn(product);
-        when(inputProducts.get(1)).thenReturn(product);
-        when(inputProducts.get(2)).thenReturn(product);
-    }
+        
+        when(inputProducts.get(0)).thenReturn(inputProduct);
+        when(inputProducts.get(1)).thenReturn(inputProduct);
+        when(inputProducts.get(2)).thenReturn(inputProduct);
+        
+        when(inputProduct.getField("quantity")).thenReturn(validationInputQuantity);
+        when(inputProduct.getBelongsToField("product")).thenReturn(product);
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenEntityIsNull() {
-        // when
-        productCostCalc.calculateProductsCost(null, AVERAGE, new BigDecimal(1));
+        when(product.getField(AVERAGE.getStrValue())).thenReturn(validationAverage);
+        when(product.getField(LAST_PURCHASE.getStrValue())).thenReturn(validationLastPurchase);
+        when(product.getField(NOMINAL.getStrValue())).thenReturn(validationNominal);
+        
     }
 
     @Test
-    public void shouldReturnCorrectCostValues() throws Exception {
-        // given
-        when(product.getField(AVERAGE.getStrValue())).thenReturn(15);
-        when(product.getField(LAST_PURCHASE.getStrValue())).thenReturn(20);
-        when(product.getField(NOMINAL.getStrValue())).thenReturn(10);
-
+    public void shouldReturnCorrectCostValuesUsingTechnology() throws Exception {
         // when
-        BigDecimal averageResult = productCostCalc.calculateProductsCost(technology, AVERAGE, new BigDecimal(1));
-        BigDecimal nominalResult = productCostCalc.calculateProductsCost(technology, NOMINAL, new BigDecimal(1));
-        BigDecimal lastPurchaseResult = productCostCalc.calculateProductsCost(technology, LAST_PURCHASE, new BigDecimal(1));
+        BigDecimal result = productCostCalc.calculateProductsCost(technology, validationMode, validationOrderQuantity);
 
         // then
-        assertEquals(averageResult, BigDecimal.valueOf(45));
-        assertEquals(nominalResult, BigDecimal.valueOf(30));
-        assertEquals(lastPurchaseResult, BigDecimal.valueOf(60));
+        assertEquals(validationExpectedResult, result);
     }
-
+*/    
 }
