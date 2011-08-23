@@ -86,7 +86,9 @@
 		<menu:menu-item-url name="systemParameters"
 			category="basic" url="/parameters.html" />
 		<menu:menu-item-url name="companyDetails"
-			category="administration" url="/companyView.html"/>
+			category="administration" url="/companyView.html" />
+		
+		<menu:menu-item-url url="/page/qcadooDictionaries/dictionariesList.html" name="dictionariesInBasic" category="basic"/>
 
 		<view:view resource="view/machinesList.xml" />
 		<view:view resource="view/machineDetails.xml" />
