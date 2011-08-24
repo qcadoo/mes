@@ -77,7 +77,8 @@ public class SamplesLoaderModule extends Module {
     private static final String[] COMPANY_ATTRIBUTES = new String[] { "companyFullName", "tax", "street", "house", "flat",
             "zipCode", "city", "state", "country", "email", "addressWww", "phone" };
 
-    private static final String[] PRODUCT_ATTRIBUTES = new String[] { "ean", "name", "product_nr", "batch" };
+    private static final String[] PRODUCT_ATTRIBUTES = new String[] { "ean", "name", "product_nr", "batch", "costForNumber",
+            "nominalCost", "lastPurchaseCost", "averageCost" };
 
     private static final String[] DICTIONARY_ATTRIBUTES = new String[] { "name", "item" };
 
@@ -90,7 +91,8 @@ public class SamplesLoaderModule extends Module {
     private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr",
             "algorithm", "minimal" };
 
-    private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number", "tpz", "tj", "productionInOneCycle" };
+    private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number", "tpz", "tj", "productionInOneCycle",
+            "pieceworkCost", "machineHourlyCost", "laborHourlyCost", "numberOfOperations" };
 
     private static final String[] MACHINE_ATTRIBUTES = new String[] { "id", "name", "prod_line", "description" };
 
@@ -345,12 +347,12 @@ public class SamplesLoaderModule extends Module {
         operation.setField("countRealized", values.get("countRealized"));
         operation.setField("machine", getMachine(values.get("number")));
         operation.setField("staff", getRandomStaff());
-        
+
         if (isEnabled("costNormsForOperation")) {
-            operation.setField("pieceworkCost", values.get("pieceworkcost"));
-            operation.setField("machineHourlyCost", values.get("machinehourlycost"));
-            operation.setField("laborHourlyCost", values.get("laborhourlycost"));
-            operation.setField("numberOfOperations", values.get("numberofoperations"));
+            operation.setField("pieceworkCost", values.get("pieceworkCost"));
+            operation.setField("machineHourlyCost", values.get("machineHourlyCost"));
+            operation.setField("laborHourlyCost", values.get("laborHourlyCost"));
+            operation.setField("numberOfOperations", values.get("numberOfOperations"));
         }
 
         if (LOG.isDebugEnabled()) {
@@ -453,6 +455,14 @@ public class SamplesLoaderModule extends Module {
         }
         product.setField("typeOfMaterial", getRandomTypeOfMaterial());
         product.setField("unit", getRandomUnit());
+
+        if (isEnabled("costNormsForProduct")) {
+            product.setField("costForNumber", values.get("costForNumber"));
+            product.setField("nominalCost", values.get("nominalCost"));
+            product.setField("lastPurchaseCost", values.get("lastPurchaseCost"));
+            product.setField("averageCost", values.get("averageCost"));
+        }
+
         product = dataDefinitionService.get("basic", "product").save(product);
 
         if (LOG.isDebugEnabled()) {
