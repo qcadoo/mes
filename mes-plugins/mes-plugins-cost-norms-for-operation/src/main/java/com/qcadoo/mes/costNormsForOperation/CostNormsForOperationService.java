@@ -41,25 +41,6 @@ public class CostNormsForOperationService {
     }
 
     
-    /* ******* MODEL HOOKS ******* */
-    
-    public void inheirtOperationCostValuesFromOperation(final DataDefinition dd, final Entity entity) {
-        Entity sourceEntity;
-        
-        if (TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(dd.getName())) {
-            sourceEntity = entity.getBelongsToField("operation");
-        } else if (ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT.equals(dd.getName())) {
-            sourceEntity = entity.getBelongsToField("technologyOperationComponent");
-        } else {
-            return;
-        }
-
-        for (String fieldName : Arrays.asList("pieceworkCost", "numberOfOperations", "laborHourlyCost", "machineHourlyCost")) {
-            entity.setField(fieldName, sourceEntity.getField(fieldName));
-        }
-    }
-    
-    
     /* ******* AWESOME HELPERS ;) ******* */
     
     private void copyCostValuesFromGivenOperation(final ViewDefinitionState viewDefinitionState, final Entity source) {

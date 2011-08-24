@@ -145,30 +145,16 @@
 		</model:model-field>
 
 		<!-- operation - technology -->
-		<model:model-hook model="technologyOperationComponent"
-			plugin="technologies">
-			<model:onCreate
-				class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
-				method="inheirtOperationCostValuesFromOperation" />
-		</model:model-hook>
-		
-<!--		<view:view-hook plugin="technologies"-->
-<!--			view="technologyOperationComponentDetails" type="beforeRender"-->
-<!--			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"-->
-<!--			method="inheirtOperationCostValuesFromOperation" />-->
+		<view:view-hook plugin="technologies"
+			view="technologyOperationComponentDetails" type="beforeRender"
+			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
+			method="inheirtOperationCostValuesFromOperation" />
 
 		<!-- operation - instance of technology -->
-		<model:model-hook model="orderOperationComponent"
-			plugin="productionScheduling">
-			<model:onCreate
-				class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
-				method="inheirtOperationCostValuesFromOperation" />
-		</model:model-hook>
-		
-<!--		<view:view-hook plugin="productionScheduling" view="orderOperationComponentDetails"-->
-<!--			type="beforeRender"-->
-<!--			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"-->
-<!--			method="inheirtOperationCostValuesFromTechnology" />-->
+		<view:view-hook plugin="productionScheduling" view="orderOperationComponentDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
+			method="inheirtOperationCostValuesFromTechnology" />
 
 	</modules>
 
