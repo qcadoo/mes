@@ -25,9 +25,11 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         BigDecimal result = new BigDecimal(0);
         Map<String, BigDecimal> results = new HashMap<String, BigDecimal>();
 
-        if (technology != null) {
+//        if (technology != null) {
             EntityTree operationComponents = technology.getTreeField("operationComponents");
-            if (!operationComponents.isEmpty()) {
+            checkArgument(operationComponents != null,  "operationComponents is null");
+            checkArgument(operationComponents.size() > 0, "operationComponents is empty");
+//            if (!operationComponents.isEmpty()) {
                 for (Entity operationComponent : operationComponents) {
                     EntityList inputProducts = operationComponent.getHasManyField("operationProductInComponents");
                     for (Entity inputProduct : inputProducts) {
@@ -44,8 +46,8 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
                 }
                 result = result.multiply(quantity);
                 results.put("materialCost", result);
-            }
-        }
+//            }
+//        }
         return results;
     }
 }
