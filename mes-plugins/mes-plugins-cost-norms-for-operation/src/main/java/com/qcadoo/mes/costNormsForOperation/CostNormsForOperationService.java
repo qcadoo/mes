@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -39,6 +40,9 @@ public class CostNormsForOperationService {
         copyCostValuesFromGivenOperation(viewDefinitionState, entity.getBelongsToField("technologyOperationComponent"));
     }
 
+    
+    /* ******* AWESOME HELPERS ;) ******* */
+    
     private void copyCostValuesFromGivenOperation(final ViewDefinitionState viewDefinitionState, final Entity source) {
         if (source == null) {
             return;

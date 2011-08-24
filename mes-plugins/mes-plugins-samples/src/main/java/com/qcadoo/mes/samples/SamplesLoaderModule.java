@@ -345,6 +345,13 @@ public class SamplesLoaderModule extends Module {
         operation.setField("countRealized", values.get("countRealized"));
         operation.setField("machine", getMachine(values.get("number")));
         operation.setField("staff", getRandomStaff());
+        
+        if (isEnabled("costNormsForOperation")) {
+            operation.setField("pieceworkCost", values.get("pieceworkcost"));
+            operation.setField("machineHourlyCost", values.get("machinehourlycost"));
+            operation.setField("laborHourlyCost", values.get("laborhourlycost"));
+            operation.setField("numberOfOperations", values.get("numberofoperations"));
+        }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test operation item {name=" + operation.getField("name") + ", number=" + operation.getField("number")
