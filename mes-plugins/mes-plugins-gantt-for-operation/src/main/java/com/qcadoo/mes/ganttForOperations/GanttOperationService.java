@@ -164,7 +164,7 @@ public class GanttOperationService {
         String number = order.getField("number").toString();
         String name = order.getField("name").toString();
 
-        title.setFieldValue("Kalendarz dla: " + name + " Numer zlecenia: " + number);
+        title.setFieldValue(name + " - " + number);
 
     }
 }
