@@ -34,15 +34,20 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         if (operationComponents == null) {
             throw new IllegalArgumentException("Incompatible source entity type..");
         }
+        int time = orderRealizationTimeService.estimateRealizationTimeForOperation(operationComponents.getRoot(), quantity,
+                includeTPZs);
+        BigDecimal realizationtime = BigDecimal.valueOf(time);
+
         for (Entity operationComponent : operationComponents) {
             BigDecimal laborHourlyCost = (BigDecimal) operationComponent.getField("laborHourlyCost");
             BigDecimal machineHourlyCost = (BigDecimal) operationComponent.getField("machineHourlyCost");
             BigDecimal numberOfOperations = (BigDecimal) operationComponent.getField("numberOfOperations");
-
+            totalMachineHourlyCost = realizationtime.multiply(machineHourlyCost);
+            totalLaborHourlyCost = realizationtime.multiply(laborHourlyCost);
         }
 
-        result.put("machineHourlyCost", BigDecimal.valueOf(1));
-        result.put("laborHourlyCost", BigDecimal.valueOf(1));
+        result.put("machineHourlyCost", totalMachineHourlyCost);
+        result.put("laborHourlyCost", totalLaborHourlyCost);
         return result;
     }
 
