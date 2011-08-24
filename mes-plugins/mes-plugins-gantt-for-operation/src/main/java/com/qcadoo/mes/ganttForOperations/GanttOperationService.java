@@ -156,4 +156,15 @@ public class GanttOperationService {
         }
 
     }
+
+    public void fillTitleLabel(final ViewDefinitionState viewDefinitionState) {
+
+        ComponentState title = (ComponentState) viewDefinitionState.getComponentByReference("title");
+        Entity order = dataDefinitionService.get("orders", "order").get(orderId);
+        String number = order.getField("number").toString();
+        String name = order.getField("name").toString();
+
+        title.setFieldValue(name + " Numer zlecenia: " + number);
+
+    }
 }
