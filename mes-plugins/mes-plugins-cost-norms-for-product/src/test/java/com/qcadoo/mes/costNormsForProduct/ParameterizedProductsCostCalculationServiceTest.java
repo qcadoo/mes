@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.mockito.Mockito;
 
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
 import com.qcadoo.model.api.Entity;
@@ -98,7 +99,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
                 validationOrderQuantity);
 
         // // then
-        // assertEquals(validationExpectedResult, result.get("materialCost"));
+        Mockito.assertEquals(validationExpectedResult, result.get("materialCost"));
     }
 
 }

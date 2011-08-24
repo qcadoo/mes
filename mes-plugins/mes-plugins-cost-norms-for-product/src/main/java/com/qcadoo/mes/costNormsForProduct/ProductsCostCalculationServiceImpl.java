@@ -25,9 +25,6 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         BigDecimal result = new BigDecimal(0);
         Map<String, BigDecimal> results = new HashMap<String, BigDecimal>();
 
-        // mode, average, lastPurchase, nominal, costForNumber, input qtty, order qtty, expectedResult
-        // { AVERAGE, valueOf(10), valueOf(5), valueOf(15), 1, valueOf(1), valueOf(1), valueOf(30) },
-
         if (technology != null) {
             EntityTree operationComponents = technology.getTreeField("operationComponents");
             if (!operationComponents.isEmpty()) {

@@ -63,7 +63,6 @@
 		<localization:translation path="locales" />
 		
 		<model:model model="correction" resource="model/correction.xml" />
-<!-- 		<model:model model="inventory" resource="model/inventory.xml" /> -->
 		<model:model model="transfer" resource="model/transfer.xml" />
 		<model:model model="warehouse" resource="model/warehouse.xml" />		
 		<model:model model="inventoryReport" resource="model/inventoryReport.xml" />
@@ -75,8 +74,6 @@
 
 		<menu:menu-item name="corrections" category="inventory"
 			view="correctionList" />
-<!-- 		<menu:menu-item name="inventory" category="inventory" -->
-<!-- 			view="inventoryList" /> -->
 		<menu:menu-item name="transfers" category="inventory"
 			view="transferList" />
 		<menu:menu-item name="warehouses" category="inventory"
@@ -88,8 +85,6 @@
 		<view:view resource="view/transferDetail.xml" />
 		<view:view resource="view/correctionList.xml" />
 		<view:view resource="view/correctionDetail.xml" />
-<!-- 		<view:view resource="view/inventoryDetail.xml"/> -->
-<!-- 		<view:view resource="view/inventoryList.xml" /> -->
 		<view:view resource="view/warehouseList.xml" />
 		<view:view resource="view/warehouseDetail.xml" />
 		<view:view resource="view/inventoryReportList.xml" />
