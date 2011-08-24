@@ -1,6 +1,7 @@
 package com.qcadoo.mes.costNormsForOperation;
 
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.HOURLY;
+import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.PIECEWORK;
 import static java.math.BigDecimal.valueOf;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -40,7 +41,7 @@ public class ParameterizedOperationsCostCalculationServiceTest {
     private Entity order;
 
     private BigDecimal validateLaborHourlyCost, validateMachineHourlyCost, validatePieceworkCost, validateOrderQuantity,
-            validateExpectedMachine, validateExpectedLabor, validateNumberOfOperations;
+            validateExpectedMachine, validateExpectedLabor, validateNumberOfOperations, validateExpectedPieceworkCost;
 
     Integer realizationTime;
 
@@ -51,13 +52,18 @@ public class ParameterizedOperationsCostCalculationServiceTest {
     @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-        // mode, laborHourly, machineHourly, piecework, numOfOps, includeTPZs, order qtty, time, expectedMachine, expectedLabor
-                { HOURLY, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), 1L, valueOf(10), valueOf(20), 1 } });
+                // mode, laborHourly, machineHourly, piecework, numOfOps, includeTPZs, order qtty, time, expectedMachine,
+                // expectedLabor,pieceWorkCost, realizationTime
+                { HOURLY, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), 1L, valueOf(10), valueOf(20),
+                        valueOf(0), 1 },
+                { PIECEWORK, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), 1L, valueOf(0), valueOf(0),
+                        valueOf(35), 1 } });
     }
 
     public ParameterizedOperationsCostCalculationServiceTest(OperationsCostCalculationConstants mode, BigDecimal laborHourly,
             BigDecimal machineHourly, BigDecimal pieceWork, BigDecimal numOfOperations, boolean includeTPZs,
-            BigDecimal orderQuantity, Long time, BigDecimal expectedMachine, BigDecimal expectedLabor, Integer realizationTime) {
+            BigDecimal orderQuantity, Long time, BigDecimal expectedMachine, BigDecimal expectedLabor,
+            BigDecimal validateExpectedPieceworkCost, Integer realizationTime) {
         this.validateIncludeTPZs = includeTPZs;
         this.validateLaborHourlyCost = laborHourly;
         this.validateMachineHourlyCost = machineHourly;
@@ -67,6 +73,7 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         this.validateOrderQuantity = orderQuantity;
         this.validateExpectedLabor = expectedLabor;
         this.validateExpectedMachine = expectedMachine;
+        this.validateExpectedPieceworkCost = validateExpectedPieceworkCost;
         this.realizationTime = realizationTime;
     }
 
@@ -124,13 +131,14 @@ public class ParameterizedOperationsCostCalculationServiceTest {
     }
 
     @Test
-    public void shouldReturnCorrectValuesUsingTechnology() throws Exception {
+    public void shouldReturnCorrectValuesUsingTechnologyForHourly() throws Exception {
         // when
         Map<String, BigDecimal> result = operationCostCalculationService.calculateOperationsCost(technology, validateMode,
                 validateIncludeTPZs, validateOrderQuantity);
         // then
         assertEquals(validateExpectedLabor, result.get("laborHourlyCost"));
         assertEquals(validateExpectedMachine, result.get("machineHourlyCost"));
+        assertEquals(validateExpectedPieceworkCost, result.get("pieceWorkCost"));
     }
 
 }

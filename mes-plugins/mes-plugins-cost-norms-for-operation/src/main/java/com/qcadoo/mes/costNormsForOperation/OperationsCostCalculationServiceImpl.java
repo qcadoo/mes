@@ -28,26 +28,38 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         BigDecimal totalMachineHourlyCost = new BigDecimal(0);
         BigDecimal totalLaborHourlyCost = new BigDecimal(0);
+        BigDecimal totalPieceWorkCost = new BigDecimal(0);
         Map<String, BigDecimal> result = new HashMap<String, BigDecimal>();
 
         EntityTree operationComponents = getOperationComponentsTree(source);
         if (operationComponents == null) {
             throw new IllegalArgumentException("Incompatible source entity type..");
         }
-        int time = orderRealizationTimeService.estimateRealizationTimeForOperation(operationComponents.getRoot(), quantity,
-                includeTPZs);
-        BigDecimal realizationtime = BigDecimal.valueOf(time);
 
-        for (Entity operationComponent : operationComponents) {
-            BigDecimal laborHourlyCost = (BigDecimal) operationComponent.getField("laborHourlyCost");
-            BigDecimal machineHourlyCost = (BigDecimal) operationComponent.getField("machineHourlyCost");
-            BigDecimal numberOfOperations = (BigDecimal) operationComponent.getField("numberOfOperations");
-            totalMachineHourlyCost = realizationtime.multiply(machineHourlyCost);
-            totalLaborHourlyCost = realizationtime.multiply(laborHourlyCost);
+        if (mode.getStrValue().equals("piecework")) {
+            for (Entity operationComponent : operationComponents) {
+                BigDecimal numberOfOperations = (BigDecimal) operationComponent.getField("numberOfOperations");
+                BigDecimal piecework = (BigDecimal) operationComponent.getField("pieceworkCost");
+                BigDecimal pieceWorkCost = piecework.divide(numberOfOperations);
+                // TODO ALBR
+                totalPieceWorkCost = totalPieceWorkCost.add(pieceWorkCost);
+
+            }
         }
-
+        if (mode.getStrValue().equals("hourly")) {
+            int time = orderRealizationTimeService.estimateRealizationTimeForOperation(operationComponents.getRoot(), quantity,
+                    includeTPZs);
+            BigDecimal realizationtime = BigDecimal.valueOf(time);
+            for (Entity operationComponent : operationComponents) {
+                BigDecimal laborHourlyCost = (BigDecimal) operationComponent.getField("laborHourlyCost");
+                BigDecimal machineHourlyCost = (BigDecimal) operationComponent.getField("machineHourlyCost");
+                totalMachineHourlyCost = realizationtime.multiply(machineHourlyCost);
+                totalLaborHourlyCost = realizationtime.multiply(laborHourlyCost);
+            }
+        }
         result.put("machineHourlyCost", totalMachineHourlyCost);
         result.put("laborHourlyCost", totalLaborHourlyCost);
+        result.put("pieceWorkCost", totalPieceWorkCost);
         return result;
     }
 
