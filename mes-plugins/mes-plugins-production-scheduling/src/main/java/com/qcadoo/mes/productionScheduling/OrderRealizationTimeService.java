@@ -43,6 +43,9 @@ public interface OrderRealizationTimeService {
 
     int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity);
 
+    int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
+            final Boolean includeTpz);
+
     Date getDateFromField(final Object value);
 
     Object setDateToField(final Date date);

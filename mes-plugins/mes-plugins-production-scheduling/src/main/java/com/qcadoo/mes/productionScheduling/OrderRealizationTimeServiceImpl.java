@@ -101,6 +101,13 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     @Override
     @Transactional
     public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity) {
+        return estimateRealizationTimeForOperation(operationComponent, plannedQuantity, true);
+    }
+
+    @Override
+    @Transactional
+    public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
+            Boolean includeTpz) {
         if (operationComponent.getField("entityType") != null
                 && !OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
             return estimateRealizationTimeForOperation(
@@ -129,8 +136,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                         .getField("countMachine") : BigDecimal.ZERO).multiply(BigDecimal
                         .valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue();
             }
-            operationTime += getIntegerValue(operationComponent.getField("tpz"));
-
+            if (includeTpz) {
+                operationTime += getIntegerValue(operationComponent.getField("tpz"));
+            }
             if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
                 operationComponent.setField("effectiveOperationRealizationTime", operationTime);
                 operationComponent.setField("operationOffSet", pathTime);

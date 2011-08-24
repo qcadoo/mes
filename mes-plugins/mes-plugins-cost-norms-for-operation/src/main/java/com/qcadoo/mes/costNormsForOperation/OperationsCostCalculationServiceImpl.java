@@ -6,12 +6,18 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
+import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
+
+    @Autowired
+    private OrderRealizationTimeService orderRealizationTimeService;
 
     @Override
     public Map<String, BigDecimal> calculateOperationsCost(Entity source, OperationsCostCalculationConstants mode,
@@ -32,6 +38,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             BigDecimal laborHourlyCost = (BigDecimal) operationComponent.getField("laborHourlyCost");
             BigDecimal machineHourlyCost = (BigDecimal) operationComponent.getField("machineHourlyCost");
             BigDecimal numberOfOperations = (BigDecimal) operationComponent.getField("numberOfOperations");
+
         }
 
         result.put("machineHourlyCost", BigDecimal.valueOf(1));
