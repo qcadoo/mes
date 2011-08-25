@@ -79,10 +79,4 @@ public class CostNormsForOperationService {
             }
         }
     }
-
-    private void debug(final String message) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(message);
-        }
-    }
 }
