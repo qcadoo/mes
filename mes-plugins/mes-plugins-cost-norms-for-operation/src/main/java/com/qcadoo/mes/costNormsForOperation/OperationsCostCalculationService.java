@@ -8,6 +8,7 @@ import com.qcadoo.model.api.Entity;
 
 public interface OperationsCostCalculationService {
 
-    public Map<String, BigDecimal> calculateOperationsCost(final Entity source,
-            final OperationsCostCalculationConstants mode, final boolean includeTPZs, final BigDecimal quantity);
+    public Map<String, BigDecimal> calculateOperationsCost(final Entity source, final OperationsCostCalculationConstants mode,
+            final boolean includeTPZs, final BigDecimal quantity);
+
 }

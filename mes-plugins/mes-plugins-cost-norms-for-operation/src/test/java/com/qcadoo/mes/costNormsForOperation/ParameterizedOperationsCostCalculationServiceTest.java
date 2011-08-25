@@ -3,6 +3,7 @@ package com.qcadoo.mes.costNormsForOperation;
 /*import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.HOURLY;
  import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.PIECEWORK;
  import static java.math.BigDecimal.valueOf;
+ import static org.junit.Assert.assertEquals;
  import static org.mockito.Mockito.mock;
  import static org.mockito.Mockito.when;
  import static org.springframework.test.util.ReflectionTestUtils.setField;
@@ -11,8 +12,10 @@ package com.qcadoo.mes.costNormsForOperation;
  import java.util.Arrays;
  import java.util.Collection;
  import java.util.Iterator;
+ import java.util.Map;
 
  import org.junit.Before;
+ import org.junit.Test;
  import org.junit.runner.RunWith;
  import org.junit.runners.Parameterized;
  import org.junit.runners.Parameterized.Parameters;
@@ -40,6 +43,8 @@ package com.qcadoo.mes.costNormsForOperation;
 
  private Entity operationComponent;
 
+ private EntityTreeNode operationComponentEntityTreeNode;
+
  private BigDecimal validateLaborHourlyCost, validateMachineHourlyCost, validatePieceworkCost, validateOrderQuantity,
  validateExpectedMachine, validateExpectedLabor, validateNumberOfOperations, validateExpectedPieceworkCost,
  validationOutputQuantity;
@@ -55,7 +60,7 @@ package com.qcadoo.mes.costNormsForOperation;
  return Arrays.asList(new Object[][] {
  // mode, laborHourly, machineHourly, piecework, numOfOps, includeTPZs, order qtty, time, expectedMachine,
  // expectedLabor
- { HOURLY, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), 1L, valueOf(30), valueOf(600),
+ { HOURLY, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), 1L, valueOf(0), valueOf(0),
  // pieceWorkCost, realizationTime, validationOutputQuantity, expectedrealizationTime
  valueOf(0), valueOf(5), 20 },
  { PIECEWORK, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), 1L, valueOf(0), valueOf(0),
@@ -119,7 +124,7 @@ package com.qcadoo.mes.costNormsForOperation;
  when(operationComponentsFromOrder.iterator()).thenReturn(operationComponentsIterator);
  // when(operationComponentsFromOrder.size()).thenReturn(1);
 
- EntityTreeNode operationComponentEntityTreeNode = mock(EntityTreeNode.class);
+ operationComponentEntityTreeNode = mock(EntityTreeNode.class);
  when(operationComponentsFromOrder.getRoot()).thenReturn(operationComponentEntityTreeNode);
  when(operationComponentsFromTechnology.getRoot()).thenReturn(operationComponentEntityTreeNode);
 
@@ -135,7 +140,6 @@ package com.qcadoo.mes.costNormsForOperation;
  EntityList outputProducts = mock(EntityList.class);
  Entity outputProduct = mock(Entity.class);
  Entity product = mock(Entity.class);
-
  Iterator<Entity> outputProductsIterator = mock(Iterator.class);
  when(outputProductsIterator.hasNext()).thenReturn(true, true, true, false);
  when(outputProductsIterator.next()).thenReturn(outputProduct);
@@ -146,28 +150,37 @@ package com.qcadoo.mes.costNormsForOperation;
  when(outputProduct.getBelongsToField("product")).thenReturn(product);
  }
 
- /*
- * @Test public void shouldReturnCorrectValuesUsingTechnology() throws Exception { // when Map<String, BigDecimal> result =
- * operationCostCalculationService.calculateOperationsCost(technology, validateMode, validateIncludeTPZs,
- * validateOrderQuantity); // then assertEquals(expectedrealizationTime, realizationTime); assertEquals(validateExpectedLabor,
- * result.get("laborHourlyCost")); assertEquals(validateExpectedMachine, result.get("machineHourlyCost"));
- * assertEquals(validateExpectedPieceworkCost, result.get("pieceWorkCost")); }
- */
-/*
- * @Test public void shouldReturnCorrectValuesUsingOrder() throws Exception { // when Map<String, BigDecimal> result =
- * operationCostCalculationService.calculateOperationsCost(order, validateMode, validateIncludeTPZs, validateOrderQuantity);
- * // then assertEquals(validateExpectedLabor, result.get("laborHourlyCost")); assertEquals(validateExpectedMachine,
- * result.get("machineHourlyCost")); assertEquals(validateExpectedPieceworkCost, result.get("pieceWorkCost")); }
- */
-// @Test
-// public void shouldReturnCorrectValuesUsingOperationComponent() throws Exception {
-// // when
-// Map<String, BigDecimal> result = operationCostCalculationService.calculateOperationsCost(operationComponent,
-// validateMode, validateIncludeTPZs, validateOrderQuantity);
-// // then
-// assertEquals(validateExpectedLabor, result.get("laborHourlyCost"));
-// assertEquals(validateExpectedMachine, result.get("machineHourlyCost"));
-// assertEquals(validateExpectedPieceworkCost, result.get("pieceWorkCost"));
-// }
-/*
+ @Test
+ public void shouldReturnCorrectValuesUsingTechnology() throws Exception {
+ // when
+ Map<String, BigDecimal> result = operationCostCalculationService.calculateOperationsCost(technology, validateMode,
+ validateIncludeTPZs, validateOrderQuantity);
+ // then
+ assertEquals(validateExpectedLabor, result.get("laborHourlyCost"));
+ assertEquals(validateExpectedMachine, result.get("machineHourlyCost"));
+ assertEquals(validateExpectedPieceworkCost, result.get("pieceWorkCost"));
+ }
+
+ // @Test
+ // public void shouldReturnCorrectValuesUsingOrder() throws Exception {
+ // // when
+ // Map<String, BigDecimal> result = operationCostCalculationService.calculateOperationsCost(order, validateMode,
+ // validateIncludeTPZs, validateOrderQuantity);
+ // // then
+ // assertEquals(validateExpectedLabor, result.get("laborHourlyCost"));
+ // assertEquals(validateExpectedMachine, result.get("machineHourlyCost"));
+ // assertEquals(validateExpectedPieceworkCost, result.get("pieceWorkCost"));
+ // }
+
+ // @Test
+ // public void shouldReturnCorrectValuesUsingOperationComponent() throws Exception {
+ // // when
+ // Map<String, BigDecimal> result = operationCostCalculationService.calculateOperationsCost(operationComponent,
+ // validateMode, validateIncludeTPZs, validateOrderQuantity);
+ // // then
+ // assertEquals(validateExpectedLabor, result.get("laborHourlyCost"));
+ // assertEquals(validateExpectedMachine, result.get("machineHourlyCost"));
+ // assertEquals(validateExpectedPieceworkCost, result.get("pieceWorkCost"));
+ // }
+
  }*/

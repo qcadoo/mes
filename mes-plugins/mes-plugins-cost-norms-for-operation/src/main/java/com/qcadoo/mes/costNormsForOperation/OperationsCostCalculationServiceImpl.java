@@ -80,6 +80,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             }
             BigDecimal realizationTime = BigDecimal.valueOf(time);
             BigDecimal hourlyCost = (BigDecimal) operationComponent.getField(name);
+            if (hourlyCost == null) {
+                hourlyCost = new BigDecimal(0);
+            }
             operationCost = realizationTime.multiply(hourlyCost);
 
             pathCost = pathCost.add(operationCost);
@@ -88,7 +91,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         }
     }
 
-    public BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
+    private BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
             final BigDecimal plannedQuantity, Boolean includeTpz) {
 
         if (operationComponent.getField("entityType") != null
@@ -106,7 +109,13 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 }
             }
             BigDecimal piecework = (BigDecimal) operationComponent.getField("pieceworkCost");
+            if (piecework == null) {
+                piecework = new BigDecimal(0);
+            }
             BigDecimal numberOfOperations = (BigDecimal) operationComponent.getField("numberOfOperations");
+            if (numberOfOperations == null) {
+                numberOfOperations = new BigDecimal(1);
+            }
             BigDecimal pieceWorkCost = piecework.divide(numberOfOperations);
 
             EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
