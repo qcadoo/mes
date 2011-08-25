@@ -20,8 +20,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
     }
 
     @Override
-    public BigDecimal calculateTotalCost(final Entity technology, final Entity order, final Map<String, Object> parameters,
-            final Boolean includeTPZs) {
+    public BigDecimal calculateTotalCost(final Entity technology, final Entity order, final Map<String, Object> parameters) {
         checkArgument(technology != null, "technology is null");
         checkArgument(order != null, "order is null");
         checkArgument(parameters.size() != 0, "parameter is empty");

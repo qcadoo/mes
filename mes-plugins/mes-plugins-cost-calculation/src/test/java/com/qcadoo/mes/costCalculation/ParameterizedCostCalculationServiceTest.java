@@ -14,8 +14,6 @@ package com.qcadoo.mes.costCalculation;
  import org.junit.runners.Parameterized;
  import org.junit.runners.Parameterized.Parameters;
 
- import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationServiceImpl;
- import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
  import com.qcadoo.model.api.Entity;
 
  @RunWith(Parameterized.class)
@@ -31,12 +29,12 @@ package com.qcadoo.mes.costCalculation;
 
  private ProductsCostCalculationConstants validateIncludeCostOfMaterial;
 
- private OperationCostCalculationConstants validateIncludeCostOfOperation
+ private OperationCostCalculationConstants validateIncludeCostOfOperation;
 
  BigDecimal validateQuantity, validateMaterialCost, validateMachineHourlyCost, validateLaborHourlyCost,
  validateTotalTechnicalProductionCost, validateProductionCostMargin, validateProductionCostMarginValue,
  validateMaterialCostMargin, validateMaterialCostMarginValue, validateAdditionalOverhead, validateTotalOverhead,
- validateTotalCost, validateCostPerUnit ;
+ validateTotalCost, validateCostPerUnit;
 
  Boolean validateIncludeTPZ;
 
@@ -47,7 +45,8 @@ package com.qcadoo.mes.costCalculation;
  // materialCost,machineHourlyCost,laborHourlyCost,totalTechnicalProductionCost,productionCostMargin,productionCostMarginValue,materialCostMargin,materialCostMarginValue,
  // additionalOverhead,totalOverhead,totalCost,costPerUnit,includeTPZ,includeCostOfMaterial,includeCostOfOperation,
  { valueOf(10), valueOf(10), valueOf(10), valueOf(10), valueOf(10), valueOf(10), valueOf(10), valueOf(10),
- valueOf(10), valueOf(10), valueOf(10), valueOf(10), valueOf(10), true, ProductsCostCalculationConstants.NOMINAL, OperationCostCalculationConstants.HOURLY } });
+ valueOf(10), valueOf(10), valueOf(10), valueOf(10), valueOf(10), true,
+ ProductsCostCalculationConstants.NOMINAL, OperationCostCalculationConstants.HOURLY } });
  }
 
  public ParameterizedCostCalculationServiceTest(BigDecimal quantity, BigDecimal materialCost, BigDecimal machineHourlyCost,
@@ -81,11 +80,10 @@ package com.qcadoo.mes.costCalculation;
  order = mock(Entity.class);
  results = mock(Map.class);
 
- when(results.get("quantity")).thenReturn(validateQuantity);
- when(results.get("productionCostMargin")).thenReturn(validateProductionCostMargin);
- when(results.get("materialCostMargin")).thenReturn(validateMaterialCostMargin);
- when(results.get("additionalOverhead")).thenReturn(validateAdditionalOverhead);
-
+ when((BigDecimal) results.get("quantity")).thenReturn(validateQuantity);
+ when((BigDecimal) results.get("productionCostMargin")).thenReturn(validateProductionCostMargin);
+ when((BigDecimal) results.get("materialCostMargin")).thenReturn(validateMaterialCostMargin);
+ when((BigDecimal) results.get("additionalOverhead")).thenReturn(validateAdditionalOverhead);
 
  }
  }*/

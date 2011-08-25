@@ -27,22 +27,24 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             boolean includeTPZs, BigDecimal quantity) {
         checkArgument(quantity != null, "quantity is null");
         checkArgument(quantity.compareTo(BigDecimal.valueOf(0)) == 1, "quantity should be greather than 0");
-
+        BigDecimal numberOfOperations = new BigDecimal(0);
+        BigDecimal piecework = new BigDecimal(0);
+        BigDecimal laborHourlyCost = new BigDecimal(0);
+        BigDecimal machineHourlyCost = new BigDecimal(0);
         BigDecimal totalMachineHourlyCost = new BigDecimal(0);
         BigDecimal totalLaborHourlyCost = new BigDecimal(0);
         BigDecimal totalPieceWorkCost = new BigDecimal(0);
         Map<String, BigDecimal> result = new HashMap<String, BigDecimal>();
 
         EntityTree operationComponents = getOperationComponentsTree(source);
-        if (operationComponents == null && source.getDataDefinition() != null) {
-
+        if (operationComponents == null) {
             throw new IllegalArgumentException("Incompatible source entity type..");
         }
 
         if (mode == PIECEWORK) {
             for (Entity operationComponent : operationComponents) {
-                BigDecimal numberOfOperations = (BigDecimal) operationComponent.getField("numberOfOperations");
-                BigDecimal piecework = (BigDecimal) operationComponent.getField("pieceworkCost");
+                numberOfOperations = (BigDecimal) operationComponent.getField("numberOfOperations");
+                piecework = (BigDecimal) operationComponent.getField("pieceworkCost");
                 BigDecimal pieceWorkCost = piecework.divide(numberOfOperations);
 
                 EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
@@ -67,8 +69,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             BigDecimal realizationtime = BigDecimal.valueOf(time);
 
             for (Entity operationComponent : operationComponents) {
-                BigDecimal laborHourlyCost = (BigDecimal) operationComponent.getField("laborHourlyCost");
-                BigDecimal machineHourlyCost = (BigDecimal) operationComponent.getField("machineHourlyCost");
+                laborHourlyCost = (BigDecimal) operationComponent.getField("laborHourlyCost");
+                machineHourlyCost = (BigDecimal) operationComponent.getField("machineHourlyCost");
                 totalMachineHourlyCost = realizationtime.multiply(machineHourlyCost);
                 totalLaborHourlyCost = realizationtime.multiply(laborHourlyCost);
             }
