@@ -22,7 +22,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     @Override
     public Map<String, BigDecimal> calculateOperationsCost(Entity source, OperationsCostCalculationConstants mode,
             boolean includeTPZs, BigDecimal quantity) {
-        checkArgument(source != null, "source is null");
         checkArgument(quantity != null, "quantity is null");
         checkArgument(quantity.compareTo(BigDecimal.valueOf(0)) == 1, "quantity should be greather than 0");
 
@@ -64,6 +63,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     }
 
     private EntityTree getOperationComponentsTree(final Entity source) {
+        checkArgument(source != null, "source is null");
         DataDefinition dd = source.getDataDefinition();
         if (dd == null) {
             return null;
@@ -72,7 +72,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         Entity operationComponentsProvider = source;
         if ("order".equals(dd.getName())) {
             operationComponentsProvider = operationComponentsProvider.getBelongsToField("technology");
-        } else if (!("technology".equals(dd.getName())) || operationComponentsProvider == null) {
+        } else if (!("technology".equals(dd.getName()))) {
             return null;
         }
 
