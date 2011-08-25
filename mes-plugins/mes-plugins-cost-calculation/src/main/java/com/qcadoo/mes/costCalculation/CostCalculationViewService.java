@@ -1,7 +1,11 @@
 package com.qcadoo.mes.costCalculation;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +25,10 @@ import com.qcadoo.view.api.components.FormComponent;
 public class CostCalculationViewService {
 
     @Autowired
-    DataDefinitionService dataDefinitionService;
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private CostCalculationService costCalculationService;
 
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -50,8 +57,7 @@ public class CostCalculationViewService {
 
         if (formOrderId != null && formOrderId.getFieldValue() != null) {
             fillFieldFromOrder(state);
-        }
-        if (formTechnologyId != null && formTechnologyId.getFieldValue() != null) {
+        } else if (formTechnologyId != null && formTechnologyId.getFieldValue() != null) {
             fillFieldFromTechnology(state);
         }
 
@@ -187,6 +193,66 @@ public class CostCalculationViewService {
             technology.setFieldValue(technologyEntity.getId());
             technology.requestComponentUpdateState();
         }
+    }
+
+    /* FUNCTIONS FOR FIRE CALCULATION AND HANDLING RESULTS BELOW */
+    
+    /* Event handler, fire total calculation */
+    public void calculateTotalCostView(ViewDefinitionState viewDefinitionState, ComponentState componentState, String[] args) {
+        Map<String, Object> parameters = getValueFromFields(viewDefinitionState);
+        Map<String, Object> results;
+        ComponentState technologyComponent = viewDefinitionState.getComponentByReference("technology");
+        ComponentState orderComponent = viewDefinitionState.getComponentByReference("order");
+        Entity order = null;
+        Entity technology;
+
+        // check that technology & operation lookup components are found
+        checkArgument(technologyComponent != null && orderComponent != null, "Incompatible view");
+
+        if (orderComponent.getFieldValue() != null) {
+            order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                    (Long) orderComponent.getFieldValue());
+        }
+
+        if (technologyComponent.getFieldValue() == null) {
+            return;
+        }
+
+        technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY)
+                .get((Long) technologyComponent.getFieldValue());
+
+        // Fire cost calculation algorithm
+        results = costCalculationService.calculateTotalCost(technology, order, parameters);
+        fillFields(results);
+    }
+
+    private Map<String, Object> getValueFromFields(ViewDefinitionState viewDefinitionState) {
+        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
+        FieldComponent includeTPZ = (FieldComponent) viewDefinitionState.getComponentByReference("includeTPZ");
+        FieldComponent includeCostOfMaterial = (FieldComponent) viewDefinitionState
+                .getComponentByReference("includeCostOfMaterial");
+        FieldComponent includeCostOfOperation = (FieldComponent) viewDefinitionState
+                .getComponentByReference("includeCostOfOperation");
+        FieldComponent productionCostMargin = (FieldComponent) viewDefinitionState
+                .getComponentByReference("productionCostMargin");
+        FieldComponent materialCostMargin = (FieldComponent) viewDefinitionState.getComponentByReference("materialCostMargin");
+        FieldComponent additionalOverhead = (FieldComponent) viewDefinitionState.getComponentByReference("additionalOverhead");
+
+        Map<String, Object> mapWithValueFields = new HashMap<String, Object>();
+
+        mapWithValueFields.put("quantity", quantity.getFieldValue());
+        mapWithValueFields.put("includeTPZ", includeTPZ.getFieldValue());
+        mapWithValueFields.put("includeCostOfMaterial", includeCostOfMaterial.getFieldValue());
+        mapWithValueFields.put("includeCostOfOperation", includeCostOfOperation.getFieldValue());
+        mapWithValueFields.put("productionCostMargin", productionCostMargin.getFieldValue());
+        mapWithValueFields.put("materialCostMargin", materialCostMargin.getFieldValue());
+        mapWithValueFields.put("additionalOverhead", additionalOverhead.getFieldValue());
+
+        return (HashMap<String, Object>) mapWithValueFields;
+    }
+
+    private void fillFields(Map<String, Object> resultMap) {
+        // TODO - fill result fields in costCalculationDetails view
     }
 
 }
