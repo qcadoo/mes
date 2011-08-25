@@ -12,15 +12,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.EntityTreeNode;
 
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
 
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
+
+    private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 
     @Override
     public Map<String, BigDecimal> calculateOperationsCost(Entity source, OperationsCostCalculationConstants mode,
@@ -32,25 +34,26 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal totalPieceWorkCost = new BigDecimal(0);
         Map<String, BigDecimal> result = new HashMap<String, BigDecimal>();
 
-        EntityTree operationComponents = getOperationComponentsTree(source);
+        EntityTree operationComponents = source.getTreeField("operationComponents");
         if (operationComponents == null) {
             throw new IllegalArgumentException("Incompatible source entity type..");
         }
 
         if (mode == PIECEWORK) {
-            totalPieceWorkCost = calculateCostPieceWork(operationComponents);
+            totalPieceWorkCost = estimateCostCalculationForPieceWork(operationComponents.getRoot(), quantity, includeTPZs);
         }
         if (mode == HOURLY) {
             int time = orderRealizationTimeService.estimateRealizationTimeForOperation(operationComponents.getRoot(), quantity,
                     includeTPZs);
             if (time == 0) {
-                totalMachineHourlyCost = new BigDecimal(0);
                 totalLaborHourlyCost = new BigDecimal(0);
+                totalMachineHourlyCost = new BigDecimal(0);
             } else {
-                totalLaborHourlyCost = calculateCostHourly(operationComponents, time, "laborHourlyCost");
-                totalMachineHourlyCost = calculateCostHourly(operationComponents, time, "machineHourlyCost");
+                totalLaborHourlyCost = estimateCostCalculationForHourly(operationComponents.getRoot(), quantity, includeTPZs,
+                        "laborHourlyCost", time);
+                totalMachineHourlyCost = estimateCostCalculationForHourly(operationComponents.getRoot(), quantity, includeTPZs,
+                        "machineHourlyCost", time);
             }
-
         }
         result.put("machineHourlyCost", totalMachineHourlyCost);
         result.put("laborHourlyCost", totalLaborHourlyCost);
@@ -58,51 +61,52 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         return result;
     }
 
-    private EntityTree getOperationComponentsTree(final Entity source) {
-        checkArgument(source != null, "source is null");
-        DataDefinition dd = source.getDataDefinition();
-        if (dd == null) {
-            return null;
-        }
+    public BigDecimal estimateCostCalculationForHourly(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
+            Boolean includeTpz, String name, int time) {
 
-        Entity operationComponentsProvider = source;
-        if ("order".equals(dd.getName())) {
-            operationComponentsProvider = operationComponentsProvider.getBelongsToField("technology");
-            if (operationComponentsProvider != null) {
-                return operationComponentsProvider.getTreeField("operationComponents");
-            }
-        }
-
-        if ("technology".equals(dd.getName())) {
-            return operationComponentsProvider.getTreeField("operationComponents");
-        }
-
-        return null;
-    }
-
-    private BigDecimal checkData(Entity operationComponent, String name) {
-        BigDecimal data = (BigDecimal) operationComponent.getField(name);
-        if (data == null) {
-
-            data = (BigDecimal) operationComponent.getBelongsToField("operation").getField(name);
-            if (data == null) {
-                if ("numberOfOperations".equals(name)) {
-                    data = new BigDecimal(1);
-                } else {
-                    data = new BigDecimal(0);
+        if (operationComponent.getField("entityType") != null
+                && !OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
+            return estimateCostCalculationForHourly(
+                    operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot(),
+                    plannedQuantity, includeTpz, name, time);
+        } else {
+            BigDecimal operationCost = new BigDecimal(0);
+            BigDecimal pathCost = new BigDecimal(0);
+            for (EntityTreeNode child : operationComponent.getChildren()) {
+                BigDecimal tmpPathCost = estimateCostCalculationForHourly(child, plannedQuantity, includeTpz, name, time);
+                if (tmpPathCost.compareTo(pathCost) == 1) {
+                    pathCost = tmpPathCost;
                 }
             }
+            BigDecimal realizationTime = BigDecimal.valueOf(time);
+            BigDecimal hourlyCost = (BigDecimal) operationComponent.getField(name);
+            operationCost = realizationTime.multiply(hourlyCost);
+
+            pathCost = pathCost.add(operationCost);
+
+            return pathCost;
         }
-        return data;
     }
 
-    private BigDecimal calculateCostPieceWork(EntityTree operationComponents) {
+    public BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
+            final BigDecimal plannedQuantity, Boolean includeTpz) {
 
-        BigDecimal totalPieceWorkCost = new BigDecimal(0);
-        for (Entity operationComponent : operationComponents) {
-            BigDecimal piecework = checkData(operationComponent, "pieceworkCost");
-
-            BigDecimal numberOfOperations = checkData(operationComponent, "numberOfOperations");
+        if (operationComponent.getField("entityType") != null
+                && !OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
+            return estimateCostCalculationForPieceWork(
+                    operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot(),
+                    plannedQuantity, includeTpz);
+        } else {
+            BigDecimal operationCost = new BigDecimal(0);
+            BigDecimal pathCost = new BigDecimal(0);
+            for (EntityTreeNode child : operationComponent.getChildren()) {
+                BigDecimal tmpPathCost = estimateCostCalculationForPieceWork(child, plannedQuantity, includeTpz);
+                if (tmpPathCost.compareTo(pathCost) == 1) {
+                    pathCost = tmpPathCost;
+                }
+            }
+            BigDecimal piecework = (BigDecimal) operationComponent.getField("pieceworkCost");
+            BigDecimal numberOfOperations = (BigDecimal) operationComponent.getField("numberOfOperations");
             BigDecimal pieceWorkCost = piecework.divide(numberOfOperations);
 
             EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
@@ -110,21 +114,35 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             for (Entity outputProduct : outputProducts) {
                 totalQuantityOutputProduct = totalQuantityOutputProduct.add((BigDecimal) outputProduct.getField("quantity"));
             }
-            totalPieceWorkCost = totalPieceWorkCost.add(pieceWorkCost.multiply(totalQuantityOutputProduct));
+            operationCost = operationCost.add(pieceWorkCost.multiply(totalQuantityOutputProduct));
 
+            pathCost = pathCost.add(operationCost);
+            return pathCost;
         }
-        return totalPieceWorkCost;
     }
 
-    private BigDecimal calculateCostHourly(EntityTree operationComponents, int time, String name) {
+    /*
+     * private EntityTree getOperationComponentsTree(final Entity source) { checkArgument(source != null, "source is null");
+     * DataDefinition dd = source.getDataDefinition(); if (dd == null) { return null; } Entity operationComponentsProvider =
+     * source; if ("order".equals(dd.getName())) { operationComponentsProvider =
+     * operationComponentsProvider.getBelongsToField("technology"); if (operationComponentsProvider != null) { return
+     * operationComponentsProvider.getTreeField("operationComponents"); } } if ("technology".equals(dd.getName())) { return
+     * operationComponentsProvider.getTreeField("operationComponents"); } return null; } private BigDecimal checkData(Entity
+     * operationComponent, String name) { BigDecimal data = (BigDecimal) operationComponent.getField(name); if (data == null) {
+     * data = (BigDecimal) operationComponent.getBelongsToField("operation").getField(name); if (data == null) { if
+     * ("numberOfOperations".equals(name)) { data = new BigDecimal(1); } else { data = new BigDecimal(0); } } } return data; }
+     * private BigDecimal calculateCostPieceWork(EntityTree operationComponents) { BigDecimal totalPieceWorkCost = new
+     * BigDecimal(0); for (Entity operationComponent : operationComponents) { BigDecimal piecework = checkData(operationComponent,
+     * "pieceworkCost"); BigDecimal numberOfOperations = checkData(operationComponent, "numberOfOperations"); BigDecimal
+     * pieceWorkCost = piecework.divide(numberOfOperations); EntityList outputProducts =
+     * operationComponent.getHasManyField("operationProductOutComponents"); BigDecimal totalQuantityOutputProduct = new
+     * BigDecimal(0); for (Entity outputProduct : outputProducts) { totalQuantityOutputProduct =
+     * totalQuantityOutputProduct.add((BigDecimal) outputProduct.getField("quantity")); } totalPieceWorkCost =
+     * totalPieceWorkCost.add(pieceWorkCost.multiply(totalQuantityOutputProduct)); } return totalPieceWorkCost; } private
+     * BigDecimal calculateCostHourly(EntityTree operationComponents, int time, String name) { BigDecimal realizationTime =
+     * BigDecimal.valueOf(time); BigDecimal totalHourlyCost = new BigDecimal(0); for (Entity operationComponent :
+     * operationComponents) { BigDecimal hourlyCost = checkData(operationComponent, name); realizationTime =
+     * realizationTime.multiply(hourlyCost); totalHourlyCost = totalHourlyCost.add(realizationTime); } return totalHourlyCost; }
+     */
 
-        BigDecimal realizationtime = BigDecimal.valueOf(time);
-        BigDecimal totalHourlyCost = new BigDecimal(0);
-        for (Entity operationComponent : operationComponents) {
-            BigDecimal hourlyCost = checkData(operationComponent, name);
-            realizationtime = realizationtime.multiply(hourlyCost);
-            totalHourlyCost = totalHourlyCost.add(realizationtime);
-        }
-        return totalHourlyCost;
-    }
 }
