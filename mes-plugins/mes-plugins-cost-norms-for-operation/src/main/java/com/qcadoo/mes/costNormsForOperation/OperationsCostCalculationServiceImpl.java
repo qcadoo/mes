@@ -14,6 +14,7 @@ import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationC
 import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
@@ -24,7 +25,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     @Override
     public Map<String, BigDecimal> calculateOperationsCost(Entity source, OperationsCostCalculationConstants mode,
             boolean includeTPZs, BigDecimal quantity) {
-        checkArgument(source != null, "source is null");
         checkArgument(quantity != null, "quantity is null");
         checkArgument(quantity.compareTo(BigDecimal.valueOf(0)) == 1, "quantity should be greather than 0");
 
@@ -44,7 +44,13 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 BigDecimal numberOfOperations = (BigDecimal) operationComponent.getField("numberOfOperations");
                 BigDecimal piecework = (BigDecimal) operationComponent.getField("pieceworkCost");
                 BigDecimal pieceWorkCost = piecework.divide(numberOfOperations);
-                // TODO ALBR
+
+                EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
+                BigDecimal totalQuantityOutputProduct = new BigDecimal(0);
+                for (Entity outputProduct : outputProducts) {
+                    totalQuantityOutputProduct = totalQuantityOutputProduct.add((BigDecimal) outputProduct.getField("quantity"));
+                }
+                pieceWorkCost = pieceWorkCost.multiply(totalQuantityOutputProduct);
                 totalPieceWorkCost = totalPieceWorkCost.add(pieceWorkCost);
 
             }
@@ -74,6 +80,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     }
 
     private EntityTree getOperationComponentsTree(final Entity source) {
+        checkArgument(source != null, "source is null");
         DataDefinition dd = source.getDataDefinition();
         if (dd == null) {
             return null;

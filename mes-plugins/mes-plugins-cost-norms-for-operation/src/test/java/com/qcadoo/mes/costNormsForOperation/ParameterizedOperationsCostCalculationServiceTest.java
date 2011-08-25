@@ -25,6 +25,7 @@ import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationC
 import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 
@@ -43,7 +44,8 @@ public class ParameterizedOperationsCostCalculationServiceTest {
     private Entity operationComponent;
 
     private BigDecimal validateLaborHourlyCost, validateMachineHourlyCost, validatePieceworkCost, validateOrderQuantity,
-            validateExpectedMachine, validateExpectedLabor, validateNumberOfOperations, validateExpectedPieceworkCost;
+            validateExpectedMachine, validateExpectedLabor, validateNumberOfOperations, validateExpectedPieceworkCost,
+            validationOutputQuantity;
 
     Integer realizationTime;
 
@@ -55,17 +57,17 @@ public class ParameterizedOperationsCostCalculationServiceTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
                 // mode, laborHourly, machineHourly, piecework, numOfOps, includeTPZs, order qtty, time, expectedMachine,
-                // expectedLabor,pieceWorkCost, realizationTime
+                // expectedLabor,pieceWorkCost, realizationTime, validationOutputQuantity
                 { HOURLY, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), 1L, valueOf(10), valueOf(20),
-                        valueOf(0), 1 },
+                        valueOf(0), 1, valueOf(5) },
                 { PIECEWORK, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), 1L, valueOf(0), valueOf(0),
-                        valueOf(35), 1 } });
+                        valueOf(525), 1, valueOf(5) } });
     }
 
     public ParameterizedOperationsCostCalculationServiceTest(OperationsCostCalculationConstants mode, BigDecimal laborHourly,
             BigDecimal machineHourly, BigDecimal pieceWork, BigDecimal numOfOperations, boolean includeTPZs,
             BigDecimal orderQuantity, Long time, BigDecimal expectedMachine, BigDecimal expectedLabor,
-            BigDecimal validateExpectedPieceworkCost, Integer realizationTime) {
+            BigDecimal validateExpectedPieceworkCost, Integer realizationTime, BigDecimal validationOutputQuantity) {
         this.validateIncludeTPZs = includeTPZs;
         this.validateLaborHourlyCost = laborHourly;
         this.validateMachineHourlyCost = machineHourly;
@@ -77,6 +79,7 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         this.validateExpectedMachine = expectedMachine;
         this.validateExpectedPieceworkCost = validateExpectedPieceworkCost;
         this.realizationTime = realizationTime;
+        this.validationOutputQuantity = validationOutputQuantity;
     }
 
     @Before
@@ -130,6 +133,19 @@ public class ParameterizedOperationsCostCalculationServiceTest {
 
         operationCostCalculationService = new OperationsCostCalculationServiceImpl();
         setField(operationCostCalculationService, "orderRealizationTimeService", orderRealizationTimeService);
+
+        EntityList outputProducts = mock(EntityList.class);
+        Entity outputProduct = mock(Entity.class);
+        Entity product = mock(Entity.class);
+
+        Iterator<Entity> outputProductsIterator = mock(Iterator.class);
+        when(outputProductsIterator.hasNext()).thenReturn(true, true, true, false);
+        when(outputProductsIterator.next()).thenReturn(outputProduct);
+        when(outputProducts.iterator()).thenReturn(outputProductsIterator);
+
+        when(operationComponent.getHasManyField("operationProductOutComponents")).thenReturn(outputProducts);
+        when(outputProduct.getField("quantity")).thenReturn(validationOutputQuantity);
+        when(outputProduct.getBelongsToField("product")).thenReturn(product);
     }
 
     @Test
