@@ -40,6 +40,8 @@ public class ParameterizedOperationsCostCalculationServiceTest {
 
     private Entity order;
 
+    private Entity operationComponent;
+
     private BigDecimal validateLaborHourlyCost, validateMachineHourlyCost, validatePieceworkCost, validateOrderQuantity,
             validateExpectedMachine, validateExpectedLabor, validateNumberOfOperations, validateExpectedPieceworkCost;
 
@@ -81,7 +83,7 @@ public class ParameterizedOperationsCostCalculationServiceTest {
     public void init() {
 
         // === OPERATION COMPONENT ===
-        Entity operationComponent = mock(Entity.class);
+        operationComponent = mock(Entity.class);
         Iterator<Entity> operationComponentsIterator = mock(Iterator.class);
         when(operationComponentsIterator.hasNext()).thenReturn(true, false);
         when(operationComponentsIterator.next()).thenReturn(operationComponent);
@@ -131,7 +133,7 @@ public class ParameterizedOperationsCostCalculationServiceTest {
     }
 
     @Test
-    public void shouldReturnCorrectValuesUsingTechnologyForHourly() throws Exception {
+    public void shouldReturnCorrectValuesUsingTechnology() throws Exception {
         // when
         Map<String, BigDecimal> result = operationCostCalculationService.calculateOperationsCost(technology, validateMode,
                 validateIncludeTPZs, validateOrderQuantity);
@@ -140,5 +142,27 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         assertEquals(validateExpectedMachine, result.get("machineHourlyCost"));
         assertEquals(validateExpectedPieceworkCost, result.get("pieceWorkCost"));
     }
+
+    @Test
+    public void shouldReturnCorrectValuesUsingOrder() throws Exception {
+        // when
+        Map<String, BigDecimal> result = operationCostCalculationService.calculateOperationsCost(order, validateMode,
+                validateIncludeTPZs, validateOrderQuantity);
+        // then
+        assertEquals(validateExpectedLabor, result.get("laborHourlyCost"));
+        assertEquals(validateExpectedMachine, result.get("machineHourlyCost"));
+        assertEquals(validateExpectedPieceworkCost, result.get("pieceWorkCost"));
+    }
+
+    // @Test
+    // public void shouldReturnCorrectValuesUsingOperationComponent() throws Exception {
+    // // when
+    // Map<String, BigDecimal> result = operationCostCalculationService.calculateOperationsCost(operationComponent,
+    // validateMode, validateIncludeTPZs, validateOrderQuantity);
+    // // then
+    // assertEquals(validateExpectedLabor, result.get("laborHourlyCost"));
+    // assertEquals(validateExpectedMachine, result.get("machineHourlyCost"));
+    // assertEquals(validateExpectedPieceworkCost, result.get("pieceWorkCost"));
+    // }
 
 }

@@ -1,15 +1,6 @@
 package com.qcadoo.mes.costNormsForOperation.constants;
 
 public enum OperationsCostCalculationConstants {
-    PIECEWORK("piecework"), HOURLY("hourly");
+    PIECEWORK, HOURLY;
 
-    private final String strValue;
-
-    private OperationsCostCalculationConstants(final String strValue) {
-        this.strValue = strValue;
-    }
-
-    public String getStrValue() {
-        return strValue;
-    }
 }
