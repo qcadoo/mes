@@ -4,8 +4,6 @@ import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +23,6 @@ public class CostNormsForOperationService {
 
     private final static Iterable<String> FIELDS = Arrays.asList("pieceworkCost", "numberOfOperations", "laborHourlyCost",
             "machineHourlyCost");
-
-    private final static Logger LOG = LoggerFactory.getLogger(CostNormsForOperationService.class);
 
     /* ****** VIEW HOOKS ******* */
 
