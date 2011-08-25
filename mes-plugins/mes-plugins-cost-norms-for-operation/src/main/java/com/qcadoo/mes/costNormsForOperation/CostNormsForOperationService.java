@@ -1,8 +1,7 @@
 package com.qcadoo.mes.costNormsForOperation;
 
-import java.util.Arrays;
-
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.FIELDS;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,12 +20,10 @@ public class CostNormsForOperationService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private final static Iterable<String> FIELDS = Arrays.asList("pieceworkCost", "numberOfOperations", "laborHourlyCost",
-            "machineHourlyCost");
-
     /* ****** VIEW HOOKS ******* */
 
     public void inheritOperationCostValues(final ViewDefinitionState viewDefinitionState) {
+        
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         String formName = form.getName();
         Entity target, source;
@@ -40,11 +37,11 @@ public class CostNormsForOperationService {
             target = dataDefinitionService.get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
                     ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT).get(form.getEntityId());
             source = target.getBelongsToField("technologyOperationComponent");
-            if (copyCostValuesFromGivenOperation(target, source)) {
+            if (copyCostValuesFromGivenOperation(target, source) != null) {
                 return;
             }
-            copyCostValuesFromGivenOperation(target, source.getBelongsToField("operation"));
-            copyCostValuesFromGivenOperation(source, source.getBelongsToField("operation")); // Fill missing technology costs
+            target = copyCostValuesFromGivenOperation(target, source.getBelongsToField("operation"));
+            source = copyCostValuesFromGivenOperation(source, source.getBelongsToField("operation")); // Fill missing technology costs
         } else {
             return;
         }
@@ -54,7 +51,7 @@ public class CostNormsForOperationService {
 
     /* ******* AWESOME HELPERS ;) ******* */
 
-    private boolean copyCostValuesFromGivenOperation(final Entity target, final Entity source) {
+    private Entity copyCostValuesFromGivenOperation(final Entity target, final Entity source) {
         checkArgument(source != null, "given source is null");
         boolean result = false;
         for (String fieldName : FIELDS) {
@@ -63,14 +60,17 @@ public class CostNormsForOperationService {
                 result = true;
             }
         }
-        target.getDataDefinition().save(target);
-        return result;
+        if(!result) {
+            return null;
+        }
+        return target.getDataDefinition().save(target);
     }
 
     private void fillCostFormFields(final ViewDefinitionState viewDefinitionState, final Entity source) {
+        checkArgument(source != null, "source is null!");
         for (String componentReference : FIELDS) {
             FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
-            if (component.getFieldValue() != null && component.getFieldValue().toString().isEmpty()) {
+            if (component.getFieldValue() != null && component.getFieldValue().toString().isEmpty() && source.getField(componentReference) != null) {
                 component.setFieldValue(source.getField(componentReference).toString());
             }
         }

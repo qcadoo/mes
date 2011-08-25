@@ -33,11 +33,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-    		<artifactId>mes-plugins-technologies</artifactId>
-    		<version>${qcadoo.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
     		<artifactId>mes-plugins-production-scheduling</artifactId>
     		<version>${qcadoo.version}</version>
 		</dependency>
