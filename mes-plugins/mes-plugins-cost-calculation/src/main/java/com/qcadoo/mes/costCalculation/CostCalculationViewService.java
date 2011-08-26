@@ -248,7 +248,7 @@ public class CostCalculationViewService {
         mapWithValueFields.put("materialCostMargin", materialCostMargin.getFieldValue());
         mapWithValueFields.put("additionalOverhead", additionalOverhead.getFieldValue());
 
-        return (HashMap<String, Object>) mapWithValueFields;
+        return mapWithValueFields;
     }
 
     private void fillFields(Map<String, Object> resultMap) {

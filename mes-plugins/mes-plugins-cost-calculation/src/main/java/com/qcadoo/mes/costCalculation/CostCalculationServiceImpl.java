@@ -2,6 +2,7 @@ package com.qcadoo.mes.costCalculation;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Map;
 
@@ -23,9 +24,9 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         checkArgument(technology != null, "technology is null");
         checkArgument(parameters.size() != 0, "parameter is empty");
         
-        if(Boolean.valueOf(parameters.get("includeTPZs").toString())) {
-            // nothing
-        }
+        BigDecimal quantity = (BigDecimal) parameters.get("quantity");
+        
+        checkArgument(quantity != null && quantity.compareTo(BigDecimal.valueOf(0)) == 1);
         
         return Collections.emptyMap();
     }

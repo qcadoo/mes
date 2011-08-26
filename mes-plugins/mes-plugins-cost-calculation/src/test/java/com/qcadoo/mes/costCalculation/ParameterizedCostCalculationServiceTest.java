@@ -1,5 +1,6 @@
 package com.qcadoo.mes.costCalculation;
 
+import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.*;
 import static java.math.BigDecimal.valueOf;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -37,15 +38,20 @@ public class ParameterizedCostCalculationServiceTest {
 
     private Entity technology, order;
 
+    private BigDecimal expectedMaterialMarginValue, expectedProductionMarginValue, expectedTotalCosts;
+
     @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-        // totalMachineHourly, totalLaborHourly, totalPieceWorkCost, totalMaterialCost, includeTPZs
-                { valueOf(200), valueOf(280), valueOf(480), valueOf(800), true }, });
+        //     mode, totalMachineHourly,  totalLaborHourly, totalPieceWorkCost, totalMaterialCost, productionMargin[%], materialMargin[%],  addOverhead,   quantity,     productionMarginValue, materialMarginValue,  expectedTotalCosts
+                {HOURLY,    valueOf(200), valueOf(200),     valueOf(200),       valueOf(800),      Double.valueOf(10),  Double.valueOf(10), valueOf(100),  valueOf(1),   valueOf(40),           valueOf(80),          valueOf(1420)},
+                {PIECEWORK, valueOf(200), valueOf(200),     valueOf(200),       valueOf(800),      Double.valueOf(10),  Double.valueOf(10), valueOf(100),  valueOf(1),   valueOf(20),           valueOf(80),          valueOf(1200)},
+        });
     }
 
-    public ParameterizedCostCalculationServiceTest(final BigDecimal totalMachineHourly, final BigDecimal totalLaborHourly,
-            final BigDecimal totalPieceWorkCost, final BigDecimal totalMaterialCost, final boolean includeTPZs) {
+    //@SuppressWarnings("unchecked")
+    public ParameterizedCostCalculationServiceTest(final OperationsCostCalculationConstants mode, final BigDecimal totalMachineHourly, final BigDecimal totalLaborHourly,
+            final BigDecimal totalPieceWorkCost, final BigDecimal totalMaterialCost, final Double productionMargin, final Double materialMargin, final BigDecimal addOverhead, final BigDecimal quantity, final BigDecimal productionMarginCostValue, final BigDecimal materialMarginCostValue, final BigDecimal expectedTotal) {
 
         operationCalcResultsMap = mock(Map.class);
         when(operationCalcResultsMap.get("machineHourlyCost")).thenReturn(totalMachineHourly);
@@ -57,12 +63,17 @@ public class ParameterizedCostCalculationServiceTest {
 
         parameters = mock(Map.class);
         when(parameters.size()).thenReturn(1);
-        when(parameters.get("includeTPZs")).thenReturn(includeTPZs);
+        when(parameters.get("mode")).thenReturn(mode);
+        when(parameters.get("quantity")).thenReturn(quantity);
 
         technology = mock(Entity.class);
         // TODO - stub technology model
         order = mock(Entity.class);
         // TODO - stub order model
+        
+        expectedMaterialMarginValue = materialMarginCostValue;
+        expectedProductionMarginValue = productionMarginCostValue;
+        expectedTotalCosts = expectedTotal;
     }
 
     @Before
@@ -89,9 +100,11 @@ public class ParameterizedCostCalculationServiceTest {
     public void shouldReturnCorrectResults() throws Exception {
         // when
         Map<String, Object> resultsMap = costService.calculateTotalCost(technology, order, parameters);
-
+/*
         // then
-        // TODO
-
+        assertEquals(expectedTotalCosts, (BigDecimal) resultsMap.get("totalCosts"));
+        assertEquals(expectedProductionMarginValue, (BigDecimal) resultsMap.get("productionCostMarginValue"));
+        assertEquals(expectedMaterialMarginValue, (BigDecimal) resultsMap.get("materialCostMarginValue"));
+*/
     }
 }
