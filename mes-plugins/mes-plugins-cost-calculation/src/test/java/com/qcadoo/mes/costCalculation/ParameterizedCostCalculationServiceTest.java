@@ -50,8 +50,21 @@ public class ParameterizedCostCalculationServiceTest {
     }
 
     @SuppressWarnings("unchecked")
-    public ParameterizedCostCalculationServiceTest(final OperationsCostCalculationConstants mode, final BigDecimal totalMachineHourly, final BigDecimal totalLaborHourly,
-            final BigDecimal totalPieceWorkCost, final BigDecimal totalMaterialCosts, final Double productionMargin, final Double materialMargin, final BigDecimal addOverhead, final BigDecimal quantity, final BigDecimal productionMarginCostValue, final BigDecimal materialMarginCostValue, final BigDecimal expectedTotal, final BigDecimal totalOverhead, final BigDecimal totalPerUnit) {
+    public ParameterizedCostCalculationServiceTest(
+            final OperationsCostCalculationConstants mode, 
+            final BigDecimal totalMachineHourly, 
+            final BigDecimal totalLaborHourly,
+            final BigDecimal totalPieceWorkCost, 
+            final BigDecimal totalMaterialCosts, 
+            final Double productionMargin, 
+            final Double materialMargin, 
+            final BigDecimal addOverhead, 
+            final BigDecimal quantity, 
+            final BigDecimal productionMarginCostValue, 
+            final BigDecimal materialMarginCostValue, 
+            final BigDecimal expectedTotal, 
+            final BigDecimal totalOverhead, 
+            final BigDecimal totalPerUnit ) {
 
         operationCalcResultsMap = mock(Map.class);
         when(operationCalcResultsMap.get("totalMachineHourlyCosts")).thenReturn(totalMachineHourly);
