@@ -40,7 +40,7 @@ public class CostNormsForOperationService {
             if (copyCostValuesFromGivenOperation(target, source) != null) {
                 return;
             }
-            target = copyCostValuesFromGivenOperation(target, source.getBelongsToField("operation"));
+            copyCostValuesFromGivenOperation(target, source.getBelongsToField("operation"));
             source = copyCostValuesFromGivenOperation(source, source.getBelongsToField("operation")); // Fill missing technology costs
         } else {
             return;
