@@ -50,9 +50,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 totalMachineHourlyCost = new BigDecimal(0);
             } else {
                 totalLaborHourlyCost = estimateCostCalculationForHourly(operationComponents.getRoot(), quantity, includeTPZs,
-                        "laborHourlyCost", time);
+                        OperationsCostCalculationConstants.LABOR_HOURLY_COST, time);
                 totalMachineHourlyCost = estimateCostCalculationForHourly(operationComponents.getRoot(), quantity, includeTPZs,
-                        "machineHourlyCost", time);
+                        OperationsCostCalculationConstants.MACHINE_HOURLY_COST, time);
             }
         }
         result.put("machineHourlyCost", totalMachineHourlyCost);
@@ -70,7 +70,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                     operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot(),
                     plannedQuantity, includeTpz, name, time);
         } else {
-            BigDecimal operationCost = new BigDecimal(0);
             BigDecimal pathCost = new BigDecimal(0);
             for (EntityTreeNode child : operationComponent.getChildren()) {
                 BigDecimal tmpPathCost = estimateCostCalculationForHourly(child, plannedQuantity, includeTpz, name, time);
@@ -83,7 +82,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             if (hourlyCost == null) {
                 hourlyCost = new BigDecimal(0);
             }
-            operationCost = realizationTime.multiply(hourlyCost);
+            BigDecimal operationCost = realizationTime.multiply(hourlyCost);
 
             pathCost = pathCost.add(operationCost);
 
@@ -121,7 +120,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
             BigDecimal totalQuantityOutputProduct = new BigDecimal(0);
             for (Entity outputProduct : outputProducts) {
-                totalQuantityOutputProduct = totalQuantityOutputProduct.add((BigDecimal) outputProduct.getField("quantity"));
+                BigDecimal quantity = (BigDecimal) outputProduct.getField("quantity");
+                totalQuantityOutputProduct = totalQuantityOutputProduct.add(quantity);
             }
             operationCost = operationCost.add(pieceWorkCost.multiply(totalQuantityOutputProduct));
 

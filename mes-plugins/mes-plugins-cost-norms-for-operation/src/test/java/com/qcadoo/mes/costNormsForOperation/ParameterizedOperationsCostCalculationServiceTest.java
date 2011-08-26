@@ -140,14 +140,16 @@ package com.qcadoo.mes.costNormsForOperation;
  EntityList outputProducts = mock(EntityList.class);
  Entity outputProduct = mock(Entity.class);
  Entity product = mock(Entity.class);
- Iterator<Entity> outputProductsIterator = mock(Iterator.class);
- when(outputProductsIterator.hasNext()).thenReturn(true, true, true, false);
- when(outputProductsIterator.next()).thenReturn(outputProduct);
- when(outputProducts.iterator()).thenReturn(outputProductsIterator);
 
  when(operationComponent.getHasManyField("operationProductOutComponents")).thenReturn(outputProducts);
  when(outputProduct.getField("quantity")).thenReturn(validationOutputQuantity);
  when(outputProduct.getBelongsToField("product")).thenReturn(product);
+
+ Iterator<Entity> outputProductsIterator = mock(Iterator.class);
+ when(outputProductsIterator.hasNext()).thenReturn(true, false);
+ when(outputProductsIterator.next()).thenReturn(outputProduct);
+ when(outputProducts.iterator()).thenReturn(outputProductsIterator);
+
  }
 
  @Test
@@ -182,5 +184,5 @@ package com.qcadoo.mes.costNormsForOperation;
  // assertEquals(validateExpectedMachine, result.get("machineHourlyCost"));
  // assertEquals(validateExpectedPieceworkCost, result.get("pieceWorkCost"));
  // }
-
+ /*
  }*/
