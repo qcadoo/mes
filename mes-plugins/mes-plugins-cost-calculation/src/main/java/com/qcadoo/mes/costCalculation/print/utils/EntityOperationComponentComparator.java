@@ -17,7 +17,7 @@ public class EntityOperationComponentComparator implements Comparator<Entity>, S
             result = o1.getBelongsToField("operation").getStringField("name")
                     .compareTo(o2.getBelongsToField("operation").getStringField("name"));
             if (result == 0) {
-                return result = o1.getBelongsToField("operation").getId().toString()
+                return o1.getBelongsToField("operation").getId().toString()
                         .compareTo(o2.getBelongsToField("operation").getId().toString());
             } else
                 return result;
