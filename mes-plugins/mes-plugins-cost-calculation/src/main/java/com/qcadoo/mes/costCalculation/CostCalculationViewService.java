@@ -27,7 +27,6 @@ public class CostCalculationViewService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Autowired
     private CostCalculationService costCalculationService;
 
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -196,7 +195,7 @@ public class CostCalculationViewService {
     }
 
     /* FUNCTIONS FOR FIRE CALCULATION AND HANDLING RESULTS BELOW */
-    
+
     /* Event handler, fire total calculation */
     public void calculateTotalCostView(ViewDefinitionState viewDefinitionState, ComponentState componentState, String[] args) {
         Map<String, Object> parameters = getValueFromFields(viewDefinitionState);
