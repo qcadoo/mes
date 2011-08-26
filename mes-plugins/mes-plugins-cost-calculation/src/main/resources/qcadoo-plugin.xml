@@ -29,11 +29,11 @@
 	<dependencies>
 		
 		<dependency>
-			<plugin>orders</plugin>
+			<plugin>costNormsForProduct</plugin>
 			<version>[0.4.1</version>
 		</dependency>
 		<dependency>
-			<plugin>technologies</plugin>
+			<plugin>costNormsForOperation</plugin>
 			<version>[0.4.1</version>
 		</dependency>
 	</dependencies>
