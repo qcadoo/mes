@@ -20,9 +20,9 @@ public class CostCalculationServiceImpl implements CostCalculationService {
     @Autowired
     private ProductsCostCalculationService productsCostCalculationService;
     
-    public Map<String, Object> calculateTotalCost(final Entity technology, final Entity order,
+    public Map<String, Object> calculateTotalCost(final Entity source,
             final Map<String, Object> parameters) {
-        checkArgument(technology != null, "technology is null");
+        checkArgument(source != null && source.getDataDefinition() != null, "incompatible source entity");
         checkArgument(parameters.size() != 0, "parameter is empty");
 
         BigDecimal quantity = (BigDecimal) parameters.get("quantity");

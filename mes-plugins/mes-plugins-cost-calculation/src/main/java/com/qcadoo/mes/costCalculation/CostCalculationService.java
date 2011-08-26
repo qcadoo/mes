@@ -6,5 +6,5 @@ import com.qcadoo.model.api.Entity;
 
 public interface CostCalculationService {
 
-    public Map<String, Object> calculateTotalCost(final Entity technology, final Entity order, final Map<String, Object> parameters);
+    public Map<String, Object> calculateTotalCost(final Entity source, final Map<String, Object> parameters);
 }

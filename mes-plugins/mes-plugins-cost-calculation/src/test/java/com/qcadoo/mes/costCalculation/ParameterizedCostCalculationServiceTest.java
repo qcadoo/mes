@@ -1,6 +1,7 @@
 package com.qcadoo.mes.costCalculation;
 
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.*;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.AVERAGE;
 import static java.math.BigDecimal.valueOf;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -21,6 +22,7 @@ import com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @RunWith(Parameterized.class)
@@ -36,44 +38,47 @@ public class ParameterizedCostCalculationServiceTest {
 
     private Map<String, BigDecimal> operationCalcResultsMap, productCalcResultsMap;
 
-    private Entity technology, order;
-
-    private BigDecimal expectedMaterialMarginValue, expectedProductionMarginValue, expectedTotalCosts;
+    private BigDecimal expectedMaterialMarginValue, expectedProductionMarginValue, expectedTotalCosts, expectedTotalOverhead, expectedTotalMaterialCosts, expectedTotalMachineHourlyCosts, expectedTotalLaborHourlyCosts, expectedTotalPieceworkCosts, expectedTotalTechnicalProductionCosts, expectedTotalCostsPerUnit;
 
     @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-        //     mode, totalMachineHourly,  totalLaborHourly, totalPieceWorkCost, totalMaterialCost, productionMargin[%], materialMargin[%],  addOverhead,   quantity,     productionMarginValue, materialMarginValue,  expectedTotalCosts
-                {HOURLY,    valueOf(200), valueOf(200),     valueOf(200),       valueOf(800),      Double.valueOf(10),  Double.valueOf(10), valueOf(100),  valueOf(1),   valueOf(40),           valueOf(80),          valueOf(1420)},
-                {PIECEWORK, valueOf(200), valueOf(200),     valueOf(200),       valueOf(800),      Double.valueOf(10),  Double.valueOf(10), valueOf(100),  valueOf(1),   valueOf(20),           valueOf(80),          valueOf(1200)},
+        //     mode, totalMachineHourly,  totalLaborHourly, totalPieceWorkCost, totalMaterialCost, productionMargin[%], materialMargin[%],  addOverhead,   quantity,     productionMarginValue, materialMarginValue,  expectedTotalCosts, expectedTotalOverhead, expectedTotalCostsPerUnit
+                {HOURLY,    valueOf(200), valueOf(200),     valueOf(200),       valueOf(800),      Double.valueOf(10),  Double.valueOf(10), valueOf(100),  valueOf(1),   valueOf(40),           valueOf(80),          valueOf(1420),      valueOf(180),          valueOf(1420) },
+                {PIECEWORK, valueOf(200), valueOf(200),     valueOf(200),       valueOf(800),      Double.valueOf(10),  Double.valueOf(10), valueOf(100),  valueOf(1),   valueOf(20),           valueOf(80),          valueOf(1200),      valueOf(180),          valueOf(1200) },
         });
     }
 
-    //@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public ParameterizedCostCalculationServiceTest(final OperationsCostCalculationConstants mode, final BigDecimal totalMachineHourly, final BigDecimal totalLaborHourly,
-            final BigDecimal totalPieceWorkCost, final BigDecimal totalMaterialCost, final Double productionMargin, final Double materialMargin, final BigDecimal addOverhead, final BigDecimal quantity, final BigDecimal productionMarginCostValue, final BigDecimal materialMarginCostValue, final BigDecimal expectedTotal) {
+            final BigDecimal totalPieceWorkCost, final BigDecimal totalMaterialCosts, final Double productionMargin, final Double materialMargin, final BigDecimal addOverhead, final BigDecimal quantity, final BigDecimal productionMarginCostValue, final BigDecimal materialMarginCostValue, final BigDecimal expectedTotal, final BigDecimal totalOverhead, final BigDecimal totalPerUnit) {
 
         operationCalcResultsMap = mock(Map.class);
-        when(operationCalcResultsMap.get("machineHourlyCost")).thenReturn(totalMachineHourly);
-        when(operationCalcResultsMap.get("laborHourlyCost")).thenReturn(totalLaborHourly);
-        when(operationCalcResultsMap.get("pieceWorkCost")).thenReturn(totalPieceWorkCost);
+        when(operationCalcResultsMap.get("totalMachineHourlyCosts")).thenReturn(totalMachineHourly);
+        when(operationCalcResultsMap.get("totalLaborHourlyCosts")).thenReturn(totalLaborHourly);
+        when(operationCalcResultsMap.get("totalPieceworkCosts")).thenReturn(totalPieceWorkCost);
 
         productCalcResultsMap = mock(Map.class);
-        when(productCalcResultsMap.get("materialCost")).thenReturn(totalMaterialCost);
+        when(productCalcResultsMap.get("totalMaterialCosts")).thenReturn(totalMaterialCosts);
 
         parameters = mock(Map.class);
-        when(parameters.size()).thenReturn(1);
-        when(parameters.get("mode")).thenReturn(mode);
+        when(parameters.size()).thenReturn(7);
+        when(parameters.get("calculateOperationCostsMode")).thenReturn(mode);
+        when(parameters.get("calculateMaterialCostsMode")).thenReturn(AVERAGE);
+        when(parameters.get("productionCostMargin")).thenReturn(productionMargin);
+        when(parameters.get("materialCostMargin")).thenReturn(materialMargin);
+        when(parameters.get("additionalOverhead")).thenReturn(addOverhead);
         when(parameters.get("quantity")).thenReturn(quantity);
+        when(parameters.get("includeTPZ")).thenReturn(false);
 
-        technology = mock(Entity.class);
-        // TODO - stub technology model
-        order = mock(Entity.class);
-        // TODO - stub order model
-        
         expectedMaterialMarginValue = materialMarginCostValue;
         expectedProductionMarginValue = productionMarginCostValue;
         expectedTotalCosts = expectedTotal;
+        expectedTotalLaborHourlyCosts = totalLaborHourly;
+        expectedTotalMachineHourlyCosts = totalMachineHourly;
+        expectedTotalMaterialCosts = totalMaterialCosts;
+        expectedTotalCostsPerUnit = totalPerUnit;
+        expectedTotalOverhead = totalOverhead;
     }
 
     @Before
@@ -98,13 +103,25 @@ public class ParameterizedCostCalculationServiceTest {
 
     @Test
     public void shouldReturnCorrectResults() throws Exception {
+        // given
+        Entity source = mock(Entity.class);
+        DataDefinition dd = mock(DataDefinition.class);
+        when(source.getDataDefinition()).thenReturn(dd);
+        
         // when
-        Map<String, Object> resultsMap = costService.calculateTotalCost(technology, order, parameters);
-/*
+        Map<String, Object> resultMap = costService.calculateTotalCost(source, parameters);
+
         // then
-        assertEquals(expectedTotalCosts, (BigDecimal) resultsMap.get("totalCosts"));
-        assertEquals(expectedProductionMarginValue, (BigDecimal) resultsMap.get("productionCostMarginValue"));
-        assertEquals(expectedMaterialMarginValue, (BigDecimal) resultsMap.get("materialCostMarginValue"));
-*/
+//        assertEquals(expectedTotalCosts, (BigDecimal) resultMap.get("totalCosts"));
+//        assertEquals(expectedProductionMarginValue, (BigDecimal) resultMap.get("productionCostMarginValue"));
+//        assertEquals(expectedMaterialMarginValue, (BigDecimal) resultMap.get("materialCostMarginValue"));
+//        assertEquals(expectedTotalOverhead, (BigDecimal) resultMap.get("totalOverhead"));
+//        assertEquals(expectedTotalMaterialCosts, (BigDecimal) resultMap.get("totalMaterialCosts"));
+//        assertEquals(expectedTotalMachineHourlyCosts, (BigDecimal) resultMap.get("totalMachineHourlyCosts"));
+//        assertEquals(expectedTotalLaborHourlyCosts, (BigDecimal) resultMap.get("totalLaborHourlyCosts"));
+//        assertEquals(expectedTotalPieceworkCosts, (BigDecimal) resultMap.get("totalPieceworkCosts"));
+//        assertEquals(expectedTotalTechnicalProductionCosts, (BigDecimal) resultMap.get("totalTechnicalProductionCosts"));
+//        assertEquals(expectedTotalCostsPerUnit, resultMap.get("totalCostsPerUnit"));
+        
     }
 }
