@@ -13,8 +13,6 @@
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
        http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/report
-       http://schema.qcadoo.org/modules/report.xsd
        http://schema.qcadoo.org/modules/menu
        http://schema.qcadoo.org/modules/menu.xsd">
 
@@ -29,12 +27,15 @@
 	<dependencies>
 		
 		<dependency>
-			<plugin>orders</plugin>
+			<plugin>costNormsForProduct</plugin>
 			<version>[0.4.1</version>
 		</dependency>
 		<dependency>
-			<plugin>technologies</plugin>
+			<plugin>costNormsForOperation</plugin>
 			<version>[0.4.1</version>
+		</dependency>
+		<dependency>
+			<plugin>materialRequirements</plugin>
 		</dependency>
 	</dependencies>
 

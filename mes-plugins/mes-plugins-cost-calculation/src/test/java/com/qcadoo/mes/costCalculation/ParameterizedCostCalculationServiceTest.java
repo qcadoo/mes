@@ -92,7 +92,7 @@ public class ParameterizedCostCalculationServiceTest {
                         (ProductsCostCalculationConstants) anyObject(), (BigDecimal) anyObject())).thenReturn(
                 productCalcResultsMap);
 
-        setField(costService, "operationsCalculationService", operationsCostCalculationService);
+        setField(costService, "operationsCostCalculationService", operationsCostCalculationService);
         setField(costService, "productsCostCalculationService", productsCostCalculationService);
     }
 
