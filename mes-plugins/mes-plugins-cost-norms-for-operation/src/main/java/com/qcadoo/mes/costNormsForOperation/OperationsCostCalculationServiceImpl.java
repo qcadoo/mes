@@ -25,8 +25,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 
     @Override
-    public Map<String, BigDecimal> calculateOperationsCost(Entity source, OperationsCostCalculationConstants mode,
-            boolean includeTPZs, BigDecimal quantity) {
+    public Map<String, BigDecimal> calculateOperationsCost(Entity source,
+            OperationsCostCalculationConstants calculateOperationCostsMode, boolean includeTPZ, BigDecimal quantity) {
         checkArgument(quantity != null, "quantity is null");
         checkArgument(quantity.compareTo(BigDecimal.valueOf(0)) == 1, "quantity should be greather than 0");
         BigDecimal totalMachineHourlyCost = new BigDecimal(0);
@@ -39,40 +39,40 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             throw new IllegalArgumentException("Incompatible source entity type..");
         }
 
-        if (mode == PIECEWORK) {
-            totalPieceWorkCost = estimateCostCalculationForPieceWork(operationComponents.getRoot(), quantity, includeTPZs);
+        if (calculateOperationCostsMode == PIECEWORK) {
+            totalPieceWorkCost = estimateCostCalculationForPieceWork(operationComponents.getRoot(), quantity, includeTPZ);
         }
-        if (mode == HOURLY) {
+        if (calculateOperationCostsMode == HOURLY) {
             int time = orderRealizationTimeService.estimateRealizationTimeForOperation(operationComponents.getRoot(), quantity,
-                    includeTPZs);
+                    includeTPZ);
             if (time == 0) {
                 totalLaborHourlyCost = new BigDecimal(0);
                 totalMachineHourlyCost = new BigDecimal(0);
             } else {
-                totalLaborHourlyCost = estimateCostCalculationForHourly(operationComponents.getRoot(), quantity, includeTPZs,
+                totalLaborHourlyCost = estimateCostCalculationForHourly(operationComponents.getRoot(), quantity, includeTPZ,
                         OperationsCostCalculationConstants.LABOR_HOURLY_COST, time);
-                totalMachineHourlyCost = estimateCostCalculationForHourly(operationComponents.getRoot(), quantity, includeTPZs,
+                totalMachineHourlyCost = estimateCostCalculationForHourly(operationComponents.getRoot(), quantity, includeTPZ,
                         OperationsCostCalculationConstants.MACHINE_HOURLY_COST, time);
             }
         }
-        result.put("machineHourlyCost", totalMachineHourlyCost);
-        result.put("laborHourlyCost", totalLaborHourlyCost);
-        result.put("pieceWorkCost", totalPieceWorkCost);
+        result.put("totalMachineHourlyCost", totalMachineHourlyCost);
+        result.put("totalLaborHourlyCost", totalLaborHourlyCost);
+        result.put("totalPieceWorkCost", totalPieceWorkCost);
         return result;
     }
 
     public BigDecimal estimateCostCalculationForHourly(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
-            Boolean includeTpz, String name, int time) {
+            Boolean includeTPZ, String name, int time) {
 
         if (operationComponent.getField("entityType") != null
                 && !OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
             return estimateCostCalculationForHourly(
                     operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot(),
-                    plannedQuantity, includeTpz, name, time);
+                    plannedQuantity, includeTPZ, name, time);
         } else {
             BigDecimal pathCost = new BigDecimal(0);
             for (EntityTreeNode child : operationComponent.getChildren()) {
-                BigDecimal tmpPathCost = estimateCostCalculationForHourly(child, plannedQuantity, includeTpz, name, time);
+                BigDecimal tmpPathCost = estimateCostCalculationForHourly(child, plannedQuantity, includeTPZ, name, time);
                 if (tmpPathCost.compareTo(pathCost) == 1) {
                     pathCost = tmpPathCost;
                 }
@@ -91,18 +91,18 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     }
 
     private BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
-            final BigDecimal plannedQuantity, Boolean includeTpz) {
+            final BigDecimal plannedQuantity, Boolean includeTPZ) {
 
         if (operationComponent.getField("entityType") != null
                 && !OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
             return estimateCostCalculationForPieceWork(
                     operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot(),
-                    plannedQuantity, includeTpz);
+                    plannedQuantity, includeTPZ);
         } else {
             BigDecimal operationCost = new BigDecimal(0);
             BigDecimal pathCost = new BigDecimal(0);
             for (EntityTreeNode child : operationComponent.getChildren()) {
-                BigDecimal tmpPathCost = estimateCostCalculationForPieceWork(child, plannedQuantity, includeTpz);
+                BigDecimal tmpPathCost = estimateCostCalculationForPieceWork(child, plannedQuantity, includeTPZ);
                 if (tmpPathCost.compareTo(pathCost) == 1) {
                     pathCost = tmpPathCost;
                 }
