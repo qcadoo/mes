@@ -2,15 +2,21 @@ package com.qcadoo.mes.costCalculation;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
+import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
+import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -222,36 +228,58 @@ public class CostCalculationViewService {
 
         // Fire cost calculation algorithm
         results = costCalculationService.calculateTotalCost(technology, order, parameters);
-        fillFields(results);
+        fillFields(viewDefinitionState, results);
     }
 
-    private Map<String, Object> getValueFromFields(ViewDefinitionState viewDefinitionState) {
-        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
-        FieldComponent includeTPZ = (FieldComponent) viewDefinitionState.getComponentByReference("includeTPZ");
-        FieldComponent includeCostOfMaterial = (FieldComponent) viewDefinitionState
-                .getComponentByReference("includeCostOfMaterial");
-        FieldComponent includeCostOfOperation = (FieldComponent) viewDefinitionState
-                .getComponentByReference("includeCostOfOperation");
-        FieldComponent productionCostMargin = (FieldComponent) viewDefinitionState
-                .getComponentByReference("productionCostMargin");
-        FieldComponent materialCostMargin = (FieldComponent) viewDefinitionState.getComponentByReference("materialCostMargin");
-        FieldComponent additionalOverhead = (FieldComponent) viewDefinitionState.getComponentByReference("additionalOverhead");
+    // get values from form fields
+    private Map<String, Object> getValueFromFields(final ViewDefinitionState view) {
+        // Set for fields contained BigDecimal values
+        final Set<String> bigDecimalValues = new HashSet<String>();
+        bigDecimalValues.addAll(Arrays.asList("quantity", "productionCostMargin", "materialCostMargin", "additionalOverhead"));
 
-        Map<String, Object> mapWithValueFields = new HashMap<String, Object>();
+        // Set for all input fields
+        final Set<String> referenceValues = new HashSet<String>();
+        referenceValues.addAll(bigDecimalValues);
+        referenceValues.addAll(Arrays.asList("includeTPZ", "calculateMaterialCostsMode", "calculateOperationCostsMode"));
 
-        mapWithValueFields.put("quantity", quantity.getFieldValue());
-        mapWithValueFields.put("includeTPZ", includeTPZ.getFieldValue());
-        mapWithValueFields.put("includeCostOfMaterial", includeCostOfMaterial.getFieldValue());
-        mapWithValueFields.put("includeCostOfOperation", includeCostOfOperation.getFieldValue());
-        mapWithValueFields.put("productionCostMargin", productionCostMargin.getFieldValue());
-        mapWithValueFields.put("materialCostMargin", materialCostMargin.getFieldValue());
-        mapWithValueFields.put("additionalOverhead", additionalOverhead.getFieldValue());
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        for (String key : referenceValues) {
+            String value = view.getComponentByReference(key).getFieldValue().toString();
+            resultMap.put(key, value);
+        }
 
-        return mapWithValueFields;
+        // cast cost input fields values to BigDeciaml
+        for (String key : bigDecimalValues) {
+            resultMap.put(key, new BigDecimal((String) resultMap.get(key)));
+        }
+
+        // cast checkbox fields values to boolean
+        resultMap.put("includeTPZ", Boolean.valueOf((String) resultMap.get("includeTPZ")));
+
+        // cast mode fields to proper enum
+        resultMap.put("calculateMaterialCostsMode",
+                ProductsCostCalculationConstants.valueOf((String) resultMap.get("calculateMaterialCostsMode")));
+        resultMap.put("calculateOperationCostsMode",
+                OperationsCostCalculationConstants.valueOf((String) resultMap.get("calculateOperationCostsMode")));
+
+        return resultMap;
     }
 
-    private void fillFields(Map<String, Object> resultMap) {
-        // TODO - fill result fields in costCalculationDetails view
+    // put result values into proper form fields
+    private void fillFields(final ViewDefinitionState view, final Map<String, Object> resultMap) {
+        final Set<String> outputFields = new HashSet<String>();
+        outputFields.addAll(Arrays.asList("productionCostMarginValue", "materialCostMarginValue", "totalOverhead",
+                "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
+                "totalTechnicalProductionCosts", "totalCosts", "totalCostsPerUnit"));
+
+        checkArgument(resultMap.keySet().containsAll(outputFields));
+
+        for (String referenceName : outputFields) {
+            FieldComponent fc = (FieldComponent) view.getComponentByReference(referenceName);
+            fc.setFieldValue(resultMap.get(referenceName).toString());
+            fc.requestComponentUpdateState();
+        }
+
     }
 
 }

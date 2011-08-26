@@ -84,19 +84,19 @@
 						<component type="gridLayout" name="gridTechnicalProductionCost"
 							columns="1" rows="4">
 							<layoutElement column="1" row="1">
-								<component type="input" name="materialCost" field="materialCost"
+								<component type="input" name="materialCost" field="materialCost" reference="totalMaterialCosts"
 									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="1" row="2">
-								<component type="input" name="machineHourlyCost"
+								<component type="input" name="machineHourlyCost" reference="totalMachineHourlyCosts"
 									field="machineHourlyCost" defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="1" row="3">
-								<component type="input" name="laborHourlyCost" field="laborHourlyCost"
+								<component type="input" name="laborHourlyCost" field="laborHourlyCost" reference="totalLaborHourlyCosts"
 									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="1" row="4">
-								<component type="input" name="totalTechnicalProductionCost"
+								<component type="input" name="totalTechnicalProductionCost" reference="totalTechnicalProductionCosts"
 									field="totalTechnicalProductionCost" defaultEnabled="false" />
 							</layoutElement>
 						</component>
@@ -110,14 +110,14 @@
 						<component type="gridLayout" name="parameters"
 							reference="parameters" columns="1" rows="3">
 							<layoutElement column="1" row="1">
-								<component type="checkbox" name="includeTPZ" field="includeTPZ" />
+								<component type="checkbox" name="includeTPZ" reference="includeTPZ" field="includeTPZ" />
 							</layoutElement>
 							<layoutElement column="1" row="2">
-								<component type="select" name="includeCostOfMaterial"
+								<component type="select" name="includeCostOfMaterial" reverence="calculateMaterialCostsMode"
 									field="includeCostOfMaterial" />
 							</layoutElement>
 							<layoutElement column="1" row="3">
-								<component type="select" name="includeCostOfOperation"
+								<component type="select" name="includeCostOfOperation" reference="calculateOperationCostsMode"
 									field="includeCostOfOperation" />
 							</layoutElement>
 						</component>
@@ -159,11 +159,11 @@
 							</layoutElement>
 							<layoutElement column="1" row="5">
 								<component type="input" name="totalCost" field="totalCost"
-									defaultEnabled="false" reference="totalCost"/>
+									defaultEnabled="false" reference="totalCosts"/>
 							</layoutElement>
 							<layoutElement column="1" row="6">
 								<component type="input" name="costPerUnit" field="costPerUnit"
-									defaultEnabled="false" reference="costPerUnit">
+									defaultEnabled="false" reference="costsPerUnit">
 								</component>
 							</layoutElement>
 						</component>
