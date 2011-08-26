@@ -116,12 +116,14 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 numberOfOperations = new BigDecimal(1);
             }
             BigDecimal pieceWorkCost = piecework.divide(numberOfOperations);
-
             EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
+
             BigDecimal totalQuantityOutputProduct = new BigDecimal(0);
+
             for (Entity outputProduct : outputProducts) {
-                BigDecimal quantity = (BigDecimal) outputProduct.getField("quantity");
-                totalQuantityOutputProduct = totalQuantityOutputProduct.add(quantity);
+
+                totalQuantityOutputProduct = totalQuantityOutputProduct.add((BigDecimal) outputProduct.getField("quantity"));
+
             }
             operationCost = operationCost.add(pieceWorkCost.multiply(totalQuantityOutputProduct));
 
@@ -129,29 +131,5 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             return pathCost;
         }
     }
-
-    /*
-     * private EntityTree getOperationComponentsTree(final Entity source) { checkArgument(source != null, "source is null");
-     * DataDefinition dd = source.getDataDefinition(); if (dd == null) { return null; } Entity operationComponentsProvider =
-     * source; if ("order".equals(dd.getName())) { operationComponentsProvider =
-     * operationComponentsProvider.getBelongsToField("technology"); if (operationComponentsProvider != null) { return
-     * operationComponentsProvider.getTreeField("operationComponents"); } } if ("technology".equals(dd.getName())) { return
-     * operationComponentsProvider.getTreeField("operationComponents"); } return null; } private BigDecimal checkData(Entity
-     * operationComponent, String name) { BigDecimal data = (BigDecimal) operationComponent.getField(name); if (data == null) {
-     * data = (BigDecimal) operationComponent.getBelongsToField("operation").getField(name); if (data == null) { if
-     * ("numberOfOperations".equals(name)) { data = new BigDecimal(1); } else { data = new BigDecimal(0); } } } return data; }
-     * private BigDecimal calculateCostPieceWork(EntityTree operationComponents) { BigDecimal totalPieceWorkCost = new
-     * BigDecimal(0); for (Entity operationComponent : operationComponents) { BigDecimal piecework = checkData(operationComponent,
-     * "pieceworkCost"); BigDecimal numberOfOperations = checkData(operationComponent, "numberOfOperations"); BigDecimal
-     * pieceWorkCost = piecework.divide(numberOfOperations); EntityList outputProducts =
-     * operationComponent.getHasManyField("operationProductOutComponents"); BigDecimal totalQuantityOutputProduct = new
-     * BigDecimal(0); for (Entity outputProduct : outputProducts) { totalQuantityOutputProduct =
-     * totalQuantityOutputProduct.add((BigDecimal) outputProduct.getField("quantity")); } totalPieceWorkCost =
-     * totalPieceWorkCost.add(pieceWorkCost.multiply(totalQuantityOutputProduct)); } return totalPieceWorkCost; } private
-     * BigDecimal calculateCostHourly(EntityTree operationComponents, int time, String name) { BigDecimal realizationTime =
-     * BigDecimal.valueOf(time); BigDecimal totalHourlyCost = new BigDecimal(0); for (Entity operationComponent :
-     * operationComponents) { BigDecimal hourlyCost = checkData(operationComponent, name); realizationTime =
-     * realizationTime.multiply(hourlyCost); totalHourlyCost = totalHourlyCost.add(realizationTime); } return totalHourlyCost; }
-     */
 
 }
