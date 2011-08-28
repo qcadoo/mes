@@ -1,10 +1,11 @@
 package com.qcadoo.mes.costCalculation;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import com.qcadoo.model.api.Entity;
 
 public interface CostCalculationService {
 
-    public Map<String, Object> calculateTotalCost(final Entity source, final Map<String, Object> parameters);
+    public Map<String, BigDecimal> calculateTotalCost(Entity source, Map<String, Object> parameters);
 }

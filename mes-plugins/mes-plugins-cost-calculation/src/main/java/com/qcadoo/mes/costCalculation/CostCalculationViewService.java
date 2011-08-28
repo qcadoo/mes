@@ -36,7 +36,7 @@ public class CostCalculationViewService {
 
     private CostCalculationService costCalculationService;
 
-    private static String EMPTY = "";
+    private final static String EMPTY = "";
 
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
