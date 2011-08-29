@@ -69,7 +69,7 @@ public class CostCalculationViewService {
         }
         FormComponent formOrderId = (FormComponent) state.getComponentByReference("orderId");
         FormComponent formTechnologyId = (FormComponent) state.getComponentByReference("technologyId");
-
+        
         if (formOrderId != null && formOrderId.getFieldValue() != null) {
             fillFieldFromOrder(state);
         } else if (formTechnologyId != null && formTechnologyId.getFieldValue() != null) {

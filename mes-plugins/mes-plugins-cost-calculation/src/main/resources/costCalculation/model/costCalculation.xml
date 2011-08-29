@@ -13,6 +13,7 @@
 		<belongsTo name="order" model="order" plugin="orders" />
 		<decimal name="materialCost" readonly="true"/>
 		<decimal name="machineHourlyCost" readonly="true"/>
+		<decimal name="pieceworkCost" readonly="true"/>
 		<decimal name="laborHourlyCost" readonly="true"/>
 		<decimal name="totalTechnicalProductionCost" />
 		<decimal name="productionCostMargin" />

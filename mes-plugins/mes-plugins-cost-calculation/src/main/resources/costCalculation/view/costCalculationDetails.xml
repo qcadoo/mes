@@ -95,7 +95,7 @@
 						reference="borderLayoutTechnicalProductionCost">
 						<option type="label" value="technicalProductionCost" />
 						<component type="gridLayout" name="gridTechnicalProductionCost"
-							columns="1" rows="4">
+							columns="1" rows="5">
 							<layoutElement column="1" row="1">
 								<component type="input" name="materialCost" field="materialCost"
 									reference="totalMaterialCosts" defaultEnabled="false" />
@@ -110,6 +110,10 @@
 									reference="totalLaborHourlyCosts" defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="1" row="4">
+								<component type="input" name="pieceworkCost" field="pieceworkCost"
+									reference="totalPieceworkCosts" defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="1" row="5">
 								<component type="input" name="totalTechnicalProductionCost"
 									reference="totalTechnicalProductionCosts" field="totalTechnicalProductionCost"
 									defaultEnabled="false" />
