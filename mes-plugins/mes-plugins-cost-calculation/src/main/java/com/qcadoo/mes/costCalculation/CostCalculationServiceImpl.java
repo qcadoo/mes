@@ -82,8 +82,15 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         debug("productionMode = " + productMode);
         debug("technology = " + technology);
         
-        resultMap.putAll(operationsCostCalculationService.calculateOperationsCost(source, operationMode,
-                (Boolean) parameters.get("includeTPZ"), quantity));
+        checkArgument(productsCostCalculationService != null, "productsCostCalculationService is null!");
+        checkArgument(operationsCostCalculationService != null, "operationsCostCalculationService is null!");
+        
+        Map<String, BigDecimal> test = operationsCostCalculationService.calculateOperationsCost(source, operationMode,
+                (Boolean) parameters.get("includeTPZ"), quantity);
+        
+        checkArgument(test != null, "operationCostCalculation return null!");
+        
+        resultMap.putAll(test);
         resultMap.putAll(productsCostCalculationService.calculateProductsCost(technology, productMode, quantity));
 
         debug("After call child services");

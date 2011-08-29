@@ -1,7 +1,7 @@
 package com.qcadoo.mes.costNormsForProduct;
 
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.AVERAGE;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.LAST_PURCHASE;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.LASTPURCHASE;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.NOMINAL;
 import static java.math.BigDecimal.valueOf;
 import static org.junit.Assert.assertEquals;
@@ -95,7 +95,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
         when(inputProduct.getBelongsToField("product")).thenReturn(product);
 
         when(product.getField(AVERAGE.getStrValue())).thenReturn(validationAverage);
-        when(product.getField(LAST_PURCHASE.getStrValue())).thenReturn(validationLastPurchase);
+        when(product.getField(LASTPURCHASE.getStrValue())).thenReturn(validationLastPurchase);
         when(product.getField(NOMINAL.getStrValue())).thenReturn(validationNominal);
         when(product.getField("costForNumber")).thenReturn(validationCostForNumber);
     }

@@ -3,11 +3,14 @@ package com.qcadoo.mes.costCalculation;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -298,8 +301,11 @@ public class CostCalculationViewService {
             Object value = null;
 
             if (fieldValue != null && !fieldValue.toString().isEmpty()) {
-                value = (bigDecimalValues.contains(key)) ? BigDecimal.valueOf(Double.valueOf(fieldValue.toString())) : fieldValue
-                        .toString();
+                if (bigDecimalValues.contains(key)) {
+                    value = getBigDecimalFromField(fieldValue, view.getLocale());
+                } else {
+                    value = fieldValue.toString();
+                }
             } else if (bigDecimalValues.contains(key)) {
                 value = BigDecimal.ZERO;
             }
@@ -324,6 +330,16 @@ public class CostCalculationViewService {
                         .get("calculateOperationCostsMode")).toUpperCase()));
 
         return resultMap;
+    }
+
+    private BigDecimal getBigDecimalFromField(final Object value, final Locale locale) {
+        try {
+            DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);
+            format.setParseBigDecimal(true);
+            return new BigDecimal(format.parse(value.toString()).doubleValue());
+        } catch (ParseException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
     }
 
     private void debug(String message) {

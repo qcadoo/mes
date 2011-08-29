@@ -3,7 +3,7 @@ package com.qcadoo.mes.costNormsForProduct.constants;
 
 public enum ProductsCostCalculationConstants {
     AVERAGE("averageCost"),
-    LAST_PURCHASE("lastPurchaseCost"),
+    LASTPURCHASE("lastPurchaseCost"),
     NOMINAL("nominalCost");
     
     private final String strValue;
