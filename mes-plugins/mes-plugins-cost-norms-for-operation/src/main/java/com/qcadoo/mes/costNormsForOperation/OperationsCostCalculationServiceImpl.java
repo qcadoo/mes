@@ -3,6 +3,7 @@ package com.qcadoo.mes.costNormsForOperation;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.HOURLY;
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.PIECEWORK;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
@@ -32,13 +34,19 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         checkArgument(quantity != null, "quantity is null");
         checkArgument(quantity.compareTo(BigDecimal.valueOf(0)) == 1, "quantity should be greather than 0");
         checkArgument(source != null, "source entity is null");
-
+        EntityTree operationComponents;
         BigDecimal totalMachineHourlyCost = new BigDecimal(0);
         BigDecimal totalLaborHourlyCost = new BigDecimal(0);
         BigDecimal totalPieceWorkCost = new BigDecimal(0);
         Map<String, BigDecimal> result = new HashMap<String, BigDecimal>();
 
-        EntityTree operationComponents = source.getTreeField("operationComponents");
+        DataDefinition dataDefinition = source.getDataDefinition();
+
+        if (MODEL_ORDER.equals(dataDefinition.getName())) {
+            operationComponents = source.getTreeField("orderOperationComponents");
+        } else {
+            operationComponents = source.getTreeField("operationComponents");
+        }
         if (operationComponents == null) {
             throw new IllegalArgumentException("Incompatible source entity type..");
         }
@@ -61,9 +69,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                         OperationsCostCalculationConstants.MACHINE_HOURLY_COST);
             }
         }
-        result.put("totalMachineHourlyCost", totalMachineHourlyCost);
-        result.put("totalLaborHourlyCost", totalLaborHourlyCost);
-        result.put("totalPieceWorkCost", totalPieceWorkCost);
+        result.put("totalMachineHourlyCosts", totalMachineHourlyCost);
+        result.put("totalLaborHourlyCosts", totalLaborHourlyCost);
+        result.put("totalPieceWorkCosts", totalPieceWorkCost);
         return result;
     }
 
@@ -123,7 +131,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             if (numberOfOperations == null) {
                 numberOfOperations = new BigDecimal(1);
             }
-            BigDecimal pieceWorkCost = piecework.divide(numberOfOperations);
+            BigDecimal pieceWorkCost = piecework.divide(numberOfOperations, 3);
             EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
 
             BigDecimal totalQuantityOutputProduct = new BigDecimal(0);

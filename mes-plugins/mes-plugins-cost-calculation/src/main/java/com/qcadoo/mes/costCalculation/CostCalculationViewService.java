@@ -39,15 +39,16 @@ public class CostCalculationViewService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
     private CostCalculationService costCalculationService;
 
     private final static String EMPTY = "";
 
     private final static Logger LOG = LoggerFactory.getLogger(CostCalculationViewService.class);
 
-    public CostCalculationViewService() {
-        costCalculationService = new CostCalculationServiceImpl();
-    }
+    // public CostCalculationViewService() {
+    // costCalculationService = new CostCalculationServiceImpl();
+    // }
 
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {

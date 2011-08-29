@@ -33,16 +33,15 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
                 BigDecimal quantityInputProduct = (BigDecimal) inputProduct.getField("quantity");
                 Entity product = inputProduct.getBelongsToField("product");
                 BigDecimal includeCostOfMaterial = (BigDecimal) product.getField(mode.getStrValue());
-                BigDecimal costForNumber = (BigDecimal) product.getField("costForNumber");
-
-                BigDecimal costPerPrice = includeCostOfMaterial.divide(costForNumber);
+                BigDecimal costForNumber = new BigDecimal(product.getField("costForNumber").toString());
+                BigDecimal costPerPrice = includeCostOfMaterial.divide(costForNumber, 3);
                 BigDecimal costQuantityFromPorduct = costPerPrice.multiply(quantityInputProduct);
                 result = result.add(costQuantityFromPorduct);
 
             }
         }
         result = result.multiply(quantity);
-        results.put("materialCost", result);
+        results.put("totalMaterialCosts", result);
         return results;
     }
 }

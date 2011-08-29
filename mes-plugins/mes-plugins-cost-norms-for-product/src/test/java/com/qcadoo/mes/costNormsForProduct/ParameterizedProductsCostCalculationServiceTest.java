@@ -107,7 +107,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
                 validationOrderQuantity);
 
         // // then
-        assertEquals(validationExpectedResult, result.get("materialCost"));
+        assertEquals(validationExpectedResult, result.get("totalMaterialCosts"));
     }
 
     @Test(expected = IllegalArgumentException.class)

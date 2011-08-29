@@ -94,7 +94,6 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
         resultMap.putAll(test);
         resultMap.putAll(productsCostCalculationService.calculateProductsCost(technology, productMode, quantity));
-
         debug("After call child services");
 
         materialCosts = resultMap.get("totalMaterialCosts");

@@ -19,10 +19,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
@@ -81,7 +83,7 @@ public class ParameterizedOperationsCostCalculationServiceTest {
 
     @Before
     public void init() {
-
+        DataDefinition dataDefinition = mock(DataDefinition.class);
         source = mock(Entity.class);
         EntityList outputProducts = mock(EntityList.class);
         Entity outputProduct = mock(Entity.class);
@@ -90,7 +92,8 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         operationComponent = mock(EntityTreeNode.class);
         Iterator<Entity> operationComponentsIterator = mock(Iterator.class);
         orderRealizationTimeService = mock(OrderRealizationTimeService.class);
-
+        when(source.getDataDefinition()).thenReturn(dataDefinition);
+        when(dataDefinition.getName()).thenReturn(Mockito.anyString());
         when(source.getTreeField("operationComponents")).thenReturn(operationComponents);
 
         when(operationComponentsIterator.hasNext()).thenReturn(true, false);
@@ -126,9 +129,9 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         Map<String, BigDecimal> result = operationCostCalculationService.calculateOperationsCost(source, validateMode,
                 validateIncludeTPZs, validateOrderQuantity);
         // then
-        assertEquals(validateExpectedLabor, result.get("totalLaborHourlyCost"));
-        assertEquals(validateExpectedMachine, result.get("totalMachineHourlyCost"));
-        assertEquals(validateExpectedPieceworkCost, result.get("totalPieceWorkCost"));
+        assertEquals(validateExpectedLabor, result.get("totalLaborHourlyCosts"));
+        assertEquals(validateExpectedMachine, result.get("totalMachineHourlyCosts"));
+        assertEquals(validateExpectedPieceworkCost, result.get("totalPieceWorkCosts"));
     }
 
     @Test(expected = IllegalArgumentException.class)
