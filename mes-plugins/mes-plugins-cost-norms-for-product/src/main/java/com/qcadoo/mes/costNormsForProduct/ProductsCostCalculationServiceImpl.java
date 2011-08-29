@@ -23,25 +23,25 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         checkArgument(quantity != null, "quantity is  null");
         checkArgument(technology.getTreeField("operationComponents") != null, "operation components is null");
 
-        BigDecimal result = new BigDecimal(0);
-        Map<String, BigDecimal> results = new HashMap<String, BigDecimal>();
+        BigDecimal result = BigDecimal.ZERO;
+        Map<String, BigDecimal> resultsMap = new HashMap<String, BigDecimal>();
 
         EntityTree operationComponents = technology.getTreeField("operationComponents");
         for (Entity operationComponent : operationComponents) {
             EntityList inputProducts = operationComponent.getHasManyField("operationProductInComponents");
             for (Entity inputProduct : inputProducts) {
-                BigDecimal quantityInputProduct = (BigDecimal) inputProduct.getField("quantity");
+                BigDecimal quantityOfInputProducts = (BigDecimal) inputProduct.getField("quantity");
                 Entity product = inputProduct.getBelongsToField("product");
-                BigDecimal includeCostOfMaterial = (BigDecimal) product.getField(mode.getStrValue());
+                BigDecimal cost = (BigDecimal) product.getField(mode.getStrValue());
                 BigDecimal costForNumber = new BigDecimal(product.getField("costForNumber").toString());
-                BigDecimal costPerPrice = includeCostOfMaterial.divide(costForNumber, 3);
-                BigDecimal costQuantityFromPorduct = costPerPrice.multiply(quantityInputProduct);
-                result = result.add(costQuantityFromPorduct);
+                BigDecimal costPerUnit = cost.divide(costForNumber, 3);
+                BigDecimal totalMaterialCosts = costPerUnit.multiply(quantityOfInputProducts);
+                result = result.add(totalMaterialCosts);
 
             }
         }
         result = result.multiply(quantity);
-        results.put("totalMaterialCosts", result);
-        return results;
+        resultsMap.put("totalMaterialCosts", result);
+        return resultsMap;
     }
 }

@@ -181,7 +181,7 @@
 							</layoutElement>
 							<layoutElement column="1" row="6">
 								<component type="input" name="costPerUnit" field="costPerUnit"
-									defaultEnabled="false" reference="costsPerUnit">
+									defaultEnabled="false" reference="totalCostsPerUnit">
 								</component>
 							</layoutElement>
 						</component>

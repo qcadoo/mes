@@ -304,12 +304,6 @@ public class CostCalculationViewService {
             resultMap.put(key, value);
         }
 
-        // cast cost input fields values to BigDeciaml
-        // for (String key : bigDecimalValues) {
-        //
-        // resultMap.put(key, new BigDecimal((String) resultMap.get(key)));
-        // }
-
         // cast checkbox fields values to boolean
         resultMap.put("includeTPZ", Boolean.valueOf((String) resultMap.get("includeTPZ")));
 
