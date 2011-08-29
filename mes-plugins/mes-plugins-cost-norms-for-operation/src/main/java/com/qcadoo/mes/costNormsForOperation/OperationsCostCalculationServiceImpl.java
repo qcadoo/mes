@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
@@ -17,6 +18,7 @@ import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 
+@Service
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
 
     @Autowired

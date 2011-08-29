@@ -45,7 +45,7 @@ public class CostCalculationViewService {
     public CostCalculationViewService() {
         costCalculationService = new CostCalculationServiceImpl();
     }
-    
+
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         Long orderId = (Long) state.getFieldValue();
@@ -295,14 +295,11 @@ public class CostCalculationViewService {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         for (String key : referenceValues) {
             Object fieldValue = view.getComponentByReference(key).getFieldValue();
-            Object value = null;            
+            Object value = null;
 
-            if (fieldValue != null) {
-                if (bigDecimalValues.contains(key)) {
-                    value = new BigDecimal(fieldValue.toString());
-                } else {
-                    value = fieldValue.toString();
-                }
+            if (fieldValue != null && !fieldValue.toString().isEmpty()) {
+                value = (bigDecimalValues.contains(key)) ? BigDecimal.valueOf(Double.valueOf(fieldValue.toString())) : fieldValue
+                        .toString();
             } else if (bigDecimalValues.contains(key)) {
                 value = BigDecimal.ZERO;
             }
@@ -311,10 +308,10 @@ public class CostCalculationViewService {
         }
 
         // cast cost input fields values to BigDeciaml
-//        for (String key : bigDecimalValues) {
-//            
-//            resultMap.put(key, new BigDecimal((String) resultMap.get(key)));
-//        }
+        // for (String key : bigDecimalValues) {
+        //
+        // resultMap.put(key, new BigDecimal((String) resultMap.get(key)));
+        // }
 
         // cast checkbox fields values to boolean
         resultMap.put("includeTPZ", Boolean.valueOf((String) resultMap.get("includeTPZ")));
@@ -322,8 +319,9 @@ public class CostCalculationViewService {
         // cast mode fields to proper enum
         resultMap.put("calculateMaterialCostsMode",
                 ProductsCostCalculationConstants.valueOf(((String) resultMap.get("calculateMaterialCostsMode")).toUpperCase()));
-        resultMap.put("calculateOperationCostsMode",
-                OperationsCostCalculationConstants.valueOf(((String) resultMap.get("calculateOperationCostsMode")).toUpperCase()));
+        resultMap
+                .put("calculateOperationCostsMode", OperationsCostCalculationConstants.valueOf(((String) resultMap
+                        .get("calculateOperationCostsMode")).toUpperCase()));
 
         return resultMap;
     }
