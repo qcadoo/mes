@@ -41,6 +41,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         BigDecimal additionalOverhead = (BigDecimal) parameters.get("additionalOverhead");
         BigDecimal totalTechnicalProductionCosts;
         BigDecimal totalOverhead;
+        BigDecimal totalCosts;
         Entity technology;
         Map<String, BigDecimal> resultMap = new HashMap<String, BigDecimal>();
         OperationsCostCalculationConstants operationMode = (OperationsCostCalculationConstants) parameters
@@ -69,22 +70,23 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         materialCosts = resultMap.get("totalMaterialCosts");
         
         if (operationMode == HOURLY) {
-            productionCosts = ((BigDecimal) resultMap.get("totalMachineHourlyCosts")).add((BigDecimal) resultMap.get("totalLaborHourlyCosts"));
+            productionCosts = resultMap.get("totalMachineHourlyCosts").add(resultMap.get("totalLaborHourlyCosts"));
         } else {
-            productionCosts = ((BigDecimal) resultMap.get("totalPieceworkCosts"));
+            productionCosts = resultMap.get("totalPieceworkCosts");
         }
 
         productionCostMarginValue = productionCosts.multiply(productionCostMargin).divide(BigDecimal.valueOf(100));
         materialCostMarginValue = materialCosts.multiply(materialCostMargin).divide(BigDecimal.valueOf(100));
-
         totalTechnicalProductionCosts = productionCosts.add(materialCosts);
         totalOverhead = productionCostMarginValue.add(materialCostMarginValue).add(additionalOverhead);
-
+        totalCosts = totalOverhead.add(totalTechnicalProductionCosts);
+        
         resultMap.put("productionCostMarginValue", productionCostMarginValue);
         resultMap.put("materialCostMarginValue", materialCostMarginValue);
         resultMap.put("totalOverhead", totalOverhead);
         resultMap.put("totalTechnicalProductionCosts", totalTechnicalProductionCosts);
-        resultMap.put("totalCosts", totalOverhead.add(totalTechnicalProductionCosts));
+        resultMap.put("totalCosts", totalCosts);
+        resultMap.put("totalCostsPerUnit", totalCosts.divide(quantity));
 
         return resultMap;
     }

@@ -2,6 +2,8 @@ package com.qcadoo.mes.costCalculation;
 
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.*;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.AVERAGE;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
 import static java.math.BigDecimal.valueOf;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -23,6 +25,7 @@ import com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -42,12 +45,16 @@ public class ParameterizedCostCalculationServiceTest {
 
     private BigDecimal expectedMaterialMarginValue, expectedProductionMarginValue, expectedTotalCosts, expectedTotalOverhead, expectedTotalMaterialCosts, expectedTotalMachineHourlyCosts, expectedTotalLaborHourlyCosts, expectedTotalPieceworkCosts, expectedTotalTechnicalProductionCosts, expectedTotalCostsPerUnit;
 
+    private Entity source;
+
+    private DataDefinition dd;
+
     @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
         //     mode, totalMachineHourly,  totalLaborHourly, totalPieceWorkCost, totalMaterialCost, productionMargin[%], materialMargin[%],  addOverhead,   quantity,     productionMarginValue, materialMarginValue,  expectedTotalCosts, expectedTotalOverhead, expectedTotalCostsPerUnit
-                {HOURLY,    valueOf(200), valueOf(200),     valueOf(200),       valueOf(800),      valueOf(10),         valueOf(10),        valueOf(100),  valueOf(1),   valueOf(40),           valueOf(80),          valueOf(1420),      valueOf(180),          valueOf(1420) },
-                {PIECEWORK, valueOf(200), valueOf(200),     valueOf(200),       valueOf(800),      valueOf(10),         valueOf(10),        valueOf(100),  valueOf(1),   valueOf(20),           valueOf(80),          valueOf(1200),      valueOf(180),          valueOf(1200) },
+                {HOURLY,    valueOf(200), valueOf(200),     valueOf(200),       valueOf(800),      valueOf(10),         valueOf(10),        valueOf(100),  valueOf(1),   valueOf(40),           valueOf(80),          valueOf(1420),      valueOf(220),          valueOf(1420) },
+                {PIECEWORK, valueOf(200), valueOf(200),     valueOf(200),       valueOf(800),      valueOf(10),         valueOf(10),        valueOf(100),  valueOf(1),   valueOf(20),           valueOf(80),          valueOf(1200),      valueOf(200),          valueOf(1200) },
         });
     }
 
@@ -102,13 +109,20 @@ public class ParameterizedCostCalculationServiceTest {
         expectedTotalLaborHourlyCosts = totalLaborHourly;
         expectedTotalMachineHourlyCosts = totalMachineHourly;
         expectedTotalMaterialCosts = totalMaterialCosts;
+        expectedTotalPieceworkCosts = totalPieceWorkCost;
         expectedTotalCostsPerUnit = totalPerUnit;
+        expectedTotalTechnicalProductionCosts = expectedTotal.subtract(totalOverhead);
         expectedTotalOverhead = totalOverhead;
     }
 
     @Before
     public void init() {
         costService = new CostCalculationServiceImpl();
+        
+        source = mock(Entity.class);
+        dd = mock(DataDefinition.class);
+        when(source.getDataDefinition()).thenReturn(dd);
+        when(dd.get(anyLong())).thenReturn(source);
 
         operationsCostCalculationService = mock(OperationsCostCalculationService.class);
         when(
@@ -127,27 +141,46 @@ public class ParameterizedCostCalculationServiceTest {
     }
 
     @Test
-    public void shouldReturnCorrectResults() throws Exception {
+    public void shouldReturnCorrectResultsFromTechnology() throws Exception {
         // given
-        Entity source = mock(Entity.class);
-        DataDefinition dd = mock(DataDefinition.class);
-        when(source.getDataDefinition()).thenReturn(dd);
-        when(dd.getName()).thenReturn(TechnologiesConstants.MODEL_TECHNOLOGY);
+        when(dd.getName()).thenReturn(MODEL_TECHNOLOGY);
         
         // when
         Map<String, BigDecimal> resultMap = costService.calculateTotalCost(source, parameters);
 
         // then
-//        assertEquals(expectedTotalCosts, resultMap.get("totalCosts"));
-//        assertEquals(expectedProductionMarginValue, resultMap.get("productionCostMarginValue"));
-//        assertEquals(expectedMaterialMarginValue, resultMap.get("materialCostMarginValue"));
-//        assertEquals(expectedTotalOverhead, resultMap.get("totalOverhead"));
-//        assertEquals(expectedTotalMaterialCosts, resultMap.get("totalMaterialCosts"));
-//        assertEquals(expectedTotalMachineHourlyCosts, resultMap.get("totalMachineHourlyCosts"));
-//        assertEquals(expectedTotalLaborHourlyCosts, resultMap.get("totalLaborHourlyCosts"));
-//        assertEquals(expectedTotalPieceworkCosts, resultMap.get("totalPieceworkCosts"));
-//        assertEquals(expectedTotalTechnicalProductionCosts, resultMap.get("totalTechnicalProductionCosts"));
-//        assertEquals(expectedTotalCostsPerUnit, resultMap.get("totalCostsPerUnit"));
+        assertEquals(expectedTotalCosts, resultMap.get("totalCosts"));
+        assertEquals(expectedProductionMarginValue, resultMap.get("productionCostMarginValue"));
+        assertEquals(expectedMaterialMarginValue, resultMap.get("materialCostMarginValue"));
+        assertEquals(expectedTotalOverhead, resultMap.get("totalOverhead"));
+        assertEquals(expectedTotalMaterialCosts, resultMap.get("totalMaterialCosts"));
+        assertEquals(expectedTotalMachineHourlyCosts, resultMap.get("totalMachineHourlyCosts"));
+        assertEquals(expectedTotalLaborHourlyCosts, resultMap.get("totalLaborHourlyCosts"));
+        assertEquals(expectedTotalPieceworkCosts, resultMap.get("totalPieceworkCosts"));
+        assertEquals(expectedTotalTechnicalProductionCosts, resultMap.get("totalTechnicalProductionCosts"));
+        assertEquals(expectedTotalCostsPerUnit, resultMap.get("totalCostsPerUnit"));
+    }
+    
+    @Test
+    public void shouldReturnCorrectResultsFromOrder() throws Exception {
+        // given
+        Entity technology = mock(Entity.class);
+        when(dd.getName()).thenReturn(MODEL_ORDER);
+        when(source.getBelongsToField("technology")).thenReturn(technology);
         
+        // when
+        Map<String, BigDecimal> resultMap = costService.calculateTotalCost(source, parameters);
+
+        // then
+        assertEquals(expectedTotalCosts, resultMap.get("totalCosts"));
+        assertEquals(expectedProductionMarginValue, resultMap.get("productionCostMarginValue"));
+        assertEquals(expectedMaterialMarginValue, resultMap.get("materialCostMarginValue"));
+        assertEquals(expectedTotalOverhead, resultMap.get("totalOverhead"));
+        assertEquals(expectedTotalMaterialCosts, resultMap.get("totalMaterialCosts"));
+        assertEquals(expectedTotalMachineHourlyCosts, resultMap.get("totalMachineHourlyCosts"));
+        assertEquals(expectedTotalLaborHourlyCosts, resultMap.get("totalLaborHourlyCosts"));
+        assertEquals(expectedTotalPieceworkCosts, resultMap.get("totalPieceworkCosts"));
+        assertEquals(expectedTotalTechnicalProductionCosts, resultMap.get("totalTechnicalProductionCosts"));
+        assertEquals(expectedTotalCostsPerUnit, resultMap.get("totalCostsPerUnit"));
     }
 }
