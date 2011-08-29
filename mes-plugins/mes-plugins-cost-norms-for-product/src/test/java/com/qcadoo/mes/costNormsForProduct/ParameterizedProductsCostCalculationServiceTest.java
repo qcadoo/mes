@@ -110,4 +110,15 @@ public class ParameterizedProductsCostCalculationServiceTest {
         assertEquals(validationExpectedResult, result.get("materialCost"));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testShouldReturnExceptionWhenEntityIsNull() throws Exception {
+        // when
+        productCostCalc.calculateProductsCost(null, validationMode, validationOrderQuantity);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testShouldReturnExceptionWhenQuantityIsNull() throws Exception {
+        // when
+        productCostCalc.calculateProductsCost(technology, validationMode, null);
+    }
 }

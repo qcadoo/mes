@@ -44,7 +44,7 @@ public class ParameterizedOperationsCostCalculationServiceTest {
             validateExpectedMachine, validateExpectedLabor, validateNumberOfOperations, validateExpectedPieceworkCost,
             validationOutputQuantity;
 
-    int realizationTime, expectedrealizationTime;
+    int realizationTime, expectedRealizationTime;
 
     private OperationsCostCalculationConstants validateMode;
 
@@ -55,7 +55,7 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         return Arrays.asList(new Object[][] {
                 // mode, laborHourly, machineHourly, piecework, numOfOps, includeTPZs, order qtty, expectedMachine, expectedLabor
                 // pieceWorkCost, validationOutputQuantity, expectedrealizationTime
-                { HOURLY, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), valueOf(0), valueOf(0),
+                { HOURLY, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), valueOf(200), valueOf(400),
                         valueOf(0), valueOf(5), 20 },
                 { PIECEWORK, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), valueOf(0), valueOf(0),
                         valueOf(175), valueOf(5), 0 } });
@@ -76,25 +76,23 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         this.validateExpectedMachine = expectedMachine;
         this.validateExpectedPieceworkCost = validateExpectedPieceworkCost;
         this.validationOutputQuantity = validationOutputQuantity;
-        this.expectedrealizationTime = expectedrealizationTime;
+        this.expectedRealizationTime = expectedrealizationTime;
     }
 
     @Before
     public void init() {
 
         source = mock(Entity.class);
-
         EntityList outputProducts = mock(EntityList.class);
         Entity outputProduct = mock(Entity.class);
         Iterator<Entity> outputProductsIterator = mock(Iterator.class);
         EntityTree operationComponents = mock(EntityTree.class);
-
-        // === OPERATION COMPONENT ===
         operationComponent = mock(EntityTreeNode.class);
+        Iterator<Entity> operationComponentsIterator = mock(Iterator.class);
+        orderRealizationTimeService = mock(OrderRealizationTimeService.class);
 
         when(source.getTreeField("operationComponents")).thenReturn(operationComponents);
 
-        Iterator<Entity> operationComponentsIterator = mock(Iterator.class);
         when(operationComponentsIterator.hasNext()).thenReturn(true, false);
         when(operationComponentsIterator.next()).thenReturn(operationComponent);
         when(operationComponents.iterator()).thenReturn(operationComponentsIterator);
@@ -106,11 +104,9 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         when(operationComponent.getField("pieceworkCost")).thenReturn(validatePieceworkCost);
         when(operationComponent.getField("numberOfOperations")).thenReturn(validateNumberOfOperations);
 
-        orderRealizationTimeService = mock(OrderRealizationTimeService.class);
-
         when(
                 orderRealizationTimeService.estimateRealizationTimeForOperation(operationComponent, validateOrderQuantity,
-                        validateIncludeTPZs)).thenReturn(realizationTime);
+                        validateIncludeTPZs)).thenReturn(expectedRealizationTime);
 
         operationCostCalculationService = new OperationsCostCalculationServiceImpl();
         setField(operationCostCalculationService, "orderRealizationTimeService", orderRealizationTimeService);
@@ -134,4 +130,17 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         assertEquals(validateExpectedMachine, result.get("totalMachineHourlyCost"));
         assertEquals(validateExpectedPieceworkCost, result.get("totalPieceWorkCost"));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testShouldReturnExceptionWhenEntityIsNull() throws Exception {
+        // when
+        operationCostCalculationService.calculateOperationsCost(null, validateMode, validateIncludeTPZs, validateOrderQuantity);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testShouldReturnExceptionWhenQuantityIsNull() throws Exception {
+        // when
+        operationCostCalculationService.calculateOperationsCost(source, validateMode, validateIncludeTPZs, null);
+    }
+
 }
