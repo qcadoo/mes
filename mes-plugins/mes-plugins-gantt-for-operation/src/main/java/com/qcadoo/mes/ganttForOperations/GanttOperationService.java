@@ -34,7 +34,6 @@ import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -51,9 +50,6 @@ public class GanttOperationService {
 
     @Autowired
     private TranslationService translationService;
-
-    @Autowired
-    private ExpressionService expressionService;
 
     private Long orderId;
 

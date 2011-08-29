@@ -24,7 +24,7 @@ public class CostNormsForProductServiceTest {
 
     private FormComponent form;
 
-    private Entity entity, product;
+    private Entity entity;
 
     @Before
     public void init() {

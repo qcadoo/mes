@@ -45,13 +45,9 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfUtil;
-import com.qcadoo.security.api.SecurityService;
 
 @Service
 public final class InventoryPdfService extends PdfDocumentService {
-
-    @Autowired
-    private SecurityService securityService;
 
     @Autowired
     private InventoryService inventoryService;
