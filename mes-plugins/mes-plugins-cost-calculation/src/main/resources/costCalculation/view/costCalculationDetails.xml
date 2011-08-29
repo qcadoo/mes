@@ -6,9 +6,10 @@
 		<ribbon>
 			<group template="navigation" />
 			<group template="formSaveCopyAndRemoveActions" />
-			<!-- <group name="costCalculate"> -->
-			<!-- <bigButton name="costCalculate" icon="calculateTimeIcon24.png"/> -->
-			<!-- </group> -->
+			<group name="costCalculate"> 
+				<bigButton name="costCalculate" icon="calculateTimeIcon24.png"
+					action="#{form}.fireEvent(fireCostCalculation);"/> 
+			</group> 
 			<group name="report">
 				<bigButton name="pdf" icon="pdfIcon24.png"
 					action="#{form}.fireEvent(printCostCalculationReport,pdf);" state="enabled" />
@@ -89,7 +90,7 @@
 							method="setFieldEnable" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="7">
+				<layoutElement column="2" row="7">
 					<component type="borderLayout" name="borderLayoutTechnicalProductionCost"
 						reference="borderLayoutTechnicalProductionCost">
 						<option type="label" value="technicalProductionCost" />
@@ -116,7 +117,7 @@
 						</component>
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="8">
+				<layoutElement column="1" row="7">
 					<component type="borderLayout" name="borderLayoutParameters"
 						reference="borderLayoutParameters">
 						<option type="label" value="parameters" />
@@ -129,7 +130,7 @@
 							</layoutElement>
 							<layoutElement column="1" row="2">
 								<component type="select" name="includeCostOfMaterial"
-									reverence="calculateMaterialCostsMode" field="includeCostOfMaterial" />
+									reference="calculateMaterialCostsMode" field="includeCostOfMaterial" />
 							</layoutElement>
 							<layoutElement column="1" row="3">
 								<component type="select" name="includeCostOfOperation"
@@ -192,6 +193,10 @@
 			<listener event="printCostCalculationReport"
 				class="com.qcadoo.mes.costCalculation.print.CostCalculationReportService"
 				method="printCostCalculationReport" />
+				
+			<listener event="fireCostCalculation"
+				class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+				method="calculateTotalCostView" />
 		</component>
 	</component>
 	<hooks>

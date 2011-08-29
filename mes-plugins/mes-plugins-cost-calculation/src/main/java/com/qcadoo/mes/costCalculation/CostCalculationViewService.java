@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +40,12 @@ public class CostCalculationViewService {
 
     private final static String EMPTY = "";
 
+    private final static Logger LOG = LoggerFactory.getLogger(CostCalculationViewService.class);
+
+    public CostCalculationViewService() {
+        costCalculationService = new CostCalculationServiceImpl();
+    }
+    
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         Long orderId = (Long) state.getFieldValue();
@@ -204,8 +212,6 @@ public class CostCalculationViewService {
         FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
         FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
 
-        if (orderLookup.getFieldValue() == null) {
-        }
         FieldComponent product = (FieldComponent) viewDefinitionState.getComponentByReference("product");
         FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
 
@@ -243,30 +249,36 @@ public class CostCalculationViewService {
     /* Event handler, fire total calculation */
     public void calculateTotalCostView(ViewDefinitionState viewDefinitionState, ComponentState componentState, String[] args) {
         Map<String, Object> parameters = getValueFromFields(viewDefinitionState);
-        Map<String, Object> results;
+        Map<String, BigDecimal> results;
         ComponentState technologyComponent = viewDefinitionState.getComponentByReference("technology");
         ComponentState orderComponent = viewDefinitionState.getComponentByReference("order");
-        Entity order = null;
+        Entity order;
         Entity technology;
+        Entity source;
 
         // check that technology & operation lookup components are found
         checkArgument(technologyComponent != null && orderComponent != null, "Incompatible view");
 
+        technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY)
+                .get((Long) technologyComponent.getFieldValue());
+
+        source = technology;
+
         if (orderComponent.getFieldValue() != null) {
             order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     (Long) orderComponent.getFieldValue());
+            source = order;
         }
 
         if (technologyComponent.getFieldValue() == null) {
             return;
         }
 
-        technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY)
-                .get((Long) technologyComponent.getFieldValue());
-
         // Fire cost calculation algorithm
-        // results = costCalculationService.calculateTotalCost(technology, order, parameters);
-        // fillFields(viewDefinitionState, results);
+        debug("source = " + source);
+        debug("parameters = " + parameters);
+        results = costCalculationService.calculateTotalCost(source, parameters);
+        fillFields(viewDefinitionState, results);
     }
 
     // get values from form fields
@@ -282,29 +294,48 @@ public class CostCalculationViewService {
 
         Map<String, Object> resultMap = new HashMap<String, Object>();
         for (String key : referenceValues) {
-            String value = view.getComponentByReference(key).getFieldValue().toString();
+            Object fieldValue = view.getComponentByReference(key).getFieldValue();
+            Object value = null;            
+
+            if (fieldValue != null) {
+                if (bigDecimalValues.contains(key)) {
+                    value = new BigDecimal(fieldValue.toString());
+                } else {
+                    value = fieldValue.toString();
+                }
+            } else if (bigDecimalValues.contains(key)) {
+                value = BigDecimal.ZERO;
+            }
+
             resultMap.put(key, value);
         }
 
         // cast cost input fields values to BigDeciaml
-        for (String key : bigDecimalValues) {
-            resultMap.put(key, new BigDecimal((String) resultMap.get(key)));
-        }
+//        for (String key : bigDecimalValues) {
+//            
+//            resultMap.put(key, new BigDecimal((String) resultMap.get(key)));
+//        }
 
         // cast checkbox fields values to boolean
         resultMap.put("includeTPZ", Boolean.valueOf((String) resultMap.get("includeTPZ")));
 
         // cast mode fields to proper enum
         resultMap.put("calculateMaterialCostsMode",
-                ProductsCostCalculationConstants.valueOf((String) resultMap.get("calculateMaterialCostsMode")));
+                ProductsCostCalculationConstants.valueOf(((String) resultMap.get("calculateMaterialCostsMode")).toUpperCase()));
         resultMap.put("calculateOperationCostsMode",
-                OperationsCostCalculationConstants.valueOf((String) resultMap.get("calculateOperationCostsMode")));
+                OperationsCostCalculationConstants.valueOf(((String) resultMap.get("calculateOperationCostsMode")).toUpperCase()));
 
         return resultMap;
     }
 
+    private void debug(String message) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("***MK " + message);
+        }
+    }
+
     // put result values into proper form fields
-    private void fillFields(final ViewDefinitionState view, final Map<String, Object> resultMap) {
+    private void fillFields(final ViewDefinitionState view, final Map<String, BigDecimal> resultMap) {
         final Set<String> outputFields = new HashSet<String>();
         outputFields.addAll(Arrays.asList("productionCostMarginValue", "materialCostMarginValue", "totalOverhead",
                 "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
@@ -313,9 +344,9 @@ public class CostCalculationViewService {
         checkArgument(resultMap.keySet().containsAll(outputFields));
 
         for (String referenceName : outputFields) {
-            FieldComponent fc = (FieldComponent) view.getComponentByReference(referenceName);
-            fc.setFieldValue(resultMap.get(referenceName).toString());
-            fc.requestComponentUpdateState();
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
+            fieldComponent.setFieldValue(resultMap.get(referenceName).toString());
+            fieldComponent.requestComponentUpdateState();
         }
 
     }
