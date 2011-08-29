@@ -25,8 +25,8 @@
 		<decimal name="costPerUnit" />
 		<string name="description"/>
 		<boolean name="includeTPZ"/>
-		<enum name="includeCostOfMaterial" values="nominal,lastPurchase,average" />
-		<enum name="includeCostOfOperation" values="piecework,hourly" />
+		<enum name="includeCostOfMaterial" values="nominal,lastPurchase,average" required="true" />
+		<enum name="includeCostOfOperation" values="piecework,hourly" required="true" />
 		<date name="dateOfCalculation" />
 	</fields>
 	<hooks >
