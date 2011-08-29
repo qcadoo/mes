@@ -14,8 +14,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,15 +37,10 @@ public class CostCalculationViewService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
     private CostCalculationService costCalculationService;
 
     private final static String EMPTY = "";
-
-    private final static Logger LOG = LoggerFactory.getLogger(CostCalculationViewService.class);
-
-    public CostCalculationViewService() {
-        costCalculationService = new CostCalculationServiceImpl();
-    }
 
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -278,8 +271,6 @@ public class CostCalculationViewService {
         }
 
         // Fire cost calculation algorithm
-        debug("source = " + source);
-        debug("parameters = " + parameters);
         results = costCalculationService.calculateTotalCost(source, parameters);
         fillFields(viewDefinitionState, results);
     }
@@ -339,12 +330,6 @@ public class CostCalculationViewService {
             return new BigDecimal(format.parse(value.toString()).doubleValue());
         } catch (ParseException e) {
             throw new IllegalStateException(e.getMessage(), e);
-        }
-    }
-
-    private void debug(String message) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("***MK " + message);
         }
     }
 
