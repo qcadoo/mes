@@ -29,6 +29,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             OperationsCostCalculationConstants calculateOperationCostsMode, boolean includeTPZ, BigDecimal quantity) {
         checkArgument(quantity != null, "quantity is null");
         checkArgument(quantity.compareTo(BigDecimal.valueOf(0)) == 1, "quantity should be greather than 0");
+        checkArgument(source != null, "source entity is null");
+
         BigDecimal totalMachineHourlyCost = new BigDecimal(0);
         BigDecimal totalLaborHourlyCost = new BigDecimal(0);
         BigDecimal totalPieceWorkCost = new BigDecimal(0);

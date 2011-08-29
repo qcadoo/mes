@@ -204,8 +204,6 @@ public class CostCalculationViewService {
         FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
         FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
 
-        if (orderLookup.getFieldValue() == null) {
-        }
         FieldComponent product = (FieldComponent) viewDefinitionState.getComponentByReference("product");
         FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
 
