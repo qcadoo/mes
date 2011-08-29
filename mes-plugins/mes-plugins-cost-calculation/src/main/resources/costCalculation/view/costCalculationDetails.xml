@@ -20,6 +20,21 @@
 		<component type="form" name="technologyId" reference="technologyId"
 			defaultVisible="false" />
 		<component type="form" name="form" reference="form">
+			<script>
+				<![CDATA[
+					jQuery(document).ready(function() {
+						var json = JSON.parse(context);
+						var orderId = json['window.mainTab.orderId'];
+						var technologyId = json['window.mainTab.technologyId'];
+						
+						if (orderId != null) {
+							#{form}.fireEvent(this, 'requestCopyFieldValues', ['order', orderId]);
+						} else if (technologyId != null) {
+							#{form}.fireEvent(this, 'requestCopyFieldValues', ['technology', technologyId]); 
+						}
+					});
+				]]>
+			</script>
 			<component type="gridLayout" name="gridLayout" columns="2"
 				rows="10">
 				<layoutElement column="1" row="1">
@@ -201,12 +216,17 @@
 			<listener event="fireCostCalculation"
 				class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 				method="calculateTotalCostView" />
+			
+			<listener event="requestCopyFieldValues"
+				class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+				method="copyFieldValues" />	
+				
 		</component>
 	</component>
 	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-			method="fillField" />
+<!--		<beforeRender-->
+<!--			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"-->
+<!--			method="fillField" />-->
 	</hooks>
 </view>
 
