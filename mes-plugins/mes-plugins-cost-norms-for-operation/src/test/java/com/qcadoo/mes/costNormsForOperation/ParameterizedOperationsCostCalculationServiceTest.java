@@ -96,7 +96,6 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         when(source.getDataDefinition()).thenReturn(dataDefinition);
         when(dataDefinition.getName()).thenReturn(Mockito.anyString());
         when(source.getTreeField("operationComponents")).thenReturn(operationComponents);
-
         when(operationComponentsIterator.hasNext()).thenReturn(true, false);
         when(operationComponentsIterator.next()).thenReturn(operationComponent);
         when(operationComponents.iterator()).thenReturn(operationComponentsIterator);
@@ -116,6 +115,7 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         setField(operationCostCalculationService, "orderRealizationTimeService", orderRealizationTimeService);
 
         when(outputProductsIterator.hasNext()).thenReturn(true, false);
+
         when(outputProductsIterator.next()).thenReturn(outputProduct);
         when(outputProducts.iterator()).thenReturn(outputProductsIterator);
 

@@ -94,25 +94,12 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             BigDecimal hourlyCost = (BigDecimal) operationComponent.getField(hourly);
             if (hourlyCost == null) {
                 hourlyCost = getHourlyCost(operationComponent, hourlyCost, hourly);
-                // hourlyCost = new BigDecimal(0);
             }
             BigDecimal operationCost = realizationTime.multiply(hourlyCost).setScale(8, BigDecimal.ROUND_UP);
             pathCost = pathCost.add(operationCost);
 
             return pathCost;
         }
-    }
-
-    private BigDecimal getHourlyCost(final EntityTreeNode operationComponent, BigDecimal hourlyCost, String hourly) {
-
-        hourlyCost = (BigDecimal) operationComponent.getBelongsToField("technology").getField(hourly);
-        if (hourlyCost == null) {
-            hourlyCost = (BigDecimal) operationComponent.getBelongsToField("operation").getField(hourly);
-        } else {
-            hourlyCost = new BigDecimal(0);
-        }
-
-        return hourlyCost;
     }
 
     private BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
@@ -133,28 +120,69 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 }
             }
             BigDecimal piecework = (BigDecimal) operationComponent.getField("pieceworkCost");
+            BigDecimal numberOfOperations = new BigDecimal(1);
+            Object numberOfOper = operationComponent.getField("numberOfOperations");
+
             if (piecework == null) {
-                piecework = new BigDecimal(0);
+                Map<String, BigDecimal> costs = getCost(operationComponent);
+                piecework = (BigDecimal) costs.get("piecework");
+                numberOfOperations = (BigDecimal) costs.get("numberOfOperations");
+            } else {
+                numberOfOperations = new BigDecimal(numberOfOper.toString());
             }
-            BigDecimal numberOfOperations = new BigDecimal(operationComponent.getField("numberOfOperations").toString());
-            if (numberOfOperations.equals(null)) {
-                numberOfOperations = new BigDecimal(1);
-            }
-            BigDecimal pieceWorkCost = piecework.divide(numberOfOperations);
+            BigDecimal pieceWorkCost = piecework.divide(numberOfOperations, 3);
             BigDecimal totalQuantityOutputProduct = new BigDecimal(0);
             EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
-
-            if (!outputProducts.isEmpty()) {
+            if (outputProducts == null) {
+                outputProducts = operationComponent.getBelongsToField("technology").getHasManyField(
+                        "operationProductOutComponents");
+            }
+            if (outputProducts != null && !outputProducts.isEmpty()) {
                 for (Entity outputProduct : outputProducts) {
                     totalQuantityOutputProduct = totalQuantityOutputProduct.add((BigDecimal) outputProduct.getField("quantity"));
+
                 }
+                operationCost = operationCost.add(pieceWorkCost.multiply(totalQuantityOutputProduct)).setScale(4,
+                        BigDecimal.ROUND_UP);
             }
-            operationCost = operationCost.add(pieceWorkCost.multiply(totalQuantityOutputProduct))
-                    .setScale(4, BigDecimal.ROUND_UP);
 
             pathCost = pathCost.add(operationCost);
             return pathCost;
         }
+    }
+
+    private BigDecimal getHourlyCost(final EntityTreeNode operationComponent, BigDecimal hourlyCost, String hourly) {
+
+        hourlyCost = (BigDecimal) operationComponent.getBelongsToField("technology").getField(hourly);
+        if (hourlyCost == null) {
+            hourlyCost = (BigDecimal) operationComponent.getBelongsToField("operation").getField(hourly);
+
+            if (hourlyCost == null) {
+                hourlyCost = new BigDecimal(0);
+            }
+        }
+
+        return hourlyCost;
+    }
+
+    private Map<String, BigDecimal> getCost(final EntityTreeNode operationComponent) {
+        Map<String, BigDecimal> costs = new HashMap<String, BigDecimal>();
+        BigDecimal piecework = (BigDecimal) operationComponent.getBelongsToField("technology").getField("pieceworkCost");
+        BigDecimal numberOfOperations = new BigDecimal(1);
+        if (piecework == null) {
+            piecework = (BigDecimal) operationComponent.getBelongsToField("operation").getField("pieceworkCost");
+            numberOfOperations = new BigDecimal(operationComponent.getBelongsToField("operation").getField("numberOfOperations")
+                    .toString());
+
+            if (piecework == null) {
+                piecework = new BigDecimal(0);
+                numberOfOperations = new BigDecimal(1);
+            }
+        }
+
+        costs.put("piecework", piecework);
+        costs.put("numberOfOperations", numberOfOperations);
+        return costs;
     }
 
 }
