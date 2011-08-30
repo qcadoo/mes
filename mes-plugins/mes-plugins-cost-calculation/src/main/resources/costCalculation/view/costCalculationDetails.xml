@@ -93,9 +93,6 @@
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 							method="fillFieldWhenTechnologyChanged" />
-						<!-- <listener event="onSelectedEntityChange" -->
-						<!-- class="com.qcadoo.mes.costCalculation.CostCalculationViewService" -->
-						<!-- method="clearFieldWhenTechnologyFieldIsEmpty" /> -->
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 							method="setFieldEnable" />
@@ -123,7 +120,7 @@
 							method="setFieldEnable" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="7">
+				<layoutElement column="2" row="6" height="2">
 					<component type="borderLayout" name="borderLayoutTechnicalProductionCost"
 						reference="borderLayoutTechnicalProductionCost">
 						<option type="label" value="technicalProductionCost" />
@@ -216,7 +213,6 @@
 								<component type="input" name="totalCost" field="totalCost"
 									defaultEnabled="false" reference="totalCosts">
 								</component>
-
 							</layoutElement>
 							<layoutElement column="1" row="6">
 								<component type="input" name="costPerUnit" field="costPerUnit"
@@ -244,9 +240,6 @@
 		</component>
 	</component>
 	<hooks>
-		<!-- <beforeRender -->
-		<!-- class="com.qcadoo.mes.costCalculation.CostCalculationViewService" -->
-		<!-- method="fillField" /> -->
 	</hooks>
 </view>
 

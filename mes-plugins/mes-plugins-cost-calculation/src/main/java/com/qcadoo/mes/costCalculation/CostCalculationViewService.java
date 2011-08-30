@@ -16,7 +16,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
@@ -41,9 +40,6 @@ public class CostCalculationViewService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
-    private TranslationService translationService;
 
     private final static String EMPTY = "";
 
@@ -179,9 +175,7 @@ public class CostCalculationViewService {
             return;
         }
         Entity technology = order.getBelongsToField("technology");
-        // if (technology != null) {
         applyValuesToFields(viewDefinitionState, technology, order);
-        // }
     }
 
     public void setFieldEnable(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -202,23 +196,6 @@ public class CostCalculationViewService {
                 quantity.setEnabled(true);
             }
         }
-    }
-
-    public void clearFieldWhenTechnologyFieldIsEmpty(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
-        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
-        FieldComponent product = (FieldComponent) viewDefinitionState.getComponentByReference("product");
-        FieldComponent order = (FieldComponent) viewDefinitionState.getComponentByReference("order");
-        if (EMPTY.equals(technologyLookup.getFieldValue())) {
-            defaultTechnology.setFieldValue(EMPTY);
-            defaultTechnology.requestComponentUpdateState();
-            product.setFieldValue(EMPTY);
-            product.requestComponentUpdateState();
-            order.setEnabled(true);
-            order.requestComponentUpdateState();
-        }
-
     }
 
     /* FUNCTIONS FOR FIRE CALCULATION AND HANDLING RESULTS BELOW */
@@ -320,7 +297,7 @@ public class CostCalculationViewService {
 
         for (String referenceName : outputFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
-            fieldComponent.setFieldValue(resultMap.get(referenceName));
+            fieldComponent.setFieldValue((BigDecimal) resultMap.get(referenceName).setScale(2, BigDecimal.ROUND_UP));
             fieldComponent.requestComponentUpdateState();
         }
 
