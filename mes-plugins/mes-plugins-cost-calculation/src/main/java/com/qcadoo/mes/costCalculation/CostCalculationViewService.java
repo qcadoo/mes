@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +16,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
@@ -29,7 +27,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class CostCalculationViewService {
@@ -40,6 +38,9 @@ public class CostCalculationViewService {
     @Autowired
     private CostCalculationService costCalculationService;
 
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
+
     private final static String EMPTY = "";
 
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -47,7 +48,7 @@ public class CostCalculationViewService {
         Long orderId = (Long) state.getFieldValue();
 
         if (orderId != null) {
-            String url = "../page/costCalculation/costCalculationDetails.html?context={\"orderId.id\":\"" + orderId + "\"}";
+            String url = "../page/costCalculation/costCalculationDetails.html?context={\"orderId\":\"" + orderId + "\"}";
             viewDefinitionState.redirectTo(url, false, true);
         }
     }
@@ -57,83 +58,85 @@ public class CostCalculationViewService {
         Long technologyId = (Long) state.getFieldValue();
 
         if (technologyId != null) {
-            String url = "../page/costCalculation/costCalculationDetails.html?context={\"technologyId.id\":\"" + technologyId
+            String url = "../page/costCalculation/costCalculationDetails.html?context={\"technologyId\":\"" + technologyId
                     + "\"}";
             viewDefinitionState.redirectTo(url, false, true);
         }
     }
 
-    public void fillField(final ViewDefinitionState state) {
-        if (!(state instanceof FieldComponent)) {
+    public void copyFieldValues(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
+            final String[] args) {
+        if (args.length < 2) {
             return;
         }
-        FormComponent formOrderId = (FormComponent) state.getComponentByReference("orderId");
-        FormComponent formTechnologyId = (FormComponent) state.getComponentByReference("technologyId");
+        String sourceType = args[0];
+        Long sourceId = Long.valueOf(args[1]);
+        Boolean cameFromOrder = "order".equals(sourceType);
+        Boolean cameFromTechnology = "technology".equals(sourceType);
+        Entity technology;
+        Entity order;
 
-        if (formOrderId != null && formOrderId.getFieldValue() != null) {
-            fillFieldFromOrder(state);
-        } else if (formTechnologyId != null && formTechnologyId.getFieldValue() != null) {
-            fillFieldFromTechnology(state);
+        if (!cameFromOrder && !cameFromTechnology) {
+            return;
         }
 
-    }
+        generateNumber(viewDefinitionState);
 
-    public void fillFieldFromOrder(final ViewDefinitionState state) {
-        FormComponent formOrderId = (FormComponent) state.getComponentByReference("orderId");
-        FormComponent form = (FormComponent) state.getComponentByReference("form");
-        FieldComponent order = (FieldComponent) state.getComponentByReference("order");
-        FieldComponent number = (FieldComponent) state.getComponentByReference("number");
-        Long orderId = (Long) formOrderId.getFieldValue();
-        Entity orderEntity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                orderId);
-
-        if (orderEntity != null) {
-            formOrderId.getEntity().setId(null);
-            form.getEntity().setId(null);
-            order.setFieldValue(orderId);
-            number.setFieldValue(generateNumber(6));
-            Entity technologyEntity = orderEntity.getBelongsToField("technology");
-            if (technologyEntity != null) {
-                setValueToField(state, orderEntity, technologyEntity);
-            }
-        }
-    }
-
-    public void fillFieldFromTechnology(final ViewDefinitionState state) {
-
-        FormComponent formTechnologyId = (FormComponent) state.getComponentByReference("technologyId");
-        FormComponent form = (FormComponent) state.getComponentByReference("form");
-        FieldComponent number = (FieldComponent) state.getComponentByReference("number");
-
-        Long technologyId = (Long) formTechnologyId.getFieldValue();
-        Entity technologyEntity = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
-
-        if (technologyEntity != null) {
-            form.getEntity().setId(null);
-            setValueToField(state, null, technologyEntity);
-            number.setFieldValue(generateNumber(6));
-        }
-    }
-
-    private String generateNumber(final int digitsNumber) {
-        List<Entity> costs = dataDefinitionService
-                .get(CostCalculateConstants.PLUGIN_IDENTIFIER, CostCalculateConstants.MODEL_COST_CALCULATION).find().list()
-                .getEntities();
-
-        long longValue = 0;
-        if (costs.size() == 0) {
-            longValue++;
+        if (cameFromOrder) {
+            order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(sourceId);
+            technology = order.getBelongsToField("technology");
         } else {
-            longValue = costs.size() + 1;
+            order = null;
+            technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY).get(sourceId);
         }
-        return String.format("%0" + digitsNumber + "d", longValue);
+
+        applyValuesToFields(viewDefinitionState, technology, order);
+
+    }
+
+    private void applyValuesToFields(final ViewDefinitionState viewDefinitionState, final Entity technology, final Entity order) {
+        Boolean cameFromOrder = false;
+        Boolean cameFromTechnology = false;
+        Set<String> referenceNames = new HashSet<String>(Arrays.asList("defaultTechnology", "product", "order", "quantity",
+                "technology"));
+        Map<String, FieldComponent> componentsMap = new HashMap<String, FieldComponent>();
+        for (String referenceName : referenceNames) {
+            FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(referenceName);
+            componentsMap.put(referenceName, fieldComponent);
+        }
+
+        if (order != null) {
+            cameFromOrder = true;
+        } else {
+            cameFromTechnology = true;
+        }
+
+        if(cameFromOrder) {
+            componentsMap.get("order").setFieldValue(order.getId());
+        } else {
+            componentsMap.get("order").setFieldValue(EMPTY);
+        }
+        componentsMap.get("order").setEnabled(cameFromOrder);
+        componentsMap.get("technology").setFieldValue(technology.getId());
+        componentsMap.get("technology").setEnabled(!cameFromTechnology);
+        if (cameFromOrder) {
+            componentsMap.get("quantity").setFieldValue(order.getField("plannedQuantity"));
+        } else {
+            componentsMap.get("quantity").setFieldValue(technology.getField("nominalQuantity"));
+        }
+        componentsMap.get("quantity").setEnabled(!cameFromOrder);
+        componentsMap.get("product").setFieldValue(technology.getBelongsToField("product").getId());
+        componentsMap.get("product").setEnabled(false);
+    }
+
+    private void generateNumber(final ViewDefinitionState viewDefinitionState) {
+        numberGeneratorService.generateAndInsertNumber(viewDefinitionState, CostCalculateConstants.PLUGIN_IDENTIFIER,
+                CostCalculateConstants.MODEL_COST_CALCULATION, "form", "number");
     }
 
     public void generateDateOfCalculation(final DataDefinition dataDefinition, final Entity entity) {
-
         entity.setField("dateOfCalculation", new Date());
-
     }
 
     public void fillFieldWhenTechnologyChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -142,12 +145,14 @@ public class CostCalculationViewService {
             return;
         }
         FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
-        if (technologyLookup.getFieldValue() != null) {
-            Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
-            if (technology != null) {
-                setValueToField(viewDefinitionState, null, technology);
-            }
+        if (technologyLookup.getFieldValue() == null) {
+            return;
+        }
+
+        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
+        if (technology != null) {
+            applyValuesToFields(viewDefinitionState, technology, null);
         }
     }
 
@@ -157,51 +162,19 @@ public class CostCalculationViewService {
             return;
         }
         FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
-        if (orderLookup.getFieldValue() != null) {
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                    (Long) orderLookup.getFieldValue());
-
-            if (order != null) {
-                Entity technologyEntity = order.getBelongsToField("technology");
-                if (technologyEntity != null) {
-                    setValueToField(viewDefinitionState, order, technologyEntity);
-                }
-            }
+        if (orderLookup.getFieldValue() == null) {
+            return;
         }
-    }
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                (Long) orderLookup.getFieldValue());
 
-    private void setValueToField(final ViewDefinitionState viewDefinitionState, Entity orderEntity, Entity technologyEntity) {
-
-        FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
-        FieldComponent product = (FieldComponent) viewDefinitionState.getComponentByReference("product");
-        FieldComponent order = (FieldComponent) viewDefinitionState.getComponentByReference("order");
-        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
-        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
-        Entity productEntity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
-                technologyEntity.getBelongsToField("product").getId());
-
-        technology.setFieldValue(technologyEntity.getId());
-        defaultTechnology.setFieldValue(technologyEntity.getId());
-        if (productEntity != null) {
-            product.setFieldValue(productEntity.getId());
-            product.setEnabled(false);
+        if (order == null) {
+            return;
         }
-        if (orderEntity != null) {
-            quantity.setFieldValue(orderEntity.getField("plannedQuantity"));
-            quantity.setEnabled(false);
-            technology.setEnabled(false);
-        } else {
-            order.setFieldValue(EMPTY);
-            order.setEnabled(false);
-            quantity.setFieldValue(technologyEntity.getField("minimalQuantity"));
-            quantity.setEnabled(true);
-        }
-        defaultTechnology.requestComponentUpdateState();
-        product.requestComponentUpdateState();
-        order.requestComponentUpdateState();
-        technology.requestComponentUpdateState();
-        quantity.requestComponentUpdateState();
-
+        Entity technology = order.getBelongsToField("technology");
+//        if (technology != null) {
+            applyValuesToFields(viewDefinitionState, technology, order);
+//        }
     }
 
     public void setFieldEnable(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -303,12 +276,6 @@ public class CostCalculationViewService {
 
             resultMap.put(key, value);
         }
-
-        // cast cost input fields values to BigDeciaml
-        // for (String key : bigDecimalValues) {
-        //
-        // resultMap.put(key, new BigDecimal((String) resultMap.get(key)));
-        // }
 
         // cast checkbox fields values to boolean
         resultMap.put("includeTPZ", Boolean.valueOf((String) resultMap.get("includeTPZ")));

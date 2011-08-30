@@ -81,6 +81,7 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         this.expectedRealizationTime = expectedrealizationTime;
     }
 
+    @SuppressWarnings("unchecked")
     @Before
     public void init() {
         DataDefinition dataDefinition = mock(DataDefinition.class);
@@ -131,7 +132,7 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         // then
         assertEquals(validateExpectedLabor, result.get("totalLaborHourlyCosts"));
         assertEquals(validateExpectedMachine, result.get("totalMachineHourlyCosts"));
-        assertEquals(validateExpectedPieceworkCost, result.get("totalPieceWorkCosts"));
+        assertEquals(validateExpectedPieceworkCost, result.get("totalPieceworkCosts"));
     }
 
     @Test(expected = IllegalArgumentException.class)
