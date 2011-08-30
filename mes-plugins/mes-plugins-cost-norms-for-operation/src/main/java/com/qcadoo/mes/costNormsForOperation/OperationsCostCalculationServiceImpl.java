@@ -71,7 +71,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         }
         result.put("totalMachineHourlyCosts", totalMachineHourlyCost);
         result.put("totalLaborHourlyCosts", totalLaborHourlyCost);
-        result.put("totalPieceWorkCosts", totalPieceWorkCost);
+        result.put("totalPieceworkCosts", totalPieceWorkCost);
         return result;
     }
 

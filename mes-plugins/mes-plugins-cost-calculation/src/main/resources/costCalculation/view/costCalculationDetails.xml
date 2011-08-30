@@ -12,7 +12,7 @@
 			</group> 
 			<group name="report">
 				<bigButton name="pdf" icon="pdfIcon24.png"
-					action="#{form}.fireEvent(printCostCalculationReport,pdf);" state="enabled" />
+					action="#{form}.fireEvent(printCostCalculationReport,pdf);" state="disabled" reference="pdf" />
 			</group>
 		</ribbon>
 		<component type="form" name="orderId" reference="orderId"
@@ -177,7 +177,12 @@
 							</layoutElement>
 							<layoutElement column="1" row="5">
 								<component type="input" name="totalCost" field="totalCost"
-									defaultEnabled="false" reference="totalCosts" />
+									defaultEnabled="false" reference="totalCosts" >
+									<listener event="onChange"
+										class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+										method="setPdfButtonEnabled" />
+								</component>
+									
 							</layoutElement>
 							<layoutElement column="1" row="6">
 								<component type="input" name="costPerUnit" field="costPerUnit"

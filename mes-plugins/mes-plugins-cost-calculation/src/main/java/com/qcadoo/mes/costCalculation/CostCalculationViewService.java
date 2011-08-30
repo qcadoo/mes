@@ -339,15 +339,22 @@ public class CostCalculationViewService {
         outputFields.addAll(Arrays.asList("productionCostMarginValue", "materialCostMarginValue", "totalOverhead",
                 "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
                 "totalTechnicalProductionCosts", "totalCosts", "totalCostsPerUnit"));
-
-        checkArgument(resultMap.keySet().containsAll(outputFields));
+        checkArgument(resultMap.keySet().size() == outputFields.size(), "to less argument");
 
         for (String referenceName : outputFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
-            fieldComponent.setFieldValue(resultMap.get(referenceName).toString());
+            fieldComponent.setFieldValue(resultMap.get(referenceName));
             fieldComponent.requestComponentUpdateState();
         }
 
     }
+
+    // public void setPdfButtonEnabled(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[]
+    // args) {
+    // ComponentState pdfRaport = (ComponentState) viewDefinitionState.getComponentByReference("pdf");
+    // if (viewDefinitionState.getComponentByReference("totalCosts").getFieldValue() != null) {
+    // pdfRaport.setEnabled(true);
+    // }
+    // }
 
 }
