@@ -230,7 +230,7 @@ public class CostCalculationPdfView extends ReportPdfView {
             materialsTable.addCell(new Phrase(product.getKey().getStringField("unit"), PdfUtil.getArialRegular9Dark()));
             materialsTable.addCell(new Phrase(getDecimalFormat().format(product.getValue()), PdfUtil.getArialRegular9Dark()));
             BigDecimal nominalCost = (BigDecimal) product.getKey().getField("nominalCost");
-            BigDecimal costForNumber = new BigDecimal((Integer) product.getKey().getField("costForNumber"));
+            BigDecimal costForNumber = (BigDecimal) product.getKey().getField("costForNumber");
             BigDecimal costPerUnit = nominalCost.divide(costForNumber, 3, RoundingMode.HALF_UP);
             materialsTable.addCell(new Phrase(getDecimalFormat().format(costPerUnit), PdfUtil.getArialRegular9Dark()));
             BigDecimal costs = product.getValue().multiply(costPerUnit);

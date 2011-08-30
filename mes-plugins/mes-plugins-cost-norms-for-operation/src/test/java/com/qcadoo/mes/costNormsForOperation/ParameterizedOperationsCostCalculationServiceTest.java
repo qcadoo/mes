@@ -57,10 +57,10 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         return Arrays.asList(new Object[][] {
                 // mode, laborHourly, machineHourly, piecework, numOfOps, includeTPZs, order qtty, expectedMachine, expectedLabor
                 // pieceWorkCost, validationOutputQuantity, expectedrealizationTime
-                { HOURLY, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), valueOf(200), valueOf(400),
-                        valueOf(0), valueOf(5), 20 },
+                { HOURLY, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), valueOf(0.05555556),
+                        valueOf(0.11111112), valueOf(0), valueOf(5), 20 },
                 { PIECEWORK, valueOf(20), valueOf(10), valueOf(35), valueOf(1), false, valueOf(1), valueOf(0), valueOf(0),
-                        valueOf(175), valueOf(5), 0 } });
+                        valueOf(175).setScale(4), valueOf(5), 0 } });
     }
 
     public ParameterizedOperationsCostCalculationServiceTest(OperationsCostCalculationConstants mode, BigDecimal laborHourly,

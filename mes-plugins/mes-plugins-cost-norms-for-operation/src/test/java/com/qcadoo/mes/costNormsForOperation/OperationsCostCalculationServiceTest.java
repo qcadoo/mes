@@ -9,8 +9,6 @@ import java.math.BigDecimal;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationService;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 

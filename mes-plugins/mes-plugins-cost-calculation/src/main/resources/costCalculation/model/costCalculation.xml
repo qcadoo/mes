@@ -16,18 +16,18 @@
 		<decimal name="pieceworkCost" readonly="true"/>
 		<decimal name="laborHourlyCost" readonly="true"/>
 		<decimal name="totalTechnicalProductionCost" />
-		<decimal name="productionCostMargin" />
+		<decimal name="productionCostMargin" default="0"/>
 		<decimal name="productionCostMarginValue" />
-		<decimal name="materialCostMargin" />		
+		<decimal name="materialCostMargin" default="0"/>		
 		<decimal name="materialCostMarginValue"  />
-		<decimal name="additionalOverhead" />
+		<decimal name="additionalOverhead" default="0"/>
 		<decimal name="totalOverhead" />
 		<decimal name="totalCost" />
 		<decimal name="costPerUnit" />
 		<string name="description"/>
-		<boolean name="includeTPZ"/>
-		<enum name="includeCostOfMaterial" values="nominal,lastPurchase,average" required="true" />
-		<enum name="includeCostOfOperation" values="piecework,hourly" required="true" />
+		<boolean name="includeTPZ" default="true"/>
+		<enum name="includeCostOfMaterial" values="nominal,lastPurchase,average" required="true" default="nominal"/>
+		<enum name="includeCostOfOperation" values="piecework,hourly" required="true" default="hourly"/>
 		<date name="dateOfCalculation" />
 	</fields>
 	<hooks >

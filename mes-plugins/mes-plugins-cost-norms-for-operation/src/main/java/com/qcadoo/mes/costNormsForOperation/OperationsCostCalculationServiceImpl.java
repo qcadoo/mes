@@ -1,8 +1,6 @@
 package com.qcadoo.mes.costNormsForOperation;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.HOURLY;
-import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.PIECEWORK;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 
 import java.math.BigDecimal;
@@ -51,10 +49,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             throw new IllegalArgumentException("Incompatible source entity type..");
         }
 
-        if (calculateOperationCostsMode == PIECEWORK) {
+        if (calculateOperationCostsMode == OperationsCostCalculationConstants.PIECEWORK) {
             totalPieceWorkCost = estimateCostCalculationForPieceWork(operationComponents.getRoot(), quantity, includeTPZ);
         }
-        if (calculateOperationCostsMode == HOURLY) {
+        if (calculateOperationCostsMode == OperationsCostCalculationConstants.HOURLY) {
 
             int time = orderRealizationTimeService.estimateRealizationTimeForOperation(operationComponents.getRoot(), quantity,
                     includeTPZ);
@@ -85,21 +83,20 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         } else {
             BigDecimal pathCost = new BigDecimal(0);
             for (EntityTreeNode child : operationComponent.getChildren()) {
-
                 BigDecimal tmpPathCost = estimateCostCalculationForHourly(child, plannedQuantity, includeTPZ, name);
                 if (tmpPathCost.compareTo(pathCost) == 1) {
                     pathCost = tmpPathCost;
                 }
             }
-            int time = orderRealizationTimeService.estimateRealizationTimeForOperation(operationComponent, plannedQuantity,
-                    includeTPZ);
-            BigDecimal realizationTime = BigDecimal.valueOf(time);
+            Double time = new Double(orderRealizationTimeService.estimateRealizationTimeForOperation(operationComponent,
+                    plannedQuantity, includeTPZ));
+            BigDecimal realizationTime = BigDecimal.valueOf(time / 3600);
             BigDecimal hourlyCost = (BigDecimal) operationComponent.getField(name);
             if (hourlyCost == null) {
+
                 hourlyCost = new BigDecimal(0);
             }
-            BigDecimal operationCost = realizationTime.multiply(hourlyCost);
-
+            BigDecimal operationCost = realizationTime.multiply(hourlyCost).setScale(8, BigDecimal.ROUND_UP);
             pathCost = pathCost.add(operationCost);
 
             return pathCost;
@@ -127,21 +124,21 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             if (piecework == null) {
                 piecework = new BigDecimal(0);
             }
-            BigDecimal numberOfOperations = (BigDecimal) operationComponent.getField("numberOfOperations");
-            if (numberOfOperations == null) {
+            BigDecimal numberOfOperations = new BigDecimal(operationComponent.getField("numberOfOperations").toString());
+            if (numberOfOperations.equals(null)) {
                 numberOfOperations = new BigDecimal(1);
             }
-            BigDecimal pieceWorkCost = piecework.divide(numberOfOperations, 3);
+            BigDecimal pieceWorkCost = piecework.divide(numberOfOperations);
+            BigDecimal totalQuantityOutputProduct = new BigDecimal(0);
             EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
 
-            BigDecimal totalQuantityOutputProduct = new BigDecimal(0);
-
-            for (Entity outputProduct : outputProducts) {
-
-                totalQuantityOutputProduct = totalQuantityOutputProduct.add((BigDecimal) outputProduct.getField("quantity"));
-
+            if (!outputProducts.isEmpty()) {
+                for (Entity outputProduct : outputProducts) {
+                    totalQuantityOutputProduct = totalQuantityOutputProduct.add((BigDecimal) outputProduct.getField("quantity"));
+                }
             }
-            operationCost = operationCost.add(pieceWorkCost.multiply(totalQuantityOutputProduct));
+            operationCost = operationCost.add(pieceWorkCost.multiply(totalQuantityOutputProduct))
+                    .setScale(4, BigDecimal.ROUND_UP);
 
             pathCost = pathCost.add(operationCost);
             return pathCost;

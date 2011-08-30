@@ -6,13 +6,31 @@
 		<ribbon>
 			<group template="navigation" />
 			<group template="formSaveCopyAndRemoveActions" />
-			<group name="costCalculate"> 
+			<group name="costCalculate">
 				<bigButton name="costCalculate" icon="calculateTimeIcon24.png"
-					action="#{form}.fireEvent(fireCostCalculation);"/> 
-			</group> 
+					action="#{form}.fireEvent(fireCostCalculation);" />
+			</group>
 			<group name="report">
 				<bigButton name="pdf" icon="pdfIcon24.png"
-					action="#{form}.fireEvent(printCostCalculationReport,pdf);" state="disabled" reference="pdf" />
+					action="#{form}.fireEvent(printCostCalculationReport,pdf);" state="enabled"
+					reference="pdf">
+					<script>
+				<![CDATA[
+					#{form}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (! value || ! value.content) {
+								return;
+							}
+							if (! value.content.entityId) {
+								this.disable();
+							} else {
+								this.enable();
+							}
+						}
+					});					
+				]]>
+					</script>
+				</bigButton>
 			</group>
 		</ribbon>
 		<component type="form" name="orderId" reference="orderId"
@@ -75,9 +93,9 @@
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 							method="fillFieldWhenTechnologyChanged" />
-						<listener event="onSelectedEntityChange"
-							class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-							method="clearFieldWhenTechnologyFieldIsEmpty" />
+						<!-- <listener event="onSelectedEntityChange" -->
+						<!-- class="com.qcadoo.mes.costCalculation.CostCalculationViewService" -->
+						<!-- method="clearFieldWhenTechnologyFieldIsEmpty" /> -->
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 							method="setFieldEnable" />
@@ -158,7 +176,7 @@
 						</component>
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="9" height="2">
+				<layoutElement column="1" row="8" height="2">
 					<component type="textarea" name="description" field="description"
 						height="2" />
 				</layoutElement>
@@ -196,12 +214,9 @@
 							</layoutElement>
 							<layoutElement column="1" row="5">
 								<component type="input" name="totalCost" field="totalCost"
-									defaultEnabled="false" reference="totalCosts" >
-									<listener event="onChange"
-										class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-										method="setPdfButtonEnabled" />
+									defaultEnabled="false" reference="totalCosts">
 								</component>
-									
+
 							</layoutElement>
 							<layoutElement column="1" row="6">
 								<component type="input" name="costPerUnit" field="costPerUnit"
@@ -217,21 +232,21 @@
 			<listener event="printCostCalculationReport"
 				class="com.qcadoo.mes.costCalculation.print.CostCalculationReportService"
 				method="printCostCalculationReport" />
-				
+
 			<listener event="fireCostCalculation"
 				class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 				method="calculateTotalCostView" />
-			
+
 			<listener event="requestCopyFieldValues"
 				class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-				method="copyFieldValues" />	
-				
+				method="copyFieldValues" />
+
 		</component>
 	</component>
 	<hooks>
-<!--		<beforeRender-->
-<!--			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"-->
-<!--			method="fillField" />-->
+		<!-- <beforeRender -->
+		<!-- class="com.qcadoo.mes.costCalculation.CostCalculationViewService" -->
+		<!-- method="fillField" /> -->
 	</hooks>
 </view>
 
