@@ -26,12 +26,18 @@
 			                 
 			                 this.addOnChangeListener({
 			                     onClick: function() {
-			                     	// #{form}.fireEvent(this, 'prepareConfirmText');
-			                        // if (confirmReAssigment()) {
-			                        	#{form}.fireEvent(this, 'addOrdersToGroup');
-			                        // }
+			                     	#{form}.fireEvent(this, 'prepareConfirmText');
 			                     }
 			                 });
+
+							#{confirmBoxTextHolder}.addOnChangeListener({
+								onSetValue: function(value) {
+									#{confirmBoxTextHolder}.performUpdateState();
+									if (confirmReAssigment()) {
+			                        	#{form}.fireEvent(this, 'addOrdersToGroup');
+			                        }
+								}
+							});
 			                 
 			                 #{orders}.addOnChangeListener({
 			                     onChange: function(selectedArray) {			                         
@@ -45,7 +51,9 @@
 			                 
 			                 function confirmReAssigment() {
 			                 	var message = #{confirmBoxTextHolder}.getValue().content.value;
-                                if(message.length > 0) {
+			                 	if (!message) {
+			                 		return false;
+			                 	} else if (message != "NULL") {
                                 	return confirm(message);
                                 }
                                 return true;
