@@ -133,15 +133,24 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             BigDecimal pieceWorkCost = piecework.divide(numberOfOperations, 3);
             BigDecimal totalQuantityOutputProduct = new BigDecimal(0);
             EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
+            System.out.println("***alaoutputProducts" + outputProducts);
+
             if (outputProducts == null) {
-                outputProducts = operationComponent.getBelongsToField("technology").getHasManyField(
-                        "operationProductOutComponents");
+
+                outputProducts = operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents")
+                        .getRoot().getHasManyField("operationProductOutComponents");
+                // outputProducts = operationComponent.getBelongsToField("technology").getHasManyField(
+                // "operationProductOutComponents");
+                System.out.println("***ala in if outputProducts" + outputProducts);
+
             }
             if (outputProducts != null && !outputProducts.isEmpty()) {
+                System.out.println("***alaoutputProducts != null" + outputProducts);
                 for (Entity outputProduct : outputProducts) {
                     totalQuantityOutputProduct = totalQuantityOutputProduct.add((BigDecimal) outputProduct.getField("quantity"));
 
                 }
+                System.out.println("***alatotalQuantityOutputProduct" + totalQuantityOutputProduct);
                 operationCost = operationCost.add(pieceWorkCost.multiply(totalQuantityOutputProduct)).setScale(4,
                         BigDecimal.ROUND_UP);
             }
