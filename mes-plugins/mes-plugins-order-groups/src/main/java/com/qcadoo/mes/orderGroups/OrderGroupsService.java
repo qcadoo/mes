@@ -175,7 +175,7 @@ public class OrderGroupsService {
         
         Entity group = groupForm.getEntity();
         RibbonActionItem ribbonItemSelect = window.getRibbon().getGroupByName("navigation").getItemByName("select");
-        textarea.setFieldValue("");
+        textarea.setFieldValue("NULL");
 
         if (grid.getSelectedEntitiesIds().size() == 0) {
             ribbonItemSelect.setEnabled(false);
@@ -195,17 +195,16 @@ public class OrderGroupsService {
             return;
         }
 
-        textarea.setFieldValue("");
         String groupName = group.getField("name").toString();
         StringBuilder confirmTextBuilder = new StringBuilder();
         for (Entity order : res.getEntities()) {
-            if (group.equals(order.getBelongsToField("orderGroup"))) {
+            if (group.getId().equals(order.getBelongsToField("orderGroup").getId())) {
                 continue;
             }
             confirmTextBuilder.append('"');
             confirmTextBuilder.append(order.getField("name"));
             confirmTextBuilder.append("\":\n\t\"");
-            confirmTextBuilder.append(order.getField("orderGroup"));
+            confirmTextBuilder.append(order.getField("orderGroupName"));
             confirmTextBuilder.append("\" --> \"");
             confirmTextBuilder.append(groupName);
             confirmTextBuilder.append("\"\n");
@@ -216,8 +215,8 @@ public class OrderGroupsService {
         }
 
         String confirmText = translationService.translate("orderGroups.popup.confirm.confirmOrderTransferText",
-                viewDefinitionState.getLocale(), confirmTextBuilder.toString());
-        textarea.setFieldValue(confirmText.toString());
+                viewDefinitionState.getLocale());
+        textarea.setFieldValue(confirmText.toString() + "\n\n" + confirmTextBuilder.toString());
     }
 
     /* ****** VALIDATORS ****** */
