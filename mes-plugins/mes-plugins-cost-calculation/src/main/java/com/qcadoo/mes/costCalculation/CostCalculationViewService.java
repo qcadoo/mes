@@ -277,8 +277,8 @@ public class CostCalculationViewService {
         return resultMap;
     }
 
-    private Boolean getBooleanFromField(final String value) {
-        if (Integer.valueOf(value) == 1) {
+    private Boolean getBooleanFromField(final Object value) {
+        if ("1".equals(value)) {
             return true;
         }
         return false;
