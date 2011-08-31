@@ -11,19 +11,6 @@
 			     <bigButton name="select" icon="acceptIcon24.png" state="disabled" >
 			         <script>
 			             <![CDATA[
-			             jQuery(document).ready(function() {
-			                 var contextJSON = JSON.parse(context);
-			                 var groupName = contextJSON['window.mainTab.orderGroup.name'];
-			                 var groupDateFrom = contextJSON['window.mainTab.orderGroup.dateFrom'];
-			                 var groupDateTo = contextJSON['window.mainTab.orderGroup.dateTo'];
-			                 var headerLabel = "#{translate(orderGroups.orderGroupOrdersTable.window.mainTab.orderGroupOrders.headerNew)} <span>" + groupName + " ";
-			                 
-			                 if(groupDateFrom != "..." || groupDateTo != "...") {
-			                     headerLabel += "( " + groupDateFrom + " - " + groupDateTo + " )";       
-                             }       
-                             headerLabel += "</span>";
-			                 $(".tabWindowHeader").html(headerLabel);
-			                 
 			                 this.addOnChangeListener({
 			                     onClick: function() {
 			                     	#{form}.fireEvent(this, 'prepareConfirmText');
@@ -58,7 +45,6 @@
                                 }
                                 return true;
 			                 }
-			             });
 			             ]]>
 			         </script>
 			     </bigButton>
@@ -66,7 +52,7 @@
 			</group>
 		</ribbon>
 		
-		<component type="form" name="orderGroup" reference="orderGroup">
+		<component type="form" name="orderGroup" reference="orderGroup" defaultVisible="false" >
 		</component>
 		
 		<component type="form" name="orderGroupOrders" reference="form">
@@ -89,8 +75,9 @@
 					<component type="textarea" name="confirmBoxTextHolder" reference="confirmBoxTextHolder" defaultVisible="false" />
 				</layoutElement>
 			</component>
-			<option type="header" value="false" />
+			<option type="header" value="true" />
 			<option type="expression" value="#name" />
+			<option type="expressionNew" value="#name" />
 			
 			<listener event="addOrdersToGroup" class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="addOrdersToGroup" />
 			<listener event="prepareConfirmText" class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="prepareConfirmText" />

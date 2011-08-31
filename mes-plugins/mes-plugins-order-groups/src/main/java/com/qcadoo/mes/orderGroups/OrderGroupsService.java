@@ -93,17 +93,26 @@ public class OrderGroupsService {
         }
     }
 
-    public void showOrderGroupOrdersTable(final ViewDefinitionState viewDefinitionState, ComponentState componentState,
+    public void showOrderGroupOrdersTable(final ViewDefinitionState state, ComponentState componentState,
             String[] args) {
-        String groupDateFrom = viewDefinitionState.getComponentByReference("groupDateFrom").getFieldValue().toString();
-        String groupDateTo = viewDefinitionState.getComponentByReference("groupDateTo").getFieldValue().toString();
-
-        JSONObject context = new JSONObject();
+        JSONObject context = new JSONObject();        
+        StringBuilder header = new StringBuilder();
+        String name = state.getComponentByReference("name").getFieldValue().toString();
+        String dateFrom = state.getComponentByReference("groupDateFrom").getFieldValue().toString();
+        String dateTo = state.getComponentByReference("groupDateTo").getFieldValue().toString();
+        
+        header.append(name);
+        if(dateFrom != null || dateTo != null) {
+            header.append("</span> ( ");
+            header.append(dateFrom.isEmpty() ? "..." : dateFrom);
+            header.append(" : ");
+            header.append(dateTo.isEmpty() ? "..." : dateTo);
+            header.append(" )<span>");
+        }
+        
         try {
             context.put("orderGroup.id", componentState.getFieldValue().toString());
-            context.put("orderGroup.name", viewDefinitionState.getComponentByReference("name").getFieldValue());
-            context.put("orderGroup.dateFrom", groupDateFrom.isEmpty() ? "..." : groupDateFrom);
-            context.put("orderGroup.dateTo", groupDateTo.isEmpty() ? "..." : groupDateTo);
+            context.put("form.name", header.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -112,7 +121,7 @@ public class OrderGroupsService {
         url.append("../page/orderGroups/orderGroupOrdersTable.html?context=");
         url.append(context.toString());
 
-        viewDefinitionState.redirectTo(url.toString(), false, true);
+        state.redirectTo(url.toString(), false, true);
     }
 
     public void addOrdersToGroup(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
@@ -171,8 +180,7 @@ public class OrderGroupsService {
         if (grid == null || groupForm == null || textarea == null || window == null) {
             return;
         }
-        
-        
+
         Entity group = groupForm.getEntity();
         RibbonActionItem ribbonItemSelect = window.getRibbon().getGroupByName("navigation").getItemByName("select");
         textarea.setFieldValue("NULL");
