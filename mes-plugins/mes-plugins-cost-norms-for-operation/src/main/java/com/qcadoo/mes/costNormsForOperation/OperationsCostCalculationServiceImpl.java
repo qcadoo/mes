@@ -90,6 +90,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             }
             Double time = new Double(orderRealizationTimeService.estimateRealizationTimeForOperation(operationComponent,
                     plannedQuantity, includeTPZ));
+            System.out.println("***ala");
+            System.out.println("***ala" + includeTPZ);
+            System.out.println("***ala" + time);
+            System.out.println("***ala");
             BigDecimal realizationTime = BigDecimal.valueOf(time / 3600);
             BigDecimal hourlyCost = (BigDecimal) operationComponent.getField(hourly);
             if (hourlyCost == null) {
@@ -130,32 +134,26 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             } else {
                 numberOfOperations = new BigDecimal(numberOfOper.toString());
             }
+            System.out.println("***ala1" + piecework);
+            System.out.println("***ala1" + numberOfOperations);
             BigDecimal pieceWorkCost = piecework.divide(numberOfOperations, 3);
             BigDecimal totalQuantityOutputProduct = new BigDecimal(0);
             EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
-            System.out.println("***alaoutputProducts" + outputProducts);
 
             if (outputProducts == null) {
-
-                outputProducts = operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents")
-                        .getRoot().getHasManyField("operationProductOutComponents");
-                // outputProducts = operationComponent.getBelongsToField("technology").getHasManyField(
-                // "operationProductOutComponents");
-                System.out.println("***ala in if outputProducts" + outputProducts);
-
+                outputProducts = operationComponent.getBelongsToField("technology").getTreeField("operationComponents").getRoot()
+                        .getHasManyField("operationProductOutComponents");
             }
             if (outputProducts != null && !outputProducts.isEmpty()) {
-                System.out.println("***alaoutputProducts != null" + outputProducts);
                 for (Entity outputProduct : outputProducts) {
                     totalQuantityOutputProduct = totalQuantityOutputProduct.add((BigDecimal) outputProduct.getField("quantity"));
 
                 }
-                System.out.println("***alatotalQuantityOutputProduct" + totalQuantityOutputProduct);
                 operationCost = operationCost.add(pieceWorkCost.multiply(totalQuantityOutputProduct)).setScale(4,
                         BigDecimal.ROUND_UP);
             }
-
-            pathCost = pathCost.add(operationCost);
+            pathCost = operationCost.multiply(plannedQuantity);
+            // pathCost = pathCost.add(operationCost);
             return pathCost;
         }
     }
@@ -178,6 +176,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         Map<String, BigDecimal> costs = new HashMap<String, BigDecimal>();
         BigDecimal piecework = (BigDecimal) operationComponent.getBelongsToField("technology").getField("pieceworkCost");
         BigDecimal numberOfOperations = new BigDecimal(1);
+        System.out.println("***ala2" + piecework);
+        System.out.println("***ala2" + numberOfOperations);
         if (piecework == null) {
             piecework = (BigDecimal) operationComponent.getBelongsToField("operation").getField("pieceworkCost");
             numberOfOperations = new BigDecimal(operationComponent.getBelongsToField("operation").getField("numberOfOperations")
@@ -188,7 +188,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 numberOfOperations = new BigDecimal(1);
             }
         }
-
+        System.out.println("***ala3" + piecework);
+        System.out.println("***ala3" + numberOfOperations);
         costs.put("piecework", piecework);
         costs.put("numberOfOperations", numberOfOperations);
         return costs;

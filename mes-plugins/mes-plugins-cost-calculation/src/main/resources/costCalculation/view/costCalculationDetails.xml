@@ -127,25 +127,25 @@
 						<component type="gridLayout" name="gridTechnicalProductionCost"
 							columns="1" rows="5">
 							<layoutElement column="1" row="1">
-								<component type="input" name="materialCost" field="materialCost"
+								<component type="input" name="totalMaterialCosts" field="totalMaterialCosts"
 									reference="totalMaterialCosts" defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="1" row="2">
-								<component type="input" name="machineHourlyCost"
-									reference="totalMachineHourlyCosts" field="machineHourlyCost"
+								<component type="input" name="totalMachineHourlyCosts"
+									reference="totalMachineHourlyCosts" field="totalMachineHourlyCosts"
 									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="1" row="3">
-								<component type="input" name="laborHourlyCost" field="laborHourlyCost"
+								<component type="input" name="totalLaborHourlyCosts" field="totalLaborHourlyCosts"
 									reference="totalLaborHourlyCosts" defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="1" row="4">
-								<component type="input" name="pieceworkCost" field="pieceworkCost"
+								<component type="input" name="totalPieceworkCosts" field="totalPieceworkCosts"
 									reference="totalPieceworkCosts" defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="1" row="5">
-								<component type="input" name="totalTechnicalProductionCost"
-									reference="totalTechnicalProductionCosts" field="totalTechnicalProductionCost"
+								<component type="input" name="totalTechnicalProductionCosts"
+									reference="totalTechnicalProductionCosts" field="totalTechnicalProductionCosts"
 									defaultEnabled="false" />
 							</layoutElement>
 						</component>

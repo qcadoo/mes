@@ -66,6 +66,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         }
 
         resultMap.putAll(productsCostCalculationService.calculateProductsCost(technology, productMode, quantity));
+
         resultMap.putAll(operationsCostCalculationService.calculateOperationsCost(source, operationMode,
                 (Boolean) parameters.get("includeTPZ"), quantity));
 
@@ -92,5 +93,4 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
         return resultMap;
     }
-
 }

@@ -241,7 +241,7 @@ public class CostCalculationViewService {
         // Set for fields contained BigDecimal values
         final Set<String> bigDecimalValues = new HashSet<String>();
         bigDecimalValues.addAll(Arrays.asList("quantity", "productionCostMargin", "materialCostMargin", "additionalOverhead"));
-        
+
         // Set for all input fields
         final Set<String> referenceValues = new HashSet<String>();
         referenceValues.addAll(bigDecimalValues);
@@ -260,7 +260,7 @@ public class CostCalculationViewService {
             } else if (bigDecimalValues.contains(key)) {
                 value = BigDecimal.ZERO;
             }
-            
+
             resultMap.put(key, value);
         }
 
@@ -278,12 +278,12 @@ public class CostCalculationViewService {
     }
 
     private Boolean getBooleanFromField(final String value) {
-        if(Integer.valueOf(value) == 1) {
+        if (Integer.valueOf(value) == 1) {
             return true;
         }
         return false;
     }
-    
+
     private BigDecimal getBigDecimalFromField(final Object value, final Locale locale) {
         try {
             DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);
@@ -304,7 +304,7 @@ public class CostCalculationViewService {
 
         for (String referenceName : outputFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
-            fieldComponent.setFieldValue((BigDecimal) resultMap.get(referenceName).setScale(2, BigDecimal.ROUND_UP));
+            fieldComponent.setFieldValue((BigDecimal) resultMap.get(referenceName).setScale(3, BigDecimal.ROUND_UP));
             fieldComponent.requestComponentUpdateState();
         }
 
