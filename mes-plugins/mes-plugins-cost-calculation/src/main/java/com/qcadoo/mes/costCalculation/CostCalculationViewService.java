@@ -241,7 +241,7 @@ public class CostCalculationViewService {
         // Set for fields contained BigDecimal values
         final Set<String> bigDecimalValues = new HashSet<String>();
         bigDecimalValues.addAll(Arrays.asList("quantity", "productionCostMargin", "materialCostMargin", "additionalOverhead"));
-
+        
         // Set for all input fields
         final Set<String> referenceValues = new HashSet<String>();
         referenceValues.addAll(bigDecimalValues);
@@ -260,12 +260,12 @@ public class CostCalculationViewService {
             } else if (bigDecimalValues.contains(key)) {
                 value = BigDecimal.ZERO;
             }
-
+            
             resultMap.put(key, value);
         }
 
         // cast checkbox fields values to boolean
-        resultMap.put("includeTPZ", Boolean.valueOf((String) resultMap.get("includeTPZ")));
+        resultMap.put("includeTPZ", getBooleanFromField((String) resultMap.get("includeTPZ")));
 
         // cast mode fields to proper enum
         resultMap.put("calculateMaterialCostsMode",
@@ -277,6 +277,13 @@ public class CostCalculationViewService {
         return resultMap;
     }
 
+    private Boolean getBooleanFromField(final String value) {
+        if(Integer.valueOf(value) == 1) {
+            return true;
+        }
+        return false;
+    }
+    
     private BigDecimal getBigDecimalFromField(final Object value, final Locale locale) {
         try {
             DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);

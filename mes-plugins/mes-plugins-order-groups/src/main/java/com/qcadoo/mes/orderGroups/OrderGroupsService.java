@@ -158,7 +158,7 @@ public class OrderGroupsService {
 
         // Redirect to 'successful' view (perform action like window.goBack)
         viewDefinitionState.redirectTo("/page/orderGroups/orderGroupDetails.html?context={\"form.id\":\"" + groupId + "\"}",
-                false, false);
+                false, true);
     }
 
     public void prepareConfirmText(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
