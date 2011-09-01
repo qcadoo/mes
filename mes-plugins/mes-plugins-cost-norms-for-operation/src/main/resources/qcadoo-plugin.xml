@@ -151,7 +151,14 @@
 			type="beforeRender"
 			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
 			method="inheritOperationCostValues" />
+		
+		<view:view-ribbon-group resource="view/ribbonExtensions/technologyOperationComponentDetails.xml"/>
 
+		<view:view-listener plugin="technologies" 
+			view="technologyOperationComponentDetails" component="operation" event="copyCostsFromOperation"
+			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService" method="copyCostsFromOperation" />
+			
+	
 	</modules>
 
 </plugin>

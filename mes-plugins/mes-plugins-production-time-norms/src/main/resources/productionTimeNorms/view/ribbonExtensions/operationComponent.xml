@@ -28,7 +28,9 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
 	plugin="technologies"
 	view="technologyOperationComponentDetails">
+	
 	<group name="norm">
-		<bigButton name="copyNormFromOperation" icon="settingsIcon24.png" state="enabled" action="#{operation}.fireEvent(copyNormFromOperation);"  />
+		<smallButton name="copyNormFromOperation"  state="enabled" action="#{operation}.fireEvent(copyNormFromOperation);"  />
 	</group>
+	
 </ribbonExtension>

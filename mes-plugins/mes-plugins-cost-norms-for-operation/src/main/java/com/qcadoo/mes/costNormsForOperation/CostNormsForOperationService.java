@@ -10,6 +10,7 @@ import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstan
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -23,7 +24,7 @@ public class CostNormsForOperationService {
     /* ****** VIEW HOOKS ******* */
 
     public void inheritOperationCostValues(final ViewDefinitionState viewDefinitionState) {
-        
+
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         String formName = form.getName();
         Entity target, source;
@@ -41,12 +42,37 @@ public class CostNormsForOperationService {
                 return;
             }
             copyCostValuesFromGivenOperation(target, source.getBelongsToField("operation"));
-            source = copyCostValuesFromGivenOperation(source, source.getBelongsToField("operation")); // Fill missing technology costs
+            source = copyCostValuesFromGivenOperation(source, source.getBelongsToField("operation")); // Fill missing technology
+                                                                                                      // costs
         } else {
             return;
         }
 
         fillCostFormFields(viewDefinitionState, source); // propagate model changes into the view
+    }
+
+    public void copyCostsFromOperation(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
+            final String[] args) {
+        FieldComponent pieceworkCost = (FieldComponent) viewDefinitionState.getComponentByReference("pieceworkCost");
+        FieldComponent numberOfOperations = (FieldComponent) viewDefinitionState.getComponentByReference("numberOfOperations");
+        FieldComponent laborHourlyCost = (FieldComponent) viewDefinitionState.getComponentByReference("laborHourlyCost");
+        FieldComponent machineHourlyCost = (FieldComponent) viewDefinitionState.getComponentByReference("machineHourlyCost");
+
+        Long operationId = (Long) componentState.getFieldValue();
+
+        Entity operation = operationId != null ? dataDefinitionService.get("technologies", "operation").get(operationId) : null;
+
+        if (operation != null) {
+            pieceworkCost.setFieldValue(operation.getField("pieceworkCost"));
+            numberOfOperations.setFieldValue(operation.getField("numberOfOperations"));
+            laborHourlyCost.setFieldValue(operation.getField("laborHourlyCost"));
+            machineHourlyCost.setFieldValue(operation.getField("machineHourlyCost"));
+        } else {
+            pieceworkCost.setFieldValue(null);
+            numberOfOperations.setFieldValue(1);
+            laborHourlyCost.setFieldValue(null);
+            machineHourlyCost.setFieldValue(null);
+        }
     }
 
     /* ******* AWESOME HELPERS ;) ******* */
@@ -60,7 +86,7 @@ public class CostNormsForOperationService {
                 result = true;
             }
         }
-        if(!result) {
+        if (!result) {
             return null;
         }
         return target.getDataDefinition().save(target);
@@ -70,9 +96,11 @@ public class CostNormsForOperationService {
         checkArgument(source != null, "source is null!");
         for (String componentReference : FIELDS) {
             FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
-            if (component.getFieldValue() != null && component.getFieldValue().toString().isEmpty() && source.getField(componentReference) != null) {
+            if (component.getFieldValue() != null && component.getFieldValue().toString().isEmpty()
+                    && source.getField(componentReference) != null) {
                 component.setFieldValue(source.getField(componentReference).toString());
             }
         }
     }
+
 }

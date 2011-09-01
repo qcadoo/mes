@@ -39,10 +39,12 @@ public interface BasicConstants {
     public static final String MODEL_SUBSTITUTE = "substitute";
 
     public static final String MODEL_SUBSTITUTE_COMPONENT = "substituteComponent";
-    
+
     public static final String MODEL_COMPANY = "company";
-    
+
     public static final String MODEL_CURRENCY = "currency";
+
+    public static final String MODEL_SHIFT = "shift";
 
     // VIEW
     public static final String VIEW_MACHINE_DETAILS = "machineDetails";
@@ -62,8 +64,7 @@ public interface BasicConstants {
     public static final String VIEW_STAFF_DETAILS = "staffDetails";
 
     public static final String VIEW_STAFFS_LIST = "staffsList";
-    
+
     public static final String VIEW_COMPANY_DETAILS = "companyDetails";
-    
 
 }
