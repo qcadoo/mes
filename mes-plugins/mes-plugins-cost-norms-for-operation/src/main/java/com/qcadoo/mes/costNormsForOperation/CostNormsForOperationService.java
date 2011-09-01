@@ -5,24 +5,14 @@ import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperati
 
 import java.math.BigDecimal;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class CostNormsForOperationService {
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     /* ****** VIEW HOOKS ******* */
 
@@ -64,14 +54,14 @@ public class CostNormsForOperationService {
         }
     }
 
-    private void fillCostFormFields(final ViewDefinitionState viewDefinitionState, final Entity source) {
-        checkArgument(source != null, "source is null!");
-        for (String componentReference : FIELDS) {
-            FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
-            if (component.getFieldValue() != null && component.getFieldValue().toString().isEmpty()
-                    && source.getField(componentReference) != null) {
-                component.setFieldValue(source.getField(componentReference).toString());
-            }
-        }
-    }
+//    private void fillCostFormFields(final ViewDefinitionState viewDefinitionState, final Entity source) {
+//        checkArgument(source != null, "source is null!");
+//        for (String componentReference : FIELDS) {
+//            FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
+//            if (component.getFieldValue() != null && component.getFieldValue().toString().isEmpty()
+//                    && source.getField(componentReference) != null) {
+//                component.setFieldValue(source.getField(componentReference).toString());
+//            }
+//        }
+//    }
 }

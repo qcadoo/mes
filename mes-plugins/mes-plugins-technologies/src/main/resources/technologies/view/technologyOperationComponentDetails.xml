@@ -40,7 +40,7 @@
 				<layoutElement column="1" row="1">
 					<component type="lookup" name="operation" field="operation"
 						reference="operation">
-						<option type="column" name="name" fields="name" width="300" />
+						<option type="column" name="name" fields="name" width="300" link="true"/>
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
 						<option type="expression"
@@ -58,4 +58,7 @@
 		</component>
 		
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.technologies.TechnologyService" method="setLookupDisableInTechnologyOperationComponent" />
+	</hooks>
 </view>

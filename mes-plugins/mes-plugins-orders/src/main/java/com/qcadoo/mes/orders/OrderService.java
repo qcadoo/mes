@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.orders;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +33,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -65,6 +69,9 @@ public final class OrderService {
 
     @Autowired
     private ExpressionService expressionService;
+
+    @Autowired
+    private ShiftsService shiftsService;
 
     public boolean clearOrderDatesAndWorkersOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("state", "01pending");
@@ -513,4 +520,26 @@ public final class OrderService {
         }
     }
 
+    public void checkPlannedDate(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        /*
+         * FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom"); FieldComponent
+         * dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo"); List<Entity> shitfs =
+         * dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find() .list().getEntities();
+         * System.out.println("***aladateFrom" + dateFrom.getFieldValue()); System.out.println("***aladateTo" +
+         * dateTo.getFieldValue()); System.out.println("***ala" + shitfs.size()); System.out.println("***ala" + shitfs); for
+         * (Entity shift : shitfs) { System.out.println("***ala" + shift.getField("mondayHours")); List<ShiftHour> shiftHour =
+         * shiftsService.getHoursForShift(shift, getDateFromField(dateFrom.getFieldValue()),
+         * getDateFromField(dateTo.getFieldValue())); for (ShiftHour hour : shiftHour) { System.out.println("***alashiftHour" +
+         * shiftHour); } }
+         */
+    }
+
+    public Date getDateFromField(final Object value) {
+        try {
+            return new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).parse((String) value);
+        } catch (ParseException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
 }

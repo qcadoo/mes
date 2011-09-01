@@ -87,7 +87,6 @@ public class NormService {
         FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference("timeNextOperation");
 
         Long operationId = (Long) componentState.getFieldValue();
-
         Entity operation = operationId != null ? dataDefinitionService.get("technologies", "operation").get(operationId) : null;
 
         if (operation != null) {
@@ -118,6 +117,11 @@ public class NormService {
         } else {
             countMachineOperation.setVisible(false);
         }
+    }
+
+    public void inheritOperationNormValues(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
+            final String[] args) {
+        copyNormFromOperation(viewDefinitionState, componentState, args);
     }
 
 }
