@@ -9,20 +9,24 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class CostNormsForOperationService {
 
 
-    /* ****** VIEW HOOKS ******* */
+    /* ****** VIEW EVENT LISTENERS ******* */
 
-    
+    public void copyCostValuesFromSelectedTechnology(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+        
+    }
 
     /* ******* MODEL HOOKS ******* */
 
     public void copyCostNormsToOrderOperationComponent(final DataDefinition dd, final Entity orderOperationComponent) {
         Entity source = orderOperationComponent.getBelongsToField("technologyOperationComponent");
-        // be sure that entity isn't in detached state
+        // IMPORTANT! be sure that entity isn't in detached state
         source = source.getDataDefinition().get(source.getId());
         if (!copyCostValuesFromGivenOperation(orderOperationComponent, source)) {
             fillCostFieldsWithDefaultValues(orderOperationComponent);
@@ -53,15 +57,5 @@ public class CostNormsForOperationService {
             entity.setField(fieldName, BigDecimal.ZERO);
         }
     }
-
-//    private void fillCostFormFields(final ViewDefinitionState viewDefinitionState, final Entity source) {
-//        checkArgument(source != null, "source is null!");
-//        for (String componentReference : FIELDS) {
-//            FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
-//            if (component.getFieldValue() != null && component.getFieldValue().toString().isEmpty()
-//                    && source.getField(componentReference) != null) {
-//                component.setFieldValue(source.getField(componentReference).toString());
-//            }
-//        }
-//    }
+    
 }

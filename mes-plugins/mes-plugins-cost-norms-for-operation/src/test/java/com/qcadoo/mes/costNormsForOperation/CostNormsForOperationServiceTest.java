@@ -77,41 +77,6 @@ public class CostNormsForOperationServiceTest {
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenSourceEntityIsIncompatible() throws Exception {
-        // given
-        when(form.getName()).thenReturn("form");
-        when(emptyEntity.getBelongsToField("operation")).thenReturn(null); // set source to null
-
-        // when
-        costNormsForOperationService.inheritOperationCostValues(viewDefinitionState);
-    }
-
-    @Test
-    public void shouldDoNothingWhenFormComponentIsUnsupported() throws Exception {
-        // given
-        when(form.getName()).thenReturn("some incompatible form component");
-
-        // when
-        costNormsForOperationService.inheritOperationCostValues(viewDefinitionState);
-
-        // then
-        verify(emptyEntity, never()).setField(anyString(), anyObject());
-    }
-
-    @Test
-    public void shouldInheritValuesFromOperationToTechnology() throws Exception {
-        // given
-        when(form.getName()).thenReturn("form");
-
-        // when
-        costNormsForOperationService.inheritOperationCostValues(viewDefinitionState);
-
-        // then
-        verify(emptyEntity, atLeastOnce()).setField(anyString(), anyObject());
-        verify(entityWitchCosts, atLeastOnce()).getField(anyString());
-
-    }
     /*
      * @Test public void shouldInheritValuesFromTechnologyToInstanceOfTechnologyInOrder() throws Exception { // given
      * when(form.getName()).thenReturn("orderOperationComponent");

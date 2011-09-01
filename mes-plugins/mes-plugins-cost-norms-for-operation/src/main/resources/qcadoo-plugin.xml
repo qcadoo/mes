@@ -141,6 +141,7 @@ http://schema.qcadoo.org/modules/menu.xsd">
 		</model:model-field>
 
 		<!-- operation - technology -->
+<!--		<view:view-listener view="" component="" plugin="" event="technologyWasChanged" class="" method="copyCostValuesFromSelectedTechnology"/>-->
 
 		<!-- operation - instance of technology -->
 		<model:model-hook model="orderOperationComponent" plugin="productionScheduling">
