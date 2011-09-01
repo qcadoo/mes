@@ -141,11 +141,17 @@ http://schema.qcadoo.org/modules/menu.xsd">
 		</model:model-field>
 
 		<!-- operation - technology -->
-<!--		<view:view-listener view="" component="" plugin="" event="technologyWasChanged" class="" method="copyCostValuesFromSelectedTechnology"/>-->
+		<view:view-listener view="technologyOperationComponentDetails"
+			component="form" plugin="technologies" event="onChangeTechnology"
+			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
+			method="copyCostValuesFromSelectedTechnology" />
 
 		<!-- operation - instance of technology -->
-		<model:model-hook model="orderOperationComponent" plugin="productionScheduling">
-			<model:onSave class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService" method="copyCostNormsToOrderOperationComponent"/>
+		<model:model-hook model="orderOperationComponent"
+			plugin="productionScheduling">
+			<model:onSave
+				class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
+				method="copyCostNormsToOrderOperationComponent" />
 		</model:model-hook>
 
 	</modules>

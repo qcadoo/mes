@@ -344,9 +344,7 @@ public final class TechnologyService {
 
     public boolean checkIfUnitSampligNrIsReq(final DataDefinition dataDefinition, final Entity entity) {
         String qualityControlType = (String) entity.getField("qualityControlType");
-
         if (qualityControlType != null && qualityControlType.equals("02forUnit")) {
-
             BigDecimal unitSamplingNr = (BigDecimal) entity.getField("unitSamplingNr");
             if (unitSamplingNr == null || unitSamplingNr.scale() > 3 || unitSamplingNr.compareTo(BigDecimal.ZERO) < 0
                     || unitSamplingNr.precision() > 7) {
@@ -354,26 +352,15 @@ public final class TechnologyService {
                 entity.addError(dataDefinition.getField("unitSamplingNr"),
                         "technologies.technology.validate.global.error.unitSamplingNr");
                 return false;
-            } else {
-                return true;
             }
-        } else {
-            return true;
         }
+        return true;
     }
 
     public void setLookupDisableInTechnologyOperationComponent(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         FieldComponent operationLookup = (FieldComponent) viewDefinitionState.getComponentByReference("operation");
-        if (form.getEntityId() == null) {
-            return;
-        } else {
 
-            Entity technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(form.getEntityId());
-            if (technologyOperationComponent != null) {
-                operationLookup.setEnabled(false);
-            }
-        }
+        operationLookup.setEnabled(form.getEntityId() == null);
     }
 }

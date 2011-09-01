@@ -19,7 +19,7 @@ public class CostNormsForOperationService {
     /* ****** VIEW EVENT LISTENERS ******* */
 
     public void copyCostValuesFromSelectedTechnology(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
-        
+        System.out.println("***MK copyCostValuesFromSelectedTechnology");
     }
 
     /* ******* MODEL HOOKS ******* */
