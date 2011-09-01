@@ -151,6 +151,10 @@
 			type="beforeRender"
 			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
 			method="inheritOperationCostValues" />
+			
+		<model:model-hook model="order" plugin="orders">
+			<model:onSave class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService" method="copyCostNormsFromTechnologyToOrder"/>
+		</model:model-hook>
 
 	</modules>
 

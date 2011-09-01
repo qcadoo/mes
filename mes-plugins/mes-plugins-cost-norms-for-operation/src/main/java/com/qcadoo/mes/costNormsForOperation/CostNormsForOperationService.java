@@ -3,13 +3,17 @@ package com.qcadoo.mes.costNormsForOperation;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.FIELDS;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -22,8 +26,13 @@ public class CostNormsForOperationService {
 
     /* ****** VIEW HOOKS ******* */
 
+    public void inheritOperationCostValues(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
+            final String[] args) {
+        inheritOperationCostValues(viewDefinitionState);
+    }
+
     public void inheritOperationCostValues(final ViewDefinitionState viewDefinitionState) {
-        
+
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         String formName = form.getName();
         Entity target, source;
@@ -41,12 +50,24 @@ public class CostNormsForOperationService {
                 return;
             }
             copyCostValuesFromGivenOperation(target, source.getBelongsToField("operation"));
-            source = copyCostValuesFromGivenOperation(source, source.getBelongsToField("operation")); // Fill missing technology costs
+            source = copyCostValuesFromGivenOperation(source, source.getBelongsToField("operation")); // Fill missing technology
+                                                                                                      // costs
         } else {
             return;
         }
 
         fillCostFormFields(viewDefinitionState, source); // propagate model changes into the view
+    }
+
+    /* ******* MODEL HOOKS ******* */
+
+    public void copyCostNormsFromTechnologyToOrder(final DataDefinition dd, final Entity order) {
+        // for (Entity orderOperationComponent : order.getTreeField("orderOperationComponents")) {
+        // Entity source = orderOperationComponent.getBelongsToField("technologyOperationComponent");
+        // if (copyCostValuesFromGivenOperation(orderOperationComponent, source) == null) {
+        // fillCostFieldsWithDefaultValues(orderOperationComponent);
+        // }
+        // }
     }
 
     /* ******* AWESOME HELPERS ;) ******* */
@@ -60,17 +81,28 @@ public class CostNormsForOperationService {
                 result = true;
             }
         }
-        if(!result) {
+        if (!result) {
             return null;
         }
         return target.getDataDefinition().save(target);
     }
 
+    // private void fillCostFieldsWithDefaultValues(final Entity entity) {
+    // for (String fieldName : FIELDS) {
+    // if ("numberOfOperations".equals(fieldName)) {
+    // entity.setField(fieldName, Long.valueOf(1));
+    // continue;
+    // }
+    // entity.setField(fieldName, BigDecimal.ZERO);
+    // }
+    // }
+
     private void fillCostFormFields(final ViewDefinitionState viewDefinitionState, final Entity source) {
         checkArgument(source != null, "source is null!");
         for (String componentReference : FIELDS) {
             FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
-            if (component.getFieldValue() != null && component.getFieldValue().toString().isEmpty() && source.getField(componentReference) != null) {
+            if (component.getFieldValue() != null && component.getFieldValue().toString().isEmpty()
+                    && source.getField(componentReference) != null) {
                 component.setFieldValue(source.getField(componentReference).toString());
             }
         }
