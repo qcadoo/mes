@@ -127,15 +127,15 @@
 		<view:view-hook view="technologyOperationComponentDetails" type="beforeRender" plugin="technologies" class="com.qcadoo.mes.productionTimeNorms.NormService" 
 			method="updateFieldsStateOnWindowLoad"/>
 			
-		<view:view-hook plugin="technologies"
-			view="technologyOperationComponentDetails" type="beforeRender"
+		<view:view-listener component="operation" event="onSelectedEntityChange" plugin="technologies"
+			view="technologyOperationComponentDetails" 
 			class="com.qcadoo.mes.productionTimeNorms.NormService"
 			method="inheritOperationNormValues" />
 			
-		<view:view-hook plugin="productionScheduling"
-			view="orderOperationComponentDetails" type="beforeRender"
-			class="com.qcadoo.mes.productionTimeNorms.NormService"
-			method="inheritOperationNormValues" />
+<!-- 		<view:view-hook plugin="productionScheduling" -->
+<!-- 			view="orderOperationComponentDetails" type="beforeRender" -->
+<!-- 			class="com.qcadoo.mes.productionTimeNorms.NormService" -->
+<!-- 			method="inheritOperationNormValues" /> -->
 			
 		<view:view-listener plugin="technologies" 
 			view="technologyOperationComponentDetails" component="operation" event="copyNormFromOperation"

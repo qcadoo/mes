@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -22,6 +23,11 @@ public class CostNormsForOperationService {
     private DataDefinitionService dataDefinitionService;
 
     /* ****** VIEW HOOKS ******* */
+
+    public void inheritOperationCostValues(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
+            final String[] args) {
+        inheritOperationCostValues(viewDefinitionState);
+    }
 
     public void inheritOperationCostValues(final ViewDefinitionState viewDefinitionState) {
 
@@ -51,28 +57,15 @@ public class CostNormsForOperationService {
         fillCostFormFields(viewDefinitionState, source); // propagate model changes into the view
     }
 
-    public void copyCostsFromOperation(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
-            final String[] args) {
-        FieldComponent pieceworkCost = (FieldComponent) viewDefinitionState.getComponentByReference("pieceworkCost");
-        FieldComponent numberOfOperations = (FieldComponent) viewDefinitionState.getComponentByReference("numberOfOperations");
-        FieldComponent laborHourlyCost = (FieldComponent) viewDefinitionState.getComponentByReference("laborHourlyCost");
-        FieldComponent machineHourlyCost = (FieldComponent) viewDefinitionState.getComponentByReference("machineHourlyCost");
+    /* ******* MODEL HOOKS ******* */
 
-        Long operationId = (Long) componentState.getFieldValue();
-
-        Entity operation = operationId != null ? dataDefinitionService.get("technologies", "operation").get(operationId) : null;
-
-        if (operation != null) {
-            pieceworkCost.setFieldValue(operation.getField("pieceworkCost"));
-            numberOfOperations.setFieldValue(operation.getField("numberOfOperations"));
-            laborHourlyCost.setFieldValue(operation.getField("laborHourlyCost"));
-            machineHourlyCost.setFieldValue(operation.getField("machineHourlyCost"));
-        } else {
-            pieceworkCost.setFieldValue(null);
-            numberOfOperations.setFieldValue(1);
-            laborHourlyCost.setFieldValue(null);
-            machineHourlyCost.setFieldValue(null);
-        }
+    public void copyCostNormsFromTechnologyToOrder(final DataDefinition dd, final Entity order) {
+        // for (Entity orderOperationComponent : order.getTreeField("orderOperationComponents")) {
+        // Entity source = orderOperationComponent.getBelongsToField("technologyOperationComponent");
+        // if (copyCostValuesFromGivenOperation(orderOperationComponent, source) == null) {
+        // fillCostFieldsWithDefaultValues(orderOperationComponent);
+        // }
+        // }
     }
 
     /* ******* AWESOME HELPERS ;) ******* */
@@ -92,6 +85,16 @@ public class CostNormsForOperationService {
         return target.getDataDefinition().save(target);
     }
 
+    // private void fillCostFieldsWithDefaultValues(final Entity entity) {
+    // for (String fieldName : FIELDS) {
+    // if ("numberOfOperations".equals(fieldName)) {
+    // entity.setField(fieldName, Long.valueOf(1));
+    // continue;
+    // }
+    // entity.setField(fieldName, BigDecimal.ZERO);
+    // }
+    // }
+
     private void fillCostFormFields(final ViewDefinitionState viewDefinitionState, final Entity source) {
         checkArgument(source != null, "source is null!");
         for (String componentReference : FIELDS) {
@@ -102,5 +105,4 @@ public class CostNormsForOperationService {
             }
         }
     }
-
 }
