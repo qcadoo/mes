@@ -141,19 +141,10 @@
 		</model:model-field>
 
 		<!-- operation - technology -->
-		<view:view-hook plugin="technologies"
-			view="technologyOperationComponentDetails" type="beforeRender"
-			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
-			method="inheritOperationCostValues" />
 
 		<!-- operation - instance of technology -->
-		<view:view-hook plugin="productionScheduling" view="orderOperationComponentDetails"
-			type="beforeRender"
-			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
-			method="inheritOperationCostValues" />
-			
-		<model:model-hook model="order" plugin="orders">
-			<model:onSave class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService" method="copyCostNormsFromTechnologyToOrder"/>
+		<model:model-hook model="orderOperationComponent" plugin="productionScheduling">
+			<model:onSave class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService" method="copyCostNormsToOrderOperationComponent"/>
 		</model:model-hook>
 
 	</modules>

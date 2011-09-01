@@ -26,76 +26,43 @@ public class CostNormsForOperationService {
 
     /* ****** VIEW HOOKS ******* */
 
-    public void inheritOperationCostValues(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
-            final String[] args) {
-        inheritOperationCostValues(viewDefinitionState);
-    }
-
-    public void inheritOperationCostValues(final ViewDefinitionState viewDefinitionState) {
-
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        String formName = form.getName();
-        Entity target, source;
-
-        if ("form".equals(formName)) { // technology
-            target = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(form.getEntityId());
-            source = target.getBelongsToField("operation");
-            copyCostValuesFromGivenOperation(target, source);
-        } else if ("orderOperationComponent".equals(formName)) { // technology instance (technology inside order)
-            target = dataDefinitionService.get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
-                    ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT).get(form.getEntityId());
-            source = target.getBelongsToField("technologyOperationComponent");
-            if (copyCostValuesFromGivenOperation(target, source) != null) {
-                return;
-            }
-            copyCostValuesFromGivenOperation(target, source.getBelongsToField("operation"));
-            source = copyCostValuesFromGivenOperation(source, source.getBelongsToField("operation")); // Fill missing technology
-                                                                                                      // costs
-        } else {
-            return;
-        }
-
-        fillCostFormFields(viewDefinitionState, source); // propagate model changes into the view
-    }
+    
 
     /* ******* MODEL HOOKS ******* */
 
-    public void copyCostNormsFromTechnologyToOrder(final DataDefinition dd, final Entity order) {
-        // for (Entity orderOperationComponent : order.getTreeField("orderOperationComponents")) {
-        // Entity source = orderOperationComponent.getBelongsToField("technologyOperationComponent");
-        // if (copyCostValuesFromGivenOperation(orderOperationComponent, source) == null) {
-        // fillCostFieldsWithDefaultValues(orderOperationComponent);
-        // }
-        // }
+    public void copyCostNormsToOrderOperationComponent(final DataDefinition dd, final Entity orderOperationComponent) {
+        Entity source = orderOperationComponent.getBelongsToField("technologyOperationComponent");
+        // be sure that entity isn't in detached state
+        source = source.getDataDefinition().get(source.getId());
+        if (!copyCostValuesFromGivenOperation(orderOperationComponent, source)) {
+            fillCostFieldsWithDefaultValues(orderOperationComponent);
+        }
     }
 
     /* ******* AWESOME HELPERS ;) ******* */
 
-    private Entity copyCostValuesFromGivenOperation(final Entity target, final Entity source) {
+    private Boolean copyCostValuesFromGivenOperation(final Entity target, final Entity source) {
         checkArgument(source != null, "given source is null");
         boolean result = false;
         for (String fieldName : FIELDS) {
-            if (target.getField(fieldName) == null && source.getField(fieldName) != null) {
-                target.setField(fieldName, source.getField(fieldName));
-                result = true;
+            if (target.getField(fieldName) != null || source.getField(fieldName) == null) {
+                continue;
             }
+            target.setField(fieldName, source.getField(fieldName));
+            result = true;
         }
-        if (!result) {
-            return null;
-        }
-        return target.getDataDefinition().save(target);
+        return result;
     }
 
-    // private void fillCostFieldsWithDefaultValues(final Entity entity) {
-    // for (String fieldName : FIELDS) {
-    // if ("numberOfOperations".equals(fieldName)) {
-    // entity.setField(fieldName, Long.valueOf(1));
-    // continue;
-    // }
-    // entity.setField(fieldName, BigDecimal.ZERO);
-    // }
-    // }
+    private void fillCostFieldsWithDefaultValues(final Entity entity) {
+        for (String fieldName : FIELDS) {
+            if ("numberOfOperations".equals(fieldName)) {
+                entity.setField(fieldName, 1);
+                continue;
+            }
+            entity.setField(fieldName, BigDecimal.ZERO);
+        }
+    }
 
     private void fillCostFormFields(final ViewDefinitionState viewDefinitionState, final Entity source) {
         checkArgument(source != null, "source is null!");
