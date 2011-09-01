@@ -24,8 +24,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
 
-    private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
-
     @Override
     public Map<String, BigDecimal> calculateOperationsCost(Entity source,
             OperationsCostCalculationConstants calculateOperationCostsMode, boolean includeTPZ, BigDecimal quantity) {
@@ -54,18 +52,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         }
         if (calculateOperationCostsMode == OperationsCostCalculationConstants.HOURLY) {
 
-            // int time = orderRealizationTimeService.estimateRealizationTimeForOperation(operationComponents.getRoot(), quantity,
-            // includeTPZ);
-            //
-            // if (time == 0) {
-            // totalLaborHourlyCost = new BigDecimal(0);
-            // totalMachineHourlyCost = new BigDecimal(0);
-            // } else {
             totalLaborHourlyCost = estimateCostCalculationForHourly(operationComponents.getRoot(), quantity, includeTPZ,
                     OperationsCostCalculationConstants.LABOR_HOURLY_COST);
             totalMachineHourlyCost = estimateCostCalculationForHourly(operationComponents.getRoot(), quantity, includeTPZ,
                     OperationsCostCalculationConstants.MACHINE_HOURLY_COST);
-            // }
         }
         result.put("totalMachineHourlyCosts", totalMachineHourlyCost);
         result.put("totalLaborHourlyCosts", totalLaborHourlyCost);
@@ -85,10 +75,16 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         Double time = new Double(orderRealizationTimeService.estimateRealizationTimeForOperation(operationComponent,
                 plannedQuantity, includeTPZ));
         BigDecimal realizationTime = BigDecimal.valueOf(time / 3600);
+        BigDecimal hourlyCost = (BigDecimal) operationComponent.getField(hourly);
+        if (hourlyCost == null) {
+            hourlyCost = new BigDecimal(0);
+        }
 
-        BigDecimal hourlyCost = getHourlyCost(operationComponent, hourly);
+        // BigDecimal hourlyCost = getHourlyCost(operationComponent, hourly);
         BigDecimal operationCost = realizationTime.multiply(hourlyCost).setScale(8, BigDecimal.ROUND_UP);
         pathCost = pathCost.add(operationCost);
+        System.out.println("***alahourlyCost" + hourlyCost);
+        System.out.println("***alapathCost" + pathCost);
         return pathCost;
     }
 
@@ -103,10 +99,14 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 pathCost = tmpPathCost;
             }
         }
-
-        Map<String, BigDecimal> costs = getCost(operationComponent);
-        BigDecimal piecework = (BigDecimal) costs.get("piecework");
-        BigDecimal numberOfOperations = (BigDecimal) costs.get("numberOfOperations");
+        BigDecimal piecework = (BigDecimal) operationComponent.getField("pieceworkCost");
+        if (piecework == null) {
+            piecework = new BigDecimal(0);
+        }
+        BigDecimal numberOfOperations = (BigDecimal) operationComponent.getField("numberOfOperations");
+        if (numberOfOperations == null) {
+            numberOfOperations = new BigDecimal(1);
+        }
 
         BigDecimal pieceWorkCost = piecework.divide(numberOfOperations, 3);
         BigDecimal totalQuantityOutputProduct = new BigDecimal(0);
@@ -124,54 +124,12 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             operationCost = operationCost.add(pieceWorkCost.multiply(totalQuantityOutputProduct))
                     .setScale(4, BigDecimal.ROUND_UP);
         }
+
         pathCost = operationCost.multiply(plannedQuantity);
+        System.out.println("***alanumberOfOperationspiecework" + piecework + " " + numberOfOperations);
+        System.out.println("***alaoperationCost" + operationCost);
+        System.out.println("***alapathCost" + pathCost);
         return pathCost;
-    }
-
-    private BigDecimal getHourlyCost(final EntityTreeNode operationComponent, String hourly) {
-        BigDecimal hourlyCost = (BigDecimal) operationComponent.getField(hourly);
-        if (hourlyCost == null) {
-            if (operationComponent.getBelongsToField("technologyOperationComponent") != null) {
-
-                hourlyCost = (BigDecimal) operationComponent.getBelongsToField("technologyOperationComponent").getField(hourly);
-            }
-            if (hourlyCost == null) {
-                hourlyCost = (BigDecimal) operationComponent.getBelongsToField("operation").getField(hourly);
-                if (hourlyCost == null) {
-                    hourlyCost = new BigDecimal(0);
-                }
-            }
-        }
-        return hourlyCost;
-    }
-
-    private Map<String, BigDecimal> getCost(final EntityTreeNode operationComponent) {
-        Map<String, BigDecimal> costs = new HashMap<String, BigDecimal>();
-        BigDecimal piecework = (BigDecimal) operationComponent.getField("pieceworkCost");
-        BigDecimal numberOfOperations = new BigDecimal(1);
-
-        if (piecework == null) {
-            if (operationComponent.getBelongsToField("technologyOperationComponent") != null) {
-
-                piecework = (BigDecimal) operationComponent.getBelongsToField("technologyOperationComponent").getField(
-                        "pieceworkCost");
-                numberOfOperations = new BigDecimal(operationComponent.getBelongsToField("technologyOperationComponent")
-                        .getField("numberOfOperations").toString());
-            }
-            if (piecework == null) {
-                piecework = (BigDecimal) operationComponent.getBelongsToField("operation").getField("pieceworkCost");
-                numberOfOperations = new BigDecimal(operationComponent.getBelongsToField("operation")
-                        .getField("numberOfOperations").toString());
-            }
-            if (piecework == null) {
-                piecework = new BigDecimal(0);
-                numberOfOperations = new BigDecimal(1);
-            }
-
-        }
-        costs.put("piecework", piecework);
-        costs.put("numberOfOperations", numberOfOperations);
-        return costs;
     }
 
 }

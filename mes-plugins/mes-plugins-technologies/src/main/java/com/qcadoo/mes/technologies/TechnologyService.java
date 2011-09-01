@@ -365,10 +365,15 @@ public final class TechnologyService {
     public void setLookupDisableInTechnologyOperationComponent(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         FieldComponent operationLookup = (FieldComponent) viewDefinitionState.getComponentByReference("operation");
-        Entity technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(form.getEntityId());
-        if (technologyOperationComponent != null) {
-            operationLookup.setEnabled(false);
+        if (form.getEntityId() == null) {
+            return;
+        } else {
+
+            Entity technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(form.getEntityId());
+            if (technologyOperationComponent != null) {
+                operationLookup.setEnabled(false);
+            }
         }
     }
 }
