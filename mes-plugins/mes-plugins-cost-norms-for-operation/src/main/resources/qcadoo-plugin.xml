@@ -142,7 +142,7 @@ http://schema.qcadoo.org/modules/menu.xsd">
 
 		<!-- operation - technology -->
 		<view:view-listener view="technologyOperationComponentDetails"
-			component="form" plugin="technologies" event="onChangeTechnology"
+			component="operation" plugin="technologies" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
 			method="copyCostValuesFromSelectedTechnology" />
 
