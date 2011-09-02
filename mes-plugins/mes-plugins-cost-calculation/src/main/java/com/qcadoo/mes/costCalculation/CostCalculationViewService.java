@@ -1,6 +1,9 @@
 package com.qcadoo.mes.costCalculation;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.AVERAGE;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.LASTPURCHASE;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.NOMINAL;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -268,8 +271,20 @@ public class CostCalculationViewService {
         resultMap.put("includeTPZ", getBooleanFromField((String) resultMap.get("includeTPZ")));
 
         // cast mode fields to proper enum
-        resultMap.put("calculateMaterialCostsMode",
-                ProductsCostCalculationConstants.valueOf(((String) resultMap.get("calculateMaterialCostsMode")).toUpperCase()));
+        ProductsCostCalculationConstants productMode = null;
+        if ("01nominal".equals(resultMap.get("calculateMaterialCostsMode"))) {
+            productMode = NOMINAL;
+        } else if ("02average".equals(resultMap.get("calculateMaterialCostsMode"))) {
+            productMode = AVERAGE;
+        } else if ("03lastPurchase".equals(resultMap.get("calculateMaterialCostsMode"))) {
+            productMode = LASTPURCHASE;
+        } else {
+            throw new IllegalArgumentException(resultMap.get("calculateMaterialCostsMode")
+                    + " unsupported material cost calculation mode value!");
+        }
+
+        resultMap.put("calculateMaterialCostsMode", productMode);
+
         resultMap
                 .put("calculateOperationCostsMode", OperationsCostCalculationConstants.valueOf(((String) resultMap
                         .get("calculateOperationCostsMode")).toUpperCase()));

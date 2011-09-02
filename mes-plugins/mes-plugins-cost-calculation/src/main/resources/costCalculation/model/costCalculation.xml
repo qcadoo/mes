@@ -65,9 +65,9 @@
 		</decimal>
 		<string name="description" />
 		<boolean name="includeTPZ" default="true" />
-		<enum name="includeCostOfMaterial" values="nominal,lastPurchase,average"
+		<enum name="calculateMaterialCostsMode" values="01nominal,03lastPurchase,02average"
 			required="true" default="nominal" />
-		<enum name="includeCostOfOperation" values="piecework,hourly"
+		<enum name="calculateOperationCostsMode" values="piecework,hourly"
 			required="true" default="hourly" />
 		<date name="dateOfCalculation" />
 	</fields>

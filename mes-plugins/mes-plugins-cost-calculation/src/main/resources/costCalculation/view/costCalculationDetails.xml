@@ -163,12 +163,12 @@
 									reference="includeTPZ" field="includeTPZ" />
 							</layoutElement>
 							<layoutElement column="1" row="2">
-								<component type="select" name="includeCostOfMaterial"
-									reference="calculateMaterialCostsMode" field="includeCostOfMaterial" />
+								<component type="select" name="calculateMaterialCostsMode"
+									reference="calculateMaterialCostsMode" field="calculateMaterialCostsMode" />
 							</layoutElement>
 							<layoutElement column="1" row="3">
-								<component type="select" name="includeCostOfOperation"
-									reference="calculateOperationCostsMode" field="includeCostOfOperation" />
+								<component type="select" name="calculateMaterialCostsMode"
+									reference="calculateOperationCostsMode" field="calculateMaterialCostsMode" />
 							</layoutElement>
 						</component>
 					</component>
