@@ -5,15 +5,6 @@
 	plugin="technologies" view="technologyOperationComponentDetails">
 
 	<windowTab name="costTab" reference="costTab">
-		<script>
-    		<![CDATA[
-    			#{operation}.addOnChangeListener({
-    				onSetValue: function(value) {
-
-    				}
-    			});
-    		]]>
-		</script>
 		<component type="gridLayout" name="gridLayout" hasBorders="false"
 			columns="2" rows="3">
 			<layoutElement column="1" row="1">
