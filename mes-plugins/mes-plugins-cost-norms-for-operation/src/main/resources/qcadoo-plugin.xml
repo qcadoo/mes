@@ -45,21 +45,18 @@ http://schema.qcadoo.org/modules/menu.xsd">
 		<!-- operation -->
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="pieceworkCost">
-				<validatesRange from="0" exclusively="true" />
 				<validatesPrecision max="7" />
 				<validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="laborHourlyCost">
-				<validatesRange from="0" exclusively="true" />
 				<validatesPrecision max="7" />
 				<validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="machineHourlyCost">
-				<validatesRange from="0" exclusively="true" />
 				<validatesPrecision max="7" />
 				<validatesScale max="3" />
 			</model:decimal>
@@ -76,7 +73,6 @@ http://schema.qcadoo.org/modules/menu.xsd">
 		<model:model-field plugin="productionScheduling"
 			model="orderOperationComponent">
 			<model:decimal name="pieceworkCost">
-				<validatesRange from="0" exclusively="true" />
 				<validatesPrecision max="7" />
 				<validatesScale max="3" />
 			</model:decimal>
@@ -84,7 +80,6 @@ http://schema.qcadoo.org/modules/menu.xsd">
 		<model:model-field plugin="productionScheduling"
 			model="orderOperationComponent">
 			<model:decimal name="laborHourlyCost">
-				<validatesRange from="0" exclusively="true" />
 				<validatesPrecision max="7" />
 				<validatesScale max="3" />
 			</model:decimal>
@@ -92,7 +87,6 @@ http://schema.qcadoo.org/modules/menu.xsd">
 		<model:model-field plugin="productionScheduling"
 			model="orderOperationComponent">
 			<model:decimal name="machineHourlyCost">
-				<validatesRange from="0" exclusively="true" />
 				<validatesPrecision max="7" />
 				<validatesScale max="3" />
 			</model:decimal>
@@ -110,7 +104,6 @@ http://schema.qcadoo.org/modules/menu.xsd">
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
 			<model:decimal name="pieceworkCost">
-				<validatesRange from="0" exclusively="true" />
 				<validatesPrecision max="7" />
 				<validatesScale max="3" />
 			</model:decimal>
@@ -118,7 +111,6 @@ http://schema.qcadoo.org/modules/menu.xsd">
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
 			<model:decimal name="laborHourlyCost">
-				<validatesRange from="0" exclusively="true" />
 				<validatesPrecision max="7" />
 				<validatesScale max="3" />
 			</model:decimal>
@@ -126,7 +118,6 @@ http://schema.qcadoo.org/modules/menu.xsd">
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
 			<model:decimal name="machineHourlyCost">
-				<validatesRange from="0" exclusively="true" />
 				<validatesPrecision max="7" />
 				<validatesScale max="3" />
 			</model:decimal>

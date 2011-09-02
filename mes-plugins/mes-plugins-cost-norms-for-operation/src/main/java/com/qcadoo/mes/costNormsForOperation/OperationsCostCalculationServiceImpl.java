@@ -83,8 +83,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         // BigDecimal hourlyCost = getHourlyCost(operationComponent, hourly);
         BigDecimal operationCost = realizationTime.multiply(hourlyCost).setScale(8, BigDecimal.ROUND_UP);
         pathCost = pathCost.add(operationCost);
-        System.out.println("***alahourlyCost" + hourlyCost);
-        System.out.println("***alapathCost" + pathCost);
         return pathCost;
     }
 
@@ -100,11 +98,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             }
         }
         BigDecimal piecework = (BigDecimal) operationComponent.getField("pieceworkCost");
+        BigDecimal numberOfOperations = new BigDecimal(operationComponent.getField("numberOfOperations").toString());
         if (piecework == null) {
             piecework = new BigDecimal(0);
-        }
-        BigDecimal numberOfOperations = (BigDecimal) operationComponent.getField("numberOfOperations");
-        if (numberOfOperations == null) {
             numberOfOperations = new BigDecimal(1);
         }
 
@@ -126,9 +122,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         }
 
         pathCost = operationCost.multiply(plannedQuantity);
-        System.out.println("***alanumberOfOperationspiecework" + piecework + " " + numberOfOperations);
-        System.out.println("***alaoperationCost" + operationCost);
-        System.out.println("***alapathCost" + pathCost);
         return pathCost;
     }
 
