@@ -19,6 +19,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
@@ -43,6 +44,9 @@ public class CostCalculationViewService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private CurrencyService currencyService;
 
     private final static String EMPTY = "";
 
@@ -143,6 +147,22 @@ public class CostCalculationViewService {
 
     public void generateDateOfCalculation(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("dateOfCalculation", new Date());
+    }
+
+    public void setCurrencyAndUnit(final ViewDefinitionState viewDefinitionState) {
+
+        checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
+        String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
+        for (String componentReference : Arrays.asList("totalCostsPLN", "totalOverheadPLN", "additionalOverheadValuePLN",
+                "materialCostMarginValuePLN", "productionCostMarginValuePLN", "totalTechnicalProductionCostsPLN",
+                "totalPieceworkCostsPLN", "totalLaborHourlyCostsPLN", "totalMachineHourlyCostsPLN", "totalMaterialCostsPLN",
+                "additionalOverheadPLN", "materialCostMarginPLN", "productionCostMarginPLN")) {
+            FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
+            field.setEnabled(true);
+            field.setFieldValue(currencyAlphabeticCode);
+            field.setEnabled(false);
+            field.requestComponentUpdateState();
+        }
     }
 
     public void fillFieldWhenTechnologyChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
