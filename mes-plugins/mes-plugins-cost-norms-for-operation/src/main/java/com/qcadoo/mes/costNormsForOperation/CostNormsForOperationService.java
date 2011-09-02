@@ -3,59 +3,67 @@ package com.qcadoo.mes.costNormsForOperation;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.FIELDS;
 
-import java.math.BigDecimal;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class CostNormsForOperationService {
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     /* ****** VIEW EVENT LISTENERS ******* */
 
-    public void copyCostValuesFromSelectedTechnology(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
-        System.out.println("***MK copyCostValuesFromSelectedTechnology");
+    public void copyCostValuesFromSelectedTechnology(final ViewDefinitionState state, final ComponentState componentState,
+            final String[] args) {
+        if (componentState.getFieldValue() == null) {
+            return;
+        }
+        FieldComponent component;
+        Long operationId = Long.valueOf(componentState.getFieldValue().toString());
+        Entity operation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION).get(operationId);
+
+        for (String fieldName : FIELDS) {
+            component = (FieldComponent) state.getComponentByReference(fieldName);
+            component.setFieldValue(operation.getField(fieldName));
+        }
     }
 
     /* ******* MODEL HOOKS ******* */
 
     public void copyCostNormsToOrderOperationComponent(final DataDefinition dd, final Entity orderOperationComponent) {
         Entity source = orderOperationComponent.getBelongsToField("technologyOperationComponent");
-        // IMPORTANT! be sure that entity isn't in detached state
-        source = source.getDataDefinition().get(source.getId());
-        if (!copyCostValuesFromGivenOperation(orderOperationComponent, source)) {
-            fillCostFieldsWithDefaultValues(orderOperationComponent);
-        }
+        copyCostValuesFromGivenOperation(orderOperationComponent, source);
     }
 
-    /* ******* AWESOME HELPERS ;) ******* */
+    public void copyCostNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity orderOperationComponent) {
+        Entity source = orderOperationComponent.getBelongsToField("operation");
+        copyCostValuesFromGivenOperation(orderOperationComponent, source);
+    }
 
-    private Boolean copyCostValuesFromGivenOperation(final Entity target, final Entity source) {
-        checkArgument(source != null, "given source is null");
-        boolean result = false;
+    /* ******* CUSTOM HELPER(S) ******* */
+
+    private void copyCostValuesFromGivenOperation(final Entity target, final Entity maybeDetachedSource) {
+        checkArgument(target != null, "given target is null");
+        checkArgument(maybeDetachedSource != null, "given target is null");
+
+        // IMPORTANT! be sure that entity isn't in detached state
+        Entity source = maybeDetachedSource.getDataDefinition().get(maybeDetachedSource.getId());
+
         for (String fieldName : FIELDS) {
-            if (target.getField(fieldName) != null || source.getField(fieldName) == null) {
+            if (source.getField(fieldName) == null) {
                 continue;
             }
             target.setField(fieldName, source.getField(fieldName));
-            result = true;
-        }
-        return result;
-    }
-
-    private void fillCostFieldsWithDefaultValues(final Entity entity) {
-        for (String fieldName : FIELDS) {
-            if ("numberOfOperations".equals(fieldName)) {
-                entity.setField(fieldName, 1);
-                continue;
-            }
-            entity.setField(fieldName, BigDecimal.ZERO);
         }
     }
-    
 }

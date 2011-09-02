@@ -98,17 +98,15 @@ public class OrderGroupsService {
         JSONObject context = new JSONObject();        
         StringBuilder header = new StringBuilder();
         String name = state.getComponentByReference("name").getFieldValue().toString();
-        String dateFrom = state.getComponentByReference("groupDateFrom").getFieldValue().toString();
-        String dateTo = state.getComponentByReference("groupDateTo").getFieldValue().toString();
+        String groupDateFrom = state.getComponentByReference("groupDateFrom").getFieldValue().toString();
+        String groupDateTo = state.getComponentByReference("groupDateTo").getFieldValue().toString();
         
         header.append(name);
-        if(dateFrom != null || dateTo != null) {
-            header.append("</span> ( ");
-            header.append(dateFrom.isEmpty() ? "..." : dateFrom);
-            header.append(" : ");
-            header.append(dateTo.isEmpty() ? "..." : dateTo);
-            header.append(" )<span>");
-        }
+        header.append("</span> ( ");
+        header.append(groupDateFrom.isEmpty() ? "..." : groupDateFrom);
+        header.append(" : ");
+        header.append(groupDateTo.isEmpty() ? "..." : groupDateTo);
+        header.append(" )<span>");
         
         try {
             context.put("orderGroup.id", componentState.getFieldValue().toString());

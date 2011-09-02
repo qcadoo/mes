@@ -7,9 +7,6 @@
 	<windowTab name="inProductsCostTab" reference="inProductsCostTab">
 		<component type="gridLayout" name="gridLayout" hasBorders="false"
 			columns="1" rows="1">
-<!--			<layoutElement column="1" row="1">-->
-<!--				<component type="label" name="editWarning" />-->
-<!--			</layoutElement>-->
 			<layoutElement column="1" row="1">
 				<component type="grid" name="inProductsGrid" reference="inProductsGrid">
 
@@ -17,8 +14,16 @@
 						expression="#product['number']" width="100" />
 					<option type="column" name="name" fields="product"
 						expression="#product['name']" width="200" />
-					<option type="column" name="type" fields="product"
-						expression="#product['typeOfMaterial']" width="200" />
+					<option type="column" name="typeOfMaterial" fields="product"
+						expression="#product['typeOfMaterial'] == '01component' ?
+										'@basic.product.typeOfMaterial.value.01component' :
+										#product['typeOfMaterial'] == '02intermediate' ?
+											'@basic.product.typeOfMaterial.value.02intermediate' :
+											#product['typeOfMaterial'] == '03product' ?
+												'@basic.product.typeOfMaterial.value.03product' :
+												#product['typeOfMaterial'] == '04waste' ?
+												'@basic.product.typeOfMaterial.value.04waste' :
+												''" width="200" />
 
 					<option type="column" name="nominalCost" fields="product"
 						expression="#product['nominalCost'] != null ? 
@@ -31,10 +36,6 @@
 							#product['averageCost'] + ' / ' + #product['costForNumber'] + #product['unit'] : ''" />
 
 					<option type="order" column="name" direction="asc" />
-					
-<!--					<option type="correspondingView" value="basic/productDetails" />-->
-<!--					<option type="correspondingComponent" value="form" />-->
-<!--					<option type="correspondingViewInModal" value="false" />-->
 				</component>
 			</layoutElement>
 		</component>
