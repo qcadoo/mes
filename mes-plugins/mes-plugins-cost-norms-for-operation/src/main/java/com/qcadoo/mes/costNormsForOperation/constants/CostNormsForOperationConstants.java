@@ -1,12 +1,15 @@
 package com.qcadoo.mes.costNormsForOperation.constants;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.Sets;
 
 public interface CostNormsForOperationConstants {
 
     public static final String PLUGIN_IDENTIFIER = "costNorms";
 
-    public static final List<String> FIELDS = Arrays.asList("pieceworkCost", "numberOfOperations", "laborHourlyCost",
+    public static final String MODEL_CALCULATION_OPERATION_COMPONENT = "calculationOperationComponent";
+    
+    public static final Set<String> FIELDS = Sets.newHashSet("pieceworkCost", "numberOfOperations", "laborHourlyCost",
             "machineHourlyCost");
 }

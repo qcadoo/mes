@@ -4,15 +4,25 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
+import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
@@ -23,6 +33,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Override
     public Map<String, BigDecimal> calculateOperationsCost(Entity source,
@@ -125,4 +138,72 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         return pathCost;
     }
 
+    @Transactional
+    private List<Entity> createTechnologyInstanceForCalculation(final Entity source, final Entity parent) {
+        DataDefinition sourceDD = source.getDataDefinition();
+        DataDefinition calculationOperationComponentDD = dataDefinitionService.get(
+                CostNormsForOperationConstants.PLUGIN_IDENTIFIER,
+                CostNormsForOperationConstants.MODEL_CALCULATION_OPERATION_COMPONENT);
+        EntityTree sourceTree;
+
+        if (TechnologiesConstants.MODEL_TECHNOLOGY.equals(sourceDD.getName())) {
+            sourceTree = source.getTreeField("operationComponents");
+        } else if (OrdersConstants.MODEL_ORDER.equals(sourceDD.getName())) {
+            sourceTree = source.getTreeField("orderOperationComponents");
+        } else {
+            throw new IllegalArgumentException("Unsupported source entity type - " + sourceDD.getName());
+        }
+
+        return Collections.singletonList(createCalculationOperationComponent(sourceTree.getRoot(), parent,
+                calculationOperationComponentDD));
+    }
+
+    private Entity createCalculationOperationComponent(final EntityTreeNode sourceTree, final Entity parent,
+            final DataDefinition calculationOperationComponentDD) {
+        Entity calculationOperationComponent = calculationOperationComponentDD.create();
+
+        calculationOperationComponent.setField("parent", parent);
+
+        if ("operation".equals(sourceTree.getField("entityType"))) {
+            createOrCopyCalculationOperationComponent(sourceTree, calculationOperationComponentDD, calculationOperationComponent);
+        } else {
+            Entity referenceTechnology = sourceTree.getBelongsToField("referenceTechnology");
+            createOrCopyCalculationOperationComponent(referenceTechnology.getTreeField("operationComponents").getRoot(),
+                    calculationOperationComponentDD, calculationOperationComponent);
+        }
+
+        return calculationOperationComponent;
+    }
+
+    private void createOrCopyCalculationOperationComponent(final EntityTreeNode operationComponent,
+            final DataDefinition calculationOperationComponentDD, final Entity calculationOperationComponent) {
+        DataDefinition sourceDD = operationComponent.getDataDefinition();
+
+        for (String fieldName : Arrays.asList("operation", "priority", "tpz", "tj", "productionInOneCycle", "countMachine",
+                "timeNextOperation", "operationOffSet", "effectiveOperationRealizationTime", "effectiveDateFrom",
+                "effectiveDateTo", "pieceworkCost", "laborHourlyCost", "machineHourlyCost", "numberOfOperations",
+                "totalOperationCost")) {
+            calculationOperationComponent.setField(fieldName, operationComponent.getField(fieldName));
+        }
+
+        calculationOperationComponent.setField("countRealized",
+                operationComponent.getField("countRealized") != null ? operationComponent.getField("countRealized") : "01all");
+
+        if (TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(sourceDD.getName())) {
+            calculationOperationComponent.setField("technologyOperationComponent", operationComponent);
+        } else if (ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT.equals(sourceDD.getName())) {
+            calculationOperationComponent.setField("technologyOperationComponent",
+                    operationComponent.getBelongsToField("technologyOperationComponent"));
+        }
+        calculationOperationComponent.setField("entityType", "operation");
+
+        List<Entity> newOrderOperationComponents = new ArrayList<Entity>();
+
+        for (EntityTreeNode child : operationComponent.getChildren()) {
+            newOrderOperationComponents.add(createCalculationOperationComponent(child, calculationOperationComponent,
+                    calculationOperationComponentDD));
+        }
+
+        calculationOperationComponent.setField("children", newOrderOperationComponents);
+    }
 }
