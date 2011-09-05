@@ -63,10 +63,10 @@
 					</component>
 				</layoutElement>
 			</component>
-			<option type="expression" value="#currency" />
-			
 			<listener event="activateSelectedCurrency" class="com.qcadoo.mes.basic.CurrencyViewService" method="activateSelectedCurrency" />
 		</component>
+			<option type="header" value="false" />
+		
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.basic.CurrencyViewService" method="applyCurrentCurrency" />
