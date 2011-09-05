@@ -155,8 +155,7 @@
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="productionCostMarginPLN"
-									defaultEnabled="false" hasLabel="false"
-									reference="productionCostMarginPLN" />
+									defaultEnabled="false" hasLabel="false" reference="productionCostMarginPLN" />
 							</layoutElement>
 							<layoutElement column="1" row="2" width="3">
 								<component type="input" name="materialCostMargin"
@@ -164,8 +163,7 @@
 							</layoutElement>
 							<layoutElement column="4" row="2">
 								<component type="input" name="materialCostMarginPLN"
-									defaultEnabled="false" hasLabel="false"
-									reference="materialCostMarginPLN" />
+									defaultEnabled="false" hasLabel="false" reference="materialCostMarginPLN" />
 							</layoutElement>
 							<layoutElement column="1" row="3" width="3">
 								<component type="input" name="additionalOverhead"
@@ -173,8 +171,7 @@
 							</layoutElement>
 							<layoutElement column="4" row="3">
 								<component type="input" name="additionalOverheadPLN"
-									defaultEnabled="false" hasLabel="false"
-									reference="additionalOverheadPLN" />
+									defaultEnabled="false" hasLabel="false" reference="additionalOverheadPLN" />
 							</layoutElement>
 						</component>
 					</component>
@@ -196,8 +193,7 @@
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="totalMaterialCostsPLN"
-									defaultEnabled="false" hasLabel="false"
-									reference="totalMaterialCostsPLN" />
+									defaultEnabled="false" hasLabel="false" reference="totalMaterialCostsPLN" />
 							</layoutElement>
 							<layoutElement column="1" row="2" width="3">
 								<component type="input" name="totalMachineHourlyCosts"
@@ -206,8 +202,7 @@
 							</layoutElement>
 							<layoutElement column="4" row="2">
 								<component type="input" name="totalMachineHourlyCostsPLN"
-									defaultEnabled="false" hasLabel="false"
-									reference="totalMachineHourlyCostsPLN" />
+									defaultEnabled="false" hasLabel="false" reference="totalMachineHourlyCostsPLN" />
 							</layoutElement>
 							<layoutElement column="1" row="3" width="3">
 								<component type="input" name="totalLaborHourlyCosts"
@@ -216,8 +211,7 @@
 							</layoutElement>
 							<layoutElement column="4" row="3">
 								<component type="input" name="totalLaborHourlyCostsPLN"
-									defaultEnabled="false" hasLabel="false"
-									reference="totalLaborHourlyCostsPLN" />
+									defaultEnabled="false" hasLabel="false" reference="totalLaborHourlyCostsPLN" />
 							</layoutElement>
 							<layoutElement column="1" row="4" width="3">
 								<component type="input" name="totalPieceworkCosts"
@@ -226,16 +220,17 @@
 							</layoutElement>
 							<layoutElement column="4" row="4">
 								<component type="input" name="totalPieceworkCostsPLN"
-									defaultEnabled="false" hasLabel="false"
-									reference="totalPieceworkCostsPLN" />
+									defaultEnabled="false" hasLabel="false" reference="totalPieceworkCostsPLN" />
 							</layoutElement>
-							<layoutElement column="1" row="5" >
-								<component type="label" name="totalTechnicalProductionCostsLabel" />
+							<layoutElement column="1" row="5">
+								<component type="label" name="totalTechnicalProductionCostsLabel" >
+									<option type="labelStyle" value="text" />
+								</component>
 							</layoutElement>
 							<layoutElement column="1" row="6" width="3">
 								<component type="input" name="totalTechnicalProductionCosts"
 									reference="totalTechnicalProductionCosts" field="totalTechnicalProductionCosts"
-									defaultEnabled="false" hasLabel="false"/>
+									defaultEnabled="false" hasLabel="false" />
 							</layoutElement>
 							<layoutElement column="4" row="6">
 								<component type="input" name="totalTechnicalProductionCostsPLN"
@@ -281,7 +276,9 @@
 							</layoutElement>
 							<layoutElement column="1" row="4">
 								<component type="label" name="totalOverheadLabel"
-									hasLabel="false" />
+									hasLabel="false">
+									<option type="labelStyle" value="text" />
+								</component>
 							</layoutElement>
 							<layoutElement column="1" row="5" width="3">
 								<component type="input" name="totalOverhead" field="totalOverhead"
@@ -300,9 +297,11 @@
 						<option type="label" value="totalCost" />
 						<component type="gridLayout" name="gridProductionCostMargin"
 							columns="4" rows="4" hasBorders="false">
-							<layoutElement column="1" row="1" >
+							<layoutElement column="1" row="1" width="2">
 								<component type="label" name="totalCostLabel"
-									hasLabel="false" />
+									hasLabel="false">
+									<option type="labelStyle" value="text" />
+								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" width="3">
 								<component type="input" name="totalCost" field="totalCost"
@@ -312,9 +311,11 @@
 								<component type="input" name="totalCostsPLN"
 									defaultEnabled="false" hasLabel="false" reference="totalCostsPLN" />
 							</layoutElement>
-							<layoutElement column="1" row="3" >
+							<layoutElement column="1" row="3">
 								<component type="label" name="costPerUnitLabel"
-									hasLabel="false" />
+									hasLabel="false">
+									<option type="labelStyle" value="text" />
+								</component>
 							</layoutElement>
 							<layoutElement column="1" row="4" width="3">
 								<component type="input" name="costPerUnit" field="costPerUnit"
@@ -345,7 +346,9 @@
 		</component>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="setCurrencyAndUnit"/>
+		<beforeRender
+			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+			method="setCurrencyAndUnit" />
 	</hooks>
 </view>
 
