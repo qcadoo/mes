@@ -6,6 +6,9 @@
 		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
 		</string>
+		<tree name="calculationOperationComponent" joinField="costCalculation"
+			model="calculationOperationComponent" plugin="costNormsForOperation"
+			required="true" />
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<belongsTo name="defaultTechnology" model="technology"
@@ -14,19 +17,19 @@
 			required="true" />
 		<decimal name="quantity" required="true" />
 		<belongsTo name="order" model="order" plugin="orders" />
-		<decimal name="totalMaterialCosts" >
+		<decimal name="totalMaterialCosts">
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<decimal name="totalMachineHourlyCosts" >
+		<decimal name="totalMachineHourlyCosts">
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<decimal name="totalPieceworkCosts" >
+		<decimal name="totalPieceworkCosts">
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<decimal name="totalLaborHourlyCosts"  >
+		<decimal name="totalLaborHourlyCosts">
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
 		</decimal>
@@ -49,7 +52,7 @@
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<decimal name="additionalOverheadValue" default="0"/>
+		<decimal name="additionalOverheadValue" default="0" />
 		<decimal name="totalOverhead">
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
