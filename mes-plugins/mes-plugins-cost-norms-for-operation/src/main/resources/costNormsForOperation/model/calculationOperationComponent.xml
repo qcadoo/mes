@@ -68,6 +68,10 @@
 			<validatesScale max="0" />
 		</integer>
 		
+		<integer name="level" />
+		
+		<decimal name="operationCost" default="0"/>
+		<decimal name="operationMarginCost" default="0"/>
 		<decimal name="totalOperationCost" default="0"/>
 
 	</fields>
