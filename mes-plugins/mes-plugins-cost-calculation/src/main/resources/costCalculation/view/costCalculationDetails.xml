@@ -68,6 +68,8 @@
 						<option type="orderable" value="name" />
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="number" />
+						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+								method="changeOrderProduct" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">

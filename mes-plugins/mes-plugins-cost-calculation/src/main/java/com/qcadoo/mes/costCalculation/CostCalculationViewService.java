@@ -28,6 +28,8 @@ import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -122,19 +124,17 @@ public class CostCalculationViewService {
         if (cameFromOrder) {
             componentsMap.get("order").setFieldValue(order.getId());
             componentsMap.get("defaultTechnology").setEnabled(false);
+            componentsMap.get("quantity").setFieldValue(order.getField("plannedQuantity"));
         } else {
             componentsMap.get("order").setFieldValue(EMPTY);
             componentsMap.get("defaultTechnology").setEnabled(false);
+            componentsMap.get("quantity").setFieldValue(technology.getField("minimalQuantity"));
         }
         componentsMap.get("order").setEnabled(cameFromOrder);
         componentsMap.get("technology").setFieldValue(technology.getId());
         componentsMap.get("technology").setEnabled(cameFromTechnology);
         componentsMap.get("defaultTechnology").setFieldValue(technology.getId());
-        if (cameFromOrder) {
-            componentsMap.get("quantity").setFieldValue(order.getField("plannedQuantity"));
-        } else {
-            componentsMap.get("quantity").setFieldValue(technology.getField("minimalQuantity"));
-        }
+
         componentsMap.get("quantity").setEnabled(!cameFromOrder);
         componentsMap.get("product").setFieldValue(technology.getBelongsToField("product").getId());
         componentsMap.get("product").setEnabled(false);
@@ -343,6 +343,43 @@ public class CostCalculationViewService {
             fieldComponent.requestComponentUpdateState();
         }
 
+    }
+
+    public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (!(state instanceof FieldComponent)) {
+            return;
+        }
+        FieldComponent product = (FieldComponent) state;
+        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
+        FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
+
+        defaultTechnology.setFieldValue("");
+        technology.setFieldValue(null);
+
+        if (product.getFieldValue() != null) {
+            Entity defaultTechnologyEntity = getDefaultTechnology((Long) product.getFieldValue());
+
+            if (defaultTechnologyEntity != null) {
+                technology.setFieldValue(defaultTechnologyEntity.getId());
+                defaultTechnology.setFieldValue(defaultTechnologyEntity.getId());
+            }
+        }
+    }
+
+    private Entity getDefaultTechnology(final Long selectedProductId) {
+        DataDefinition instructionDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isEq("master", true)
+                .belongsTo("product", selectedProductId);
+
+        SearchResult searchResult = searchCriteria.list();
+
+        if (searchResult.getTotalNumberOfEntities() == 1) {
+            return searchResult.getEntities().get(0);
+        } else {
+            return null;
+        }
     }
 
 }
