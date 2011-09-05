@@ -47,6 +47,7 @@
 		<integer name="effectiveOperationRealizationTime" />
 		<datetime name="effectiveDateFrom" />
 		<datetime name="effectiveDateTo" />
+		<decimal name="pieces" />
 		<decimal name="pieceworkCost" default="0">
 			<validatesRange from="0" exclusively="false" />
 			<validatesPrecision max="7" />
