@@ -1,7 +1,9 @@
 package com.qcadoo.mes.costNormsForOperation;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.MODEL_CALCULATION_OPERATION_COMPONENT;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -13,11 +15,9 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -138,23 +138,22 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         return pathCost;
     }
 
-    @Transactional
-    private List<Entity> createTechnologyInstanceForCalculation(final Entity source, final Entity parent) {
+    public EntityTree createTechnologyInstanceForCalculation(final Entity source) {
         DataDefinition sourceDD = source.getDataDefinition();
         DataDefinition calculationOperationComponentDD = dataDefinitionService.get(
                 CostNormsForOperationConstants.PLUGIN_IDENTIFIER,
-                CostNormsForOperationConstants.MODEL_CALCULATION_OPERATION_COMPONENT);
+                MODEL_CALCULATION_OPERATION_COMPONENT);
         EntityTree sourceTree;
 
-        if (TechnologiesConstants.MODEL_TECHNOLOGY.equals(sourceDD.getName())) {
+        if (MODEL_TECHNOLOGY.equals(sourceDD.getName())) {
             sourceTree = source.getTreeField("operationComponents");
-        } else if (OrdersConstants.MODEL_ORDER.equals(sourceDD.getName())) {
+        } else if (MODEL_ORDER.equals(sourceDD.getName())) {
             sourceTree = source.getTreeField("orderOperationComponents");
         } else {
             throw new IllegalArgumentException("Unsupported source entity type - " + sourceDD.getName());
         }
 
-        return Collections.singletonList(createCalculationOperationComponent(sourceTree.getRoot(), parent,
+        return (EntityTree) Collections.singletonList(createCalculationOperationComponent(sourceTree.getRoot(), null,
                 calculationOperationComponentDD));
     }
 
