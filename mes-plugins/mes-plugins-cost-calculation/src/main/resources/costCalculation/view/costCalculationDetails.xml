@@ -306,7 +306,7 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" width="3">
-								<component type="input" name="totalCost" field="totalCost"
+								<component type="input" name="totalCosts" field="totalCosts"
 									defaultEnabled="false" reference="totalCosts" hasLabel="false" />
 							</layoutElement>
 							<layoutElement column="4" row="2">
