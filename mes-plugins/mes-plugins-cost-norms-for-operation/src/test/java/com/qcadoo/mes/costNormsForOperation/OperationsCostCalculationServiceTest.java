@@ -1,10 +1,7 @@
 package com.qcadoo.mes.costNormsForOperation;
 
-import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.HOURLY;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.math.BigDecimal;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +27,7 @@ public class OperationsCostCalculationServiceTest {
         when(wrongDataDefinition.getName()).thenReturn("incorrectModel");
 
         // when
-        operationCostCalculationService.calculateOperationsCost(wrongEntity, HOURLY, false, BigDecimal.valueOf(1));
+        operationCostCalculationService.calculateOperationsCost(wrongEntity);
     }
 
 }

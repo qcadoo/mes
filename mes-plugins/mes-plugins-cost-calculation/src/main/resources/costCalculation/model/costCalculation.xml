@@ -6,9 +6,8 @@
 		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
 		</string>
-		<tree name="calculationOperationComponent" joinField="costCalculation"
-			model="calculationOperationComponent" plugin="costNormsForOperation"
-			required="true" />
+		<tree name="calculationOperationComponents" joinField="costCalculation"
+			model="calculationOperationComponent" plugin="costNormsForOperation" />
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<belongsTo name="defaultTechnology" model="technology"

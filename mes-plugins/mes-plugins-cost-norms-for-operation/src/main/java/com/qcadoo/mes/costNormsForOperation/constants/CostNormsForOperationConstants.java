@@ -6,7 +6,7 @@ import com.google.common.collect.Sets;
 
 public interface CostNormsForOperationConstants {
 
-    public static final String PLUGIN_IDENTIFIER = "costNorms";
+    public static final String PLUGIN_IDENTIFIER = "costNormsForOperation";
 
     public static final String MODEL_CALCULATION_OPERATION_COMPONENT = "calculationOperationComponent";
     
