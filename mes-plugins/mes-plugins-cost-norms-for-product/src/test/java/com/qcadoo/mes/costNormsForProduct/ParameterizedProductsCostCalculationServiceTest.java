@@ -116,7 +116,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
         // then
         ArgumentCaptor<BigDecimal> argument = ArgumentCaptor.forClass(BigDecimal.class);
         Mockito.verify(costCalculation).setField(Mockito.eq("totalMaterialCosts"), argument.capture());
-        assertEquals(expectedResult, argument.getValue());
+        assertEquals(expectedResult.setScale(3), argument.getValue());
     }
 
     @Test(expected = IllegalArgumentException.class)

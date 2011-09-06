@@ -57,7 +57,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         }
 
         createTechnologyInstanceForCalculation(sourceOperationComponents, costCalculation);
-        costCalculation = costCalculation.getDataDefinition().save(costCalculation);
 
         if (mode == PIECEWORK) {
             BigDecimal totalPieceworkCost = estimateCostCalculationForPieceWork(costCalculation, margin, quantity, 1L);
@@ -65,8 +64,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         } else {
             Map<String, BigDecimal> hourlyResultsMap = estimateCostCalculationForHourly(costCalculation, margin, quantity,
                     includeTPZ, 0L);
-            costCalculation.setField("totalMachineHourlyCosts", hourlyResultsMap.get(MACHINE_HOURLY_COST));
-            costCalculation.setField("totalLaborHourlyCosts", hourlyResultsMap.get(LABOR_HOURLY_COST));
+            costCalculation.setField("totalMachineHourlyCosts", hourlyResultsMap.get(MACHINE_HOURLY_COST).setScale(3));
+            costCalculation.setField("totalLaborHourlyCosts", hourlyResultsMap.get(LABOR_HOURLY_COST).setScale(3));
         }
     }
 
@@ -170,28 +169,28 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 CostNormsForOperationConstants.PLUGIN_IDENTIFIER, MODEL_CALCULATION_OPERATION_COMPONENT);
 
         costCalculation.setField("calculationOperationComponents", Collections.singletonList(createCalculationOperationComponent(
-                sourceTree.getRoot(), null, calculationOperationComponentDD)));
+                sourceTree.getRoot(), null, calculationOperationComponentDD, costCalculation)));
     }
 
     private Entity createCalculationOperationComponent(final EntityTreeNode sourceTree, final Entity parent,
-            final DataDefinition calculationOperationComponentDD) {
+            final DataDefinition calculationOperationComponentDD, final Entity costCalculation) {
         Entity calculationOperationComponent = calculationOperationComponentDD.create();
 
         calculationOperationComponent.setField("parent", parent);
 
         if ("operation".equals(sourceTree.getField("entityType"))) {
-            createOrCopyCalculationOperationComponent(sourceTree, calculationOperationComponentDD, calculationOperationComponent);
+            createOrCopyCalculationOperationComponent(sourceTree, calculationOperationComponentDD, calculationOperationComponent, costCalculation);
         } else {
             Entity referenceTechnology = sourceTree.getBelongsToField("referenceTechnology");
             createOrCopyCalculationOperationComponent(referenceTechnology.getTreeField("operationComponents").getRoot(),
-                    calculationOperationComponentDD, calculationOperationComponent);
+                    calculationOperationComponentDD, calculationOperationComponent, costCalculation);
         }
 
         return calculationOperationComponent;
     }
 
     private void createOrCopyCalculationOperationComponent(final EntityTreeNode operationComponent,
-            final DataDefinition calculationOperationComponentDD, final Entity calculationOperationComponent) {
+            final DataDefinition calculationOperationComponentDD, final Entity calculationOperationComponent, final Entity costCalculation) {
         DataDefinition sourceDD = operationComponent.getDataDefinition();
 
         for (String fieldName : Arrays.asList("operation", "priority", "tpz", "tj", "productionInOneCycle", "countMachine",
@@ -200,6 +199,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 "totalOperationCost")) {
             calculationOperationComponent.setField(fieldName, operationComponent.getField(fieldName));
         }
+        
+        calculationOperationComponent.setField("costCalculation", costCalculation);
 
         calculationOperationComponent.setField("countRealized",
                 operationComponent.getField("countRealized") != null ? operationComponent.getField("countRealized") : "01all");
@@ -216,7 +217,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
             newOrderOperationComponents.add(createCalculationOperationComponent(child, calculationOperationComponent,
-                    calculationOperationComponentDD));
+                    calculationOperationComponentDD, costCalculation));
         }
 
         calculationOperationComponent.setField("children", newOrderOperationComponents);

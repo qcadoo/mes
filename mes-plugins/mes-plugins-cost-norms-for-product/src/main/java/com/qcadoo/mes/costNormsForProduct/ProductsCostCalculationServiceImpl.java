@@ -39,7 +39,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
             }
         }
         result = result.multiply(quantity);
-        costCalculation.setField("totalMaterialCosts", result);
+        costCalculation.setField("totalMaterialCosts", result.setScale(3));
     }
 
     private ProductsCostCalculationConstants getProductModeFromField(final Object value) {
