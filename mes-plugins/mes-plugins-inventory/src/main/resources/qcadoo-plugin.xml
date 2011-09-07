@@ -71,6 +71,7 @@
 		<menu:menu-category name="reports" />
 		
 	    <view:view-listener plugin="inventory" view="correctionDetail" component="form" event="refreshShouldBe" class="com.qcadoo.mes.inventory.InventoryService" method="refreshShouldBe" />
+		<view:view-hook plugin="inventory" view="correctionDetail" type="beforeRender" class="com.qcadoo.mes.inventory.InventoryService" method="refreshShouldBe" />
 
 		<menu:menu-item name="corrections" category="inventory"
 			view="correctionList" />
@@ -92,5 +93,4 @@
 		
 		<view:resource uri="public/**/*" />
 	</modules>
-
 </plugin>

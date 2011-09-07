@@ -86,4 +86,7 @@
 			<option type="header" value="true" />
 		</component>
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.inventory.InventoryService" method="refreshShouldBe" /> 
+	</hooks>
 </view>
