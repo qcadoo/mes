@@ -99,7 +99,8 @@ public final class InventoryPdfService extends PdfDocumentService {
                 .getEntities();
         Collections.sort(transfers, new EntityTransferComparator());
 
-        String warehouseNumber = inventoryReport.getBelongsToField("warehouse").getStringField("number");
+        String warehouseNumber = inventoryReport.getBelongsToField("warehouse").getId().toString();
+
         String forDate = ((Date) inventoryReport.getField("inventoryForDate")).toString();
 
         String numberBefore = "";
@@ -107,8 +108,8 @@ public final class InventoryPdfService extends PdfDocumentService {
             String numberNow = e.getBelongsToField("product").getStringField("number");
 
             if (!numberBefore.equals(numberNow)) {
-                BigDecimal quantity = inventoryService.calculateShouldBe(warehouseNumber.toString(),
-                        e.getBelongsToField("product").getStringField("number"), forDate);
+                BigDecimal quantity = inventoryService.calculateShouldBe(warehouseNumber, e.getBelongsToField("product")
+                        .getStringField("number"), forDate);
 
                 table.addCell(new Phrase(e.getBelongsToField("product").getStringField("number"), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(e.getBelongsToField("product").getStringField("name"), PdfUtil.getArialRegular9Dark()));
