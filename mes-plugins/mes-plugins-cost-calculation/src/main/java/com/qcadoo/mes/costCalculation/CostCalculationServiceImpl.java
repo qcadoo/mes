@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
@@ -74,5 +75,9 @@ public class CostCalculationServiceImpl implements CostCalculationService {
             return BigDecimal.ZERO;
         }
         return new BigDecimal(value.toString());
+    }
+    
+    public void copyTechnologyTree(final DataDefinition dd, final Entity costCalculation) {
+        operationsCostCalculationService.copyTechnologyTree(dd, costCalculation);
     }
 }

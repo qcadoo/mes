@@ -78,7 +78,7 @@
 		<onSave class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 			method="generateDateOfCalculation" />
 		<onSave
-			class="com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationServiceImpl"
+			class="com.qcadoo.mes.costCalculation.CostCalculationServiceImpl"
 			method="copyTechnologyTree" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />

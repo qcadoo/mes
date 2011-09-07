@@ -199,17 +199,18 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 sourceTree.getRoot(), null, calculationOperationComponentDD, costCalculation)));
     }
 
-    private Entity createCalculationOperationComponent(final EntityTreeNode sourceTree, final Entity parent,
+    private Entity createCalculationOperationComponent(final EntityTreeNode sourceTreeNode, final Entity parent,
             final DataDefinition calculationOperationComponentDD, final Entity costCalculation) {
         Entity calculationOperationComponent = calculationOperationComponentDD.create();
 
         calculationOperationComponent.setField("parent", parent);
+        calculationOperationComponent.setField("costCalculation", costCalculation);
 
-        if ("operation".equals(sourceTree.getField("entityType"))) {
-            createOrCopyCalculationOperationComponent(sourceTree, calculationOperationComponentDD, calculationOperationComponent,
+        if ("operation".equals(sourceTreeNode.getField("entityType"))) {
+            createOrCopyCalculationOperationComponent(sourceTreeNode, calculationOperationComponentDD, calculationOperationComponent,
                     costCalculation);
         } else {
-            Entity referenceTechnology = sourceTree.getBelongsToField("referenceTechnology");
+            Entity referenceTechnology = sourceTreeNode.getBelongsToField("referenceTechnology");
             createOrCopyCalculationOperationComponent(referenceTechnology.getTreeField("operationComponents").getRoot(),
                     calculationOperationComponentDD, calculationOperationComponent, costCalculation);
         }
@@ -230,7 +231,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         }
 
         calculationOperationComponent.setField("operation", operationComponent.getBelongsToField("operation"));
-        calculationOperationComponent.setField("costCalculation", costCalculation);
+//        calculationOperationComponent.setField("costCalculation", costCalculation);
 
         calculationOperationComponent.setField("countRealized",
                 operationComponent.getField("countRealized") != null ? operationComponent.getField("countRealized") : "01all");
