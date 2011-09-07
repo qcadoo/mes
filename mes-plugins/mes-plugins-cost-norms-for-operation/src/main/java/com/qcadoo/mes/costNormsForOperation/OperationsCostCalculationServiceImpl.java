@@ -44,9 +44,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         checkArgument(quantity.compareTo(BigDecimal.valueOf(0)) == 1, "quantity should be greather than 0");
         checkArgument(source != null, "source entity is null");
         EntityTree operationComponents;
-        BigDecimal totalMachineHourlyCost = new BigDecimal(0);
-        BigDecimal totalLaborHourlyCost = new BigDecimal(0);
-        BigDecimal totalPieceWorkCost = new BigDecimal(0);
+        BigDecimal totalMachineHourlyCost = BigDecimal.ZERO;
+        BigDecimal totalLaborHourlyCost = BigDecimal.ZERO;
+        BigDecimal totalPieceWorkCost = BigDecimal.ZERO;
         Map<String, BigDecimal> result = new HashMap<String, BigDecimal>();
 
         DataDefinition dataDefinition = source.getDataDefinition();
@@ -78,7 +78,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     public BigDecimal estimateCostCalculationForHourly(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
             Boolean includeTPZ, String hourly) {
-        BigDecimal pathCost = new BigDecimal(0);
+        BigDecimal pathCost = BigDecimal.ZERO;
         for (EntityTreeNode child : operationComponent.getChildren()) {
             BigDecimal tmpPathCost = estimateCostCalculationForHourly(child, plannedQuantity, includeTPZ, hourly);
             if (tmpPathCost.compareTo(pathCost) == 1) {
@@ -90,7 +90,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal realizationTime = BigDecimal.valueOf(time / 3600);
         BigDecimal hourlyCost = (BigDecimal) operationComponent.getField(hourly);
         if (hourlyCost == null) {
-            hourlyCost = new BigDecimal(0);
+            hourlyCost = BigDecimal.ZERO;
         }
 
         // BigDecimal hourlyCost = getHourlyCost(operationComponent, hourly);
@@ -102,8 +102,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     private BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
             final BigDecimal plannedQuantity, Boolean includeTPZ) {
 
-        BigDecimal operationCost = new BigDecimal(0);
-        BigDecimal pathCost = new BigDecimal(0);
+        BigDecimal operationCost = BigDecimal.ZERO;
+        BigDecimal pathCost = BigDecimal.ZERO;
         for (EntityTreeNode child : operationComponent.getChildren()) {
             BigDecimal tmpPathCost = estimateCostCalculationForPieceWork(child, plannedQuantity, includeTPZ);
             if (tmpPathCost.compareTo(pathCost) == 1) {
@@ -113,12 +113,12 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal piecework = (BigDecimal) operationComponent.getField("pieceworkCost");
         BigDecimal numberOfOperations = new BigDecimal(operationComponent.getField("numberOfOperations").toString());
         if (piecework == null) {
-            piecework = new BigDecimal(0);
+            piecework = BigDecimal.ZERO;
             numberOfOperations = new BigDecimal(1);
         }
 
         BigDecimal pieceWorkCost = piecework.divide(numberOfOperations, 3);
-        BigDecimal totalQuantityOutputProduct = new BigDecimal(0);
+        BigDecimal totalQuantityOutputProduct = BigDecimal.ZERO;
         EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
 
         if (outputProducts == null) {
@@ -141,8 +141,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     public EntityTree createTechnologyInstanceForCalculation(final Entity source) {
         DataDefinition sourceDD = source.getDataDefinition();
         DataDefinition calculationOperationComponentDD = dataDefinitionService.get(
-                CostNormsForOperationConstants.PLUGIN_IDENTIFIER,
-                MODEL_CALCULATION_OPERATION_COMPONENT);
+                CostNormsForOperationConstants.PLUGIN_IDENTIFIER, MODEL_CALCULATION_OPERATION_COMPONENT);
         EntityTree sourceTree;
 
         if (MODEL_TECHNOLOGY.equals(sourceDD.getName())) {

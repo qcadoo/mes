@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -26,13 +25,12 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
-import com.qcadoo.mes.costCalculation.print.utils.EntityOperationComponentComparator;
 import com.qcadoo.mes.materialRequirements.internal.MaterialRequirementReportDataServiceImpl;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.report.api.pdf.ReportPdfView;
@@ -218,10 +216,6 @@ public class CostCalculationPdfView extends ReportPdfView {
                 "costCalculation.costCalculationDetails.window.mainTab.form.totalCost", locale)
                 + ":", PdfUtil.getArialBold10Dark()));
 
-        // rightPanelColumn.addCell(new
-        // Phrase(getTranslationService().translate("costCalculation.costCalculation.totalCost.label",
-        // locale), PdfUtil.getArialBold10Dark()));costCalculation.costCalculation.machineHourlyCosts.label:
-
         reportData = costCalculation.getField("totalCosts");
         addTableCellAsTable(
                 rightPanelColumn,
@@ -300,40 +294,41 @@ public class CostCalculationPdfView extends ReportPdfView {
                 locale), PdfUtil.getArialBold11Dark()));
 
         if ("hourly".equals(costCalculation.getField("calculateOperationCostsMode"))) {
-            List<String> operationsTableHeader = new ArrayList<String>();
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.number", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.name", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.level", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.duration", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.machCosts", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.labCosts", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.operationCost", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.margin", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.totalCosts", locale));
+            document.add(addTableAboutHourlyCost(costCalculation, locale));
+        } else {
+            document.add(addTableAboutPieceworkCost(costCalculation, locale));
+        }
 
-            DataDefinition calculationOperationComponentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
-            List<Entity> calculationOperationComponents = calculationOperationComponentDD
-                    .find("where costCalculation.id = " + costCalculation.getId().toString()).list().getEntities();
-            Collections.sort(calculationOperationComponents, new EntityOperationComponentComparator());
-            PdfPTable operationsTable = PdfUtil.createTableWithHeader(9, operationsTableHeader, false);
-            // DataDefinition dataDefOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-            // TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
-            // List<Entity> operationComponents = dataDefOperationComponent
-            // .find("where technology.id = " + ((Entity) costCalculation.getField("technology")).getId().toString()).list()
-            // .getEntities();
-            // Collections.sort(operationComponents, new EntityOperationComponentComparator());
-            //
-            // PdfPTable operationsTable = PdfUtil.createTableWithHeader(9, operationsTableHeader, false);
+        String text = getTranslationService().translate("qcadooReport.commons.endOfPrint.label", locale);
+        PdfUtil.addEndOfDocument(document, writer, text);
+        return getTranslationService().translate("costCalculation.costCalculationDetails.report.fileName", locale);
+    }
+
+    private PdfPTable addTableAboutHourlyCost(final Entity costCalculation, final Locale locale) {
+        List<String> operationsTableHeader = new ArrayList<String>();
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.number", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.name", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.level", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.duration", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.machCosts", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.labCosts", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.operationCost", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.margin", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.totalCosts", locale));
+
+        List<Entity> calculationOperationComponents = costCalculation.getTreeField("calculationOperationComponents");
+
+        PdfPTable operationsTable = PdfUtil.createTableWithHeader(9, operationsTableHeader, false);
+        if (calculationOperationComponents != null && calculationOperationComponents.size() != 0) {
             for (Entity operationComponent : calculationOperationComponents) {
                 operationsTable.addCell(new Phrase(operationComponent.getBelongsToField("operation").getStringField("number"),
                         PdfUtil.getArialRegular9Dark()));
@@ -347,7 +342,7 @@ public class CostCalculationPdfView extends ReportPdfView {
 
                 operationsTable.addCell(new Phrase(getDecimalFormat().format(machineHourlyCost), PdfUtil.getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(getDecimalFormat().format(laborHourlyCost), PdfUtil.getArialRegular9Dark()));
-                reportData = costCalculation.getField("productionCostMargin");
+                Object reportData = costCalculation.getField("productionCostMargin");
                 if (reportData != null) {
                     operationsTable.addCell(new Phrase(getDecimalFormat().format(reportData), PdfUtil.getArialRegular9Dark()));
                     BigDecimal sum = machineHourlyCost.add(laborHourlyCost).add((BigDecimal) reportData);
@@ -357,32 +352,34 @@ public class CostCalculationPdfView extends ReportPdfView {
                     operationsTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
                 }
             }
-            document.add(operationsTable);
-        } else {
-            List<String> operationsTableHeader = new ArrayList<String>();
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.number", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.name", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.level", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.quantity", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.piecework", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.operationCost", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.margin", locale));
-            operationsTableHeader.add(getTranslationService().translate(
-                    "costCalculation.costCalculationDetails.report.columnHeader.totalCost", locale));
+        }
+        return operationsTable;
+    }
 
-            DataDefinition calculationOperationComponentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
-            List<Entity> calculationOperationComponents = calculationOperationComponentDD
-                    .find("where costCalculation.id = " + costCalculation.getId().toString()).list().getEntities();
-            Collections.sort(calculationOperationComponents, new EntityOperationComponentComparator());
-            PdfPTable operationsTable = PdfUtil.createTableWithHeader(9, operationsTableHeader, false);
+    private PdfPTable addTableAboutPieceworkCost(final Entity costCalculation, final Locale locale) {
+        List<String> operationsTableHeader = new ArrayList<String>();
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.number", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.name", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.level", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.quantity", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.piecework", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.operationCost", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.margin", locale));
+        operationsTableHeader.add(getTranslationService().translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.totalCost", locale));
+
+        List<Entity> calculationOperationComponents = costCalculation.getTreeField("calculationOperationComponents");
+
+        // Collections.sort(calculationOperationComponents, new EntityOperationComponentComparator());
+        PdfPTable operationsTable = PdfUtil.createTableWithHeader(9, operationsTableHeader, false);
+        if (calculationOperationComponents.size() != 0) {
             for (Entity calculationOperationComponent : calculationOperationComponents) {
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
                         "number"), PdfUtil.getArialRegular9Dark()));
@@ -396,7 +393,7 @@ public class CostCalculationPdfView extends ReportPdfView {
                 operationsTable.addCell(new Phrase(getDecimalFormat().format(pieces), PdfUtil.getArialRegular9Dark()));
                 BigDecimal operationCost = pieceworkCost.multiply(pieces);
                 operationsTable.addCell(new Phrase(getDecimalFormat().format(operationCost), PdfUtil.getArialRegular9Dark()));
-                reportData = costCalculation.getField("productionCostMargin");
+                Object reportData = costCalculation.getField("productionCostMargin");
                 if (reportData != null) {
                     operationsTable.addCell(new Phrase(getDecimalFormat().format(reportData), PdfUtil.getArialRegular9Dark()));
                     BigDecimal sum = operationCost.add((BigDecimal) reportData);
@@ -406,12 +403,8 @@ public class CostCalculationPdfView extends ReportPdfView {
                     operationsTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
                 }
             }
-            document.add(operationsTable);
         }
-
-        String text = getTranslationService().translate("qcadooReport.commons.endOfPrint.label", locale);
-        PdfUtil.addEndOfDocument(document, writer, text);
-        return getTranslationService().translate("costCalculation.costCalculationDetails.report.fileName", locale);
+        return operationsTable;
     }
 
     @Override
@@ -444,4 +437,15 @@ public class CostCalculationPdfView extends ReportPdfView {
         table.addCell(cellTable);
     }
 
+    private List<Entity> getCalculateOperationComponents(EntityTreeNode operationComponents, List<Entity> listOfOperationComponent) {
+
+        List<EntityTreeNode> operationComponentList = operationComponents.getChildren();
+        for (EntityTreeNode operationComponent : operationComponentList) {
+            if (operationComponent != null) {
+                listOfOperationComponent.add(operationComponent);
+                listOfOperationComponent = getCalculateOperationComponents(operationComponent, listOfOperationComponent);
+            }
+        }
+        return listOfOperationComponent;
+    }
 }
