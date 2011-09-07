@@ -12,13 +12,14 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
 import com.qcadoo.model.api.Entity;
@@ -30,14 +31,14 @@ public class ParameterizedProductsCostCalculationServiceTest {
 
     private ProductsCostCalculationService productCostCalc;
 
-    private Entity technology;
+    private Entity costCalculation;
 
-    private ProductsCostCalculationConstants validationMode;
+    private ProductsCostCalculationConstants calculationMode;
 
-    private BigDecimal validationAverage, validationLastPurchase, validationNominal, validationInputQuantity,
-            validationOrderQuantity, validationExpectedResult;
+    private BigDecimal averageCost, lastPurchaseCost, nominalCost, inputQuantity,
+            orderQuantity, expectedResult;
 
-    private BigDecimal validationCostForNumber;
+    private BigDecimal costForNumber;
 
     @Parameters
     public static Collection<Object[]> data() {
@@ -57,68 +58,79 @@ public class ParameterizedProductsCostCalculationServiceTest {
     public ParameterizedProductsCostCalculationServiceTest(ProductsCostCalculationConstants mode, BigDecimal average,
             BigDecimal lastPurchase, BigDecimal nominal, BigDecimal costForNumber, BigDecimal inputQuantity,
             BigDecimal orderQuantity, BigDecimal expectedResult) {
-        this.validationAverage = average;
-        this.validationExpectedResult = expectedResult;
-        this.validationInputQuantity = inputQuantity;
-        this.validationLastPurchase = lastPurchase;
-        this.validationMode = mode;
-        this.validationNominal = nominal;
-        this.validationOrderQuantity = orderQuantity;
-        this.validationCostForNumber = costForNumber;
+        this.averageCost = average;
+        this.expectedResult = expectedResult;
+        this.inputQuantity = inputQuantity;
+        this.lastPurchaseCost = lastPurchase;
+        this.calculationMode = mode;
+        this.nominalCost = nominal;
+        this.orderQuantity = orderQuantity;
+        this.costForNumber = costForNumber;
     }
 
     @Before
     public void init() {
         productCostCalc = new ProductsCostCalculationServiceImpl();
 
-        technology = mock(Entity.class);
+        costCalculation = mock(Entity.class);
         EntityTree operationComponents = mock(EntityTree.class);
         Entity operationComponent = mock(Entity.class);
         EntityList inputProducts = mock(EntityList.class);
         Entity inputProduct = mock(Entity.class);
         Entity product = mock(Entity.class);
+        Entity technology = mock(Entity.class);
 
+        when(costCalculation.getField("quantity")).thenReturn(orderQuantity);
+        when(costCalculation.getBelongsToField("technology")).thenReturn(technology);
+        when(technology.getTreeField("operationComponents")).thenReturn(operationComponents);
+        when(costCalculation.getField("calculateMaterialCostsMode")).thenReturn(calculationMode);
+
+        
+        @SuppressWarnings("unchecked")
         Iterator<Entity> operationComponentsIterator = mock(Iterator.class);
         when(operationComponentsIterator.hasNext()).thenReturn(true, false);
         when(operationComponentsIterator.next()).thenReturn(operationComponent);
         when(operationComponents.iterator()).thenReturn(operationComponentsIterator);
 
+        @SuppressWarnings("unchecked")
         Iterator<Entity> inputProductsIterator = mock(Iterator.class);
         when(inputProductsIterator.hasNext()).thenReturn(true, true, true, false);
         when(inputProductsIterator.next()).thenReturn(inputProduct);
         when(inputProducts.iterator()).thenReturn(inputProductsIterator);
 
-        when(technology.getTreeField("operationComponents")).thenReturn(operationComponents);
-
         when(operationComponent.getHasManyField("operationProductInComponents")).thenReturn(inputProducts);
-        when(inputProduct.getField("quantity")).thenReturn(validationInputQuantity);
+        when(inputProduct.getField("quantity")).thenReturn(inputQuantity);
         when(inputProduct.getBelongsToField("product")).thenReturn(product);
 
-        when(product.getField(AVERAGE.getStrValue())).thenReturn(validationAverage);
-        when(product.getField(LASTPURCHASE.getStrValue())).thenReturn(validationLastPurchase);
-        when(product.getField(NOMINAL.getStrValue())).thenReturn(validationNominal);
-        when(product.getField("costForNumber")).thenReturn(validationCostForNumber);
+        when(product.getField(AVERAGE.getStrValue())).thenReturn(averageCost);
+        when(product.getField(LASTPURCHASE.getStrValue())).thenReturn(lastPurchaseCost);
+        when(product.getField(NOMINAL.getStrValue())).thenReturn(nominalCost);
+        when(product.getField("costForNumber")).thenReturn(costForNumber);
     }
 
     @Test
     public void shouldReturnCorrectCostValuesUsingTechnology() throws Exception {
         // when
-        Map<String, BigDecimal> result = productCostCalc.calculateProductsCost(technology, validationMode,
-                validationOrderQuantity);
+        productCostCalc.calculateProductsCost(costCalculation);
 
-        // // then
-        assertEquals(validationExpectedResult, result.get("totalMaterialCosts"));
+        // then
+        ArgumentCaptor<BigDecimal> argument = ArgumentCaptor.forClass(BigDecimal.class);
+        Mockito.verify(costCalculation).setField(Mockito.eq("totalMaterialCosts"), argument.capture());
+        assertEquals(expectedResult.setScale(3), argument.getValue());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testShouldReturnExceptionWhenEntityIsNull() throws Exception {
         // when
-        productCostCalc.calculateProductsCost(null, validationMode, validationOrderQuantity);
+        productCostCalc.calculateProductsCost(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testShouldReturnExceptionWhenQuantityIsNull() throws Exception {
+        // given
+        when(costCalculation.getField("quantity")).thenReturn(null);
+        
         // when
-        productCostCalc.calculateProductsCost(technology, validationMode, null);
+        productCostCalc.calculateProductsCost(costCalculation);
     }
 }

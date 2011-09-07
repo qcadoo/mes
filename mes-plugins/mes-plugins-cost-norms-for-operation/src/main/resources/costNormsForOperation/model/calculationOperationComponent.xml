@@ -47,6 +47,7 @@
 		<integer name="effectiveOperationRealizationTime" />
 		<datetime name="effectiveDateFrom" />
 		<datetime name="effectiveDateTo" />
+		<integer name="duration" />
 		<decimal name="pieces" />
 		<integer name="level" />
 	    <decimal name="operationCost" default="0"/>

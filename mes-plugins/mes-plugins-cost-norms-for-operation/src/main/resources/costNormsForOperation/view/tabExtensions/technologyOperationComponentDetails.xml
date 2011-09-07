@@ -24,9 +24,6 @@
 					reference="machineHourlyCost" field="#{form}.machineHourlyCost" />
 			</layoutElement>
 		</component>
-<!--		<listener event="onChangeTechnology"-->
-<!--			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"-->
-<!--			method="copyCostValuesFromSelectedTechnology" />-->
 	</windowTab>
 
 </windowTabExtension>

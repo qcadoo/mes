@@ -32,7 +32,6 @@
 	<component type="window" name="window">
 		<ribbon>
 			<group name="navigation">
-				<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack;" />
 			     <bigButton name="select" icon="acceptIcon24.png" >
 			         <script>
 			             <![CDATA[

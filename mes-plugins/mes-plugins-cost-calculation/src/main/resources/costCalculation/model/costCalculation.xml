@@ -6,9 +6,8 @@
 		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
 		</string>
-		<tree name="calculationOperationComponent" joinField="costCalculation"
-			model="calculationOperationComponent" plugin="costNormsForOperation"
-			 />
+		<tree name="calculationOperationComponents" joinField="costCalculation"
+			model="calculationOperationComponent" plugin="costNormsForOperation" />
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<belongsTo name="defaultTechnology" model="technology"
@@ -73,11 +72,11 @@
 			required="true" default="nominal" />
 		<enum name="calculateOperationCostsMode" values="piecework,hourly"
 			required="true" default="hourly" />
-		<date name="dateOfCalculation" />
+		<datetime name="dateOfCalculation" />
+		<boolean name="generated" />
+		<string name="fileName" />
 	</fields>
 	<hooks>
-		<onSave class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-			method="generateDateOfCalculation" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

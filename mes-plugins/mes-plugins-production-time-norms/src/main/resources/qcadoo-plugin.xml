@@ -132,11 +132,6 @@
 			class="com.qcadoo.mes.productionTimeNorms.NormService"
 			method="inheritOperationNormValues" />
 			
-<!-- 		<view:view-hook plugin="productionScheduling" -->
-<!-- 			view="orderOperationComponentDetails" type="beforeRender" -->
-<!-- 			class="com.qcadoo.mes.productionTimeNorms.NormService" -->
-<!-- 			method="inheritOperationNormValues" /> -->
-			
 		<view:view-listener plugin="technologies" 
 			view="technologyOperationComponentDetails" component="operation" event="copyNormFromOperation"
 			class="com.qcadoo.mes.productionTimeNorms.NormService" method="copyNormFromOperation" />
