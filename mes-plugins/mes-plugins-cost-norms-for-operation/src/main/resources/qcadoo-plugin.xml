@@ -162,7 +162,6 @@ http://schema.qcadoo.org/modules/menu.xsd">
 				class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
 				method="copyCostNormsToOrderOperationComponent" />
 		</model:model-hook>
-
 	</modules>
 
 </plugin>
