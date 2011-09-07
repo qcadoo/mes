@@ -38,6 +38,11 @@ public class CostNormsForOperationService {
         }
     }
 
+    public void inheritOperationNormValues(final ViewDefinitionState state, final ComponentState componentState,
+            final String[] args) {
+        copyCostValuesFromSelectedTechnology(state, componentState, args);
+    }
+
     /* ******* MODEL HOOKS ******* */
 
     public void copyCostNormsToOrderOperationComponent(final DataDefinition dd, final Entity orderOperationComponent) {

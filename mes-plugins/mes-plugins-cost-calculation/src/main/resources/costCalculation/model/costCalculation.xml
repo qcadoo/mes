@@ -56,7 +56,7 @@
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<decimal name="totalCost">
+		<decimal name="totalCosts">
 			<validatesRange from="0" exclusively="true" />
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
@@ -72,11 +72,11 @@
 			required="true" default="nominal" />
 		<enum name="calculateOperationCostsMode" values="piecework,hourly"
 			required="true" default="hourly" />
-		<date name="dateOfCalculation" />
+		<datetime name="dateOfCalculation" />
+		<boolean name="generated" />
+		<string name="fileName" />
 	</fields>
 	<hooks>
-		<onSave class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-			method="generateDateOfCalculation" />
 		<onSave
 			class="com.qcadoo.mes.costCalculation.CostCalculationServiceImpl"
 			method="copyTechnologyTree" />

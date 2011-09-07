@@ -81,7 +81,7 @@ public final class InventoryXlsService extends XlsDocumentService {
                 .getEntities();
         Collections.sort(transfers, new EntityTransferComparator());
 
-        String warehouseNumber = inventoryReport.getBelongsToField("warehouse").getStringField("number");
+        String warehouseNumber = inventoryReport.getBelongsToField("warehouse").getId().toString();
         String forDate = ((Date) inventoryReport.getField("inventoryForDate")).toString();
 
         String numberBefore = "";
@@ -89,8 +89,8 @@ public final class InventoryXlsService extends XlsDocumentService {
             String numberNow = e.getBelongsToField("product").getStringField("number");
 
             if (!numberBefore.equals(numberNow)) {
-                BigDecimal quantity = inventoryService.calculateShouldBe(warehouseNumber.toString(),
-                        e.getBelongsToField("product").getStringField("number"), forDate);
+                BigDecimal quantity = inventoryService.calculateShouldBe(warehouseNumber, e.getBelongsToField("product")
+                        .getStringField("number"), forDate);
 
                 HSSFRow row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(e.getBelongsToField("product").getStringField("number"));
