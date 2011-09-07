@@ -24,6 +24,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
     @Autowired
     private ProductsCostCalculationService productsCostCalculationService;
 
+    @Override
     public Entity calculateTotalCost(Entity costCalculation) {
 
         BigDecimal productionCosts;
@@ -65,18 +66,19 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         return costCalculation;
     }
 
-    private OperationsCostCalculationConstants getOperationModeFromField(Object value) {
+    private OperationsCostCalculationConstants getOperationModeFromField(final Object value) {
         checkArgument(value != null, "field value is null");
         return OperationsCostCalculationConstants.valueOf(value.toString().toUpperCase());
     }
 
-    private BigDecimal getBigDecimal(Object value) {
+    private BigDecimal getBigDecimal(final Object value) {
         if (value == null) {
             return BigDecimal.ZERO;
         }
         return new BigDecimal(value.toString());
     }
-    
+
+    // FIXME - MAKU Transactional should be here ?
     public void copyTechnologyTree(final DataDefinition dd, final Entity costCalculation) {
         operationsCostCalculationService.copyTechnologyTree(dd, costCalculation);
     }
