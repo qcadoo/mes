@@ -164,10 +164,20 @@
 				<textElement/>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="427" y="18" width="380" height="13"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.generatedBy.label} + " " + $P{Author}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="427" y="33" width="380" height="13"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageFooter>
 	<lastPageFooter>
-		<band height="46">
+		<band height="61">
 			<line>
 				<reportElement style="qcadooPageNumberLine" x="0" y="-1" width="807" height="1"/>
 			</line>
@@ -197,7 +207,17 @@
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="qcadooPageNumber" x="510" y="18" width="297" height="13"/>
+				<reportElement style="qcadooPageNumber" x="427" y="18" width="380" height="13"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.generatedBy.label} + " " + $P{Author}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="427" y="33" width="380" height="13"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="510" y="48" width="297" height="13"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.endOfPrint.label}]]></textFieldExpression>
 			</textField>
