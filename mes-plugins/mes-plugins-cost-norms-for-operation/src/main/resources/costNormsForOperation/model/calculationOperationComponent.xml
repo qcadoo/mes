@@ -30,9 +30,11 @@
 	<fields>
 		<belongsTo name="operation" plugin="technologies" model="operation"
 			required="true" />
-		<belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent" required="true" />
+		<belongsTo name="technologyOperationComponent" plugin="technologies"
+			model="technologyOperationComponent" required="true" />
 		<belongsTo name="parent" model="calculationOperationComponent" />
-		<enum name="entityType" values="operation" required="true" default="operation" />
+		<enum name="entityType" values="operation" required="true"
+			default="operation" />
 		<hasMany name="children" model="calculationOperationComponent"
 			joinField="parent" cascade="delete" copyable="true" />
 		<priority name="priority" scope="parent" />
@@ -52,6 +54,7 @@
 		<integer name="level" />
 	    <decimal name="operationCost" default="0"/>
  	    <decimal name="operationMarginCost" default="0"/>
+ 	    <decimal name="totalOperationCost" default="0" />
 		<decimal name="pieceworkCost" default="0">
 			<validatesRange from="0" exclusively="false" />
 			<validatesPrecision max="7" />
@@ -73,7 +76,6 @@
 			<validatesScale max="0" />
 		</integer>
 		
-		<decimal name="totalOperationCost" default="0"/>
 
 	</fields>
 	<hooks />
