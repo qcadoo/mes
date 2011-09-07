@@ -143,7 +143,10 @@ public class InventoryService {
     }
 
     public void refreshShouldBe(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+        refreshShouldBe(state);
+    }
 
+    public void refreshShouldBe(final ViewDefinitionState state) {
         FieldComponent warehouse = (FieldComponent) (state.getComponentByReference("warehouse") != null ? state
                 .getComponentByReference("warehouse") : null);
         FieldComponent product = (FieldComponent) (state.getComponentByReference("product") != null ? state
