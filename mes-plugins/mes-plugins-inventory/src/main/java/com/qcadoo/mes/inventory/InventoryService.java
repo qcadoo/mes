@@ -84,8 +84,6 @@ public class InventoryService {
         BigDecimal countProduct = BigDecimal.ZERO;
         Date lastCorrectionDate = null;
 
-        System.out.println("Libront: " + warehouse);
-
         DataDefinition transferDataCorrection = dataDefinitionService.get("inventory", "correction");
         DataDefinition transferTo = dataDefinitionService.get("inventory", "transfer");
         DataDefinition transferFrom = dataDefinitionService.get("inventory", "transfer");
