@@ -10,27 +10,13 @@
 				<bigButton name="costCalculate" icon="calculateTimeIcon24.png"
 					action="#{form}.fireEvent(fireCostCalculation);" />
 			</group>
-			<group name="report">
-				<bigButton name="pdf" icon="pdfIcon24.png"
-					action="#{form}.fireEvent(printCostCalculationReport,pdf);" state="enabled"
-					reference="pdf">
-					<script>
-				<![CDATA[
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (! value || ! value.content) {
-								return;
-							}
-							if (! value.content.entityId) {
-								this.disable();
-							} else {
-								this.enable();
-							}
-						}
-					});					
-				]]>
-					</script>
-				</bigButton>
+			<group name="generate">
+				<bigButton name="generate" icon="generateIcon24.png"
+					action="#{form}.fireEvent(generateCostCalculation);" state="enabled" />
+			</group>
+			<group name="export">
+				<bigButton name="pdf" icon="pdfIcon16.png"
+					action="#{form}.fireEvent(printCostCalculation,pdf);" state="disabled" />
 			</group>
 		</ribbon>
 		<component type="form" name="orderId" reference="orderId"
@@ -51,15 +37,52 @@
 							#{form}.fireEvent(this, 'requestCopyFieldValues', ['technology', technologyId]); 
 						}
 					});
+					
+					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
+					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
+					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+					
+					this.addOnChangeListener({
+						onSetValue: function(value) {
+							if (!value || !value.content) {
+								alert("sss");
+								return;
+							}
+							if (value.content.entityId) {
+								var isGeneratedCheckboxValue = #{generated}.getValue();
+								copyRibbonItem.enable();
+								if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+									pdfRibbonItem.enable();
+									saveRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
+								} else {
+									pdfRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordNotGenerated)}");
+									saveRibbonItem.enable();
+								}
+							} 
+							else {
+								copyRibbonItem.disable("#{translate(recordNotCreated)}");
+								pdfRibbonItem.disable("#{translate(recordNotCreated)}");
+								saveRibbonItem.enable();
+							}
+						}
+					});
 				]]>
 			</script>
 			<component type="gridLayout" name="gridLayout" columns="2"
-				rows="15">
+				rows="17">
 				<layoutElement column="1" row="1">
+					<component type="checkbox" name="generated" field="generated"
+						reference="generated" defaultEnabled="false" />
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="input" name="dateOfCalculation" field="dateOfCalculation"
+						reference="dateOfCalculation" defaultEnabled="false" />
+				</layoutElement>
+				<layoutElement column="1" row="3">
 					<component type="input" name="number" field="number"
 						reference="number" />
 				</layoutElement>
-				<layoutElement column="1" row="2">
+				<layoutElement column="1" row="4">
 					<component type="lookup" name="product" field="product"
 						reference="product">
 						<option type="column" name="name" fields="name" link="true" />
@@ -68,11 +91,12 @@
 						<option type="orderable" value="name" />
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="number" />
-						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-								method="changeOrderProduct" />
+						<listener event="onSelectedEntityChange"
+							class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+							method="changeOrderProduct" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="3">
+				<layoutElement column="1" row="5">
 					<component type="lookup" name="defaultTechnology" field="defaultTechnology"
 						reference="defaultTechnology" defaultEnabled="false">
 						<option type="column" name="name" fields="name" />
@@ -83,7 +107,7 @@
 						<option type="fieldCode" value="number" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="4">
+				<layoutElement column="1" row="6">
 					<component type="lookup" name="technology" field="technology"
 						reference="technology">
 						<option type="column" name="name" fields="name" link="true" />
@@ -100,11 +124,11 @@
 							method="setFieldEnable" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="5">
+				<layoutElement column="1" row="7">
 					<component type="input" name="quantity" field="quantity"
 						reference="quantity" />
 				</layoutElement>
-				<layoutElement column="1" row="6">
+				<layoutElement column="1" row="8">
 					<component type="lookup" name="order" field="order"
 						reference="order">
 						<option type="column" name="name" fields="name" link="true" />
@@ -122,7 +146,7 @@
 							method="setFieldEnable" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="7" height="3">
+				<layoutElement column="1" row="9" height="3">
 					<component type="borderLayout" name="borderLayoutParameters"
 						reference="borderLayoutParameters">
 						<option type="label" value="parameters" />
@@ -144,7 +168,7 @@
 						</component>
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="10" height="3">
+				<layoutElement column="1" row="12" height="3">
 					<component type="borderLayout" name="borderLayoutOverheads"
 						reference="borderLayoutOverheads">
 
@@ -178,7 +202,7 @@
 						</component>
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="13" height="3">
+				<layoutElement column="1" row="15" height="3">
 					<component type="textarea" name="description" field="description"
 						height="3" />
 				</layoutElement>
@@ -225,7 +249,7 @@
 									defaultEnabled="false" hasLabel="false" reference="totalPieceworkCostsPLN" />
 							</layoutElement>
 							<layoutElement column="1" row="5">
-								<component type="label" name="totalTechnicalProductionCostsLabel" >
+								<component type="label" name="totalTechnicalProductionCostsLabel">
 									<option type="labelStyle" value="text" />
 								</component>
 							</layoutElement>
@@ -306,7 +330,7 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" width="3">
-								<component type="input" name="totalCost" field="totalCost"
+								<component type="input" name="totalCosts" field="totalCosts"
 									defaultEnabled="false" reference="totalCosts" hasLabel="false" />
 							</layoutElement>
 							<layoutElement column="4" row="2">
@@ -333,10 +357,6 @@
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
-			<listener event="printCostCalculationReport"
-				class="com.qcadoo.mes.costCalculation.print.CostCalculationReportService"
-				method="printCostCalculationReport" />
-
 			<listener event="fireCostCalculation"
 				class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 				method="calculateTotalCostView" />
@@ -344,7 +364,12 @@
 			<listener event="requestCopyFieldValues"
 				class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 				method="copyFieldValues" />
-
+			<listener event="printCostCalculation"
+				class="com.qcadoo.mes.costCalculation.print.CostCalculationReportService"
+				method="printCostCalculation" />
+			<listener event="generateCostCalculation"
+				class="com.qcadoo.mes.costCalculation.print.CostCalculationReportService"
+				method="generateCostCalculation" />
 		</component>
 	</component>
 	<hooks>

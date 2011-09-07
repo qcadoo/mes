@@ -2,9 +2,6 @@ package com.qcadoo.mes.costCalculation;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.AVERAGE;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.LASTPURCHASE;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.NOMINAL;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
 
@@ -23,11 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
-import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -169,6 +164,12 @@ public class CostCalculationViewService {
             field.setEnabled(false);
             field.requestComponentUpdateState();
         }
+        FieldComponent totalCostsPerUnitUNIT = (FieldComponent) viewDefinitionState
+                .getComponentByReference("totalCostsPerUnitUNIT");
+        totalCostsPerUnitUNIT.setEnabled(true);
+        totalCostsPerUnitUNIT.setFieldValue(currencyAlphabeticCode + " / ");
+        totalCostsPerUnitUNIT.setEnabled(false);
+        totalCostsPerUnitUNIT.requestComponentUpdateState();
     }
 
     public void fillFieldWhenTechnologyChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -231,32 +232,30 @@ public class CostCalculationViewService {
 
     /* Event handler, fire total calculation */
     public void calculateTotalCostView(ViewDefinitionState viewDefinitionState, ComponentState componentState, String[] args) {
-        
-        
-        
-        //Map<String, Object> parameters = getValueFromFields(viewDefinitionState);
-//        ComponentState technologyComponent = viewDefinitionState.getComponentByReference("technology");
-//        ComponentState orderComponent = viewDefinitionState.getComponentByReference("order");
-//        Entity technology, source, costCalculation;
+
+        // Map<String, Object> parameters = getValueFromFields(viewDefinitionState);
+        // ComponentState technologyComponent = viewDefinitionState.getComponentByReference("technology");
+        // ComponentState orderComponent = viewDefinitionState.getComponentByReference("order");
+        // Entity technology, source, costCalculation;
 
         // check that technology & operation lookup components are found
-//        checkArgument(technologyComponent != null && orderComponent != null, "Incompatible view");
+        // checkArgument(technologyComponent != null && orderComponent != null, "Incompatible view");
 
-//        Long technologyId = (Long) technologyComponent.getFieldValue();
-//        Long orderId = (Long) orderComponent.getFieldValue(); 
-        
-//        technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY)
-//                .get(technologyId);
-//
-//        source = technology;
-//
-//        if (orderComponent.getFieldValue() != null) {
-//            source = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(orderId);
-//        }
+        // Long technologyId = (Long) technologyComponent.getFieldValue();
+        // Long orderId = (Long) orderComponent.getFieldValue();
 
-//        if (technologyComponent.getFieldValue() == null) {
-//            return;
-//        }
+        // technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY)
+        // .get(technologyId);
+        //
+        // source = technology;
+        //
+        // if (orderComponent.getFieldValue() != null) {
+        // source = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(orderId);
+        // }
+
+        // if (technologyComponent.getFieldValue() == null) {
+        // return;
+        // }
 
         Entity costCalculation = getEntityFromForm(viewDefinitionState);
         attachBelongsToFields(costCalculation);
@@ -270,88 +269,86 @@ public class CostCalculationViewService {
         final Map<String, DataDefinition> belongsToFieldDDs = Maps.newHashMap();
         belongsToFieldDDs.put("order", dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER));
         belongsToFieldDDs.put("technology", dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY));
-        belongsToFieldDDs.put("defaultTechnology", dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY));
+        belongsToFieldDDs.put("defaultTechnology",
+                dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY));
         belongsToFieldDDs.put("product", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT));
-        
+
         Entity fieldEntity;
         Object fieldValue;
-        
+
         for (String fieldName : belongsToFieldDDs.keySet()) {
             fieldValue = costCalculation.getField(fieldName);
-            if(fieldValue == null || !(fieldValue instanceof Long)) {
+            if (fieldValue == null || !(fieldValue instanceof Long)) {
                 continue;
             }
             fieldEntity = belongsToFieldDDs.get(fieldName).get((Long) fieldValue);
             costCalculation.setField(fieldName, fieldEntity);
         }
-        
-//        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY);
-//        Entity order = costCalculation.getBelongsToField("order");
-//        Entity technology = costCalculation.getBelongsToField("technology");
-//        Entity defaultTechnology = costCalculation.getBelongsToField("defaultTechnology");
-//        if(order != null) {
-//            order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(order.getId());
-//            costCalculation.setField("order", order);
-//        }
-//        technology = technologyDD.get(technology.getId());
-//        defaultTechnology = technologyDD.get(defaultTechnology.getId());
-//
-//        costCalculation.setField("technology", technology);
-//        costCalculation.setField("defaultTechnology", defaultTechnology);
+
+        // DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY);
+        // Entity order = costCalculation.getBelongsToField("order");
+        // Entity technology = costCalculation.getBelongsToField("technology");
+        // Entity defaultTechnology = costCalculation.getBelongsToField("defaultTechnology");
+        // if(order != null) {
+        // order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(order.getId());
+        // costCalculation.setField("order", order);
+        // }
+        // technology = technologyDD.get(technology.getId());
+        // defaultTechnology = technologyDD.get(defaultTechnology.getId());
+        //
+        // costCalculation.setField("technology", technology);
+        // costCalculation.setField("defaultTechnology", defaultTechnology);
     }
-    
+
     // get values from form fields
     private Entity getEntityFromForm(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         checkArgument(form != null, "form is null");
         checkArgument(form.isValid(), "invalid form");
         return form.getEntity();
-        
-//        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        // Map<String, Object> resultMap = new HashMap<String, Object>();
 
         // Set for fields contained BigDecimal values
-//        final Set<String> bigDecimalValues = new HashSet<String>();
-//        bigDecimalValues.addAll(Arrays.asList("quantity", "productionCostMargin", "materialCostMargin", "additionalOverhead"));
+        // final Set<String> bigDecimalValues = new HashSet<String>();
+        // bigDecimalValues.addAll(Arrays.asList("quantity", "productionCostMargin", "materialCostMargin", "additionalOverhead"));
 
         // Set for all input fields
-//        final Set<String> referenceValues = new HashSet<String>();
-//        referenceValues.addAll(bigDecimalValues);
-//        referenceValues.addAll(Arrays.asList("includeTPZ", "calculateMaterialCostsMode", "calculateOperationCostsMode"));
+        // final Set<String> referenceValues = new HashSet<String>();
+        // referenceValues.addAll(bigDecimalValues);
+        // referenceValues.addAll(Arrays.asList("includeTPZ", "calculateMaterialCostsMode", "calculateOperationCostsMode"));
 
-//        for (String key : referenceValues) {
-//            Object fieldValue = view.getComponentByReference(key).getFieldValue();
-//            Object value = null;
-//
-//            if (fieldValue != null && !fieldValue.toString().isEmpty()) {
-//                if (bigDecimalValues.contains(key)) {
-//                    value = getBigDecimalFromField(fieldValue, view.getLocale());
-//                } else {
-//                    value = fieldValue.toString();
-//                }
-//            } else if (bigDecimalValues.contains(key)) {
-//                value = BigDecimal.ZERO;
-//            }
-//
-//            resultMap.put(key, value);
-//        }
+        // for (String key : referenceValues) {
+        // Object fieldValue = view.getComponentByReference(key).getFieldValue();
+        // Object value = null;
+        //
+        // if (fieldValue != null && !fieldValue.toString().isEmpty()) {
+        // if (bigDecimalValues.contains(key)) {
+        // value = getBigDecimalFromField(fieldValue, view.getLocale());
+        // } else {
+        // value = fieldValue.toString();
+        // }
+        // } else if (bigDecimalValues.contains(key)) {
+        // value = BigDecimal.ZERO;
+        // }
+        //
+        // resultMap.put(key, value);
+        // }
 
         // cast checkbox fields values to boolean
-//        resultMap.put("includeTPZ", getBooleanFromField((String) resultMap.get("includeTPZ")));
+        // resultMap.put("includeTPZ", getBooleanFromField((String) resultMap.get("includeTPZ")));
 
         // cast mode fields to proper enum
-//        ProductsCostCalculationConstants productMode = getProductMode.get("calculateMaterialCostsMode"));
-        
+        // ProductsCostCalculationConstants productMode = getProductMode.get("calculateMaterialCostsMode"));
 
-//        resultMap.put("calculateMaterialCostsMode", productMode);
+        // resultMap.put("calculateMaterialCostsMode", productMode);
 
-//        resultMap
-//                .put("calculateOperationCostsMode", OperationsCostCalculationConstants.valueOf(((String) resultMap
-//                        .get("calculateOperationCostsMode")).toUpperCase()));
+        // resultMap
+        // .put("calculateOperationCostsMode", OperationsCostCalculationConstants.valueOf(((String) resultMap
+        // .get("calculateOperationCostsMode")).toUpperCase()));
 
-//        return resultMap;
+        // return resultMap;
     }
-
-
 
     private BigDecimal getBigDecimalFromField(final Object value, final Locale locale) {
         try {
@@ -367,18 +364,18 @@ public class CostCalculationViewService {
     private void fillFields(final ViewDefinitionState view, final Entity costCalculation) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         form.setFieldValue(costCalculation);
-        
-//        final Set<String> outputFields = new HashSet<String>();
-//        outputFields.addAll(Arrays.asList("productionCostMarginValue", "materialCostMarginValue", "totalOverhead",
-//                "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
-//                "totalTechnicalProductionCosts", "totalCosts", "totalCostsPerUnit"));
-//        checkArgument(resultMap.keySet().size() == outputFields.size(), "to less argument");
-//
-//        for (String referenceName : outputFields) {
-//            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
-//            fieldComponent.setFieldValue((BigDecimal) resultMap.get(referenceName).setScale(3, BigDecimal.ROUND_UP));
-//            fieldComponent.requestComponentUpdateState();
-//        }
+
+        // final Set<String> outputFields = new HashSet<String>();
+        // outputFields.addAll(Arrays.asList("productionCostMarginValue", "materialCostMarginValue", "totalOverhead",
+        // "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
+        // "totalTechnicalProductionCosts", "totalCosts", "totalCostsPerUnit"));
+        // checkArgument(resultMap.keySet().size() == outputFields.size(), "to less argument");
+        //
+        // for (String referenceName : outputFields) {
+        // FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
+        // fieldComponent.setFieldValue((BigDecimal) resultMap.get(referenceName).setScale(3, BigDecimal.ROUND_UP));
+        // fieldComponent.requestComponentUpdateState();
+        // }
     }
 
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {

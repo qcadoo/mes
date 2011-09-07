@@ -44,6 +44,8 @@ http://schema.qcadoo.org/modules/menu.xsd">
 		<view:view-tab
 			resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
 
+		<view:view-ribbon-group resource="view/ribbonExtensions/technologyOperationComponentDetails.xml"/>
+		
 		<!-- operation -->
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="pieceworkCost" default="0">
@@ -150,10 +152,15 @@ http://schema.qcadoo.org/modules/menu.xsd">
 				class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
 				method="copyCostNormsToTechnologyOperationComponent" />
 		</model:model-hook>
+		
 		<view:view-listener view="technologyOperationComponentDetails"
 			component="operation" plugin="technologies" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
-			method="copyCostValuesFromSelectedTechnology" />
+			method="inheritOperationNormValues" />
+
+		<view:view-listener plugin="technologies" 
+			view="technologyOperationComponentDetails" component="operation" event="copyCostsFromOperation"
+			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService" method="copyCostValuesFromSelectedTechnology" />
 
 		<!-- operation - instance of technology -->
 		<model:model-hook model="orderOperationComponent"
