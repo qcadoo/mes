@@ -6,20 +6,15 @@ import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import sun.security.action.GetBooleanAction;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -32,7 +27,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -277,7 +272,7 @@ public class CostCalculationViewService {
         }
         return getBigDecimal(value).setScale(3, BigDecimal.ROUND_UP).toString().replace('.', ',');
     }
-    
+
     private BigDecimal getBigDecimal(final Object value) {
         if (value == null) {
             return BigDecimal.ZERO;
@@ -293,8 +288,8 @@ public class CostCalculationViewService {
 
     // put result values into proper form fields
     private void fillFields(final ViewDefinitionState view, final Entity costCalculation) {
-        final Set<String> outputDecimalFields = Sets.newHashSet("productionCostMarginValue", "materialCostMarginValue", "totalOverhead",
-                "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
+        final Set<String> outputDecimalFields = Sets.newHashSet("productionCostMarginValue", "materialCostMarginValue",
+                "totalOverhead", "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
                 "totalTechnicalProductionCosts", "totalCosts", "totalCostsPerUnit");
 
         for (String referenceName : outputDecimalFields) {
@@ -325,18 +320,11 @@ public class CostCalculationViewService {
     }
 
     private Entity getDefaultTechnology(final Long selectedProductId) {
-        DataDefinition instructionDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY);
+        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY);
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isEq("master", true)
-                .belongsTo("product", selectedProductId);
+        SearchCriteriaBuilder searchCriteria = technologyDD.find().add(SearchRestrictions.eq("master", true))
+                .add(SearchRestrictions.belongsTo("product", BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT, selectedProductId));
 
-        SearchResult searchResult = searchCriteria.list();
-
-        if (searchResult.getTotalNumberOfEntities() == 1) {
-            return searchResult.getEntities().get(0);
-        } else {
-            return null;
-        }
+        return searchCriteria.uniqueResult();
     }
 }
