@@ -39,38 +39,10 @@
 						}
 					});
 					
-					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
-					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
-					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
-					
-					this.addOnChangeListener({
-						onSetValue: function(value) {
-							if (!value || !value.content) {
-								alert("sss");
-								return;
-							}
-							if (value.content.entityId) {
-								var isGeneratedCheckboxValue = #{generated}.getValue();
-								copyRibbonItem.enable();
-								if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-									pdfRibbonItem.enable();
-									saveRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
-								} else {
-									pdfRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordNotGenerated)}");
-									saveRibbonItem.enable();
-								}
-							} 
-							else {
-								copyRibbonItem.disable("#{translate(recordNotCreated)}");
-								pdfRibbonItem.disable("#{translate(recordNotCreated)}");
-								saveRibbonItem.enable();
-							}
-						}
-					});
 				]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="2"
-					rows="7">
+					rows="6">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="generated" field="generated"
 							reference="generated" defaultEnabled="false" />
@@ -207,16 +179,16 @@
 										field="productionCostMargin" reference="productionCostMargin" />
 								</layoutElement>
 								<layoutElement column="4" row="1">
-									<component type="input" name="productionCostMarginPLN"
-										defaultEnabled="false" hasLabel="false" reference="productionCostMarginPLN" />
+									<component type="input" name="productionCostMarginProc"
+										defaultEnabled="false" hasLabel="false" reference="productionCostMarginProc" />
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="materialCostMargin"
 										field="materialCostMargin" reference="materialCostMargin" />
 								</layoutElement>
 								<layoutElement column="4" row="2">
-									<component type="input" name="materialCostMarginPLN"
-										defaultEnabled="false" hasLabel="false" reference="materialCostMarginPLN" />
+									<component type="input" name="materialCostMarginProc"
+										defaultEnabled="false" hasLabel="false" reference="materialCostMarginProc" />
 								</layoutElement>
 								<layoutElement column="1" row="3" width="3">
 									<component type="input" name="additionalOverhead"
@@ -236,7 +208,7 @@
 			<component type="form" name="formCalculationResults"
 				reference="formCalculationResults">
 				<component type="gridLayout" name="calculationResults"
-					reference="calculationResults" columns="2" rows="10">
+					reference="calculationResults" columns="2" rows="9">
 					<layoutElement column="1" row="1" height="6">
 						<component type="borderLayout" name="borderLayoutTechnicalProductionCost"
 							reference="borderLayoutTechnicalProductionCost">
@@ -390,6 +362,7 @@
 
 	</component>
 	<hooks>
+		<beforeRender class="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="copyFieldValues"/>
 		<beforeRender
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 			method="setCurrencyAndUnit" />

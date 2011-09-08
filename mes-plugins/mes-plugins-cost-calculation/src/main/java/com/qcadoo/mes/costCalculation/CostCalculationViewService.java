@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -154,10 +155,12 @@ public class CostCalculationViewService {
 
         checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
         String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
-        for (String componentReference : Arrays.asList("totalCostsPLN", "totalOverheadPLN", "additionalOverheadValuePLN",
+        List<String> fields = Arrays.asList("totalCostsPLN", "totalOverheadPLN", "additionalOverheadValuePLN",
                 "materialCostMarginValuePLN", "productionCostMarginValuePLN", "totalTechnicalProductionCostsPLN",
                 "totalPieceworkCostsPLN", "totalLaborHourlyCostsPLN", "totalMachineHourlyCostsPLN", "totalMaterialCostsPLN",
-                "additionalOverheadPLN", "materialCostMarginPLN", "productionCostMarginPLN")) {
+                "additionalOverheadPLN");
+
+        for (String componentReference : fields) {
             FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
             field.setEnabled(true);
             field.setFieldValue(currencyAlphabeticCode);
@@ -170,6 +173,13 @@ public class CostCalculationViewService {
         totalCostsPerUnitUNIT.setFieldValue(currencyAlphabeticCode + " / ");
         totalCostsPerUnitUNIT.setEnabled(false);
         totalCostsPerUnitUNIT.requestComponentUpdateState();
+
+        FieldComponent productionCostMarginProc = (FieldComponent) viewDefinitionState
+                .getComponentByReference("productionCostMarginProc");
+        productionCostMarginProc.setFieldValue("%");
+        FieldComponent materialCostMarginProc = (FieldComponent) viewDefinitionState
+                .getComponentByReference("materialCostMarginProc");
+        materialCostMarginProc.setFieldValue("%");
     }
 
     public void fillFieldWhenTechnologyChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
