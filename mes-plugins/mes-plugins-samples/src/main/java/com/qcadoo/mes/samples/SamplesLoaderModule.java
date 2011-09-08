@@ -1027,12 +1027,6 @@ public class SamplesLoaderModule extends Module {
                 .setMaxResults(1).list().getEntities().get(0);
     }
 
-    private Entity getRandomOperation() {
-        Long total = (long) dataDefinitionService.get("technologies", "operation").find().list().getTotalNumberOfEntities();
-        return dataDefinitionService.get("technologies", "operation").find().setFirstResult(RANDOM.nextInt(total.intValue()))
-                .setMaxResults(1).list().getEntities().get(0);
-    }
-
     private Entity getRandomOrder() {
         Long total = (long) dataDefinitionService.get("orders", "order").find().list().getTotalNumberOfEntities();
         return dataDefinitionService.get("orders", "order").find().setFirstResult(RANDOM.nextInt(total.intValue()))
