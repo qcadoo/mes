@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
@@ -36,7 +35,6 @@ public class CostCalculationServiceImpl implements CostCalculationService {
                 .getField("calculateOperationCostsMode"));
 
         costCalculation.setField("dateOfCalculation", new Date());
-        costCalculation = costCalculation.getDataDefinition().save(costCalculation);
         operationsCostCalculationService.calculateOperationsCost(costCalculation);
         productsCostCalculationService.calculateProductsCost(costCalculation);
 
@@ -75,11 +73,12 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         if (value == null) {
             return BigDecimal.ZERO;
         }
-        return new BigDecimal(value.toString());
-    }
+        if (value instanceof BigDecimal) {
+            return (BigDecimal) value;
+        }
 
-    // FIXME - MAKU Transactional should be here ?
-    public void copyTechnologyTree(final DataDefinition dd, final Entity costCalculation) {
-        operationsCostCalculationService.copyTechnologyTree(dd, costCalculation);
+        // MAKU - using BigDecimal.valueOf(Double) instead of new BigDecimal(String) to prevent issue described at
+        // https://forums.oracle.com/forums/thread.jspa?threadID=2251030
+        return BigDecimal.valueOf(Double.valueOf(value.toString()));
     }
 }

@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +39,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    private final static Logger LOG = LoggerFactory.getLogger(OperationsCostCalculationServiceImpl.class);
+
     private final static Set<String> PATH_COST_KEYS = Sets.newHashSet(LABOR_HOURLY_COST, MACHINE_HOURLY_COST);
 
     @Override
@@ -44,27 +48,20 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         checkArgument(costCalculation != null, "costCalculation entity is null");
         checkArgument("costCalculation".equals(costCalculation.getDataDefinition().getName()), "unsupported entity type");
 
-        // EntityTree sourceOperationComponents;
+        DataDefinition costCalculationDD = costCalculation.getDataDefinition();
+
         OperationsCostCalculationConstants mode = getOperationModeFromField(costCalculation
                 .getField("calculateOperationCostsMode"));
         BigDecimal quantity = getBigDecimal(costCalculation.getField("quantity"));
         Boolean includeTPZ = getBooleanFromField(costCalculation.getField("includeTPZ"));
         BigDecimal margin = getBigDecimal(costCalculation.getField("productionCostMargin"));
 
-        // if (costCalculation.getBelongsToField("order") != null) {
-        // sourceOperationComponents = costCalculation.getBelongsToField("order").getTreeField("orderOperationComponents");
-        // } else {
-        // sourceOperationComponents = costCalculation.getBelongsToField("technology").getTreeField("operationComponents");
-        // }
-        //
-        // DataDefinition dd = dataDefinitionService.get("costCalculation", "costCalculation");
-        //
-        // createTechnologyInstanceForCalculation(sourceOperationComponents, costCalculation);
-        // // FIXME - MAKU we really need this?
-        // dd.save(costCalculation);
-        // costCalculation = dd.get(costCalculation.getId());
-        Entity newCostCalculation = costCalculation.getDataDefinition().get(costCalculation.getId());
+        copyTechnologyTree(costCalculation);
+
+        Entity yetAnotherCostCalculation = costCalculationDD.save(costCalculation);
+        Entity newCostCalculation = costCalculationDD.get(yetAnotherCostCalculation.getId());
         EntityTree operationComponents = newCostCalculation.getTreeField("calculationOperationComponents");
+
         checkArgument(operationComponents != null, "given operation components is null");
 
         if (mode == PIECEWORK) {
@@ -74,13 +71,17 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         } else {
             Map<String, BigDecimal> hourlyResultsMap = estimateCostCalculationForHourly(operationComponents.getRoot(), margin,
                     quantity, includeTPZ, 0L);
-            costCalculation.setField("totalMachineHourlyCosts", hourlyResultsMap.get(MACHINE_HOURLY_COST).setScale(3));
-            costCalculation.setField("totalLaborHourlyCosts", hourlyResultsMap.get(LABOR_HOURLY_COST).setScale(3));
+            costCalculation.setField("totalMachineHourlyCosts",
+                    hourlyResultsMap.get(MACHINE_HOURLY_COST).setScale(3, BigDecimal.ROUND_UP));
+            costCalculation.setField("totalLaborHourlyCosts",
+                    hourlyResultsMap.get(LABOR_HOURLY_COST).setScale(3, BigDecimal.ROUND_UP));
         }
     }
 
     private Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode operationComponent,
             final BigDecimal margin, final BigDecimal plannedQuantity, final Boolean includeTPZ, Long level) {
+        checkArgument(operationComponent != null, "given operationComponent is null");
+
         BigDecimal hourlyMachineCost = getBigDecimal(operationComponent.getField(MACHINE_HOURLY_COST));
         BigDecimal hourlyLaborCost = getBigDecimal(operationComponent.getField(LABOR_HOURLY_COST));
         BigDecimal numOfProducts = countNumberOfOutputProducts(operationComponent
@@ -96,23 +97,23 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         for (EntityTreeNode child : operationComponent.getChildren()) {
             unitResultsMap = estimateCostCalculationForHourly(child, margin, plannedQuantity, includeTPZ, level++);
             for (String key : PATH_COST_KEYS) {
-                BigDecimal newCost = resultsMap.get(key).add(unitResultsMap.get(key));
-                resultsMap.put(key, newCost);
+                BigDecimal unitOperationCost = resultsMap.get(key).add(unitResultsMap.get(key));
+                resultsMap.put(key, unitOperationCost);
             }
         }
 
-        Long numOfCycles = numOfProducts.divide(prodInOneCycle).setScale(0, BigDecimal.ROUND_UP).longValue();
-        Long tj = getLong(operationComponent.getField("tj"));
-        Long additionalTime = getLong(operationComponent.getField("timeNextOperation"));
-        Long duration = (tj * numOfCycles) + additionalTime;
+        BigDecimal numOfCycles = numOfProducts.divide(prodInOneCycle).setScale(0, BigDecimal.ROUND_UP);
+        BigDecimal tj = getBigDecimal(operationComponent.getField("tj"));
+        BigDecimal additionalTime = getBigDecimal(operationComponent.getField("timeNextOperation"));
+        BigDecimal duration = (tj.multiply(numOfCycles)).add(additionalTime);
         if (includeTPZ) {
-            duration += getLong(operationComponent.getField("tpz"));
+            duration.add(getBigDecimal(operationComponent.getField("tpz")));
         }
-        BigDecimal realizationTime = BigDecimal.valueOf(duration / 3600);
-        BigDecimal operationMachineCost = realizationTime.multiply(hourlyMachineCost);
-        BigDecimal operationLaborCost = realizationTime.multiply(hourlyLaborCost);
+        BigDecimal durationInHours = duration.divide(BigDecimal.valueOf(3600), 5, BigDecimal.ROUND_HALF_UP);
+        BigDecimal operationMachineCost = durationInHours.multiply(hourlyMachineCost);
+        BigDecimal operationLaborCost = durationInHours.multiply(hourlyLaborCost);
         BigDecimal operationCost = operationMachineCost.add(operationLaborCost);
-        BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100)));
+        BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100), 5, BigDecimal.ROUND_HALF_UP));
 
         operationComponent.setField("operationCost", operationCost);
         operationComponent.setField("operationMarginCost", operationMarginCost);
@@ -120,16 +121,21 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         operationComponent.setField("duration", duration);
         operationComponent.setField("level", level);
 
-        resultsMap.put(MACHINE_HOURLY_COST, operationMachineCost);
-        resultsMap.put(LABOR_HOURLY_COST, operationLaborCost);
+        // add child operations cost values to total cost of operation
+        resultsMap.put(MACHINE_HOURLY_COST, resultsMap.get(MACHINE_HOURLY_COST).add(operationMachineCost));
+        resultsMap.put(LABOR_HOURLY_COST, resultsMap.get(LABOR_HOURLY_COST).add(operationLaborCost));
 
         return resultsMap;
     }
 
-    private BigDecimal countNumberOfOutputProducts(final Entity technologyOperationComponent) {
-        EntityList outProducts = technologyOperationComponent.getHasManyField("operationProductOutComponents");
+    private BigDecimal countNumberOfOutputProducts(final Entity givenTechnologyOperation) {
+        if (givenTechnologyOperation == null) {
+            return BigDecimal.ZERO;
+        }
+
+        EntityList outProductsTree = givenTechnologyOperation.getHasManyField("operationProductOutComponents");
         String typeOfMaterial;
-        for (Entity outProduct : outProducts) {
+        for (Entity outProduct : outProductsTree) {
             typeOfMaterial = outProduct.getBelongsToField("product").getField("typeOfMaterial").toString();
             if (!("04waste".equals(typeOfMaterial))) {
                 return getBigDecimal(outProduct.getField("quantity"));
@@ -141,36 +147,34 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     private BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent, final BigDecimal margin,
             final BigDecimal plannedQuantity, final Long level) {
 
-        BigDecimal operationCost = BigDecimal.ZERO;
         BigDecimal pathCost = BigDecimal.ZERO;
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
-            BigDecimal tmpPathCost = estimateCostCalculationForPieceWork(child, margin, plannedQuantity, level);
-            pathCost.add(tmpPathCost);
+            pathCost.add(estimateCostCalculationForPieceWork(child, margin, plannedQuantity, level));
         }
 
         BigDecimal pieceworkCost = getBigDecimal(operationComponent.getField("pieceworkCost"));
         BigDecimal numberOfOperations = getBigDecimal(operationComponent.getField("numberOfOperations"));
-        BigDecimal numOfProducts = countNumberOfOutputProducts(operationComponent);
+        BigDecimal numOfProducts = countNumberOfOutputProducts(operationComponent.getBelongsToField("technologyOperationComponent"));
         BigDecimal pieces = numOfProducts.multiply(plannedQuantity);
-        BigDecimal pieceworkCostPerOperation = pieceworkCost.divide(numberOfOperations);
-        operationCost = pieces.multiply(pieceworkCostPerOperation);
-        BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100)));
+        BigDecimal pieceworkCostPerOperation = pieceworkCost.divide(numberOfOperations, 5, BigDecimal.ROUND_HALF_UP);
+        BigDecimal operationCost = pieces.multiply(pieceworkCostPerOperation);
+        BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100), 5, BigDecimal.ROUND_HALF_UP));
 
         operationComponent.setField("level", level);
         operationComponent.setField("pieces", pieces);
         operationComponent.setField("operationCost", operationCost);
         operationComponent.setField("operationMarginCost", operationMarginCost);
         operationComponent.setField("totalOperationCost", operationCost.add(operationMarginCost));
-
-        return operationCost;
+        
+        return operationCost.add(pathCost);
     }
 
-    @Override
-    public void copyTechnologyTree(final DataDefinition dd, final Entity costCalculation) {
+    @Transactional
+    private void copyTechnologyTree(final Entity costCalculation) {
         EntityTree sourceOperationComponents;
 
-        // FIXME MAKU add custom logic to prevent override existing tree if report was generated
+        deleteOperationsTreeIfExists(costCalculation);
 
         if (costCalculation.getBelongsToField("order") != null) {
             sourceOperationComponents = costCalculation.getBelongsToField("order").getTreeField("orderOperationComponents");
@@ -180,7 +184,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         createTechnologyInstanceForCalculation(sourceOperationComponents, costCalculation);
     }
 
-    @Transactional
     public void createTechnologyInstanceForCalculation(final EntityTree sourceTree, final Entity costCalculation) {
         checkArgument(sourceTree != null, "source is null");
         DataDefinition calculationOperationComponentDD = dataDefinitionService.get(
@@ -251,18 +254,30 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         calculationOperationComponent.setField("children", newOrderOperationComponents);
     }
 
+    private void deleteOperationsTreeIfExists(final Entity costCalculation) {
+        Entity yetAnotherCostCalculation = costCalculation.getDataDefinition().get(costCalculation.getId());
+        EntityTree existingOperationsTree = yetAnotherCostCalculation.getTreeField("calculationOperationComponents");
+
+        if (existingOperationsTree == null || existingOperationsTree.getRoot() == null) {
+            return;
+        }
+
+        debug("existing calculation operation components tree will be removed..");
+        EntityTreeNode existingOperationsTreeRoot = existingOperationsTree.getRoot();
+        existingOperationsTreeRoot.getDataDefinition().delete(existingOperationsTreeRoot.getId());
+    }
+
     private BigDecimal getBigDecimal(final Object value) {
         if (value == null) {
             return BigDecimal.ZERO;
         }
-        return new BigDecimal(value.toString());
-    }
-
-    private Long getLong(final Object value) {
-        if (value == null) {
-            return 0L;
+        if (value instanceof BigDecimal) {
+            return (BigDecimal) value;
         }
-        return Long.valueOf(value.toString());
+
+        // MAKU - using BigDecimal.valueOf(Double) instead of new BigDecimal(String) to prevent issue described at
+        // https://forums.oracle.com/forums/thread.jspa?threadID=2251030
+        return BigDecimal.valueOf(Double.valueOf(value.toString()));
     }
 
     private Boolean getBooleanFromField(final Object value) {
@@ -276,6 +291,12 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         checkArgument(value != null, "field value is null");
         String strValue = value.toString();
         return OperationsCostCalculationConstants.valueOf(strValue.toUpperCase());
+    }
+
+    private void debug(final String message) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(message);
+        }
     }
 
 }
