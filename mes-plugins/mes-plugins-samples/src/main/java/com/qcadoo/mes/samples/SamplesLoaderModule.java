@@ -70,7 +70,7 @@ public class SamplesLoaderModule extends Module {
 
     private static final long MILLIS_IN_DAY = 86400000;
 
-    private static final String[] TYPE_OF_MATERIALS = new String[] { "03product", "01component", "02intermediate" };
+    // private static final String[] TYPE_OF_MATERIALS = new String[] { "03product", "01component", "02intermediate" };
 
     private static final List<String> UNITS = new ArrayList<String>();
 
@@ -78,7 +78,7 @@ public class SamplesLoaderModule extends Module {
             "zipCode", "city", "state", "country", "email", "addressWww", "phone" };
 
     private static final String[] PRODUCT_ATTRIBUTES = new String[] { "ean", "name", "product_nr", "batch", "costForNumber",
-            "nominalCost", "lastPurchaseCost", "averageCost" };
+            "nominalCost", "lastPurchaseCost", "averageCost", "typeOfProduct" };
 
     private static final String[] DICTIONARY_ATTRIBUTES = new String[] { "name", "item" };
 
@@ -453,7 +453,10 @@ public class SamplesLoaderModule extends Module {
         if (!values.get("product_nr").isEmpty()) {
             product.setField("number", values.get("product_nr"));
         }
-        product.setField("typeOfMaterial", getRandomTypeOfMaterial());
+        if (!values.get("typeOfProduct").isEmpty()) {
+            product.setField("typeOfMaterial", values.get("typeOfProduct"));
+        }
+        // getRandomTypeOfMaterial());
         product.setField("unit", getRandomUnit());
 
         if (isEnabled("costNormsForProduct")) {
@@ -692,9 +695,10 @@ public class SamplesLoaderModule extends Module {
                 } else if ("14".equals(values.get("bom_id"))) {
                     addTechnologyOperationComponentsForStoolAdvanced(technology);
                 }
-            } else {
-                addTechnologyOperationComponents(technology, null, 3);
             }
+            // else {
+            // addTechnologyOperationComponents(technology, null, 3);
+            // }
         }
     }
 
@@ -874,35 +878,35 @@ public class SamplesLoaderModule extends Module {
         }
     }
 
-    private void addTechnologyOperationComponents(final Entity technology, final Entity parent, final int depth) {
-        if (depth <= 0) {
-            return;
-        }
-
-        int childrenNumber = RANDOM.nextInt(4) + 1;
-
-        if (depth == 3) {
-            childrenNumber = 1;
-        }
-
-        for (int i = 0; i < childrenNumber; i++) {
-            Entity component = addOperationComponent(technology, parent, getRandomOperation());
-
-            for (int j = 0; j < RANDOM.nextInt(4) + 1; j++) {
-                addProductInComponent(component, new BigDecimal(100 * RANDOM.nextDouble()).setScale(3, RoundingMode.HALF_EVEN),
-                        getRandomProduct());
-            }
-
-            for (int j = 0; j < RANDOM.nextInt(4) + 1; j++) {
-                addProductOutComponent(component, new BigDecimal(100 * RANDOM.nextDouble()).setScale(3, RoundingMode.HALF_EVEN),
-                        getRandomProduct());
-            }
-
-            if (RANDOM.nextDouble() > 0.2) {
-                addTechnologyOperationComponents(technology, component, depth - 1);
-            }
-        }
-    }
+    // private void addTechnologyOperationComponents(final Entity technology, final Entity parent, final int depth) {
+    // if (depth <= 0) {
+    // return;
+    // }
+    //
+    // int childrenNumber = RANDOM.nextInt(4) + 1;
+    //
+    // if (depth == 3) {
+    // childrenNumber = 1;
+    // }
+    //
+    // for (int i = 0; i < childrenNumber; i++) {
+    // Entity component = addOperationComponent(technology, parent, getRandomOperation());
+    //
+    // for (int j = 0; j < RANDOM.nextInt(4) + 1; j++) {
+    // addProductInComponent(component, new BigDecimal(100 * RANDOM.nextDouble()).setScale(3, RoundingMode.HALF_EVEN),
+    // getRandomProduct());
+    // }
+    //
+    // for (int j = 0; j < RANDOM.nextInt(4) + 1; j++) {
+    // addProductOutComponent(component, new BigDecimal(100 * RANDOM.nextDouble()).setScale(3, RoundingMode.HALF_EVEN),
+    // getRandomProduct());
+    // }
+    //
+    // if (RANDOM.nextDouble() > 0.2) {
+    // addTechnologyOperationComponents(technology, component, depth - 1);
+    // }
+    // }
+    // }
 
     private void addMaterialRequirements() {
         for (int i = 0; i < 50; i++) {
@@ -1068,9 +1072,9 @@ public class SamplesLoaderModule extends Module {
                 .setMaxResults(1).list().getEntities().get(0);
     }
 
-    private String getRandomTypeOfMaterial() {
-        return TYPE_OF_MATERIALS[RANDOM.nextInt(TYPE_OF_MATERIALS.length)];
-    }
+    // private String getRandomTypeOfMaterial() {
+    // return TYPE_OF_MATERIALS[RANDOM.nextInt(TYPE_OF_MATERIALS.length)];
+    // }
 
     private String getRandomUnit() {
         return UNITS.get(RANDOM.nextInt(UNITS.size()));
