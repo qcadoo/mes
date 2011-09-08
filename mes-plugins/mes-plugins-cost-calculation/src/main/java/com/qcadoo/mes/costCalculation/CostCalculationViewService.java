@@ -19,7 +19,10 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import sun.security.action.GetBooleanAction;
+
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
@@ -232,37 +235,11 @@ public class CostCalculationViewService {
 
     /* Event handler, fire total calculation */
     public void calculateTotalCostView(ViewDefinitionState viewDefinitionState, ComponentState componentState, String[] args) {
-
-        // Map<String, Object> parameters = getValueFromFields(viewDefinitionState);
-        // ComponentState technologyComponent = viewDefinitionState.getComponentByReference("technology");
-        // ComponentState orderComponent = viewDefinitionState.getComponentByReference("order");
-        // Entity technology, source, costCalculation;
-
-        // check that technology & operation lookup components are found
-        // checkArgument(technologyComponent != null && orderComponent != null, "Incompatible view");
-
-        // Long technologyId = (Long) technologyComponent.getFieldValue();
-        // Long orderId = (Long) orderComponent.getFieldValue();
-
-        // technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY)
-        // .get(technologyId);
-        //
-        // source = technology;
-        //
-        // if (orderComponent.getFieldValue() != null) {
-        // source = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(orderId);
-        // }
-
-        // if (technologyComponent.getFieldValue() == null) {
-        // return;
-        // }
-
         Entity costCalculation = getEntityFromForm(viewDefinitionState);
         attachBelongsToFields(costCalculation);
         // Fire cost calculation algorithm
         costCalculation = costCalculationService.calculateTotalCost(costCalculation);
         fillFields(viewDefinitionState, costCalculation);
-
     }
 
     private void attachBelongsToFields(final Entity costCalculation) {
@@ -276,28 +253,14 @@ public class CostCalculationViewService {
         Entity fieldEntity;
         Object fieldValue;
 
-        for (String fieldName : belongsToFieldDDs.keySet()) {
-            fieldValue = costCalculation.getField(fieldName);
+        for (Map.Entry<String, DataDefinition> belongsToFieldDD : belongsToFieldDDs.entrySet()) {
+            fieldValue = costCalculation.getField(belongsToFieldDD.getKey());
             if (fieldValue == null || !(fieldValue instanceof Long)) {
                 continue;
             }
-            fieldEntity = belongsToFieldDDs.get(fieldName).get((Long) fieldValue);
-            costCalculation.setField(fieldName, fieldEntity);
+            fieldEntity = belongsToFieldDD.getValue().get((Long) fieldValue);
+            costCalculation.setField(belongsToFieldDD.getKey(), fieldEntity);
         }
-
-        // DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY);
-        // Entity order = costCalculation.getBelongsToField("order");
-        // Entity technology = costCalculation.getBelongsToField("technology");
-        // Entity defaultTechnology = costCalculation.getBelongsToField("defaultTechnology");
-        // if(order != null) {
-        // order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(order.getId());
-        // costCalculation.setField("order", order);
-        // }
-        // technology = technologyDD.get(technology.getId());
-        // defaultTechnology = technologyDD.get(defaultTechnology.getId());
-        //
-        // costCalculation.setField("technology", technology);
-        // costCalculation.setField("defaultTechnology", defaultTechnology);
     }
 
     // get values from form fields
@@ -306,76 +269,38 @@ public class CostCalculationViewService {
         checkArgument(form != null, "form is null");
         checkArgument(form.isValid(), "invalid form");
         return form.getEntity();
-
-        // Map<String, Object> resultMap = new HashMap<String, Object>();
-
-        // Set for fields contained BigDecimal values
-        // final Set<String> bigDecimalValues = new HashSet<String>();
-        // bigDecimalValues.addAll(Arrays.asList("quantity", "productionCostMargin", "materialCostMargin", "additionalOverhead"));
-
-        // Set for all input fields
-        // final Set<String> referenceValues = new HashSet<String>();
-        // referenceValues.addAll(bigDecimalValues);
-        // referenceValues.addAll(Arrays.asList("includeTPZ", "calculateMaterialCostsMode", "calculateOperationCostsMode"));
-
-        // for (String key : referenceValues) {
-        // Object fieldValue = view.getComponentByReference(key).getFieldValue();
-        // Object value = null;
-        //
-        // if (fieldValue != null && !fieldValue.toString().isEmpty()) {
-        // if (bigDecimalValues.contains(key)) {
-        // value = getBigDecimalFromField(fieldValue, view.getLocale());
-        // } else {
-        // value = fieldValue.toString();
-        // }
-        // } else if (bigDecimalValues.contains(key)) {
-        // value = BigDecimal.ZERO;
-        // }
-        //
-        // resultMap.put(key, value);
-        // }
-
-        // cast checkbox fields values to boolean
-        // resultMap.put("includeTPZ", getBooleanFromField((String) resultMap.get("includeTPZ")));
-
-        // cast mode fields to proper enum
-        // ProductsCostCalculationConstants productMode = getProductMode.get("calculateMaterialCostsMode"));
-
-        // resultMap.put("calculateMaterialCostsMode", productMode);
-
-        // resultMap
-        // .put("calculateOperationCostsMode", OperationsCostCalculationConstants.valueOf(((String) resultMap
-        // .get("calculateOperationCostsMode")).toUpperCase()));
-
-        // return resultMap;
     }
 
-    private BigDecimal getBigDecimalFromField(final Object value, final Locale locale) {
-        try {
-            DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);
-            format.setParseBigDecimal(true);
-            return new BigDecimal(format.parse(value.toString()).doubleValue());
-        } catch (ParseException e) {
-            throw new IllegalStateException(e.getMessage(), e);
+    private String getStringValueFromBigDecimal(final Object value) {
+        if (value == null) {
+            return "0,000";
         }
+        return getBigDecimal(value).setScale(3, BigDecimal.ROUND_UP).toString().replace('.', ',');
+    }
+    
+    private BigDecimal getBigDecimal(final Object value) {
+        if (value == null) {
+            return BigDecimal.ZERO;
+        }
+        if (value instanceof BigDecimal) {
+            return (BigDecimal) value;
+        }
+
+        // MAKU - using BigDecimal.valueOf(Double) instead of new BigDecimal(String) to prevent issue described at
+        // https://forums.oracle.com/forums/thread.jspa?threadID=2251030
+        return BigDecimal.valueOf(Double.valueOf(value.toString()));
     }
 
     // put result values into proper form fields
     private void fillFields(final ViewDefinitionState view, final Entity costCalculation) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        form.setFieldValue(costCalculation);
+        final Set<String> outputDecimalFields = Sets.newHashSet("productionCostMarginValue", "materialCostMarginValue", "totalOverhead",
+                "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
+                "totalTechnicalProductionCosts", "totalCosts", "totalCostsPerUnit");
 
-        // final Set<String> outputFields = new HashSet<String>();
-        // outputFields.addAll(Arrays.asList("productionCostMarginValue", "materialCostMarginValue", "totalOverhead",
-        // "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
-        // "totalTechnicalProductionCosts", "totalCosts", "totalCostsPerUnit"));
-        // checkArgument(resultMap.keySet().size() == outputFields.size(), "to less argument");
-        //
-        // for (String referenceName : outputFields) {
-        // FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
-        // fieldComponent.setFieldValue((BigDecimal) resultMap.get(referenceName).setScale(3, BigDecimal.ROUND_UP));
-        // fieldComponent.requestComponentUpdateState();
-        // }
+        for (String referenceName : outputDecimalFields) {
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
+            fieldComponent.setFieldValue(getStringValueFromBigDecimal(costCalculation.getField(referenceName)));
+        }
     }
 
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -414,5 +339,4 @@ public class CostCalculationViewService {
             return null;
         }
     }
-
 }

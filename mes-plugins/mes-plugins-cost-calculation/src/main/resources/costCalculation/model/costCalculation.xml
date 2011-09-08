@@ -76,10 +76,6 @@
 		<boolean name="generated" />
 		<string name="fileName" />
 	</fields>
-	<hooks>
-		<onSave
-			class="com.qcadoo.mes.costCalculation.CostCalculationServiceImpl"
-			method="copyTechnologyTree" />
-	</hooks>
+	<hooks />
 	<identifier expression="#number + ' - ' + #name" />
 </model>
