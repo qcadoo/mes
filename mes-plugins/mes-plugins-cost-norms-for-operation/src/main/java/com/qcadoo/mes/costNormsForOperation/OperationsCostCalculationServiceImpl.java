@@ -107,7 +107,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal additionalTime = getBigDecimal(operationComponent.getField("timeNextOperation"));
         BigDecimal duration = (tj.multiply(numOfCycles)).add(additionalTime);
         if (includeTPZ) {
-            duration.add(getBigDecimal(operationComponent.getField("tpz")));
+            duration = duration.add(getBigDecimal(operationComponent.getField("tpz")));
         }
         BigDecimal durationInHours = duration.divide(BigDecimal.valueOf(3600), 5, BigDecimal.ROUND_HALF_UP);
         BigDecimal operationMachineCost = durationInHours.multiply(hourlyMachineCost);
@@ -150,7 +150,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal pathCost = BigDecimal.ZERO;
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
-            pathCost.add(estimateCostCalculationForPieceWork(child, margin, plannedQuantity, level));
+            pathCost = pathCost.add(estimateCostCalculationForPieceWork(child, margin, plannedQuantity, level));
         }
 
         BigDecimal pieceworkCost = getBigDecimal(operationComponent.getField("pieceworkCost"));

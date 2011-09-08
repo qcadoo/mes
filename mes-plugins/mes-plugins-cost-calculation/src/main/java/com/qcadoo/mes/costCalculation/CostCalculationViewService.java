@@ -50,7 +50,7 @@ public class CostCalculationViewService {
     private CurrencyService currencyService;
 
     private final static String EMPTY = "";
-
+    
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         Long orderId = (Long) state.getFieldValue();
@@ -148,24 +148,42 @@ public class CostCalculationViewService {
         entity.setField("dateOfCalculation", new Date());
     }
 
-    public void setCurrencyAndUnit(final ViewDefinitionState viewDefinitionState) {
+    public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState) {
+        final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
 
-        checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
-        String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
-        for (String componentReference : Arrays.asList("totalCostsPLN", "totalOverheadPLN", "additionalOverheadValuePLN",
-                "materialCostMarginValuePLN", "productionCostMarginValuePLN", "totalTechnicalProductionCostsPLN",
-                "totalPieceworkCostsPLN", "totalLaborHourlyCostsPLN", "totalMachineHourlyCostsPLN", "totalMaterialCostsPLN",
-                "additionalOverheadPLN", "materialCostMarginPLN", "productionCostMarginPLN")) {
+        Set<String> fields = Sets.newHashSet("totalCostsCurrency", "totalOverheadCurrency", "additionalOverheadValueCurrency",
+                "materialCostMarginValueCurrency", "productionCostMarginValueCurrency", "totalTechnicalProductionCostsCurrency",
+                "totalPieceworkCostsCurrency", "totalLaborHourlyCostsCurrency", "totalMachineHourlyCostsCurrency",
+                "totalMaterialCostsCurrency", "additionalOverheadCurrency");
+
+        for (String componentReference : fields) {
             FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
             field.setEnabled(true);
             field.setFieldValue(currencyAlphabeticCode);
             field.setEnabled(false);
             field.requestComponentUpdateState();
         }
-        FieldComponent totalCostsPerUnitUNIT = (FieldComponent) viewDefinitionState
-                .getComponentByReference("totalCostsPerUnitUNIT");
+        
+        if(viewDefinitionState.getComponentByReference("product").getFieldValue() != null) {
+            fillCostPerUnitUnitField(viewDefinitionState);
+        }
+
+        FieldComponent productionCostMarginProc = (FieldComponent) viewDefinitionState
+                .getComponentByReference("productionCostMarginProc");
+        productionCostMarginProc.setFieldValue("%");
+        FieldComponent materialCostMarginProc = (FieldComponent) viewDefinitionState
+                .getComponentByReference("materialCostMarginProc");
+        materialCostMarginProc.setFieldValue("%");
+    }
+
+    public void fillCostPerUnitUnitField(final ViewDefinitionState view) {
+        final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
+        Long productId = (Long) view.getComponentByReference("product").getFieldValue();
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
+        
+        FieldComponent totalCostsPerUnitUNIT = (FieldComponent) view.getComponentByReference("totalCostsPerUnitUNIT");
         totalCostsPerUnitUNIT.setEnabled(true);
-        totalCostsPerUnitUNIT.setFieldValue(currencyAlphabeticCode + " / ");
+        totalCostsPerUnitUNIT.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField("unit"));
         totalCostsPerUnitUNIT.setEnabled(false);
         totalCostsPerUnitUNIT.requestComponentUpdateState();
     }
@@ -180,6 +198,8 @@ public class CostCalculationViewService {
             return;
         }
 
+        fillCostPerUnitUnitField(viewDefinitionState);
+        
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
         if (technology != null) {
