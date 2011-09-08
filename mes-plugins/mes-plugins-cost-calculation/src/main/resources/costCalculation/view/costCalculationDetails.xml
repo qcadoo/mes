@@ -362,7 +362,7 @@
 
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="copyFieldValues"/>
+<!-- 		<beforeRender class="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="copyFieldValues"/> -->
 		<beforeRender
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 			method="setCurrencyAndUnit" />

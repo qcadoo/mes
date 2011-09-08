@@ -6,21 +6,16 @@ import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import sun.security.action.GetBooleanAction;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -287,7 +282,7 @@ public class CostCalculationViewService {
         }
         return getBigDecimal(value).setScale(3, BigDecimal.ROUND_UP).toString().replace('.', ',');
     }
-    
+
     private BigDecimal getBigDecimal(final Object value) {
         if (value == null) {
             return BigDecimal.ZERO;
@@ -303,8 +298,8 @@ public class CostCalculationViewService {
 
     // put result values into proper form fields
     private void fillFields(final ViewDefinitionState view, final Entity costCalculation) {
-        final Set<String> outputDecimalFields = Sets.newHashSet("productionCostMarginValue", "materialCostMarginValue", "totalOverhead",
-                "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
+        final Set<String> outputDecimalFields = Sets.newHashSet("productionCostMarginValue", "materialCostMarginValue",
+                "totalOverhead", "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
                 "totalTechnicalProductionCosts", "totalCosts", "totalCostsPerUnit");
 
         for (String referenceName : outputDecimalFields) {
