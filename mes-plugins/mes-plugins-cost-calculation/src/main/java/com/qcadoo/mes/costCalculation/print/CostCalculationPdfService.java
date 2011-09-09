@@ -366,13 +366,10 @@ public class CostCalculationPdfService extends PdfDocumentService {
                         "number"), PdfUtil.getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
                         "name"), PdfUtil.getArialRegular9Dark()));
-                // operationsTable.addCell(new Phrase(calculationOperationComponent.getField("level").toString(), PdfUtil
-                // .getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(calculationOperationComponent.getField("level").toString(), PdfUtil
+                        .getArialRegular9Dark()));
 
-                // Long durationLongValue = (Long) calculationOperationComponent.getField("duration");
-                // Date dateFromDuration = new Date((Long) calculationOperationComponent.getField("duration"));
-                Long durationLongValue = Long.valueOf("200000");
-                Date dateFromDuration = new Date(durationLongValue);
+                Date dateFromDuration = new Date((Long) calculationOperationComponent.getField("duration"));
 
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(dateFromDuration);
