@@ -82,11 +82,12 @@
 		<menu:menu-item name="staff" category="basic" view="staffsList" />
 		<menu:menu-item name="products" category="basic" view="productsList" />
 		<menu:menu-item name="shifts" category="basic" view="shiftsList"/>
-		<menu:menu-item name="currency" category="basic" view="currencyDetails"/>
 		<menu:menu-item-url name="systemParameters"
 			category="basic" url="/parameters.html" />
 		<menu:menu-item-url name="companyDetails"
 			category="administration" url="/companyView.html" />
+		<menu:menu-item name="currency"
+			category="administration" view="currencyDetails"/>
 		
 		<menu:menu-item-url url="/page/qcadooDictionaries/dictionariesList.html" name="dictionariesInBasic" category="basic"/>
 
