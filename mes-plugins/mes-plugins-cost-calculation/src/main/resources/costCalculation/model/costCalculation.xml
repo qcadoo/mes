@@ -7,7 +7,7 @@
 			<validatesLength max="40" />
 		</string>
 		<tree name="calculationOperationComponents" joinField="costCalculation"
-			model="calculationOperationComponent" plugin="costNormsForOperation" />
+			model="calculationOperationComponent" plugin="costNormsForOperation" cascade="delete" />
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<belongsTo name="defaultTechnology" model="technology"

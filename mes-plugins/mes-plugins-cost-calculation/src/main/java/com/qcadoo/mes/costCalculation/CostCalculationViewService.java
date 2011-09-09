@@ -287,10 +287,11 @@ public class CostCalculationViewService {
     }
 
     private String getStringValueFromBigDecimal(final Object value) {
+        // FIXME MAKU check locales (dots or commas?)
         if (value == null) {
-            return "0,000";
+            return "0.000";
         }
-        return getBigDecimal(value).setScale(3, BigDecimal.ROUND_UP).toString().replace('.', ',');
+        return getBigDecimal(value).setScale(3, BigDecimal.ROUND_UP).toString();
     }
 
     private BigDecimal getBigDecimal(final Object value) {

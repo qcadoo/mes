@@ -2,6 +2,7 @@ package com.qcadoo.mes.costNormsForProduct;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.*;
+import static java.math.BigDecimal.ROUND_UP;
 
 import java.math.BigDecimal;
 
@@ -39,7 +40,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
             }
         }
         result = result.multiply(quantity);
-        costCalculation.setField("totalMaterialCosts", result.setScale(3));
+        costCalculation.setField("totalMaterialCosts", result.setScale(3, ROUND_UP));
     }
 
     private ProductsCostCalculationConstants getProductModeFromField(final Object value) {

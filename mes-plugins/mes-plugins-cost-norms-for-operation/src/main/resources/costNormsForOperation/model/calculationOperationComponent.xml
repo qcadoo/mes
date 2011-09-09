@@ -47,14 +47,26 @@
 		<integer name="timeNextOperation" />
 		<integer name="operationOffSet" />
 		<integer name="effectiveOperationRealizationTime" />
+		<integer name="level" />
 		<datetime name="effectiveDateFrom" />
 		<datetime name="effectiveDateTo" />
-		<integer name="duration" />
-		<decimal name="pieces" />
-		<integer name="level" />
-	    <decimal name="operationCost" default="0"/>
- 	    <decimal name="operationMarginCost" default="0"/>
- 	    <decimal name="totalOperationCost" default="0" />
+		<integer name="duration" default="0" />
+		<decimal name="pieces" default="0" />
+		<decimal name="operationCost" default="0">
+			<validatesRange from="0" exclusively="false" />
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="operationMarginCost" default="0">
+			<validatesRange from="0" exclusively="false" />
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="totalOperationCost" default="0">
+			<validatesRange from="0" exclusively="false" />
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
 		<decimal name="pieceworkCost" default="0">
 			<validatesRange from="0" exclusively="false" />
 			<validatesPrecision max="7" />
@@ -75,7 +87,7 @@
 			<validatesPrecision max="7" />
 			<validatesScale max="0" />
 		</integer>
-		
+
 
 	</fields>
 	<hooks />
