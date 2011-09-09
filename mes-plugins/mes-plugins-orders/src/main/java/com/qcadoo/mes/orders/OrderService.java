@@ -522,6 +522,7 @@ public final class OrderService {
 
     public void checkPlannedDate(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
+        System.out.println("***aladateFrom");
         /*
          * FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom"); FieldComponent
          * dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo"); List<Entity> shitfs =
