@@ -522,17 +522,9 @@ public final class OrderService {
 
     public void checkPlannedDate(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
-        /*
-         * FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom"); FieldComponent
-         * dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo"); List<Entity> shitfs =
-         * dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find() .list().getEntities();
-         * System.out.println("***aladateFrom" + dateFrom.getFieldValue()); System.out.println("***aladateTo" +
-         * dateTo.getFieldValue()); System.out.println("***ala" + shitfs.size()); System.out.println("***ala" + shitfs); for
-         * (Entity shift : shitfs) { System.out.println("***ala" + shift.getField("mondayHours")); List<ShiftHour> shiftHour =
-         * shiftsService.getHoursForShift(shift, getDateFromField(dateFrom.getFieldValue()),
-         * getDateFromField(dateTo.getFieldValue())); for (ShiftHour hour : shiftHour) { System.out.println("***alashiftHour" +
-         * shiftHour); } }
-         */
+
+        // TODO ALBR
+
     }
 
     public Date getDateFromField(final Object value) {
