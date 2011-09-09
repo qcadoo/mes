@@ -76,7 +76,7 @@ public class InventoryService {
     @Value("${reportPath}")
     private String path;
 
-    public BigDecimal calculateShouldBe(String warehouse, String product, String forDate) {
+    public BigDecimal calculateShouldBe(final String warehouse, final String product, final String forDate) {
 
         BigDecimal countProductIn = BigDecimal.ZERO;
         BigDecimal countProductOut = BigDecimal.ZERO;
@@ -147,14 +147,10 @@ public class InventoryService {
     }
 
     public void refreshShouldBe(final ViewDefinitionState state) {
-        FieldComponent warehouse = (FieldComponent) (state.getComponentByReference("warehouse") != null ? state
-                .getComponentByReference("warehouse") : null);
-        FieldComponent product = (FieldComponent) (state.getComponentByReference("product") != null ? state
-                .getComponentByReference("product") : null);
-        FieldComponent date = (FieldComponent) (state.getComponentByReference("correctionDate") != null ? state
-                .getComponentByReference("correctionDate") : null);
-        FieldComponent should = (FieldComponent) (state.getComponentByReference("shouldBe") != null ? state
-                .getComponentByReference("shouldBe") : null);
+        FieldComponent warehouse = (FieldComponent) state.getComponentByReference("warehouse");
+        FieldComponent product = (FieldComponent) state.getComponentByReference("product");
+        FieldComponent date = (FieldComponent) state.getComponentByReference("correctionDate");
+        FieldComponent should = (FieldComponent) state.getComponentByReference("shouldBe");
 
         if (warehouse != null && product != null && date != null) {
             if (warehouse.getFieldValue() != null && product.getFieldValue() != null

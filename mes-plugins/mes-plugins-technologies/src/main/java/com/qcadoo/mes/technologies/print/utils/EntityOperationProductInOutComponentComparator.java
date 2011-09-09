@@ -46,12 +46,9 @@ public class EntityOperationProductInOutComponentComparator implements Comparato
                     if (result == 0) {
                         return o1.getBelongsToField("product").getStringField("unit")
                                 .compareTo(o2.getBelongsToField("product").getStringField("unit"));
-                    } else
-                        return result;
-                } else
-                    return result;
-            } else
-                return result;
+                    }
+                }
+            }
         }
         return result;
     }
