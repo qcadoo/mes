@@ -522,9 +522,7 @@ public final class OrderService {
 
     public void checkPlannedDate(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
-
         // TODO ALBR
-
     }
 
     public Date getDateFromField(final Object value) {
