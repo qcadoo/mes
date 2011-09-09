@@ -28,8 +28,8 @@ import com.qcadoo.plugin.api.Module;
 @Component
 public class CurrencyLoaderModule extends Module {
 
-    private static final String[] CURRENCY_ATTRIBUTES = new String[] { "CURRENCY", "COUNTRY", "ALPHABETICCODE", "ISOCODE",
-            "MINORUNIT", "ISACTIVE" };
+    private static final String[] CURRENCY_ATTRIBUTES = new String[] { "CURRENCY", "ALPHABETICCODE", "ISOCODE",
+            "MINORUNIT" };
 
     private static final Logger LOG = LoggerFactory.getLogger(CurrencyLoaderModule.class);
     
@@ -94,12 +94,11 @@ public class CurrencyLoaderModule extends Module {
     private void addCurrency(final Map<String, String> values) {
         Entity currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).create();
 
-        currency.setField("currency", values.get("CURRENCY"));
-        currency.setField("country", values.get("COUNTRY"));
-        currency.setField("alphabeticCode", values.get("ALPHABETICCODE"));
-        currency.setField("isoCode", values.get("ISOCODE"));
-        currency.setField("minorUnit", values.get("MINORUNIT"));
-        currency.setField("isActive", values.get("ISACTIVE"));
+        currency.setField("currency", values.get("CURRENCY").toString());
+        currency.setField("alphabeticCode", values.get("ALPHABETICCODE").toString());
+        currency.setField("isoCode", Integer.valueOf(values.get("ISOCODE")));
+        currency.setField("minorUnit", Integer.valueOf(values.get("MINORUNIT")));
+        currency.setField("isActive", false);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test currency item {currency=" + currency.getStringField("currency") + "}");
