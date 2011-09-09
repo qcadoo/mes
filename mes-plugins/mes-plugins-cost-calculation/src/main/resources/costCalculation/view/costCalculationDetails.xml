@@ -41,7 +41,7 @@
 					
 				]]>
 				</script>
-				
+
 				<component type="gridLayout" name="gridLayout" columns="2"
 					rows="6">
 					<layoutElement column="1" row="1">
@@ -141,6 +141,9 @@
 				<listener event="generateCostCalculation"
 					class="com.qcadoo.mes.costCalculation.print.CostCalculationReportService"
 					method="generateCostCalculation" />
+				<listener event="onChange"
+					class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+					method="fillCostPerUnitUnitField" />
 			</component>
 		</windowTab>
 		<windowTab name="inputDataTab">
@@ -232,7 +235,8 @@
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="totalMachineHourlyCostsCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalMachineHourlyCostsCurrency" />
+										defaultEnabled="false" hasLabel="false"
+										reference="totalMachineHourlyCostsCurrency" />
 								</layoutElement>
 								<layoutElement column="1" row="3" width="3">
 									<component type="input" name="totalLaborHourlyCosts"
@@ -241,7 +245,8 @@
 								</layoutElement>
 								<layoutElement column="4" row="3">
 									<component type="input" name="totalLaborHourlyCostsCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalLaborHourlyCostsCurrency" />
+										defaultEnabled="false" hasLabel="false"
+										reference="totalLaborHourlyCostsCurrency" />
 								</layoutElement>
 								<layoutElement column="1" row="4" width="3">
 									<component type="input" name="totalPieceworkCosts"
@@ -263,9 +268,9 @@
 										defaultEnabled="false" hasLabel="false" />
 								</layoutElement>
 								<layoutElement column="4" row="6">
-									<component type="input" name="totalTechnicalProductionCostsCurrency"
-										defaultEnabled="false" hasLabel="false"
-										reference="totalTechnicalProductionCostsCurrency" />
+									<component type="input"
+										name="totalTechnicalProductionCostsCurrency" defaultEnabled="false"
+										hasLabel="false" reference="totalTechnicalProductionCostsCurrency" />
 								</layoutElement>
 							</component>
 						</component>
@@ -283,7 +288,8 @@
 								</layoutElement>
 								<layoutElement column="4" row="1">
 									<component type="input" name="productionCostMarginValueCurrency"
-										defaultEnabled="false" hasLabel="false" reference="productionCostMarginValueCurrency" />
+										defaultEnabled="false" hasLabel="false"
+										reference="productionCostMarginValueCurrency" />
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="materialCostMarginValue"
@@ -292,7 +298,8 @@
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="materialCostMarginValueCurrency"
-										defaultEnabled="false" hasLabel="false" reference="materialCostMarginValueCurrency" />
+										defaultEnabled="false" hasLabel="false"
+										reference="materialCostMarginValueCurrency" />
 								</layoutElement>
 								<layoutElement column="1" row="3" width="3">
 									<component type="input" name="additionalOverheadValue"
@@ -301,7 +308,8 @@
 								</layoutElement>
 								<layoutElement column="4" row="3">
 									<component type="input" name="additionalOverheadValueCurrency"
-										defaultEnabled="false" hasLabel="false" reference="additionalOverheadValueCurrency" />
+										defaultEnabled="false" hasLabel="false"
+										reference="additionalOverheadValueCurrency" />
 								</layoutElement>
 								<layoutElement column="1" row="4">
 									<component type="label" name="totalOverheadLabel"
@@ -362,7 +370,8 @@
 		</windowTab>
 	</component>
 	<hooks>
-<!-- 		<beforeRender class="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="copyFieldValues"/> -->
+		<!-- <beforeRender class="com.qcadoo.mes.costCalculation.CostCalculationViewService" 
+			method="copyFieldValues"/> -->
 		<beforeRender
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 			method="fillCurrencyFields" />
