@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
@@ -85,6 +86,7 @@ public class OrderGroupsService {
 
     /* ****** CUSTOM EVENT LISTENER ****** */
 
+    @Transactional
     public void removeOrderFromGroup(final ViewDefinitionState viewDefinitionState, ComponentState componentState, String[] args) {
         if ("orderGroupOrders".equals(componentState.getName())) {
             DataDefinition orderDataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
@@ -134,6 +136,7 @@ public class OrderGroupsService {
         state.redirectTo(url.toString(), false, true);
     }
 
+    @Transactional
     public void addOrdersToGroup(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
             final String[] args) {
         Long groupId = ((FormComponent) viewDefinitionState.getComponentByReference("orderGroup")).getEntityId();
