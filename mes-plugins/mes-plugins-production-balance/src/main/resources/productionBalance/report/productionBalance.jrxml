@@ -122,12 +122,12 @@
 				<textElement/>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{planned}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement style="qcadooValueSmall" x="460" y="2" width="122" height="26"/>
 				<textElement/>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{used}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement style="qcadooValueSmall" x="640" y="2" width="122" height="26"/>
 				<textElement/>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{produced}]]></textFieldExpression>

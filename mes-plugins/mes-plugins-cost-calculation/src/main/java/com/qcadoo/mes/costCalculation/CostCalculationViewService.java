@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,8 +51,10 @@ public class CostCalculationViewService {
     @Autowired
     private CurrencyService currencyService;
 
+    private static final Logger LOG = LoggerFactory.getLogger(CurrencyService.class);
+
     private final static String EMPTY = "";
-    
+
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         Long orderId = (Long) state.getFieldValue();
@@ -87,9 +91,6 @@ public class CostCalculationViewService {
         if (!cameFromOrder && !cameFromTechnology) {
             return;
         }
-
-        generateNumber(viewDefinitionState);
-
         if (cameFromOrder) {
             order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(sourceId);
             technology = order.getBelongsToField("technology");
@@ -150,7 +151,7 @@ public class CostCalculationViewService {
 
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState) {
         final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
-
+        generateNumber(viewDefinitionState);
         Set<String> fields = Sets.newHashSet("totalCostsCurrency", "totalOverheadCurrency", "additionalOverheadValueCurrency",
                 "materialCostMarginValueCurrency", "productionCostMarginValueCurrency", "totalTechnicalProductionCostsCurrency",
                 "totalPieceworkCostsCurrency", "totalLaborHourlyCostsCurrency", "totalMachineHourlyCostsCurrency",
@@ -163,10 +164,6 @@ public class CostCalculationViewService {
             field.setEnabled(false);
             field.requestComponentUpdateState();
         }
-        
-        if(viewDefinitionState.getComponentByReference("product").getFieldValue() != null) {
-            fillCostPerUnitUnitField(viewDefinitionState);
-        }
 
         FieldComponent productionCostMarginProc = (FieldComponent) viewDefinitionState
                 .getComponentByReference("productionCostMarginProc");
@@ -176,16 +173,20 @@ public class CostCalculationViewService {
         materialCostMarginProc.setFieldValue("%");
     }
 
-    public void fillCostPerUnitUnitField(final ViewDefinitionState view) {
+    public void fillCostPerUnitUnitField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
-        Long productId = (Long) view.getComponentByReference("product").getFieldValue();
-        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
-        
-        FieldComponent totalCostsPerUnitUNIT = (FieldComponent) view.getComponentByReference("totalCostsPerUnitUNIT");
-        totalCostsPerUnitUNIT.setEnabled(true);
-        totalCostsPerUnitUNIT.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField("unit"));
-        totalCostsPerUnitUNIT.setEnabled(false);
-        totalCostsPerUnitUNIT.requestComponentUpdateState();
+        if (view.getComponentByReference("product") != null && view.getComponentByReference("product").getFieldValue() != null) {
+            Long productId = (Long) view.getComponentByReference("product").getFieldValue();
+            Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
+
+            FieldComponent totalCostsPerUnitUNIT = (FieldComponent) view.getComponentByReference("totalCostsPerUnitUNIT");
+            totalCostsPerUnitUNIT.setEnabled(true);
+            totalCostsPerUnitUNIT.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField("unit"));
+            totalCostsPerUnitUNIT.setEnabled(false);
+            totalCostsPerUnitUNIT.requestComponentUpdateState();
+        } else {
+            LOG.debug("Product field is empty");
+        }
     }
 
     public void fillFieldWhenTechnologyChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -198,13 +199,13 @@ public class CostCalculationViewService {
             return;
         }
 
-        fillCostPerUnitUnitField(viewDefinitionState);
-        
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
         if (technology != null) {
             applyValuesToFields(viewDefinitionState, technology, null);
         }
+
+        // fillCostPerUnitUnitField(viewDefinitionState);
     }
 
     public void fillFieldWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -327,6 +328,9 @@ public class CostCalculationViewService {
         FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
         FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
 
+        if (viewDefinitionState.getComponentByReference("product").getFieldValue() != null) {
+            fillCostPerUnitUnitField(viewDefinitionState, state, args);
+        }
         defaultTechnology.setFieldValue("");
         technology.setFieldValue(null);
 

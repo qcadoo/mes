@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.inventory.InventoryService;
@@ -77,9 +78,7 @@ public final class InventoryPdfService extends PdfDocumentService {
                 getTranslationService().translate("inventory.inventory.report.panel.warehouse", locale), inventoryReport
                         .getBelongsToField("warehouse").getStringField("number"), null, PdfUtil.getArialBold10Dark(), PdfUtil
                         .getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(panelTable,
-                getTranslationService().translate("inventory.inventory.report.panel.worker", locale),
-                inventoryReport.getStringField("worker"), null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+        PdfUtil.addTableCellAsTable(panelTable, "", "", null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
 
         panelTable.setSpacingBefore(20);
         panelTable.setSpacingAfter(20);
@@ -113,7 +112,9 @@ public final class InventoryPdfService extends PdfDocumentService {
 
                 table.addCell(new Phrase(e.getBelongsToField("product").getStringField("number"), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(e.getBelongsToField("product").getStringField("name"), PdfUtil.getArialRegular9Dark()));
-                table.addCell(new Phrase(quantity.toString(), PdfUtil.getArialRegular9Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                table.addCell(new Phrase(getDecimalFormat().format(quantity), PdfUtil.getArialRegular9Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                 table.addCell(new Phrase(e.getBelongsToField("product").getStringField("unit"), PdfUtil.getArialRegular9Dark()));
                 numberBefore = numberNow;
             }
