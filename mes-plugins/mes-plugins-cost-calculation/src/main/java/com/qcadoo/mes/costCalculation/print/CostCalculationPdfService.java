@@ -5,7 +5,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -94,8 +93,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     @Override
     protected String getSuffix() {
-        // TODO Auto-generated method stub
-        return null;
+        return "";
     }
 
     @Override
@@ -369,12 +367,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getField("level").toString(), PdfUtil
                         .getArialRegular9Dark()));
 
-                Date dateFromDuration = new Date((Long) calculationOperationComponent.getField("duration"));
-
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(dateFromDuration);
-
-                String duration = cal.HOUR + ":" + cal.MINUTE + ":" + cal.SECOND;
+                String duration = convertTimeToString((Integer) calculationOperationComponent.getField("duration"));
 
                 operationsTable.addCell(new Phrase(duration, PdfUtil.getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(getDecimalFormat().format(
@@ -390,6 +383,28 @@ public class CostCalculationPdfService extends PdfDocumentService {
             }
         }
         return operationsTable;
+    }
+
+    private String convertTimeToString(final Integer duration) {
+        Long durationLongValue = duration.longValue();
+
+        Long hour = durationLongValue / 3600;
+        String h = null;
+        String m = null;
+        String s = null;
+        while (hour < 10) {
+            h = "0" + hour.toString();
+        }
+        Long minute = (durationLongValue % 3600) / 60;
+        while (minute < 10) {
+            m = "0" + minute.toString();
+        }
+        Long second = (durationLongValue % 3600) % 60;
+        while (second < 10) {
+            s = "0" + second.toString();
+        }
+
+        return h + ":" + m + ":" + s;
     }
 
     private PdfPTable addTableAboutPieceworkCost(final Entity costCalculation, final Locale locale) {
