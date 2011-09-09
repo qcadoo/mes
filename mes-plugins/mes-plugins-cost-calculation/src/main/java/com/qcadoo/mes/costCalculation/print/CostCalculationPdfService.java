@@ -5,12 +5,15 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,7 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
+import com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationServiceImpl;
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.model.api.DataDefinition;
@@ -48,6 +52,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     @Autowired
     MaterialRequirementReportDataService materialRequirementReportDataService;
+
+    private final static Logger LOG = LoggerFactory.getLogger(OperationsCostCalculationServiceImpl.class);
 
     @Override
     protected void buildPdfContent(Document document, Entity entity, Locale locale) throws DocumentException {
@@ -360,25 +366,32 @@ public class CostCalculationPdfService extends PdfDocumentService {
                         "number"), PdfUtil.getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
                         "name"), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getId()
-                        .toString(), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-                BigDecimal machineHourlyCost = (BigDecimal) calculationOperationComponent.getField("machineHourlyCost");
-                BigDecimal laborHourlyCost = (BigDecimal) calculationOperationComponent.getField("laborHourlyCost");
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(machineHourlyCost), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(laborHourlyCost), PdfUtil.getArialRegular9Dark()));
-                Object reportData = costCalculation.getField("productionCostMargin");
-                if (reportData != null) {
-                    operationsTable.addCell(new Phrase(getDecimalFormat().format(reportData), PdfUtil.getArialRegular9Dark()));
-                    BigDecimal sum = machineHourlyCost.add(laborHourlyCost).add((BigDecimal) reportData);
-                    operationsTable.addCell(new Phrase(getDecimalFormat().format(sum), PdfUtil.getArialRegular9Dark()));
-                } else {
-                    operationsTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-                    operationsTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-                }
+                // operationsTable.addCell(new Phrase(calculationOperationComponent.getField("level").toString(), PdfUtil
+                // .getArialRegular9Dark()));
+
+                // Long durationLongValue = (Long) calculationOperationComponent.getField("duration");
+                // Date dateFromDuration = new Date((Long) calculationOperationComponent.getField("duration"));
+                Long durationLongValue = Long.valueOf("200000");
+                Date dateFromDuration = new Date(durationLongValue);
+
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(dateFromDuration);
+
+                String duration = cal.HOUR + ":" + cal.MINUTE + ":" + cal.SECOND;
+
+                operationsTable.addCell(new Phrase(duration, PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                        calculationOperationComponent.getField("machineHourlyCost")), PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                        calculationOperationComponent.getField("laborHourlyCost")), PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                        calculationOperationComponent.getField("operationCost")), PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                        calculationOperationComponent.getField("operationMarginCost")), PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                        calculationOperationComponent.getField("totalOperationCost")), PdfUtil.getArialRegular9Dark()));
             }
         }
-
         return operationsTable;
     }
 
@@ -399,7 +412,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         List<Entity> calculationOperationComponents = costCalculation.getTreeField("calculationOperationComponents");
 
-        // Collections.sort(calculationOperationComponents, new EntityOperationComponentComparator());
         PdfPTable operationsTable = PdfUtil.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false);
 
         if (calculationOperationComponents.size() != 0) {
@@ -410,24 +422,18 @@ public class CostCalculationPdfService extends PdfDocumentService {
                         "name"), PdfUtil.getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getId()
                         .toString(), PdfUtil.getArialRegular9Dark()));
-                BigDecimal pieceworkCost = (BigDecimal) calculationOperationComponent.getField("pieceworkCost");
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(pieceworkCost), PdfUtil.getArialRegular9Dark()));
-                BigDecimal pieces = (BigDecimal) calculationOperationComponent.getField("pieces");
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(pieces), PdfUtil.getArialRegular9Dark()));
-                BigDecimal operationCost = pieceworkCost.multiply(pieces);
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(operationCost), PdfUtil.getArialRegular9Dark()));
-                Object reportData = costCalculation.getField("productionCostMargin");
-                if (reportData != null) {
-                    operationsTable.addCell(new Phrase(getDecimalFormat().format(reportData), PdfUtil.getArialRegular9Dark()));
-                    BigDecimal sum = operationCost.add((BigDecimal) reportData);
-                    operationsTable.addCell(new Phrase(getDecimalFormat().format(sum), PdfUtil.getArialRegular9Dark()));
-                } else {
-                    operationsTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-                    operationsTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-                }
+                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                        calculationOperationComponent.getField("pieceworkCost")), PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(getDecimalFormat().format(calculationOperationComponent.getField("pieces")),
+                        PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                        calculationOperationComponent.getField("operationCost")), PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                        calculationOperationComponent.getField("operationMarginCost")), PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                        calculationOperationComponent.getField("totalOperationCost")), PdfUtil.getArialRegular9Dark()));
             }
         }
-
         return operationsTable;
     }
 }
