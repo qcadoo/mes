@@ -31,7 +31,6 @@ import com.qcadoo.model.api.search.SearchDisjunction;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -260,7 +259,8 @@ public class OrderGroupsService {
     public boolean validateOrderDate(final DataDefinition dataDefinition, final Entity order) {
         Entity group = order.getBelongsToField("orderGroup");
         if (group != null && !checkOrderGroupComponentDateRange(group, Arrays.asList(order))) {
-            order.addError(dataDefinition.getField("orderGroup"), OrderGroupsConstants.DATE_RANGE_ERROR);
+            order.addError(dataDefinition.getField("dateFrom"), OrderGroupsConstants.ORDER_DATES_RANGE_ERROR);
+            order.addError(dataDefinition.getField("dateTo"), OrderGroupsConstants.ORDER_DATES_RANGE_ERROR);
         }
         return true;
     }
