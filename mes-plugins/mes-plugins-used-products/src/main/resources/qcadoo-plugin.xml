@@ -72,6 +72,7 @@
 			class="com.qcadoo.mes.usedProducts.UsedProductsService" method="showUsedProducts" />
 		
 		<view:view-hook plugin="usedProducts" view="usedProductsDetails" type="beforeRender" class="com.qcadoo.mes.usedProducts.UsedProductsService" method="disablePlannedQuantity" />
+		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.usedProducts.UsedProductsService" method="generateUsedProducts" />
 		
 		<view:view resource="view/usedProducts.xml" />
 		<view:view resource="view/usedProductsDetails.xml" />

@@ -117,6 +117,17 @@ public class UsedProductsService {
         }
     }
 
+    public void generateUsedProducts(final ViewDefinitionState state) {
+        String orderNumber = (String) state.getComponentByReference("number").getFieldValue();
+
+        if (orderNumber != null) {
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                    .find("where number='" + orderNumber + "'").uniqueResult();
+            if (order != null)
+                updateUsedProductsForOrder(order);
+        }
+    }
+
     public void disablePlannedQuantity(final ViewDefinitionState state) {
         ComponentState form = state.getComponentByReference("form");
         if (form.getFieldValue() != null) {

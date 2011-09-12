@@ -27,37 +27,9 @@
 <ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
     xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
     plugin="orders"
-    view="ordersList">
-
+    view="orderDetails">
      <group name="exportBalance">
-     <bigButton name="printBalance" icon="pdfIcon16.png"
-					action="#{grid}.generateReportForEntity('productionBalance','productionBalance','pdf')" >					
-					
-					state="disabled">
-			<script>
-				<![CDATA[
-					#{grid}.addOnChangeListener({
-						onChange: function(selectedEntitiesArray) {
-							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								this.disable();
-							} else if (selectedEntitiesArray.length == 1) {
-								var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
-								if (selectedEntityStatus == '03done') {
-									this.disable("#{translate(orders.order.ribbon.message.stateIsDone)}");
-								} else {
-									this.enable();
-								}
-							} else {
-								this.disable("#{translate(moreThanOneRecordSelected)}");
-							}
-						}
-					});					
-				]]>
-			</script>
-					
-					</bigButton>         
-			</group>
-    
-     
-     
+	     <bigButton name="printBalance" icon="pdfIcon16.png"
+						action="#{form}.generateReportForEntity('productionBalance','productionBalance','pdf')" />
+	</group>
 </ribbonExtension>
