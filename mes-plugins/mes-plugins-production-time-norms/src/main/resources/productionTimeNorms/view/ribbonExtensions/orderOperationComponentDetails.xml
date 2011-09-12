@@ -24,14 +24,13 @@
     ***************************************************************************
 
 -->
-
 <ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
-	plugin="technologies"
-	view="technologyOperationComponentDetails">
+	plugin="productionScheduling"
+	view="orderOperationComponentDetails">
 	
-	<group name="costs">
-		<bigButton name="copyCostsFromOperation" icon="copyIcon24.png"  state="enabled" action="#{operation}.fireEvent(copyCostsFromOperation);" />
+	<group name="norm">
+		<bigButton name="copyTimeNormsFromTechnology" icon="copyIcon24.png" state="enabled" action="#{form}.fireEvent(copyTimeNormsFromTechnology);" />
 	</group>
+	
 </ribbonExtension>
-

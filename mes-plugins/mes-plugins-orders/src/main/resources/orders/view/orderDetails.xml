@@ -36,10 +36,8 @@
 					state="disabled">
 					<script>
 						<![CDATA[
-							this.element.width(100);
 							this.addOnChangeListener({
 								onClick: function() {
-									this.element.width(100);
 									if (this.state == "begin") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.activateOrder.confirm)}")) {
 											if(window.canClose()) {

@@ -23,20 +23,30 @@
  */
 package com.qcadoo.mes.productionTimeNorms;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.productionTimeNorms.TimeNormsConstants.*;
+import static com.qcadoo.view.api.ComponentState.MessageType.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class NormService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TranslationService translationService;
 
     public void updateFieldsStateOnWindowLoad(final ViewDefinitionState viewDefinitionState) {
         FieldComponent tpzNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
@@ -76,35 +86,54 @@ public class NormService {
         }
     }
 
-    public void copyNormFromOperation(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
+    public void copyTimeNormsFromOperation(final ViewDefinitionState view, final ComponentState operationLookupState,
             final String[] args) {
-        FieldComponent tpzNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
-        FieldComponent tjNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
-        FieldComponent productionInOneCycle = (FieldComponent) viewDefinitionState
-                .getComponentByReference("productionInOneCycle");
-        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
-        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
-        FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference("timeNextOperation");
 
-        Long operationId = (Long) componentState.getFieldValue();
-        Entity operation = operationId != null ? dataDefinitionService.get("technologies", "operation").get(operationId) : null;
-
-        if (operation != null) {
-            tpzNorm.setFieldValue(operation.getField("tpz"));
-            tjNorm.setFieldValue(operation.getField("tj"));
-            productionInOneCycle.setFieldValue(operation.getField("productionInOneCycle"));
-            countRealized.setFieldValue(operation.getField("countRealizedOperation") != null ? operation
-                    .getField("countRealizedOperation") : "01all");
-            countMachine.setFieldValue(operation.getField("countMachineOperation"));
-            timeNextOperation.setFieldValue(operation.getField("timeNextOperation"));
-        } else {
-            tpzNorm.setFieldValue(null);
-            tjNorm.setFieldValue(null);
-            productionInOneCycle.setFieldValue("1");
-            countRealized.setFieldValue("01all");
-            countMachine.setFieldValue(null);
-            timeNextOperation.setFieldValue(null);
+        if (operationLookupState.getFieldValue() == null) {
+            view.getComponentByReference("form")
+                    .addMessage(
+                            translationService.translate("productionTimeNorms.messages.info.missingOperationReference",
+                                    view.getLocale()), INFO);
+            return;
         }
+
+        Entity operation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION).get((Long) operationLookupState.getFieldValue());
+
+        applyCostNormsFromGivenSource(view, operation, FIELDS_OPERATION);
+    }
+
+    public void copyTimeNormsFromTechnology(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        Entity orderOperationComponent = ((FormComponent) view.getComponentByReference("form")).getEntity();
+
+        // be sure that entity isn't in detached state
+        orderOperationComponent = orderOperationComponent.getDataDefinition().get(orderOperationComponent.getId());
+
+        applyCostNormsFromGivenSource(view, orderOperationComponent.getBelongsToField("technologyOperationComponent"),
+                FIELDS_TECHNOLOGY);
+    }
+
+    private void applyCostNormsFromGivenSource(final ViewDefinitionState view, final Entity source, final Iterable<String> fields) {
+        checkArgument(source != null, "source entity is null");
+        FieldComponent component = null;
+
+        for (String fieldName : fields) {
+            component = (FieldComponent) view.getComponentByReference(fieldName);
+            component.setFieldValue(source.getField(fieldName));
+        }
+
+        if (source.getField("countRealized") == null) {
+            view.getComponentByReference("countRealized").setFieldValue("01all");
+        }
+
+        if (source.getField("productionInOneCycle") == null) {
+            view.getComponentByReference("productionInOneCycle").setFieldValue("1");
+        }
+
+        // FIXME MAKU fix problem with double notifications after operation changed
+        // view.getComponentByReference("form").addMessage(translationService.translate("productionTimeNorms.messages.success.copyTimeNormsSuccess",
+        // view.getLocale()), SUCCESS);
     }
 
     public void updateCountMachineOperationFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
@@ -121,7 +150,7 @@ public class NormService {
 
     public void inheritOperationNormValues(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
             final String[] args) {
-        copyNormFromOperation(viewDefinitionState, componentState, args);
+        copyTimeNormsFromOperation(viewDefinitionState, componentState, args);
     }
 
 }

@@ -9,7 +9,7 @@
 			reference="borderLayoutPiecework">
 			<option type="label" value="piecework" />
 			<component type="gridLayout" name="gridLayout" hasBorders="false"
-				columns="3" rows="1">
+				columns="2" rows="1">
 				<layoutElement column="1" row="1">
 					<component type="input" name="pieceworkCost" reference="pieceworkCost"
 						field="#{form}.pieceworkCost" />
@@ -24,7 +24,7 @@
 			reference="borderLayoutHourly">
 			<option type="label" value="hourly" />
 			<component type="gridLayout" name="gridLayout" hasBorders="false"
-				columns="3" rows="2">
+				columns="2" rows="2">
 				<layoutElement column="1" row="1">
 					<component type="input" name="laborHourlyCost" reference="laborHourlyCost"
 						field="#{form}.laborHourlyCost" />
