@@ -13,8 +13,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,8 +48,6 @@ public class CostCalculationViewService {
 
     @Autowired
     private CurrencyService currencyService;
-
-    private static final Logger LOG = LoggerFactory.getLogger(CurrencyService.class);
 
     private final static String EMPTY = "";
 
@@ -171,22 +167,24 @@ public class CostCalculationViewService {
         FieldComponent materialCostMarginProc = (FieldComponent) viewDefinitionState
                 .getComponentByReference("materialCostMarginProc");
         materialCostMarginProc.setFieldValue("%");
+
+        fillCostPerUnitUnitField(viewDefinitionState, null, null);
     }
 
     public void fillCostPerUnitUnitField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
-        if (view.getComponentByReference("product") != null && view.getComponentByReference("product").getFieldValue() != null) {
-            Long productId = (Long) view.getComponentByReference("product").getFieldValue();
-            Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
-
-            FieldComponent totalCostsPerUnitUNIT = (FieldComponent) view.getComponentByReference("totalCostsPerUnitUNIT");
-            totalCostsPerUnitUNIT.setEnabled(true);
-            totalCostsPerUnitUNIT.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField("unit"));
-            totalCostsPerUnitUNIT.setEnabled(false);
-            totalCostsPerUnitUNIT.requestComponentUpdateState();
-        } else {
-            LOG.debug("Product field is empty");
+        if (view.getComponentByReference("product").getFieldValue() == null) {
+            return;
         }
+        
+        Long productId = (Long) view.getComponentByReference("product").getFieldValue();
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
+
+        FieldComponent totalCostsPerUnitUNIT = (FieldComponent) view.getComponentByReference("totalCostsPerUnitUNIT");
+        totalCostsPerUnitUNIT.setEnabled(true);
+        totalCostsPerUnitUNIT.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField("unit"));
+        totalCostsPerUnitUNIT.setEnabled(false);
+        totalCostsPerUnitUNIT.requestComponentUpdateState();
     }
 
     public void fillFieldWhenTechnologyChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,

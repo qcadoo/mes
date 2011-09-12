@@ -30,6 +30,7 @@ import static com.qcadoo.view.api.ComponentState.MessageType.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Sets;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -77,12 +78,36 @@ public class NormService {
             final String[] args) {
         FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
         FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
+        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineUNIT");
 
-        if (countRealized.getFieldValue().equals("02specified")) {
-            countMachine.setVisible(true);
-            countMachine.setEnabled(true);
-        } else {
-            countMachine.setVisible(false);
+        Boolean visibilityValue = "02specified".equals(countRealized.getFieldValue());
+        countMachine.setVisible(visibilityValue);
+        countMachine.setEnabled(visibilityValue);
+        countMachineUNIT.setVisible(visibilityValue);
+
+    }
+
+    public void fillUnitFields(final ViewDefinitionState view) {
+        FieldComponent component = null;
+        Entity formEntity = ((FormComponent) view.getComponentByReference("form")).getEntity();
+
+        // we can pass units only to technology level operations
+        if (!"technologyOperationComponent".equals(formEntity.getDataDefinition().getName())) {
+            return;
+        }
+
+        // be sure that entity isn't in detached state before you wander through the relationship
+        formEntity = formEntity.getDataDefinition().get(formEntity.getId());
+        // you can use someEntity.getSTH().getSTH() only when you are 100% sure that all the passers-relations
+        // will not return null (i.e. all relations using below are mandatory on the model definition level)
+        String unit = formEntity.getBelongsToField("technology").getBelongsToField("product").getField("unit").toString();
+        for (String referenceName : Sets.newHashSet("countMachineUNIT", "productionInOneCycleUNIT")) {
+            component = (FieldComponent) view.getComponentByReference(referenceName);
+            if (component == null) {
+                continue;
+            }
+            component.setFieldValue(unit);
+            component.requestComponentUpdateState();
         }
     }
 

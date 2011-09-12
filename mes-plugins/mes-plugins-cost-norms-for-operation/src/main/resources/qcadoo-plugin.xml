@@ -149,13 +149,28 @@ http://schema.qcadoo.org/modules/menu.xsd">
 			</model:integer>
 		</model:model-field>
 
+
+		<!-- operation -->
+		
+		<view:view-hook view="operationDetails" type="beforeRender"
+			plugin="technologies"
+			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
+			method="fillCurrencyFields" />
+
+
 		<!-- operation - technology -->
+		
 		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
 			<model:onCreate
 				class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
 				method="copyCostNormsToTechnologyOperationComponent" />
 		</model:model-hook>
+
+		<view:view-hook view="technologyOperationComponentDetails" type="beforeRender"
+			plugin="technologies"
+			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
+			method="fillCurrencyFields" />
 
 		<view:view-listener view="technologyOperationComponentDetails"
 			component="operation" plugin="technologies" event="onSelectedEntityChange"
@@ -168,13 +183,20 @@ http://schema.qcadoo.org/modules/menu.xsd">
 			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
 			method="copyCostValuesFromOperation" />
 
+
 		<!-- operation - instance of technology -->
+		
 		<model:model-hook model="orderOperationComponent"
 			plugin="productionScheduling">
 			<model:onCreate
 				class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
 				method="copyCostNormsToOrderOperationComponent" />
 		</model:model-hook>
+
+		<view:view-hook view="orderOperationComponentDetails" type="beforeRender"
+			plugin="productionScheduling"
+			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
+			method="fillCurrencyFields" />
 
 		<view:view-listener plugin="productionScheduling"
 			view="orderOperationComponentDetails" component="form"

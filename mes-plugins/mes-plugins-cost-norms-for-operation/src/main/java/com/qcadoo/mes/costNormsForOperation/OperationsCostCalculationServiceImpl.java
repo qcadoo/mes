@@ -171,10 +171,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 ROUND_HALF_UP));
 
         operationComponent.setField("level", level);
-        operationComponent.setField("pieces", pieces);
-        operationComponent.setField("operationCost", operationCost);
-        operationComponent.setField("operationMarginCost", operationMarginCost);
-        operationComponent.setField("totalOperationCost", operationCost.add(operationMarginCost));
+        operationComponent.setField("pieces", pieces.setScale(3, ROUND_UP));
+        operationComponent.setField("operationCost", operationCost.setScale(3, ROUND_UP));
+        operationComponent.setField("operationMarginCost", operationMarginCost.setScale(3, ROUND_UP));
+        operationComponent.setField("totalOperationCost", operationCost.add(operationMarginCost).setScale(3, ROUND_UP));
 
         checkArgument(operationComponent.getDataDefinition().save(operationComponent).isValid(), "invalid operationComponent");
 

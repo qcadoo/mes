@@ -84,7 +84,6 @@
                 <validatesScale max="3" />
             </model:decimal>
         </model:model-field>
-        
-	</modules>
 
+	</modules>
 </plugin>

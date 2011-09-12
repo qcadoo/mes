@@ -99,7 +99,7 @@
 			<model:integer name="timeNextOperation" />
 		</model:model-field>
 
-		<view:view-tab resource="view/tabExtensions/operationComponent.xml" />
+		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 
 		<view:view-ribbon-group
@@ -122,6 +122,10 @@
 		<view:view-hook view="technologyOperationComponentDetails"
 			type="beforeRender" plugin="technologies"
 			class="com.qcadoo.mes.productionTimeNorms.NormService" method="updateFieldsStateOnWindowLoad" />
+
+		<view:view-hook view="technologyOperationComponentDetails"
+			type="beforeRender" plugin="technologies"
+			class="com.qcadoo.mes.productionTimeNorms.NormService" method="fillUnitFields" />
 
 		<view:view-listener component="operation"
 			event="onSelectedEntityChange" plugin="technologies"

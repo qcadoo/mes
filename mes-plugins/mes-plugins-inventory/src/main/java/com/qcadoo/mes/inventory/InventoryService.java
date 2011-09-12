@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.inventory;
 
+import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_COMPANY;
+import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
+import static com.qcadoo.mes.inventory.constants.InventoryConstants.MODEL_INVENTORY_REPORT;
+import static com.qcadoo.mes.inventory.constants.InventoryConstants.MODEL_TRANSFER;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -34,6 +39,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.google.common.collect.Sets;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -54,6 +60,7 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class InventoryService {
@@ -72,6 +79,9 @@ public class InventoryService {
 
     @Autowired
     private InventoryXlsService inventoryXlsService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
 
     @Value("${reportPath}")
     private String path;
@@ -180,13 +190,11 @@ public class InventoryService {
     }
 
     public void setGenerateButtonState(final ViewDefinitionState state) {
-        setGenerateButtonState(state, state.getLocale(), InventoryConstants.PLUGIN_IDENTIFIER,
-                InventoryConstants.MODEL_INVENTORY_REPORT);
+        setGenerateButtonState(state, state.getLocale(), InventoryConstants.PLUGIN_IDENTIFIER, MODEL_INVENTORY_REPORT);
     }
 
     public void setGridGenerateButtonState(final ViewDefinitionState state) {
-        setGridGenerateButtonState(state, state.getLocale(), InventoryConstants.PLUGIN_IDENTIFIER,
-                InventoryConstants.MODEL_INVENTORY_REPORT);
+        setGridGenerateButtonState(state, state.getLocale(), InventoryConstants.PLUGIN_IDENTIFIER, MODEL_INVENTORY_REPORT);
     }
 
     public boolean validateTransfer(final DataDefinition dataDefinition, final Entity entity) {
@@ -275,8 +283,8 @@ public class InventoryService {
     public void printInventory(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
 
         if (state.getFieldValue() instanceof Long) {
-            Entity inventoryReport = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
-                    InventoryConstants.MODEL_INVENTORY_REPORT).get((Long) state.getFieldValue());
+            Entity inventoryReport = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER, MODEL_INVENTORY_REPORT).get(
+                    (Long) state.getFieldValue());
             if (inventoryReport == null) {
                 state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
@@ -306,8 +314,8 @@ public class InventoryService {
             ComponentState date = viewDefinitionState.getComponentByReference("date");
             ComponentState worker = viewDefinitionState.getComponentByReference("worker");
 
-            Entity inventoryReport = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
-                    InventoryConstants.MODEL_INVENTORY_REPORT).get((Long) state.getFieldValue());
+            Entity inventoryReport = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER, MODEL_INVENTORY_REPORT).get(
+                    (Long) state.getFieldValue());
 
             if (inventoryReport == null) {
                 String message = translationService.translate("qcadooView.message.entityNotFound", state.getLocale());
@@ -335,8 +343,8 @@ public class InventoryService {
                 return;
             }
 
-            inventoryReport = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
-                    InventoryConstants.MODEL_INVENTORY_REPORT).get((Long) state.getFieldValue());
+            inventoryReport = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER, MODEL_INVENTORY_REPORT).get(
+                    (Long) state.getFieldValue());
 
             try {
                 generateMaterialReqDocuments(state, inventoryReport);
@@ -366,10 +374,37 @@ public class InventoryService {
         Entity inventoryWithFileName = updateFileName(inventoryReport,
                 getFullFileName((Date) inventoryReport.getField("date"), inventoryReport.getStringField("name")),
                 InventoryConstants.MODEL_INVENTORY_REPORT);
-        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .uniqueResult();
+        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_COMPANY).find().uniqueResult();
         inventoryPdfService.generateDocument(inventoryWithFileName, company, state.getLocale());
         inventoryXlsService.generateDocument(inventoryWithFileName, company, state.getLocale());
+    }
+
+    public void fillNumberFieldValue(final ViewDefinitionState view) {
+        if (view.getComponentByReference("number").getFieldValue() != null) {
+            return;
+        }
+        numberGeneratorService.generateAndInsertNumber(view, InventoryConstants.PLUGIN_IDENTIFIER, 
+                MODEL_TRANSFER, "form", "number");
+    }
+
+    public void fillUnitFieldValue(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        Long productId = (Long) view.getComponentByReference("product").getFieldValue();
+        if (productId == null) {
+            return;
+        }
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
+        FieldComponent unitField = null;
+        String unit = product.getField("unit").toString();
+        for (String referenceName : Sets.newHashSet("quantityUNIT", "shouldBeUNIT", "foundUNIT")) {
+            unitField = (FieldComponent) view.getComponentByReference(referenceName);
+            if (unitField == null) {
+                continue;
+            }
+            unitField.setFieldValue(unit);
+            unitField.requestComponentUpdateState();
+        }
+        
+        
     }
 
 }
