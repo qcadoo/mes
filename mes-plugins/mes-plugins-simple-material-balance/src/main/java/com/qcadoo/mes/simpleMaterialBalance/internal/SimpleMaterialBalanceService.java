@@ -8,6 +8,7 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
@@ -137,6 +138,7 @@ public class SimpleMaterialBalanceService {
         window.requestRibbonRender();
     }
 
+    @Transactional
     public void generateSimpleMaterialBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
