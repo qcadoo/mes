@@ -38,7 +38,7 @@
 				<!--<bigButton name="copy" icon="copyIcon24.png" action="#{form}.performCopy;" 
 					state="disabled"/> -->
 				<bigButton name="generate" icon="generateIcon24.png"
-					action="#{form}.fireEvent(generateMaterialRequirement);" state="disabled" />
+					action="#{form}.fireEvent(generateMaterialRequirement);" state="enabled" />
 			</group>
 			<group name="export">
 				<smallButton name="pdf" icon="pdfIcon16.png"

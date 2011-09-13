@@ -11,8 +11,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +24,6 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
-import com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationServiceImpl;
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.model.api.DataDefinition;
@@ -51,8 +48,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     @Autowired
     MaterialRequirementReportDataService materialRequirementReportDataService;
-
-    private final static Logger LOG = LoggerFactory.getLogger(OperationsCostCalculationServiceImpl.class);
 
     @Override
     protected void buildPdfContent(Document document, Entity entity, Locale locale) throws DocumentException {
@@ -353,9 +348,11 @@ public class CostCalculationPdfService extends PdfDocumentService {
             operationsTableHeader.add(getTranslationService().translate(translate, locale));
         }
 
+        int[] columnWitdh = { 20, 20, 20, 20, 20, 20, 20, 20, 20 };
         List<Entity> calculationOperationComponents = costCalculation.getTreeField("calculationOperationComponents");
 
-        PdfPTable operationsTable = PdfUtil.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false);
+        PdfPTable operationsTable = PdfUtil.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false,
+                columnWitdh);
 
         if (calculationOperationComponents != null && calculationOperationComponents.size() != 0) {
             for (Entity calculationOperationComponent : calculationOperationComponents) {
@@ -385,6 +382,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
     }
 
     private String convertTimeToString(final Integer duration) {
+        // TODO ALBR
+
         Long durationLongValue = duration.longValue();
 
         Long hour = durationLongValue / 3600;
@@ -400,13 +399,13 @@ public class CostCalculationPdfService extends PdfDocumentService {
         if (minute < 10) {
             m = "0" + minute.toString();
         } else {
-            m = hour.toString();
+            m = minute.toString();
         }
         Long second = (durationLongValue % 3600) % 60;
         if (second < 10) {
             s = "0" + second.toString();
         } else {
-            s = hour.toString();
+            s = second.toString();
         }
 
         return h + ":" + m + ":" + s;
@@ -418,15 +417,13 @@ public class CostCalculationPdfService extends PdfDocumentService {
         for (String translate : Arrays.asList("costCalculation.costCalculationDetails.report.columnHeader.number",
                 "costCalculation.costCalculationDetails.report.columnHeader.name",
                 "costCalculation.costCalculationDetails.report.columnHeader.level",
-                "costCalculation.costCalculationDetails.report.columnHeader.level",
-                "costCalculation.costCalculationDetails.report.columnHeader.quantity",
+                "costCalculation.costCalculationDetails.report.columnHeader.pieces",
                 "costCalculation.costCalculationDetails.report.columnHeader.piecework",
                 "costCalculation.costCalculationDetails.report.columnHeader.operationCost",
                 "costCalculation.costCalculationDetails.report.columnHeader.margin",
                 "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
             operationsTableHeader.add(getTranslationService().translate(translate, locale));
         }
-
         List<Entity> calculationOperationComponents = costCalculation.getTreeField("calculationOperationComponents");
 
         PdfPTable operationsTable = PdfUtil.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false);
@@ -437,12 +434,12 @@ public class CostCalculationPdfService extends PdfDocumentService {
                         "number"), PdfUtil.getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
                         "name"), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getId()
-                        .toString(), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(
-                        calculationOperationComponent.getField("pieceworkCost")), PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(calculationOperationComponent.getField("level").toString(), PdfUtil
+                        .getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(getDecimalFormat().format(calculationOperationComponent.getField("pieces")),
                         PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                        calculationOperationComponent.getField("pieceworkCost")), PdfUtil.getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(getDecimalFormat().format(
                         calculationOperationComponent.getField("operationCost")), PdfUtil.getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(getDecimalFormat().format(
