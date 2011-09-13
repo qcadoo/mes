@@ -4,13 +4,13 @@
 
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<group template="navigation" />
-			<group template="formSaveCopyAndRemoveActions" />
+			<template name="standardFormTemplate" />
 			<group name="generate">
 				<bigButton name="generate" icon="generateIcon24.png"
 					action="#{form}.fireEvent(generateCostCalculation);" state="disabled">
 					<script>
-						<![CDATA[#{form}.addOnChangeListener({
+						<![CDATA[
+						#{form}.addOnChangeListener({
 							onSetValue: function(value) {
 								if (! value || ! value.content) {
 									return;
@@ -39,6 +39,7 @@
 			<component type="form" name="form" reference="form">
 				<script>
 				<![CDATA[
+				
 					jQuery(document).ready(function() {
 						var json = JSON.parse(context);
 						var orderId = json['window.mainTab.orderId'];
@@ -50,10 +51,12 @@
 							#{form}.fireEvent(this, 'requestCopyFieldValues', ['technology', technologyId]); 
 						}
 					});
-					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
+									
+					
 					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
 					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
 					var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
+					
 					var containsAtLeastOneOrder = false;
 					var entityExists = false;
 					
@@ -84,8 +87,8 @@
 					function updateRibbon() {
 						if (entityExists) {
 							var isGeneratedCheckboxValue = #{generated}.getValue();
-							copyRibbonItem.enable();
-							generatedRibbonItem.enabled();
+							generatedRibbonItem.enable();
+							saveRibbonItem.disable();
 							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
 								pdfRibbonItem.enable();
 								saveRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
