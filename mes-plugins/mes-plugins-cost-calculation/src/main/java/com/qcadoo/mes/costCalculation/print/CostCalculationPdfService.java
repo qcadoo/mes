@@ -181,8 +181,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         addTableCellAsTable(
                 leftPanelColumn,
                 "\t \t \t" + getTranslationService().translate("costCalculation.costCalculation.description.label", locale) + ":",
-                (reportData != null ? getDecimalFormat().format(reportData) : ""), null, PdfUtil.getArialBold9Dark(),
-                PdfUtil.getArialBold9Dark(), null);
+                (reportData != null ? reportData : ""), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
 
         return leftPanelColumn;
     }
@@ -392,16 +391,22 @@ public class CostCalculationPdfService extends PdfDocumentService {
         String h = null;
         String m = null;
         String s = null;
-        while (hour < 10) {
+        if (hour < 10) {
             h = "0" + hour.toString();
+        } else {
+            h = hour.toString();
         }
         Long minute = (durationLongValue % 3600) / 60;
-        while (minute < 10) {
+        if (minute < 10) {
             m = "0" + minute.toString();
+        } else {
+            m = hour.toString();
         }
         Long second = (durationLongValue % 3600) % 60;
-        while (second < 10) {
+        if (second < 10) {
             s = "0" + second.toString();
+        } else {
+            s = hour.toString();
         }
 
         return h + ":" + m + ":" + s;
