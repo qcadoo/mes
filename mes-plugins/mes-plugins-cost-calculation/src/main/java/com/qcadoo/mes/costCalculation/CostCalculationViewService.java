@@ -36,7 +36,6 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -47,7 +46,7 @@ public class CostCalculationViewService {
 
     @Autowired
     private CostCalculationService costCalculationService;
-    
+
     @Autowired
     private CostCalculationReportService costCalculationReportService;
 
@@ -56,7 +55,7 @@ public class CostCalculationViewService {
 
     @Autowired
     private CurrencyService currencyService;
-    
+
     @Autowired
     private TranslationService translationService;
 
@@ -186,7 +185,7 @@ public class CostCalculationViewService {
         if (view.getComponentByReference("product").getFieldValue() == null) {
             return;
         }
-        
+
         Long productId = (Long) view.getComponentByReference("product").getFieldValue();
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
 
@@ -261,8 +260,10 @@ public class CostCalculationViewService {
     public void generateCostCalculation(ViewDefinitionState view, ComponentState componentState, String[] args) {
         Entity costCalculation = getEntityFromForm(view);
         if (costCalculation.getId() == null) {
-            view.getComponentByReference("form").addMessage(translationService.translate("costCalculation.messages.failure.calculationOnUnsavedEntity",
-                    view.getLocale()), FAILURE);
+            view.getComponentByReference("form")
+                    .addMessage(
+                            translationService.translate("costCalculation.messages.failure.calculationOnUnsavedEntity",
+                                    view.getLocale()), FAILURE);
             return;
         }
         attachBelongsToFields(costCalculation);
@@ -270,9 +271,8 @@ public class CostCalculationViewService {
         costCalculation = costCalculationService.calculateTotalCost(costCalculation);
         fillFields(view, costCalculation);
         costCalculationReportService.generateCostCalculationReport(view, componentState, args);
-        view.getComponentByReference("form").addMessage(translationService.translate("costCalculation.messages.success.calculationComplete",
-                view.getLocale()), SUCCESS);
-        ((WindowComponent)view.getComponentByReference("window")).getRibbon().getGroupByName("export").getItemByName("pdf").setEnabled(true);
+        view.getComponentByReference("form").addMessage(
+                translationService.translate("costCalculation.messages.success.calculationComplete", view.getLocale()), SUCCESS);
     }
 
     private void attachBelongsToFields(final Entity costCalculation) {
