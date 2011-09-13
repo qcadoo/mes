@@ -41,17 +41,20 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.name", locale));
         cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell2 = header.createCell(2);
-        cell2.setCellValue(getTranslationService().translate(
-                "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.needed", locale));
+        cell2.setCellValue(getTranslationService().translate("basic.product.unit.label", locale));
         cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell3 = header.createCell(3);
         cell3.setCellValue(getTranslationService().translate(
-                "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.inStoch", locale));
+                "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.needed", locale));
         cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell4 = header.createCell(4);
         cell4.setCellValue(getTranslationService().translate(
-                "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.balance", locale));
+                "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.inStoch", locale));
         cell4.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        HSSFCell cell5 = header.createCell(5);
+        cell5.setCellValue(getTranslationService().translate(
+                "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.balance", locale));
+        cell5.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
     }
 
     @Override
@@ -63,24 +66,26 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
                 orders, onlyComponents);
         List<Entity> warehouses = simpleMaterialBalance.getHasManyField("warehouses");
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
-        for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
+        for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(entry.getKey().getField("number").toString());
-            row.createCell(1).setCellValue(entry.getKey().getField("name").toString());
-            row.createCell(2).setCellValue(getDecimalFormat().format(entry.getValue()));
+            row.createCell(0).setCellValue(product.getKey().getField("number").toString());
+            row.createCell(1).setCellValue(product.getKey().getField("name").toString());
+            row.createCell(2).setCellValue(product.getKey().getField("unit").toString());
+            row.createCell(3).setCellValue(getDecimalFormat().format(product.getValue()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity warehouse : warehouses) {
                 available = available.add(inventoryService.calculateShouldBe(warehouse.getBelongsToField("warehouse").getId()
-                        .toString(), entry.getKey().getId().toString(), simpleMaterialBalance.getField("date").toString()));
+                        .toString(), product.getKey().getId().toString(), simpleMaterialBalance.getField("date").toString()));
             }
-            row.createCell(3).setCellValue(getDecimalFormat().format(available));
-            row.createCell(4).setCellValue(getDecimalFormat().format(available.subtract(entry.getValue())));
+            row.createCell(4).setCellValue(getDecimalFormat().format(available));
+            row.createCell(5).setCellValue(getDecimalFormat().format(available.subtract(product.getValue())));
         }
         sheet.autoSizeColumn((short) 0);
         sheet.autoSizeColumn((short) 1);
         sheet.autoSizeColumn((short) 2);
         sheet.autoSizeColumn((short) 3);
         sheet.autoSizeColumn((short) 4);
+        sheet.autoSizeColumn((short) 5);
     }
 
     @Override

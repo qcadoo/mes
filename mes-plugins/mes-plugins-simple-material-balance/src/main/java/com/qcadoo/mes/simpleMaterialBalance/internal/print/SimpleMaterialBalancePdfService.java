@@ -97,6 +97,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.number", locale));
         simpleMaterialBalanceTableHeader.add(getTranslationService().translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.name", locale));
+        simpleMaterialBalanceTableHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
         simpleMaterialBalanceTableHeader.add(getTranslationService().translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.needed", locale));
         simpleMaterialBalanceTableHeader.add(getTranslationService().translate(
@@ -104,7 +105,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         simpleMaterialBalanceTableHeader.add(getTranslationService().translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.balance", locale));
 
-        PdfPTable table = PdfUtil.createTableWithHeader(5, simpleMaterialBalanceTableHeader, false);
+        PdfPTable table = PdfUtil.createTableWithHeader(6, simpleMaterialBalanceTableHeader, false);
         List<Entity> orders = simpleMaterialBalance.getHasManyField("orders");
         Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField("onlyComponents");
         Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForMaterialRequirementProducts(
@@ -114,6 +115,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(entry.getKey().getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(entry.getKey().getField("unit").toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(getDecimalFormat().format(entry.getValue()), PdfUtil.getArialRegular9Dark()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity warehouse : warehouses) {
