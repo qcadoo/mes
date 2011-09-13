@@ -36,7 +36,7 @@ public class CostCalculationReportService {
     @Value("${reportPath}")
     private String path;
 
-    public void printCostCalculation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+    public void printCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state.getFieldValue() instanceof Long) {
             Entity costCalculation = dataDefinitionService.get(CostCalculateConstants.PLUGIN_IDENTIFIER,
@@ -63,7 +63,7 @@ public class CostCalculationReportService {
         }
     }
 
-    public void generateCostCalculation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+    public void generateCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
             ComponentState date = viewDefinitionState.getComponentByReference("dateOfCalculation");

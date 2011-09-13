@@ -4,6 +4,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
+import static com.qcadoo.view.api.ComponentState.MessageType.FAILURE;
+import static com.qcadoo.view.api.ComponentState.MessageType.SUCCESS;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -18,9 +20,11 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
+import com.qcadoo.mes.costCalculation.print.CostCalculationReportService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -32,6 +36,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -42,12 +47,18 @@ public class CostCalculationViewService {
 
     @Autowired
     private CostCalculationService costCalculationService;
+    
+    @Autowired
+    private CostCalculationReportService costCalculationReportService;
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
     private CurrencyService currencyService;
+    
+    @Autowired
+    private TranslationService translationService;
 
     private final static String EMPTY = "";
 
@@ -97,7 +108,6 @@ public class CostCalculationViewService {
         }
 
         applyValuesToFields(viewDefinitionState, technology, order);
-
     }
 
     private void applyValuesToFields(final ViewDefinitionState viewDefinitionState, final Entity technology, final Entity order) {
@@ -248,12 +258,21 @@ public class CostCalculationViewService {
     /* FUNCTIONS FOR FIRE CALCULATION AND HANDLING RESULTS BELOW */
 
     /* Event handler, fire total calculation */
-    public void calculateTotalCostView(ViewDefinitionState viewDefinitionState, ComponentState componentState, String[] args) {
-        Entity costCalculation = getEntityFromForm(viewDefinitionState);
+    public void generateCostCalculation(ViewDefinitionState view, ComponentState componentState, String[] args) {
+        Entity costCalculation = getEntityFromForm(view);
+        if (costCalculation.getId() == null) {
+            view.getComponentByReference("form").addMessage(translationService.translate("costCalculation.messages.failure.calculationOnUnsavedEntity",
+                    view.getLocale()), FAILURE);
+            return;
+        }
         attachBelongsToFields(costCalculation);
         // Fire cost calculation algorithm
         costCalculation = costCalculationService.calculateTotalCost(costCalculation);
-        fillFields(viewDefinitionState, costCalculation);
+        fillFields(view, costCalculation);
+        costCalculationReportService.generateCostCalculationReport(view, componentState, args);
+        view.getComponentByReference("form").addMessage(translationService.translate("costCalculation.messages.success.calculationComplete",
+                view.getLocale()), SUCCESS);
+        ((WindowComponent)view.getComponentByReference("window")).getRibbon().getGroupByName("export").getItemByName("pdf").setEnabled(true);
     }
 
     private void attachBelongsToFields(final Entity costCalculation) {
