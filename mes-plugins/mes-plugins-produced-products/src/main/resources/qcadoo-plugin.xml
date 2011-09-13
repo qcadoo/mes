@@ -72,6 +72,7 @@
 			class="com.qcadoo.mes.producedProducts.ProducedProductsService" method="showProducedProducts" />
 		
 		<view:view-hook plugin="producedProducts" view="producedProductsDetails" type="beforeRender" class="com.qcadoo.mes.producedProducts.ProducedProductsService" method="disablePlannedQuantity" />
+		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.producedProducts.ProducedProductsService" method="generateProducedProducts" />
 		
 		<view:view resource="view/producedProducts.xml" />
 		<view:view resource="view/producedProductsDetails.xml" />

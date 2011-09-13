@@ -1,5 +1,12 @@
 package com.qcadoo.mes.orderGroups;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.orderGroups.constants.OrderGroupsConstants.DATE_RANGE_ERROR;
+import static com.qcadoo.mes.orderGroups.constants.OrderGroupsConstants.MODEL_ORDERGROUP;
+import static com.qcadoo.mes.orderGroups.constants.OrderGroupsConstants.PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
+import static com.qcadoo.view.api.ComponentState.MessageType.FAILURE;
+
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
@@ -23,7 +31,6 @@ import com.qcadoo.model.api.search.SearchDisjunction;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -78,6 +85,7 @@ public class OrderGroupsService {
 
     /* ****** CUSTOM EVENT LISTENER ****** */
 
+    @Transactional
     public void removeOrderFromGroup(final ViewDefinitionState viewDefinitionState, ComponentState componentState, String[] args) {
         if ("orderGroupOrders".equals(componentState.getName())) {
             DataDefinition orderDataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
@@ -93,21 +101,26 @@ public class OrderGroupsService {
         }
     }
 
-    public void showOrderGroupOrdersTable(final ViewDefinitionState state, ComponentState componentState,
-            String[] args) {
-        JSONObject context = new JSONObject();        
+    public void redirectToGroupsList(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+        // FIXME
+        state.redirectTo("../page/orderGroups/orderGroupList.html", false, true);
+    }
+
+    public void showOrderGroupOrdersTable(final ViewDefinitionState state, final ComponentState componentState,
+            final String[] args) {
+        JSONObject context = new JSONObject();
         StringBuilder header = new StringBuilder();
         String name = state.getComponentByReference("name").getFieldValue().toString();
         String groupDateFrom = state.getComponentByReference("groupDateFrom").getFieldValue().toString();
         String groupDateTo = state.getComponentByReference("groupDateTo").getFieldValue().toString();
-        
+
         header.append(name);
         header.append("</span> ( ");
         header.append(groupDateFrom.isEmpty() ? "..." : groupDateFrom);
         header.append(" : ");
         header.append(groupDateTo.isEmpty() ? "..." : groupDateTo);
         header.append(" )<span>");
-        
+
         try {
             context.put("orderGroup.id", componentState.getFieldValue().toString());
             context.put("form.name", header.toString());
@@ -122,44 +135,37 @@ public class OrderGroupsService {
         state.redirectTo(url.toString(), false, true);
     }
 
+    @Transactional
     public void addOrdersToGroup(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
             final String[] args) {
-        Long groupId = (Long) viewDefinitionState.getComponentByReference("orderGroup").getFieldValue();
+        Long groupId = ((FormComponent) viewDefinitionState.getComponentByReference("orderGroup")).getEntityId();
         if (groupId == null) {
             return;
         }
 
-        Set<Long> orderIds = new HashSet<Long>();
         Set<Entity> orderEntities = new HashSet<Entity>();
-        ComponentState orders = viewDefinitionState.getComponentByReference("orders");
-        DataDefinition orderDataDef = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
-        Entity group = dataDefinitionService.get(OrderGroupsConstants.PLUGIN_IDENTIFIER, OrderGroupsConstants.MODEL_ORDERGROUP)
-                .get(groupId);
-
-        if (orders instanceof GridComponent) {
-            orderIds = ((GridComponent) orders).getSelectedEntitiesIds();
-        } else {
-            orderIds.add((Long) viewDefinitionState.getComponentByReference("orders").getFieldValue());
-        }
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        GridComponent orders = (GridComponent) viewDefinitionState.getComponentByReference("orders");
+        DataDefinition orderDataDef = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER);
+        Entity group = dataDefinitionService.get(OrderGroupsConstants.PLUGIN_IDENTIFIER, MODEL_ORDERGROUP).get(groupId);
 
         // get orders entities
-        for (Long orderId : orderIds) {
-            Entity order = orderDataDef.get(orderId);
-            order.setField("orderGroup", groupId);
-            order.setField("orderGroupName", group.getField("name"));
-            orderEntities.add(order);
+        for (Long orderId : orders.getSelectedEntitiesIds()) {
+            orderEntities.add(orderDataDef.get(orderId));
         }
 
         // validate data ranges
         if (!checkOrderGroupComponentDateRange(group, orderEntities)) {
-            viewDefinitionState.getComponentByReference("form").addMessage(
-                    translationService.translate(OrderGroupsConstants.DATE_RANGE_ERROR, viewDefinitionState.getLocale()),
-                    MessageType.FAILURE);
+            // disable infinity calling component onChange listener (bug with infinity error messages loop)
+            viewDefinitionState.getComponentByReference("confirmBoxTextHolder").setFieldValue(null);
+            form.addMessage(translationService.translate(DATE_RANGE_ERROR, viewDefinitionState.getLocale()), FAILURE);
             return;
         }
 
         // Save if validation pass
         for (Entity entity : orderEntities) {
+            entity.setField("orderGroup", groupId);
+            entity.setField("orderGroupName", group.getField("name"));
             orderDataDef.save(entity);
         }
 
@@ -179,7 +185,11 @@ public class OrderGroupsService {
             return;
         }
 
-        Entity group = groupForm.getEntity();
+        Long groupId = groupForm.getEntityId();
+        Entity group = dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_ORDERGROUP).get(groupId);
+
+        checkArgument(group != null, "unable to load orderGroup entity with id = " + groupId);
+
         RibbonActionItem ribbonItemSelect = window.getRibbon().getGroupByName("navigation").getItemByName("select");
         textarea.setFieldValue("NULL");
 
@@ -189,7 +199,7 @@ public class OrderGroupsService {
         }
         ribbonItemSelect.setEnabled(true);
 
-        DataDefinition dd = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+        DataDefinition dd = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER);
         SearchDisjunction disjunction = SearchRestrictions.disjunction();
         for (Long id : grid.getSelectedEntitiesIds()) {
             disjunction.add(SearchRestrictions.idEq(id));
@@ -249,7 +259,8 @@ public class OrderGroupsService {
     public boolean validateOrderDate(final DataDefinition dataDefinition, final Entity order) {
         Entity group = order.getBelongsToField("orderGroup");
         if (group != null && !checkOrderGroupComponentDateRange(group, Arrays.asList(order))) {
-            order.addError(dataDefinition.getField("orderGroup"), OrderGroupsConstants.DATE_RANGE_ERROR);
+            order.addError(dataDefinition.getField("dateFrom"), OrderGroupsConstants.ORDER_DATES_RANGE_ERROR);
+            order.addError(dataDefinition.getField("dateTo"), OrderGroupsConstants.ORDER_DATES_RANGE_ERROR);
         }
         return true;
     }
@@ -257,23 +268,27 @@ public class OrderGroupsService {
     public boolean checkOrderGroupComponentDateRange(final Entity group, final Iterable<Entity> orders) {
         Date groupDateTo = (Date) group.getField("dateTo");
         Date groupDateFrom = (Date) group.getField("dateFrom");
-        Date orderDateFrom;
-        Date orderDateTo;
+        Long orderDateFrom = null;
+        Long orderDateTo = null;
 
         if (groupDateTo != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTime((Date) group.getField("dateTo"));
+            // important! change time to 23:59:59.99
             cal.add(Calendar.DAY_OF_MONTH, 1);
             cal.add(Calendar.MILLISECOND, -1);
-            groupDateTo = cal.getTime(); // important! change time to 23:59:59.99
+            groupDateTo = cal.getTime();
         }
 
         for (Entity order : orders) {
-            orderDateFrom = (Date) order.getField("dateFrom");
-            orderDateTo = (Date) order.getField("dateTo");
+            orderDateFrom = ((Date) order.getField("dateFrom")).getTime();
+            orderDateTo = ((Date) order.getField("dateTo")).getTime();
 
-            if ((groupDateFrom != null && orderDateFrom.compareTo(groupDateFrom) < 0)
-                    || (groupDateTo != null && groupDateTo.compareTo(orderDateTo) < 0)) {
+            if (groupDateFrom != null && groupDateFrom.getTime() > orderDateFrom) {
+                return false;
+            }
+
+            if (groupDateTo != null && groupDateTo.getTime() < orderDateTo) {
                 return false;
             }
         }

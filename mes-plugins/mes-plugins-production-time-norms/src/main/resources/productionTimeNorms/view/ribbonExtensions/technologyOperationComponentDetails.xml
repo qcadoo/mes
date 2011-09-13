@@ -30,7 +30,7 @@
 	view="technologyOperationComponentDetails">
 	
 	<group name="norm">
-		<smallButton name="copyNormFromOperation"  state="enabled" action="#{operation}.fireEvent(copyNormFromOperation);"  />
+		<bigButton name="copyTimeNormsFromOperation" icon="copyIcon24.png" state="enabled" action="#{operation}.fireEvent(copyTimeNormsFromOperation);"  />
 	</group>
 	
 </ribbonExtension>

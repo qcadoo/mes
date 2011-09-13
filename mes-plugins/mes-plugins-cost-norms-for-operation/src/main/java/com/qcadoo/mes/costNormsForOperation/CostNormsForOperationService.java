@@ -2,10 +2,14 @@ package com.qcadoo.mes.costNormsForOperation;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.FIELDS;
+import static com.qcadoo.view.api.ComponentState.MessageType.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Sets;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -13,6 +17,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class CostNormsForOperationService {
@@ -20,27 +25,66 @@ public class CostNormsForOperationService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private TranslationService translationService;
+    
+    @Autowired
+    private CurrencyService currencyService;
+
     /* ****** VIEW EVENT LISTENERS ******* */
 
-    public void copyCostValuesFromSelectedTechnology(final ViewDefinitionState state, final ComponentState componentState,
+    public void copyCostValuesFromOperation(final ViewDefinitionState view, final ComponentState operationLookupState,
             final String[] args) {
-        if (componentState.getFieldValue() == null) {
+        if (operationLookupState.getFieldValue() == null) {
+            view.getComponentByReference("form").addMessage(
+                    translationService.translate("costNormsForOperation.messages.info.missingOperationReference",
+                            view.getLocale()), INFO);
             return;
         }
-        FieldComponent component;
-        Long operationId = Long.valueOf(componentState.getFieldValue().toString());
         Entity operation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION).get(operationId);
-
-        for (String fieldName : FIELDS) {
-            component = (FieldComponent) state.getComponentByReference(fieldName);
-            component.setFieldValue(operation.getField(fieldName));
-        }
+                TechnologiesConstants.MODEL_OPERATION).get((Long) operationLookupState.getFieldValue());
+        applyCostNormsFromGivenSource(view, operation);
     }
 
-    public void inheritOperationNormValues(final ViewDefinitionState state, final ComponentState componentState,
+    public void copyCostValuesFromTechnology(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        copyCostValuesFromSelectedTechnology(state, componentState, args);
+        Entity orderOperationComponent = ((FormComponent) view.getComponentByReference("form")).getEntity();
+        // Be sure that entity isn't in detached state
+        orderOperationComponent = orderOperationComponent.getDataDefinition().get(orderOperationComponent.getId());
+        applyCostNormsFromGivenSource(view, orderOperationComponent.getBelongsToField("technologyOperationComponent"));
+
+    }
+
+    public void inheritOperationNormValues(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        copyCostValuesFromOperation(view, componentState, args);
+    }
+
+    public void fillCurrencyFields(final ViewDefinitionState view) {
+        String currencyStringCode = currencyService.getCurrencyAlphabeticCode();
+        FieldComponent component = null;
+        for (String componentReference : Sets.newHashSet("pieceworkCostCURRENCY", "laborHourlyCostCURRENCY", "machineHourlyCostCURRENCY")) {
+            component = (FieldComponent) view.getComponentByReference(componentReference);
+            if (component == null) {
+                continue;
+            }
+            component.setFieldValue(currencyStringCode);
+            component.requestComponentUpdateState();
+        }
+    }
+    
+    private void applyCostNormsFromGivenSource(final ViewDefinitionState view, final Entity source) {
+        checkArgument(source != null, "source entity is null");
+        FieldComponent component = null;
+
+        for (String fieldName : FIELDS) {
+            component = (FieldComponent) view.getComponentByReference(fieldName);
+            component.setFieldValue(source.getField(fieldName));
+        }
+
+        // FIXME MAKU - double notification after change operation lookup value
+        // view.getComponentByReference("form").addMessage(translationService.translate("costNormsForOperation.messages.success.copyCostNormsSuccess",
+        // view.getLocale()), SUCCESS);
     }
 
     /* ******* MODEL HOOKS ******* */

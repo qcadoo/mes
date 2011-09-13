@@ -141,6 +141,17 @@ public class ProducedProductsService {
         }
     }
 
+    public void generateProducedProducts(final ViewDefinitionState state) {
+        String orderNumber = (String) state.getComponentByReference("number").getFieldValue();
+
+        if (orderNumber != null) {
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                    .find("where number='" + orderNumber + "'").uniqueResult();
+            if (order != null)
+                updateProducedProductsForOrder(order);
+        }
+    }
+
     public void disablePlannedQuantity(final ViewDefinitionState state) {
         ComponentState form = state.getComponentByReference("form");
         if (form.getFieldValue() != null) {

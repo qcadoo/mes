@@ -88,8 +88,4 @@ public class CostNormsForProductService {
         grid.setEntities(searchResult.getEntities());
     }
 
-    /* ****** CUSTOM EVENT LISTENER ****** */
-
-    /* ****** VALIDATORS ****** */
-
 }
