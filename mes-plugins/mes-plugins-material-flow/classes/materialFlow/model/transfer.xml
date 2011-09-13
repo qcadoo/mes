@@ -6,7 +6,7 @@
 		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
 		</string>
-		<enum name="type" values="Movement,Consumption,Production" required="true">
+		<enum name="type" values="Transport,Consumption,Production,Transformation" required="true">
 		</enum>
 		<datetime name="date" readonly="true" />
 		<belongsTo name="from" model="stockAreas" >

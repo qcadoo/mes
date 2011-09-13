@@ -285,7 +285,7 @@ public class MaterialFlowService {
         window.requestRibbonRender();
     }
 
-    public void printmaterialFlow(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void printMaterialFlow(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
 
         if (state.getFieldValue() instanceof Long) {
             Entity materialFlowReport = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MODEL_MATERIAL_FLOW_REPORT).get(
@@ -313,7 +313,7 @@ public class MaterialFlowService {
         }
     }
 
-    public void generatematerialFlow(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void generateMaterialFlow(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state instanceof FormComponent) {
             ComponentState generated = viewDefinitionState.getComponentByReference("generated");
             ComponentState date = viewDefinitionState.getComponentByReference("date");

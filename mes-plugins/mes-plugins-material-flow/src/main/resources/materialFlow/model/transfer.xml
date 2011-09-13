@@ -31,7 +31,7 @@
 		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
 		</string>
-		<enum name="type" values="Movement,Consumption,Production" required="true"/>
+		<enum name="type" values="Transport,Consumption,Production,Transformation" required="true"/>
 		<date name="date" required="true"/>
 		<belongsTo name="stockAreasFrom" model="stockAreas" plugin="materialFlow" />
 		<belongsTo name="stockAreasTo" model="stockAreas" plugin="materialFlow" />
