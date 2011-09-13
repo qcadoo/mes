@@ -31,8 +31,12 @@ import static com.qcadoo.mes.inventory.constants.InventoryConstants.MODEL_TRANSF
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +50,7 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.inventory.constants.InventoryConstants;
 import com.qcadoo.mes.inventory.print.pdf.InventoryPdfService;
+import com.qcadoo.mes.inventory.print.utils.EntityTransferComparator;
 import com.qcadoo.mes.inventory.print.xls.InventoryXlsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -368,23 +373,50 @@ public class InventoryService {
         return dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER, entityName).save(entity);
     }
 
+    private Map<Entity, BigDecimal> createReportData(Entity inventoryReport) {
+        DataDefinition dataDefTransfer = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
+                InventoryConstants.MODEL_TRANSFER);
+        List<Entity> transfers = dataDefTransfer
+                .find("where warehouseTo.id = " + Long.toString(inventoryReport.getBelongsToField("warehouse").getId())).list()
+                .getEntities();
+        Collections.sort(transfers, new EntityTransferComparator());
+
+        String warehouseNumber = inventoryReport.getBelongsToField("warehouse").getId().toString();
+        String forDate = ((Date) inventoryReport.getField("inventoryForDate")).toString();
+
+        Map<Entity, BigDecimal> reportData = new HashMap<Entity, BigDecimal>();
+
+        String numberBefore = "";
+        for (Entity transfer : transfers) {
+            String numberNow = transfer.getBelongsToField("product").getStringField("number");
+            if (!numberBefore.equals(numberNow)) {
+                BigDecimal quantity = calculateShouldBe(warehouseNumber,
+                        transfer.getBelongsToField("product").getStringField("number"), forDate);
+                reportData.put(transfer, quantity);
+                numberBefore = numberNow;
+            }
+        }
+
+        return reportData;
+    }
+
     private void generateMaterialReqDocuments(final ComponentState state, final Entity inventoryReport) throws IOException,
             DocumentException {
-
         Entity inventoryWithFileName = updateFileName(inventoryReport,
                 getFullFileName((Date) inventoryReport.getField("date"), inventoryReport.getStringField("name")),
                 InventoryConstants.MODEL_INVENTORY_REPORT);
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_COMPANY).find().uniqueResult();
-        inventoryPdfService.generateDocument(inventoryWithFileName, company, state.getLocale());
-        inventoryXlsService.generateDocument(inventoryWithFileName, company, state.getLocale());
+        Map<Entity, BigDecimal> reportData = createReportData(inventoryReport);
+        inventoryPdfService.generateDocument(inventoryWithFileName, reportData, company, state.getLocale());
+        inventoryXlsService.generateDocument(inventoryWithFileName, reportData, state.getLocale());
     }
 
     public void fillNumberFieldValue(final ViewDefinitionState view) {
         if (view.getComponentByReference("number").getFieldValue() != null) {
             return;
         }
-        numberGeneratorService.generateAndInsertNumber(view, InventoryConstants.PLUGIN_IDENTIFIER, 
-                MODEL_TRANSFER, "form", "number");
+        numberGeneratorService.generateAndInsertNumber(view, InventoryConstants.PLUGIN_IDENTIFIER, MODEL_TRANSFER, "form",
+                "number");
     }
 
     public void fillUnitFieldValue(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
@@ -403,8 +435,7 @@ public class InventoryService {
             unitField.setFieldValue(unit);
             unitField.requestComponentUpdateState();
         }
-        
-        
+
     }
 
 }
