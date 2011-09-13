@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.google.common.collect.Sets;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orderGroups.constants.OrderGroupsConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -74,13 +75,7 @@ public class OrderGroupsService {
         WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference("window");
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
 
-        boolean value = (form.getEntityId() != null);
-
-        Set<String> buttonReferences = new HashSet<String>(Arrays.asList("addManyOrders"));
-
-        for (String reference : buttonReferences) {
-            window.getRibbon().getGroupByName("ordersActions").getItemByName(reference).setEnabled(value);
-        }
+        window.getRibbon().getGroupByName("ordersActions").getItemByName("addManyOrders").setEnabled((form.getEntityId() != null));
     }
 
     /* ****** CUSTOM EVENT LISTENER ****** */
