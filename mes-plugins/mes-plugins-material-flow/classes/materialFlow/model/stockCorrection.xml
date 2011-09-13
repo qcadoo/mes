@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model name="correction" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<model name="stockCorrection" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
@@ -7,7 +7,7 @@
 				<validatesLength max="40" />
 		</string>
 		<datetime name="date" readonly="true" />
-		<belongsTo name="warehouse" model="warehouse" />
+		<belongsTo name="stockAreas" model="stockAreas" />
 		<belongsTo name="product" model="product" plugin="basic"/>
 		<decimal name="shouldBe" persistent="false" required="true">
 		</decimal>

@@ -2,8 +2,8 @@
 
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="corrections" 
-	modelName="correction" 
+	name="stockCorrections" 
+	modelName="stockCorrection" 
 	menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
@@ -12,7 +12,7 @@
 			<component type="grid" name="grid" reference="grid">
 				<option type="column" name="number" fields="number" link="true" width="150" />
 				<option type="column" name="date" fields="date" />
-				<option type="column" name="warehouse" fields="warehouse" />
+				<option type="column" name="stockAreas" fields="stockAreas" />
 				<option type="column" name="product" fields="product"
 				expression="#product['name']" />
 				<option type="column" name="shouldBe" fields="shouldBe" />

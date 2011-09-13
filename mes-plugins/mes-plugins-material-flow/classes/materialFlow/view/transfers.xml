@@ -14,9 +14,9 @@
 				<option type="column" name="type" fields="type" />
 				<option type="column" name="date" fields="date" />
 				<option type="column" name="from" fields="from" 
-				expression="#warehouse['name']" />
+				expression="#stockAreas['name']" />
 				<option type="column" name="to" fields="to" 
-				expression="#warehouse['name']" />
+				expression="#stockAreas['name']" />
 				<option type="column" name="product" fields="product"
 				expression="#product['name']" />
 				<option type="column" name="quantity" fields="quantity" />
@@ -25,7 +25,7 @@
 				<option type="order" column="number" direction="asc" />
 				<option type="searchable" value="number" />
 				<option type="orderable" value="number" />
-				<option type="correspondingView" value="inventory/transferDetails" />
+				<option type="correspondingView" value="materialFlow/transferDetails" />
 				<option type="correspondingComponent" value="form" />
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />

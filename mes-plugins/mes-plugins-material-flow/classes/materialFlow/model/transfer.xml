@@ -9,9 +9,9 @@
 		<enum name="type" values="Movement,Consumption,Production" required="true">
 		</enum>
 		<datetime name="date" readonly="true" />
-		<belongsTo name="from" model="warehouse" >
+		<belongsTo name="from" model="stockAreas" >
 		</belongsTo>
-		<belongsTo name="to" model="warehouse" >
+		<belongsTo name="to" model="stockAreas" >
 		</belongsTo>
 		<belongsTo name="product" model="product" plugin="basic">
 		</belongsTo>
