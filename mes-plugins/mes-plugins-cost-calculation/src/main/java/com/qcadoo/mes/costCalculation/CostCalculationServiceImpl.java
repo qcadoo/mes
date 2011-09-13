@@ -9,6 +9,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
@@ -34,10 +35,15 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         OperationsCostCalculationConstants operationMode = getOperationModeFromField(costCalculation
                 .getField("calculateOperationCostsMode"));
 
+        // clear the previous results
+        for (String fieldName : Sets.newHashSet("totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts")) {
+            costCalculation.setField(fieldName, BigDecimal.ZERO.setScale(3));
+        }
+        
         costCalculation.setField("dateOfCalculation", new Date());
         operationsCostCalculationService.calculateOperationsCost(costCalculation);
         productsCostCalculationService.calculateProductsCost(costCalculation);
-
+        
         if (operationMode == HOURLY) {
             BigDecimal totalMachine = getBigDecimal(costCalculation.getField("totalMachineHourlyCosts"));
             BigDecimal totalLabor = getBigDecimal(costCalculation.getField("totalLaborHourlyCosts"));
