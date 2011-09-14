@@ -149,6 +149,11 @@
 			<artifactId>mes-plugins-order-groups</artifactId>
 			<version>0.4.8-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-production-counting</artifactId>
+			<version>0.4.8-SNAPSHOT</version>
+		</dependency>
 
 		<!-- TODO develop purpose only -->
 		<!--<dependency> <groupId>com.qcadoo.mes</groupId> <artifactId>mes-commercial-plugins-integration-commons</artifactId> 

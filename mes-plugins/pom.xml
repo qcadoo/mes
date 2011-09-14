@@ -42,6 +42,7 @@
         <module>mes-plugins-cost-calculation</module>
         <module>mes-plugins-simple-material-balance</module>
         <module>mes-plugins-order-groups</module>
+        <module>mes-plugins-production-counting</module>
   </modules>
 
 
