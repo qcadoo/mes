@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="simpleMaterialBalanceWarehousesComponentDetails"
-	modelName="simpleMaterialBalanceWarehousesComponent">
+	name="simpleMaterialBalanceStockAreasComponentDetails"
+	modelName="simpleMaterialBalanceStockAreasComponent">
 	
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back, actions.saveBack"/>
 		</ribbon>
-		<component type="form" name="simpleMaterialBalanceWarehousesComponent"
+		<component type="form" name="simpleMaterialBalanceStockAreasComponent"
 			reference="form">
 			<component type="gridLayout" name="gridLayout" columns="1" rows="1">
 				<layoutElement column="1" row="1">
-					<component type="lookup" name="warehouse" field="warehouse">
+					<component type="lookup" name="warehouse" field="stockAreas">
 						<option type="column" name="name" fields="name" link="true"
 							width="200" />
 						<option type="searchable" value="number" />

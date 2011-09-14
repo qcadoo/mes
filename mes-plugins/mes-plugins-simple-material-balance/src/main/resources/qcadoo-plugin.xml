@@ -31,7 +31,7 @@
 			<plugin>orders</plugin>
 		</dependency>
 		<dependency>
-			<plugin>inventory</plugin>
+			<plugin>material-flow</plugin>
 		</dependency>
 		<dependency>
 			<plugin>materialRequirements</plugin>
@@ -43,15 +43,15 @@
 		
 		<model:model model="simpleMaterialBalance" resource="model/simpleMaterialBalance.xml" />
 		<model:model model="simpleMaterialBalanceOrdersComponent" resource="model/simpleMaterialBalanceOrdersComponent.xml" />
-		<model:model model="simpleMaterialBalanceWarehousesComponent" resource="model/simpleMaterialBalanceWarehousesComponent.xml" />
+		<model:model model="simpleMaterialBalanceStockAreasComponent" resource="model/simpleMaterialBalanceStockAreasComponent.xml" />
 		
 		<model:model-field plugin="orders" model="order">
 			<model:hasMany name="simpleMaterialBalance" plugin="simpleMaterialBalance"
 				model="simpleMaterialBalanceOrdersComponent" joinField="order" cascade="none" />
 		</model:model-field>
-		<model:model-field plugin="inventory" model="warehouse">
+		<model:model-field plugin="materialFlow" model="stockAreas">
 			<model:hasMany name="simpleMaterialBalance" plugin="simpleMaterialBalance"
-				model="simpleMaterialBalanceWarehousesComponent" joinField="warehouse" cascade="none" />
+				model="simpleMaterialBalanceStockAreasComponent" joinField="stockAreas" cascade="none" />
 		</model:model-field>
 
 		<menu:menu-category name="reports" />
@@ -62,7 +62,7 @@
 		<view:view resource="view/simpleMaterialBalanceList.xml" />
 		<view:view resource="view/simpleMaterialBalanceDetails.xml" />
 		<view:view resource="view/simpleMaterialBalanceOrdersComponentDetails.xml" />
-		<view:view resource="view/simpleMaterialBalanceWarehousesComponentDetails.xml" />
+		<view:view resource="view/simpleMaterialBalanceStockAreasComponentDetails.xml" />
 		
 		<view:resource uri="public/**/*" />
 		

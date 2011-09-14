@@ -12,7 +12,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.inventory.InventoryService;
+import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.materialRequirements.internal.MaterialRequirementReportDataServiceImpl;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
@@ -27,7 +27,7 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
     private MaterialRequirementReportDataServiceImpl materialRequirementReportDataService;
 
     @Autowired
-    private InventoryService inventoryService;
+    private MaterialFlowService materialFlowService;
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -64,7 +64,7 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
         Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField("onlyComponents");
         Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForMaterialRequirementProducts(
                 orders, onlyComponents);
-        List<Entity> warehouses = simpleMaterialBalance.getHasManyField("warehouses");
+        List<Entity> stockAreass = simpleMaterialBalance.getHasManyField("stockAreas");
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
@@ -73,8 +73,8 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
             row.createCell(2).setCellValue(product.getKey().getField("unit").toString());
             row.createCell(3).setCellValue(getDecimalFormat().format(product.getValue()));
             BigDecimal available = BigDecimal.ZERO;
-            for (Entity warehouse : warehouses) {
-                available = available.add(inventoryService.calculateShouldBe(warehouse.getBelongsToField("warehouse").getId()
+            for (Entity stockAreas : stockAreass) {
+                available = available.add(materialFlowService.calculateShouldBe(stockAreas.getBelongsToField("stockAreas").getId()
                         .toString(), product.getKey().getId().toString(), simpleMaterialBalance.getField("date").toString()));
             }
             row.createCell(4).setCellValue(getDecimalFormat().format(available));

@@ -13,7 +13,7 @@
 		<string name="fileName" />
 		<hasMany name="orders" model="simpleMaterialBalanceOrdersComponent"
 			joinField="simpleMaterialBalance" cascade="delete" copyable="true" />
-		<hasMany name="warehouses" model="simpleMaterialBalanceWarehousesComponent"
+		<hasMany name="stockAreas" model="simpleMaterialBalanceStockAreasComponent"
 			joinField="simpleMaterialBalance" cascade="delete" copyable="true" />
 	</fields>
 	<hooks>

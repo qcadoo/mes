@@ -5,13 +5,13 @@ import java.util.Comparator;
 
 import com.qcadoo.model.api.Entity;
 
-public class EntityWarehouseNumberComparator implements Comparator<Entity>, Serializable {
+public class EntityStockAreasNumberComparator implements Comparator<Entity>, Serializable {
 
     private static final long serialVersionUID = 1784214465897023057L;
 
     @Override
     public final int compare(final Entity o1, final Entity o2) {
-        return o1.getBelongsToField("warehouse").getStringField("number")
-                .compareTo(o2.getBelongsToField("warehouse").getStringField("number"));
+        return o1.getBelongsToField("stockAreas").getStringField("number")
+                .compareTo(o2.getBelongsToField("stockAreas").getStringField("number"));
     }
 }
