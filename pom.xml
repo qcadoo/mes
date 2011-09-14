@@ -5,7 +5,7 @@
 
 	<groupId>com.qcadoo.mes</groupId>
 	<artifactId>mes</artifactId>
-	<version>0.4.7</version>
+	<version>0.4.8-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Qcadoo MES</name>
@@ -34,9 +34,9 @@
 	  </modules>	
 
 	<properties>
-		<qcadoo.version>0.4.7</qcadoo.version>
-		<qcadoo.saas.version>0.4.7</qcadoo.saas.version>
-		<qcadoo.maven.plugin.version>0.4.7</qcadoo.maven.plugin.version>
+		<qcadoo.version>0.4.8-SNAPSHOT</qcadoo.version>
+		<qcadoo.saas.version>0.4.8-SNAPSHOT</qcadoo.saas.version>
+		<qcadoo.maven.plugin.version>0.4.8-SNAPSHOT</qcadoo.maven.plugin.version>
 		<slf4j.version>1.6.1</slf4j.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<profile.name>default</profile.name>

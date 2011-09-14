@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-        <artifactId>mes-plugins</artifactId>
-        <groupId>com.qcadoo.mes</groupId>
-        <version>0.4.7</version>
-    </parent>
+		<groupId>com.qcadoo.mes</groupId>
+		<artifactId>mes-plugins</artifactId>
+		<version>0.4.8-SNAPSHOT</version>
+	</parent>
 
 	<artifactId>mes-plugins-simple-material-balance</artifactId>
-	<groupId>com.qcadoo.mes</groupId>
+	<packaging>qcadoo-plugin</packaging>
 	<name>Qcadoo MES :: Plugins :: Simple material balance</name>
 
 	<build>
@@ -26,23 +26,13 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-basic</artifactId>
-			<version>0.4.7</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-orders</artifactId>
-			<version>0.4.7</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-inventory</artifactId>
-			<version>0.4.7</version>
+			<version>0.4.8-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-material-requirements</artifactId>
-			<version>0.4.7</version>
+			<version>0.4.8-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

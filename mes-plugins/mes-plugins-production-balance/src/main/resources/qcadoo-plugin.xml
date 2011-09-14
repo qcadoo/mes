@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="productionBalance" version="0.4.6"
+<plugin plugin="productionBalance" version="0.4.7"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:model="http://schema.qcadoo.org/modules/model"

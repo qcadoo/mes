@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="samples" version="0.4.1"
+<plugin plugin="samples" version="0.4.7"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
