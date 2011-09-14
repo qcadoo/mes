@@ -40,6 +40,27 @@
 		<menu:menu-item name="productionCounting" category="productionCounting"
 			view="productionCountingList" />
 
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="registerQuantityInProduct" default="true" required="true" />
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="registerQuantityOutProduct" default="true" required="true"/>
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="registerProductionTime" default="true" required="true"/>
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic" >
+			<model:boolean name="allowedPartial"  default="false" required="true"/>
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="blockClosing"  default="false" required="true"/>
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="autoCloseOrder"  default="false" required="true"/>
+		</model:model-field>
+		
+		<view:view-tab resource="view/tabExtensions/parameters.xml"/>
+
 		<view:view resource="view/productionCountingList.xml" />
 		<view:view resource="view/productionCountingDetails.xml" />
 		
