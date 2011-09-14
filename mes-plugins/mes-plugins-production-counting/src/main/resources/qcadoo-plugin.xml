@@ -34,6 +34,8 @@
 		<localization:translation path="locales" />
 		
 		<model:model model="productionRecord" resource="model/productionRecord.xml" />
+		<model:model model="recordOperationProductInComponent" resource="model/recordOperationProductInComponent.xml" />
+		<model:model model="recordOperationProductOutComponent" resource="model/recordOperationProductOutComponent.xml" />
 		
 		<menu:menu-category name="orders" />
 		<menu:menu-item name="productionCounting" category="orders" view="productionRecordsList" />

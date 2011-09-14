@@ -11,7 +11,7 @@
 						<component type="input" name="number" field="number" reference="number" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="textarea" name="name" field="name" hasDescription="true" />
+<!--						<component type="textarea" name="name" field="name" hasDescription="true" />-->
 					</layoutElement>				
 				</component>
 				<option type="header" value="true"/>
