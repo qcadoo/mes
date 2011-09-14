@@ -1,16 +1,16 @@
-<view name="productionCountingList" modelName="productionCounting" menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view name="productionRecordsList" modelName="productionRecord" menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardGridTemplate" />
 		</ribbon>
-		<component type="grid" name="productionCountingList" reference="grid">
+		<component type="grid" name="productionRecordsList" reference="grid">
 			<option type="column" name="number" fields="number" link="true"
 				width="150" />
 			<option type="column" name="name" fields="name" link="true"
 				width="300" />
 			<option type="order" column="name" direction="asc" />
-			<option type="correspondingView" value="productionCounting/productionCountingDetails" />
+			<option type="correspondingView" value="productionCounting/productionRecordDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="searchable" value="name,number" />
 			<option type="orderable" value="name,number" />
