@@ -28,7 +28,7 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="record" model="productionRecord" required="true" />
+		<belongsTo name="productionRecord" model="productionRecord" required="true" />
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<decimal name="usedQuantity">

@@ -7,9 +7,9 @@
 		<component type="grid" name="productionRecordsList" reference="grid">
 			<option type="column" name="number" fields="number" link="true"
 				width="150" />
-			<option type="column" name="name" fields="name" link="true"
-				width="300" />
-			<option type="order" column="name" direction="asc" />
+<!--			<option type="column" name="name" fields="name" link="true"-->
+<!--				width="300" />-->
+			<option type="order" column="number" direction="asc" />
 			<option type="correspondingView" value="productionCounting/productionRecordDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="searchable" value="name,number" />
