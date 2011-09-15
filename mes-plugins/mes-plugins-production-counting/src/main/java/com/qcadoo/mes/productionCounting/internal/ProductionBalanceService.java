@@ -15,6 +15,7 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
 import com.qcadoo.model.api.DataDefinition;
@@ -24,6 +25,7 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
@@ -46,6 +48,24 @@ public class ProductionBalanceService {
 
     @Value("${reportPath}")
     private String path;
+
+    public void fillProductWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (!(state instanceof FieldComponent)) {
+            return;
+        }
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
+        if (orderLookup.getFieldValue() == null) {
+            return;
+        }
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                (Long) orderLookup.getFieldValue());
+        if (order == null) {
+            return;
+        }
+        FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference("product");
+        productField.setFieldValue(order.getBelongsToField("product").getId());
+    }
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("date", null);
