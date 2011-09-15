@@ -1,1 +1,60 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<view name="productionBalanceDetails" modelName="productionBalance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardFormTemplate" />
+		</ribbon>
+		<windowTab name="mainTab">
+			<component type="form" name="productionBalanceDetails" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
+					<layoutElement column="1" row="1">
+						<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="lookup" name="order" field="order" reference="order">
+							<option type="column" name="name" fields="name" link="true" />
+							<option type="required" value="true" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="product" field="product" reference="product" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="textarea" name="name" field="name" />
+					</layoutElement>				
+					<layoutElement column="1" row="5">
+						<component type="input" name="date" reference="date" field="date" defaultEnabled="false"/>
+					</layoutElement>
+					<layoutElement column="1" row="6">
+						<component type="input" name="worker" reference="worker" field="worker" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="2">
+						<component type="input" name="recordsNumber" reference="recordsNumber" field="recordsNumber" defaultEnabled="false"/>
+					</layoutElement>
+					<layoutElement column="2" row="3" height="4">
+						<component type="textarea" name="description" field="description" />
+					</layoutElement>				
+				</component>
+				<option type="header" value="true"/>
+				<option type="expression" value="#name" />
+			</component>
+		</windowTab>
+		<windowTab name="inputProducts">
+		
+		</windowTab>
+		<windowTab name="outputProducts">
+		
+		</windowTab>
+		<windowTab name="productionTime">
+		
+		</windowTab>
+	</component>
+</view>

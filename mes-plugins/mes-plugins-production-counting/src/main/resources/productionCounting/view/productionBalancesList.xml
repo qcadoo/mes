@@ -1,1 +1,27 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<view name="productionBalancesList" modelName="productionBalance" menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<template name="standardGridTemplate" />
+		</ribbon>
+		<component type="grid" name="productionBalancesList" reference="grid">
+			<option type="column" name="name" fields="name" link="true" />
+			<option type="column" name="order" fields="order" link="false" width="250" expression="#order==null?'N/A':#order['name']" />
+			<option type="column" name="product" fields="product" link="false" width="250" expression="#product['name']" />
+			<option type="column" name="generated" fields="generated" link="false" width="150" />
+			<option type="column" name="date" fields="date" link="false" width="175" />
+			<option type="column" name="worker" fields="worker" link="false" width="150" />
+			<option type="order" column="order" direction="asc" />
+			<option type="correspondingView" value="productionCounting/productionBalanceDetails" />
+			<option type="correspondingComponent" value="form" />
+			<option type="searchable" value="name,number" />
+			<option type="orderable" value="name,number" />
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+		</component>
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+	<hooks>
+	</hooks>
+</view>

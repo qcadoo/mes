@@ -34,7 +34,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         addPanel(document, productionBalance, locale);
         addInputProductsBalance(document, productionBalance, locale);
         addOutputProductsBalance(document, productionBalance, locale);
-        addOperationsTimeBalance(document, productionBalance, locale);
+        machineTimeBalance(document, productionBalance, locale);
+        laborTimeBalance(document, productionBalance, locale);
     }
 
     private void addPanel(final Document document, final Entity productionBalance, final Locale locale) throws DocumentException {
@@ -100,10 +101,35 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         document.add(table);
     }
 
-    private void addOperationsTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
+    private void machineTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(getTranslationService().translate("productionCounting.productionBalance.report.paragraph3",
+                locale), PdfUtil.getArialBold11Dark()));
+
+        List<String> operationsTimeTableHeader = new ArrayList<String>();
+        operationsTimeTableHeader.add(getTranslationService().translate(
+                "productionCounting.productionBalance.report.columnHeader.opNumber", locale));
+        operationsTimeTableHeader.add(getTranslationService().translate(
+                "productionCounting.productionBalance.report.columnHeader.opNamer", locale));
+        operationsTimeTableHeader.add(getTranslationService().translate(
+                "productionCounting.productionBalance.report.columnHeader.level", locale));
+        operationsTimeTableHeader.add(getTranslationService().translate(
+                "productionCounting.productionBalance.report.columnHeader.plannedDuration", locale));
+        operationsTimeTableHeader.add(getTranslationService().translate(
+                "productionCounting.productionBalance.report.columnHeader.registeredTime", locale));
+        operationsTimeTableHeader.add(getTranslationService().translate(
+                "productionCounting.productionBalance.report.columnHeader.balance", locale));
+
+        PdfPTable table = PdfUtil.createTableWithHeader(7, operationsTimeTableHeader, false);
+
+        document.add(table);
+    }
+
+    private void laborTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
+            throws DocumentException {
+        document.add(Chunk.NEWLINE);
+        document.add(new Paragraph(getTranslationService().translate("productionCounting.productionBalance.report.paragraph4",
                 locale), PdfUtil.getArialBold11Dark()));
 
         List<String> operationsTimeTableHeader = new ArrayList<String>();

@@ -11,6 +11,7 @@
 		</string>
 		<datetime name="date" />
 		<string name="worker" />
+		<integer name="recordsNumber" />
 		<string name="description" />
 		<string name="fileName" />
 	</fields>
