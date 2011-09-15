@@ -44,27 +44,29 @@
 		<view:view resource="view/productionRecordDetails.xml" />
 
 		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="registerQuantityInProduct"  />
+			<model:boolean name="registerQuantityInProduct" />
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="registerQuantityOutProduct"/>
+			<model:boolean name="registerQuantityOutProduct" />
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="registerProductionTime"/>
+			<model:boolean name="registerProductionTime" />
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="allowedPartial"  />
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic" >
-			<model:boolean name="allowedPartial" />
+			<model:boolean name="blockClosing"  />
 		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="blockClosing" />
-		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="autoCloseOrder" />
+		<model:model-field model="parameter" plugin="basic" >
+			<model:boolean name="autoCloseOrder"  />
 		</model:model-field>
 		
-		<view:view-tab resource="view/tabExtensions/parameters.xml"/>
+		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		
 		<view:resource uri="public/**/*" />
+		
+		<view:view-hook plugin="basic" view="parameters" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService" method="setDefaultValue" />
 		
 	</modules>
 

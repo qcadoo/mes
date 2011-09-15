@@ -1,12 +1,21 @@
 package com.qcadoo.mes.productionCounting.internal;
 
-import com.qcadoo.view.api.ComponentState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
+@Service
 public class ProductionCountingService {
 
-    public void setDefaultValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    @Autowired
+    DataDefinitionService dataDefinitionService;
+
+    public void setDefaultValue(final ViewDefinitionState viewDefinitionState) {
         FieldComponent registerQuantityInProduct = (FieldComponent) viewDefinitionState
                 .getComponentByReference("registerQuantityInProduct");
         FieldComponent registerQuantityOutProduct = (FieldComponent) viewDefinitionState
@@ -14,12 +23,20 @@ public class ProductionCountingService {
         FieldComponent registerProductionTime = (FieldComponent) viewDefinitionState
                 .getComponentByReference("registerProductionTime");
 
-        registerQuantityInProduct.setRequired(true);
-        registerQuantityInProduct.setFieldValue(true);
-        registerQuantityOutProduct.setRequired(true);
-        registerQuantityOutProduct.setFieldValue(true);
-        registerProductionTime.setRequired(true);
-        registerProductionTime.setFieldValue(true);
+        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).get(
+                (long) 1);
 
+        if (parameter == null || parameter.getField("registerQuantityInProduct") == null) {
+            registerQuantityInProduct.setFieldValue(true);
+            registerQuantityInProduct.requestComponentUpdateState();
+        }
+        if (parameter == null || parameter.getField("registerQuantityOutProduct") == null) {
+            registerQuantityOutProduct.setFieldValue(true);
+            registerQuantityOutProduct.requestComponentUpdateState();
+        }
+        if (parameter == null || parameter.getField("registerProductionTime") == null) {
+            registerProductionTime.setFieldValue(true);
+            registerProductionTime.requestComponentUpdateState();
+        }
     }
 }

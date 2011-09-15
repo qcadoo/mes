@@ -8,32 +8,28 @@
 			columns="2" rows="7">
 			<layoutElement column="1" row="1">
 				<component type="checkbox" name="registerQuantityInProduct"
-					reference="registerQuantityInProduct" field="registerQuantityInProduct" />
+					reference="registerQuantityInProduct" field="#{form}.registerQuantityInProduct" />
 			</layoutElement>
 			<layoutElement column="1" row="2">
 				<component type="checkbox" name="registerQuantityOutProduct"
-					reference="registerQuantityOutProduct" field="registerQuantityOutProduct" />
+					reference="registerQuantityOutProduct" field="#{form}.registerQuantityOutProduct" />
 			</layoutElement>
 			<layoutElement column="1" row="3">
 				<component type="checkbox" name="registerProductionTime"
-					reference="registerProductionTime" field="registerProductionTime" />
+					reference="registerProductionTime" field="#{form}.registerProductionTime" />
 			</layoutElement>
 			<layoutElement column="1" row="5">
 				<component type="checkbox" name="allowedPartial"
-					reference="allowedPartial" field="allowedPartial" />
+					reference="allowedPartial" field="#{form}.allowedPartial" />
 			</layoutElement>
 			<layoutElement column="1" row="6">
 				<component type="checkbox" name="blockClosing" reference="blockClosing"
-					field="blockClosing" />
+					field="#{form}.blockClosing" />
 			</layoutElement>
 			<layoutElement column="1" row="7">
 				<component type="checkbox" name="autoCloseOrder"
-					reference="autoCloseOrder" field="autoCloseOrder" />
+					reference="autoCloseOrder" field="#{form}.autoCloseOrder" />
 			</layoutElement>
 		</component>
-	<hooks>
-		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService"
-				method="setDefaultValue"/>
-	</hooks>
 	</windowTab>
 </windowTabExtension>
