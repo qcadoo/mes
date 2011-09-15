@@ -3,6 +3,11 @@
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardGridTemplate" />
+			<group name="export">
+				<bigButton name="pdf" icon="pdfIcon24.png"
+					action="#{grid}.fireEvent(printProductionBalance,pdf);" state="disabled"
+					message="qcadooView.message.noRecordSelected" />
+			</group>
 		</ribbon>
 		<component type="grid" name="productionBalancesList" reference="grid">
 			<option type="column" name="name" fields="name" link="true" />
@@ -18,6 +23,28 @@
 			<option type="orderable" value="name,number" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
+			<listener event="printProductionBalance"
+				class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService" method="printProductionBalance" />
+			<script>
+				<![CDATA[
+					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
+					
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								pdfRibbonItem.disable();
+							} else if (selectedEntitiesArray.length > 1) {
+								pdfRibbonItem.disable("#{translate(moreThanOneRecordSelected)}");	
+							} else if (selectedEntitiesArray[0].fields.generated == '0') {
+								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");								
+							} else {
+								pdfRibbonItem.enable();
+							}
+						}
+					}
+					this.addOnChangeListener(listener);
+				]]>
+			</script>
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
