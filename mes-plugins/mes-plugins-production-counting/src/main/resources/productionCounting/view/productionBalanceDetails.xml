@@ -20,10 +20,20 @@
 							<option type="orderable" value="name" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
+								method="fillProductWhenOrderChanged" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="input" name="product" field="product" reference="product" defaultEnabled="false" />
+						<component type="lookup" name="product" field="product" reference="product" defaultEnabled="false">
+							<option type="column" name="name" fields="name" link="true" />
+							<option type="required" value="true" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+							<option type="expression" value="#name" />
+							<option type="fieldCode" value="number" />
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="textarea" name="name" field="name" />

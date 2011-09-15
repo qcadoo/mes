@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<boolean name="generated" />
-		<belongsTo name="order" plugin="orders" model="order" />
-		<belongsTo name="product" plugin="basic" model="product" />
+		<belongsTo name="order" plugin="orders" model="order" required="true"/>
+		<belongsTo name="product" plugin="basic" model="product"/>
 		<string name="name" required="true">
 			<validatesLength max="255" />
 		</string>
