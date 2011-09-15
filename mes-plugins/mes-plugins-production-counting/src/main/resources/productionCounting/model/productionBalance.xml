@@ -16,6 +16,8 @@
 		<string name="fileName" />
 	</fields>
 	<hooks>
+		<onCopy class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
+			method="clearGeneratedOnCopy" />
 	</hooks>
 	<identifier expression="#name" />
 </model>
