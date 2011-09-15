@@ -92,7 +92,7 @@ public class NormService {
         Entity formEntity = ((FormComponent) view.getComponentByReference("form")).getEntity();
 
         // we can pass units only to technology level operations
-        if (!"technologyOperationComponent".equals(formEntity.getDataDefinition().getName())) {
+        if (formEntity.getId() == null || !"technologyOperationComponent".equals(formEntity.getDataDefinition().getName())) {
             return;
         }
 
@@ -114,16 +114,18 @@ public class NormService {
     public void copyTimeNormsFromOperation(final ViewDefinitionState view, final ComponentState operationLookupState,
             final String[] args) {
 
-        if (operationLookupState.getFieldValue() == null) {
-            view.getComponentByReference("form")
-                    .addMessage(
-                            translationService.translate("productionTimeNorms.messages.info.missingOperationReference",
-                                    view.getLocale()), INFO);
+        ComponentState operationLookup = view.getComponentByReference("operation");
+        if (operationLookup.getFieldValue() == null) {
+            if (!"operation".equals(operationLookupState.getName())) {
+                view.getComponentByReference("form").addMessage(
+                        translationService.translate("productionTimeNorms.messages.info.missingOperationReference",
+                                view.getLocale()), INFO);
+            }
             return;
         }
 
         Entity operation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION).get((Long) operationLookupState.getFieldValue());
+                TechnologiesConstants.MODEL_OPERATION).get((Long) operationLookup.getFieldValue());
 
         applyCostNormsFromGivenSource(view, operation, FIELDS_OPERATION);
     }
