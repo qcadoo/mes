@@ -121,7 +121,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         operationsTimeTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.balance", locale));
 
-        PdfPTable table = PdfUtil.createTableWithHeader(7, operationsTimeTableHeader, false);
+        PdfPTable table = PdfUtil.createTableWithHeader(6, operationsTimeTableHeader, false);
 
         document.add(table);
     }
@@ -146,7 +146,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         operationsTimeTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.balance", locale));
 
-        PdfPTable table = PdfUtil.createTableWithHeader(7, operationsTimeTableHeader, false);
+        PdfPTable table = PdfUtil.createTableWithHeader(6, operationsTimeTableHeader, false);
 
         document.add(table);
     }
