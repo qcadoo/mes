@@ -48,7 +48,7 @@ public class ProductionCountingService {
             for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
                     "registerProductionTime")) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
-                if ((order == null || order.getField(componentReference) == null) && component.getFieldValue() == null) {
+                if (order == null || order.getField(componentReference) == null) {
                     component.setFieldValue(true);
                     component.requestComponentUpdateState();
                 }
