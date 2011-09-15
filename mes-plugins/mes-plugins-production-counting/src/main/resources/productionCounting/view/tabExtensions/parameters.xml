@@ -31,6 +31,9 @@
 					reference="autoCloseOrder" field="autoCloseOrder" />
 			</layoutElement>
 		</component>
-
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService"
+				method="setDefaultValue"/>
+	</hooks>
 	</windowTab>
 </windowTabExtension>

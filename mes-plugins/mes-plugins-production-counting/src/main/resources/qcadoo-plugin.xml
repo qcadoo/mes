@@ -42,22 +42,22 @@
 		<view:view resource="view/productionRecordDetails.xml" />
 
 		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="registerQuantityInProduct" required="true" />
+			<model:boolean name="registerQuantityInProduct"  />
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="registerQuantityOutProduct" required="true"/>
+			<model:boolean name="registerQuantityOutProduct"/>
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="registerProductionTime" required="true"/>
+			<model:boolean name="registerProductionTime"/>
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic" >
-			<model:boolean name="allowedPartial" required="true"/>
+			<model:boolean name="allowedPartial" />
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="blockClosing" required="true"/>
+			<model:boolean name="blockClosing" />
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="autoCloseOrder"  required="true"/>
+			<model:boolean name="autoCloseOrder" />
 		</model:model-field>
 		
 		<view:view-tab resource="view/tabExtensions/parameters.xml"/>
