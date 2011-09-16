@@ -1,6 +1,6 @@
 package com.qcadoo.mes.productionCounting.internal.constants;
 
-public class ProductionCountingConstants {
+public interface ProductionCountingConstants {
 
     public static final String PLUGIN_IDENTIFIER = "productionCounting";
 

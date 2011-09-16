@@ -28,6 +28,10 @@
 			<plugin>orders</plugin>
 			<version>[0.4.1</version>
 		</dependency>
+		<dependency>
+			<plugin>materialRequirements</plugin>
+			<version>[0.4.1</version>
+		</dependency>
 	</dependencies>
 
 	<modules>
