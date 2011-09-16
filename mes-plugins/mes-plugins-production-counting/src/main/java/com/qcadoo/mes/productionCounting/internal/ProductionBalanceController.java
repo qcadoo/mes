@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionCounting.internal;
 
+import java.util.Date;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,7 +33,7 @@ public class ProductionBalanceController {
         DataDefinition dataDefinition = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_PRODUCTION_BALANCE);
         Entity productionBalance = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(productionBalance,
+        ReportUtil.sentTranslatedFileName((Date) productionBalance.getField("date"),
                 translationService.translate("productionCounting.productionBalance.report.fileName", locale), "",
                 PdfUtil.PDF_EXTENSION, response);
         ReportUtil.sentFileAsAttachement(productionBalance.getStringField("fileName") + PdfUtil.PDF_EXTENSION,
