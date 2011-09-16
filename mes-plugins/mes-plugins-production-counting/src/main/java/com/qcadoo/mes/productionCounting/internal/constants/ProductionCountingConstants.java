@@ -21,4 +21,8 @@ public interface ProductionCountingConstants {
     public static final String VIEW_PRODUCTION_BALANCES_LIST = "productionBalancesList";
 
     public static final String VIEW_PRODUCTION_BALANCE_DETAILS = "productionBalanceDetails";
+
+    public static final String VIEW_RECORD_OPERATION_PRODUCT_IN_COMPONENT_DETAILS = "recordOperationProductInComponentDetails";
+
+    public static final String VIEW_RECORD_OPERATION_PRODUCT_OUT_COMPONENT_DETAILS = "recordOperationProductOutComponentDetails";
 }

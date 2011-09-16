@@ -48,7 +48,9 @@
 		<datetime name="creationTime" />
 
 		<integer name="machineTime" />
+		<integer name="machineTimeBalance" />
 		<integer name="laborTime" />
+		<integer name="laborTimeBalance" />
 	</fields>
 	<hooks />
 	<identifier expression="#number" />
