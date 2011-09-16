@@ -1,25 +1,29 @@
 package com.qcadoo.mes.productionCounting.internal;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.Arrays;
+
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchDisjunction;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class ProductionCountingService {
@@ -80,59 +84,98 @@ public class ProductionCountingService {
     public void setProductBelongsToOperation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
 
-        // TODO
+        // TODO ALBR
     }
 
-    public void updateUsedProductsForOrder(final Entity order) {
+    public void enabledOrDisabledOperationField(final ViewDefinitionState viewDefinitionState,
+            final ComponentState componentState, final String[] args) {
 
-        List<Entity> orderList = Arrays.asList(order);
-
-        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(
-                orderList, true);
-
-        List<Entity> usedproducts = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
-
-        for (Entry<Entity, BigDecimal> product : products.entrySet()) {
-            Entity found = null;
-
-            for (Entity usedproduct : usedproducts) {
-                if (usedproduct.getBelongsToField("product").equals(product.getKey())) {
-                    found = usedproduct;
-                    break;
-                }
+        ComponentState orderLookup = (ComponentState) viewDefinitionState.getComponentByReference("order");
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                (Long) orderLookup.getFieldValue());
+        if (order != null) {
+            String typeOfProductionRecording = (String) order.getField("typeOfProductionRecording");
+            if ("02cumulated".equals(typeOfProductionRecording)) {
+                setComponentVisibleCumulated(viewDefinitionState);
+            } else if ("03forEach".equals(typeOfProductionRecording)) {
+                setComponentVisibleForEach(viewDefinitionState);
             }
+        } else {
+            Log.debug("order is null!!");
+        }
+    }
 
-            if (found == null) {
-                Entity newEntry = dataDefinitionService.get("usedProducts", "usedProducts").create();
-                newEntry.setField("order", order);
-                newEntry.setField("product", product.getKey());
-                newEntry.setField("plannedQuantity", product.getValue());
-                dataDefinitionService.get("usedProducts", "usedProducts").save(newEntry);
-            } else {
-                BigDecimal currentPlannedQuantity = (BigDecimal) found.getField("plannedQuantity");
-                if (currentPlannedQuantity != product.getValue()) {
-                    found.setField("plannedQuantity", product.getValue());
-                    dataDefinitionService.get("usedProducts", "usedProducts").save(found);
-                }
-            }
+    private void setComponentVisibleCumulated(final ViewDefinitionState viewDefinitionState) {
+        FieldComponent operation = (FieldComponent) viewDefinitionState.getComponentByReference("orderOperationComponent");
+        ComponentState borderLayoutConsumedTimeCumulated = (ComponentState) viewDefinitionState
+                .getComponentByReference("borderLayoutConsumedTimeCumulated");
+        fillInProductsGridWhenOrderCumulated(viewDefinitionState);
+        fillOutProductsGridWhenOrderCumulated(viewDefinitionState);
+        operation.setVisible(false);
+        borderLayoutConsumedTimeCumulated.setVisible(true);
+    }
+
+    public void getProductInAndProductOut(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
+            final String[] args) {
+
+    }
+
+    private void fillInProductsGridWhenOrderCumulated(final ViewDefinitionState viewDefinitionState) {
+        checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
+        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("recordOperationProductInComponent");
+        ComponentState orderLookup = (ComponentState) viewDefinitionState.getComponentByReference("order");
+        Long orderId = (Long) orderLookup.getFieldValue();
+        if (orderId == null || grid == null) {
+            return;
+        }
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
+        Entity technology = order.getBelongsToField("technology");
+
+        DataDefinition dd = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
+
+        SearchDisjunction disjunction = SearchRestrictions.disjunction();
+        for (Entity operationComponent : technology.getTreeField("operationComponents")) {
+            disjunction.add(SearchRestrictions.belongsTo("operationComponent", operationComponent));
         }
 
-        usedproducts = dataDefinitionService.get("usedProducts", "usedProducts").find()
-                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
-        for (Entity usedproduct : usedproducts) {
-            boolean found = false;
-            for (Entry<Entity, BigDecimal> product : products.entrySet()) {
-                if (usedproduct.getBelongsToField("product").equals(product.getKey())) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                dataDefinitionService.get("usedProducts", "usedProducts").delete(usedproduct.getId());
-            }
+        SearchResult searchResult = dd.find().add(disjunction).createAlias("product", "product")
+                .addOrder(SearchOrders.asc("product.name")).list();
+
+        grid.setEntities(searchResult.getEntities());
+    }
+
+    private void fillOutProductsGridWhenOrderCumulated(final ViewDefinitionState viewDefinitionState) {
+        checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
+        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("recordOperationProductOutComponent");
+        ComponentState orderLookup = (ComponentState) viewDefinitionState.getComponentByReference("order");
+        Long orderId = (Long) orderLookup.getFieldValue();
+        if (orderId == null || grid == null) {
+            return;
         }
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
+        Entity technology = order.getBelongsToField("technology");
+
+        DataDefinition dd = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
+
+        SearchDisjunction disjunction = SearchRestrictions.disjunction();
+        for (Entity operationComponent : technology.getTreeField("operationComponents")) {
+            disjunction.add(SearchRestrictions.belongsTo("operationComponent", operationComponent));
+        }
+
+        SearchResult searchResult = dd.find().add(disjunction).createAlias("product", "product")
+                .addOrder(SearchOrders.asc("product.name")).list();
+
+        grid.setEntities(searchResult.getEntities());
+    }
+
+    private void setComponentVisibleForEach(final ViewDefinitionState viewDefinitionState) {
+        ComponentState borderLayoutConsumedTimeCumulated = (ComponentState) viewDefinitionState
+                .getComponentByReference("borderLayoutConsumedTimeForEach");
+        borderLayoutConsumedTimeCumulated.setVisible(true);
+        // fillInProductsGridWhenOrderForEach(viewDefinitionState);
+        // fillOutProductsGridWhenOrderForEach(viewDefinitionState);
 
     }
 }
