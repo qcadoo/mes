@@ -150,7 +150,7 @@
 			view="orderOperationComponentDetails" class="com.qcadoo.mes.productionTimeNorms.NormService"
 			method="copyTimeNormsFromTechnology" />
 
-		<view:view-listener component="operation"
+		<view:view-listener component="form"
 			event="copyTimeNormsFromOperation" plugin="technologies"
 			view="technologyOperationComponentDetails" class="com.qcadoo.mes.productionTimeNorms.NormService"
 			method="copyTimeNormsFromOperation" />

@@ -50,7 +50,7 @@ public class CostNormsForOperationService {
 
     @Autowired
     private TranslationService translationService;
-    
+
     @Autowired
     private CurrencyService currencyService;
 
@@ -58,14 +58,17 @@ public class CostNormsForOperationService {
 
     public void copyCostValuesFromOperation(final ViewDefinitionState view, final ComponentState operationLookupState,
             final String[] args) {
-        if (operationLookupState.getFieldValue() == null) {
-            view.getComponentByReference("form").addMessage(
-                    translationService.translate("costNormsForOperation.messages.info.missingOperationReference",
-                            view.getLocale()), INFO);
+        ComponentState operationLookup = view.getComponentByReference("operation");
+        if (operationLookup.getFieldValue() == null) {
+            if (!"operation".equals(operationLookupState.getName())) {
+                view.getComponentByReference("form").addMessage(
+                        translationService.translate("costNormsForOperation.messages.info.missingOperationReference",
+                                view.getLocale()), INFO);
+            }
             return;
         }
         Entity operation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION).get((Long) operationLookupState.getFieldValue());
+                TechnologiesConstants.MODEL_OPERATION).get((Long) operationLookup.getFieldValue());
         applyCostNormsFromGivenSource(view, operation);
     }
 
@@ -86,7 +89,8 @@ public class CostNormsForOperationService {
     public void fillCurrencyFields(final ViewDefinitionState view) {
         String currencyStringCode = currencyService.getCurrencyAlphabeticCode();
         FieldComponent component = null;
-        for (String componentReference : Sets.newHashSet("pieceworkCostCURRENCY", "laborHourlyCostCURRENCY", "machineHourlyCostCURRENCY")) {
+        for (String componentReference : Sets.newHashSet("pieceworkCostCURRENCY", "laborHourlyCostCURRENCY",
+                "machineHourlyCostCURRENCY")) {
             component = (FieldComponent) view.getComponentByReference(componentReference);
             if (component == null) {
                 continue;
@@ -95,7 +99,7 @@ public class CostNormsForOperationService {
             component.requestComponentUpdateState();
         }
     }
-    
+
     private void applyCostNormsFromGivenSource(final ViewDefinitionState view, final Entity source) {
         checkArgument(source != null, "source entity is null");
         FieldComponent component = null;

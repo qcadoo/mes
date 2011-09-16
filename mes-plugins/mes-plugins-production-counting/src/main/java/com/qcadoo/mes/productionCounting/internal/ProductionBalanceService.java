@@ -15,6 +15,7 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
 import com.qcadoo.model.api.DataDefinition;
@@ -24,8 +25,8 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
@@ -47,6 +48,24 @@ public class ProductionBalanceService {
     @Value("${reportPath}")
     private String path;
 
+    public void fillProductWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (!(state instanceof FieldComponent)) {
+            return;
+        }
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
+        if (orderLookup.getFieldValue() == null) {
+            return;
+        }
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                (Long) orderLookup.getFieldValue());
+        if (order == null) {
+            return;
+        }
+        FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference("product");
+        productField.setFieldValue(order.getBelongsToField("product").getId());
+    }
+
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("date", null);
         entity.setField("generated", false);
@@ -57,11 +76,6 @@ public class ProductionBalanceService {
 
     public void setGenerateButtonState(final ViewDefinitionState state) {
         setGenerateButtonState(state, state.getLocale(), ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_BALANCE);
-    }
-
-    public void setGridGenerateButtonState(final ViewDefinitionState state) {
-        setGridGenerateButtonState(state, state.getLocale(), ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_PRODUCTION_BALANCE);
     }
 
@@ -97,38 +111,6 @@ public class ProductionBalanceService {
 
         }
         generateButton.requestUpdate(true);
-        deleteButton.requestUpdate(true);
-        window.requestRibbonRender();
-    }
-
-    public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
-            final String entityName) {
-        WindowComponent window = (WindowComponent) state.getComponentByReference("window");
-        GridComponent grid = (GridComponent) state.getComponentByReference("grid");
-        RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
-
-        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
-            deleteButton.setMessage(null);
-            deleteButton.setEnabled(false);
-        } else {
-            boolean canDelete = true;
-            for (Long entityId : grid.getSelectedEntitiesIds()) {
-                Entity productionBalance = dataDefinitionService.get(plugin, entityName).get(entityId);
-
-                if ((Boolean) productionBalance.getField("generated")) {
-                    canDelete = false;
-                    break;
-                }
-            }
-            if (canDelete) {
-                deleteButton.setMessage(null);
-                deleteButton.setEnabled(true);
-            } else {
-                deleteButton.setMessage("orders.ribbon.message.selectedRecordAlreadyGenerated");
-                deleteButton.setEnabled(false);
-            }
-        }
-
         deleteButton.requestUpdate(true);
         window.requestRibbonRender();
     }

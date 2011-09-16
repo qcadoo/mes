@@ -1,20 +1,136 @@
-<view name="productionRecordDetails" modelName="productionRecord" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+<view name="productionRecordDetails" modelName="productionRecord"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
 		</ribbon>
 		<windowTab name="mainTab">
-			<component type="form" name="productionRecordDetails" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="1" rows="2">
+			<component type="form" name="productionRecordDetails"
+				reference="form">
+				<component type="gridLayout" name="gridLayout" columns="2"
+					rows="15">
 					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number" reference="number" />
+						<component type="checkbox" name="isFinal" field="isFinal"
+							reference="isFinal" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="textarea" name="name" field="name" hasDescription="true" />
-					</layoutElement>				
+						<component type="lookup" name="order" field="order"
+							reference="order">
+							<option type="column" name="name" fields="name" link="true" />
+							<option type="required" value="true" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+<!-- 						<component type="lookup" name="orderOperationComponent" -->
+<!-- 							field="orderOperationComponent" reference="orderOperationComponent" source="#{order}.orderOperationComponents"> -->
+<!-- 							<option type="required" value="true" /> -->
+<!-- 							<option type="fieldCode" value="#operation['name']" /> -->
+<!-- 							<option type="expression" value="#operation['name']" /> -->
+<!-- 							<option type="searchable" value="#operation['name']" /> -->
+<!-- 							<option type="orderable" value="#operation['name']" /> -->
+<!-- 						</component> -->
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="lookup" name="shift" reference="shift"
+							field="shift">
+							<option type="fieldCode" value="name" />
+							<option type="expression" value="#name" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="5">
+						<component type="calendar" name="creationTime" field="creationTime"
+							reference="creationTime" defaultEnabled="false">
+							<option type="withTimePicker" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="6">
+						<component type="input" name="worker" field="worker"
+							reference="worker" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="7">
+						<component type="separatorLine" name="line1" />
+					</layoutElement>
+					<layoutElement column="1" row="8">
+						<component type="grid" name="recordOperationProductInComponent"
+							reference="recordOperationProductInComponent" source="recordOperationProductInComponent">
+							<option type="column" name="number" fields="product"
+								expression="#product['number']" link="true" width="100" />
+							<option type="column" name="name" fields="product"
+								expression="#product['name']" link="true" width="200" />
+							<option type="column" name="usedQuantity" fields="usedQuantity"
+								width="100" />
+							<option type="column" name="type" fields="product" width="100"
+								expression="#product['unit']" />
+							<option type="column" name="unit" fields="product"
+								expression="#product['unit']" link="false" width="70" />
+							<option type="order" column="number" direction="desc" />
+							<option type="correspondingView"
+								value="productionCounting/recordOperationProductInComponentDetails" />
+							<option type="correspondingComponent" value="form" />
+							<option type="correspondingViewInModal" value="true" />
+							<option type="paginable" value="false" />
+							<option type="creatable" value="true" />
+							<option type="deletable" value="true" />
+							<option type="fullscreen" value="true" />
+							<option type="multiselect" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="1" height="2">
+						<component type="borderLayout" name="borderLayoutConsumedTime"
+							reference="borderLayoutConsumedTime">
+							<option type="label" value="consumedTime" />
+
+							<component type="gridLayout" name="consumedTime"
+								reference="consumedTime" columns="1" rows="2">
+								<layoutElement column="1" row="1">
+									<component type="input" name="machineTime" reference="machineTime"
+										field="machineTime" />
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="input" name="laborTime" reference="laborTime"
+										field="laborTime" />
+								</layoutElement>
+							</component>
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="7">
+						<component type="separatorLine" name="line2" />
+					</layoutElement>
+					<layoutElement column="2" row="8">
+						<component type="grid" name="recordOperationProductOutComponent"
+							reference="recordOperationProductOutComponent" source="recordOperationProductOutComponent">
+							<option type="column" name="number" fields="product"
+								expression="#product['number']" link="true" width="100" />
+							<option type="column" name="name" fields="product"
+								expression="#product['name']" link="true" width="200" />
+							<option type="column" name="usedQuantity" fields="usedQuantity"
+								width="100" />
+							<option type="column" name="type" fields="product" width="100"
+								expression="#product['unit']" />
+							<option type="column" name="unit" fields="product"
+								expression="#product['unit']" link="false" width="70" />
+							<option type="order" column="number" direction="desc" />
+							<option type="correspondingView"
+								value="productionCounting/recordOperationProductOutComponentDetails" />
+							<option type="correspondingComponent" value="form" />
+							<option type="correspondingViewInModal" value="true" />
+							<option type="paginable" value="false" />
+							<option type="creatable" value="true" />
+							<option type="deletable" value="true" />
+							<option type="fullscreen" value="true" />
+							<option type="multiselect" value="true" />
+						</component>
+					</layoutElement>
 				</component>
-				<option type="header" value="true"/>
+				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 			</component>
 		</windowTab>

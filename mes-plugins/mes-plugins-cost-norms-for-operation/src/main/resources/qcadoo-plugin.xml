@@ -203,7 +203,7 @@ http://schema.qcadoo.org/modules/menu.xsd">
 			method="inheritOperationNormValues" />
 
 		<view:view-listener plugin="technologies"
-			view="technologyOperationComponentDetails" component="operation"
+			view="technologyOperationComponentDetails" component="form"
 			event="copyCostsFromOperation"
 			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
 			method="copyCostValuesFromOperation" />

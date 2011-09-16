@@ -83,7 +83,7 @@
 		<menu:menu-item name="products" category="basic" view="productsList" />
 		<menu:menu-item name="shifts" category="basic" view="shiftsList"/>
 		<menu:menu-item-url name="systemParameters"
-			category="basic" url="/parameters.html" />
+			category="administration" url="/parameters.html" />
 		<menu:menu-item-url name="companyDetails"
 			category="administration" url="/companyView.html" />
 		<menu:menu-item name="currency"
