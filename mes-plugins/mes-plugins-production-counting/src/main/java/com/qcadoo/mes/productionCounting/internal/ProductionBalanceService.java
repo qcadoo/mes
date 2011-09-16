@@ -27,7 +27,6 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
@@ -80,11 +79,6 @@ public class ProductionBalanceService {
                 ProductionCountingConstants.MODEL_PRODUCTION_BALANCE);
     }
 
-    public void setGridGenerateButtonState(final ViewDefinitionState state) {
-        setGridGenerateButtonState(state, state.getLocale(), ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_BALANCE);
-    }
-
     public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
             final String entityName) {
         WindowComponent window = (WindowComponent) state.getComponentByReference("window");
@@ -117,38 +111,6 @@ public class ProductionBalanceService {
 
         }
         generateButton.requestUpdate(true);
-        deleteButton.requestUpdate(true);
-        window.requestRibbonRender();
-    }
-
-    public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
-            final String entityName) {
-        WindowComponent window = (WindowComponent) state.getComponentByReference("window");
-        GridComponent grid = (GridComponent) state.getComponentByReference("grid");
-        RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
-
-        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
-            deleteButton.setMessage(null);
-            deleteButton.setEnabled(false);
-        } else {
-            boolean canDelete = true;
-            for (Long entityId : grid.getSelectedEntitiesIds()) {
-                Entity productionBalance = dataDefinitionService.get(plugin, entityName).get(entityId);
-
-                if ((Boolean) productionBalance.getField("generated")) {
-                    canDelete = false;
-                    break;
-                }
-            }
-            if (canDelete) {
-                deleteButton.setMessage(null);
-                deleteButton.setEnabled(true);
-            } else {
-                deleteButton.setMessage("orders.ribbon.message.selectedRecordAlreadyGenerated");
-                deleteButton.setEnabled(false);
-            }
-        }
-
         deleteButton.requestUpdate(true);
         window.requestRibbonRender();
     }

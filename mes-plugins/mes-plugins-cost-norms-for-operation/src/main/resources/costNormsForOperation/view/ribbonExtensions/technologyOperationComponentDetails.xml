@@ -30,7 +30,7 @@
 	view="technologyOperationComponentDetails">
 	
 	<group name="costs">
-		<bigButton name="copyCostsFromOperation" icon="copyIcon24.png"  state="enabled" action="#{operation}.fireEvent(copyCostsFromOperation);" />
+		<bigButton name="copyCostsFromOperation" icon="copyIcon24.png"  state="enabled" action="#{form}.fireEvent(copyCostsFromOperation);" />
 	</group>
 </ribbonExtension>
 
