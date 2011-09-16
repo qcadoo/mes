@@ -105,6 +105,10 @@ public class ProductionCountingService {
         }
     }
 
+    public void setTimeValue(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        // TODO ALBR & ANKI - put some method stuff ..
+    }
+    
     private void setComponentVisibleCumulated(final ViewDefinitionState viewDefinitionState) {
         FieldComponent operation = (FieldComponent) viewDefinitionState.getComponentByReference("orderOperationComponent");
         ComponentState borderLayoutConsumedTimeCumulated = (ComponentState) viewDefinitionState
