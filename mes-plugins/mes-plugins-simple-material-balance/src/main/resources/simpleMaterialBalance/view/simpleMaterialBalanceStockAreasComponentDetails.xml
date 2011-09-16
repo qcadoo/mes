@@ -12,7 +12,7 @@
 			reference="form">
 			<component type="gridLayout" name="gridLayout" columns="1" rows="1">
 				<layoutElement column="1" row="1">
-					<component type="lookup" name="warehouse" field="stockAreas">
+					<component type="lookup" name="stockAreas" field="stockAreas">
 						<option type="column" name="name" fields="name" link="true"
 							width="200" />
 						<option type="searchable" value="number" />

@@ -11,7 +11,7 @@
             <component type="form" name="form" reference="form">
             	<component type="input" name="number" field="number" />
             	<component type="calendar" name="date" field="date" />
-                <component type="lookup" name="warehouse" field="warehouse">
+                <component type="lookup" name="stockAreas" field="stockAreas">
                  	<option type="searchable" value="name" />
                     <option type="orderable" value=" name" />
                     <option type="fullScreen" value="true" />
