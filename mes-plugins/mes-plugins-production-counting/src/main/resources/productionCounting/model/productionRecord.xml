@@ -32,11 +32,11 @@
 			<validatesLength max="40" />
 		</string>
 		<belongsTo name="order" model="order" plugin="orders"
-			required="true" />
+			/>
 		<belongsTo name="orderOperationComponent" model="orderOperationComponent"
 			plugin="productionScheduling" />
 		<belongsTo name="shift" model="shift" plugin="basic"
-			required="true" />
+			 />
 
 		<hasMany name="recordOperationProductInComponent" joinField="productionRecord"
 			model="recordOperationProductInComponent" />

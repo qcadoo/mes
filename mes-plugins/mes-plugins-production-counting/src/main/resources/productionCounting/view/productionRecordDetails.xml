@@ -6,39 +6,44 @@
 			<template name="standardFormTemplate" />
 		</ribbon>
 		<windowTab name="mainTab">
+
+			<component type="form" name="formHelper" reference="formHelper"
+				source="#{form}.order" />
+			<component type="form" name="formHelperSecond" reference="formHelperSecond"
+				source="#{form}.orderOperationComponent" />
 			<component type="form" name="productionRecordDetails"
 				reference="form">
 				<component type="gridLayout" name="gridLayout" columns="2"
 					rows="15">
 					<layoutElement column="1" row="1">
-						<component type="checkbox" name="isFinal" field="isFinal"
+						<component type="checkbox" name="isFinal" field="#{form}.isFinal"
 							reference="isFinal" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="lookup" name="order" field="order"
+						<component type="lookup" name="order" field="#{form}.order"
 							reference="order">
 							<option type="column" name="name" fields="name" link="true" />
-							<option type="required" value="true" />
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService" method="enabledOrDisabledOperationField" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
-<!-- 						<component type="lookup" name="orderOperationComponent" -->
-<!-- 							field="orderOperationComponent" reference="orderOperationComponent" source="#{order}.orderOperationComponents"> -->
-<!-- 							<option type="required" value="true" /> -->
-<!-- 							<option type="fieldCode" value="#operation['name']" /> -->
-<!-- 							<option type="expression" value="#operation['name']" /> -->
-<!-- 							<option type="searchable" value="#operation['name']" /> -->
-<!-- 							<option type="orderable" value="#operation['name']" /> -->
-<!-- 						</component> -->
+						<component type="lookup" name="orderOperationComponent"
+							field="#{form}.orderOperationComponent" reference="orderOperationComponent" >
+							<option type="fieldCode" value="operation" />
+							<option type="expression" value="#operation['number']" />
+							<option type="searchable" value="operation" />
+							<option type="orderable" value="operation" />
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService" method="setTimeValue" />
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="lookup" name="shift" reference="shift"
-							field="shift">
+							field="#{form}.shift">
 							<option type="fieldCode" value="name" />
 							<option type="expression" value="#name" />
 							<option type="searchable" value="name" />
@@ -46,13 +51,13 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5">
-						<component type="calendar" name="creationTime" field="creationTime"
+						<component type="calendar" name="creationTime" field="#{form}.creationTime"
 							reference="creationTime" defaultEnabled="false">
 							<option type="withTimePicker" value="true" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="6">
-						<component type="input" name="worker" field="worker"
+						<component type="input" name="worker" field="#{form}.worker"
 							reference="worker" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="7">
@@ -83,19 +88,34 @@
 							<option type="multiselect" value="true" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="1" height="2">
-						<component type="borderLayout" name="borderLayoutConsumedTime"
-							reference="borderLayoutConsumedTime">
-							<option type="label" value="consumedTime" />
-
-							<component type="gridLayout" name="consumedTime"
-								reference="consumedTime" columns="1" rows="2">
+					<layoutElement column="2" row="1" height="2" >
+						<component type="borderLayout" name="borderLayoutConsumedTimeForEach"
+							reference="borderLayoutConsumedTimeForEach" defaultVisible="false" >
+							<option type="label" value="consumedTimeForEach" />
+							<component type="gridLayout" name="consumedTimeForEach"
+								reference="consumedTimeOperation" columns="1" rows="2">
 								<layoutElement column="1" row="1">
-									<component type="input" name="machineTime" reference="machineTime"
+									<component type="input" name="machineTimeForEach" reference="machineTimeForEach"
 										field="machineTime" />
 								</layoutElement>
 								<layoutElement column="1" row="2">
-									<component type="input" name="laborTime" reference="laborTime"
+									<component type="input" name="laborTimeForEach" reference="laborTimeForEach"
+										field="laborTime" />
+								</layoutElement>
+							</component>
+						</component>
+						<component type="borderLayout" name="borderLayoutConsumedTimeCumulated"
+							reference="borderLayoutConsumedTimeCumulated" defaultVisible="false" >
+							<option type="label" value="consumedTimeCumulated" />
+
+							<component type="gridLayout" name="consumedTimeCumulated"
+								reference="consumedTimeCumulated" columns="1" rows="2" >
+								<layoutElement column="1" row="1">
+									<component type="input" name="machineTimeCumulated" reference="machineTimeCumulated"
+										field="machineTime" />
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="input" name="laborTimeCumulated" reference="laborTimeCumulated"
 										field="laborTime" />
 								</layoutElement>
 							</component>
