@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.simpleMaterialBalance.internal;
 
+import java.util.Date;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
@@ -57,7 +58,7 @@ public class SimpleMaterialBalanceController {
         DataDefinition dataDefinition = dataDefinitionService.get(SimpleMaterialBalanceConstants.PLUGIN_IDENTIFIER,
                 SimpleMaterialBalanceConstants.MODEL_SIMPLE_MATERIAL_BALANCE);
         Entity simpleMaterialBalance = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(simpleMaterialBalance,
+        ReportUtil.sentTranslatedFileName((Date) simpleMaterialBalance.getField("date"),
                 translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.fileName", locale), "",
                 PdfUtil.PDF_EXTENSION, response);
         ReportUtil.sentFileAsAttachement(simpleMaterialBalance.getStringField("fileName") + PdfUtil.PDF_EXTENSION,
@@ -70,7 +71,7 @@ public class SimpleMaterialBalanceController {
         DataDefinition dataDefinition = dataDefinitionService.get(SimpleMaterialBalanceConstants.PLUGIN_IDENTIFIER,
                 SimpleMaterialBalanceConstants.MODEL_SIMPLE_MATERIAL_BALANCE);
         Entity simpleMaterialBalance = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(simpleMaterialBalance,
+        ReportUtil.sentTranslatedFileName((Date) simpleMaterialBalance.getField("date"),
                 translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.fileName", locale), "",
                 XlsUtil.XLS_EXTENSION, response);
         ReportUtil.sentFileAsAttachement(simpleMaterialBalance.getStringField("fileName") + XlsUtil.XLS_EXTENSION,

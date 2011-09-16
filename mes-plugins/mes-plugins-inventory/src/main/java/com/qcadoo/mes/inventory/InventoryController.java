@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.inventory;
 
+import java.util.Date;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
@@ -55,10 +56,10 @@ public class InventoryController {
     public void inventoryReportPdf(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
         DataDefinition dataDefinition = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
                 InventoryConstants.MODEL_INVENTORY_REPORT);
-        Entity inventoryReport = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(inventoryReport,
+        Entity inventory = dataDefinition.get(Long.parseLong(id));
+        ReportUtil.sentTranslatedFileName((Date) inventory.getField("date"),
                 translationService.translate("inventory.inventory.report.fileName", locale), "", PdfUtil.PDF_EXTENSION, response);
-        ReportUtil.sentFileAsAttachement(inventoryReport.getStringField("fileName") + PdfUtil.PDF_EXTENSION,
+        ReportUtil.sentFileAsAttachement(inventory.getStringField("fileName") + PdfUtil.PDF_EXTENSION,
                 ReportUtil.PDF_CONTENT_TYPE, response);
     }
 
@@ -67,8 +68,8 @@ public class InventoryController {
         DataDefinition dataDefinition = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
                 InventoryConstants.MODEL_INVENTORY_REPORT);
         Entity inventory = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(inventory, translationService.translate("inventory.inventory.report.fileName", locale),
-                "", XlsUtil.XLS_EXTENSION, response);
+        ReportUtil.sentTranslatedFileName((Date) inventory.getField("date"),
+                translationService.translate("inventory.inventory.report.fileName", locale), "", XlsUtil.XLS_EXTENSION, response);
         ReportUtil.sentFileAsAttachement(inventory.getStringField("fileName") + XlsUtil.XLS_EXTENSION,
                 ReportUtil.XLS_CONTENT_TYPE, response);
     }

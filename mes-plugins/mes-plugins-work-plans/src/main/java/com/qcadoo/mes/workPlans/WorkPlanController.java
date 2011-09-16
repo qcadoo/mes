@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.workPlans;
 
+import java.util.Date;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
@@ -56,7 +57,8 @@ public class WorkPlanController {
         DataDefinition dataDefinition = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                 WorkPlansConstants.MODEL_WORK_PLAN);
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(workPlan, translationService.translate("workPlans.workPlan.report.fileName", locale),
+        ReportUtil.sentTranslatedFileName((Date) workPlan.getField("date"),
+                translationService.translate("workPlans.workPlan.report.fileName", locale),
                 translationService.translate("workPlans.workPlan.report.fileName.suffix.forWorker", locale),
                 PdfUtil.PDF_EXTENSION, response);
         ReportUtil.sentFileAsAttachement(workPlan.getStringField("fileName") + "for_worker" + PdfUtil.PDF_EXTENSION,
@@ -68,7 +70,8 @@ public class WorkPlanController {
         DataDefinition dataDefinition = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                 WorkPlansConstants.MODEL_WORK_PLAN);
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(workPlan, translationService.translate("workPlans.workPlan.report.fileName", locale),
+        ReportUtil.sentTranslatedFileName((Date) workPlan.getField("date"),
+                translationService.translate("workPlans.workPlan.report.fileName", locale),
                 translationService.translate("workPlans.workPlan.report.fileName.suffix.forProduct", locale),
                 PdfUtil.PDF_EXTENSION, response);
         ReportUtil.sentFileAsAttachement(workPlan.getStringField("fileName") + "for_product" + PdfUtil.PDF_EXTENSION,
@@ -80,7 +83,8 @@ public class WorkPlanController {
         DataDefinition dataDefinition = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                 WorkPlansConstants.MODEL_WORK_PLAN);
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(workPlan, translationService.translate("workPlans.workPlan.report.fileName", locale),
+        ReportUtil.sentTranslatedFileName((Date) workPlan.getField("date"),
+                translationService.translate("workPlans.workPlan.report.fileName", locale),
                 translationService.translate("workPlans.workPlan.report.fileName.suffix.forMachine", locale),
                 PdfUtil.PDF_EXTENSION, response);
         ReportUtil.sentFileAsAttachement(workPlan.getStringField("fileName") + "for_machine" + PdfUtil.PDF_EXTENSION,
@@ -92,7 +96,8 @@ public class WorkPlanController {
         DataDefinition dataDefinition = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                 WorkPlansConstants.MODEL_WORK_PLAN);
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(workPlan, translationService.translate("workPlans.workPlan.report.fileName", locale),
+        ReportUtil.sentTranslatedFileName((Date) workPlan.getField("date"),
+                translationService.translate("workPlans.workPlan.report.fileName", locale),
                 translationService.translate("workPlans.workPlan.report.fileName.suffix.forWorker", locale),
                 XlsUtil.XLS_EXTENSION, response);
         ReportUtil.sentFileAsAttachement(workPlan.getStringField("fileName") + "for_worker" + XlsUtil.XLS_EXTENSION,
@@ -104,7 +109,8 @@ public class WorkPlanController {
         DataDefinition dataDefinition = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                 WorkPlansConstants.MODEL_WORK_PLAN);
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(workPlan, translationService.translate("workPlans.workPlan.report.fileName", locale),
+        ReportUtil.sentTranslatedFileName((Date) workPlan.getField("date"),
+                translationService.translate("workPlans.workPlan.report.fileName", locale),
                 translationService.translate("workPlans.workPlan.report.fileName.suffix.forProduct", locale),
                 XlsUtil.XLS_EXTENSION, response);
         ReportUtil.sentFileAsAttachement(workPlan.getStringField("fileName") + "for_product" + XlsUtil.XLS_EXTENSION,
@@ -116,7 +122,8 @@ public class WorkPlanController {
         DataDefinition dataDefinition = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                 WorkPlansConstants.MODEL_WORK_PLAN);
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(workPlan, translationService.translate("workPlans.workPlan.report.fileName", locale),
+        ReportUtil.sentTranslatedFileName((Date) workPlan.getField("date"),
+                translationService.translate("workPlans.workPlan.report.fileName", locale),
                 translationService.translate("workPlans.workPlan.report.fileName.suffix.forMachine", locale),
                 XlsUtil.XLS_EXTENSION, response);
         ReportUtil.sentFileAsAttachement(workPlan.getStringField("fileName") + "for_machine" + XlsUtil.XLS_EXTENSION,
