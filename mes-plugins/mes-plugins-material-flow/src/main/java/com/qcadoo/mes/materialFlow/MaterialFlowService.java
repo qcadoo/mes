@@ -55,6 +55,7 @@ import com.qcadoo.mes.materialFlow.print.xls.MaterialFlowXlsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -313,6 +314,39 @@ public class MaterialFlowService {
         }
     }
 
+    public void generateTransferNumber(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+        if (!(componentState instanceof FieldComponent)) {
+            throw new IllegalStateException("component is not FieldComponentState");
+        }
+        FieldComponent number = (FieldComponent) state.getComponentByReference("number");
+        FieldComponent productState = (FieldComponent) componentState;
+
+        if (!numberGeneratorService.checkIfShouldInsertNumber(state, "form", "number")) {
+            return;
+        }
+        if (productState.getFieldValue() != null) {
+            Entity product = getAreaById((Long) productState.getFieldValue());
+            if (product != null) {
+                String numberValue = product.getField("number") + "-" +
+                        numberGeneratorService.generateNumber("materialFlow", "transfer", 3);
+                number.setFieldValue(numberValue);
+            }
+        }
+    }
+    
+    
+    private Entity getAreaById(final Long productId) {
+        DataDefinition instructionDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
+
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isIdEq(productId);
+
+        SearchResult searchResult = searchCriteria.list();
+        if (searchResult.getTotalNumberOfEntities() == 1) {
+            return searchResult.getEntities().get(0);
+        }
+        return null;
+    }
+    
     public void generateMaterialFlow(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state instanceof FormComponent) {
             ComponentState generated = viewDefinitionState.getComponentByReference("generated");
