@@ -100,7 +100,7 @@ public class MaterialFlowService {
         BigDecimal countProduct = BigDecimal.ZERO;
         Date lastCorrectionDate = null;
 
-        DataDefinition transferDataCorrection = dataDefinitionService.get("materialFlow", "correction");
+        DataDefinition transferDataCorrection = dataDefinitionService.get("materialFlow", "stockCorrection");
         DataDefinition transferTo = dataDefinitionService.get("materialFlow", "transfer");
         DataDefinition transferFrom = dataDefinitionService.get("materialFlow", "transfer");
 
