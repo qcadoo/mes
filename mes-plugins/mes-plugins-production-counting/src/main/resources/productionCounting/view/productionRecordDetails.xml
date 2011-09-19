@@ -38,7 +38,6 @@
 							<option type="expression" value="#operation['number']" />
 							<option type="searchable" value="operation" />
 							<option type="orderable" value="operation" />
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService" method="setTimeValue" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">

@@ -83,7 +83,6 @@ public class ProductionCountingService {
 
     public void setProductBelongsToOperation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-
         // TODO ALBR
     }
 
@@ -91,28 +90,29 @@ public class ProductionCountingService {
             final ComponentState componentState, final String[] args) {
 
         ComponentState orderLookup = (ComponentState) viewDefinitionState.getComponentByReference("order");
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                (Long) orderLookup.getFieldValue());
-        if (order != null) {
-            String typeOfProductionRecording = (String) order.getField("typeOfProductionRecording");
-            if ("02cumulated".equals(typeOfProductionRecording)) {
-                setComponentVisibleCumulated(viewDefinitionState);
-            } else if ("03forEach".equals(typeOfProductionRecording)) {
-                setComponentVisibleForEach(viewDefinitionState);
+        if (orderLookup.getFieldValue() != null) {
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                    (Long) orderLookup.getFieldValue());
+            if (order != null) {
+                String typeOfProductionRecording = (String) order.getField("typeOfProductionRecording");
+                if ("02cumulated".equals(typeOfProductionRecording)) {
+                    setComponentVisibleCumulated(viewDefinitionState);
+                } else if ("03forEach".equals(typeOfProductionRecording)) {
+                    setComponentVisibleForEach(viewDefinitionState);
+                }
+            } else {
+                Log.debug("order is null!!");
             }
-        } else {
-            Log.debug("order is null!!");
         }
     }
 
     private void setComponentVisibleCumulated(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent operation = (FieldComponent) viewDefinitionState.getComponentByReference("orderOperationComponent");
-        ComponentState borderLayoutConsumedTimeCumulated = (ComponentState) viewDefinitionState
-                .getComponentByReference("borderLayoutConsumedTimeCumulated");
+        ((FieldComponent) viewDefinitionState.getComponentByReference("orderOperationComponent")).setVisible(false);
+        ((ComponentState) viewDefinitionState.getComponentByReference("borderLayoutConsumedTimeForEach")).setVisible(false);
+        ((ComponentState) viewDefinitionState.getComponentByReference("borderLayoutConsumedTimeCumulated")).setVisible(true);
         fillInProductsGridWhenOrderCumulated(viewDefinitionState);
         fillOutProductsGridWhenOrderCumulated(viewDefinitionState);
-        operation.setVisible(false);
-        borderLayoutConsumedTimeCumulated.setVisible(true);
+
     }
 
     public void getProductInAndProductOut(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
@@ -171,9 +171,9 @@ public class ProductionCountingService {
     }
 
     private void setComponentVisibleForEach(final ViewDefinitionState viewDefinitionState) {
-        ComponentState borderLayoutConsumedTimeCumulated = (ComponentState) viewDefinitionState
-                .getComponentByReference("borderLayoutConsumedTimeForEach");
-        borderLayoutConsumedTimeCumulated.setVisible(true);
+        ((FieldComponent) viewDefinitionState.getComponentByReference("orderOperationComponent")).setVisible(true);
+        ((ComponentState) viewDefinitionState.getComponentByReference("borderLayoutConsumedTimeForEach")).setVisible(true);
+        ((ComponentState) viewDefinitionState.getComponentByReference("borderLayoutConsumedTimeCumulated")).setVisible(false);
         // fillInProductsGridWhenOrderForEach(viewDefinitionState);
         // fillOutProductsGridWhenOrderForEach(viewDefinitionState);
 
