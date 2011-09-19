@@ -53,10 +53,23 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         panelTable.setSpacingBefore(20);
         document.add(panelTable);
 
-        addInputProductsBalance(document, productionBalance, locale);
-        addOutputProductsBalance(document, productionBalance, locale);
-        machineTimeBalance(document, productionBalance, locale);
-        laborTimeBalance(document, productionBalance, locale);
+        if ((Boolean) productionBalance.getBelongsToField("order").getField("registerQuantityInProduct")) {
+            addInputProductsBalance(document, productionBalance, locale);
+        }
+        if ((Boolean) productionBalance.getBelongsToField("order").getField("registerQuantityOutProduct")) {
+            addOutputProductsBalance(document, productionBalance, locale);
+        }
+
+        if ((Boolean) productionBalance.getBelongsToField("order").getField("registerProductionTime")) {
+            if (productionBalance.getBelongsToField("order").getField("typeOfProductionRecording") != null
+                    && productionBalance.getBelongsToField("order").getStringField("typeOfProductionRecording")
+                            .equals("03forEach")) {
+                addMachineTimeBalance(document, productionBalance, locale);
+                addLaborTimeBalance(document, productionBalance, locale);
+            } else {
+                addTimeBalanceAsPanel(document, productionBalance, locale);
+            }
+        }
     }
 
     private void addTableCellAsTable(final PdfPTable table, final String label, final Object fieldValue, final String nullValue,
@@ -239,7 +252,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         document.add(outputProductsTable);
     }
 
-    private void machineTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
+    private void addMachineTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(getTranslationService().translate("productionCounting.productionBalance.report.paragraph3",
@@ -259,10 +272,23 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
         PdfPTable machineTimeTable = PdfUtil.createTableWithHeader(5, operationsTimeTableHeader, false);
 
+        for (Entity productionRecord : productionBalance.getHasManyField("productionRecord")) {
+            machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
+                    .getBelongsToField("operation").getStringField("number"), PdfUtil.getArialRegular9Dark()));
+            machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
+                    .getBelongsToField("operation").getStringField("name"), PdfUtil.getArialRegular9Dark()));
+            // TODO planned time ANKI
+            machineTimeTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+            machineTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("machineTime")), PdfUtil
+                    .getArialRegular9Dark()));
+            machineTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("machineTimeBalance")),
+                    PdfUtil.getArialRegular9Dark()));
+        }
+
         document.add(machineTimeTable);
     }
 
-    private void laborTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
+    private void addLaborTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(getTranslationService().translate("productionCounting.productionBalance.report.paragraph4",
@@ -282,7 +308,71 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
         PdfPTable laborTimeTable = PdfUtil.createTableWithHeader(5, operationsTimeTableHeader, false);
 
+        for (Entity productionRecord : productionBalance.getHasManyField("productionRecord")) {
+            laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
+                    .getBelongsToField("operation").getStringField("number"), PdfUtil.getArialRegular9Dark()));
+            laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
+                    .getBelongsToField("operation").getStringField("name"), PdfUtil.getArialRegular9Dark()));
+            // TODO planned time ANKI
+            laborTimeTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+            laborTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("laborTime")), PdfUtil
+                    .getArialRegular9Dark()));
+            laborTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("laborTimeBalance")), PdfUtil
+                    .getArialRegular9Dark()));
+        }
+
         document.add(laborTimeTable);
+    }
+
+    private void addTimeBalanceAsPanel(final Document document, final Entity productionBalance, final Locale locale)
+            throws DocumentException {
+        document.add(Chunk.NEWLINE);
+        document.add(new Paragraph(getTranslationService().translate(
+                "productionCounting.productionBalanceDetails.window.productionTime.tabLabel", locale), PdfUtil
+                .getArialBold11Dark()));
+
+        Entity productionRecord = productionBalance.getHasManyField("productionRecord").find().uniqueResult();
+
+        PdfPTable timePanel = PdfUtil.createPanelTable(3);
+
+        // TODO planned time ANKI
+        addTableCellAsTable(
+                timePanel,
+                getTranslationService().translate(
+                        "productionCounting.productionBalanceDetails.window.productionTime.machinePlannedTime.label", locale)
+                        + ":", "", null, PdfUtil.getArialRegular9Dark(), PdfUtil.getArialRegular9Dark(), null);
+        addTableCellAsTable(
+                timePanel,
+                getTranslationService().translate(
+                        "productionCounting.productionBalanceDetails.window.productionTime.machineRegisteredTime.label", locale)
+                        + ":", productionRecord.getStringField("machineTime"), null, PdfUtil.getArialRegular9Dark(),
+                PdfUtil.getArialRegular9Dark(), null);
+        addTableCellAsTable(
+                timePanel,
+                getTranslationService().translate(
+                        "productionCounting.productionBalanceDetails.window.productionTime.machineTimeBalance.label", locale)
+                        + ":", productionRecord.getStringField("machineTimeBalance"), null, PdfUtil.getArialRegular9Dark(),
+                PdfUtil.getArialRegular9Dark(), null);
+        // TODO planned time ANKI
+        addTableCellAsTable(
+                timePanel,
+                getTranslationService().translate(
+                        "productionCounting.productionBalanceDetails.window.productionTime.laborPlannedTime.label", locale)
+                        + ":", "", null, PdfUtil.getArialRegular9Dark(), PdfUtil.getArialRegular9Dark(), null);
+        addTableCellAsTable(
+                timePanel,
+                getTranslationService().translate(
+                        "productionCounting.productionBalanceDetails.window.productionTime.laborRegisteredTime.label", locale)
+                        + ":", productionRecord.getStringField("laborTime"), null, PdfUtil.getArialRegular9Dark(),
+                PdfUtil.getArialRegular9Dark(), null);
+        addTableCellAsTable(
+                timePanel,
+                getTranslationService().translate(
+                        "productionCounting.productionBalanceDetails.window.productionTime.laborTimeBalance.label", locale)
+                        + ":", productionRecord.getStringField("laborTimeBalance"), null, PdfUtil.getArialRegular9Dark(),
+                PdfUtil.getArialRegular9Dark(), null);
+
+        document.add(timePanel);
     }
 
     @Override
