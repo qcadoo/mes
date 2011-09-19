@@ -90,7 +90,8 @@ public class SamplesLoaderModule extends Module {
             "algorithm", "minimal" };
 
     private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number", "tpz", "tj", "productionInOneCycle",
-            "pieceworkCost", "machineHourlyCost", "laborHourlyCost", "numberOfOperations" };
+            "pieceworkCost", "machineHourlyCost", "laborHourlyCost", "numberOfOperations", "machineUtilization",
+            "laborUtilization" };
 
     private static final String[] MACHINE_ATTRIBUTES = new String[] { "id", "name", "prod_line", "description" };
 
@@ -343,6 +344,8 @@ public class SamplesLoaderModule extends Module {
         operation.setField("tj", values.get("tj"));
         operation.setField("productionInOneCycle", values.get("productionInOneCycle"));
         operation.setField("countRealized", values.get("countRealized"));
+        operation.setField("machineUtilization", values.get("machineUtilization"));
+        operation.setField("laborUtilization", values.get("laborUtilization"));
         operation.setField("machine", getMachine(values.get("number")));
         operation.setField("staff", getRandomStaff());
 
@@ -817,6 +820,8 @@ public class SamplesLoaderModule extends Module {
         component.setField("entityType", "operation");
         component.setField("tpz", operation.getField("tpz"));
         component.setField("tj", operation.getField("tj"));
+        component.setField("machineUtilization", operation.getField("machineUtilization"));
+        component.setField("laborUtilization", operation.getField("laborUtilization"));
         component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
         component.setField("countRealized", operation.getField("countRealized"));
 

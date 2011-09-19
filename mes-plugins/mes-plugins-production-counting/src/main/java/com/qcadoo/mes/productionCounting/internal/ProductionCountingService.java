@@ -148,6 +148,7 @@ public class ProductionCountingService {
                 .addOrder(SearchOrders.asc("product.name")).list();
 
         grid.setEntities(searchResult.getEntities());
+
     }
 
     private void fillOutProductsGridWhenOrderStateCumulated(final ViewDefinitionState viewDefinitionState) {
