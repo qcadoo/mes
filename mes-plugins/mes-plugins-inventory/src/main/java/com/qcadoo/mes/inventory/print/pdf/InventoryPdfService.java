@@ -66,6 +66,7 @@ public final class InventoryPdfService extends PdfDocumentService {
             setDecimalFormat((DecimalFormat) DecimalFormat.getInstance(locale));
             getDecimalFormat().setMaximumFractionDigits(3);
             getDecimalFormat().setMinimumFractionDigits(3);
+            ensureReportDirectoryExist();
             FileOutputStream fileOutputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix()
                     + PdfUtil.PDF_EXTENSION);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
