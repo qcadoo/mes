@@ -33,11 +33,13 @@
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="lookup" name="orderOperationComponent"
-							field="#{form}.orderOperationComponent" reference="orderOperationComponent" >
-							<option type="fieldCode" value="operation" />
-							<option type="expression" value="#operation['number']" />
-							<option type="searchable" value="operation" />
-							<option type="orderable" value="operation" />
+							field="#{form}.orderOperationComponent" source="#{order}.orderOperationComponents" reference="orderOperationComponent" >
+							<option type="column" name="name" fields="operation" expression="#operation['name']" link="true" />
+							<option type="fieldCode" value="tj" />
+							<option type="expression" value="#operation['name']" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService" method="setTimeValue" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">

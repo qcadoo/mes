@@ -91,11 +91,10 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 getTranslationService().translate("productionCounting.productionBalance.report.panel.product", locale),
                 productionBalance.getBelongsToField("product").getStringField("name"), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
-        Object reportData = productionBalance.getField("recordsNumber");
         addTableCellAsTable(leftPanel,
                 getTranslationService().translate("productionCounting.productionBalance.report.panel.numberOfRecords", locale),
-                reportData != null ? reportData.toString() : "", null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(),
-                null);
+                productionBalance.getField("recordsNumber").toString(), null, PdfUtil.getArialBold9Dark(),
+                PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 getTranslationService().translate("productionCounting.productionBalance.description.label", locale) + ":",
                 productionBalance.getStringField("description"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(),
@@ -171,9 +170,28 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         inputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.balance", locale));
 
-        PdfPTable table = PdfUtil.createTableWithHeader(7, inputProductsTableHeader, false);
+        PdfPTable inputProductsTable = PdfUtil.createTableWithHeader(7, inputProductsTableHeader, false);
 
-        document.add(table);
+        for (Entity inputProduct : productionBalance.getHasManyField("recordOperationProductInComponent")) {
+            inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("number"), PdfUtil
+                    .getArialRegular9Dark()));
+            inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("name"), PdfUtil
+                    .getArialRegular9Dark()));
+            inputProductsTable.addCell(new Phrase(this.getTranslationService().translate(
+                    "basic.product.typeOfMaterial.value."
+                            + inputProduct.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
+                    .getArialRegular9Dark()));
+            inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
+                    .getArialRegular9Dark()));
+            inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("plannedQuantity")), PdfUtil
+                    .getArialRegular9Dark()));
+            inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("usedQuantity")), PdfUtil
+                    .getArialRegular9Dark()));
+            inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("balance")), PdfUtil
+                    .getArialRegular9Dark()));
+        }
+
+        document.add(inputProductsTable);
     }
 
     private void addOutputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
@@ -197,9 +215,28 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         outputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.balance", locale));
 
-        PdfPTable table = PdfUtil.createTableWithHeader(7, outputProductsTableHeader, false);
+        PdfPTable outputProductsTable = PdfUtil.createTableWithHeader(7, outputProductsTableHeader, false);
 
-        document.add(table);
+        for (Entity inputProduct : productionBalance.getHasManyField("recordOperationProductOutComponent")) {
+            outputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("number"), PdfUtil
+                    .getArialRegular9Dark()));
+            outputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("name"), PdfUtil
+                    .getArialRegular9Dark()));
+            outputProductsTable.addCell(new Phrase(this.getTranslationService().translate(
+                    "basic.product.typeOfMaterial.value."
+                            + inputProduct.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
+                    .getArialRegular9Dark()));
+            outputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
+                    .getArialRegular9Dark()));
+            outputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("plannedQuantity")), PdfUtil
+                    .getArialRegular9Dark()));
+            outputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("usedQuantity")), PdfUtil
+                    .getArialRegular9Dark()));
+            outputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("balance")), PdfUtil
+                    .getArialRegular9Dark()));
+        }
+
+        document.add(outputProductsTable);
     }
 
     private void machineTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
@@ -220,9 +257,9 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         operationsTimeTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.balance", locale));
 
-        PdfPTable table = PdfUtil.createTableWithHeader(5, operationsTimeTableHeader, false);
+        PdfPTable machineTimeTable = PdfUtil.createTableWithHeader(5, operationsTimeTableHeader, false);
 
-        document.add(table);
+        document.add(machineTimeTable);
     }
 
     private void laborTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
@@ -243,9 +280,9 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         operationsTimeTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.balance", locale));
 
-        PdfPTable table = PdfUtil.createTableWithHeader(5, operationsTimeTableHeader, false);
+        PdfPTable laborTimeTable = PdfUtil.createTableWithHeader(5, operationsTimeTableHeader, false);
 
-        document.add(table);
+        document.add(laborTimeTable);
     }
 
     @Override

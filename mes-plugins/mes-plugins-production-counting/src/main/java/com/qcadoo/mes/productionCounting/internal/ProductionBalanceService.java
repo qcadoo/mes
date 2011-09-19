@@ -48,7 +48,7 @@ public class ProductionBalanceService {
     @Value("${reportPath}")
     private String path;
 
-    public void fillProductWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+    public void fillFieldsWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (!(state instanceof FieldComponent)) {
             return;
@@ -64,6 +64,59 @@ public class ProductionBalanceService {
         }
         FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference("product");
         productField.setFieldValue(order.getBelongsToField("product").getId());
+
+        FieldComponent recordsNumberField = (FieldComponent) viewDefinitionState.getComponentByReference("recordsNumber");
+        Integer recordsNumberValue = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD)
+                .find("where order.id=" + order.getId().toString()).list().getEntities().size();
+        recordsNumberField.setFieldValue(recordsNumberValue);
+    }
+
+    public void fillProductionTimesWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (!(state instanceof FieldComponent)) {
+            return;
+        }
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
+        if (orderLookup.getFieldValue() == null) {
+            return;
+        }
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                (Long) orderLookup.getFieldValue());
+        if (order == null) {
+            return;
+        }
+
+        if (order.getField("typeOfProductionRecording") != null
+                && order.getStringField("typeOfProductionRecording").equals("03forEach")) {
+            viewDefinitionState.getComponentByReference("productionTimeGridLayout").setVisible(false);
+
+        } else {
+            viewDefinitionState.getComponentByReference("operationsTimeGrid").setVisible(false);
+
+            Entity productionRecord = dataDefinitionService
+                    .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD)
+                    .find("where order.id=" + order.getId().toString()).uniqueResult();
+
+            if (productionRecord != null) {
+                // FieldComponent machinePlannedTimeField = (FieldComponent) viewDefinitionState
+                // .getComponentByReference("machinePlannedTime");
+                FieldComponent machineRegisteredTimeField = (FieldComponent) viewDefinitionState
+                        .getComponentByReference("machineRegisteredTime");
+                machineRegisteredTimeField.setFieldValue(productionRecord.getStringField("machineTime"));
+                FieldComponent machineTimeBalanceField = (FieldComponent) viewDefinitionState
+                        .getComponentByReference("machineTimeBalance");
+                machineTimeBalanceField.setFieldValue(productionRecord.getStringField("machineTimeBalance"));
+                // FieldComponent laborPlannedTimeField = (FieldComponent) viewDefinitionState
+                // .getComponentByReference("laborPlannedTime");
+                FieldComponent laborRegisteredTimeField = (FieldComponent) viewDefinitionState
+                        .getComponentByReference("laborRegisteredTime");
+                laborRegisteredTimeField.setFieldValue(productionRecord.getStringField("laborTime"));
+                FieldComponent laborTimeBalanceField = (FieldComponent) viewDefinitionState
+                        .getComponentByReference("laborTimeBalance");
+                laborTimeBalanceField.setFieldValue(productionRecord.getStringField("laborTimeBalance"));
+            }
+        }
     }
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {

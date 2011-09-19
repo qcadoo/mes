@@ -1043,6 +1043,16 @@ public class SamplesLoaderModule extends Module {
         parameter.setField("checkDoneOrderForQuality", false);
         parameter.setField("autoGenerateQualityControl", false);
         parameter.setField("batchForDoneOrder", "01none");
+
+        if (isEnabled("productionCounting")) {
+            parameter.setField("registerQuantityInProduct", true);
+            parameter.setField("registerQuantityOutProduct", true);
+            parameter.setField("registerProductionTime", true);
+            parameter.setField("allowedPartial", false);
+            parameter.setField("blockClosing", false);
+            parameter.setField("autoCloseOrder", false);
+        }
+
         dataDefinitionService.get("basic", "parameter").save(parameter);
     }
 
