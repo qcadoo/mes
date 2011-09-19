@@ -14,7 +14,7 @@
 		<integer name="recordsNumber" />
 		<string name="description" />
 		<string name="fileName" />
-		<hasMany name="productionRecords" joinField="productionReport" model="productionRecord" />
+		<hasMany name="productionRecords" joinField="productionBalance" model="productionRecord" />
 		<hasMany name="recordOperationProductInComponents" joinField="productionRecord" model="recordOperationProductInComponent" />
 		<hasMany name="recordOperationProductOutComponents" joinField="productionRecord" model="recordOperationProductOutComponent" />
 	</fields>
