@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.7
  *
  * This file is part of Qcadoo.
  *
@@ -23,33 +23,25 @@
  */
 package com.qcadoo.mes.orders;
 
+import java.awt.TrayIcon.MessageType;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.naming.directory.SearchResult;
+
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.ExpressionService;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.plugin.api.PluginAccessor;
-import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ComponentState.MessageType;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public final class OrderService {
@@ -73,6 +65,9 @@ public final class OrderService {
     private ExpressionService expressionService;
 
     private final Set<BeforeChangeStateListener> beforeChangeStateListeners = new HashSet<OrderService.BeforeChangeStateListener>();
+
+    @Autowired
+    private ShiftsService shiftsService;
 
     public boolean clearOrderDatesAndWorkersOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("state", "01new");
@@ -596,6 +591,19 @@ public final class OrderService {
 
         boolean canChange(ComponentState gridOrForm, Entity order, String state);
 
+    }
+
+    public void checkPlannedDate(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        // TODO ALBR
+    }
+
+    public Date getDateFromField(final Object value) {
+        try {
+            return new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).parse((String) value);
+        } catch (ParseException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
     }
 
 }

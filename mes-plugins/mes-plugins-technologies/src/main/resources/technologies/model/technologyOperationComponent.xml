@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.7
 
     This file is part of Qcadoo.
 
@@ -28,6 +28,8 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
+		<string name="number" />
+	
 		<belongsTo name="technology" model="technology" required="true" />
 		<hasMany name="children" model="technologyOperationComponent"
 			joinField="parent" cascade="delete" copyable="true" />

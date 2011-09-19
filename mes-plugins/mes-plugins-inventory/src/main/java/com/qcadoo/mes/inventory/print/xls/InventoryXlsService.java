@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.7
  *
  * This file is part of Qcadoo.
  *
@@ -23,21 +23,21 @@
  */
 package com.qcadoo.mes.inventory.print.xls;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
+import java.text.DecimalFormat;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.inventory.constants.InventoryConstants;
-import com.qcadoo.mes.inventory.print.utils.EntityInventoryComparator;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 import com.qcadoo.report.api.xls.XlsUtil;
@@ -45,8 +45,32 @@ import com.qcadoo.report.api.xls.XlsUtil;
 @Service
 public final class InventoryXlsService extends XlsDocumentService {
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private static final Logger LOG = LoggerFactory.getLogger(InventoryXlsService.class);
+
+    public final void generateDocument(final Entity entity, final Map<Entity, BigDecimal> reportData, final Locale locale)
+            throws IOException {
+        setDecimalFormat((DecimalFormat) DecimalFormat.getInstance(locale));
+        getDecimalFormat().setMaximumFractionDigits(3);
+        getDecimalFormat().setMinimumFractionDigits(3);
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet(getReportTitle(locale));
+        addHeader(sheet, locale);
+        addSeries(sheet, reportData);
+        sheet.setZoom(4, 3);
+        FileOutputStream outputStream = null;
+        try {
+            ensureReportDirectoryExist();
+            outputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix() + XlsUtil.XLS_EXTENSION);
+            workbook.write(outputStream);
+        } catch (IOException e) {
+            LOG.error("Problem with generating document - " + e.getMessage());
+            if (outputStream != null) {
+                outputStream.close();
+            }
+            throw e;
+        }
+        outputStream.close();
+    }
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -65,21 +89,14 @@ public final class InventoryXlsService extends XlsDocumentService {
         cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
     }
 
-    @Override
-    protected void addSeries(final HSSFSheet sheet, final Entity inventoryReport) {
+    protected void addSeries(final HSSFSheet sheet, Map<Entity, BigDecimal> reportData) {
         int rowNum = 1;
-        DataDefinition dataDefInventory = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
-                InventoryConstants.MODEL_INVENTORY);
-        List<Entity> inventories = dataDefInventory
-                .find("where warehouse.id = " + Long.toString(inventoryReport.getBelongsToField("warehouse").getId())).list()
-                .getEntities();
-        Collections.sort(inventories, new EntityInventoryComparator());
-        for (Entity e : inventories) {
+        for (Map.Entry<Entity, BigDecimal> data : reportData.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(e.getBelongsToField("product").getStringField("number"));
-            row.createCell(1).setCellValue(e.getBelongsToField("product").getStringField("name"));
-            row.createCell(2).setCellValue(((BigDecimal) e.getField("quantity")).toString());
-            row.createCell(3).setCellValue(e.getBelongsToField("product").getStringField("unit"));
+            row.createCell(0).setCellValue(data.getKey().getBelongsToField("product").getStringField("number"));
+            row.createCell(1).setCellValue(data.getKey().getBelongsToField("product").getStringField("name"));
+            row.createCell(2).setCellValue(this.getDecimalFormat().format(data.getValue()));
+            row.createCell(3).setCellValue(data.getKey().getBelongsToField("product").getStringField("unit"));
         }
         sheet.autoSizeColumn((short) 0);
         sheet.autoSizeColumn((short) 1);
@@ -95,5 +112,9 @@ public final class InventoryXlsService extends XlsDocumentService {
     @Override
     protected String getSuffix() {
         return "";
+    }
+
+    @Override
+    protected void addSeries(final HSSFSheet sheet, final Entity entity) {
     }
 }

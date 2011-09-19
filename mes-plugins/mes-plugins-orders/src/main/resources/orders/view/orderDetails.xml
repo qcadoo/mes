@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.7
 
     This file is part of Qcadoo.
 
@@ -36,7 +36,6 @@
 					state="disabled">
 					<script>
 						<![CDATA[
-							this.element.width(100);
 							this.addOnChangeListener({
 								onClick: function() {
 									this.element.width(100);
@@ -178,6 +177,8 @@
 							reference="dateFrom">
 							<option type="labelWidth" value="50" />
 							<option type="withTimePicker" value="true" />
+							<listener event="onChange" class="com.qcadoo.mes.orders.OrderService"
+								method="checkPlannedDate" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="7">
@@ -185,6 +186,8 @@
 							reference="dateTo">
 							<option type="labelWidth" value="50" />
 							<option type="withTimePicker" value="true" />
+							<listener event="onChange" class="com.qcadoo.mes.orders.OrderService"
+								method="checkPlannedDate" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">

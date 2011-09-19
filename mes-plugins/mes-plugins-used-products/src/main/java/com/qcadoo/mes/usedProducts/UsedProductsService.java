@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.7
  *
  * This file is part of Qcadoo.
  *
@@ -114,6 +114,17 @@ public class UsedProductsService {
             String url = "../page/usedProducts/usedProducts.html?context={\"order.id\":\"" + orderId + "\"}";
 
             viewDefinitionState.openModal(url);
+        }
+    }
+
+    public void generateUsedProducts(final ViewDefinitionState state) {
+        String orderNumber = (String) state.getComponentByReference("number").getFieldValue();
+
+        if (orderNumber != null) {
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                    .find("where number='" + orderNumber + "'").uniqueResult();
+            if (order != null)
+                updateUsedProductsForOrder(order);
         }
     }
 

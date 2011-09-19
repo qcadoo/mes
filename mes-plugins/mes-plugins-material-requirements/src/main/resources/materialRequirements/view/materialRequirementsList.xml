@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.7
 
     This file is part of Qcadoo.
 
@@ -49,9 +49,10 @@
 			<option type="column" name="generated" fields="generated"
 				link="false" />
 			<option type="column" name="worker" fields="worker" width="200" />
+			<option type="column" name="date" fields="date" />
 			<option type="order" column="name" direction="asc" />
-			<option type="searchable" value="name,generated,worker" />
-			<option type="orderable" value="name,generated,worker" />
+			<option type="searchable" value="name,generated,worker,date" />
+			<option type="orderable" value="name,generated,worker,date" />
 			<option type="correspondingView" value="materialRequirements/materialRequirementDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="fullscreen" value="true" />

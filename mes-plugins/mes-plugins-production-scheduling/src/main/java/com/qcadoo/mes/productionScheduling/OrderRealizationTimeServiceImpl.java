@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.7
  *
  * This file is part of Qcadoo.
  *
@@ -101,6 +101,13 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     @Override
     @Transactional
     public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity) {
+        return estimateRealizationTimeForOperation(operationComponent, plannedQuantity, true);
+    }
+
+    @Override
+    @Transactional
+    public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
+            Boolean includeTpz) {
         if (operationComponent.getField("entityType") != null
                 && !OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
             return estimateRealizationTimeForOperation(
@@ -129,14 +136,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                         .getField("countMachine") : BigDecimal.ZERO).multiply(BigDecimal
                         .valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue();
             }
-
-            System.out.println("Libront productionInOneCycle: " + productionInOneCycle);
-            System.out.println("Libront roundUp: " + roundUp);
-            System.out.println("Libront countMachine: " + operationComponent.getField("countMachine"));
-            System.out.println("Libront plannedQuantity: " + plannedQuantity);
-
-            operationTime += getIntegerValue(operationComponent.getField("tpz"));
-
+            if (includeTpz) {
+                operationTime += getIntegerValue(operationComponent.getField("tpz"));
+            }
             if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
                 operationComponent.setField("effectiveOperationRealizationTime", operationTime);
                 operationComponent.setField("operationOffSet", pathTime);

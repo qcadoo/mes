@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="productionCounting" version="0.4.8"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
+
+	<information>
+		<name>Qcadoo MES :: Plugins :: Production Counting and Balance</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+
+	<dependencies>
+		<dependency>
+			<plugin>materialRequirements</plugin>
+			<version>[0.4.1</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+		
+		<model:model model="productionRecord" resource="model/productionRecord.xml" />
+		<model:model model="productionBalance" resource="model/productionBalance.xml" />
+		<model:model model="recordOperationProductInComponent" resource="model/recordOperationProductInComponent.xml" />
+		<model:model model="recordOperationProductOutComponent" resource="model/recordOperationProductOutComponent.xml" />
+		
+		<menu:menu-category name="orders" />
+		<menu:menu-item name="productionCounting" category="orders" view="productionRecordsList" />
+
+		<menu:menu-category name="reports" />
+		<menu:menu-item name="productionBalance" category="reports" view="productionBalancesList" />
+
+		<view:view resource="view/productionRecordsList.xml" />
+		<view:view resource="view/productionRecordDetails.xml" />
+		<view:view resource="view/productionBalancesList.xml" />
+		<view:view resource="view/productionBalanceDetails.xml" />
+
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="registerQuantityInProduct" />
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="registerQuantityOutProduct" />
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="registerProductionTime" />
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="allowedPartial"  />
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic" >
+			<model:boolean name="blockClosing"  />
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic" >
+			<model:boolean name="autoCloseOrder"  />
+		</model:model-field>
+		
+		<model:model-field model="order" plugin="orders">
+			<model:enum name="typeOfProductionRecording" values="01none,02cumulated,03forEach" default="01none"/>
+		</model:model-field>
+		<model:model-field model="order" plugin="orders">
+			<model:boolean name="registerQuantityInProduct" />
+		</model:model-field>
+		<model:model-field model="order" plugin="orders">
+			<model:boolean name="registerQuantityOutProduct" />
+		</model:model-field>
+		<model:model-field model="order" plugin="orders">
+			<model:boolean name="registerProductionTime" />
+		</model:model-field>
+		<model:model-field model="order" plugin="orders">
+			<model:boolean name="allowedPartial"  />
+		</model:model-field>
+		<model:model-field model="order" plugin="orders" >
+			<model:boolean name="blockClosing"  />
+		</model:model-field>
+		<model:model-field model="order" plugin="orders" >
+			<model:boolean name="autoCloseOrder"  />
+		</model:model-field>
+		
+		<view:view-tab resource="view/tabExtensions/parameters.xml" />
+		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
+		<view:resource uri="public/**/*" />
+		
+		<view:view-hook plugin="basic" view="parameters" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService" method="setParametersDefaultValue" />
+		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService" method="setOrderDefaultValue" />
+	</modules>
+
+</plugin>

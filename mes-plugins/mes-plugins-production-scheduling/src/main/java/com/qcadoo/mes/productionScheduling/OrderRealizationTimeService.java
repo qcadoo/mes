@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.7
  *
  * This file is part of Qcadoo.
  *
@@ -42,6 +42,9 @@ public interface OrderRealizationTimeService {
     BigDecimal getBigDecimalFromField(final Object value, final Locale locale);
 
     int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity);
+
+    int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
+            final Boolean includeTpz);
 
     Date getDateFromField(final Object value);
 

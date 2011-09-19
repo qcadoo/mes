@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.7
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="producedProducts" version="0.4.6"
+<plugin plugin="producedProducts" version="0.4.7"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
     xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
     xmlns:menu="http://schema.qcadoo.org/modules/menu"
@@ -72,6 +72,7 @@
 			class="com.qcadoo.mes.producedProducts.ProducedProductsService" method="showProducedProducts" />
 		
 		<view:view-hook plugin="producedProducts" view="producedProductsDetails" type="beforeRender" class="com.qcadoo.mes.producedProducts.ProducedProductsService" method="disablePlannedQuantity" />
+		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.producedProducts.ProducedProductsService" method="generateProducedProducts" />
 		
 		<view:view resource="view/producedProducts.xml" />
 		<view:view resource="view/producedProductsDetails.xml" />

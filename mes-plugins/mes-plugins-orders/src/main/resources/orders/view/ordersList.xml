@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.7
 
     This file is part of Qcadoo.
 
@@ -44,7 +44,6 @@
 					state="disabled">
 					<script>
 						<![CDATA[
-							this.element.width(100);
 							this.addOnChangeListener({
 								onClick: function() {
 									this.element.width(100);
@@ -157,8 +156,8 @@
 			<option type="order" column="number" direction="desc" />
 			<option type="correspondingView" value="orders/orderDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="name,number,state,dateFrom,dateTo" />
-			<option type="orderable" value="name,number,state,dateFrom,dateTo" />
+			<option type="searchable" value="name,number,state,dateFrom,dateTo,product,technology" />
+			<option type="orderable" value="name,number,state,dateFrom,dateTo,product,technology" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 			<option type="hasPredefinedFilters" value="true" />

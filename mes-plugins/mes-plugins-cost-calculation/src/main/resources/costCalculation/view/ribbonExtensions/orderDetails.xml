@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.2
+    Version: 0.4.7
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,6 @@
     ***************************************************************************
 
 -->
-
 <ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
     xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
     plugin="orders"

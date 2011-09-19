@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.7
  *
  * This file is part of Qcadoo.
  *
@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -41,8 +40,6 @@ import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.TreeComponent;
 
 @Service
 public class NormOrderService {
@@ -172,5 +169,5 @@ public class NormOrderService {
         timeNextOperation.setEnabled(true);
         timeNextOperation.setRequired(true);
     }
-    
+
 }

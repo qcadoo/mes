@@ -1,0 +1,35 @@
+<view name="productionRecordsList" modelName="productionRecord"
+	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardGridTemplate" />
+		</ribbon>
+		<component type="grid" name="productionRecordsList"
+			reference="grid">
+			<option type="column" name="number" fields="number" link="true"
+				width="150" />
+			<option type="column" name="order" fields="order" link="true"
+				width="300" expression="order['name']"/>
+			<option type="column" name="orderOperationComponent" fields="orderOperationComponent"
+				link="true" width="300" expression="orderOperationComponent['number'] +' ' + orderOperationComponent['name']"/>
+			<option type="column" name="type" fields="isFinal" link="true"
+				width="300"  expression="isFinal==true?'Final':'Partial'"/>
+			<option type="column" name="shift" fields="shift" link="true"
+				width="300" expression="shift['name']"/>
+			<option type="column" name="creationTime" fields="creationTime"
+				link="true" width="300" />
+			<option type="column" name="worker" fields="worker" link="true"
+				width="300" />
+			<option type="order" column="number" direction="asc" />
+			<option type="correspondingView" value="productionCounting/productionRecordDetails" />
+			<option type="correspondingComponent" value="form" />
+			<option type="searchable" value="name,number" />
+			<option type="orderable" value="name,number" />
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+		</component>
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+</view>

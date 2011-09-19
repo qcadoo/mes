@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.7
  *
  * This file is part of Qcadoo.
  *
@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.technologies;
 
+import static com.google.common.base.Preconditions.checkState;
+import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_OPERATION_NUMBER_FIELD_NAME;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.util.TreeNumberingService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.print.ReportDataService;
 import com.qcadoo.model.api.DataDefinition;
@@ -44,7 +49,7 @@ import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -63,6 +68,9 @@ public final class TechnologyService {
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
+    private TreeNumberingService treeNumberingService;
+
+    @Autowired
     private ReportDataService reportDataService;
 
     public boolean clearMasterOnCopy(final DataDefinition dataDefinition, final Entity entity) {
@@ -71,38 +79,32 @@ public final class TechnologyService {
     }
 
     public void setFirstTechnologyAsDefault(final DataDefinition dataDefinition, final Entity entity) {
-        if (!(Boolean) entity.getField("master") && entity.getField("product") != null) {
-            SearchCriteriaBuilder searchCriteria = dataDefinition.find().setMaxResults(1)
-                    .belongsTo("product", entity.getField("product"));
-
-            if (searchCriteria.list().getTotalNumberOfEntities() == 0) {
-                entity.setField("master", Boolean.TRUE);
-            }
+        if ((Boolean) entity.getField("master")) {
+            return;
         }
+        SearchCriteriaBuilder searchCriteria = dataDefinition.find();
+        searchCriteria.add(SearchRestrictions.belongsTo("product", entity.getBelongsToField("product")));
+        entity.setField("master", searchCriteria.list().getTotalNumberOfEntities() == 0);
     }
 
     public boolean checkTechnologyDefault(final DataDefinition dataDefinition, final Entity entity) {
-        Boolean master = (Boolean) entity.getField("master");
-
-        if (!master) {
+        if (!((Boolean) entity.getField("master"))) {
             return true;
         }
 
-        SearchCriteriaBuilder searchCriteria = dataDefinition.find().setMaxResults(1).isEq("master", true)
-                .belongsTo("product", entity.getField("product"));
+        SearchCriteriaBuilder searchCriteries = dataDefinition.find();
+        searchCriteries.add(SearchRestrictions.eq("master", true));
+        searchCriteries.add(SearchRestrictions.belongsTo("product", entity.getBelongsToField("product")));
 
         if (entity.getId() != null) {
-            searchCriteria.isIdNe(entity.getId());
+            searchCriteries.add(SearchRestrictions.idNe(entity.getId()));
         }
 
-        SearchResult searchResult = searchCriteria.list();
-
-        if (searchResult.getTotalNumberOfEntities() == 0) {
+        if (searchCriteries.list().getTotalNumberOfEntities() == 0) {
             return true;
-        } else {
-            entity.addError(dataDefinition.getField("master"), "orders.validate.global.error.default");
-            return false;
         }
+        entity.addError(dataDefinition.getField("master"), "orders.validate.global.error.default");
+        return false;
     }
 
     public void loadProductsForReferencedTechnology(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -209,15 +211,7 @@ public final class TechnologyService {
     }
 
     private Entity getProductById(final Long productId) {
-        DataDefinition instructionDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
-
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isIdEq(productId);
-
-        SearchResult searchResult = searchCriteria.list();
-        if (searchResult.getTotalNumberOfEntities() == 1) {
-            return searchResult.getEntities().get(0);
-        }
-        return null;
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
     }
 
     public boolean copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
@@ -331,22 +325,9 @@ public final class TechnologyService {
         return isValid;
     }
 
-    // public void setTechnologyReferenceOperationComponentViewRequiredFields(final ViewDefinitionState state, final Locale
-    // locale) {
-    // ((FieldComponentState) state.getComponentByReference("operation")).setRequired(true);
-    // }
-    //
-    // public void setTechnologyReferenceTechnologyComponentViewRequiredFields(final ViewDefinitionState state, final Locale
-    // locale) {
-    // ((FieldComponentState) state.getComponentByReference("technology")).setRequired(true);
-    // ((FieldComponentState) state.getComponentByReference("referenceMode")).setRequired(true);
-    // }
-
     public boolean checkIfUnitSampligNrIsReq(final DataDefinition dataDefinition, final Entity entity) {
         String qualityControlType = (String) entity.getField("qualityControlType");
-
         if (qualityControlType != null && qualityControlType.equals("02forUnit")) {
-
             BigDecimal unitSamplingNr = (BigDecimal) entity.getField("unitSamplingNr");
             if (unitSamplingNr == null || unitSamplingNr.scale() > 3 || unitSamplingNr.compareTo(BigDecimal.ZERO) < 0
                     || unitSamplingNr.precision() > 7) {
@@ -354,12 +335,27 @@ public final class TechnologyService {
                 entity.addError(dataDefinition.getField("unitSamplingNr"),
                         "technologies.technology.validate.global.error.unitSamplingNr");
                 return false;
-            } else {
-                return true;
             }
-        } else {
-            return true;
         }
+        return true;
     }
 
+    public void setLookupDisableInTechnologyOperationComponent(final ViewDefinitionState viewDefinitionState) {
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FieldComponent operationLookup = (FieldComponent) viewDefinitionState.getComponentByReference("operation");
+
+        operationLookup.setEnabled(form.getEntityId() == null);
+    }
+
+    public void assignNumberToOperationsInTechnology(final DataDefinition dataDefinition, final Entity entity) {
+        Entity technology = dataDefinition.get(entity.getId());
+        EntityTree tree = technology.getTreeField("operationComponents");
+        treeNumberingService.assignNumberToEntityTreeNodes(tree, MODEL_OPERATION_NUMBER_FIELD_NAME);
+
+        // save updated technology operations
+        for (Entity node : tree) {
+            checkState(node.getDataDefinition().save(node).isValid(), "invalid node: " + node);
+        }
+        entity.setField("operationComponents", tree);
+    }
 }
