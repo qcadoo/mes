@@ -72,9 +72,6 @@
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
 								method="fillFieldsWhenOrderChanged" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
-								method="fillProductionTimesWhenOrderChanged" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
@@ -175,5 +172,7 @@
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
 			method="setGenerateButtonState" />
+		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
+			method="setProductionTimeTabContentVisibility" />
 	</hooks>
 </view>

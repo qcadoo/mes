@@ -62,6 +62,12 @@ public class ProductionBalanceService {
         if (order == null) {
             return;
         }
+
+        setFieldValues(viewDefinitionState, order);
+        setGridAndGridLayoutVisibility(viewDefinitionState, order);
+    }
+
+    private void setFieldValues(final ViewDefinitionState viewDefinitionState, final Entity order) {
         FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference("product");
         productField.setFieldValue(order.getBelongsToField("product").getId());
 
@@ -72,50 +78,56 @@ public class ProductionBalanceService {
         recordsNumberField.setFieldValue(recordsNumberValue);
     }
 
-    public void fillProductionTimesWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        if (!(state instanceof FieldComponent)) {
-            return;
-        }
+    public void setProductionTimeTabContentVisibility(final ViewDefinitionState viewDefinitionState) {
         FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
         if (orderLookup.getFieldValue() == null) {
+            setGridAndGridLayoutVisibility(viewDefinitionState, null);
             return;
         }
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 (Long) orderLookup.getFieldValue());
+        setGridAndGridLayoutVisibility(viewDefinitionState, order);
+    }
+
+    private void setGridAndGridLayoutVisibility(final ViewDefinitionState viewDefinitionState, final Entity order) {
         if (order == null) {
-            return;
-        }
-
-        if (order.getField("typeOfProductionRecording") != null
-                && order.getStringField("typeOfProductionRecording").equals("03forEach")) {
+            viewDefinitionState.getComponentByReference("operationsTimeGrid").setVisible(false);
             viewDefinitionState.getComponentByReference("productionTimeGridLayout").setVisible(false);
-
+        } else if (order.getField("typeOfProductionRecording") != null
+                && order.getStringField("typeOfProductionRecording").equals("03forEach")) {
+            viewDefinitionState.getComponentByReference("operationsTimeGrid").setVisible(true);
+            viewDefinitionState.getComponentByReference("productionTimeGridLayout").setVisible(false);
         } else {
             viewDefinitionState.getComponentByReference("operationsTimeGrid").setVisible(false);
+            viewDefinitionState.getComponentByReference("productionTimeGridLayout").setVisible(true);
+            setTimeValues(viewDefinitionState, order);
+        }
+    }
 
-            Entity productionRecord = dataDefinitionService
-                    .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD)
-                    .find("where order.id=" + order.getId().toString()).uniqueResult();
+    private void setTimeValues(final ViewDefinitionState viewDefinitionState, final Entity order) {
+        Entity productionRecord = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD)
+                .find("where order.id=" + order.getId().toString()).uniqueResult();
 
-            if (productionRecord != null) {
-                // FieldComponent machinePlannedTimeField = (FieldComponent) viewDefinitionState
-                // .getComponentByReference("machinePlannedTime");
-                FieldComponent machineRegisteredTimeField = (FieldComponent) viewDefinitionState
-                        .getComponentByReference("machineRegisteredTime");
-                machineRegisteredTimeField.setFieldValue(productionRecord.getStringField("machineTime"));
-                FieldComponent machineTimeBalanceField = (FieldComponent) viewDefinitionState
-                        .getComponentByReference("machineTimeBalance");
-                machineTimeBalanceField.setFieldValue(productionRecord.getStringField("machineTimeBalance"));
-                // FieldComponent laborPlannedTimeField = (FieldComponent) viewDefinitionState
-                // .getComponentByReference("laborPlannedTime");
-                FieldComponent laborRegisteredTimeField = (FieldComponent) viewDefinitionState
-                        .getComponentByReference("laborRegisteredTime");
-                laborRegisteredTimeField.setFieldValue(productionRecord.getStringField("laborTime"));
-                FieldComponent laborTimeBalanceField = (FieldComponent) viewDefinitionState
-                        .getComponentByReference("laborTimeBalance");
-                laborTimeBalanceField.setFieldValue(productionRecord.getStringField("laborTimeBalance"));
-            }
+        if (productionRecord != null) {
+            // TODO planned time ANKI
+            // FieldComponent machinePlannedTimeField = (FieldComponent) viewDefinitionState
+            // .getComponentByReference("machinePlannedTime");
+            FieldComponent machineRegisteredTimeField = (FieldComponent) viewDefinitionState
+                    .getComponentByReference("machineRegisteredTime");
+            machineRegisteredTimeField.setFieldValue(productionRecord.getStringField("machineTime"));
+            FieldComponent machineTimeBalanceField = (FieldComponent) viewDefinitionState
+                    .getComponentByReference("machineTimeBalance");
+            machineTimeBalanceField.setFieldValue(productionRecord.getStringField("machineTimeBalance"));
+            // TODO planned time ANKI
+            // FieldComponent laborPlannedTimeField = (FieldComponent) viewDefinitionState
+            // .getComponentByReference("laborPlannedTime");
+            FieldComponent laborRegisteredTimeField = (FieldComponent) viewDefinitionState
+                    .getComponentByReference("laborRegisteredTime");
+            laborRegisteredTimeField.setFieldValue(productionRecord.getStringField("laborTime"));
+            FieldComponent laborTimeBalanceField = (FieldComponent) viewDefinitionState
+                    .getComponentByReference("laborTimeBalance");
+            laborTimeBalanceField.setFieldValue(productionRecord.getStringField("laborTimeBalance"));
         }
     }
 
