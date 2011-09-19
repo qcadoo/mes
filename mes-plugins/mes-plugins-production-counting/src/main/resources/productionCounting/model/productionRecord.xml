@@ -28,15 +28,13 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="40" />
+		<string name="number" unique="true">
+<!-- 			<validatesLength max="40" /> -->
 		</string>
-		<belongsTo name="order" model="order" plugin="orders"
-			/>
+		<belongsTo name="order" model="order" plugin="orders"/>
 		<belongsTo name="orderOperationComponent" model="orderOperationComponent"
 			plugin="productionScheduling" />
-		<belongsTo name="shift" model="shift" plugin="basic"
-			 />
+		<belongsTo name="shift" model="shift" plugin="basic" />
 
 		<hasMany name="recordOperationProductInComponent" joinField="productionRecord"
 			model="recordOperationProductInComponent" />
@@ -52,6 +50,8 @@
 		<integer name="laborTime" />
 		<integer name="laborTimeBalance" />
 	</fields>
-	<hooks />
+	<hooks >
+		<onSave class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService" method="generateNumer"/>
+	</hooks>
 	<identifier expression="#number" />
 </model>
