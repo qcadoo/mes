@@ -35,6 +35,7 @@
 		<belongsTo name="orderOperationComponent" model="orderOperationComponent"
 			plugin="productionScheduling" />
 		<belongsTo name="shift" model="shift" plugin="basic" />
+		<belongsTo name="productionBalance" model="productionBalance" />
 
 		<hasMany name="recordOperationProductInComponent" joinField="productionRecord"
 			model="recordOperationProductInComponent" />

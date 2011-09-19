@@ -14,9 +14,9 @@
 		<integer name="recordsNumber" />
 		<string name="description" />
 		<string name="fileName" />
-		<hasMany name="productionRecord" joinField="order" model="productionRecord" />
-		<hasMany name="recordOperationProductInComponent" joinField="productionRecord" model="recordOperationProductInComponent" />
-		<hasMany name="recordOperationProductOutComponent" joinField="productionRecord" model="recordOperationProductOutComponent" />
+		<hasMany name="productionRecords" joinField="productionReport" model="productionRecord" />
+		<hasMany name="recordOperationProductInComponents" joinField="productionRecord" model="recordOperationProductInComponent" />
+		<hasMany name="recordOperationProductOutComponents" joinField="productionRecord" model="recordOperationProductOutComponent" />
 	</fields>
 	<hooks>
 		<onCopy class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
