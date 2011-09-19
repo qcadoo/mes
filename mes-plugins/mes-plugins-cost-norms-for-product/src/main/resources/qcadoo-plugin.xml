@@ -54,10 +54,6 @@
 
     <dependencies>
         <dependency>
-            <plugin>basic</plugin>
-            <version>[0.4.1</version>
-        </dependency>
-        <dependency>
             <plugin>productionScheduling</plugin>
             <version>[0.4.2</version>
         </dependency>

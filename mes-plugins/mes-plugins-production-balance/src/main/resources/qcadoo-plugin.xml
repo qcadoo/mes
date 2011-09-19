@@ -52,10 +52,6 @@
 
 	<dependencies>
 		<dependency>
-			<plugin>orders</plugin>
-			<version>[0.4.1</version>
-		</dependency>
-		<dependency>
 			<plugin>usedProducts</plugin>
 			<version>[0.4.1</version>
 		</dependency>
