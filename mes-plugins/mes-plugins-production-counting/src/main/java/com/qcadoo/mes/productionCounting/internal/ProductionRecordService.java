@@ -257,7 +257,7 @@ public class ProductionRecordService {
                 recordIn.setField("product", productIn.getId());
                 recordIn.setField("plannedQuantity", productIn.getField("quantity"));
                 recordIn.setField("productionRecord", productionCounting.getId());
-                productInDD.save(recordIn);
+                // productInDD.save(recordIn);
                 listOfProductIn.add(recordIn);
             }
         }
@@ -281,7 +281,7 @@ public class ProductionRecordService {
                 recordOut.setField("product", productOut.getId());
                 recordOut.setField("plannedQuantity", productOut.getField("quantity"));
                 recordOut.setField("productionRecord", productionCounting.getId());
-                productOutDD.save(recordOut);
+                // productOutDD.save(recordOut);
                 listOfProductOut.add(recordOut);
             }
         }
