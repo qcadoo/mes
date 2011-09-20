@@ -9,6 +9,8 @@ public interface ProductionCountingConstants {
 
     public static final String MODEL_PRODUCTION_BALANCE = "productionBalance";
 
+    public static final String MODEL_PRODUCTION_COUNTING = "productionCounting";
+
     public static final String MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT = "recordOperationProductInComponent";
 
     public static final String MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT = "recordOperationProductOutComponent";
@@ -21,6 +23,10 @@ public interface ProductionCountingConstants {
     public static final String VIEW_PRODUCTION_BALANCES_LIST = "productionBalancesList";
 
     public static final String VIEW_PRODUCTION_BALANCE_DETAILS = "productionBalanceDetails";
+
+    public static final String VIEW_PRODUCTION_COUNTINGS_LIST = "productionCountingsList";
+
+    public static final String VIEW_PRODUCTION_COUNTING_DETAILS = "productionCountingDetails";
 
     public static final String VIEW_RECORD_OPERATION_PRODUCT_IN_COMPONENT_DETAILS = "recordOperationProductInComponentDetails";
 
