@@ -47,7 +47,7 @@ public final class WorkPlanForMachinePdfService extends PdfDocumentService {
 
     @Override
     protected String getSuffix() {
-        return "for_machine";
+        return "_for_machine";
     }
 
     @Override

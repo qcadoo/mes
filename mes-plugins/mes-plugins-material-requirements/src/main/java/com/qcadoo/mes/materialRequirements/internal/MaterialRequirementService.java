@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -74,9 +73,6 @@ public final class MaterialRequirementService {
 
     @Autowired
     private OrderReportService orderReportService;
-
-    @Value("${reportPath}")
-    private String path;
 
     @Autowired
     private TranslationService translationService;
@@ -239,22 +235,12 @@ public final class MaterialRequirementService {
 
     private void generateMaterialReqDocuments(final ComponentState state, final Entity materialRequirement) throws IOException,
             DocumentException {
-        Entity materialRequirementWithFileName = updateFileName(materialRequirement,
-                getFullFileName((Date) materialRequirement.getField("date"), "Material_requirement"),
-                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT);
+        Entity materialRequirementWithFileName = materialRequirementPdfService.updateFileName(materialRequirement,
+                "Material_requirement");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .uniqueResult();
         materialRequirementPdfService.generateDocument(materialRequirementWithFileName, company, state.getLocale());
         materialRequirementXlsService.generateDocument(materialRequirementWithFileName, company, state.getLocale());
-    }
-
-    private String getFullFileName(final Date date, final String fileName) {
-        return path + fileName + "_" + new SimpleDateFormat(DateUtils.REPORT_DATE_TIME_FORMAT).format(date) + "_";
-    }
-
-    private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
-        entity.setField("fileName", fileName);
-        return dataDefinitionService.get(MaterialRequirementsConstants.PLUGIN_IDENTIFIER, entityName).save(entity);
     }
 
     private Entity printMaterialReqForOrder(final ComponentState state) {

@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -70,9 +69,6 @@ public class SimpleMaterialBalanceService {
 
     @Autowired
     private SimpleMaterialBalanceXlsService simpleMaterialBalanceXlsService;
-
-    @Value("${reportPath}")
-    private String path;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("date", null);
@@ -256,22 +252,11 @@ public class SimpleMaterialBalanceService {
 
     private void generateSimpleMaterialBalanceDocuments(final ComponentState state, final Entity simpleMaterialBalance)
             throws IOException, DocumentException {
-        Entity simpleMaterialBalanceWithFileName = updateFileName(simpleMaterialBalance,
-                getFullFileName((Date) simpleMaterialBalance.getField("date"), simpleMaterialBalance.getStringField("name")),
-                SimpleMaterialBalanceConstants.MODEL_SIMPLE_MATERIAL_BALANCE);
+        Entity simpleMaterialBalanceWithFileName = simpleMaterialBalancePdfService.updateFileName(simpleMaterialBalance);
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .uniqueResult();
         simpleMaterialBalancePdfService.generateDocument(simpleMaterialBalanceWithFileName, company, state.getLocale());
         simpleMaterialBalanceXlsService.generateDocument(simpleMaterialBalanceWithFileName, company, state.getLocale());
-    }
-
-    private String getFullFileName(final Date date, final String fileName) {
-        return path + fileName + "_" + new SimpleDateFormat(DateUtils.REPORT_DATE_TIME_FORMAT).format(date);
-    }
-
-    private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
-        entity.setField("fileName", fileName);
-        return dataDefinitionService.get(SimpleMaterialBalanceConstants.PLUGIN_IDENTIFIER, entityName).save(entity);
     }
 
 }
