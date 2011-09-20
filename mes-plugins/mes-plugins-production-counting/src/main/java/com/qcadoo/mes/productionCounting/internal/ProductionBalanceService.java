@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -44,9 +43,6 @@ public class ProductionBalanceService {
 
     @Autowired
     private ProductionBalancePdfService productionBalancePdfService;
-
-    @Value("${reportPath}")
-    private String path;
 
     public void fillFieldsWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -260,21 +256,10 @@ public class ProductionBalanceService {
 
     private void generateProductionBalanceDocuments(final ComponentState state, final Entity productionBalance)
             throws IOException, DocumentException {
-        Entity productionBalanceWithFileName = updateFileName(productionBalance,
-                getFullFileName((Date) productionBalance.getField("date"), productionBalance.getStringField("name")),
-                ProductionCountingConstants.MODEL_PRODUCTION_BALANCE);
+        Entity productionBalanceWithFileName = productionBalancePdfService.updateFileName(productionBalance);
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .uniqueResult();
         productionBalancePdfService.generateDocument(productionBalanceWithFileName, company, state.getLocale());
-    }
-
-    private String getFullFileName(final Date date, final String fileName) {
-        return path + fileName + "_" + new SimpleDateFormat(DateUtils.REPORT_DATE_TIME_FORMAT).format(date);
-    }
-
-    private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
-        entity.setField("fileName", fileName);
-        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, entityName).save(entity);
     }
 
 }

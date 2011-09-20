@@ -126,6 +126,6 @@ public final class WorkPlanForProductXlsService extends XlsDocumentService {
 
     @Override
     protected String getSuffix() {
-        return "for_product";
+        return "_for_product";
     }
 }

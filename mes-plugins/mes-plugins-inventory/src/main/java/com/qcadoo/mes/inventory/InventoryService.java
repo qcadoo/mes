@@ -39,7 +39,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -87,9 +86,6 @@ public class InventoryService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
-
-    @Value("${reportPath}")
-    private String path;
 
     public BigDecimal calculateShouldBe(final String warehouse, final String product, final String forDate) {
 
@@ -362,17 +358,6 @@ public class InventoryService {
         }
     }
 
-    private String getFullFileName(final Date date, final String fileName) {
-
-        return path + fileName + "_" + new SimpleDateFormat(DateUtils.REPORT_DATE_TIME_FORMAT).format(date);
-
-    }
-
-    private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
-        entity.setField("fileName", fileName);
-        return dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER, entityName).save(entity);
-    }
-
     private Map<Entity, BigDecimal> createReportData(Entity inventoryReport) {
         DataDefinition dataDefTransfer = dataDefinitionService.get(InventoryConstants.PLUGIN_IDENTIFIER,
                 InventoryConstants.MODEL_TRANSFER);
@@ -402,9 +387,7 @@ public class InventoryService {
 
     private void generateMaterialReqDocuments(final ComponentState state, final Entity inventoryReport) throws IOException,
             DocumentException {
-        Entity inventoryWithFileName = updateFileName(inventoryReport,
-                getFullFileName((Date) inventoryReport.getField("date"), inventoryReport.getStringField("name")),
-                InventoryConstants.MODEL_INVENTORY_REPORT);
+        Entity inventoryWithFileName = inventoryPdfService.updateFileName(inventoryReport);
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_COMPANY).find().uniqueResult();
         Map<Entity, BigDecimal> reportData = createReportData(inventoryReport);
         inventoryPdfService.generateDocument(inventoryWithFileName, reportData, company, state.getLocale());
