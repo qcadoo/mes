@@ -32,22 +32,29 @@
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="status">
-				<bigButton name="activateOrder" icon="startIcon24.png"
+				<bigButton name="acceptOrder" icon="startIcon24.png"
 					state="disabled">
 					<script>
 						<![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if (this.state == "begin") {
+									this.element.width(100);
+									if (this.state == "accept") {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.acceptOrder.confirm)}")) {
+											if(window.canClose()) {
+												#{form}.performEvent('changeOrderStateForForm', ['accept']);
+											}
+										};
+									} else if (this.state == "begin") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.activateOrder.confirm)}")) {
 											if(window.canClose()) {
-												#{form}.performEvent('changeOrderStateForForm', [true]);
+												#{form}.performEvent('changeOrderStateForForm', ['begin']);
 											}
 										};
 									} else if (this.state == "finish") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.finishOrder.confirm)}")) {
 											if(window.canClose()) {
-												#{form}.performEvent('changeOrderStateForForm', [false]);
+												#{form}.performEvent('changeOrderStateForForm', ['finish']);
 											}
 										};
 									}
@@ -70,7 +77,7 @@
 						var saveNew = #{window}.getRibbonItem("actions.saveNew");
 						var cancel = #{window}.getRibbonItem("actions.cancel");
 						var del = #{window}.getRibbonItem("actions.delete");
-						var activateOrder = #{window}.getRibbonItem("status.activateOrder");
+						var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
 						
 						this.addOnChangeListener({
 							onSetValue: function(value) {
@@ -83,7 +90,7 @@
 								if (! value.content.entityId) {
 									cancel.disable();
 									del.disable();
-									activateOrder.disable();
+									acceptOrder.disable();
 									return;
 								}
 								
@@ -91,26 +98,48 @@
 								del.enable();
 								
 								var state = #{state}.getValue().content.value;
+								var externalNumber = #{externalNumber}.getValue().content.value;
+								var externalSynchronized = #{externalSynchronized}.getValue().content.value;
+								
 								if (!state) {
 									return;
 								}
-								if (state == "03done") {
+								
+								if (state == "04done") {
 									save.disable("#{translate(orders.order.ribbon.message.stateIsDone)}");
 									saveBack.disable("#{translate(orders.order.ribbon.message.stateIsDone)}");
 									saveNew.disable("#{translate(orders.order.ribbon.message.stateIsDone)}");
 									cancel.disable("#{translate(orders.order.ribbon.message.stateIsDone)}");
 									del.disable("#{translate(orders.order.ribbon.message.stateIsDone)}");
-									activateOrder.disable();
-								} else if (state == "02inProgress") { 
-									activateOrder.enable();
-									activateOrder.state = "finish";
-									activateOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.finishOrder)}");
-									activateOrder.setIcon('acceptIcon24.png');
-								} else if (state == "01pending") {
-									activateOrder.enable();
-									activateOrder.state = "begin";
-									activateOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.activateOrder)}");
-									activateOrder.setIcon('startIcon24.png');
+									acceptOrder.disable();
+								} else if (state == "03inProgress") { 
+									acceptOrder.enable();
+									acceptOrder.state = "finish";
+									acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.finishOrder)}");
+									acceptOrder.setIcon('acceptIcon24.png');
+								} else if (state == "02accepted") {
+									acceptOrder.enable();
+									acceptOrder.state = "begin";
+									acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.activateOrder)}");
+									acceptOrder.setIcon('startIcon24.png');
+								} else if (state == "01new") {
+									acceptOrder.enable();
+									acceptOrder.state = "accept";
+									acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.acceptOrder)}");
+									acceptOrder.setIcon('startIcon24.png');
+								}
+								
+								if(externalSynchronized == '0') {
+									save.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+									saveBack.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+									saveNew.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+									cancel.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+									del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+									acceptOrder.disable();
+								}
+								
+								if(externalNumber != undefined && externalNumber != '') {
+									del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
 								}
 							}
 						});
@@ -121,6 +150,8 @@
 					<layoutElement column="1" row="1">
 						<component type="select" name="state" field="state"
 							reference="state" defaultEnabled="false" />
+ 						<component type="hidden" name="externalNumber" field="externalNumber" reference="externalNumber" />
+						<component type="hidden" name="externalSynchronized" field="externalSynchronized" reference="externalSynchronized" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="number" reference="number"
@@ -130,8 +161,17 @@
 						<component type="textarea" name="name" field="name"
 							reference="name" hasDescription="true" />
 					</layoutElement>
-					<!--<layoutElement column="1" row="5"> <component type="separatorLine" 
-						name="line1" /> </layoutElement> -->
+					<layoutElement column="1" row="5">
+						<component type="lookup" name="contractor" reference="contractor"
+							field="contractor">
+							<option type="column" name="name" fields="name" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />							
+						</component>
+					</layoutElement>
 					<layoutElement column="1" row="6">
 						<component type="calendar" name="dateFrom" field="dateFrom"
 							reference="dateFrom">
@@ -252,5 +292,6 @@
 			method="setAndDisableState" />
 		<beforeRender class="com.qcadoo.mes.basic.util.UnitService"
 			method="fillProductUnitBeforeRender" />
+		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="disableOrderFormForExternalItems" />
 	</hooks>
 </view>

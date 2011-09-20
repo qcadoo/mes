@@ -25,6 +25,7 @@
 		<belongsTo name="shift" model="shift" plugin="basic"
 			required="true" />
 		<belongsTo name="productionBalance" model="productionBalance" />
+		<belongsTo name="productionCounting" model="productionCounting" />
 
 		<hasMany name="recordOperationProductInComponent" joinField="productionRecord"
 			model="recordOperationProductInComponent" />

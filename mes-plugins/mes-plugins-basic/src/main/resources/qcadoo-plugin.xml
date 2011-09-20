@@ -56,6 +56,7 @@
 
 		<localization:translation path="locales" basename="basic"/>
 
+		<model:model model="contractor" resource="model/contractor.xml" />
 		<model:model model="machine" resource="model/machine.xml" />
 		<model:model model="staff" resource="model/staff.xml" />
 		<model:model model="parameter" resource="model/parameter.xml" />
@@ -85,12 +86,16 @@
 		<menu:menu-item-url name="systemParameters"
 			category="administration" url="/parameters.html" />
 		<menu:menu-item-url name="companyDetails"
-			category="administration" url="/companyView.html" />
+			category="administration" url="/companyView.html"/>
+		<menu:menu-item name="contractors" category="basic"
+			view="contractorsList" />
 		<menu:menu-item name="currency"
 			category="administration" view="currencyDetails"/>
 		
 		<menu:menu-item-url url="/page/qcadooDictionaries/dictionariesList.html" name="dictionariesInBasic" category="basic"/>
 
+		<view:view resource="view/contractorsList.xml" />
+		<view:view resource="view/contractorDetails.xml" />
 		<view:view resource="view/machinesList.xml" />
 		<view:view resource="view/machineDetails.xml" />
 		<view:view resource="view/staffsList.xml" />

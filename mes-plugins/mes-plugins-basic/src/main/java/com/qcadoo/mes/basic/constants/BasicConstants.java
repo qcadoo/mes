@@ -34,6 +34,8 @@ public interface BasicConstants {
 
     public static final String MODEL_PRODUCT = "product";
 
+    public static final String MODEL_CONTRACTOR = "contractor";
+
     public static final String MODEL_STAFF = "staff";
 
     public static final String MODEL_SUBSTITUTE = "substitute";

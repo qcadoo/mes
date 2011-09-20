@@ -601,6 +601,7 @@ public class SamplesLoaderModule extends Module {
         Entity order = dataDefinitionService.get("orders", "order").create();
         order.setField("dateFrom", new Date(startDate));
         order.setField("dateTo", new Date(endDate));
+        order.setField("externalSynchronized", true);
 
         order.setField("technology", getTechnologyByName(values.get("bom_name")));
         order.setField("name",
@@ -612,7 +613,7 @@ public class SamplesLoaderModule extends Module {
             order.setField("plannedQuantity", null);
         }
 
-        order.setField("state", "01pending");
+        order.setField("state", "01new");
 
         Entity product = getProductByNumber(values.get("product_nr"));
 
