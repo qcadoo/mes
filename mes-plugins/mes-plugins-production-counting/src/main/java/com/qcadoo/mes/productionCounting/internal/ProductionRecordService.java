@@ -2,7 +2,9 @@ package com.qcadoo.mes.productionCounting.internal;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,7 +188,6 @@ public class ProductionRecordService {
     }
 
     private void fillInProductsGridWhenOrderStateForEach(final ViewDefinitionState viewDefinitionState) {
-        checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("recordOperationProductInComponent");
         ComponentState orderLookup = (ComponentState) viewDefinitionState.getComponentByReference("order");
         Long orderId = (Long) orderLookup.getFieldValue();
@@ -199,8 +200,6 @@ public class ProductionRecordService {
         DataDefinition dd = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
 
-        EntityList operations = (EntityList) technology.getTreeField("operationComponents");
-
         SearchDisjunction disjunction = SearchRestrictions.disjunction();
         for (Entity operationComponent : technology.getTreeField("operationComponents")) {
             disjunction.add(SearchRestrictions.belongsTo("operationComponent", operationComponent));
@@ -212,47 +211,81 @@ public class ProductionRecordService {
         grid.setEntities(searchResult.getEntities());
     }
 
-    public void copyProductInAndOut(final DataDefinition dd, final Entity productionCounting) {
+    public void copyProductInAndOut(final DataDefinition dd, final Entity entity) {
+        Entity productionCounting = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_RECORD).save(entity);
         Entity order = productionCounting.getBelongsToField("order");
-        if (order == null) {
-            return;
+        if (order != null || "02cumulated".equals(order.getBelongsToField("typeOfProductionRecording"))) {
+            DataDefinition operationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
+            List<Entity> orderOperationComponents = operationComponentDD.find().add(SearchRestrictions.belongsTo("order", order))
+                    .list().getEntities();
+
+            if (orderOperationComponents != null || orderOperationComponents.size() != 0) {
+
+                copyProductInAndOutForOrder(orderOperationComponents, productionCounting);
+            }
+        } else if (order != null || "03forEach".equals(order.getBelongsToField("typeOfProductionRecording"))) {
+            List<Entity> orderOperationComponents = new ArrayList<Entity>();
+            orderOperationComponents.add(productionCounting.getBelongsToField("orderOperationComponent"));
+            copyProductInAndOutForOrder(orderOperationComponents, productionCounting);
         }
-        Entity orderOperationComponent = order.getBelongsToField("orderOperationComponent");
-        if (orderOperationComponent == null) {
-            return;
-        }
-        Entity operationComponent = orderOperationComponent.getBelongsToField("technologyOperationComponent");
-        EntityList productIn = operationComponent.getHasManyField("operationProductInComponents");
-        createRecordOperationProductInComponent(productIn, productionCounting);
-        EntityList productOut = operationComponent.getHasManyField("operationProductOutComponents");
-        createRecordOperationProductOutComponent(productOut, productionCounting);
     }
 
-    private void createRecordOperationProductInComponent(final EntityList entityList, final Entity productionCounting) {
-        checkArgument(entityList != null, "entityList is null!");
+    private void copyProductInAndOutForOrder(final List<Entity> orderOperationComponents, final Entity productionCounting) {
+        checkArgument(orderOperationComponents != null, "orderOperationComponents is null");
+
+        productionCounting.setField("recordOperationProductInComponent",
+                createRecordOperationProductInComponent(orderOperationComponents, productionCounting));
+        productionCounting.setField("recordOperationProductOutComponent",
+                createRecordOperationProductOutComponent(orderOperationComponents, productionCounting));
+    }
+
+    private List<Entity> createRecordOperationProductInComponent(final List<Entity> orderOperationComponents,
+            final Entity productionCounting) {
+        checkArgument(orderOperationComponents != null, "entityList is null!");
         checkArgument(productionCounting != null, "productionCounting is null!");
         DataDefinition productInDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT);
-        for (Entity productIn : entityList) {
-            Entity recordIn = productInDD.create();
-            recordIn.setField("product", productIn.getId());
-            recordIn.setField("plannedQuantity", productIn.getField("quantity"));
-            recordIn.setField("productionRecord", productionCounting.getId());
-            productInDD.save(recordIn);
+        List<Entity> listOfProductIn = new ArrayList<Entity>();
+
+        for (Entity orderOperationComponent : orderOperationComponents) {
+            Entity operationComponent = orderOperationComponent.getBelongsToField("technologyOperationComponent");
+            EntityList operationProductInComponents = operationComponent.getHasManyField("operationProductInComponents");
+
+            for (Entity productIn : operationProductInComponents) {
+                Entity recordIn = productInDD.create();
+                recordIn.setField("product", productIn.getId());
+                recordIn.setField("plannedQuantity", productIn.getField("quantity"));
+                recordIn.setField("productionRecord", productionCounting.getId());
+                // productInDD.save(recordIn);
+                listOfProductIn.add(recordIn);
+            }
         }
+        return listOfProductIn;
     }
 
-    private void createRecordOperationProductOutComponent(final EntityList entityList, final Entity productionCounting) {
-        checkArgument(entityList != null, "entityList is null!");
+    private List<Entity> createRecordOperationProductOutComponent(final List<Entity> orderOperationComponents,
+            final Entity productionCounting) {
+        checkArgument(orderOperationComponents != null, "entityList is null!");
         checkArgument(productionCounting != null, "productionCounting is null!");
         DataDefinition productOutDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
-        for (Entity productOut : entityList) {
-            Entity recordOut = productOutDD.create();
-            recordOut.setField("product", productOut.getId());
-            recordOut.setField("plannedQuantity", productOut.getField("quantity"));
-            recordOut.setField("productionRecord", productionCounting.getId());
-            productOutDD.save(recordOut);
+        List<Entity> listOfProductOut = new ArrayList<Entity>();
+
+        for (Entity orderOperationComponent : orderOperationComponents) {
+            Entity operationComponent = orderOperationComponent.getBelongsToField("technologyOperationComponent");
+            EntityList operationProductOutComponents = operationComponent.getHasManyField("operationProductOutComponents");
+
+            for (Entity productOut : operationProductOutComponents) {
+                Entity recordOut = productOutDD.create();
+                recordOut.setField("product", productOut.getId());
+                recordOut.setField("plannedQuantity", productOut.getField("quantity"));
+                recordOut.setField("productionRecord", productionCounting.getId());
+                // productOutDD.save(recordOut);
+                listOfProductOut.add(recordOut);
+            }
         }
+        return listOfProductOut;
     }
+
 }
