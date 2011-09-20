@@ -28,9 +28,8 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="productionRecord" model="productionRecord" required="true" />
-		<belongsTo name="product" model="product" plugin="basic"
-			required="true" />
+		<belongsTo name="productionRecord" model="productionRecord" />
+		<belongsTo name="product" model="product" plugin="basic" />
 		<decimal name="usedQuantity">
 			<validatesRange from="0" exclusively="true" />
 			<validatesPrecision max="7" />

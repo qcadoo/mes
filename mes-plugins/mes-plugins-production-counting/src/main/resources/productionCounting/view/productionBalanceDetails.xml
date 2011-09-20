@@ -110,30 +110,30 @@
 					class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService" method="generateProductionBalance" />
 			</component>
 		</windowTab>
-		<windowTab name="inputProducts">
-			<component type="grid" name="inputProducts" reference="inputProductsGrid" source="#{form}.recordOperationProductInComponents">
-				<option type="column" name="inputProductNumber" fields="product" expression="#product['number']" />
-				<option type="column" name="inputProductName" fields="product" expression="#product['name']" />
-				<option type="column" name="inputProductType" fields="product" expression="#product['typeOfMaterial']" />
-				<option type="column" name="inputProductUnit" fields="product" expression="#product['unit']" />
-				<option type="column" name="inputProductPlannedQuantity" fields="plannedQuantity" expression="#plannedQuantity" />
-				<option type="column" name="inputProductUsedQuantity" fields="usedQuantity" expression="#usedQuantity" />
-				<option type="column" name="inputProductBalance" fields="balance" expression="#balance" />
-				<option type="order" column="inputProductNumber" direction="asc" />
-			</component>
-		</windowTab>
-		<windowTab name="outputProducts">
-			<component type="grid" name="outputProducts" reference="outputProductsGrid" source="#{form}.recordOperationProductOutComponents">
-				<option type="column" name="outputProductNumber" fields="product" expression="#product['number']" />
-				<option type="column" name="outputProductName" fields="product" expression="#product['name']" />
-				<option type="column" name="outputProductType" fields="product" expression="#product['typeOfMaterial']" />
-				<option type="column" name="outputProductUnit" fields="product" expression="#product['unit']" />
-				<option type="column" name="outputProductPlannedQuantity" fields="plannedQuantity" expression="#plannedQuantity" />
-				<option type="column" name="outputProductUsedQuantity" fields="usedQuantity" expression="#usedQuantity" />
-				<option type="column" name="outputProductBalance" fields="balance" expression="#balance" />
-				<option type="order" column="outputProductNumber" direction="asc" />
-			</component>
-		</windowTab>
+<!-- 		<windowTab name="inputProducts"> -->
+<!-- 			<component type="grid" name="inputProducts" reference="inputProductsGrid" source="#{form}.recordOperationProductInComponents"> -->
+<!-- 				<option type="column" name="inputProductNumber" fields="product" expression="#product['number']" /> -->
+<!-- 				<option type="column" name="inputProductName" fields="product" expression="#product['name']" /> -->
+<!-- 				<option type="column" name="inputProductType" fields="product" expression="#product['typeOfMaterial']" /> -->
+<!-- 				<option type="column" name="inputProductUnit" fields="product" expression="#product['unit']" /> -->
+<!-- 				<option type="column" name="inputProductPlannedQuantity" fields="plannedQuantity" expression="#plannedQuantity" /> -->
+<!-- 				<option type="column" name="inputProductUsedQuantity" fields="usedQuantity" expression="#usedQuantity" /> -->
+<!-- 				<option type="column" name="inputProductBalance" fields="balance" expression="#balance" /> -->
+<!-- 				<option type="order" column="inputProductNumber" direction="asc" /> -->
+<!-- 			</component> -->
+<!-- 		</windowTab> -->
+<!-- 		<windowTab name="outputProducts"> -->
+<!-- 			<component type="grid" name="outputProducts" reference="outputProductsGrid" source="#{form}.recordOperationProductOutComponents"> -->
+<!-- 				<option type="column" name="outputProductNumber" fields="product" expression="#product['number']" /> -->
+<!-- 				<option type="column" name="outputProductName" fields="product" expression="#product['name']" /> -->
+<!-- 				<option type="column" name="outputProductType" fields="product" expression="#product['typeOfMaterial']" /> -->
+<!-- 				<option type="column" name="outputProductUnit" fields="product" expression="#product['unit']" /> -->
+<!-- 				<option type="column" name="outputProductPlannedQuantity" fields="plannedQuantity" expression="#plannedQuantity" /> -->
+<!-- 				<option type="column" name="outputProductUsedQuantity" fields="usedQuantity" expression="#usedQuantity" /> -->
+<!-- 				<option type="column" name="outputProductBalance" fields="balance" expression="#balance" /> -->
+<!-- 				<option type="order" column="outputProductNumber" direction="asc" /> -->
+<!-- 			</component> -->
+<!-- 		</windowTab> -->
 		<windowTab name="productionTime">
 			<component type="gridLayout" name="productionTimeGridLayout" reference="productionTimeGridLayout" 
 					   columns="4" rows="2">
