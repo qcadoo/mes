@@ -35,19 +35,20 @@
 		
 		<model:model model="productionRecord" resource="model/productionRecord.xml" />
 		<model:model model="productionBalance" resource="model/productionBalance.xml" />
+		<model:model model="productionCounting" resource="model/productionCounting.xml" />
 		<model:model model="recordOperationProductInComponent" resource="model/recordOperationProductInComponent.xml" />
 		<model:model model="recordOperationProductOutComponent" resource="model/recordOperationProductOutComponent.xml" />
 		
-		<menu:menu-category name="orders" />
 		<menu:menu-item name="productionCounting" category="orders" view="productionRecordsList" />
-
-		<menu:menu-category name="reports" />
 		<menu:menu-item name="productionBalance" category="reports" view="productionBalancesList" />
+		<menu:menu-item name="productionCountingsList" category="reports" view="productionCountingsList" />
 
 		<view:view resource="view/productionRecordsList.xml" />
 		<view:view resource="view/productionRecordDetails.xml" />
 		<view:view resource="view/productionBalancesList.xml" />
 		<view:view resource="view/productionBalanceDetails.xml" />
+		<view:view resource="view/productionCountingsList.xml" />
+		<view:view resource="view/productionCountingDetails.xml" />
 		<view:view resource="view/recordOperationProductInComponentDetails.xml"/>
 		<view:view resource="view/recordOperationProductOutComponentDetails.xml"/>
 		
@@ -96,8 +97,8 @@
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 		<view:resource uri="public/**/*" />
 		
-		<view:view-hook plugin="basic" view="parameters" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService" method="setParametersDefaultValue" />
-		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService" method="setOrderDefaultValue" />
+		<view:view-hook plugin="basic" view="parameters" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="setParametersDefaultValue" />
+		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="setOrderDefaultValue" />
 	</modules>
 
 </plugin>
