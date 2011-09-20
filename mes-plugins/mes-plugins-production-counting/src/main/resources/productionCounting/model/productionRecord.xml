@@ -52,7 +52,8 @@
 		<integer name="laborTimeBalance" />
 	</fields>
 	<hooks >
-		<onSave class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService" method="generateNumer"/>
+		<onSave class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="generateNumer"/>
+		<onSave class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="copyProductInAndOut"/>
 	</hooks>
 	<identifier expression="#number" />
 </model>

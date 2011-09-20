@@ -29,7 +29,7 @@
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 								method="enabledOrDisabledOperationField" />
 						</component>
 					</layoutElement>
