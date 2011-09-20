@@ -117,23 +117,23 @@ public class CostNormsForOperationService {
     /* ******* MODEL HOOKS ******* */
 
     public void copyCostNormsToOrderOperationComponent(final DataDefinition dd, final Entity orderOperationComponent) {
-        Entity source = orderOperationComponent.getBelongsToField("technologyOperationComponent");
-        copyCostValuesFromGivenOperation(orderOperationComponent, source);
+        copyCostValuesFromGivenOperation(orderOperationComponent,
+                orderOperationComponent.getBelongsToField("technologyOperationComponent"));
     }
 
-    public void copyCostNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity orderOperationComponent) {
-        Entity source = orderOperationComponent.getBelongsToField("operation");
-        copyCostValuesFromGivenOperation(orderOperationComponent, source);
+    public void copyCostNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity technologyOperationComponent) {
+        if ("referenceTechnology".equals(technologyOperationComponent.getField("entityType"))) {
+            return;
+        }
+        copyCostValuesFromGivenOperation(technologyOperationComponent,
+                technologyOperationComponent.getBelongsToField("operation"));
     }
 
     /* ******* CUSTOM HELPER(S) ******* */
 
-    private void copyCostValuesFromGivenOperation(final Entity target, final Entity maybeDetachedSource) {
+    private void copyCostValuesFromGivenOperation(final Entity target, final Entity source) {
         checkArgument(target != null, "given target is null");
-        checkArgument(maybeDetachedSource != null, "given target is null");
-
-        // IMPORTANT! be sure that entity isn't in detached state
-        Entity source = maybeDetachedSource.getDataDefinition().get(maybeDetachedSource.getId());
+        checkArgument(source != null, "given source is null");
 
         for (String fieldName : FIELDS) {
             if (source.getField(fieldName) == null) {
