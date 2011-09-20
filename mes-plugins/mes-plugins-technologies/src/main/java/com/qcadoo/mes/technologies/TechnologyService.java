@@ -23,9 +23,7 @@
  */
 package com.qcadoo.mes.technologies;
 
-import static com.google.common.base.Preconditions.checkState;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
-import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_OPERATION_NUMBER_FIELD_NAME;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -39,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.util.TreeNumberingService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.print.ReportDataService;
 import com.qcadoo.model.api.DataDefinition;
@@ -66,9 +63,6 @@ public final class TechnologyService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
-    private TreeNumberingService treeNumberingService;
 
     @Autowired
     private ReportDataService reportDataService;
@@ -345,17 +339,5 @@ public final class TechnologyService {
         FieldComponent operationLookup = (FieldComponent) viewDefinitionState.getComponentByReference("operation");
 
         operationLookup.setEnabled(form.getEntityId() == null);
-    }
-
-    public void assignNumberToOperationsInTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        Entity technology = dataDefinition.get(entity.getId());
-        EntityTree tree = technology.getTreeField("operationComponents");
-        treeNumberingService.assignNumberToEntityTreeNodes(tree, MODEL_OPERATION_NUMBER_FIELD_NAME);
-
-        // save updated technology operations
-        for (Entity node : tree) {
-            checkState(node.getDataDefinition().save(node).isValid(), "invalid node: " + node);
-        }
-        entity.setField("operationComponents", tree);
     }
 }

@@ -28,7 +28,7 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="number" />
+<!-- 		<string name="nodeNumber" /> -->
 	
 		<belongsTo name="technology" model="technology" required="true" />
 		<hasMany name="children" model="technologyOperationComponent"

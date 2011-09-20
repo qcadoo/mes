@@ -111,7 +111,7 @@
 			</component>
 		</windowTab>
 		<windowTab name="inputProducts">
-			<component type="grid" name="inputProducts" reference="inputProductsGrid" source="#{form}.recordOperationProductInComponent">
+			<component type="grid" name="inputProducts" reference="inputProductsGrid" source="#{form}.recordOperationProductInComponents">
 				<option type="column" name="inputProductNumber" fields="product" expression="#product['number']" />
 				<option type="column" name="inputProductName" fields="product" expression="#product['name']" />
 				<option type="column" name="inputProductType" fields="product" expression="#product['typeOfMaterial']" />
@@ -123,7 +123,7 @@
 			</component>
 		</windowTab>
 		<windowTab name="outputProducts">
-			<component type="grid" name="outputProducts" reference="outputProductsGrid" source="#{form}.recordOperationProductOutComponent">
+			<component type="grid" name="outputProducts" reference="outputProductsGrid" source="#{form}.recordOperationProductOutComponents">
 				<option type="column" name="outputProductNumber" fields="product" expression="#product['number']" />
 				<option type="column" name="outputProductName" fields="product" expression="#product['name']" />
 				<option type="column" name="outputProductType" fields="product" expression="#product['typeOfMaterial']" />
@@ -156,7 +156,7 @@
 					<component type="input" name="laborTimeBalance" reference="laborTimeBalance" defaultEnabled="false"/>
 				</layoutElement>
 			</component>
-			<component type="grid" name="operationsTime" reference="operationsTimeGrid" source="#{form}.productionRecord">
+			<component type="grid" name="operationsTime" reference="operationsTimeGrid" source="#{form}.productionRecords">
 				<option type="column" name="opNumber" fields="orderOperationComponent" expression="#orderOperationComponent['operation'].number" />
 				<option type="column" name="opName" fields="orderOperationComponent" expression="#orderOperationComponent['operation'].name" />
 <!-- 				<option type="column" name="machinePlannedTime" fields="???" expression="#???" /> -->

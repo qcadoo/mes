@@ -93,7 +93,7 @@
 						field="#{form}.operationComponents">
 						<dataType name="operation">
 							<option type="nodeLabelExpression"
-								value="#number + ' &lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
+								value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
 							<option type="correspondingView" value="technologies/technologyOperationComponentDetails" />
 							<option type="correspondingComponent" value="form" />
 							<option type="correspondingViewInModal" value="true" />
@@ -102,7 +102,7 @@
 						</dataType>
 						<dataType name="referenceTechnology">
 							<option type="nodeLabelExpression"
-								value="#number + ' &lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + '&lt;/span&gt; ' + #referenceTechnology['name']" />
+								value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + '&lt;/span&gt; ' + #referenceTechnology['name']" />
 							<option type="correspondingView"
 								value="technologies/technologyReferenceTechnologyComponentDetails" />
 							<option type="correspondingComponent" value="form" />

@@ -57,8 +57,6 @@
 			method="clearMasterOnCopy" />
 		<onSave class="com.qcadoo.mes.technologies.TechnologyService"
 			method="setFirstTechnologyAsDefault" />
-		<onUpdate class="com.qcadoo.mes.technologies.TechnologyService"
-			method="assignNumberToOperationsInTechnology" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

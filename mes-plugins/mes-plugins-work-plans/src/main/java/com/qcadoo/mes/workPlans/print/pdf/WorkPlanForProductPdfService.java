@@ -47,7 +47,7 @@ public final class WorkPlanForProductPdfService extends PdfDocumentService {
 
     @Override
     protected String getSuffix() {
-        return "for_product";
+        return "_for_product";
     }
 
     @Override

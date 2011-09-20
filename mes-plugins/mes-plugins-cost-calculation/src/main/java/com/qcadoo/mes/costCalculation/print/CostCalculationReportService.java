@@ -28,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -55,9 +54,6 @@ public class CostCalculationReportService {
 
     @Autowired
     CostCalculationPdfService costCalculationPdfService;
-
-    @Value("${reportPath}")
-    private String path;
 
     public void printCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -133,21 +129,11 @@ public class CostCalculationReportService {
 
     private void generateCostCalDocuments(final ComponentState state, final Entity costCalculation) throws IOException,
             DocumentException {
-        Entity costCalculationWithFileName = updateFileName(costCalculation,
-                getFullFileName((Date) costCalculation.getField("dateOfCalculation"), "Cost_calculation"),
-                CostCalculateConstants.MODEL_COST_CALCULATION);
+        Entity costCalculationWithFileName = costCalculationPdfService.updateFileName(costCalculation, "dateOfCalculation",
+                "Cost_calculation");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .uniqueResult();
         costCalculationPdfService.generateDocument(costCalculationWithFileName, company, state.getLocale());
-    }
-
-    private String getFullFileName(final Date date, final String fileName) {
-        return path + fileName + "_" + new SimpleDateFormat(DateUtils.REPORT_DATE_TIME_FORMAT).format(date) + "_";
-    }
-
-    private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
-        entity.setField("fileName", fileName);
-        return dataDefinitionService.get(CostCalculateConstants.PLUGIN_IDENTIFIER, entityName).save(entity);
     }
 
 }

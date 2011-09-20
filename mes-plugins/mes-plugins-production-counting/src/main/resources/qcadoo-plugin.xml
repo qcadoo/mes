@@ -48,7 +48,9 @@
 		<view:view resource="view/productionRecordDetails.xml" />
 		<view:view resource="view/productionBalancesList.xml" />
 		<view:view resource="view/productionBalanceDetails.xml" />
-
+		<view:view resource="view/recordOperationProductInComponentDetails.xml"/>
+		<view:view resource="view/recordOperationProductOutComponentDetails.xml"/>
+		
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="registerQuantityInProduct" />
 		</model:model-field>
