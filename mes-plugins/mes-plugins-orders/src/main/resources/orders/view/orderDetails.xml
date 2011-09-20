@@ -54,7 +54,7 @@
 									} else if (this.state == "finish") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.finishOrder.confirm)}")) {
 											if(window.canClose()) {
-												#{form}.performEvent('changeOrderStateForForm', ['accept']);
+												#{form}.performEvent('changeOrderStateForForm', ['finish']);
 											}
 										};
 									}

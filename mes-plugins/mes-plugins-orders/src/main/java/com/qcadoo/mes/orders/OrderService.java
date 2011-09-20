@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.orders;
 
-import java.awt.TrayIcon.MessageType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,17 +30,32 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.naming.directory.SearchResult;
-
-import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.ExpressionService;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.plugin.api.Plugin;
+import com.qcadoo.plugin.api.PluginAccessor;
+import com.qcadoo.plugin.api.PluginState;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public final class OrderService {
@@ -160,7 +174,7 @@ public final class OrderService {
                 order.setField("state", "04done");
             }
 
-            if (hasIntegrationWithExternalSystem() && order.getField("externalNumber") != null) {
+            if (hasIntegrationWithExternalSystem() && StringUtils.hasText((String) order.getField("externalNumber"))) {
                 order.setField("externalSynchronized", false);
             } else {
                 order.setField("externalSynchronized", true);
@@ -183,7 +197,8 @@ public final class OrderService {
     }
 
     private boolean hasIntegrationWithExternalSystem() {
-        return pluginAccessor.getEnabledPlugin("mesPluginsIntegrationErp") != null;
+        Plugin plugin = pluginAccessor.getPlugin("mesPluginsIntegrationErp");
+        return plugin != null && plugin.getState().equals(PluginState.ENABLED);
     }
 
     public void changeOrderStateForForm(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -571,7 +586,7 @@ public final class OrderService {
         String externalNumber = entity.getStringField("externalNumber");
         boolean externalSynchronized = (Boolean) entity.getField("externalSynchronized");
 
-        if ((externalNumber != null && !"".equals(externalNumber)) || !externalSynchronized) {
+        if (StringUtils.hasText(externalNumber) || !externalSynchronized) {
             state.getComponentByReference("number").setEnabled(false);
             state.getComponentByReference("name").setEnabled(false);
             state.getComponentByReference("contractor").setEnabled(false);
