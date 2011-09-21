@@ -7,6 +7,7 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCou
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PLUGIN_IDENTIFIER;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.jfree.util.Log;
@@ -25,6 +26,7 @@ import com.qcadoo.model.api.search.SearchDisjunction;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -44,9 +46,31 @@ public class ProductionRecordService {
     @Autowired
     NumberGeneratorService numberGeneratorService;
 
-    public void generateNumer(final DataDefinition dd, final Entity entity) {
+    @Autowired
+    SecurityService securityService;
+
+    public void generateData(final DataDefinition dd, final Entity entity) {
         entity.setField("number", numberGeneratorService.generateNumber(ProductionCountingConstants.PLUGIN_IDENTIFIER, entity
                 .getDataDefinition().getName()));
+        entity.setField("creationTime", new Date());
+        entity.setField("worker", securityService.getCurrentUserName());
+    }
+
+    public void checkTypeOfProductionRecording(final DataDefinition dd, final Entity entity) {
+        Entity order = entity.getBelongsToField("order");
+        String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
+        if (typeOfProductionRecording == null || "01none".equals(typeOfProductionRecording)) {
+            entity.addError(dd.getField("order"), "productionCounting.validate.global.error.productionRecord.orderError");
+        }
+
+    }
+
+    public void checkFinal(final DataDefinition dd, final Entity entity) {
+        Entity order = entity.getBelongsToField("order");
+        boolean isFinal = (Boolean) entity.getField("isFinal");
+        dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.eq("order", order));
     }
 
     public void setParametersDefaultValue(final ViewDefinitionState viewDefinitionState) {
@@ -96,6 +120,18 @@ public class ProductionRecordService {
         }
     }
 
+    public void checkStateOrder(final ViewDefinitionState viewDefinitionState) {
+        FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
+        if ("03inProgress".equals(orderState.getFieldValue()) || "04done".equals(orderState.getFieldValue())) {
+            for (String componentName : Arrays.asList("typeOfProductionRecording", "registerQuantityInProduct",
+                    "registerQuantityOutProduct", "registerProductionTime", "allowedPartial", "blockClosing", "autoCloseOrder")) {
+                FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
+                component.setEnabled(false);
+                component.requestComponentUpdateState();
+            }
+        }
+    }
+
     public void setProductBelongsToOperation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         // TODO ALBR
@@ -107,26 +143,33 @@ public class ProductionRecordService {
         ComponentState orderLookup = (ComponentState) viewDefinitionState.getComponentByReference("order");
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 (Long) orderLookup.getFieldValue());
-        if (order != null) {
-            String typeOfProductionRecording = (String) order.getField("typeOfProductionRecording");
-            if ("02cumulated".equals(typeOfProductionRecording)) {
-                setComponentVisibleCumulated(viewDefinitionState);
-            } else if ("03forEach".equals(typeOfProductionRecording)) {
-                setComponentVisibleForEach(viewDefinitionState);
-            }
-        } else {
+        if (order == null) {
             Log.debug("order is null!!");
+            return;
+        }
+
+        String typeOfProductionRecording = (String) order.getField("typeOfProductionRecording");
+        if ("02cumulated".equals(typeOfProductionRecording)) {
+            setComponentVisible(false, true, false, viewDefinitionState);
+            fillInProductsGridWhenOrderStateCumulated(viewDefinitionState);
+            fillOutProductsGridWhenOrderStateCumulated(viewDefinitionState);
+        } else if ("03forEach".equals(typeOfProductionRecording)) {
+            setComponentVisible(true, false, false, viewDefinitionState);
+            // fillInProductsGridWhenOrderStateForEach(viewDefinitionState);
+            // fillOutProductsGridWhenOrderStateForEach(viewDefinitionState);
+        } else {
+            setComponentVisible(false, false, true, viewDefinitionState);
         }
     }
 
-    private void setComponentVisibleCumulated(final ViewDefinitionState viewDefinitionState) {
-        ((FieldComponent) viewDefinitionState.getComponentByReference("orderOperationComponent")).setVisible(false);
+    private void setComponentVisible(final boolean forEach, final boolean cumulated, final boolean none,
+            final ViewDefinitionState viewDefinitionState) {
+        ((FieldComponent) viewDefinitionState.getComponentByReference("orderOperationComponent")).setVisible(none ? forEach
+                : cumulated);
         ((FieldComponent) viewDefinitionState.getComponentByReference("orderOperationComponent")).requestComponentUpdateState();
-        ((ComponentState) viewDefinitionState.getComponentByReference("borderLayoutConsumedTimeForEach")).setVisible(false);
-        ((ComponentState) viewDefinitionState.getComponentByReference("borderLayoutConsumedTimeCumulated")).setVisible(true);
-        fillInProductsGridWhenOrderStateCumulated(viewDefinitionState);
-        fillOutProductsGridWhenOrderStateCumulated(viewDefinitionState);
-
+        ((ComponentState) viewDefinitionState.getComponentByReference("borderLayoutConsumedTimeForEach")).setVisible(forEach);
+        ((ComponentState) viewDefinitionState.getComponentByReference("borderLayoutConsumedTimeCumulated")).setVisible(cumulated);
+        ((ComponentState) viewDefinitionState.getComponentByReference("operationNoneLabel")).setVisible(none);
     }
 
     private void fillInProductsGridWhenOrderStateCumulated(final ViewDefinitionState viewDefinitionState) {
@@ -217,7 +260,7 @@ public class ProductionRecordService {
         Entity order = productionRecord.getBelongsToField("order");
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
         List<Entity> operationComponents = null;
-        
+
         for (String fieldName : newArrayList("recordOperationProductInComponents", "recordOperationProductOutComponents")) {
             if (productionRecord.getHasManyField(fieldName) != null) {
                 return;
@@ -233,7 +276,7 @@ public class ProductionRecordService {
         copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT);
         copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
     }
-    
+
     // TODO products list should be distinct?
     private void copyOperationProductComponents(final List<Entity> orderOperations, final Entity productionRecord,
             final String modelName) {

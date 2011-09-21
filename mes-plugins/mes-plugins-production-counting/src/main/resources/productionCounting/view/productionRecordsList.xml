@@ -10,13 +10,14 @@
 			<option type="column" name="number" fields="number" link="true"
 				width="150" />
 			<option type="column" name="order" fields="order" link="true"
-				width="300" expression="order['name']"/>
+				width="300" expression="#order!= null ? #order['name']: 'N/A'" />
 			<option type="column" name="orderOperationComponent" fields="orderOperationComponent"
-				link="true" width="300" expression="orderOperationComponent['number'] +' ' + orderOperationComponent['name']"/>
+				link="true" width="300"
+				expression="#orderOperationComponent!=null ? #orderOperationComponent['number'] +' ' + orderOperationComponent['name']: 'N/A'" />
 			<option type="column" name="type" fields="isFinal" link="true"
-				width="300"  expression="isFinal==true?'Final':'Partial'"/>
+				width="300" expression="isFinal==true?'Final':'Partial'" />
 			<option type="column" name="shift" fields="shift" link="true"
-				width="300" expression="shift['name']"/>
+				width="300" expression="#shift!=null ? #shift['name'] : 'N/A'" />
 			<option type="column" name="creationTime" fields="creationTime"
 				link="true" width="300" />
 			<option type="column" name="worker" fields="worker" link="true"
