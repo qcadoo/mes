@@ -192,7 +192,7 @@ public class ProductionRecordService {
 			final ViewDefinitionState viewDefinitionState) {
 		((FieldComponent) viewDefinitionState
 				.getComponentByReference("orderOperationComponent"))
-				.setVisible(none == true ? forEach : cumulated);
+				.setVisible(none == true && cumulated==true ? false: true);
 		((FieldComponent) viewDefinitionState
 				.getComponentByReference("orderOperationComponent"))
 				.requestComponentUpdateState();

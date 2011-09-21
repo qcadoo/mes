@@ -12,6 +12,9 @@
 		</ribbon>
 
 		<component type="form" name="form" reference="form">
+			<component type="input" name="number" field="product" expression="#product['number']" defaultEnabled="false" />
+			<component type="input" name="name" field="product" expression="#product['name']" defaultEnabled="false" />
+			<component type="input" name="type" field="product" expression="#product['type']" defaultEnabled="false" />
 			<component type="input" name="plannedQuantity" field="plannedQuantity"
 				reference="plannedQuantity" />
 			<component type="input" name="usedQuantity" field="usedQuantity" />
