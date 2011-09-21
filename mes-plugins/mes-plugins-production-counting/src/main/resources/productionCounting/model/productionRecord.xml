@@ -25,9 +25,9 @@
 		<belongsTo name="shift" model="shift" plugin="basic"
 			required="true" />
 
-		<hasMany name="recordOperationProductInComponent" joinField="productionRecord"
+		<hasMany name="recordOperationProductInComponents" joinField="productionRecord"
 			model="recordOperationProductInComponent" />
-		<hasMany name="recordOperationProductOutComponent" joinField="productionRecord"
+		<hasMany name="recordOperationProductOutComponents" joinField="productionRecord"
 			model="recordOperationProductOutComponent" />
 
 		<boolean name="isFinal" />

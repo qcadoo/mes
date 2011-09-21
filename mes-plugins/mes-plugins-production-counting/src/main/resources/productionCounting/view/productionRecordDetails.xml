@@ -69,29 +69,29 @@
 						<component type="separatorLine" name="line1" />
 					</layoutElement>
 					<layoutElement column="1" row="9">
-						<component type="grid" name="recordOperationProductInComponent"
-							reference="recordOperationProductInComponent" source="recordOperationProductInComponent">
-							<option type="column" name="number" fields="product"
-								expression="#product['number']" link="true" width="100" />
-							<option type="column" name="name" fields="product"
-								expression="#product['name']" link="true" width="200" />
-							<option type="column" name="type" fields="product" width="100"
-								expression="#product['unit']" />
-							<option type="column" name="unit" fields="product"
-								expression="#product['unit']" link="false" width="70" />
-							<option type="column" name="usedQuantity" fields="usedQuantity"
-								width="100" />
-							<option type="order" column="number" direction="desc" />
-							<option type="correspondingView"
-								value="productionCounting/recordOperationProductInComponentDetails" />
-							<option type="correspondingComponent" value="form" />
-							<option type="correspondingViewInModal" value="true" />
-							<option type="paginable" value="false" />
-							<option type="creatable" value="true" />
-							<option type="deletable" value="true" />
-							<option type="fullscreen" value="true" />
-							<option type="multiselect" value="true" />
-						</component>
+<!-- 						<component type="grid" name="recordOperationProductInComponent" -->
+<!-- 							reference="recordOperationProductInComponent" > -->
+<!-- 							<option type="column" name="number" fields="product" -->
+<!-- 								expression="#product['number']" link="true" width="100" /> -->
+<!-- 							<option type="column" name="name" fields="product" -->
+<!-- 								expression="#product['name']" link="true" width="200" /> -->
+<!-- 							<option type="column" name="type" fields="product" width="100" -->
+<!-- 								expression="#product['unit']" /> -->
+<!-- 							<option type="column" name="unit" fields="product" -->
+<!-- 								expression="#product['unit']" link="false" width="70" /> -->
+<!-- 							<option type="column" name="usedQuantity" fields="usedQuantity" -->
+<!-- 								width="100" /> -->
+<!-- 							<option type="order" column="number" direction="desc" /> -->
+<!-- 							<option type="correspondingView" -->
+<!-- 								value="productionCounting/recordOperationProductInComponentDetails" /> -->
+<!-- 							<option type="correspondingComponent" value="form" /> -->
+<!-- 							<option type="correspondingViewInModal" value="true" /> -->
+<!-- 							<option type="paginable" value="false" /> -->
+<!-- 							<option type="creatable" value="true" /> -->
+<!-- 							<option type="deletable" value="true" /> -->
+<!-- 							<option type="fullscreen" value="true" /> -->
+<!-- 							<option type="multiselect" value="true" /> -->
+<!-- 						</component> -->
 					</layoutElement>
 					<layoutElement column="2" row="1" height="2">
 						<component type="borderLayout" name="borderLayoutConsumedTimeForEach"
@@ -130,29 +130,29 @@
 						<component type="separatorLine" name="line2" />
 					</layoutElement>
 					<layoutElement column="2" row="9">
-						<component type="grid" name="recordOperationProductOutComponent"
-							reference="recordOperationProductOutComponent" source="recordOperationProductOutComponent">
-							<option type="column" name="number" fields="product"
-								expression="#product['number']" link="true" width="100" />
-							<option type="column" name="name" fields="product"
-								expression="#product['name']" link="true" width="200" />
-							<option type="column" name="type" fields="product" width="100"
-								expression="#product['unit']" />
-							<option type="column" name="unit" fields="product"
-								expression="#product['unit']" link="false" width="70" />
-							<option type="column" name="usedQuantity" fields="usedQuantity"
-								width="100" />
-							<option type="order" column="number" direction="desc" />
-							<option type="correspondingView"
-								value="productionCounting/recordOperationProductOutComponentDetails" />
-							<option type="correspondingComponent" value="form" />
-							<option type="correspondingViewInModal" value="true" />
-							<option type="paginable" value="false" />
-							<option type="creatable" value="true" />
-							<option type="deletable" value="true" />
-							<option type="fullscreen" value="true" />
-							<option type="multiselect" value="true" />
-						</component>
+<!-- 						<component type="grid" name="recordOperationProductOutComponent" -->
+<!-- 							reference="recordOperationProductOutComponent" > -->
+<!-- 							<option type="column" name="number" fields="product" -->
+<!-- 								expression="#product['number']" link="true" width="100" /> -->
+<!-- 							<option type="column" name="name" fields="product" -->
+<!-- 								expression="#product['name']" link="true" width="200" /> -->
+<!-- 							<option type="column" name="type" fields="product" width="100" -->
+<!-- 								expression="#product['unit']" /> -->
+<!-- 							<option type="column" name="unit" fields="product" -->
+<!-- 								expression="#product['unit']" link="false" width="70" /> -->
+<!-- 							<option type="column" name="usedQuantity" fields="usedQuantity" -->
+<!-- 								width="100" /> -->
+<!-- 							<option type="order" column="number" direction="desc" /> -->
+<!-- 							<option type="correspondingView" -->
+<!-- 								value="productionCounting/recordOperationProductOutComponentDetails" /> -->
+<!-- 							<option type="correspondingComponent" value="form" /> -->
+<!-- 							<option type="correspondingViewInModal" value="true" /> -->
+<!-- 							<option type="paginable" value="false" /> -->
+<!-- 							<option type="creatable" value="true" /> -->
+<!-- 							<option type="deletable" value="true" /> -->
+<!-- 							<option type="fullscreen" value="true" /> -->
+<!-- 							<option type="multiselect" value="true" /> -->
+<!-- 						</component> -->
 					</layoutElement>
 				</component>
 				<option type="header" value="true" />
