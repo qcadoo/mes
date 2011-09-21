@@ -156,17 +156,17 @@
 					<component type="input" name="laborTimeBalance" reference="laborTimeBalance" defaultEnabled="false"/>
 				</layoutElement>
 			</component>
-			<component type="grid" name="operationsTime" reference="operationsTimeGrid" source="#{form}.productionRecords">
-				<option type="column" name="opNumber" fields="orderOperationComponent" expression="#orderOperationComponent['operation'].number" />
-				<option type="column" name="opName" fields="orderOperationComponent" expression="#orderOperationComponent['operation'].name" />
+<!-- 			<component type="grid" name="operationsTime" reference="operationsTimeGrid" source="#{form}.productionRecords"> -->
+<!-- 				<option type="column" name="opNumber" fields="orderOperationComponent" expression="#orderOperationComponent['operation'].number" /> -->
+<!-- 				<option type="column" name="opName" fields="orderOperationComponent" expression="#orderOperationComponent['operation'].name" /> -->
 <!-- 				<option type="column" name="machinePlannedTime" fields="???" expression="#???" /> -->
-				<option type="column" name="machineRegisteredTime" fields="machineTime" expression="#machineTime" />
-				<option type="column" name="machineTimeBalance" fields="machineTimeBalance" expression="#machineTimeBalance" />
+<!-- 				<option type="column" name="machineRegisteredTime" fields="machineTime" expression="#machineTime" /> -->
+<!-- 				<option type="column" name="machineTimeBalance" fields="machineTimeBalance" expression="#machineTimeBalance" /> -->
 <!-- 				<option type="column" name="laborPlannedTime" fields="???" expression="#???" /> -->
-				<option type="column" name="laborRegisteredTime" fields="laborTime" expression="#laborTime" />
-				<option type="column" name="laborTimeBalance" fields="laborTimeBalance" expression="#laborTimeBalance" />
-				<option type="order" column="opNumber" direction="asc" />
-			</component>
+<!-- 				<option type="column" name="laborRegisteredTime" fields="laborTime" expression="#laborTime" /> -->
+<!-- 				<option type="column" name="laborTimeBalance" fields="laborTimeBalance" expression="#laborTimeBalance" /> -->
+<!-- 				<option type="order" column="opNumber" direction="asc" /> -->
+<!-- 			</component> -->
 		</windowTab>
 	</component>
 	<hooks>

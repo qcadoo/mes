@@ -13,7 +13,6 @@
 		<string name="worker" />
 		<string name="description" />
 		<string name="fileName" />
-		<hasMany name="productionRecords" joinField="productionCounting" model="productionRecord" />
 	</fields>
 	<hooks>
 		<onCopy class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService"

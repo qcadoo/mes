@@ -14,7 +14,6 @@
 		<integer name="recordsNumber" />
 		<string name="description" />
 		<string name="fileName" />
-		<hasMany name="productionRecords" joinField="productionBalance" model="productionRecord" />
 	</fields>
 	<hooks>
 		<onCopy class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
