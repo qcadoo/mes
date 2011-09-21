@@ -24,7 +24,7 @@
 							<option type="column" name="name" fields="name" link="true" />
 							<option type="required" value="true" />
 							<option type="searchable" value="name" />
-							<option type="orderable" value="name" />
+							<option type="orderable" value="number" direction="desc" />
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
@@ -85,10 +85,10 @@
 							<option type="correspondingComponent" value="form" />
 							<option type="correspondingViewInModal" value="true" />
 							<option type="paginable" value="false" />
-							<option type="creatable" value="true" />
-							<option type="deletable" value="true" />
+							<option type="creatable" value="false" />
+							<option type="deletable" value="false" />
 							<option type="fullscreen" value="true" />
-							<option type="multiselect" value="true" />
+							<option type="multiselect" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1" height="2">
@@ -150,10 +150,10 @@
 							<option type="correspondingComponent" value="form" />
 							<option type="correspondingViewInModal" value="true" />
 							<option type="paginable" value="false" />
-							<option type="creatable" value="true" />
-							<option type="deletable" value="true" />
+							<option type="creatable" value="false" />
+							<option type="deletable" value="false" />
 							<option type="fullscreen" value="true" />
-							<option type="multiselect" value="true" />
+							<option type="multiselect" value="false" />
 						</component>
 					</layoutElement>
 				</component>

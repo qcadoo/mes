@@ -1,12 +1,12 @@
 package com.qcadoo.mes.productionCounting.internal;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Lists.newArrayList;
+import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PARAMETER;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PLUGIN_IDENTIFIER;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -18,16 +18,9 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.search.SearchDisjunction;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -51,9 +44,12 @@ public class ProductionRecordService {
     @Autowired
     SecurityService securityService;
 
+    private final static String CUMULATE = "02cumulated";
+
+    private final static String FOR_EACH_OPERATION = "03forEach";
+
     public void generateData(final DataDefinition dd, final Entity entity) {
-        entity.setField("number", numberGeneratorService.generateNumber(ProductionCountingConstants.PLUGIN_IDENTIFIER, entity
-                .getDataDefinition().getName()));
+        entity.setField("number", numberGeneratorService.generateNumber(PLUGIN_IDENTIFIER, entity.getDataDefinition().getName()));
         entity.setField("creationTime", new Date());
         entity.setField("worker", securityService.getCurrentUserName());
     }
@@ -67,17 +63,12 @@ public class ProductionRecordService {
     }
 
     public void checkFinal(final DataDefinition dd, final Entity entity) {
-        Entity order = entity.getBelongsToField("order");
-        boolean isFinal = (Boolean) entity.getField("isFinal");
-        dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.eq("order", order));
+
     }
 
     public void setParametersDefaultValue(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).get(
-                form.getEntityId());
+        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PARAMETER).get(form.getEntityId());
 
         for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
                 "registerProductionTime")) {
@@ -95,7 +86,7 @@ public class ProductionRecordService {
 
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         if (form.getEntityId() != null) {
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(
                     (Long) form.getEntityId());
             if (order == null || "".equals(order.getField("typeOfProductionRecording"))) {
                 typeOfProductionRecording.setFieldValue("01none");
@@ -133,174 +124,41 @@ public class ProductionRecordService {
         }
     }
 
-    public void setProductBelongsToOperation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        // TODO ALBR
-    }
-
     public void enabledOrDisabledOperationField(final ViewDefinitionState viewDefinitionState,
             final ComponentState componentState, final String[] args) {
-
-        ComponentState orderLookup = (ComponentState) viewDefinitionState.getComponentByReference("order");
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                (Long) orderLookup.getFieldValue());
+        Long orderId = (Long) viewDefinitionState.getComponentByReference("order").getFieldValue();
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(orderId);
         if (order == null) {
             Log.debug("order is null!!");
             return;
         }
         String typeOfProductionRecording = (String) order.getField("typeOfProductionRecording");
+        setComponentVisible((String) order.getField("typeOfProductionRecording"), viewDefinitionState);
+
         if ("02cumulated".equals(typeOfProductionRecording)) {
-            setComponentVisible(false, true, false, viewDefinitionState);
-            fillInProductsGridWhenOrderStateCumulated(viewDefinitionState);
-            fillOutProductsGridWhenOrderStateCumulated(viewDefinitionState);
-        } else if ("03forEach".equals(typeOfProductionRecording)) {
-            setComponentVisible(true, false, false, viewDefinitionState);
-            // fillInProductsGridWhenOrderStateForEach(viewDefinitionState);
-            // fillOutProductsGridWhenOrderStateForEach(viewDefinitionState);
-        } else {
-            setComponentVisible(false, false, true, viewDefinitionState);
+            fillProductsGrid(viewDefinitionState, MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT);
+            fillProductsGrid(viewDefinitionState, MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
         }
     }
 
-    private void setComponentVisible(final boolean forEach, final boolean cumulated, final boolean none,
-            final ViewDefinitionState viewDefinitionState) {
-        viewDefinitionState.getComponentByReference("orderOperationComponent").setVisible(none ? forEach : cumulated);
-        ((FieldComponent) viewDefinitionState.getComponentByReference("orderOperationComponent")).requestComponentUpdateState();
-        viewDefinitionState.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(forEach);
-        viewDefinitionState.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(cumulated);
-        viewDefinitionState.getComponentByReference("operationNoneLabel").setVisible(none);
-    }
-
-    private void fillInProductsGridWhenOrderStateCumulated(final ViewDefinitionState viewDefinitionState) {
-        checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
-        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("recordOperationProductInComponent");
-        ComponentState orderLookup = (ComponentState) viewDefinitionState.getComponentByReference("order");
-        Long orderId = (Long) orderLookup.getFieldValue();
-        if (orderId == null || grid == null) {
+    private void fillProductsGrid(final ViewDefinitionState view, final String modelName) {
+        GridComponent grid = (GridComponent) view.getComponentByReference(modelName);
+        Entity productionRecord = ((FormComponent) view.getComponentByReference("form")).getEntity();
+        if (productionRecord.getId() == null) {
             return;
         }
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-        Entity technology = order.getBelongsToField("technology");
-
-        DataDefinition dd = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
-
-        SearchDisjunction disjunction = SearchRestrictions.disjunction();
-        for (Entity operationComponent : technology.getTreeField("operationComponents")) {
-            disjunction.add(SearchRestrictions.belongsTo("operationComponent", operationComponent));
-        }
-
-        SearchResult searchResult = dd.find().add(disjunction).createAlias("product", "product")
-                .addOrder(SearchOrders.asc("product.name")).list();
-
-        grid.setEntities(searchResult.getEntities());
-
+        grid.setEntities(productionRecord.getHasManyField(modelName + 's'));
     }
 
-    private void fillOutProductsGridWhenOrderStateCumulated(final ViewDefinitionState viewDefinitionState) {
-        checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
-        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("recordOperationProductOutComponent");
-        ComponentState orderLookup = (ComponentState) viewDefinitionState.getComponentByReference("order");
-        Long orderId = (Long) orderLookup.getFieldValue();
-        if (orderId == null || grid == null) {
-            return;
-        }
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-        Entity technology = order.getBelongsToField("technology");
+    private void setComponentVisible(final String recordingType, final ViewDefinitionState view) {
+        view.getComponentByReference("orderOperationComponent").setVisible(
+                FOR_EACH_OPERATION.equals(recordingType) || CUMULATE.equals(recordingType));
+        view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(FOR_EACH_OPERATION.equals(recordingType));
+        view.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(CUMULATE.equals(recordingType));
+        view.getComponentByReference("operationNoneLabel").setVisible(
+                !CUMULATE.equals(recordingType) && !FOR_EACH_OPERATION.equals(recordingType));
 
-        DataDefinition dd = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
-
-        SearchDisjunction disjunction = SearchRestrictions.disjunction();
-        for (Entity operationComponent : technology.getTreeField("operationComponents")) {
-            disjunction.add(SearchRestrictions.belongsTo("operationComponent", operationComponent));
-        }
-
-        SearchResult searchResult = dd.find().add(disjunction).createAlias("product", "product")
-                .addOrder(SearchOrders.asc("product.name")).list();
-
-        grid.setEntities(searchResult.getEntities());
-    }
-
-    private void fillInProductsGridWhenOrderStateForEach(final ViewDefinitionState viewDefinitionState) {
-        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("recordOperationProductInComponent");
-        ComponentState orderLookup = (ComponentState) viewDefinitionState.getComponentByReference("order");
-        Long orderId = (Long) orderLookup.getFieldValue();
-        if (orderId == null || grid == null) {
-            return;
-        }
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-        Entity technology = order.getBelongsToField("technology");
-
-        DataDefinition dd = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
-
-        SearchDisjunction disjunction = SearchRestrictions.disjunction();
-        for (Entity operationComponent : technology.getTreeField("operationComponents")) {
-            disjunction.add(SearchRestrictions.belongsTo("operationComponent", operationComponent));
-        }
-
-        SearchResult searchResult = dd.find().add(disjunction).createAlias("operation", "operation")
-                .addOrder(SearchOrders.asc("product.name")).list();
-
-        grid.setEntities(searchResult.getEntities());
-    }
-
-    private void copyProductInAndOutForOrder(final List<Entity> orderOperationComponents, final Entity productionCounting) {
-        checkArgument(orderOperationComponents != null, "orderOperationComponents is null");
-
-        productionCounting.setField("recordOperationProductInComponent",
-                createRecordOperationProductInComponent(orderOperationComponents, productionCounting));
-        productionCounting.setField("recordOperationProductOutComponent",
-                createRecordOperationProductOutComponent(orderOperationComponents, productionCounting));
-    }
-
-    private List<Entity> createRecordOperationProductInComponent(final List<Entity> orderOperationComponents,
-            final Entity productionCounting) {
-        checkArgument(orderOperationComponents != null, "entityList is null!");
-        checkArgument(productionCounting != null, "productionCounting is null!");
-        DataDefinition productInDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT);
-        List<Entity> listOfProductIn = new ArrayList<Entity>();
-
-        for (Entity orderOperationComponent : orderOperationComponents) {
-            Entity operationComponent = orderOperationComponent.getBelongsToField("technologyOperationComponent");
-            EntityList operationProductInComponents = operationComponent.getHasManyField("operationProductInComponents");
-
-            for (Entity productIn : operationProductInComponents) {
-                Entity recordIn = productInDD.create();
-                recordIn.setField("product", productIn.getId());
-                recordIn.setField("plannedQuantity", productIn.getField("quantity"));
-                recordIn.setField("productionRecord", productionCounting.getId());
-                // productInDD.save(recordIn);
-                listOfProductIn.add(recordIn);
-            }
-        }
-        return listOfProductIn;
-    }
-
-    private List<Entity> createRecordOperationProductOutComponent(final List<Entity> orderOperationComponents,
-            final Entity productionCounting) {
-        checkArgument(orderOperationComponents != null, "entityList is null!");
-        checkArgument(productionCounting != null, "productionCounting is null!");
-        DataDefinition productOutDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
-        List<Entity> listOfProductOut = new ArrayList<Entity>();
-
-        for (Entity orderOperationComponent : orderOperationComponents) {
-            Entity operationComponent = orderOperationComponent.getBelongsToField("technologyOperationComponent");
-            EntityList operationProductOutComponents = operationComponent.getHasManyField("operationProductOutComponents");
-
-            for (Entity productOut : operationProductOutComponents) {
-                Entity recordOut = productOutDD.create();
-                recordOut.setField("product", productOut.getId());
-                recordOut.setField("plannedQuantity", productOut.getField("quantity"));
-                recordOut.setField("productionRecord", productionCounting.getId());
-                // productOutDD.save(recordOut);
-                listOfProductOut.add(recordOut);
-            }
-        }
-        return listOfProductOut;
+        ((FieldComponent) view.getComponentByReference("orderOperationComponent")).requestComponentUpdateState();
     }
 
     public void copyProductInAndOut(final DataDefinition dd, final Entity productionRecord) {
@@ -327,7 +185,6 @@ public class ProductionRecordService {
     // TODO products list should be distinct?
     private void copyOperationProductComponents(final List<Entity> orderOperations, final Entity productionRecord,
             final String modelName) {
-        checkArgument(modelName != null, "missing model name argument");
         if (orderOperations == null) {
             return;
         }
@@ -356,8 +213,6 @@ public class ProductionRecordService {
                 products.add(recordProduct);
             }
         }
-
         productionRecord.setField(recordProductFieldName, products);
     }
-
 }
