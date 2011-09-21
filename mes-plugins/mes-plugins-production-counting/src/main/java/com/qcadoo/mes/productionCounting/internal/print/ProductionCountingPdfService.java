@@ -17,7 +17,6 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -52,10 +51,9 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         panelTable.setSpacingBefore(20);
         document.add(panelTable);
 
-        if (productionCounting.getHasManyField("productionRecords") != null)
-            for (Entity productionRecord : productionCounting.getHasManyField("productionRecords")) {
-                addProductionRecord(document, productionRecord, locale);
-            }
+        for (Entity productionRecord : productionCounting.getHasManyField("productionRecords")) {
+            addProductionRecord(document, productionRecord, locale);
+        }
     }
 
     private void addTableCellAsTable(final PdfPTable table, final String label, final Object fieldValue, final String nullValue,
@@ -76,75 +74,83 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         table.addCell(cellTable);
     }
 
-    private PdfPTable createLeftPanel(final Entity productionBalance, final Locale locale) {
+    private PdfPTable createLeftPanel(final Entity productionCounting, final Locale locale) {
         PdfPTable leftPanel = PdfUtil.createPanelTable(1);
 
         addTableCellAsTable(leftPanel,
                 getTranslationService().translate("productionCounting.productionCounting.report.title", locale) + ":",
-                productionBalance.getId().toString(), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+                productionCounting.getId().toString(), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 getTranslationService().translate("productionCounting.productionBalance.report.panel.order", locale),
-                productionBalance.getBelongsToField("order").getStringField("name"), null, PdfUtil.getArialBold9Dark(),
+                productionCounting.getBelongsToField("order").getStringField("name"), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 getTranslationService().translate("productionCounting.productionBalance.report.panel.product", locale),
-                productionBalance.getBelongsToField("product").getStringField("name"), null, PdfUtil.getArialBold9Dark(),
+                productionCounting.getBelongsToField("product").getStringField("name"), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 getTranslationService().translate("productionCounting.productionBalance.report.panel.numberOfRecords", locale),
-                String.valueOf(productionBalance.getHasManyField("productionRecords").size()), null, PdfUtil.getArialBold9Dark(),
-                PdfUtil.getArialBold9Dark(), null);
+                String.valueOf(productionCounting.getHasManyField("productionRecords").size()), null,
+                PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 getTranslationService().translate("productionCounting.productionBalance.description.label", locale) + ":",
-                productionBalance.getStringField("description"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(),
+                productionCounting.getStringField("description"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(),
                 null);
 
         return leftPanel;
     }
 
-    private PdfPTable createRightPanel(final Entity productionBalance, final Locale locale) {
+    private PdfPTable createRightPanel(final Entity productionCounting, final Locale locale) {
         PdfPTable rightPanel = PdfUtil.createPanelTable(1);
 
         rightPanel.addCell(new Phrase(getTranslationService().translate(
                 "costCalculation.costCalculationDetails.window.mainTab.form.parameters", locale)
                 + ":", PdfUtil.getArialBold10Dark()));
-        Entity parameters = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                .uniqueResult();
-        rightPanel.addCell(new Phrase("\t \t \t"
-                + getTranslationService().translate(
-                        "productionCounting.productionBalance.report.panel.registerQuantityOutProduct", locale)
-                + " "
-                + ((Boolean) parameters.getField("registerQuantityInProduct") ? getTranslationService().translate(
-                        "qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale)), PdfUtil
-                .getArialBold9Dark()));
-        rightPanel.addCell(new Phrase("\t \t \t"
-                + getTranslationService().translate(
-                        "productionCounting.productionBalance.report.panel.registerQuantityInProduct", locale)
-                + " "
-                + ((Boolean) parameters.getField("registerQuantityOutProduct") ? getTranslationService().translate(
-                        "qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale)), PdfUtil
-                .getArialBold9Dark()));
-        rightPanel.addCell(new Phrase("\t \t \t"
-                + getTranslationService().translate("productionCounting.productionBalance.report.panel.registerProductionTime",
-                        locale)
-                + " "
-                + ((Boolean) parameters.getField("registerProductionTime") ? getTranslationService().translate("qcadooView.true",
-                        locale) : getTranslationService().translate("qcadooView.false", locale)), PdfUtil.getArialBold9Dark()));
+        rightPanel
+                .addCell(new Phrase(
+                        "\t \t \t"
+                                + getTranslationService().translate(
+                                        "productionCounting.productionBalance.report.panel.registerQuantityOutProduct", locale)
+                                + " "
+                                + ((Boolean) productionCounting.getBelongsToField("order").getField("registerQuantityInProduct") ? getTranslationService()
+                                        .translate("qcadooView.true", locale) : getTranslationService().translate(
+                                        "qcadooView.false", locale)), PdfUtil.getArialBold9Dark()));
+        rightPanel
+                .addCell(new Phrase(
+                        "\t \t \t"
+                                + getTranslationService().translate(
+                                        "productionCounting.productionBalance.report.panel.registerQuantityInProduct", locale)
+                                + " "
+                                + ((Boolean) productionCounting.getBelongsToField("order").getField("registerQuantityOutProduct") ? getTranslationService()
+                                        .translate("qcadooView.true", locale) : getTranslationService().translate(
+                                        "qcadooView.false", locale)), PdfUtil.getArialBold9Dark()));
+        rightPanel
+                .addCell(new Phrase(
+                        "\t \t \t"
+                                + getTranslationService().translate(
+                                        "productionCounting.productionBalance.report.panel.registerProductionTime", locale)
+                                + " "
+                                + ((Boolean) productionCounting.getBelongsToField("order").getField("registerProductionTime") ? getTranslationService()
+                                        .translate("qcadooView.true", locale) : getTranslationService().translate(
+                                        "qcadooView.false", locale)), PdfUtil.getArialBold9Dark()));
         rightPanel.addCell(new Phrase("\t \t \t"
                 + getTranslationService().translate("productionCounting.productionBalance.report.panel.allowedPartial", locale)
                 + " "
-                + ((Boolean) parameters.getField("allowedPartial") ? getTranslationService().translate("qcadooView.true", locale)
-                        : getTranslationService().translate("qcadooView.false", locale)), PdfUtil.getArialBold9Dark()));
+                + ((Boolean) productionCounting.getBelongsToField("order").getField("allowedPartial") ? getTranslationService()
+                        .translate("qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale)),
+                PdfUtil.getArialBold9Dark()));
         rightPanel.addCell(new Phrase("\t \t \t"
                 + getTranslationService().translate("productionCounting.productionBalance.report.panel.blockClosing", locale)
                 + " "
-                + ((Boolean) parameters.getField("blockClosing") ? getTranslationService().translate("qcadooView.true", locale)
-                        : getTranslationService().translate("qcadooView.false", locale)), PdfUtil.getArialBold9Dark()));
+                + ((Boolean) productionCounting.getBelongsToField("order").getField("blockClosing") ? getTranslationService()
+                        .translate("qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale)),
+                PdfUtil.getArialBold9Dark()));
         rightPanel.addCell(new Phrase("\t \t \t"
                 + getTranslationService().translate("productionCounting.productionBalance.report.panel.autoCloseOrder", locale)
                 + " "
-                + ((Boolean) parameters.getField("autoCloseOrder") ? getTranslationService().translate("qcadooView.true", locale)
-                        : getTranslationService().translate("qcadooView.false", locale)), PdfUtil.getArialBold9Dark()));
+                + ((Boolean) productionCounting.getBelongsToField("order").getField("autoCloseOrder") ? getTranslationService()
+                        .translate("qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale)),
+                PdfUtil.getArialBold9Dark()));
 
         return rightPanel;
     }
@@ -189,8 +195,10 @@ public class ProductionCountingPdfService extends PdfDocumentService {
 
         document.add(panelTable);
 
-        addInputProducts(document, productionRecord, locale);
-        addOutputProducts(document, productionRecord, locale);
+        if ((Boolean) productionRecord.getBelongsToField("order").getField("registerQuantityInProduct"))
+            addInputProducts(document, productionRecord, locale);
+        if ((Boolean) productionRecord.getBelongsToField("order").getField("registerQuantityOutProduct"))
+            addOutputProducts(document, productionRecord, locale);
     }
 
     private void addInputProducts(Document document, final Entity productionRecord, final Locale locale) throws DocumentException {
@@ -210,8 +218,8 @@ public class ProductionCountingPdfService extends PdfDocumentService {
 
         PdfPTable inputProductsTable = PdfUtil.createTableWithHeader(5, inputProductsTableHeader, false);
 
-        if (productionRecord.getHasManyField("recordOperationProductInComponent") != null)
-            for (Entity productIn : productionRecord.getHasManyField("recordOperationProductInComponent")) {
+        if (productionRecord.getHasManyField("recordOperationProductInComponents") != null)
+            for (Entity productIn : productionRecord.getHasManyField("recordOperationProductInComponents")) {
                 inputProductsTable.addCell(new Phrase(productIn.getBelongsToField("product").getStringField("number"), PdfUtil
                         .getArialRegular9Dark()));
                 inputProductsTable.addCell(new Phrase(productIn.getBelongsToField("product").getStringField("name"), PdfUtil
@@ -247,8 +255,8 @@ public class ProductionCountingPdfService extends PdfDocumentService {
 
         PdfPTable outputProductsTable = PdfUtil.createTableWithHeader(5, outputProductsTableHeader, false);
 
-        if (productionRecord.getHasManyField("recordOperationProductOutComponent") != null)
-            for (Entity productOut : productionRecord.getHasManyField("recordOperationProductOutComponent")) {
+        if (productionRecord.getHasManyField("recordOperationProductOutComponents") != null)
+            for (Entity productOut : productionRecord.getHasManyField("recordOperationProductOutComponents")) {
                 outputProductsTable.addCell(new Phrase(productOut.getBelongsToField("product").getStringField("number"), PdfUtil
                         .getArialRegular9Dark()));
                 outputProductsTable.addCell(new Phrase(productOut.getBelongsToField("product").getStringField("name"), PdfUtil

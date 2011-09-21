@@ -26,6 +26,7 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
@@ -59,8 +60,32 @@ public class ProductionCountingService {
             return;
         }
 
+        setProductFieldValue(viewDefinitionState, order);
+        setProductionRecordsGridContent(viewDefinitionState, order);
+    }
+
+    public void fillProductionRecordsGrid(final ViewDefinitionState viewDefinitionState) {
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
+        if (orderLookup.getFieldValue() == null) {
+            return;
+        }
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                (Long) orderLookup.getFieldValue());
+        if (order == null) {
+            return;
+        }
+
+        setProductionRecordsGridContent(viewDefinitionState, order);
+    }
+
+    private void setProductFieldValue(final ViewDefinitionState viewDefinitionState, final Entity order) {
         FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference("product");
         productField.setFieldValue(order.getBelongsToField("product").getId());
+    }
+
+    private void setProductionRecordsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
+        GridComponent productionRecords = (GridComponent) viewDefinitionState.getComponentByReference("productionRecords");
+        productionRecords.setEntities(order.getHasManyField("productionRecords"));
     }
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
@@ -105,7 +130,6 @@ public class ProductionCountingService {
                 deleteButton.setMessage(null);
                 deleteButton.setEnabled(true);
             }
-
         }
         generateButton.requestUpdate(true);
         deleteButton.requestUpdate(true);

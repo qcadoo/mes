@@ -1,8 +1,11 @@
 package com.qcadoo.mes.productionCounting.internal;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,7 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
@@ -60,7 +64,24 @@ public class ProductionBalanceService {
         }
 
         setFieldValues(viewDefinitionState, order);
+        setInputProductsGridContent(viewDefinitionState, order);
+        setOutputProductsGridContent(viewDefinitionState, order);
         setGridAndGridLayoutVisibility(viewDefinitionState, order);
+    }
+
+    public void fillGrids(final ViewDefinitionState viewDefinitionState) {
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
+        if (orderLookup.getFieldValue() == null) {
+            return;
+        }
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                (Long) orderLookup.getFieldValue());
+        if (order == null) {
+            return;
+        }
+
+        setInputProductsGridContent(viewDefinitionState, order);
+        setOutputProductsGridContent(viewDefinitionState, order);
     }
 
     private void setFieldValues(final ViewDefinitionState viewDefinitionState, final Entity order) {
@@ -89,10 +110,10 @@ public class ProductionBalanceService {
         if (order == null) {
             viewDefinitionState.getComponentByReference("operationsTimeGrid").setVisible(false);
             viewDefinitionState.getComponentByReference("productionTimeGridLayout").setVisible(false);
-        } else if (order.getField("typeOfProductionRecording") != null
-                && order.getStringField("typeOfProductionRecording").equals("03forEach")) {
+        } else if (order.getStringField("typeOfProductionRecording").equals("03forEach")) {
             viewDefinitionState.getComponentByReference("operationsTimeGrid").setVisible(true);
             viewDefinitionState.getComponentByReference("productionTimeGridLayout").setVisible(false);
+            setProductionTimeGridContent(viewDefinitionState, order);
         } else {
             viewDefinitionState.getComponentByReference("operationsTimeGrid").setVisible(false);
             viewDefinitionState.getComponentByReference("productionTimeGridLayout").setVisible(true);
@@ -101,30 +122,61 @@ public class ProductionBalanceService {
     }
 
     private void setTimeValues(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        Entity productionRecord = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD)
-                .find("where order.id=" + order.getId().toString()).uniqueResult();
+        List<Entity> productionRecords = order.getHasManyField("productionRecords");
 
-        if (productionRecord != null) {
-            // TODO planned time ANKI
-            // FieldComponent machinePlannedTimeField = (FieldComponent) viewDefinitionState
-            // .getComponentByReference("machinePlannedTime");
-            FieldComponent machineRegisteredTimeField = (FieldComponent) viewDefinitionState
-                    .getComponentByReference("machineRegisteredTime");
-            machineRegisteredTimeField.setFieldValue(productionRecord.getStringField("machineTime"));
-            FieldComponent machineTimeBalanceField = (FieldComponent) viewDefinitionState
-                    .getComponentByReference("machineTimeBalance");
-            machineTimeBalanceField.setFieldValue(productionRecord.getStringField("machineTimeBalance"));
-            // TODO planned time ANKI
-            // FieldComponent laborPlannedTimeField = (FieldComponent) viewDefinitionState
-            // .getComponentByReference("laborPlannedTime");
-            FieldComponent laborRegisteredTimeField = (FieldComponent) viewDefinitionState
-                    .getComponentByReference("laborRegisteredTime");
-            laborRegisteredTimeField.setFieldValue(productionRecord.getStringField("laborTime"));
-            FieldComponent laborTimeBalanceField = (FieldComponent) viewDefinitionState
-                    .getComponentByReference("laborTimeBalance");
-            laborTimeBalanceField.setFieldValue(productionRecord.getStringField("laborTimeBalance"));
+        BigDecimal machineRegisteredTime = BigDecimal.ZERO;
+        BigDecimal machineTimeBalance = BigDecimal.ZERO;
+        BigDecimal laborRegisteredTime = BigDecimal.ZERO;
+        BigDecimal laborTimeBalance = BigDecimal.ZERO;
+
+        for (Entity productionRecord : productionRecords) {
+            machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")));
+            laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")));
         }
+        // TODO balance ANKI
+        // balance = registered - planned
+
+        // TODO planned time ANKI
+        // FieldComponent machinePlannedTimeField = (FieldComponent) viewDefinitionState
+        // .getComponentByReference("machinePlannedTime");
+        FieldComponent machineRegisteredTimeField = (FieldComponent) viewDefinitionState
+                .getComponentByReference("machineRegisteredTime");
+        machineRegisteredTimeField.setFieldValue(machineRegisteredTime.toString());
+        FieldComponent machineTimeBalanceField = (FieldComponent) viewDefinitionState
+                .getComponentByReference("machineTimeBalance");
+        machineTimeBalanceField.setFieldValue(machineTimeBalance.toString());
+        // TODO planned time ANKI
+        // FieldComponent laborPlannedTimeField = (FieldComponent) viewDefinitionState
+        // .getComponentByReference("laborPlannedTime");
+        FieldComponent laborRegisteredTimeField = (FieldComponent) viewDefinitionState
+                .getComponentByReference("laborRegisteredTime");
+        laborRegisteredTimeField.setFieldValue(laborRegisteredTime.toString());
+        FieldComponent laborTimeBalanceField = (FieldComponent) viewDefinitionState.getComponentByReference("laborTimeBalance");
+        laborTimeBalanceField.setFieldValue(laborTimeBalance.toString());
+    }
+
+    private void setInputProductsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
+        GridComponent inputProducts = (GridComponent) viewDefinitionState.getComponentByReference("inputProductsGrid");
+        List<Entity> inputProductsList = new ArrayList<Entity>();
+        for (Entity productionRecord : order.getHasManyField("productionRecords")) {
+            inputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductInComponents"));
+        }
+        inputProducts.setEntities(inputProductsList);
+        // TODO group by ANKI
+    }
+
+    private void setOutputProductsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
+        GridComponent outputProducts = (GridComponent) viewDefinitionState.getComponentByReference("outputProductsGrid");
+        List<Entity> outputProductsList = new ArrayList<Entity>();
+        for (Entity productionRecord : order.getHasManyField("productionRecords")) {
+            outputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductOutComponents"));
+        }
+        outputProducts.setEntities(outputProductsList);
+        // TODO group by ANKI
+    }
+
+    private void setProductionTimeGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
+        // TODO production time grid content & group by ANKI
     }
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
@@ -132,6 +184,15 @@ public class ProductionBalanceService {
         entity.setField("generated", false);
         entity.setField("fileName", null);
         entity.setField("worker", null);
+        return true;
+    }
+
+    public boolean validateOrder(final DataDefinition dataDefinition, final Entity entity) {
+        if (entity.getBelongsToField("order").getHasManyField("productionRecords").size() == 0) {
+            entity.addError(dataDefinition.getField("order"),
+                    "productionCounting.productionBalance.report.error.orderWithoutProductionRecords");
+            return false;
+        }
         return true;
     }
 
