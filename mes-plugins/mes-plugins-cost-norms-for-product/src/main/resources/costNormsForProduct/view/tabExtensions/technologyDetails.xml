@@ -35,7 +35,7 @@
 			<layoutElement column="1" row="1">
 				<component type="grid" name="inProductsGrid" reference="inProductsGrid">
 
-					<option type="column" name="number" fields="number"
+					<option type="column" name="number" fields="product"
 						expression="#product['number']" width="100" />
 					<option type="column" name="name" fields="product"
 						expression="#product['name']" width="200" />

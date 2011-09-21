@@ -110,7 +110,8 @@ public class NormOrderService {
                 operationComponent.getField("countRealized") != null ? operationComponent.getField("countRealized") : "01all");
         orderOperationComponent.setField("countMachine", operationComponent.getField("countMachine"));
         orderOperationComponent.setField("timeNextOperation", operationComponent.getField("timeNextOperation"));
-
+        orderOperationComponent.setField("nodeNumber", operationComponent.getField("nodeNumber"));
+        
         List<Entity> newOrderOperationComponents = new ArrayList<Entity>();
 
         for (EntityTreeNode child : operationComponent.getChildren()) {

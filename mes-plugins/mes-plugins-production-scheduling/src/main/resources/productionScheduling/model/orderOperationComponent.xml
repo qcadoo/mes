@@ -48,6 +48,8 @@
 		<integer name="effectiveOperationRealizationTime" />
 		<datetime name="effectiveDateFrom" />
 		<datetime name="effectiveDateTo" />
+		
+		<string name="nodeNumber" />
 	</fields>
 	<hooks />
 </model>
