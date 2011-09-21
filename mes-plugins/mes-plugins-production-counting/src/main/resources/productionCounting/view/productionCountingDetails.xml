@@ -107,6 +107,8 @@
 							<option type="column" name="date" fields="creationTime" expression="#creationTime" />
 							<option type="column" name="worker" fields="worker" expression="#worker" />
 							<option type="order" column="number" direction="asc" />
+							<option type="searchable" value="number,operation,type,shift,date,worker" />
+							<option type="orderable" value="number,operation,type,shift,date,worker" />
 						</component>
 					</layoutElement>				
 				</component>

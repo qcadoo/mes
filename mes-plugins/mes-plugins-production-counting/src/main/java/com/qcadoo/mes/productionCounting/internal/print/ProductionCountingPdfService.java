@@ -195,8 +195,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
 
     private void addInputProducts(Document document, final Entity productionRecord, final Locale locale) throws DocumentException {
         document.add(new Paragraph(getTranslationService().translate("productionCounting.productionCounting.report.paragraph2",
-                locale)
-                + " " + productionRecord.getId().toString(), PdfUtil.getArialBold11Dark()));
+                locale), PdfUtil.getArialBold11Dark()));
 
         List<String> inputProductsTableHeader = new ArrayList<String>();
         inputProductsTableHeader.add(getTranslationService().translate(
@@ -211,14 +210,29 @@ public class ProductionCountingPdfService extends PdfDocumentService {
 
         PdfPTable inputProductsTable = PdfUtil.createTableWithHeader(5, inputProductsTableHeader, false);
 
+        if (productionRecord.getHasManyField("recordOperationProductInComponent") != null)
+            for (Entity productIn : productionRecord.getHasManyField("recordOperationProductInComponent")) {
+                inputProductsTable.addCell(new Phrase(productIn.getBelongsToField("product").getStringField("number"), PdfUtil
+                        .getArialRegular9Dark()));
+                inputProductsTable.addCell(new Phrase(productIn.getBelongsToField("product").getStringField("name"), PdfUtil
+                        .getArialRegular9Dark()));
+                inputProductsTable.addCell(new Phrase(getTranslationService().translate(
+                        "basic.product.typeOfMaterial.value."
+                                + productIn.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
+                        .getArialRegular9Dark()));
+                inputProductsTable.addCell(new Phrase(productIn.getBelongsToField("product").getStringField("unit"), PdfUtil
+                        .getArialRegular9Dark()));
+                inputProductsTable.addCell(new Phrase(getDecimalFormat().format(productIn.getField("usedQuantity")), PdfUtil
+                        .getArialRegular9Dark()));
+            }
+
         document.add(inputProductsTable);
     }
 
     private void addOutputProducts(Document document, final Entity productionRecord, final Locale locale)
             throws DocumentException {
         document.add(new Paragraph(getTranslationService().translate("productionCounting.productionCounting.report.paragraph3",
-                locale)
-                + " " + productionRecord.getId().toString(), PdfUtil.getArialBold11Dark()));
+                locale), PdfUtil.getArialBold11Dark()));
 
         List<String> outputProductsTableHeader = new ArrayList<String>();
         outputProductsTableHeader.add(getTranslationService().translate(
@@ -232,6 +246,22 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 "productionCounting.productionBalance.report.columnHeader.quantity", locale));
 
         PdfPTable outputProductsTable = PdfUtil.createTableWithHeader(5, outputProductsTableHeader, false);
+
+        if (productionRecord.getHasManyField("recordOperationProductOutComponent") != null)
+            for (Entity productOut : productionRecord.getHasManyField("recordOperationProductOutComponent")) {
+                outputProductsTable.addCell(new Phrase(productOut.getBelongsToField("product").getStringField("number"), PdfUtil
+                        .getArialRegular9Dark()));
+                outputProductsTable.addCell(new Phrase(productOut.getBelongsToField("product").getStringField("name"), PdfUtil
+                        .getArialRegular9Dark()));
+                outputProductsTable.addCell(new Phrase(getTranslationService().translate(
+                        "basic.product.typeOfMaterial.value."
+                                + productOut.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
+                        .getArialRegular9Dark()));
+                outputProductsTable.addCell(new Phrase(productOut.getBelongsToField("product").getStringField("unit"), PdfUtil
+                        .getArialRegular9Dark()));
+                outputProductsTable.addCell(new Phrase(getDecimalFormat().format(productOut.getField("usedQuantity")), PdfUtil
+                        .getArialRegular9Dark()));
+            }
 
         document.add(outputProductsTable);
     }
