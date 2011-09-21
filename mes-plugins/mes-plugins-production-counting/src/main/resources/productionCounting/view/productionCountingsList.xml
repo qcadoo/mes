@@ -19,8 +19,8 @@
 			<option type="order" column="order" direction="asc" />
 			<option type="correspondingView" value="productionCounting/productionCountingDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="order" />
-			<option type="orderable" value="order" />
+			<option type="searchable" value="name,order,product,generated,date,worker" />
+			<option type="orderable" value="name,order,product,generated,date,worker" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 			<listener event="printProductionCounting"
