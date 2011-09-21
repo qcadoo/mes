@@ -42,10 +42,12 @@
 	<hooks>
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
-			method="generateNumer" />
+			method="generateData" />
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="copyProductInAndOut" />
+		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+			method="checkTypeOfProductionRecording" />
 	</hooks>
 	<identifier expression="#number" />
 </model>
