@@ -18,6 +18,8 @@
 	<hooks>
 		<onCopy class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
 			method="clearGeneratedOnCopy" />
+		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
+			method="validateOrder" />
 	</hooks>
 	<identifier expression="#name" />
 </model>

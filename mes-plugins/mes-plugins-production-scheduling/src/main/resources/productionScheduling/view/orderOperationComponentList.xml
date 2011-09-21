@@ -37,7 +37,7 @@
 					reference="orderOperationComponents" field="#{form}.orderOperationComponents">
 					<dataType name="operation">
 						<option type="nodeLabelExpression"
-							value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
+							value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
 						<option type="correspondingView"
 							value="productionScheduling/orderOperationComponentDetails" />
 						<option type="correspondingComponent" value="form" />
