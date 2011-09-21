@@ -358,59 +358,72 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 "productionCounting.productionBalanceDetails.window.productionTime.tabLabel", locale), PdfUtil
                 .getArialBold11Dark()));
 
-        List<Entity> productionRecords = productionBalance.getBelongsToField("order").getHasManyField("productionRecords");
+        BigDecimal plannedTime;
+        BigDecimal machinePlannedTime = BigDecimal.ZERO;
+        BigDecimal laborPlannedTime = BigDecimal.ZERO;
+
+        List<Entity> orderOperationComponents = productionBalance.getBelongsToField("order").getTreeField(
+                "orderOperationComponents");
+        for (Entity orderOperationComponent : orderOperationComponents) {
+            plannedTime = ((BigDecimal) orderOperationComponent.getField("productionInOneCycle")).multiply(
+                    new BigDecimal((Integer) orderOperationComponent.getField("tj"))).add(
+                    new BigDecimal((Integer) orderOperationComponent.getField("tpz")));
+            machinePlannedTime = machinePlannedTime.add(plannedTime.multiply((BigDecimal) orderOperationComponent
+                    .getField("machineUtilization")));
+            laborPlannedTime = laborPlannedTime.add(plannedTime.multiply((BigDecimal) orderOperationComponent
+                    .getField("laborUtilization")));
+        }
 
         BigDecimal machineRegisteredTime = BigDecimal.ZERO;
-        BigDecimal machineTimeBalance = BigDecimal.ZERO;
         BigDecimal laborRegisteredTime = BigDecimal.ZERO;
-        BigDecimal laborTimeBalance = BigDecimal.ZERO;
-
-        for (Entity productionRecord : productionRecords) {
-            machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")));
-            laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")));
+        for (Entity productionRecord : productionBalance.getBelongsToField("order").getHasManyField("productionRecords")) {
+            machineRegisteredTime = machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")));
+            laborRegisteredTime = laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")));
         }
-        // TODO balance ANKI
-        // balance = registered - planned
+
+        BigDecimal machineTimeBalance = machineRegisteredTime.subtract(machinePlannedTime);
+        BigDecimal laborTimeBalance = laborRegisteredTime.subtract(laborPlannedTime);
 
         PdfPTable timePanel = PdfUtil.createPanelTable(3);
 
-        // TODO planned time ANKI
         addTableCellAsTable(
                 timePanel,
                 getTranslationService().translate(
                         "productionCounting.productionBalanceDetails.window.productionTime.machinePlannedTime.label", locale)
-                        + ":", "", null, PdfUtil.getArialRegular9Dark(), PdfUtil.getArialRegular9Dark(), null);
+                        + ":", convertTimeToString(machinePlannedTime), null, PdfUtil.getArialRegular9Dark(),
+                PdfUtil.getArialRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 getTranslationService().translate(
                         "productionCounting.productionBalanceDetails.window.productionTime.machineRegisteredTime.label", locale)
-                        + ":", machineRegisteredTime.toString(), null, PdfUtil.getArialRegular9Dark(),
+                        + ":", convertTimeToString(machineRegisteredTime), null, PdfUtil.getArialRegular9Dark(),
                 PdfUtil.getArialRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 getTranslationService().translate(
                         "productionCounting.productionBalanceDetails.window.productionTime.machineTimeBalance.label", locale)
-                        + ":", machineTimeBalance.toString(), null, PdfUtil.getArialRegular9Dark(),
+                        + ":", convertTimeToString(machineTimeBalance), null, PdfUtil.getArialRegular9Dark(),
                 PdfUtil.getArialRegular9Dark(), null);
-        // TODO planned time ANKI
         addTableCellAsTable(
                 timePanel,
                 getTranslationService().translate(
                         "productionCounting.productionBalanceDetails.window.productionTime.laborPlannedTime.label", locale)
-                        + ":", "", null, PdfUtil.getArialRegular9Dark(), PdfUtil.getArialRegular9Dark(), null);
+                        + ":", convertTimeToString(laborPlannedTime), null, PdfUtil.getArialRegular9Dark(),
+                PdfUtil.getArialRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 getTranslationService().translate(
                         "productionCounting.productionBalanceDetails.window.productionTime.laborRegisteredTime.label", locale)
-                        + ":", laborRegisteredTime.toString(), null, PdfUtil.getArialRegular9Dark(),
+                        + ":", convertTimeToString(laborRegisteredTime), null, PdfUtil.getArialRegular9Dark(),
                 PdfUtil.getArialRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 getTranslationService().translate(
                         "productionCounting.productionBalanceDetails.window.productionTime.laborTimeBalance.label", locale)
-                        + ":", laborTimeBalance.toString(), null, PdfUtil.getArialRegular9Dark(), PdfUtil.getArialRegular9Dark(),
-                null);
+                        + ":", convertTimeToString(laborTimeBalance), null, PdfUtil.getArialRegular9Dark(),
+                PdfUtil.getArialRegular9Dark(), null);
 
+        timePanel.setSpacingBefore(10);
         document.add(timePanel);
     }
 
@@ -422,6 +435,34 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
     @Override
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("productionCounting.productionBalance.report.title", locale);
+    }
+
+    public String convertTimeToString(final BigDecimal duration) {
+        Long durationLongValue = duration.longValue();
+
+        Long hour = durationLongValue / 3600;
+        String h = null;
+        String m = null;
+        String s = null;
+        if (hour < 10) {
+            h = "0" + hour.toString();
+        } else {
+            h = hour.toString();
+        }
+        Long minute = (durationLongValue % 3600) / 60;
+        if (minute < 10) {
+            m = "0" + minute.toString();
+        } else {
+            m = minute.toString();
+        }
+        Long second = (durationLongValue % 3600) % 60;
+        if (second < 10) {
+            s = "0" + second.toString();
+        } else {
+            s = second.toString();
+        }
+
+        return h + ":" + m + ":" + s;
     }
 
 }

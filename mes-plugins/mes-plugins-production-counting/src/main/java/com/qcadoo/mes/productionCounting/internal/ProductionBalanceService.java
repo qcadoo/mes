@@ -122,37 +122,52 @@ public class ProductionBalanceService {
     }
 
     private void setTimeValues(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        List<Entity> productionRecords = order.getHasManyField("productionRecords");
+        BigDecimal plannedTime;
+        BigDecimal machinePlannedTime = BigDecimal.ZERO;
+        BigDecimal laborPlannedTime = BigDecimal.ZERO;
+
+        List<Entity> orderOperationComponents = order.getTreeField("orderOperationComponents");
+        for (Entity orderOperationComponent : orderOperationComponents) {
+            plannedTime = ((BigDecimal) orderOperationComponent.getField("productionInOneCycle")).multiply(
+                    new BigDecimal((Integer) orderOperationComponent.getField("tj"))).add(
+                    new BigDecimal((Integer) orderOperationComponent.getField("tpz")));
+            machinePlannedTime = machinePlannedTime.add(plannedTime.multiply((BigDecimal) orderOperationComponent
+                    .getField("machineUtilization")));
+            laborPlannedTime = laborPlannedTime.add(plannedTime.multiply((BigDecimal) orderOperationComponent
+                    .getField("laborUtilization")));
+        }
 
         BigDecimal machineRegisteredTime = BigDecimal.ZERO;
-        BigDecimal machineTimeBalance = BigDecimal.ZERO;
         BigDecimal laborRegisteredTime = BigDecimal.ZERO;
-        BigDecimal laborTimeBalance = BigDecimal.ZERO;
-
-        for (Entity productionRecord : productionRecords) {
-            machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")));
-            laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")));
+        for (Entity productionRecord : order.getHasManyField("productionRecords")) {
+            machineRegisteredTime = machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")));
+            laborRegisteredTime = laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")));
         }
-        // TODO balance ANKI
-        // balance = registered - planned
 
-        // TODO planned time ANKI
-        // FieldComponent machinePlannedTimeField = (FieldComponent) viewDefinitionState
-        // .getComponentByReference("machinePlannedTime");
+        BigDecimal machineTimeBalance = machineRegisteredTime.subtract(machinePlannedTime);
+        BigDecimal laborTimeBalance = laborRegisteredTime.subtract(laborPlannedTime);
+
+        FieldComponent machinePlannedTimeField = (FieldComponent) viewDefinitionState
+                .getComponentByReference("machinePlannedTime");
+        machinePlannedTimeField.setFieldValue(productionBalancePdfService.convertTimeToString(machinePlannedTime));
+
         FieldComponent machineRegisteredTimeField = (FieldComponent) viewDefinitionState
                 .getComponentByReference("machineRegisteredTime");
-        machineRegisteredTimeField.setFieldValue(machineRegisteredTime.toString());
+        machineRegisteredTimeField.setFieldValue(productionBalancePdfService.convertTimeToString(machineRegisteredTime));
+
         FieldComponent machineTimeBalanceField = (FieldComponent) viewDefinitionState
                 .getComponentByReference("machineTimeBalance");
-        machineTimeBalanceField.setFieldValue(machineTimeBalance.toString());
-        // TODO planned time ANKI
-        // FieldComponent laborPlannedTimeField = (FieldComponent) viewDefinitionState
-        // .getComponentByReference("laborPlannedTime");
+        machineTimeBalanceField.setFieldValue(productionBalancePdfService.convertTimeToString(machineTimeBalance));
+
+        FieldComponent laborPlannedTimeField = (FieldComponent) viewDefinitionState.getComponentByReference("laborPlannedTime");
+        laborPlannedTimeField.setFieldValue(productionBalancePdfService.convertTimeToString(laborPlannedTime));
+
         FieldComponent laborRegisteredTimeField = (FieldComponent) viewDefinitionState
                 .getComponentByReference("laborRegisteredTime");
-        laborRegisteredTimeField.setFieldValue(laborRegisteredTime.toString());
+        laborRegisteredTimeField.setFieldValue(productionBalancePdfService.convertTimeToString(laborRegisteredTime));
+
         FieldComponent laborTimeBalanceField = (FieldComponent) viewDefinitionState.getComponentByReference("laborTimeBalance");
-        laborTimeBalanceField.setFieldValue(laborTimeBalance.toString());
+        laborTimeBalanceField.setFieldValue(productionBalancePdfService.convertTimeToString(laborTimeBalance));
     }
 
     private void setInputProductsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
