@@ -12,9 +12,9 @@
 		</ribbon>
 
 		<component type="form" name="form" reference="form">
-			<component type="input" name="number" field="product" expression="#product['number']" defaultEnabled="false" />
-			<component type="input" name="name" field="product" expression="#product['name']" defaultEnabled="false" />
-			<component type="input" name="type" field="product" expression="#product['type']" defaultEnabled="false" />
+			<component type="input" name="number" reference="number" />
+			<component type="input" name="name" reference="name" />
+			<component type="input" name="type" reference="type" />
 			<component type="input" name="plannedQuantity" field="plannedQuantity"
 				reference="plannedQuantity" />
 			<component type="input" name="usedQuantity" field="usedQuantity" />
@@ -22,4 +22,9 @@
 			<option type="expression" value="#product['name']" />
 		</component>
 	</component>
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.productionCounting.internal.RecordInAndOutService"
+			method="fillFieldFromProduct" />
+	</hooks>
 </view>
