@@ -31,6 +31,9 @@
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 								method="enabledOrDisabledOperationField" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+								method="registeringProductionTime" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
@@ -161,5 +164,10 @@
 				<option type="expression" value="#name" />
 			</component>
 		</windowTab>
+		<hooks>
+			<onSave
+				class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+				method="registeringProductionTime" />
+		</hooks>
 	</component>
 </view>

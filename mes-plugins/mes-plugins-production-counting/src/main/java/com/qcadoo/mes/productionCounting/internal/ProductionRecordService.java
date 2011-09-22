@@ -43,8 +43,18 @@ public class ProductionRecordService {
         }
     }
 
+    public void allowedPartial(final DataDefinition dd, final Entity entity) {
+        Entity order = entity.getBelongsToField("order");
+        Boolean allowedPartial = (Boolean) order.getField("allowedPartial");
+        Boolean isFinal = (Boolean) order.getField("isFinal");
+        if (!isFinal && allowedPartial) {
+            entity.addError(dd.getField("order"),
+                    "productionCounting.validate.global.error.productionRecord.orderError.allowedPartial");
+        }
+    }
+
     public void checkFinal(final DataDefinition dd, final Entity entity) {
-        
+
     }
 
     public void copyProductInAndOut(final DataDefinition dd, final Entity productionRecord) {
@@ -71,7 +81,7 @@ public class ProductionRecordService {
     // TODO products list should be distinct?
     private void copyOperationProductComponents(final List<Entity> orderOperations, final Entity productionRecord,
             final String modelName) {
-        if (orderOperations == null) {
+        if (orderOperations == null || orderOperations.size() == 0) {
             return;
         }
 

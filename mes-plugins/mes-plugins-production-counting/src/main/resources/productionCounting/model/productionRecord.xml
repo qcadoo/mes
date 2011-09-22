@@ -48,6 +48,8 @@
 			method="copyProductInAndOut" />
 		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="checkTypeOfProductionRecording" />
+		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="allowedPartial"/>
+		
 	</hooks>
 	<identifier expression="#number" />
 </model>

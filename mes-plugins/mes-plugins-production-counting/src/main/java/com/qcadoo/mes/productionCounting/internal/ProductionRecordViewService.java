@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -25,10 +26,13 @@ public class ProductionRecordViewService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private TranslationService translationService;
+
     private final static String CUMULATE = "02cumulated";
 
     private final static String FOR_EACH_OPERATION = "03forEach";
-    
+
     private final static Logger LOG = LoggerFactory.getLogger(ProductionRecordViewService.class);
 
     public void setParametersDefaultValue(final ViewDefinitionState viewDefinitionState) {
@@ -112,4 +116,16 @@ public class ProductionRecordViewService {
 
         ((FieldComponent) view.getComponentByReference("orderOperationComponent")).requestComponentUpdateState();
     }
+
+    public void registeringProductionTime(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        ComponentState orderLookup = (ComponentState) view.getComponentByReference("order");
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                (Long) orderLookup.getFieldValue());
+        Boolean registerProductionTime = (Boolean) order.getField("registerProductionTime");
+        if (registerProductionTime) {
+            view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(false);
+            view.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(false);
+        }
+    }
+
 }

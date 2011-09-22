@@ -12,11 +12,11 @@
 		</ribbon>
 
 		<component type="form" name="form" reference="form">
-			<component type="input" name="number" field="product" expression="#product['number']" defaultEnabled="false" />
+			<component type="input" name="number" field="product" expression="#product" defaultEnabled="false" />
 			<component type="input" name="name" field="product" expression="#product['name']" defaultEnabled="false" />
 			<component type="input" name="type" field="product" expression="#product['type']" defaultEnabled="false" />
 			<component type="input" name="plannedQuantity" field="plannedQuantity"
-				reference="plannedQuantity" />
+				reference="plannedQuantity" defaultEnabled="false"/>
 			<component type="input" name="usedQuantity" field="usedQuantity" />
 			<option type="header" value="true" />
 			<option type="expression" value="#product['name']" />

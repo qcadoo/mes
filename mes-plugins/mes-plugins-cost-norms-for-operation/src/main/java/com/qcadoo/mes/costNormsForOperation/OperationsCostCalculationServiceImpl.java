@@ -96,10 +96,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         } else {
             Map<String, BigDecimal> hourlyResultsMap = estimateCostCalculationForHourly(operationComponents.getRoot(), margin,
                     quantity, includeTPZ, 0L);
-            costCalculation.setField("totalMachineHourlyCosts",
-                    hourlyResultsMap.get(MACHINE_HOURLY_COST).setScale(3, ROUND_UP));
-            costCalculation.setField("totalLaborHourlyCosts",
-                    hourlyResultsMap.get(LABOR_HOURLY_COST).setScale(3, ROUND_UP));
+            costCalculation.setField("totalMachineHourlyCosts", hourlyResultsMap.get(MACHINE_HOURLY_COST).setScale(3, ROUND_UP));
+            costCalculation.setField("totalLaborHourlyCosts", hourlyResultsMap.get(LABOR_HOURLY_COST).setScale(3, ROUND_UP));
         }
 
         costCalculation.setField("calculationOperationComponents", operationComponents);
@@ -131,17 +129,20 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         BigDecimal numOfCycles = numOfProducts.divide(prodInOneCycle).setScale(0, ROUND_UP);
         BigDecimal tj = getBigDecimal(operationComponent.getField("tj"));
+        BigDecimal machineUtilization = getBigDecimal(operationComponent.getField("machineUtilization"));
+        BigDecimal laborUtilization = getBigDecimal(operationComponent.getField("laborUtilization"));
         BigDecimal additionalTime = getBigDecimal(operationComponent.getField("timeNextOperation"));
         BigDecimal duration = (tj.multiply(numOfCycles)).add(additionalTime);
         if (includeTPZ) {
             duration = duration.add(getBigDecimal(operationComponent.getField("tpz")));
         }
         BigDecimal durationInHours = duration.divide(BigDecimal.valueOf(3600), 5, ROUND_HALF_UP);
-        BigDecimal operationMachineCost = durationInHours.multiply(hourlyMachineCost);
-        BigDecimal operationLaborCost = durationInHours.multiply(hourlyLaborCost);
+        BigDecimal durationMachine = durationInHours.multiply(machineUtilization);
+        BigDecimal durationLabor = durationInHours.multiply(laborUtilization);
+        BigDecimal operationMachineCost = durationMachine.multiply(hourlyMachineCost);
+        BigDecimal operationLaborCost = durationLabor.multiply(hourlyLaborCost);
         BigDecimal operationCost = operationMachineCost.add(operationLaborCost);
-        BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100), 5,
-                ROUND_HALF_UP));
+        BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100), 5, ROUND_HALF_UP));
 
         operationComponent.setField("operationCost", operationCost.setScale(3, ROUND_UP));
         operationComponent.setField("operationMarginCost", operationMarginCost.setScale(3, ROUND_UP));
@@ -190,8 +191,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal pieces = numOfProducts.multiply(plannedQuantity);
         BigDecimal pieceworkCostPerOperation = pieceworkCost.divide(numberOfOperations, 5, ROUND_HALF_UP);
         BigDecimal operationCost = pieces.multiply(pieceworkCostPerOperation);
-        BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100), 5,
-                ROUND_HALF_UP));
+        BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100), 5, ROUND_HALF_UP));
 
         operationComponent.setField("level", level);
         operationComponent.setField("pieces", pieces.setScale(3, ROUND_UP));
