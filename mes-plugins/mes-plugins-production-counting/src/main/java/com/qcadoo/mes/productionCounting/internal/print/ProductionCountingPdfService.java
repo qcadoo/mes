@@ -21,6 +21,7 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
+import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordComparator;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -55,7 +56,10 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         panelTable.setSpacingBefore(20);
         document.add(panelTable);
 
-        for (Entity productionRecord : productionCounting.getBelongsToField("order").getHasManyField("productionRecords")) {
+        List<Entity> productionRecordsList = new ArrayList<Entity>(productionCounting.getBelongsToField("order").getHasManyField(
+                "productionRecords"));
+        Collections.sort(productionRecordsList, new EntityProductionRecordComparator());
+        for (Entity productionRecord : productionRecordsList) {
             addProductionRecord(document, productionRecord, locale);
         }
     }
@@ -163,7 +167,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
             throws DocumentException {
         document.add(new Paragraph(getTranslationService().translate("productionCounting.productionCounting.report.paragraph",
                 locale)
-                + " " + productionRecord.getId().toString(), PdfUtil.getArialBold19Dark()));
+                + " " + productionRecord.getStringField("number"), PdfUtil.getArialBold19Dark()));
 
         PdfPTable panelTable = PdfUtil.createPanelTable(2);
         addTableCellAsTable(
@@ -174,12 +178,15 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                         : getTranslationService().translate(
                                 "productionCounting.productionCounting.report.panel.recordType.final", locale), null,
                 PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        // TODO operation level ANKI
         addTableCellAsTable(
                 panelTable,
                 getTranslationService().translate("productionCounting.productionCounting.report.panel.operationAndLevel", locale),
                 productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
-                        .getStringField("name"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+                        .getStringField("name")
+                        + " "
+                        + productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
+                                .getStringField("nodeNumber"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(),
+                null);
         addTableCellAsTable(panelTable,
                 getTranslationService().translate("productionCounting.productionCounting.report.panel.dateAndTime", locale),
                 (new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format((Date) productionRecord.getField("creationTime")))
