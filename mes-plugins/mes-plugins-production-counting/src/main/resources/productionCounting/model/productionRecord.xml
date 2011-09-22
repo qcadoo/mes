@@ -38,6 +38,9 @@
 		<integer name="machineTimeBalance" />
 		<integer name="laborTime" />
 		<integer name="laborTimeBalance" />
+		<integer name="plannedTime" default="0" />
+		<integer name="plannedMachineTime" default="0" />
+		<integer name="plannedLaborTime" default="0" />
 	</fields>
 	<hooks>
 		<onSave
@@ -46,6 +49,8 @@
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="copyProductInAndOut" />
+		<onSave class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+			method="countPlannedTime" />
 		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="checkTypeOfProductionRecording" />
 		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="allowedPartial"/>

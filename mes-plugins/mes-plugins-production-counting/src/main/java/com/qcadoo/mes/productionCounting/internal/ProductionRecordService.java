@@ -8,14 +8,16 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCou
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_IN_PRODUCTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_OUT_PRODUCTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PLUGIN_IDENTIFIER;
+import static java.math.BigDecimal.ROUND_UP;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -34,8 +36,13 @@ public class ProductionRecordService {
     @Autowired
     SecurityService securityService;
 
+    private final static String CUMULATE = "02cumulated";
+
+    private final static String FOR_EACH_OPERATION = "03forEach";
+
     public void generateData(final DataDefinition dd, final Entity entity) {
-        entity.setField("number", numberGeneratorService.generateNumber(PLUGIN_IDENTIFIER, entity.getDataDefinition().getName()));
+        entity.setField("number", numberGeneratorService.generateNumber(ProductionCountingConstants.PLUGIN_IDENTIFIER, entity
+                .getDataDefinition().getName()));
         entity.setField("creationTime", new Date());
         entity.setField("worker", securityService.getCurrentUserName());
     }
@@ -78,11 +85,11 @@ public class ProductionRecordService {
 
         Boolean registerInput = getBooleanValue(order.getField(PARAM_REGISTER_IN_PRODUCTS));
         Boolean registerOutput = getBooleanValue(order.getField(PARAM_REGISTER_OUT_PRODUCTS));
-        
+
         if (!registerInput && !registerOutput) {
             return;
         }
-        
+
         for (String fieldName : newArrayList("recordOperationProductInComponents", "recordOperationProductOutComponents")) {
             if (productionRecord.getHasManyField(fieldName) != null) {
                 return;
@@ -110,12 +117,12 @@ public class ProductionRecordService {
             return;
         }
 
-        DataDefinition recordProductDD = dataDefinitionService.get(PLUGIN_IDENTIFIER, modelName);
+        DataDefinition recordProductDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, modelName);
         List<Entity> products = newArrayList();
         String technologyProductFieldName = "operationProductOutComponents";
         String recordProductFieldName = "recordOperationProductOutComponents";
 
-        if (MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName)) {
+        if (ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName)) {
             technologyProductFieldName = "operationProductInComponents";
             recordProductFieldName = "recordOperationProductInComponents";
         }
@@ -136,8 +143,65 @@ public class ProductionRecordService {
         }
         productionRecord.setField(recordProductFieldName, products);
     }
-    
+
+    public void countPlannedTime(final DataDefinition dataDefinition, final Entity productionCounting) {
+        Entity order = productionCounting.getBelongsToField("order");
+        String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
+        if (CUMULATE.equals(typeOfProductionRecording)) {
+            List<Entity> operationComponents = order.getTreeField("orderOperationComponents");
+            countPlannedTimeForCumulated(productionCounting, operationComponents);
+
+        } else if (FOR_EACH_OPERATION.equals(typeOfProductionRecording)) {
+            Entity orderOperationComponent = productionCounting.getBelongsToField("orderOperationComponent");
+            countPlannedTimeForEachOperation(productionCounting, orderOperationComponent);
+        }
+    }
+
+    private void countPlannedTimeForEachOperation(final Entity productionCounting, final Entity orderOperationComponent) {
+        BigDecimal tpz = getBigDecimal(orderOperationComponent.getField("tpz"));
+        BigDecimal tj = getBigDecimal(orderOperationComponent.getField("tj"));
+        BigDecimal productionInOneCycle = getBigDecimal(orderOperationComponent.getField("productionInOneCycle"));
+        BigDecimal machineUtilization = getBigDecimal(orderOperationComponent.getField("machineUtilization"));
+        BigDecimal laborUtilization = getBigDecimal(orderOperationComponent.getField("laborUtilization"));
+        BigDecimal plannedTime = (tj.multiply(productionInOneCycle)).add(tpz);
+        BigDecimal plannedMachineTime = plannedTime.multiply(machineUtilization);
+        BigDecimal plannedLaborTime = plannedTime.multiply(laborUtilization);
+
+        productionCounting.setField("plannedTime", plannedTime.setScale(0, ROUND_UP).intValue());
+        productionCounting.setField("plannedMachineTime", plannedMachineTime.setScale(0, ROUND_UP).intValue());
+        productionCounting.setField("plannedLaborTime", plannedLaborTime.setScale(0, ROUND_UP).intValue());
+    }
+
+    private void countPlannedTimeForCumulated(final Entity productionCounting, final List<Entity> orderOperationComponents) {
+        BigDecimal plannedTime = BigDecimal.ZERO;
+        BigDecimal plannedMachineTime = BigDecimal.ZERO;
+        BigDecimal plannedLaborTime = BigDecimal.ZERO;
+        for (Entity orderOperationComponent : orderOperationComponents) {
+            BigDecimal tpz = getBigDecimal(orderOperationComponent.getField("tpz"));
+            BigDecimal tj = getBigDecimal(orderOperationComponent.getField("tj"));
+            BigDecimal productionInOneCycle = getBigDecimal(orderOperationComponent.getField("productionInOneCycle"));
+            BigDecimal machineUtilization = getBigDecimal(orderOperationComponent.getField("machineUtilization"));
+            BigDecimal laborUtilization = getBigDecimal(orderOperationComponent.getField("laborUtilization"));
+            plannedTime = (tj.multiply(productionInOneCycle)).add(tpz);
+            plannedMachineTime = plannedTime.multiply(machineUtilization);
+            plannedLaborTime = plannedTime.multiply(laborUtilization);
+        }
+        productionCounting.setField("plannedTime", plannedTime.setScale(0, ROUND_UP).intValue());
+        productionCounting.setField("plannedMachineTime", plannedMachineTime.setScale(0, ROUND_UP).intValue());
+        productionCounting.setField("plannedLaborTime", plannedLaborTime.setScale(0, ROUND_UP).intValue());
+    }
+
+    private BigDecimal getBigDecimal(final Object value) {
+        if (value == null) {
+            return BigDecimal.ZERO;
+        }
+        if (value instanceof BigDecimal) {
+            return (BigDecimal) value;
+        }
+        return BigDecimal.valueOf(Double.valueOf(value.toString()));
+    }
+
     public static Boolean getBooleanValue(Object fieldValue) {
-        return fieldValue != null && fieldValue instanceof Boolean && (Boolean) fieldValue; 
+        return fieldValue != null && fieldValue instanceof Boolean && (Boolean) fieldValue;
     }
 }
