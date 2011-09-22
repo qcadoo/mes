@@ -41,7 +41,7 @@
 								copyRibbonItem.enable();
 								if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
 									pdfRibbonItem.enable();
-									saveRibbonItem.disable("#{translate(productionCounting.productionCounting.report.error.documentsWasGenerated)}");
+									saveRibbonItem.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
 								} else {
 									pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 									saveRibbonItem.enable();
@@ -69,7 +69,7 @@
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionCountingViewService"
 								method="fillProductWhenOrderChanged" />
 						</component>
 					</layoutElement>
@@ -124,7 +124,7 @@
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService"
 			method="setGenerateButtonState" />
-		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService"
+		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionCountingViewService"
 			method="fillProductionRecordsGrid" />
 	</hooks>
 </view>

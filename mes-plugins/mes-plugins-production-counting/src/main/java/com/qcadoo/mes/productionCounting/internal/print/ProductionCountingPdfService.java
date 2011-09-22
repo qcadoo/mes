@@ -247,11 +247,10 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 inputProductsTable.addCell(new Phrase(productIn.getBelongsToField("product").getStringField("unit"), PdfUtil
                         .getArialRegular9Dark()));
                 if (productIn.getField("usedQuantity") != null)
-                    inputProductsTable.addCell(new Phrase(getDecimalFormat().format(
-                            (BigDecimal) productIn.getField("usedQuantity")), PdfUtil.getArialRegular9Dark()));
-                else
-                    inputProductsTable.addCell(new Phrase(getDecimalFormat().format(BigDecimal.ZERO), PdfUtil
+                    inputProductsTable.addCell(new Phrase(getDecimalFormat().format(productIn.getField("usedQuantity")), PdfUtil
                             .getArialRegular9Dark()));
+                else
+                    inputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
             }
         }
 
@@ -292,11 +291,10 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 outputProductsTable.addCell(new Phrase(productOut.getBelongsToField("product").getStringField("unit"), PdfUtil
                         .getArialRegular9Dark()));
                 if (productOut.getField("usedQuantity") != null)
-                    outputProductsTable.addCell(new Phrase(getDecimalFormat().format(
-                            (BigDecimal) productOut.getField("usedQuantity")), PdfUtil.getArialRegular9Dark()));
+                    outputProductsTable.addCell(new Phrase(getDecimalFormat().format(productOut.getField("usedQuantity")),
+                            PdfUtil.getArialRegular9Dark()));
                 else
-                    outputProductsTable.addCell(new Phrase(getDecimalFormat().format(BigDecimal.ZERO), PdfUtil
-                            .getArialRegular9Dark()));
+                    outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
             }
         }
 

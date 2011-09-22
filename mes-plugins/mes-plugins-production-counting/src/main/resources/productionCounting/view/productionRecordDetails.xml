@@ -71,7 +71,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="9">
 						<component type="grid" name="recordOperationProductInComponent"
-							reference="recordOperationProductInComponent" source="#{form}.recordOperationProductInComponents">
+							reference="recordOperationProductInComponent" source="#{form}.recordOperationProductInComponents" defaultEnabled="false">
 							<option type="column" name="number" fields="product"
 								expression="#product['number']" link="true" width="100" />
 							<option type="column" name="name" fields="product"
@@ -136,7 +136,7 @@
 					</layoutElement>
 					<layoutElement column="2" row="9">
 						<component type="grid" name="recordOperationProductOutComponent"
-							reference="recordOperationProductOutComponent" source="#{form}.recordOperationProductOutComponents">
+							reference="recordOperationProductOutComponent" source="#{form}.recordOperationProductOutComponents" defaultEnabled="false">
 							<option type="column" name="number" fields="product"
 								expression="#product['number']" link="true" width="100" />
 							<option type="column" name="name" fields="product"
@@ -168,4 +168,7 @@
 			</component>
 		</windowTab>
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="initializeRecordDetailsView" />
+	</hooks>
 </view>

@@ -2,6 +2,10 @@ package com.qcadoo.mes.productionCounting.internal;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PARAMETER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
+import static com.qcadoo.mes.productionCounting.internal.ProductionRecordService.getBooleanValue;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,13 +37,28 @@ public class ProductionRecordViewService {
     @Autowired
     private TranslationService translationService;
 
-    private final static String CUMULATE = "02cumulated";
-
-    private final static String FOR_EACH_OPERATION = "03forEach";
-
     private final static String CLOSED_ORDER = "04done";
 
     private final static Logger LOG = LoggerFactory.getLogger(ProductionRecordViewService.class);
+
+    public void initializeRecordDetailsView(final ViewDefinitionState view) {
+        FormComponent recordForm = (FormComponent) view.getComponentByReference("form");
+        if (recordForm.getEntityId() == null) {
+            return;
+        }
+        Entity record = recordForm.getEntity();
+        Long orderId = (Long) record.getField("order");
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(orderId);
+
+        view.getComponentByReference("recordOperationProductOutComponent").setEnabled(
+                getBooleanValue(order.getField("registerQuantityOutProduct")));
+        view.getComponentByReference("recordOperationProductInComponent").setEnabled(
+                getBooleanValue(order.getField("registerQuantityInProduct")));
+        view.getComponentByReference("borderLayoutConsumedTimeCumulated").setEnabled(
+                getBooleanValue(order.getField("registerProductionTime")));
+        view.getComponentByReference("borderLayoutConsumedTimeForEach").setEnabled(
+                getBooleanValue(order.getField("registerProductionTime")));
+    }
 
     public void setParametersDefaultValue(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
@@ -64,7 +83,7 @@ public class ProductionRecordViewService {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(
                     (Long) form.getEntityId());
             if (order == null || "".equals(order.getField("typeOfProductionRecording"))) {
-                typeOfProductionRecording.setFieldValue("01none");
+                typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
             }
             for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
                     "registerProductionTime")) {
@@ -75,7 +94,7 @@ public class ProductionRecordViewService {
                 }
             }
         } else {
-            typeOfProductionRecording.setFieldValue("01none");
+            typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
             for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
                     "registerProductionTime")) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
@@ -114,11 +133,13 @@ public class ProductionRecordViewService {
 
     private void setComponentVisible(final String recordingType, final ViewDefinitionState view) {
         view.getComponentByReference("orderOperationComponent").setVisible(
-                FOR_EACH_OPERATION.equals(recordingType) || CUMULATE.equals(recordingType));
-        view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(FOR_EACH_OPERATION.equals(recordingType));
-        view.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(CUMULATE.equals(recordingType));
+                PARAM_RECORDING_TYPE_FOREACH.equals(recordingType) || PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType));
+        view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(
+                PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
+        view.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(
+                PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType));
         view.getComponentByReference("operationNoneLabel").setVisible(
-                !CUMULATE.equals(recordingType) && !FOR_EACH_OPERATION.equals(recordingType));
+                !PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType) && !PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
 
         ((FieldComponent) view.getComponentByReference("orderOperationComponent")).requestComponentUpdateState();
     }
@@ -127,7 +148,7 @@ public class ProductionRecordViewService {
         ComponentState orderLookup = (ComponentState) view.getComponentByReference("order");
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 (Long) orderLookup.getFieldValue());
-        Boolean registerProductionTime = (Boolean) order.getField("registerProductionTime");
+        Boolean registerProductionTime = getBooleanValue(order.getField("registerProductionTime"));
         if (registerProductionTime) {
             view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(false);
             view.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(false);
