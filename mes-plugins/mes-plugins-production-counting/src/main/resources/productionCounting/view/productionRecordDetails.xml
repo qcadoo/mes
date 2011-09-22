@@ -29,7 +29,7 @@
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 								method="enabledOrDisabledOperationField" />
 						</component>
 					</layoutElement>
@@ -68,7 +68,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="9">
 						<component type="grid" name="recordOperationProductInComponent"
-							reference="recordOperationProductInComponent" model="recordOperationProductInComponent">
+							reference="recordOperationProductInComponent" source="#{form}.recordOperationProductInComponents">
 							<option type="column" name="number" fields="product"
 								expression="#product['number']" link="true" width="100" />
 							<option type="column" name="name" fields="product"
@@ -133,7 +133,7 @@
 					</layoutElement>
 					<layoutElement column="2" row="9">
 						<component type="grid" name="recordOperationProductOutComponent"
-							reference="recordOperationProductOutComponent" model="recordOperationProductOutComponent">
+							reference="recordOperationProductOutComponent" source="#{form}.recordOperationProductOutComponents">
 							<option type="column" name="number" fields="product"
 								expression="#product['number']" link="true" width="100" />
 							<option type="column" name="name" fields="product"

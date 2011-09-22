@@ -1,32 +1,20 @@
 package com.qcadoo.mes.productionCounting.internal;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PARAMETER;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PLUGIN_IDENTIFIER;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -36,17 +24,10 @@ public class ProductionRecordService {
     DataDefinitionService dataDefinitionService;
 
     @Autowired
-    MaterialRequirementReportDataService materialRequirementReportDataService;
-
-    @Autowired
     NumberGeneratorService numberGeneratorService;
 
     @Autowired
     SecurityService securityService;
-
-    private final static String CUMULATE = "02cumulated";
-
-    private final static String FOR_EACH_OPERATION = "03forEach";
 
     public void generateData(final DataDefinition dd, final Entity entity) {
         entity.setField("number", numberGeneratorService.generateNumber(PLUGIN_IDENTIFIER, entity.getDataDefinition().getName()));
@@ -63,102 +44,7 @@ public class ProductionRecordService {
     }
 
     public void checkFinal(final DataDefinition dd, final Entity entity) {
-
-    }
-
-    public void setParametersDefaultValue(final ViewDefinitionState viewDefinitionState) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PARAMETER).get(form.getEntityId());
-
-        for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
-                "registerProductionTime")) {
-            FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
-            if (parameter == null || parameter.getField(componentReference) == null) {
-                component.setFieldValue(true);
-                component.requestComponentUpdateState();
-            }
-        }
-    }
-
-    public void setOrderDefaultValue(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
-                .getComponentByReference("typeOfProductionRecording");
-
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        if (form.getEntityId() != null) {
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(
-                    (Long) form.getEntityId());
-            if (order == null || "".equals(order.getField("typeOfProductionRecording"))) {
-                typeOfProductionRecording.setFieldValue("01none");
-            }
-            for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
-                    "registerProductionTime")) {
-                FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
-                if (order == null || order.getField(componentReference) == null) {
-                    component.setFieldValue(true);
-                    component.requestComponentUpdateState();
-                }
-            }
-        } else {
-            typeOfProductionRecording.setFieldValue("01none");
-            for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
-                    "registerProductionTime")) {
-                FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
-                if (component.getFieldValue() == null) {
-                    component.setFieldValue(true);
-                    component.requestComponentUpdateState();
-                }
-            }
-        }
-    }
-
-    public void checkStateOrder(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
-        if ("03inProgress".equals(orderState.getFieldValue()) || "04done".equals(orderState.getFieldValue())) {
-            for (String componentName : Arrays.asList("typeOfProductionRecording", "registerQuantityInProduct",
-                    "registerQuantityOutProduct", "registerProductionTime", "allowedPartial", "blockClosing", "autoCloseOrder")) {
-                FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
-                component.setEnabled(false);
-                component.requestComponentUpdateState();
-            }
-        }
-    }
-
-    public void enabledOrDisabledOperationField(final ViewDefinitionState viewDefinitionState,
-            final ComponentState componentState, final String[] args) {
-        Long orderId = (Long) viewDefinitionState.getComponentByReference("order").getFieldValue();
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(orderId);
-        if (order == null) {
-            Log.debug("order is null!!");
-            return;
-        }
-        String typeOfProductionRecording = (String) order.getField("typeOfProductionRecording");
-        setComponentVisible((String) order.getField("typeOfProductionRecording"), viewDefinitionState);
-
-        if ("02cumulated".equals(typeOfProductionRecording)) {
-            fillProductsGrid(viewDefinitionState, MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT);
-            fillProductsGrid(viewDefinitionState, MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
-        }
-    }
-
-    private void fillProductsGrid(final ViewDefinitionState view, final String modelName) {
-        GridComponent grid = (GridComponent) view.getComponentByReference(modelName);
-        Entity productionRecord = ((FormComponent) view.getComponentByReference("form")).getEntity();
-        if (productionRecord.getId() == null) {
-            return;
-        }
-        grid.setEntities(productionRecord.getHasManyField(modelName + 's'));
-    }
-
-    private void setComponentVisible(final String recordingType, final ViewDefinitionState view) {
-        view.getComponentByReference("orderOperationComponent").setVisible(
-                FOR_EACH_OPERATION.equals(recordingType) || CUMULATE.equals(recordingType));
-        view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(FOR_EACH_OPERATION.equals(recordingType));
-        view.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(CUMULATE.equals(recordingType));
-        view.getComponentByReference("operationNoneLabel").setVisible(
-                !CUMULATE.equals(recordingType) && !FOR_EACH_OPERATION.equals(recordingType));
-
-        ((FieldComponent) view.getComponentByReference("orderOperationComponent")).requestComponentUpdateState();
+        
     }
 
     public void copyProductInAndOut(final DataDefinition dd, final Entity productionRecord) {
