@@ -103,10 +103,10 @@
 							<option type="column" name="operation" fields="orderOperationComponent" 
 									expression="#orderOperationComponent['operation']" />
 							<option type="column" name="type" fields="isFinal" 
-									expression="#isFinal == 'false' 
-												? '@productionCounting.productionCounting.report.panel.recordType.partial' 
-												: '@productionCounting.productionCounting.report.panel.recordType.final'" />
-							<option type="column" name="shift" fields="shift" />
+									expression="#isFinal" />
+<!-- 												? '@productionCounting.productionCounting.report.panel.recordType.final'  -->
+<!-- 												: '@productionCounting.productionCounting.report.panel.recordType.partial'" /> -->
+							<option type="column" name="shift" fields="shift" expression="#shift['name']" />
 							<option type="column" name="date" fields="creationTime" />
 							<option type="column" name="worker" fields="worker" />
 							<option type="order" column="number" direction="asc" />

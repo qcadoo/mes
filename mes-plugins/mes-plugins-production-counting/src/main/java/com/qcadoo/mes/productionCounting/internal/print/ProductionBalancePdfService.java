@@ -438,31 +438,13 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
     }
 
     public String convertTimeToString(final BigDecimal duration) {
-        Long durationLongValue = duration.longValue();
+        long longValueFromDuration = duration.longValue();
+        long hours = longValueFromDuration / 3600;
+        long minutes = longValueFromDuration % 3600 / 60;
+        long seconds = longValueFromDuration % 3600 % 60;
 
-        Long hour = durationLongValue / 3600;
-        String h = null;
-        String m = null;
-        String s = null;
-        if (hour < 10) {
-            h = "0" + hour.toString();
-        } else {
-            h = hour.toString();
-        }
-        Long minute = (durationLongValue % 3600) / 60;
-        if (minute < 10) {
-            m = "0" + minute.toString();
-        } else {
-            m = minute.toString();
-        }
-        Long second = (durationLongValue % 3600) % 60;
-        if (second < 10) {
-            s = "0" + second.toString();
-        } else {
-            s = second.toString();
-        }
-
-        return h + ":" + m + ":" + s;
+        return (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "")
+                + seconds;
     }
 
 }

@@ -52,11 +52,15 @@ public class ProductionCountingService {
         }
         FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
         if (orderLookup.getFieldValue() == null) {
+            clearProductFieldValue(viewDefinitionState);
+            setProductionRecordsGridVisibility(viewDefinitionState, false);
             return;
         }
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 (Long) orderLookup.getFieldValue());
         if (order == null) {
+            clearProductFieldValue(viewDefinitionState);
+            setProductionRecordsGridVisibility(viewDefinitionState, false);
             return;
         }
 
@@ -67,11 +71,13 @@ public class ProductionCountingService {
     public void fillProductionRecordsGrid(final ViewDefinitionState viewDefinitionState) {
         FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
         if (orderLookup.getFieldValue() == null) {
+            setProductionRecordsGridVisibility(viewDefinitionState, false);
             return;
         }
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 (Long) orderLookup.getFieldValue());
         if (order == null) {
+            setProductionRecordsGridVisibility(viewDefinitionState, false);
             return;
         }
 
@@ -83,9 +89,20 @@ public class ProductionCountingService {
         productField.setFieldValue(order.getBelongsToField("product").getId());
     }
 
+    private void clearProductFieldValue(final ViewDefinitionState viewDefinitionState) {
+        FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference("product");
+        productField.setFieldValue(null);
+    }
+
     private void setProductionRecordsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
         GridComponent productionRecords = (GridComponent) viewDefinitionState.getComponentByReference("productionRecords");
         productionRecords.setEntities(order.getHasManyField("productionRecords"));
+        productionRecords.setVisible(true);
+    }
+
+    private void setProductionRecordsGridVisibility(final ViewDefinitionState viewDefinitionState, final Boolean isVisible) {
+        GridComponent productionRecords = (GridComponent) viewDefinitionState.getComponentByReference("productionRecords");
+        productionRecords.setVisible(isVisible);
     }
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
