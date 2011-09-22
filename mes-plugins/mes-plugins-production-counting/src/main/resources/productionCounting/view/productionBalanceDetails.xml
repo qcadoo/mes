@@ -70,7 +70,7 @@
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
 								method="fillFieldsWhenOrderChanged" />
 						</component>
 					</layoutElement>
@@ -114,11 +114,15 @@
 			<component type="grid" name="inputProducts" reference="inputProductsGrid" model="recordOperationProductInComponent" >
 				<option type="column" name="inputProductNumber" fields="product" expression="#product['number']" />
 				<option type="column" name="inputProductName" fields="product" expression="#product['name']" />
-				<option type="column" name="inputProductType" fields="product" expression="#product['typeOfMaterial']" />
+				<option type="column" name="inputProductType" fields="product" 
+						expression="#product['typeOfMaterial'] == '01component' ? '@basic.product.typeOfMaterial.value.01component' :
+									#product['typeOfMaterial'] == '02intermediate' ? '@basic.product.typeOfMaterial.value.02intermediate' :
+									#product['typeOfMaterial'] == '03product' ? '@basic.product.typeOfMaterial.value.03product' :
+									#product['typeOfMaterial'] == '04waste' ? '@basic.product.typeOfMaterial.value.04waste' : ''" />
 				<option type="column" name="inputProductUnit" fields="product" expression="#product['unit']" />
 				<option type="column" name="inputProductPlannedQuantity" fields="plannedQuantity" />
-				<option type="column" name="inputProductUsedQuantity" fields="usedQuantity" />
-				<option type="column" name="inputProductBalance" fields="balance" />
+				<option type="column" name="inputProductUsedQuantity" fields="usedQuantity" expression="#usedQuantity==null?'N/A':#usedQuantity" />
+				<option type="column" name="inputProductBalance" fields="balance" expression="#balance==null?'N/A':#balance" />
 				<option type="order" column="inputProductNumber" direction="asc" />
 			</component>
 		</windowTab>
@@ -126,11 +130,15 @@
 			<component type="grid" name="outputProducts" reference="outputProductsGrid" model="recordOperationProductOutComponent" >
 				<option type="column" name="outputProductNumber" fields="product" expression="#product['number']" />
 				<option type="column" name="outputProductName" fields="product" expression="#product['name']" />
-				<option type="column" name="outputProductType" fields="product" expression="#product['typeOfMaterial']" />
+				<option type="column" name="outputProductType" fields="product" 
+						expression="#product['typeOfMaterial'] == '01component' ? '@basic.product.typeOfMaterial.value.01component' :
+									#product['typeOfMaterial'] == '02intermediate' ? '@basic.product.typeOfMaterial.value.02intermediate' :
+									#product['typeOfMaterial'] == '03product' ? '@basic.product.typeOfMaterial.value.03product' :
+									#product['typeOfMaterial'] == '04waste' ? '@basic.product.typeOfMaterial.value.04waste' : ''" />
 				<option type="column" name="outputProductUnit" fields="product" expression="#product['unit']" />
 				<option type="column" name="outputProductPlannedQuantity" fields="plannedQuantity" />
-				<option type="column" name="outputProductUsedQuantity" fields="usedQuantity" />
-				<option type="column" name="outputProductBalance" fields="balance" />
+				<option type="column" name="outputProductUsedQuantity" fields="usedQuantity" expression="#usedQuantity==null?'N/A':#usedQuantity" />
+				<option type="column" name="outputProductBalance" fields="balance" expression="#balance==null?'N/A':#balance" />
 				<option type="order" column="outputProductNumber" direction="asc" />
 			</component>
 		</windowTab>
@@ -172,9 +180,7 @@
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
 			method="setGenerateButtonState" />
-		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
-			method="setProductionTimeTabContentVisibility" />
-		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
+		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
 			method="fillGrids" />
 	</hooks>
 </view>

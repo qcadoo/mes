@@ -2,10 +2,7 @@ package com.qcadoo.mes.productionCounting.internal;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +14,8 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionCountingPdfService;
-import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordComparator;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -28,9 +23,7 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
@@ -48,68 +41,6 @@ public class ProductionCountingService {
 
     @Autowired
     private ProductionCountingPdfService productionCountingPdfService;
-
-    public void fillProductWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        if (!(state instanceof FieldComponent)) {
-            return;
-        }
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
-        if (orderLookup.getFieldValue() == null) {
-            clearProductFieldValue(viewDefinitionState);
-            setProductionRecordsGridVisibility(viewDefinitionState, false);
-            return;
-        }
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                (Long) orderLookup.getFieldValue());
-        if (order == null) {
-            clearProductFieldValue(viewDefinitionState);
-            setProductionRecordsGridVisibility(viewDefinitionState, false);
-            return;
-        }
-
-        setProductFieldValue(viewDefinitionState, order);
-        setProductionRecordsGridContent(viewDefinitionState, order);
-    }
-
-    public void fillProductionRecordsGrid(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
-        if (orderLookup.getFieldValue() == null) {
-            setProductionRecordsGridVisibility(viewDefinitionState, false);
-            return;
-        }
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                (Long) orderLookup.getFieldValue());
-        if (order == null) {
-            setProductionRecordsGridVisibility(viewDefinitionState, false);
-            return;
-        }
-
-        setProductionRecordsGridContent(viewDefinitionState, order);
-    }
-
-    private void setProductFieldValue(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference("product");
-        productField.setFieldValue(order.getBelongsToField("product").getId());
-    }
-
-    private void clearProductFieldValue(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference("product");
-        productField.setFieldValue(null);
-    }
-
-    private void setProductionRecordsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        GridComponent productionRecords = (GridComponent) viewDefinitionState.getComponentByReference("productionRecords");
-        List<Entity> productionRecordsList = new ArrayList<Entity>(order.getHasManyField("productionRecords"));
-        Collections.sort(productionRecordsList, new EntityProductionRecordComparator());
-        productionRecords.setEntities(productionRecordsList);
-        productionRecords.setVisible(true);
-    }
-
-    private void setProductionRecordsGridVisibility(final ViewDefinitionState viewDefinitionState, final Boolean isVisible) {
-        GridComponent productionRecords = (GridComponent) viewDefinitionState.getComponentByReference("productionRecords");
-        productionRecords.setVisible(isVisible);
-    }
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("date", null);
