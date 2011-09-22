@@ -13,10 +13,12 @@ import static java.math.BigDecimal.ROUND_UP;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -77,7 +79,7 @@ public class ProductionRecordService {
         }
         return true;
     }
-    
+
     public void copyProductInAndOut(final DataDefinition dd, final Entity productionRecord) {
         Entity order = productionRecord.getBelongsToField("order");
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
@@ -110,7 +112,6 @@ public class ProductionRecordService {
         }
     }
 
-    // TODO products list should be distinct?
     private void copyOperationProductComponents(final List<Entity> orderOperations, final Entity productionRecord,
             final String modelName) {
         if (orderOperations == null || orderOperations.size() == 0) {
@@ -119,6 +120,7 @@ public class ProductionRecordService {
 
         DataDefinition recordProductDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, modelName);
         List<Entity> products = newArrayList();
+        Map<Entity, BigDecimal> productQuantityMap = Maps.newHashMap();
         String technologyProductFieldName = "operationProductOutComponents";
         String recordProductFieldName = "recordOperationProductOutComponents";
 
@@ -135,12 +137,22 @@ public class ProductionRecordService {
             }
 
             for (Entity technologyProduct : technologyProducts) {
-                Entity recordProduct = recordProductDD.create();
-                recordProduct.setField("product", technologyProduct.getField("product"));
-                recordProduct.setField("plannedQuantity", technologyProduct.getField("quantity"));
-                products.add(recordProduct);
+                BigDecimal plannedQuantity = getBigDecimal(technologyProduct.getField("quantity"));
+                if (productQuantityMap.containsKey(technologyProduct)) {
+                    productQuantityMap.put(technologyProduct, productQuantityMap.get(technologyProduct).add(plannedQuantity));
+                } else {
+                    productQuantityMap.put(technologyProduct, plannedQuantity);
+                }
             }
         }
+
+        for (Map.Entry<Entity, BigDecimal> technologyEntry : productQuantityMap.entrySet()) {
+            Entity recordProduct = recordProductDD.create();
+            recordProduct.setField("product", technologyEntry.getKey().getField("product"));
+            recordProduct.setField("plannedQuantity", technologyEntry.getValue());
+            products.add(recordProduct);
+        }
+
         productionRecord.setField(recordProductFieldName, products);
     }
 
@@ -191,7 +203,7 @@ public class ProductionRecordService {
         productionCounting.setField("plannedLaborTime", plannedLaborTime.setScale(0, ROUND_UP).intValue());
     }
 
-    private BigDecimal getBigDecimal(final Object value) {
+    public static BigDecimal getBigDecimal(final Object value) {
         if (value == null) {
             return BigDecimal.ZERO;
         }

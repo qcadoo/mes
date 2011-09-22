@@ -3,6 +3,7 @@ package com.qcadoo.mes.productionCounting.internal;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PARAMETER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.productionCounting.internal.ProductionRecordService.getBooleanValue;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_PRODUCTION_RECORD;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE;
@@ -47,11 +48,11 @@ public class ProductionRecordViewService {
             return;
         }
 
-        Long orderId = (Long) recordForm.getEntity().getField("order");
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(orderId);
-        
+        Entity order = getOrderFromLookup(view);
+
         view.getComponentByReference("order").setEnabled(false);
         view.getComponentByReference("orderOperationComponent").setEnabled(false);
+        view.getComponentByReference("shift").setEnabled(false);
 
         view.getComponentByReference("recordOperationProductOutComponent").setEnabled(
                 getBooleanValue(order.getField("registerQuantityOutProduct")));
@@ -77,20 +78,18 @@ public class ProductionRecordViewService {
         }
     }
 
-    public void setOrderDefaultValue(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
-                .getComponentByReference("typeOfProductionRecording");
+    public void setOrderDefaultValue(final ViewDefinitionState view) {
+        FieldComponent typeOfProductionRecording = (FieldComponent) view.getComponentByReference("typeOfProductionRecording");
 
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
         if (form.getEntityId() != null) {
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(
-                    (Long) form.getEntityId());
+            Entity order = getOrderFromLookup(view);
             if (order == null || "".equals(order.getField("typeOfProductionRecording"))) {
                 typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
             }
             for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
                     "registerProductionTime")) {
-                FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
+                FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
                 if (order == null || order.getField(componentReference) == null) {
                     component.setFieldValue(true);
                     component.requestComponentUpdateState();
@@ -100,7 +99,7 @@ public class ProductionRecordViewService {
             typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
             for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
                     "registerProductionTime")) {
-                FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
+                FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
                 if (component.getFieldValue() == null) {
                     component.setFieldValue(true);
                     component.requestComponentUpdateState();
@@ -121,24 +120,25 @@ public class ProductionRecordViewService {
         }
     }
 
-    public void enabledOrDisabledOperationField(final ViewDefinitionState viewDefinitionState,
-            final ComponentState componentState, final String[] args) {
-        Long orderId = (Long) viewDefinitionState.getComponentByReference("order").getFieldValue();
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(orderId);
+    public void enabledOrDisabledOperationField(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        Entity order = getOrderFromLookup(view);
         if (order == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("order is null");
             }
             return;
         }
-        setComponentVisible((String) order.getField("typeOfProductionRecording"), viewDefinitionState);
+        setComponentVisible((String) order.getField("typeOfProductionRecording"), view);
     }
 
     private void setComponentVisible(final String recordingType, final ViewDefinitionState view) {
         view.getComponentByReference("orderOperationComponent").setEnabled(PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
-        
-        view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
-        view.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType));
+
+        view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(
+                PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
+        view.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(
+                PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType));
         view.getComponentByReference("operationNoneLabel").setVisible(
                 !PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType) && !PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
 
@@ -146,9 +146,10 @@ public class ProductionRecordViewService {
     }
 
     public void registeringProductionTime(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        ComponentState orderLookup = (ComponentState) view.getComponentByReference("order");
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                (Long) orderLookup.getFieldValue());
+        Entity order = getOrderFromLookup(view);
+        if (order == null) {
+            return;
+        }
         Boolean registerProductionTime = getBooleanValue(order.getField("registerProductionTime"));
         if (registerProductionTime) {
             view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(false);
@@ -156,15 +157,12 @@ public class ProductionRecordViewService {
         }
     }
 
-    public void closedOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        ComponentState orderLookup = (ComponentState) view.getComponentByReference("order");
+    public void closeOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                (Long) orderLookup.getFieldValue());
-        Boolean autoCloseOrder = (Boolean) order.getField("autoCloseOrder");
+        Entity order = getOrderFromLookup(view);
+        Boolean autoCloseOrder = getBooleanValue(order.getField("autoCloseOrder"));
 
-        FieldComponent isFinal = (FieldComponent) view.getComponentByReference("isFinal");
-        if (autoCloseOrder && isFinal.getFieldValue() == "1") {
+        if (autoCloseOrder && view.getComponentByReference("isFinal").getFieldValue() == "1") {
             order.setField("state", CLOSED_ORDER);
             form.addMessage(translationService.translate("productionCounting.order.orderClosed", view.getLocale()),
                     MessageType.INFO, false);
@@ -173,13 +171,12 @@ public class ProductionRecordViewService {
 
     public void checkFinalProductionRecording(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                (Long) componentState.getFieldValue());
+        Entity order = getOrderFromLookup(view);
         if (!("04done".equals(order.getField("state")))) {
             return;
         }
         List<Entity> productionRecordings = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("isFinal", true)).list()
                 .getEntities();
         if (productionRecordings.size() == 0) {
@@ -189,5 +186,26 @@ public class ProductionRecordViewService {
             return;
         }
 
+    }
+
+    public void fillFieldFromProduct(final ViewDefinitionState view) {
+        Entity recordProduct = ((FormComponent) view.getComponentByReference("form")).getEntity();
+        recordProduct = recordProduct.getDataDefinition().get(recordProduct.getId());
+        Entity product = recordProduct.getBelongsToField("product");
+
+        view.getComponentByReference("number").setFieldValue(product.getField("number"));
+        view.getComponentByReference("name").setFieldValue(product.getField("name"));
+
+        String typeOfMaterial = "basic.product.typeOfMaterial.value." + product.getStringField("typeOfMaterial");
+        view.getComponentByReference("type").setFieldValue(
+                translationService.translate(typeOfMaterial, view.getLocale()));
+    }
+
+    private Entity getOrderFromLookup(final ViewDefinitionState view) {
+        ComponentState lookup = view.getComponentByReference("order");
+        if (!(lookup.getFieldValue() instanceof Long)) {
+            return null;
+        }
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get((Long) lookup.getFieldValue());
     }
 }

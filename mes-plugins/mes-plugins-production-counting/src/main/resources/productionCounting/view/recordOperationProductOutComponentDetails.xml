@@ -10,19 +10,25 @@
 			<group template="navigation" />
 			<group template="formSaveAction" />
 		</ribbon>
+		
 		<component type="form" name="form" reference="form">
-			<component type="input" name="number" reference="number" />
-			<component type="input" name="name" reference="name" />
-			<component type="input" name="type" reference="type" />
+			<component type="input" name="number" reference="number"
+				defaultEnabled="false" />
+			<component type="input" name="name" reference="name"
+				defaultEnabled="false" />
+			<component type="input" name="type" reference="type"
+				defaultEnabled="false" />
 			<component type="input" name="plannedQuantity" field="plannedQuantity"
 				reference="plannedQuantity" defaultEnabled="false" />
 			<component type="input" name="usedQuantity" field="usedQuantity" />
 			<option type="header" value="true" />
 			<option type="expression" value="#product['name']" />
 		</component>
-	
 	</component>
+	
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.productionCounting.internal.RecordInAndOutService" method="fillFieldFromProduct" />
+		<beforeRender
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+			method="fillFieldFromProduct" />
 	</hooks>
 </view>
