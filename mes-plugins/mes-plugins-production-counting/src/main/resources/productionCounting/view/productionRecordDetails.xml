@@ -164,10 +164,5 @@
 				<option type="expression" value="#name" />
 			</component>
 		</windowTab>
-		<hooks>
-			<onSave
-				class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-				method="registeringProductionTime" />
-		</hooks>
 	</component>
 </view>
