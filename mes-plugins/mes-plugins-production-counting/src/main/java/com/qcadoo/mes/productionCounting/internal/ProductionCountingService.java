@@ -2,7 +2,10 @@ package com.qcadoo.mes.productionCounting.internal;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionCountingPdfService;
+import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordComparator;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -96,7 +100,9 @@ public class ProductionCountingService {
 
     private void setProductionRecordsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
         GridComponent productionRecords = (GridComponent) viewDefinitionState.getComponentByReference("productionRecords");
-        productionRecords.setEntities(order.getHasManyField("productionRecords"));
+        List<Entity> productionRecordsList = new ArrayList<Entity>(order.getHasManyField("productionRecords"));
+        Collections.sort(productionRecordsList, new EntityProductionRecordComparator());
+        productionRecords.setEntities(productionRecordsList);
         productionRecords.setVisible(true);
     }
 
