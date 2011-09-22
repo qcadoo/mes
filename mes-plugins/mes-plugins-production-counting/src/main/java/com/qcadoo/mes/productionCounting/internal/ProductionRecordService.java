@@ -3,6 +3,11 @@ package com.qcadoo.mes.productionCounting.internal;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_IN_PRODUCTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_OUT_PRODUCTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PLUGIN_IDENTIFIER;
 
 import java.util.Date;
@@ -38,15 +43,15 @@ public class ProductionRecordService {
     public void checkTypeOfProductionRecording(final DataDefinition dd, final Entity entity) {
         Entity order = entity.getBelongsToField("order");
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
-        if (typeOfProductionRecording == null || "01none".equals(typeOfProductionRecording)) {
+        if (typeOfProductionRecording == null || PARAM_RECORDING_TYPE_NONE.equals(typeOfProductionRecording)) {
             entity.addError(dd.getField("order"), "productionCounting.validate.global.error.productionRecord.orderError");
         }
     }
 
     public void allowedPartial(final DataDefinition dd, final Entity entity) {
         Entity order = entity.getBelongsToField("order");
-        Boolean allowedPartial = (Boolean) order.getField("allowedPartial");
-        Boolean isFinal = (Boolean) order.getField("isFinal");
+        Boolean allowedPartial = getBooleanValue(order.getField("allowedPartial"));
+        Boolean isFinal = getBooleanValue(order.getField("isFinal"));
         if (!isFinal && allowedPartial) {
             entity.addError(dd.getField("order"),
                     "productionCounting.validate.global.error.productionRecord.orderError.allowedPartial");
@@ -62,20 +67,31 @@ public class ProductionRecordService {
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
         List<Entity> operationComponents = null;
 
+        Boolean registerInput = getBooleanValue(order.getField(PARAM_REGISTER_IN_PRODUCTS));
+        Boolean registerOutput = getBooleanValue(order.getField(PARAM_REGISTER_OUT_PRODUCTS));
+        
+        if (!registerInput && !registerOutput) {
+            return;
+        }
+        
         for (String fieldName : newArrayList("recordOperationProductInComponents", "recordOperationProductOutComponents")) {
             if (productionRecord.getHasManyField(fieldName) != null) {
                 return;
             }
         }
 
-        if ("02cumulated".equals(typeOfProductionRecording)) {
+        if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
             operationComponents = order.getTreeField("orderOperationComponents");
-        } else if ("03forEach".equals(typeOfProductionRecording)) {
+        } else if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
             operationComponents = newArrayList(productionRecord.getBelongsToField("orderOperationComponent"));
         }
 
-        copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT);
-        copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
+        if (registerInput) {
+            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT);
+        }
+        if (registerOutput) {
+            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
+        }
     }
 
     // TODO products list should be distinct?
@@ -110,5 +126,9 @@ public class ProductionRecordService {
             }
         }
         productionRecord.setField(recordProductFieldName, products);
+    }
+    
+    public static Boolean getBooleanValue(Object fieldValue) {
+        return fieldValue != null && fieldValue instanceof Boolean && (Boolean) fieldValue; 
     }
 }
