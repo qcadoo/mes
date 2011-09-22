@@ -49,6 +49,7 @@
 		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="checkTypeOfProductionRecording" />
 		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="allowedPartial"/>
+		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="checkIfOrderIsStarted"/>
 		
 	</hooks>
 	<identifier expression="#number" />

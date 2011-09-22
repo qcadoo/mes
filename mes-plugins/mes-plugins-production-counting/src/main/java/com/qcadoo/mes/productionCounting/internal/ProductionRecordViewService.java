@@ -41,9 +41,11 @@ public class ProductionRecordViewService {
             return;
         }
 
-        Entity record = recordForm.getEntity();
-        Long orderId = (Long) record.getField("order");
+        Long orderId = (Long) recordForm.getEntity().getField("order");
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(orderId);
+        
+        view.getComponentByReference("order").setEnabled(false);
+        view.getComponentByReference("orderOperationComponent").setEnabled(false);
         
         view.getComponentByReference("recordOperationProductOutComponent").setEnabled(
                 getBooleanValue(order.getField("registerQuantityOutProduct")));
@@ -127,8 +129,8 @@ public class ProductionRecordViewService {
     }
 
     private void setComponentVisible(final String recordingType, final ViewDefinitionState view) {
-        view.getComponentByReference("orderOperationComponent").setVisible(
-                PARAM_RECORDING_TYPE_FOREACH.equals(recordingType) || PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType));
+        view.getComponentByReference("orderOperationComponent").setEnabled(PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
+        
         view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
         view.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType));
         view.getComponentByReference("operationNoneLabel").setVisible(

@@ -39,7 +39,7 @@
 					<layoutElement column="1" row="4">
 						<component type="lookup" name="orderOperationComponent"
 							field="orderOperationComponent" source="#{order}.orderOperationComponents"
-							reference="orderOperationComponent">
+							reference="orderOperationComponent" defaultEnabled="false" >
 							<option type="column" name="name" fields="operation"
 								expression="#operation['name']" link="true" />
 							<option type="fieldCode" value="operation" />
