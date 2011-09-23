@@ -21,6 +21,7 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.productionCounting.internal.ProductionBalanceReportDataService;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
+import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordOperationComparator;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -311,8 +312,11 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         Integer registeredTimeSum = 0;
         Integer timeBalanceSum = 0;
 
-        for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionBalance
-                .getBelongsToField("order").getHasManyField("productionRecords"))) {
+        List<Entity> productionRecords = new ArrayList<Entity>(productionBalance.getBelongsToField("order").getHasManyField(
+                "productionRecords"));
+        Collections.sort(productionRecords, new EntityProductionRecordOperationComparator());
+
+        for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecords)) {
             machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
                     .getBelongsToField("operation").getStringField("number"), PdfUtil.getArialRegular9Dark()));
             machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
@@ -365,8 +369,11 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         Integer registeredTimeSum = 0;
         Integer timeBalanceSum = 0;
 
-        for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionBalance
-                .getBelongsToField("order").getHasManyField("productionRecords"))) {
+        List<Entity> productionRecords = new ArrayList<Entity>(productionBalance.getBelongsToField("order").getHasManyField(
+                "productionRecords"));
+        Collections.sort(productionRecords, new EntityProductionRecordOperationComparator());
+
+        for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecords)) {
             laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
                     .getBelongsToField("operation").getStringField("number"), PdfUtil.getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
@@ -380,9 +387,9 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     .getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("laborTimeBalance")), PdfUtil
                     .getArialRegular9Dark()));
-            plannedTimeSum += (Integer) productionRecord.getField("plannedMachineTime");
-            registeredTimeSum += (Integer) productionRecord.getField("machineTime");
-            timeBalanceSum += (Integer) productionRecord.getField("machineTimeBalance");
+            plannedTimeSum += (Integer) productionRecord.getField("plannedLaborTime");
+            registeredTimeSum += (Integer) productionRecord.getField("laborTime");
+            timeBalanceSum += (Integer) productionRecord.getField("laborTimeBalance");
         }
 
         laborTimeTable.addCell(new Phrase(getTranslationService().translate("productionCounting.productionBalance.report.total",

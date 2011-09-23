@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordComparator;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -21,6 +22,9 @@ public class ProductionCountingViewService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TranslationService translationService;
 
     public void fillProductWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -40,6 +44,15 @@ public class ProductionCountingViewService {
             viewDefinitionState.getComponentByReference("productionRecords").setVisible(false);
             return;
         }
+        if (order.getStringField("typeOfProductionRecording") == null
+                || order.getStringField("typeOfProductionRecording").equals("01none")) {
+            viewDefinitionState.getComponentByReference("product").setFieldValue(null);
+            viewDefinitionState.getComponentByReference("productionRecords").setVisible(false);
+            ((FieldComponent) viewDefinitionState.getComponentByReference("order")).addMessage(translationService.translate(
+                    "productionCounting.productionBalance.report.error.orderWithoutRecordingType",
+                    viewDefinitionState.getLocale()), ComponentState.MessageType.FAILURE);
+            return;
+        }
 
         setProductFieldValue(viewDefinitionState, order);
         setProductionRecordsGridContent(viewDefinitionState, order);
@@ -54,6 +67,11 @@ public class ProductionCountingViewService {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 (Long) orderLookup.getFieldValue());
         if (order == null) {
+            viewDefinitionState.getComponentByReference("productionRecords").setVisible(false);
+            return;
+        }
+        if (order.getStringField("typeOfProductionRecording") == null
+                || order.getStringField("typeOfProductionRecording").equals("01none")) {
             viewDefinitionState.getComponentByReference("productionRecords").setVisible(false);
             return;
         }
