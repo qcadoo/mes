@@ -78,7 +78,15 @@
 							<option type="column" name="name" fields="product"
 								expression="#product['name']" link="true" width="200" />
 							<option type="column" name="type" fields="product" width="100"
-								expression="#product['typeOfMaterial']" />
+								expression="#product['typeOfMaterial'] == '01component' ?
+										'@basic.product.typeOfMaterial.value.01component' :
+										#product['typeOfMaterial'] == '02intermediate' ?
+											'@basic.product.typeOfMaterial.value.02intermediate' :
+											#product['typeOfMaterial'] == '03product' ?
+												'@basic.product.typeOfMaterial.value.03product' :
+												#product['typeOfMaterial'] == '04waste' ?
+												'@basic.product.typeOfMaterial.value.04waste' :
+												''" />
 							<option type="column" name="unit" fields="product"
 								expression="#product['unit']" link="false" width="70" />
 							<option type="column" name="usedQuantity" fields="usedQuantity"
@@ -143,7 +151,15 @@
 							<option type="column" name="name" fields="product"
 								expression="#product['name']" link="true" width="200" />
 							<option type="column" name="type" fields="product" width="100"
-								expression="#product['typeOfMaterial']" />
+								expression="#product['typeOfMaterial'] == '01component' ?
+										'@basic.product.typeOfMaterial.value.01component' :
+										#product['typeOfMaterial'] == '02intermediate' ?
+											'@basic.product.typeOfMaterial.value.02intermediate' :
+											#product['typeOfMaterial'] == '03product' ?
+												'@basic.product.typeOfMaterial.value.03product' :
+												#product['typeOfMaterial'] == '04waste' ?
+												'@basic.product.typeOfMaterial.value.04waste' :
+												''" />
 							<option type="column" name="unit" fields="product"
 								expression="#product['unit']" link="false" width="70" />
 							<option type="column" name="usedQuantity" fields="usedQuantity"
