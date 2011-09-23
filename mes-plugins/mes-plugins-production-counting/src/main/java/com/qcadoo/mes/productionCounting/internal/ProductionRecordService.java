@@ -60,8 +60,8 @@ public class ProductionRecordService {
     public void allowedPartial(final DataDefinition dd, final Entity entity) {
         Entity order = entity.getBelongsToField("order");
         Boolean allowedPartial = getBooleanValue(order.getField("allowedPartial"));
-        Boolean isFinal = getBooleanValue(order.getField("isFinal"));
-        if (!isFinal && allowedPartial) {
+        Boolean isFinal = getBooleanValue(entity.getField("isFinal"));
+        if (!isFinal && !allowedPartial) {
             entity.addError(dd.getField("order"),
                     "productionCounting.validate.global.error.productionRecord.orderError.allowedPartial");
         }
