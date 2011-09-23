@@ -88,6 +88,8 @@ public class ProductionRecordService {
         Boolean registerInput = getBooleanValue(order.getField(PARAM_REGISTER_IN_PRODUCTS));
         Boolean registerOutput = getBooleanValue(order.getField(PARAM_REGISTER_OUT_PRODUCTS));
 
+        BigDecimal orderQuantity = getBigDecimal(order.getField("quantity"));
+        
         if (!registerInput && !registerOutput) {
             return;
         }
@@ -105,26 +107,25 @@ public class ProductionRecordService {
         }
 
         if (registerInput) {
-            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT);
+            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT, orderQuantity);
         }
         if (registerOutput) {
-            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
+            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT, orderQuantity);
         }
     }
 
     private void copyOperationProductComponents(final List<Entity> orderOperations, final Entity productionRecord,
-            final String modelName) {
+            final String modelName, final BigDecimal orderQuantity) {
         if (orderOperations == null || orderOperations.size() == 0) {
             return;
         }
 
         DataDefinition recordProductDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, modelName);
-        List<Entity> products = newArrayList();
-        Map<Entity, BigDecimal> productQuantityMap = Maps.newHashMap();
+        Map<Long, Entity> recordProductsMap = Maps.newHashMap();
         String technologyProductFieldName = "operationProductOutComponents";
         String recordProductFieldName = "recordOperationProductOutComponents";
 
-        if (ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName)) {
+        if (MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName)) {
             technologyProductFieldName = "operationProductInComponents";
             recordProductFieldName = "recordOperationProductInComponents";
         }
@@ -137,23 +138,24 @@ public class ProductionRecordService {
             }
 
             for (Entity technologyProduct : technologyProducts) {
+                Long productId = technologyProduct.getBelongsToField("product").getId();
                 BigDecimal plannedQuantity = getBigDecimal(technologyProduct.getField("quantity"));
-                if (productQuantityMap.containsKey(technologyProduct)) {
-                    productQuantityMap.put(technologyProduct, productQuantityMap.get(technologyProduct).add(plannedQuantity));
+                BigDecimal newPlannedQuantity = null;
+                Entity recordProduct = null;
+
+                if (recordProductsMap.containsKey(productId)) {
+                    recordProduct = recordProductsMap.get(productId);
+                    newPlannedQuantity = getBigDecimal(recordProduct.getField("plannedQuantity")).add(plannedQuantity).multiply(orderQuantity);
                 } else {
-                    productQuantityMap.put(technologyProduct, plannedQuantity);
+                    recordProduct = recordProductDD.create();
+                    recordProduct.setField("product", technologyProduct.getField("product"));
+                    newPlannedQuantity = plannedQuantity.multiply(orderQuantity);
                 }
+                recordProduct.setField("plannedQuantity", newPlannedQuantity.setScale(3, BigDecimal.ROUND_HALF_UP));
+                recordProductsMap.put(productId, recordProduct);
             }
         }
-
-        for (Map.Entry<Entity, BigDecimal> technologyEntry : productQuantityMap.entrySet()) {
-            Entity recordProduct = recordProductDD.create();
-            recordProduct.setField("product", technologyEntry.getKey().getField("product"));
-            recordProduct.setField("plannedQuantity", technologyEntry.getValue());
-            products.add(recordProduct);
-        }
-
-        productionRecord.setField(recordProductFieldName, products);
+        productionRecord.setField(recordProductFieldName, newArrayList(recordProductsMap.values()));
     }
 
     public void countPlannedTime(final DataDefinition dataDefinition, final Entity productionCounting) {
@@ -162,7 +164,6 @@ public class ProductionRecordService {
         if (CUMULATE.equals(typeOfProductionRecording)) {
             List<Entity> operationComponents = order.getTreeField("orderOperationComponents");
             countPlannedTimeForCumulated(productionCounting, operationComponents);
-
         } else if (FOR_EACH_OPERATION.equals(typeOfProductionRecording)) {
             Entity orderOperationComponent = productionCounting.getBelongsToField("orderOperationComponent");
             countPlannedTimeForEachOperation(productionCounting, orderOperationComponent);
