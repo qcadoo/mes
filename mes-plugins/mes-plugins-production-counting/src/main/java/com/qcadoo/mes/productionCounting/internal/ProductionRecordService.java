@@ -83,7 +83,7 @@ public class ProductionRecordService {
                     .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
                     .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("isFinal", true)).list()
                     .getEntities();
-            if (productionRecordings.size() == 0) {
+            if (productionRecordings.size() != 0) {
                 entity.addError(dd.getField("order"), "productionCounting.record.messages.error.final");
                 return;
             }

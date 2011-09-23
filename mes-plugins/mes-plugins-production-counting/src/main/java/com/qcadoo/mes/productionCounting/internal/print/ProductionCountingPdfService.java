@@ -178,7 +178,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                         : getTranslationService().translate(
                                 "productionCounting.productionCounting.report.panel.recordType.final", locale), null,
                 PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        if ((Boolean) productionRecord.getField("isFinal"))
+        if (productionRecord.getBelongsToField("order").getStringField("typeOfProductionRecording").equals("02cumulated"))
             addTableCellAsTable(
                     panelTable,
                     getTranslationService().translate("productionCounting.productionCounting.report.panel.operationAndLevel",
@@ -197,19 +197,31 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 getTranslationService().translate("productionCounting.productionCounting.report.panel.dateAndTime", locale),
                 (new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format((Date) productionRecord.getField("creationTime")))
                         .toString(), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        addTableCellAsTable(
-                panelTable,
-                getTranslationService().translate("productionCounting.productionCounting.report.panel.machineOperationTime",
-                        locale), convertTimeToString(new BigDecimal((Integer) productionRecord.getField("machineTime"))), null,
-                PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+        if (productionRecord.getField("machineTime") != null)
+            addTableCellAsTable(
+                    panelTable,
+                    getTranslationService().translate("productionCounting.productionCounting.report.panel.machineOperationTime",
+                            locale), convertTimeToString(new BigDecimal((Integer) productionRecord.getField("machineTime"))),
+                    null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+        else
+            addTableCellAsTable(
+                    panelTable,
+                    getTranslationService().translate("productionCounting.productionCounting.report.panel.machineOperationTime",
+                            locale), "N/A", null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(panelTable,
                 getTranslationService().translate("productionCounting.productionCounting.report.panel.worker", locale),
                 productionRecord.getStringField("worker"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        addTableCellAsTable(panelTable,
-                getTranslationService()
-                        .translate("productionCounting.productionCounting.report.panel.laborOperationTime", locale),
-                convertTimeToString(new BigDecimal((Integer) productionRecord.getField("laborTime"))), null,
-                PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+        if (productionRecord.getField("laborTime") != null)
+            addTableCellAsTable(
+                    panelTable,
+                    getTranslationService().translate("productionCounting.productionCounting.report.panel.laborOperationTime",
+                            locale), convertTimeToString(new BigDecimal((Integer) productionRecord.getField("laborTime"))), null,
+                    PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+        else
+            addTableCellAsTable(
+                    panelTable,
+                    getTranslationService().translate("productionCounting.productionCounting.report.panel.laborOperationTime",
+                            locale), "N/A", null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
 
         panelTable.setSpacingBefore(10);
         document.add(panelTable);
@@ -323,8 +335,22 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         long minutes = longValueFromDuration % 3600 / 60;
         long seconds = longValueFromDuration % 3600 % 60;
 
-        return (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "")
-                + seconds;
+        Boolean minus = false;
+        if (hours < 0) {
+            minus = true;
+            hours = -hours;
+        }
+        if (minutes < 0) {
+            minus = true;
+            minutes = -minutes;
+        }
+        if (seconds < 0) {
+            minus = true;
+            seconds = -seconds;
+        }
+
+        return (minus ? "-" : "") + (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":"
+                + (seconds < 10 ? "0" : "") + seconds;
     }
 
 }
