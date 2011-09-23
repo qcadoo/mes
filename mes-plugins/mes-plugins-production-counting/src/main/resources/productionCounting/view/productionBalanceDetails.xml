@@ -167,10 +167,10 @@
 			<component type="grid" name="operationsTime" reference="operationsTimeGrid" model="productionRecord" >
 				<option type="column" name="opNumber" fields="orderOperationComponent" expression="#orderOperationComponent['operation']" />
 				<option type="column" name="opName" fields="orderOperationComponent" expression="#orderOperationComponent['operation']" />
-<!-- 				<option type="column" name="machinePlannedTime" fields="???" expression="#???" /> -->
+				<option type="column" name="machinePlannedTime" fields="plannedMachineTime" expression="#plannedMachineTime" />
 				<option type="column" name="machineRegisteredTime" fields="machineTime" />
 				<option type="column" name="machineTimeBalance" fields="machineTimeBalance" />
-<!-- 				<option type="column" name="laborPlannedTime" fields="???" expression="#???" /> -->
+				<option type="column" name="laborPlannedTime" fields="plannedLaborTime" expression="#plannedLaborTime" />
 				<option type="column" name="laborRegisteredTime" fields="laborTime" />
 				<option type="column" name="laborTimeBalance" fields="laborTimeBalance" />
 				<option type="order" column="opNumber" direction="asc" />

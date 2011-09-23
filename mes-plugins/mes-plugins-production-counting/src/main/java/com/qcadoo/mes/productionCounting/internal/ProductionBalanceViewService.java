@@ -12,6 +12,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
+import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordComparator;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -27,6 +28,9 @@ public class ProductionBalanceViewService {
 
     @Autowired
     private ProductionBalancePdfService productionBalancePdfService;
+
+    @Autowired
+    private ProductionBalanceReportDataService productionBalanceReportDataService;
 
     public void fillFieldsWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -103,9 +107,8 @@ public class ProductionBalanceViewService {
             inputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductInComponents"));
         }
         Collections.sort(inputProductsList, new EntityProductInOutComparator());
-        inputProducts.setEntities(inputProductsList);
+        inputProducts.setEntities(productionBalanceReportDataService.groupProductInOutComponentsByProduct(inputProductsList));
         inputProducts.setVisible(true);
-        // TODO group by ANKI
     }
 
     private void setOutputProductsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
@@ -115,9 +118,8 @@ public class ProductionBalanceViewService {
             outputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductOutComponents"));
         }
         Collections.sort(outputProductsList, new EntityProductInOutComparator());
-        outputProducts.setEntities(outputProductsList);
+        outputProducts.setEntities(productionBalanceReportDataService.groupProductInOutComponentsByProduct(outputProductsList));
         outputProducts.setVisible(true);
-        // TODO group by ANKI
     }
 
     private void setProductionTimeTabContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
@@ -184,10 +186,9 @@ public class ProductionBalanceViewService {
     private void setProductionTimeGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
         GridComponent productionsTime = (GridComponent) viewDefinitionState.getComponentByReference("operationsTimeGrid");
         List<Entity> productionRecordsList = new ArrayList<Entity>(order.getHasManyField("productionRecords"));
-        Collections.sort(productionRecordsList, new EntityProductInOutComparator());
-        productionsTime.setEntities(productionRecordsList);
+        Collections.sort(productionRecordsList, new EntityProductionRecordComparator());
+        productionsTime.setEntities(productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecordsList));
         productionsTime.setVisible(true);
-        // TODO group by ANKI
     }
 
 }

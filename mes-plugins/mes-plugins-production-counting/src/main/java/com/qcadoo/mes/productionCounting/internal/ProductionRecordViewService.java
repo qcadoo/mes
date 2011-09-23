@@ -54,13 +54,13 @@ public class ProductionRecordViewService {
         view.getComponentByReference("orderOperationComponent").setEnabled(false);
         view.getComponentByReference("shift").setEnabled(false);
 
-        view.getComponentByReference("recordOperationProductOutComponent").setEnabled(
+        view.getComponentByReference("recordOperationProductOutComponent").setVisible(
                 getBooleanValue(order.getField("registerQuantityOutProduct")));
-        view.getComponentByReference("recordOperationProductInComponent").setEnabled(
+        view.getComponentByReference("recordOperationProductInComponent").setVisible(
                 getBooleanValue(order.getField("registerQuantityInProduct")));
-        view.getComponentByReference("borderLayoutConsumedTimeCumulated").setEnabled(
+        view.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(
                 getBooleanValue(order.getField("registerProductionTime")));
-        view.getComponentByReference("borderLayoutConsumedTimeForEach").setEnabled(
+        view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(
                 getBooleanValue(order.getField("registerProductionTime")));
     }
 
@@ -73,48 +73,6 @@ public class ProductionRecordViewService {
             FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
             if (parameter == null || parameter.getField(componentReference) == null) {
                 component.setFieldValue(true);
-                component.requestComponentUpdateState();
-            }
-        }
-    }
-
-    public void setOrderDefaultValue(final ViewDefinitionState view) {
-        FieldComponent typeOfProductionRecording = (FieldComponent) view.getComponentByReference("typeOfProductionRecording");
-
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        if (form.getEntityId() != null) {
-            Entity order = getOrderFromLookup(view);
-            if (order == null || "".equals(order.getField("typeOfProductionRecording"))) {
-                typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
-            }
-            for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
-                    "registerProductionTime")) {
-                FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
-                if (order == null || order.getField(componentReference) == null) {
-                    component.setFieldValue(true);
-                    component.requestComponentUpdateState();
-                }
-            }
-        } else {
-            typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
-            for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
-                    "registerProductionTime")) {
-                FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
-                if (component.getFieldValue() == null) {
-                    component.setFieldValue(true);
-                    component.requestComponentUpdateState();
-                }
-            }
-        }
-    }
-
-    public void checkOrderState(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
-        if ("03inProgress".equals(orderState.getFieldValue()) || "04done".equals(orderState.getFieldValue())) {
-            for (String componentName : Arrays.asList("typeOfProductionRecording", "registerQuantityInProduct",
-                    "registerQuantityOutProduct", "registerProductionTime", "allowedPartial", "blockClosing", "autoCloseOrder")) {
-                FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
-                component.setEnabled(false);
                 component.requestComponentUpdateState();
             }
         }
@@ -164,6 +122,7 @@ public class ProductionRecordViewService {
 
         if (autoCloseOrder && view.getComponentByReference("isFinal").getFieldValue() == "1") {
             order.setField("state", CLOSED_ORDER);
+            dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(order);
             form.addMessage(translationService.translate("productionCounting.order.orderClosed", view.getLocale()),
                     MessageType.INFO, false);
         }
@@ -197,8 +156,10 @@ public class ProductionRecordViewService {
         view.getComponentByReference("name").setFieldValue(product.getField("name"));
 
         String typeOfMaterial = "basic.product.typeOfMaterial.value." + product.getStringField("typeOfMaterial");
-        view.getComponentByReference("type").setFieldValue(
-                translationService.translate(typeOfMaterial, view.getLocale()));
+        view.getComponentByReference("type").setFieldValue(translationService.translate(typeOfMaterial, view.getLocale()));
+        ((FieldComponent) view.getComponentByReference("number")).requestComponentUpdateState();
+        ((FieldComponent) view.getComponentByReference("name")).requestComponentUpdateState();
+        ((FieldComponent) view.getComponentByReference("type")).requestComponentUpdateState();
     }
 
     private Entity getOrderFromLookup(final ViewDefinitionState view) {
@@ -208,4 +169,49 @@ public class ProductionRecordViewService {
         }
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get((Long) lookup.getFieldValue());
     }
+
+    // VIEW HOOK for OrderDetails
+    public void setOrderDefaultValue(final ViewDefinitionState view) {
+        FieldComponent typeOfProductionRecording = (FieldComponent) view.getComponentByReference("typeOfProductionRecording");
+
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() != null) {
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                    form.getEntityId());
+            if (order == null || "".equals(order.getField("typeOfProductionRecording"))) {
+                typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
+            }
+            for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
+                    "registerProductionTime")) {
+                FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
+                if (order == null || order.getField(componentReference) == null) {
+                    component.setFieldValue(true);
+                    component.requestComponentUpdateState();
+                }
+            }
+        } else {
+            typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
+            for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
+                    "registerProductionTime")) {
+                FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
+                if (component.getFieldValue() == null) {
+                    component.setFieldValue(true);
+                    component.requestComponentUpdateState();
+                }
+            }
+        }
+    }
+
+    public void checkOrderState(final ViewDefinitionState viewDefinitionState) {
+        FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
+        if ("03inProgress".equals(orderState.getFieldValue()) || "04done".equals(orderState.getFieldValue())) {
+            for (String componentName : Arrays.asList("typeOfProductionRecording", "registerQuantityInProduct",
+                    "registerQuantityOutProduct", "registerProductionTime", "allowedPartial", "blockClosing", "autoCloseOrder")) {
+                FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
+                component.setEnabled(false);
+                component.requestComponentUpdateState();
+            }
+        }
+    }
+
 }
