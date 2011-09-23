@@ -12,6 +12,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
+import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordComparator;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -185,7 +186,7 @@ public class ProductionBalanceViewService {
     private void setProductionTimeGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
         GridComponent productionsTime = (GridComponent) viewDefinitionState.getComponentByReference("operationsTimeGrid");
         List<Entity> productionRecordsList = new ArrayList<Entity>(order.getHasManyField("productionRecords"));
-        Collections.sort(productionRecordsList, new EntityProductInOutComparator());
+        Collections.sort(productionRecordsList, new EntityProductionRecordComparator());
         productionsTime.setEntities(productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecordsList));
         productionsTime.setVisible(true);
     }

@@ -13,7 +13,7 @@
 
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="grid" reference="grid"
-				columns="5" rows="6">
+				columns="6" rows="6">
 				<layoutElement column="1" row="1" width="5">
 					<component type="input" name="number" reference="number"
 

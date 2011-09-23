@@ -307,9 +307,9 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
         PdfPTable machineTimeTable = PdfUtil.createTableWithHeader(5, operationsTimeTableHeader, false);
 
-        BigDecimal plannedTimeSum = BigDecimal.ZERO;
-        BigDecimal registeredTimeSum = BigDecimal.ZERO;
-        BigDecimal timeBalanceSum = BigDecimal.ZERO;
+        Integer plannedTimeSum = 0;
+        Integer registeredTimeSum = 0;
+        Integer timeBalanceSum = 0;
 
         for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionBalance
                 .getBelongsToField("order").getHasManyField("productionRecords"))) {
@@ -326,9 +326,9 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     .getArialRegular9Dark()));
             machineTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("machineTimeBalance")),
                     PdfUtil.getArialRegular9Dark()));
-            plannedTimeSum = plannedTimeSum.add((BigDecimal) productionRecord.getField("plannedMachineTime"));
-            registeredTimeSum = registeredTimeSum.add((BigDecimal) productionRecord.getField("machineTime"));
-            timeBalanceSum = timeBalanceSum.add((BigDecimal) productionRecord.getField("machineTimeBalance"));
+            plannedTimeSum += (Integer) productionRecord.getField("plannedMachineTime");
+            registeredTimeSum += (Integer) productionRecord.getField("machineTime");
+            timeBalanceSum += (Integer) productionRecord.getField("machineTimeBalance");
         }
 
         machineTimeTable.addCell(new Phrase(getTranslationService().translate(
@@ -361,9 +361,9 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
         PdfPTable laborTimeTable = PdfUtil.createTableWithHeader(5, operationsTimeTableHeader, false);
 
-        BigDecimal plannedTimeSum = BigDecimal.ZERO;
-        BigDecimal registeredTimeSum = BigDecimal.ZERO;
-        BigDecimal timeBalanceSum = BigDecimal.ZERO;
+        Integer plannedTimeSum = 0;
+        Integer registeredTimeSum = 0;
+        Integer timeBalanceSum = 0;
 
         for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionBalance
                 .getBelongsToField("order").getHasManyField("productionRecords"))) {
@@ -380,9 +380,9 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     .getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("laborTimeBalance")), PdfUtil
                     .getArialRegular9Dark()));
-            plannedTimeSum = plannedTimeSum.add((BigDecimal) productionRecord.getField("plannedMachineTime"));
-            registeredTimeSum = registeredTimeSum.add((BigDecimal) productionRecord.getField("machineTime"));
-            timeBalanceSum = timeBalanceSum.add((BigDecimal) productionRecord.getField("machineTimeBalance"));
+            plannedTimeSum += (Integer) productionRecord.getField("plannedMachineTime");
+            registeredTimeSum += (Integer) productionRecord.getField("machineTime");
+            timeBalanceSum += (Integer) productionRecord.getField("machineTimeBalance");
         }
 
         laborTimeTable.addCell(new Phrase(getTranslationService().translate("productionCounting.productionBalance.report.total",

@@ -19,7 +19,8 @@ public class ProductionBalanceReportDataService {
         BigDecimal usedQuantity = BigDecimal.ZERO;
 
         for (Entity product : productsList) {
-            if (product.getStringField("number").equals(prevProduct.getStringField("number"))) {
+            if (product.getBelongsToField("product").getStringField("number")
+                    .equals(prevProduct.getBelongsToField("product").getStringField("number"))) {
                 plannedQuantity = plannedQuantity.add((BigDecimal) product.getField("plannedQuantity"));
                 usedQuantity = usedQuantity.add((BigDecimal) product.getField("usedQuantity"));
             } else {
@@ -44,10 +45,10 @@ public class ProductionBalanceReportDataService {
         List<Entity> groupedProducts = new ArrayList<Entity>();
 
         Entity prevRecord = productionRecords.get(0);
-        BigDecimal plannedMachineTime = BigDecimal.ZERO;
-        BigDecimal registeredMachineTime = BigDecimal.ZERO;
-        BigDecimal plannedLaborTime = BigDecimal.ZERO;
-        BigDecimal registeredLaborTime = BigDecimal.ZERO;
+        Integer plannedMachineTime = 0;
+        Integer registeredMachineTime = 0;
+        Integer plannedLaborTime = 0;
+        Integer registeredLaborTime = 0;
 
         for (Entity record : productionRecords) {
             if (record
@@ -56,34 +57,33 @@ public class ProductionBalanceReportDataService {
                     .getStringField("number")
                     .equals(prevRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
                             .getStringField("number"))) {
-                plannedMachineTime = plannedMachineTime.add((BigDecimal) record.getField("plannedMachineTime"));
-                registeredMachineTime = registeredMachineTime.add((BigDecimal) record.getField("machineTime"));
-                plannedLaborTime = plannedLaborTime.add((BigDecimal) record.getField("plannedLaborTime"));
-                registeredLaborTime = registeredLaborTime.add((BigDecimal) record.getField("laborTime"));
+                plannedMachineTime += (Integer) record.getField("plannedMachineTime");
+                registeredMachineTime += (Integer) record.getField("machineTime");
+                plannedLaborTime += (Integer) record.getField("plannedLaborTime");
+                registeredLaborTime += (Integer) record.getField("laborTime");
             } else {
                 prevRecord.setField("plannedMachineTime", plannedMachineTime);
                 prevRecord.setField("machineTime", registeredMachineTime);
-                prevRecord.setField("machineTimeBalance", registeredMachineTime.subtract(plannedMachineTime));
+                prevRecord.setField("machineTimeBalance", registeredMachineTime - plannedMachineTime);
                 prevRecord.setField("plannedLaborTime", plannedLaborTime);
                 prevRecord.setField("laborTime", registeredLaborTime);
-                prevRecord.setField("laborTimeBalance", registeredLaborTime.subtract(plannedLaborTime));
+                prevRecord.setField("laborTimeBalance", registeredLaborTime - plannedLaborTime);
                 groupedProducts.add(prevRecord);
                 prevRecord = record;
-                plannedMachineTime = (BigDecimal) record.getField("plannedMachineTime");
-                registeredMachineTime = (BigDecimal) record.getField("machineTime");
-                plannedLaborTime = (BigDecimal) record.getField("plannedLaborTime");
-                registeredLaborTime = (BigDecimal) record.getField("laborTime");
+                plannedMachineTime = (Integer) record.getField("plannedMachineTime");
+                registeredMachineTime = (Integer) record.getField("machineTime");
+                plannedLaborTime = (Integer) record.getField("plannedLaborTime");
+                registeredLaborTime = (Integer) record.getField("laborTime");
             }
         }
         prevRecord.setField("plannedMachineTime", plannedMachineTime);
         prevRecord.setField("machineTime", registeredMachineTime);
-        prevRecord.setField("machineTimeBalance", registeredMachineTime.subtract(plannedMachineTime));
+        prevRecord.setField("machineTimeBalance", registeredMachineTime - plannedMachineTime);
         prevRecord.setField("plannedLaborTime", plannedLaborTime);
         prevRecord.setField("laborTime", registeredLaborTime);
-        prevRecord.setField("laborTimeBalance", registeredLaborTime.subtract(plannedLaborTime));
+        prevRecord.setField("laborTimeBalance", registeredLaborTime - plannedLaborTime);
         groupedProducts.add(prevRecord);
 
         return groupedProducts;
     }
-
 }
