@@ -84,7 +84,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
-						<component type="textarea" name="name" field="name" />
+						<component type="textarea" name="name" reference="name" field="name" />
 					</layoutElement>				
 					<layoutElement column="1" row="5">
 						<component type="input" name="date" reference="date" field="date" defaultEnabled="false"/>
@@ -103,9 +103,9 @@
 							<option type="column" name="operation" fields="orderOperationComponent" 
 									expression="#orderOperationComponent['operation']" />
 							<option type="column" name="type" fields="isFinal" 
-									expression="#isFinal" />
-<!-- 												? '@productionCounting.productionCounting.report.panel.recordType.final'  -->
-<!-- 												: '@productionCounting.productionCounting.report.panel.recordType.partial'" /> -->
+									expression="#isFinal == 'true'
+ 												? '@productionCounting.productionCounting.report.panel.recordType.final'
+ 												: '@productionCounting.productionCounting.report.panel.recordType.partial'" />
 							<option type="column" name="shift" fields="shift" expression="#shift['name']" />
 							<option type="column" name="date" fields="creationTime" />
 							<option type="column" name="worker" fields="worker" />

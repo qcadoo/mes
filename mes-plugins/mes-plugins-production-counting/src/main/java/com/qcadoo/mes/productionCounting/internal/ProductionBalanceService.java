@@ -51,6 +51,12 @@ public class ProductionBalanceService {
     }
 
     public boolean validateOrder(final DataDefinition dataDefinition, final Entity entity) {
+        if (entity.getBelongsToField("order").getStringField("typeOfProductionRecording") == null
+                || entity.getBelongsToField("order").getStringField("typeOfProductionRecording").equals("01none")) {
+            entity.addError(dataDefinition.getField("order"),
+                    "productionCounting.productionBalance.report.error.orderWithoutRecordingType");
+            return false;
+        }
         if (entity.getBelongsToField("order").getHasManyField("productionRecords").size() == 0) {
             entity.addError(dataDefinition.getField("order"),
                     "productionCounting.productionBalance.report.error.orderWithoutProductionRecords");

@@ -19,7 +19,9 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import com.qcadoo.mes.productionCounting.internal.ProductionBalanceReportDataService;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
+import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordOperationComparator;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -34,6 +36,9 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
     @Autowired
     SecurityService securityService;
+
+    @Autowired
+    private ProductionBalanceReportDataService productionBalanceReportDataService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity productionBalance, final Locale locale)
@@ -198,9 +203,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         }
         Collections.sort(inputProductsList, new EntityProductInOutComparator());
 
-        // TODO group by ANKI
-
-        for (Entity inputProduct : inputProductsList) {
+        for (Entity inputProduct : productionBalanceReportDataService.groupProductInOutComponentsByProduct(inputProductsList)) {
             inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("number"), PdfUtil
                     .getArialRegular9Dark()));
             inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("name"), PdfUtil
@@ -257,26 +260,24 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         }
         Collections.sort(outputProductsList, new EntityProductInOutComparator());
 
-        // TODO group by ANKI
-
-        for (Entity inputProduct : outputProductsList) {
-            outputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("number"), PdfUtil
+        for (Entity outputProduct : productionBalanceReportDataService.groupProductInOutComponentsByProduct(outputProductsList)) {
+            outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("number"), PdfUtil
                     .getArialRegular9Dark()));
-            outputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("name"), PdfUtil
+            outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("name"), PdfUtil
                     .getArialRegular9Dark()));
             outputProductsTable.addCell(new Phrase(this.getTranslationService().translate(
                     "basic.product.typeOfMaterial.value."
-                            + inputProduct.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
+                            + outputProduct.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
                     .getArialRegular9Dark()));
-            outputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
+            outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
                     .getArialRegular9Dark()));
-            outputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("plannedQuantity")), PdfUtil
+            outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("plannedQuantity")), PdfUtil
                     .getArialRegular9Dark()));
-            if (inputProduct.getField("usedQuantity") != null) {
-                outputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("usedQuantity")), PdfUtil
+            if (outputProduct.getField("usedQuantity") != null) {
+                outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("usedQuantity")), PdfUtil
                         .getArialRegular9Dark()));
                 outputProductsTable.addCell(new Phrase(getDecimalFormat().format(
-                        inputProduct.getField("balance") != null ? inputProduct.getField("balance") : 0), PdfUtil
+                        outputProduct.getField("balance") != null ? outputProduct.getField("balance") : 0), PdfUtil
                         .getArialRegular9Dark()));
             } else {
                 outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
@@ -307,9 +308,15 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
         PdfPTable machineTimeTable = PdfUtil.createTableWithHeader(5, operationsTimeTableHeader, false);
 
-        // TODO group by ANKI
+        Integer plannedTimeSum = 0;
+        Integer registeredTimeSum = 0;
+        Integer timeBalanceSum = 0;
 
-        for (Entity productionRecord : productionBalance.getBelongsToField("order").getHasManyField("productionRecords")) {
+        List<Entity> productionRecords = new ArrayList<Entity>(productionBalance.getBelongsToField("order").getHasManyField(
+                "productionRecords"));
+        Collections.sort(productionRecords, new EntityProductionRecordOperationComparator());
+
+        for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecords)) {
             machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
                     .getBelongsToField("operation").getStringField("number"), PdfUtil.getArialRegular9Dark()));
             machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
@@ -317,19 +324,23 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     + " "
                     + productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
                             .getStringField("nodeNumber"), PdfUtil.getArialRegular9Dark()));
-            // TODO planned time ANKI
-            machineTimeTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+            machineTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("plannedMachineTime")),
+                    PdfUtil.getArialRegular9Dark()));
             machineTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("machineTime")), PdfUtil
                     .getArialRegular9Dark()));
-            if (productionRecord.getField("machineTimeBalance") != null)
-                machineTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("machineTimeBalance")),
-                        PdfUtil.getArialRegular9Dark()));
-            else
-                machineTimeTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
-
+            machineTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("machineTimeBalance")),
+                    PdfUtil.getArialRegular9Dark()));
+            plannedTimeSum += (Integer) productionRecord.getField("plannedMachineTime");
+            registeredTimeSum += (Integer) productionRecord.getField("machineTime");
+            timeBalanceSum += (Integer) productionRecord.getField("machineTimeBalance");
         }
 
-        // TODO sum row ANKI
+        machineTimeTable.addCell(new Phrase(getTranslationService().translate(
+                "productionCounting.productionBalance.report.total", locale), PdfUtil.getArialRegular9Dark()));
+        machineTimeTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+        machineTimeTable.addCell(new Phrase(getDecimalFormat().format(plannedTimeSum), PdfUtil.getArialRegular9Dark()));
+        machineTimeTable.addCell(new Phrase(getDecimalFormat().format(registeredTimeSum), PdfUtil.getArialRegular9Dark()));
+        machineTimeTable.addCell(new Phrase(getDecimalFormat().format(timeBalanceSum), PdfUtil.getArialRegular9Dark()));
 
         document.add(machineTimeTable);
     }
@@ -354,9 +365,15 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
         PdfPTable laborTimeTable = PdfUtil.createTableWithHeader(5, operationsTimeTableHeader, false);
 
-        // TODO group by ANKI
+        Integer plannedTimeSum = 0;
+        Integer registeredTimeSum = 0;
+        Integer timeBalanceSum = 0;
 
-        for (Entity productionRecord : productionBalance.getBelongsToField("order").getHasManyField("productionRecords")) {
+        List<Entity> productionRecords = new ArrayList<Entity>(productionBalance.getBelongsToField("order").getHasManyField(
+                "productionRecords"));
+        Collections.sort(productionRecords, new EntityProductionRecordOperationComparator());
+
+        for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecords)) {
             laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
                     .getBelongsToField("operation").getStringField("number"), PdfUtil.getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
@@ -364,18 +381,23 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     + " "
                     + productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
                             .getStringField("nodeNumber"), PdfUtil.getArialRegular9Dark()));
-            // TODO planned time ANKI
-            laborTimeTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+            laborTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("plannedLaborTime")), PdfUtil
+                    .getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("laborTime")), PdfUtil
                     .getArialRegular9Dark()));
-            if (productionRecord.getField("laborTimeBalance") != null)
-                laborTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("laborTimeBalance")),
-                        PdfUtil.getArialRegular9Dark()));
-            else
-                laborTimeTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
+            laborTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("laborTimeBalance")), PdfUtil
+                    .getArialRegular9Dark()));
+            plannedTimeSum += (Integer) productionRecord.getField("plannedLaborTime");
+            registeredTimeSum += (Integer) productionRecord.getField("laborTime");
+            timeBalanceSum += (Integer) productionRecord.getField("laborTimeBalance");
         }
 
-        // TODO sum row ANKI
+        laborTimeTable.addCell(new Phrase(getTranslationService().translate("productionCounting.productionBalance.report.total",
+                locale), PdfUtil.getArialRegular9Dark()));
+        laborTimeTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+        laborTimeTable.addCell(new Phrase(getDecimalFormat().format(plannedTimeSum), PdfUtil.getArialRegular9Dark()));
+        laborTimeTable.addCell(new Phrase(getDecimalFormat().format(registeredTimeSum), PdfUtil.getArialRegular9Dark()));
+        laborTimeTable.addCell(new Phrase(getDecimalFormat().format(timeBalanceSum), PdfUtil.getArialRegular9Dark()));
 
         document.add(laborTimeTable);
     }
