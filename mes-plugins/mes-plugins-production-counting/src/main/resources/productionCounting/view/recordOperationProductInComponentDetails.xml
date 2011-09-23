@@ -13,7 +13,7 @@
 
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="grid" reference="grid"
-				columns="6" rows="6">
+				columns="6" rows="6" hasBorders="false">
 				<layoutElement column="1" row="1" width="5">
 					<component type="input" name="number" reference="number"
 
@@ -29,18 +29,18 @@
 				</layoutElement>
 				<layoutElement column="1" row="4" width="5">
 					<component type="input" name="plannedQuantity" field="plannedQuantity"
-						reference="plannedQuantity" defaultEnabled="false" required="false" />
+						reference="plannedQuantity" defaultEnabled="false"  />
 				</layoutElement>
 				<layoutElement column="6" row="4" >
 					<component type="input" name="plannedQuantityUNIT" 
-						reference="plannedQuantityUNIT" defaultEnabled="false" required="false" />
+						reference="plannedQuantityUNIT" defaultEnabled="false"  hasLabel="false"/>
 				</layoutElement>
-				<layoutElement column="1" row="5" width="4">
+				<layoutElement column="1" row="5" width="5">
 					<component type="input" name="usedQuantity" field="usedQuantity" />
 				</layoutElement>
 				<layoutElement column="6" row="5" >
 					<component type="input" name="usedQuantityUNIT" 
-						reference="usedQuantityUNIT" defaultEnabled="false" required="false" />
+						reference="usedQuantityUNIT" defaultEnabled="false"  hasLabel="false"/>
 				</layoutElement>
 			</component>
 			<option type="header" value="true" />

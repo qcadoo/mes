@@ -85,7 +85,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
-						<component type="textarea" name="name" field="name" />
+						<component type="textarea" name="name" reference="name" field="name" />
 					</layoutElement>				
 					<layoutElement column="1" row="5">
 						<component type="input" name="date" reference="date" field="date" defaultEnabled="false"/>
@@ -96,7 +96,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
-						<component type="input" name="recordsNumber" reference="recordsNumber" field="recordsNumber" defaultEnabled="false"/>
+						<component type="input" name="recordsNumber" reference="recordsNumber" field="#{form}.recordsNumber" defaultEnabled="false"/>
 					</layoutElement>
 					<layoutElement column="2" row="3" height="4">
 						<component type="textarea" name="description" reference="description" field="description" />

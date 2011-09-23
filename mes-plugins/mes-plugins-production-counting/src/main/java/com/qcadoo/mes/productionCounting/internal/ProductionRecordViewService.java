@@ -3,13 +3,11 @@ package com.qcadoo.mes.productionCounting.internal;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PARAMETER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.productionCounting.internal.ProductionRecordService.getBooleanValue;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_PRODUCTION_RECORD;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +16,10 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -34,6 +31,9 @@ public class ProductionRecordViewService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private CurrencyService currencyService;
 
     @Autowired
     private TranslationService translationService;
@@ -58,10 +58,6 @@ public class ProductionRecordViewService {
                 getBooleanValue(order.getField("registerQuantityOutProduct")));
         view.getComponentByReference("recordOperationProductInComponent").setVisible(
                 getBooleanValue(order.getField("registerQuantityInProduct")));
-        view.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(
-                getBooleanValue(order.getField("registerProductionTime")));
-        view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(
-                getBooleanValue(order.getField("registerProductionTime")));
     }
 
     public void setParametersDefaultValue(final ViewDefinitionState viewDefinitionState) {
@@ -91,16 +87,25 @@ public class ProductionRecordViewService {
     }
 
     private void setComponentVisible(final String recordingType, final ViewDefinitionState view) {
-        view.getComponentByReference("orderOperationComponent").setEnabled(PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
-
-        view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(
-                PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
-        view.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(
-                PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType));
-        view.getComponentByReference("operationNoneLabel").setVisible(
-                !PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType) && !PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
-
+        view.getComponentByReference("orderOperationComponent").setVisible(PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
         ((FieldComponent) view.getComponentByReference("orderOperationComponent")).requestComponentUpdateState();
+        view.getComponentByReference("machineTime").setVisible(true);
+        view.getComponentByReference("laborTime").setVisible(true);
+
+        if (PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)) {
+            view.getComponentByReference("borderLayoutConsumed").setEnabled(true);
+            view.getComponentByReference("borderLayoutConsumed").setFieldValue(
+                    translationService.translate("consumedTimeForEach", view.getLocale()));
+        }
+        if (PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)) {
+            view.getComponentByReference("borderLayoutConsumed").setFieldValue(
+                    translationService.translate("consumedTimeCumulated", view.getLocale()));
+        }
+        if (!PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType) && !PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)) {
+            view.getComponentByReference("borderLayoutConsumed").setFieldValue(
+                    translationService.translate("operationNoneLabel", view.getLocale()));
+        }
+
     }
 
     public void registeringProductionTime(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
@@ -110,8 +115,9 @@ public class ProductionRecordViewService {
         }
         Boolean registerProductionTime = getBooleanValue(order.getField("registerProductionTime"));
         if (registerProductionTime) {
-            view.getComponentByReference("borderLayoutConsumedTimeForEach").setVisible(false);
-            view.getComponentByReference("borderLayoutConsumedTimeCumulated").setVisible(false);
+            // view.getComponentByReference("borderLayoutConsumed").setVisible(true);
+            view.getComponentByReference("machineTime").setVisible(true);
+            view.getComponentByReference("laborTime").setVisible(true);
         }
     }
 
@@ -128,25 +134,6 @@ public class ProductionRecordViewService {
         }
     }
 
-    public void checkFinalProductionRecording(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        Entity order = getOrderFromLookup(view);
-        if (!("04done".equals(order.getField("state")))) {
-            return;
-        }
-        List<Entity> productionRecordings = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("isFinal", true)).list()
-                .getEntities();
-        if (productionRecordings.size() == 0) {
-            componentState.addMessage(
-                    translationService.translate("orders.order.error.productionCounting.final", view.getLocale()),
-                    MessageType.FAILURE);
-            return;
-        }
-
-    }
-
     public void fillFieldFromProduct(final ViewDefinitionState view) {
         Entity recordProduct = ((FormComponent) view.getComponentByReference("form")).getEntity();
         recordProduct = recordProduct.getDataDefinition().get(recordProduct.getId());
@@ -157,9 +144,12 @@ public class ProductionRecordViewService {
 
         String typeOfMaterial = "basic.product.typeOfMaterial.value." + product.getStringField("typeOfMaterial");
         view.getComponentByReference("type").setFieldValue(translationService.translate(typeOfMaterial, view.getLocale()));
-        ((FieldComponent) view.getComponentByReference("number")).requestComponentUpdateState();
-        ((FieldComponent) view.getComponentByReference("name")).requestComponentUpdateState();
-        ((FieldComponent) view.getComponentByReference("type")).requestComponentUpdateState();
+        view.getComponentByReference("usedQuantityUNIT").setFieldValue(currencyService.getCurrencyAlphabeticCode());
+        view.getComponentByReference("plannedQuantityUNIT").setFieldValue(currencyService.getCurrencyAlphabeticCode());
+        for (String reference : Arrays.asList("number", "name", "type", "usedQuantityUNIT", "plannedQuantityUNIT")) {
+            ((FieldComponent) view.getComponentByReference(reference)).requestComponentUpdateState();
+        }
+
     }
 
     private Entity getOrderFromLookup(final ViewDefinitionState view) {
@@ -168,6 +158,18 @@ public class ProductionRecordViewService {
             return null;
         }
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get((Long) lookup.getFieldValue());
+    }
+
+    public void copyTimeValue(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        if (componentState.getName().contains("cumulated")) {
+            view.getComponentByReference("laborTimeForEach").setFieldValue(view.getComponentByReference("laborTimeCumulated"));
+            view.getComponentByReference("machineTimeForEach")
+                    .setFieldValue(view.getComponentByReference("machineTimeCumulated"));
+        } else {
+            view.getComponentByReference("laborTimeCumulated").setFieldValue(view.getComponentByReference("laborTimeForEach"));
+            view.getComponentByReference("machineTimeCumulated")
+                    .setFieldValue(view.getComponentByReference("machineTimeForEach"));
+        }
     }
 
     // VIEW HOOK for OrderDetails

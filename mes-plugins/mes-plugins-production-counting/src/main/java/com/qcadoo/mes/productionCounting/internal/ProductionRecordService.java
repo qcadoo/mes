@@ -1,6 +1,7 @@
 package com.qcadoo.mes.productionCounting.internal;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_PRODUCTION_RECORD;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED;
@@ -23,6 +24,7 @@ import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingCo
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
@@ -43,8 +45,10 @@ public class ProductionRecordService {
     private final static String FOR_EACH_OPERATION = "03forEach";
 
     public void generateData(final DataDefinition dd, final Entity entity) {
-        entity.setField("number", numberGeneratorService.generateNumber(ProductionCountingConstants.PLUGIN_IDENTIFIER, entity
-                .getDataDefinition().getName()));
+        if (entity.getField("number") == null) {
+            entity.setField("number", numberGeneratorService.generateNumber(ProductionCountingConstants.PLUGIN_IDENTIFIER, entity
+                    .getDataDefinition().getName()));
+        }
         entity.setField("creationTime", new Date());
         entity.setField("worker", securityService.getCurrentUserName());
     }
@@ -67,8 +71,34 @@ public class ProductionRecordService {
         }
     }
 
-    public void checkFinal(final DataDefinition dd, final Entity entity) {
+    public void checkExistsFinalProductionRecording(final DataDefinition dd, final Entity entity) {
+        if (entity.getId() != null) {
+            return;
+        }
+        Entity order = entity.getBelongsToField("order");
+        String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
 
+        if (CUMULATE.equals(typeOfProductionRecording)) {
+            List<Entity> productionRecordings = dataDefinitionService
+                    .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
+                    .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("isFinal", true)).list()
+                    .getEntities();
+            if (productionRecordings.size() == 0) {
+                entity.addError(dd.getField("order"), "productionCounting.record.messages.error.final");
+                return;
+            }
+        } else if (FOR_EACH_OPERATION.equals(typeOfProductionRecording)) {
+            Entity operation = entity.getBelongsToField("orderOperationComponent");
+            List<Entity> productionRecordings = dataDefinitionService
+                    .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
+                    .add(SearchRestrictions.belongsTo("order", order))
+                    .add(SearchRestrictions.belongsTo("orderOperationComponent", operation))
+                    .add(SearchRestrictions.eq("isFinal", true)).list().getEntities();
+            if (productionRecordings.size() != 0) {
+                entity.addError(dd.getField("order"), "productionCounting.record.messages.error.finalExists");
+                return;
+            }
+        }
     }
 
     public Boolean checkIfOrderIsStarted(final DataDefinition dd, final Entity entity) {

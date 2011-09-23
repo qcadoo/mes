@@ -84,7 +84,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
-						<component type="textarea" name="name" field="name" />
+						<component type="textarea" name="name" reference="name" field="name" />
 					</layoutElement>				
 					<layoutElement column="1" row="5">
 						<component type="input" name="date" reference="date" field="date" defaultEnabled="false"/>
