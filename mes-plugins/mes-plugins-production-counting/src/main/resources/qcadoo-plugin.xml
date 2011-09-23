@@ -116,6 +116,7 @@
 		<view:view-hook plugin="basic" view="parameters" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="setParametersDefaultValue" />
 		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="setOrderDefaultValue" />
 		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="checkOrderState" />
+		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="checkFinalProductionCountingForOrder" />
 	</modules>
 
 </plugin>
