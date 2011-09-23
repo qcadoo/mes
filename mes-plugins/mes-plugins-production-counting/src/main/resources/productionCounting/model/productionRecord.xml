@@ -55,6 +55,7 @@
 			method="checkTypeOfProductionRecording" />
 		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="allowedPartial"/>
 		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="checkIfOrderIsStarted"/>
+		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="checkExistsFinalProductionRecording"/>
 		
 	</hooks>
 	<identifier expression="#number" />

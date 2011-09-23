@@ -40,7 +40,7 @@
 					<layoutElement column="1" row="4">
 						<component type="lookup" name="orderOperationComponent"
 							field="orderOperationComponent" source="#{order}.orderOperationComponents"
-							reference="orderOperationComponent" defaultEnabled="false" >
+							reference="orderOperationComponent" defaultEnabled="false">
 							<option type="column" name="name" fields="operation"
 								expression="#operation['name']" link="true" />
 							<option type="fieldCode" value="operation" />
@@ -72,7 +72,8 @@
 					</layoutElement>
 					<layoutElement column="1" row="9">
 						<component type="grid" name="recordOperationProductInComponent"
-							reference="recordOperationProductInComponent" source="#{form}.recordOperationProductInComponents" defaultEnabled="false">
+							reference="recordOperationProductInComponent" source="#{form}.recordOperationProductInComponents"
+							defaultEnabled="false">
 							<option type="column" name="number" fields="product"
 								expression="#product['number']" link="true" width="100" />
 							<option type="column" name="name" fields="product"
@@ -103,49 +104,27 @@
 							<option type="multiselect" value="false" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="1" height="2">
-						<component type="borderLayout" name="borderLayoutConsumedTimeForEach"
-							reference="borderLayoutConsumedTimeForEach" defaultVisible="false">
-							<option type="label" value="consumedTimeForEach" />
-							<component type="gridLayout" name="consumedTimeForEach"
-								reference="consumedTimeOperation" columns="1" rows="2">
-								<layoutElement column="1" row="1">
-									<component type="time" name="machineTimeForEach"
-										reference="machineTimeForEach" field="machineTime" />
-								</layoutElement>
-								<layoutElement column="1" row="2">
-									<component type="time" name="laborTimeForEach"
-										reference="laborTimeForEach" field="laborTime" />
-								</layoutElement>
-							</component>
-						</component>
-						<component type="borderLayout" name="borderLayoutConsumedTimeCumulated"
-							reference="borderLayoutConsumedTimeCumulated" defaultVisible="false">
-							<option type="label" value="consumedTimeCumulated" />
-
-							<component type="gridLayout" name="consumedTimeCumulated"
-								reference="consumedTimeCumulated" columns="1" rows="2">
-								<layoutElement column="1" row="1">
-									<component type="time" name="machineTimeCumulated"
-										reference="machineTimeCumulated" field="machineTime" />
-								</layoutElement>
-								<layoutElement column="1" row="2">
-									<component type="time" name="laborTimeCumulated"
-										reference="laborTimeCumulated" field="laborTime" />
-								</layoutElement>
-							</component>
-						</component>
-						<component type="label" name="operationNoneLabel"
-							reference="operationNoneLabel" defaultVisible="true">
+					<layoutElement column="2" row="1">
+						<component type="label" name="borderLayoutConsumed"
+							reference="borderLayoutConsumed" >
 							<option type="labelStyle" value="text" />
 						</component>
+					</layoutElement>
+					<layoutElement column="2" row="2">
+						<component type="time" name="laborTime" reference="laborTime"
+							field="laborTime" />
+					</layoutElement>
+					<layoutElement column="2" row="3">
+						<component type="time" name="machineTime" reference="machineTime"
+							field="machineTime" />
 					</layoutElement>
 					<layoutElement column="2" row="8">
 						<component type="separatorLine" name="line2" />
 					</layoutElement>
 					<layoutElement column="2" row="9">
 						<component type="grid" name="recordOperationProductOutComponent"
-							reference="recordOperationProductOutComponent" source="#{form}.recordOperationProductOutComponents" defaultEnabled="false">
+							reference="recordOperationProductOutComponent" source="#{form}.recordOperationProductOutComponents"
+							defaultEnabled="false">
 							<option type="column" name="number" fields="product"
 								expression="#product['number']" link="true" width="100" />
 							<option type="column" name="name" fields="product"
@@ -186,6 +165,8 @@
 		</windowTab>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="initializeRecordDetailsView" />
+		<beforeRender
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+			method="initializeRecordDetailsView" />
 	</hooks>
 </view>
