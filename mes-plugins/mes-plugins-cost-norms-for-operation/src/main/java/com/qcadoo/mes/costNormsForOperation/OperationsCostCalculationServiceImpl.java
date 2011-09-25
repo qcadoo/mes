@@ -90,12 +90,11 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         checkArgument(operationComponents != null, "given operation components is null");
 
         if (mode == PIECEWORK) {
-            BigDecimal totalPieceworkCost = estimateCostCalculationForPieceWork(operationComponents.getRoot(), margin, quantity,
-                    1L);
+            BigDecimal totalPieceworkCost = estimateCostCalculationForPieceWork(operationComponents.getRoot(), margin, quantity);
             costCalculation.setField("totalPieceworkCosts", totalPieceworkCost);
         } else {
             Map<String, BigDecimal> hourlyResultsMap = estimateCostCalculationForHourly(operationComponents.getRoot(), margin,
-                    quantity, includeTPZ, 0L);
+                    quantity, includeTPZ);
             costCalculation.setField("totalMachineHourlyCosts", hourlyResultsMap.get(MACHINE_HOURLY_COST).setScale(3, ROUND_UP));
             costCalculation.setField("totalLaborHourlyCosts", hourlyResultsMap.get(LABOR_HOURLY_COST).setScale(3, ROUND_UP));
         }
@@ -104,7 +103,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     }
 
     private Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode operationComponent,
-            final BigDecimal margin, final BigDecimal plannedQuantity, final Boolean includeTPZ, Long level) {
+            final BigDecimal margin, final BigDecimal plannedQuantity, final Boolean includeTPZ) {
         checkArgument(operationComponent != null, "given operationComponent is null");
 
         BigDecimal hourlyMachineCost = getBigDecimal(operationComponent.getField(MACHINE_HOURLY_COST));
@@ -120,7 +119,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         }
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
-            unitResultsMap = estimateCostCalculationForHourly(child, margin, plannedQuantity, includeTPZ, level++);
+            unitResultsMap = estimateCostCalculationForHourly(child, margin, plannedQuantity, includeTPZ);
             for (String key : PATH_COST_KEYS) {
                 BigDecimal unitOperationCost = resultsMap.get(key).add(unitResultsMap.get(key));
                 resultsMap.put(key, unitOperationCost);
@@ -148,7 +147,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         operationComponent.setField("operationMarginCost", operationMarginCost.setScale(3, ROUND_UP));
         operationComponent.setField("totalOperationCost", operationCost.add(operationMarginCost).setScale(3, ROUND_UP));
         operationComponent.setField("duration", duration.setScale(0, ROUND_UP).longValue());
-        operationComponent.setField("level", level);
 
         checkArgument(operationComponent.getDataDefinition().save(operationComponent).isValid(), "invalid operationComponent");
 
@@ -176,12 +174,12 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     }
 
     private BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent, final BigDecimal margin,
-            final BigDecimal plannedQuantity, final Long level) {
+            final BigDecimal plannedQuantity) {
 
         BigDecimal pathCost = BigDecimal.ZERO;
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
-            pathCost = pathCost.add(estimateCostCalculationForPieceWork(child, margin, plannedQuantity, level));
+            pathCost = pathCost.add(estimateCostCalculationForPieceWork(child, margin, plannedQuantity));
         }
 
         BigDecimal pieceworkCost = getBigDecimal(operationComponent.getField("pieceworkCost"));
@@ -193,7 +191,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal operationCost = pieces.multiply(pieceworkCostPerOperation);
         BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100), 5, ROUND_HALF_UP));
 
-        operationComponent.setField("level", level);
         operationComponent.setField("pieces", pieces.setScale(3, ROUND_UP));
         operationComponent.setField("operationCost", operationCost.setScale(3, ROUND_UP));
         operationComponent.setField("operationMarginCost", operationMarginCost.setScale(3, ROUND_UP));
@@ -257,7 +254,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             final Entity costCalculation) {
         DataDefinition sourceDD = operationComponent.getDataDefinition();
 
-        for (String fieldName : Arrays.asList("priority", "tpz", "tj", "productionInOneCycle", "countMachine",
+        for (String fieldName : Arrays.asList("priority", "nodeNumber", "tpz", "tj", "productionInOneCycle", "countMachine",
                 "timeNextOperation", "operationOffSet", "effectiveOperationRealizationTime", "effectiveDateFrom",
                 "effectiveDateTo", "pieceworkCost", "laborHourlyCost", "machineHourlyCost", "numberOfOperations",
                 "totalOperationCost")) {

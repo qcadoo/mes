@@ -24,6 +24,7 @@
 package com.qcadoo.mes.technologies;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -66,6 +68,9 @@ public final class TechnologyService {
 
     @Autowired
     private ReportDataService reportDataService;
+    
+    @Autowired
+    private TreeNumberingService treeNumberingService;
 
     public boolean clearMasterOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("master", false);
@@ -339,5 +344,11 @@ public final class TechnologyService {
         FieldComponent operationLookup = (FieldComponent) viewDefinitionState.getComponentByReference("operation");
 
         operationLookup.setEnabled(form.getEntityId() == null);
+    }
+    
+    public void performTreeNumbering(final DataDefinition dd, final Entity technology) {
+        DataDefinition technologyOperationDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+        treeNumberingService.generateNumbersAndUpdateTree(technologyOperationDD, "technology", technology.getId());
     }
 }

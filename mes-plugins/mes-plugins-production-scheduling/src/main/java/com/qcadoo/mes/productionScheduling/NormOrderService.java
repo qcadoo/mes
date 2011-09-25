@@ -46,7 +46,7 @@ public class NormOrderService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
+    
     @Transactional
     public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity entity) {
         DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
@@ -72,7 +72,7 @@ public class NormOrderService {
         }
 
         EntityTree operationComponents = technology.getTreeField("operationComponents");
-
+        
         entity.setField("orderOperationComponents", Collections.singletonList(createOrderOperationComponent(
                 operationComponents.getRoot(), entity, technology, null, orderOperationComponentDD)));
     }
