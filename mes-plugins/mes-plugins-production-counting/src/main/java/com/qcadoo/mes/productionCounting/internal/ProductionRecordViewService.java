@@ -3,11 +3,13 @@ package com.qcadoo.mes.productionCounting.internal;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PARAMETER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.productionCounting.internal.ProductionRecordService.getBooleanValue;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_PRODUCTION_RECORD;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +20,17 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class ProductionRecordViewService {
@@ -54,6 +60,8 @@ public class ProductionRecordViewService {
         view.getComponentByReference("orderOperationComponent").setEnabled(false);
         view.getComponentByReference("shift").setEnabled(false);
 
+        view.getComponentByReference("borderLayoutConsumed")
+                .setVisible(getBooleanValue(order.getField("registerProductionTime")));
         view.getComponentByReference("recordOperationProductOutComponent").setVisible(
                 getBooleanValue(order.getField("registerQuantityOutProduct")));
         view.getComponentByReference("recordOperationProductInComponent").setVisible(
@@ -213,6 +221,31 @@ public class ProductionRecordViewService {
                 component.requestComponentUpdateState();
             }
         }
+    }
+
+    public void checkFinalProductionCountingForOrder(final ViewDefinitionState view) {
+        Boolean blockClosing = (Boolean) view.getComponentByReference("blockClosing").getFieldValue();
+        FieldComponent orderState = (FieldComponent) view.getComponentByReference("state");
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                form.getEntityId());
+        if (order == null) {
+            return;
+        }
+        List<Entity> productionRecordings = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("isFinal", true)).list()
+                .getEntities();
+        if (blockClosing && productionRecordings.size() == 0 && "03inProgress".equals(orderState.getFieldValue())) {
+            WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+            RibbonActionItem start = window.getRibbon().getGroupByName("status").getItemByName("acceptOrder");
+            start.setEnabled(false);
+            start.setMessage("productionRecording");
+        }
+
     }
 
 }

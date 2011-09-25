@@ -324,12 +324,12 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     + " "
                     + productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
                             .getStringField("nodeNumber"), PdfUtil.getArialRegular9Dark()));
-            machineTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("plannedMachineTime")),
-                    PdfUtil.getArialRegular9Dark()));
-            machineTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("machineTime")), PdfUtil
-                    .getArialRegular9Dark()));
-            machineTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("machineTimeBalance")),
-                    PdfUtil.getArialRegular9Dark()));
+            machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
+                    .getField("plannedMachineTime"))), PdfUtil.getArialRegular9Dark()));
+            machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
+                    .getField("machineTime"))), PdfUtil.getArialRegular9Dark()));
+            machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
+                    .getField("machineTimeBalance"))), PdfUtil.getArialRegular9Dark()));
             plannedTimeSum += (Integer) productionRecord.getField("plannedMachineTime");
             registeredTimeSum += (Integer) productionRecord.getField("machineTime");
             timeBalanceSum += (Integer) productionRecord.getField("machineTimeBalance");
@@ -338,9 +338,10 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         machineTimeTable.addCell(new Phrase(getTranslationService().translate(
                 "productionCounting.productionBalance.report.total", locale), PdfUtil.getArialRegular9Dark()));
         machineTimeTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-        machineTimeTable.addCell(new Phrase(getDecimalFormat().format(plannedTimeSum), PdfUtil.getArialRegular9Dark()));
-        machineTimeTable.addCell(new Phrase(getDecimalFormat().format(registeredTimeSum), PdfUtil.getArialRegular9Dark()));
-        machineTimeTable.addCell(new Phrase(getDecimalFormat().format(timeBalanceSum), PdfUtil.getArialRegular9Dark()));
+        machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal(plannedTimeSum)), PdfUtil.getArialRegular9Dark()));
+        machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal(registeredTimeSum)), PdfUtil
+                .getArialRegular9Dark()));
+        machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal(timeBalanceSum)), PdfUtil.getArialRegular9Dark()));
 
         document.add(machineTimeTable);
     }
@@ -381,12 +382,13 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     + " "
                     + productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
                             .getStringField("nodeNumber"), PdfUtil.getArialRegular9Dark()));
-            laborTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("plannedLaborTime")), PdfUtil
-                    .getArialRegular9Dark()));
-            laborTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("laborTime")), PdfUtil
-                    .getArialRegular9Dark()));
-            laborTimeTable.addCell(new Phrase(getDecimalFormat().format(productionRecord.getField("laborTimeBalance")), PdfUtil
-                    .getArialRegular9Dark()));
+            laborTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
+                    .getField("plannedLaborTime"))), PdfUtil.getArialRegular9Dark()));
+            laborTimeTable.addCell(new Phrase(
+                    convertTimeToString(new BigDecimal((Integer) productionRecord.getField("laborTime"))), PdfUtil
+                            .getArialRegular9Dark()));
+            laborTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
+                    .getField("laborTimeBalance"))), PdfUtil.getArialRegular9Dark()));
             plannedTimeSum += (Integer) productionRecord.getField("plannedLaborTime");
             registeredTimeSum += (Integer) productionRecord.getField("laborTime");
             timeBalanceSum += (Integer) productionRecord.getField("laborTimeBalance");
@@ -395,9 +397,10 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         laborTimeTable.addCell(new Phrase(getTranslationService().translate("productionCounting.productionBalance.report.total",
                 locale), PdfUtil.getArialRegular9Dark()));
         laborTimeTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-        laborTimeTable.addCell(new Phrase(getDecimalFormat().format(plannedTimeSum), PdfUtil.getArialRegular9Dark()));
-        laborTimeTable.addCell(new Phrase(getDecimalFormat().format(registeredTimeSum), PdfUtil.getArialRegular9Dark()));
-        laborTimeTable.addCell(new Phrase(getDecimalFormat().format(timeBalanceSum), PdfUtil.getArialRegular9Dark()));
+        laborTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal(plannedTimeSum)), PdfUtil.getArialRegular9Dark()));
+        laborTimeTable
+                .addCell(new Phrase(convertTimeToString(new BigDecimal(registeredTimeSum)), PdfUtil.getArialRegular9Dark()));
+        laborTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal(timeBalanceSum)), PdfUtil.getArialRegular9Dark()));
 
         document.add(laborTimeTable);
     }
@@ -494,8 +497,22 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         long minutes = longValueFromDuration % 3600 / 60;
         long seconds = longValueFromDuration % 3600 % 60;
 
-        return (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "")
-                + seconds;
+        Boolean minus = false;
+        if (hours < 0) {
+            minus = true;
+            hours = -hours;
+        }
+        if (minutes < 0) {
+            minus = true;
+            minutes = -minutes;
+        }
+        if (seconds < 0) {
+            minus = true;
+            seconds = -seconds;
+        }
+
+        return (minus ? "-" : "") + (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":"
+                + (seconds < 10 ? "0" : "") + seconds;
     }
 
 }
