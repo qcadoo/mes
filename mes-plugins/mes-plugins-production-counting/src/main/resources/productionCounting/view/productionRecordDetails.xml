@@ -43,10 +43,11 @@
 							reference="orderOperationComponent" defaultEnabled="false">
 							<option type="column" name="name" fields="operation"
 								expression="#operation['name']" link="true" />
-							<option type="fieldCode" value="operation" />
+							<option type="fieldCode" value="nodeNumber" />
+							<option type="order" column="nodeNumber" direction="asc" />
 							<option type="expression" value="#operation['name']" />
-							<option type="searchable" value="operation['name']" />
-							<option type="orderable" value="operation['name']" />
+							<option type="searchable" value="name,nodeNumber" />
+							<option type="orderable" value="name,nodeNumber" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5">
@@ -106,7 +107,7 @@
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="label" name="borderLayoutConsumed"
-							reference="borderLayoutConsumed" >
+							reference="borderLayoutConsumed">
 							<option type="labelStyle" value="text" />
 						</component>
 					</layoutElement>

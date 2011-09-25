@@ -115,7 +115,6 @@ public class ProductionRecordViewService {
         }
         Boolean registerProductionTime = getBooleanValue(order.getField("registerProductionTime"));
         if (registerProductionTime) {
-            // view.getComponentByReference("borderLayoutConsumed").setVisible(true);
             view.getComponentByReference("machineTime").setVisible(true);
             view.getComponentByReference("laborTime").setVisible(true);
         }

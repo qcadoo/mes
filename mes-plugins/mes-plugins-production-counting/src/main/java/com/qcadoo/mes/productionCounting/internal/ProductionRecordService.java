@@ -1,7 +1,7 @@
 package com.qcadoo.mes.productionCounting.internal;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_PRODUCTION_RECORD;
+import static com.google.common.collect.Maps.newHashMap;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED;
@@ -19,11 +19,11 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Maps;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
@@ -40,10 +40,6 @@ public class ProductionRecordService {
     @Autowired
     SecurityService securityService;
 
-    private final static String CUMULATE = "02cumulated";
-
-    private final static String FOR_EACH_OPERATION = "03forEach";
-
     public void generateData(final DataDefinition dd, final Entity entity) {
         if (entity.getField("number") == null) {
             entity.setField("number", numberGeneratorService.generateNumber(ProductionCountingConstants.PLUGIN_IDENTIFIER, entity
@@ -53,52 +49,51 @@ public class ProductionRecordService {
         entity.setField("worker", securityService.getCurrentUserName());
     }
 
-    public void checkTypeOfProductionRecording(final DataDefinition dd, final Entity entity) {
+    public Boolean checkTypeOfProductionRecording(final DataDefinition dd, final Entity entity) {
         Entity order = entity.getBelongsToField("order");
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
         if (typeOfProductionRecording == null || PARAM_RECORDING_TYPE_NONE.equals(typeOfProductionRecording)) {
             entity.addError(dd.getField("order"), "productionCounting.validate.global.error.productionRecord.orderError");
+            return false;
         }
+        return true;
     }
 
-    public void allowedPartial(final DataDefinition dd, final Entity entity) {
+    public Boolean checkIfPartialIsAllowed(final DataDefinition dd, final Entity entity) {
         Entity order = entity.getBelongsToField("order");
         Boolean allowedPartial = getBooleanValue(order.getField("allowedPartial"));
         Boolean isFinal = getBooleanValue(entity.getField("isFinal"));
         if (!isFinal && !allowedPartial) {
             entity.addError(dd.getField("order"),
                     "productionCounting.validate.global.error.productionRecord.orderError.allowedPartial");
+            return false;
         }
+        return true;
     }
 
-    public void checkExistsFinalProductionRecording(final DataDefinition dd, final Entity entity) {
+    public Boolean checkIfExistsFinalRecord(final DataDefinition dd, final Entity entity) {
         if (entity.getId() != null) {
-            return;
+            return true;
         }
+
         Entity order = entity.getBelongsToField("order");
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
 
-        if (CUMULATE.equals(typeOfProductionRecording)) {
-            List<Entity> productionRecordings = dataDefinitionService
-                    .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
-                    .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("isFinal", true)).list()
-                    .getEntities();
-            if (productionRecordings.size() == 0) {
-                entity.addError(dd.getField("order"), "productionCounting.record.messages.error.final");
-                return;
-            }
-        } else if (FOR_EACH_OPERATION.equals(typeOfProductionRecording)) {
-            Entity operation = entity.getBelongsToField("orderOperationComponent");
-            List<Entity> productionRecordings = dataDefinitionService
-                    .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
-                    .add(SearchRestrictions.belongsTo("order", order))
-                    .add(SearchRestrictions.belongsTo("orderOperationComponent", operation))
-                    .add(SearchRestrictions.eq("isFinal", true)).list().getEntities();
-            if (productionRecordings.size() != 0) {
-                entity.addError(dd.getField("order"), "productionCounting.record.messages.error.finalExists");
-                return;
-            }
+        SearchCriteriaBuilder searchBuilder = dd.find();
+        searchBuilder.add(SearchRestrictions.belongsTo("order", order));
+        searchBuilder.add(SearchRestrictions.eq("isFinal", true));
+
+        if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
+            searchBuilder.add(SearchRestrictions.belongsTo("orderOperationComponent",
+                    entity.getBelongsToField("orderOperationComponents")));
         }
+
+        if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
+            entity.addError(dd.getField("order"), "productionCounting.record.messages.error.finalExists");
+            return false;
+        }
+
+        return true;
     }
 
     public Boolean checkIfOrderIsStarted(final DataDefinition dd, final Entity entity) {
@@ -110,7 +105,7 @@ public class ProductionRecordService {
         return true;
     }
 
-    public void copyProductInAndOut(final DataDefinition dd, final Entity productionRecord) {
+    public void copyProductsFromOrderOperation(final DataDefinition dd, final Entity productionRecord) {
         Entity order = productionRecord.getBelongsToField("order");
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
         List<Entity> operationComponents = null;
@@ -119,7 +114,7 @@ public class ProductionRecordService {
         Boolean registerOutput = getBooleanValue(order.getField(PARAM_REGISTER_OUT_PRODUCTS));
 
         BigDecimal orderQuantity = getBigDecimal(order.getField("quantity"));
-        
+
         if (!registerInput && !registerOutput) {
             return;
         }
@@ -137,21 +132,23 @@ public class ProductionRecordService {
         }
 
         if (registerInput) {
-            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT, orderQuantity);
+            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT,
+                    orderQuantity);
         }
         if (registerOutput) {
-            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT, orderQuantity);
+            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT,
+                    orderQuantity);
         }
     }
 
     private void copyOperationProductComponents(final List<Entity> orderOperations, final Entity productionRecord,
             final String modelName, final BigDecimal orderQuantity) {
-        if (orderOperations == null || orderOperations.size() == 0) {
+        if (checkIfOperationListIsEmpty(orderOperations)) {
             return;
         }
-
+        
         DataDefinition recordProductDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, modelName);
-        Map<Long, Entity> recordProductsMap = Maps.newHashMap();
+        Map<Long, Entity> recordProductsMap = newHashMap();
         String technologyProductFieldName = "operationProductOutComponents";
         String recordProductFieldName = "recordOperationProductOutComponents";
 
@@ -175,7 +172,8 @@ public class ProductionRecordService {
 
                 if (recordProductsMap.containsKey(productId)) {
                     recordProduct = recordProductsMap.get(productId);
-                    newPlannedQuantity = getBigDecimal(recordProduct.getField("plannedQuantity")).add(plannedQuantity).multiply(orderQuantity);
+                    newPlannedQuantity = getBigDecimal(recordProduct.getField("plannedQuantity")).add(plannedQuantity).multiply(
+                            orderQuantity);
                 } else {
                     recordProduct = recordProductDD.create();
                     recordProduct.setField("product", technologyProduct.getField("product"));
@@ -188,43 +186,52 @@ public class ProductionRecordService {
         productionRecord.setField(recordProductFieldName, newArrayList(recordProductsMap.values()));
     }
 
+    public Boolean checkIfOperationIsSet(final DataDefinition dd, final Entity productionRecord) {
+        String recordingMode = productionRecord.getBelongsToField("order").getStringField("typeOfProductionRecording");
+        Object orderOperation = productionRecord.getField("orderOperationComponent");
+        
+        if (PARAM_RECORDING_TYPE_FOREACH.equals(recordingMode) && orderOperation == null) {
+            productionRecord.addError(dd.getField("orderOperationComponent"),
+                    "productionCounting.record.messages.error.operationIsNotSet");
+            return false;
+        }
+        return true;
+    }
+
     public void countPlannedTime(final DataDefinition dataDefinition, final Entity productionCounting) {
         Entity order = productionCounting.getBelongsToField("order");
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
-        if (CUMULATE.equals(typeOfProductionRecording)) {
-            List<Entity> operationComponents = order.getTreeField("orderOperationComponents");
-            countPlannedTimeForCumulated(productionCounting, operationComponents);
-        } else if (FOR_EACH_OPERATION.equals(typeOfProductionRecording)) {
-            Entity orderOperationComponent = productionCounting.getBelongsToField("orderOperationComponent");
-            countPlannedTimeForEachOperation(productionCounting, orderOperationComponent);
+        List<Entity> operationComponents = null;
+        if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
+            operationComponents = order.getTreeField("orderOperationComponents");
+        } else if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
+            operationComponents = newArrayList(productionCounting.getBelongsToField("orderOperationComponent"));
         }
+        countPlannedTime(productionCounting, operationComponents);
     }
 
-    private void countPlannedTimeForEachOperation(final Entity productionCounting, final Entity orderOperationComponent) {
-        BigDecimal tpz = getBigDecimal(orderOperationComponent.getField("tpz"));
-        BigDecimal tj = getBigDecimal(orderOperationComponent.getField("tj"));
-        BigDecimal productionInOneCycle = getBigDecimal(orderOperationComponent.getField("productionInOneCycle"));
-        BigDecimal machineUtilization = getBigDecimal(orderOperationComponent.getField("machineUtilization"));
-        BigDecimal laborUtilization = getBigDecimal(orderOperationComponent.getField("laborUtilization"));
-        BigDecimal plannedTime = (tj.multiply(productionInOneCycle)).add(tpz);
-        BigDecimal plannedMachineTime = plannedTime.multiply(machineUtilization);
-        BigDecimal plannedLaborTime = plannedTime.multiply(laborUtilization);
-
-        productionCounting.setField("plannedTime", plannedTime.setScale(0, ROUND_UP).intValue());
-        productionCounting.setField("plannedMachineTime", plannedMachineTime.setScale(0, ROUND_UP).intValue());
-        productionCounting.setField("plannedLaborTime", plannedLaborTime.setScale(0, ROUND_UP).intValue());
-    }
-
-    private void countPlannedTimeForCumulated(final Entity productionCounting, final List<Entity> orderOperationComponents) {
+    private void countPlannedTime(final Entity productionCounting, final List<Entity> operationComponents) {
+        if (checkIfOperationListIsEmpty(operationComponents)) {
+            return;
+        }
         BigDecimal plannedTime = BigDecimal.ZERO;
         BigDecimal plannedMachineTime = BigDecimal.ZERO;
         BigDecimal plannedLaborTime = BigDecimal.ZERO;
-        for (Entity orderOperationComponent : orderOperationComponents) {
-            BigDecimal tpz = getBigDecimal(orderOperationComponent.getField("tpz"));
-            BigDecimal tj = getBigDecimal(orderOperationComponent.getField("tj"));
-            BigDecimal productionInOneCycle = getBigDecimal(orderOperationComponent.getField("productionInOneCycle"));
-            BigDecimal machineUtilization = getBigDecimal(orderOperationComponent.getField("machineUtilization"));
-            BigDecimal laborUtilization = getBigDecimal(orderOperationComponent.getField("laborUtilization"));
+        BigDecimal tpz = BigDecimal.ZERO;
+        BigDecimal tj = BigDecimal.ZERO;
+        BigDecimal productionInOneCycle = BigDecimal.ZERO;
+        BigDecimal machineUtilization = BigDecimal.ZERO;
+        BigDecimal laborUtilization = BigDecimal.ZERO;
+
+        for (Entity orderOperationComponent : operationComponents) {
+            tj = getBigDecimal(orderOperationComponent.getField("tj"));
+            if (tj == BigDecimal.ZERO) {
+                continue;
+            }
+            tpz = getBigDecimal(orderOperationComponent.getField("tpz"));
+            productionInOneCycle = getBigDecimal(orderOperationComponent.getField("productionInOneCycle"));
+            machineUtilization = getBigDecimal(orderOperationComponent.getField("machineUtilization"));
+            laborUtilization = getBigDecimal(orderOperationComponent.getField("laborUtilization"));
             plannedTime = (tj.multiply(productionInOneCycle)).add(tpz);
             plannedMachineTime = plannedTime.multiply(machineUtilization);
             plannedLaborTime = plannedTime.multiply(laborUtilization);
@@ -234,6 +241,10 @@ public class ProductionRecordService {
         productionCounting.setField("plannedLaborTime", plannedLaborTime.setScale(0, ROUND_UP).intValue());
     }
 
+    private static Boolean checkIfOperationListIsEmpty(final List<Entity> orderOperations) {
+        return orderOperations == null || orderOperations.isEmpty() || orderOperations.get(0) == null;
+    }
+    
     public static BigDecimal getBigDecimal(final Object value) {
         if (value == null) {
             return BigDecimal.ZERO;
