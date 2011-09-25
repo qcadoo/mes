@@ -23,11 +23,14 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
+import static com.google.common.collect.Lists.newLinkedList;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -53,6 +56,7 @@ import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfUtil;
@@ -69,6 +73,9 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     @Autowired
     CurrencyService currencyService;
+    
+    @Autowired
+    TreeNumberingService treeNumberingService;
 
     @Autowired
     MaterialRequirementReportDataService materialRequirementReportDataService;
@@ -360,9 +367,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
     private PdfPTable addTableAboutHourlyCost(final Entity costCalculation, final Locale locale) {
         List<String> operationsTableHeader = new ArrayList<String>();
 
-        for (String translate : Arrays.asList("costCalculation.costCalculationDetails.report.columnHeader.number",
+        for (String translate : Arrays.asList("costCalculation.costCalculationDetails.report.columnHeader.level",
                 "costCalculation.costCalculationDetails.report.columnHeader.name",
-                "costCalculation.costCalculationDetails.report.columnHeader.level",
                 "costCalculation.costCalculationDetails.report.columnHeader.duration",
                 "costCalculation.costCalculationDetails.report.columnHeader.machCosts",
                 "costCalculation.costCalculationDetails.report.columnHeader.labCosts",
@@ -373,19 +379,19 @@ public class CostCalculationPdfService extends PdfDocumentService {
         }
 
         int[] columnWitdh = { 20, 20, 20, 20, 20, 20, 20, 20, 20 };
-        List<Entity> calculationOperationComponents = costCalculation.getTreeField("calculationOperationComponents");
+        List<Entity> calculationOperationComponents = newLinkedList(costCalculation.getTreeField("calculationOperationComponents"));
 
+        Collections.sort(calculationOperationComponents, treeNumberingService.getTreeNodesNumberComparator());
+        
         PdfPTable operationsTable = PdfUtil.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false,
                 columnWitdh);
 
         if (calculationOperationComponents != null && calculationOperationComponents.size() != 0) {
             for (Entity calculationOperationComponent : calculationOperationComponents) {
-                operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
-                        "number"), PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(calculationOperationComponent.getField("nodeNumber").toString(), PdfUtil
+                        .getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
                         "name"), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(calculationOperationComponent.getField("level").toString(), PdfUtil
-                        .getArialRegular9Dark()));
 
                 String duration = convertTimeToString((Integer) calculationOperationComponent.getField("duration"));
 
@@ -440,9 +446,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
     private PdfPTable addTableAboutPieceworkCost(final Entity costCalculation, final Locale locale) {
         List<String> operationsTableHeader = new ArrayList<String>();
 
-        for (String translate : Arrays.asList("costCalculation.costCalculationDetails.report.columnHeader.number",
+        for (String translate : Arrays.asList("costCalculation.costCalculationDetails.report.columnHeader.level",
                 "costCalculation.costCalculationDetails.report.columnHeader.name",
-                "costCalculation.costCalculationDetails.report.columnHeader.level",
                 "costCalculation.costCalculationDetails.report.columnHeader.pieces",
                 "costCalculation.costCalculationDetails.report.columnHeader.piecework",
                 "costCalculation.costCalculationDetails.report.columnHeader.operationCost",
@@ -456,12 +461,10 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         if (calculationOperationComponents.size() != 0) {
             for (Entity calculationOperationComponent : calculationOperationComponents) {
-                operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
-                        "number"), PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(calculationOperationComponent.getField("nodeNumber").toString(), PdfUtil
+                        .getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
                         "name"), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(calculationOperationComponent.getField("level").toString(), PdfUtil
-                        .getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(getDecimalFormat().format(calculationOperationComponent.getField("pieces")),
                         PdfUtil.getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(getDecimalFormat().format(
