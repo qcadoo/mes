@@ -21,16 +21,19 @@ public class ProductionBalanceReportDataService {
         for (Entity product : productsList) {
             if (product.getBelongsToField("product").getStringField("number")
                     .equals(prevProduct.getBelongsToField("product").getStringField("number"))) {
-                if (product.getField("usedQuantity") != null)
-                    if (usedQuantity != null)
+                if (product.getField("usedQuantity") != null) {
+                    if (usedQuantity != null) {
                         usedQuantity = usedQuantity.add((BigDecimal) product.getField("usedQuantity"));
-                    else
+                    } else {
                         usedQuantity = (BigDecimal) product.getField("usedQuantity");
+                    }
+                }
             } else {
                 prevProduct.setField("plannedQuantity", plannedQuantity);
                 prevProduct.setField("usedQuantity", usedQuantity);
-                if (usedQuantity != null)
+                if (usedQuantity != null) {
                     prevProduct.setField("balance", usedQuantity.subtract(plannedQuantity));
+                }
                 groupedProducts.add(prevProduct);
                 prevProduct = product;
                 plannedQuantity = (BigDecimal) product.getField("plannedQuantity");
