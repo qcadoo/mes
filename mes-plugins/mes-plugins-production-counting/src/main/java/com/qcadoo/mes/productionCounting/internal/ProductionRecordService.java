@@ -146,7 +146,7 @@ public class ProductionRecordService {
         if (checkIfOperationListIsEmpty(orderOperations)) {
             return;
         }
-        
+
         DataDefinition recordProductDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, modelName);
         Map<Long, Entity> recordProductsMap = newHashMap();
         String technologyProductFieldName = "operationProductOutComponents";
@@ -189,7 +189,7 @@ public class ProductionRecordService {
     public Boolean checkIfOperationIsSet(final DataDefinition dd, final Entity productionRecord) {
         String recordingMode = productionRecord.getBelongsToField("order").getStringField("typeOfProductionRecording");
         Object orderOperation = productionRecord.getField("orderOperationComponent");
-        
+
         if (PARAM_RECORDING_TYPE_FOREACH.equals(recordingMode) && orderOperation == null) {
             productionRecord.addError(dd.getField("orderOperationComponent"),
                     "productionCounting.record.messages.error.operationIsNotSet");
@@ -217,21 +217,16 @@ public class ProductionRecordService {
         BigDecimal plannedTime = BigDecimal.ZERO;
         BigDecimal plannedMachineTime = BigDecimal.ZERO;
         BigDecimal plannedLaborTime = BigDecimal.ZERO;
-        BigDecimal tpz = BigDecimal.ZERO;
-        BigDecimal tj = BigDecimal.ZERO;
-        BigDecimal productionInOneCycle = BigDecimal.ZERO;
-        BigDecimal machineUtilization = BigDecimal.ZERO;
-        BigDecimal laborUtilization = BigDecimal.ZERO;
 
         for (Entity orderOperationComponent : operationComponents) {
-            tj = getBigDecimal(orderOperationComponent.getField("tj"));
+            BigDecimal tj = getBigDecimal(orderOperationComponent.getField("tj"));
             if (tj == BigDecimal.ZERO) {
                 continue;
             }
-            tpz = getBigDecimal(orderOperationComponent.getField("tpz"));
-            productionInOneCycle = getBigDecimal(orderOperationComponent.getField("productionInOneCycle"));
-            machineUtilization = getBigDecimal(orderOperationComponent.getField("machineUtilization"));
-            laborUtilization = getBigDecimal(orderOperationComponent.getField("laborUtilization"));
+            BigDecimal tpz = getBigDecimal(orderOperationComponent.getField("tpz"));
+            BigDecimal productionInOneCycle = getBigDecimal(orderOperationComponent.getField("productionInOneCycle"));
+            BigDecimal machineUtilization = getBigDecimal(orderOperationComponent.getField("machineUtilization"));
+            BigDecimal laborUtilization = getBigDecimal(orderOperationComponent.getField("laborUtilization"));
             plannedTime = (tj.multiply(productionInOneCycle)).add(tpz);
             plannedMachineTime = plannedTime.multiply(machineUtilization);
             plannedLaborTime = plannedTime.multiply(laborUtilization);
@@ -244,7 +239,7 @@ public class ProductionRecordService {
     private static Boolean checkIfOperationListIsEmpty(final List<Entity> orderOperations) {
         return orderOperations == null || orderOperations.isEmpty() || orderOperations.get(0) == null;
     }
-    
+
     public static BigDecimal getBigDecimal(final Object value) {
         if (value == null) {
             return BigDecimal.ZERO;
