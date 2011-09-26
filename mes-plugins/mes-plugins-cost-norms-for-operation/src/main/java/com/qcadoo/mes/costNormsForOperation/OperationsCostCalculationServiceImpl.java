@@ -257,7 +257,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         for (String fieldName : Arrays.asList("priority", "nodeNumber", "tpz", "tj", "productionInOneCycle", "countMachine",
                 "timeNextOperation", "operationOffSet", "effectiveOperationRealizationTime", "effectiveDateFrom",
                 "effectiveDateTo", "pieceworkCost", "laborHourlyCost", "machineHourlyCost", "numberOfOperations",
-                "totalOperationCost")) {
+                "totalOperationCost", "laborUtilization", "machineUtilization")) {
             calculationOperationComponent.setField(fieldName, operationComponent.getField(fieldName));
         }
 

@@ -102,9 +102,12 @@ public class ProductionBalanceViewService {
     }
 
     private void setGridsContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        setInputProductsGridContent(viewDefinitionState, order);
-        setOutputProductsGridContent(viewDefinitionState, order);
-        setProductionTimeTabContent(viewDefinitionState, order);
+        if ((Boolean) order.getField("registerQuantityInProduct"))
+            setInputProductsGridContent(viewDefinitionState, order);
+        if ((Boolean) order.getField("registerQuantityOutProduct"))
+            setOutputProductsGridContent(viewDefinitionState, order);
+        if ((Boolean) order.getField("registerProductionTime"))
+            setProductionTimeTabContent(viewDefinitionState, order);
     }
 
     private void clearFieldValues(final ViewDefinitionState viewDefinitionState) {

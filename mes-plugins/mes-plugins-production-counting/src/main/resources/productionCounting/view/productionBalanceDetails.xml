@@ -165,8 +165,10 @@
 				</layoutElement>
 			</component>
 			<component type="grid" name="operationsTime" reference="operationsTimeGrid" model="productionRecord" >
-				<option type="column" name="opNumber" fields="orderOperationComponent" expression="#orderOperationComponent['operation']" />
-				<option type="column" name="opName" fields="orderOperationComponent" expression="#orderOperationComponent['operation']" />
+				<option type="column" name="opNumber" fields="orderOperationComponent" 
+						expression="#orderOperationComponent==null ? 'N/A' : #orderOperationComponent['operation']" />
+				<option type="column" name="opName" fields="orderOperationComponent" 
+						expression="#orderOperationComponent==null ? 'N/A' : #orderOperationComponent['operation']" />
 				<option type="column" name="machinePlannedTime" fields="plannedMachineTime" expression="#plannedMachineTime" />
 				<option type="column" name="machineRegisteredTime" fields="machineTime" />
 				<option type="column" name="machineTimeBalance" fields="machineTimeBalance" />
