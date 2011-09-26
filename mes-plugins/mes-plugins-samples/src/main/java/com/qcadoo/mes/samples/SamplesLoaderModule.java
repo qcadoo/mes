@@ -56,6 +56,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityRole;
@@ -120,6 +121,9 @@ public class SamplesLoaderModule extends Module {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TreeNumberingService treeNumberingService;
 
     @Value("${loadTestDataLocale}")
     private String locale;
@@ -697,9 +701,9 @@ public class SamplesLoaderModule extends Module {
                     addTechnologyOperationComponentsForStoolAdvanced(technology);
                 }
             }
-            // else {
-            // addTechnologyOperationComponents(technology, null, 3);
-            // }
+
+            treeNumberingService.generateNumbersAndUpdateTree(
+                    dataDefinitionService.get("technologies", "technologyOperationComponent"), "technology", technology.getId());
         }
     }
 

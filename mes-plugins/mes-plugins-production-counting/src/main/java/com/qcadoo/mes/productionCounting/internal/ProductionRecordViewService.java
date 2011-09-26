@@ -151,8 +151,8 @@ public class ProductionRecordViewService {
 
         String typeOfMaterial = "basic.product.typeOfMaterial.value." + product.getStringField("typeOfMaterial");
         view.getComponentByReference("type").setFieldValue(translationService.translate(typeOfMaterial, view.getLocale()));
-        view.getComponentByReference("usedQuantityUNIT").setFieldValue(currencyService.getCurrencyAlphabeticCode());
-        view.getComponentByReference("plannedQuantityUNIT").setFieldValue(currencyService.getCurrencyAlphabeticCode());
+        view.getComponentByReference("usedQuantityUNIT").setFieldValue(product.getStringField("unit"));
+        view.getComponentByReference("plannedQuantityUNIT").setFieldValue(product.getStringField("unit"));
         for (String reference : Arrays.asList("number", "name", "type", "usedQuantityUNIT", "plannedQuantityUNIT")) {
             ((FieldComponent) view.getComponentByReference(reference)).requestComponentUpdateState();
         }
@@ -224,8 +224,6 @@ public class ProductionRecordViewService {
     }
 
     public void checkFinalProductionCountingForOrder(final ViewDefinitionState view) {
-        Boolean blockClosing = (Boolean) view.getComponentByReference("blockClosing").getFieldValue();
-        FieldComponent orderState = (FieldComponent) view.getComponentByReference("state");
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         if (form.getEntityId() == null) {
             return;
@@ -235,6 +233,9 @@ public class ProductionRecordViewService {
         if (order == null) {
             return;
         }
+        Boolean blockClosing = (Boolean) order.getField("blockClosing");
+        FieldComponent orderState = (FieldComponent) view.getComponentByReference("state");
+
         List<Entity> productionRecordings = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("isFinal", true)).list()
@@ -244,6 +245,8 @@ public class ProductionRecordViewService {
             RibbonActionItem start = window.getRibbon().getGroupByName("status").getItemByName("acceptOrder");
             start.setEnabled(false);
             start.setMessage("productionRecording");
+            start.requestUpdate(true);
+            window.requestRibbonRender();
         }
 
     }

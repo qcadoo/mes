@@ -43,9 +43,9 @@
 		<integer name="plannedLaborTime" default="0" />
 	</fields>
 	<hooks>
-<!-- 		<onSave -->
-<!-- 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" -->
-<!-- 			method="generateData" /> -->
+		<onSave
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+			method="generateData" />
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="copyProductsFromOrderOperation" />

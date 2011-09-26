@@ -49,7 +49,7 @@ public class ProductionRecordService {
         entity.setField("worker", securityService.getCurrentUserName());
     }
 
-    public Boolean checkTypeOfProductionRecording(final DataDefinition dd, final Entity entity) {
+    public boolean checkTypeOfProductionRecording(final DataDefinition dd, final Entity entity) {
         Entity order = entity.getBelongsToField("order");
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
         if (typeOfProductionRecording == null || PARAM_RECORDING_TYPE_NONE.equals(typeOfProductionRecording)) {
@@ -59,7 +59,7 @@ public class ProductionRecordService {
         return true;
     }
 
-    public Boolean checkIfPartialIsAllowed(final DataDefinition dd, final Entity entity) {
+    public boolean checkIfPartialIsAllowed(final DataDefinition dd, final Entity entity) {
         Entity order = entity.getBelongsToField("order");
         Boolean allowedPartial = getBooleanValue(order.getField("allowedPartial"));
         Boolean isFinal = getBooleanValue(entity.getField("isFinal"));
@@ -71,7 +71,7 @@ public class ProductionRecordService {
         return true;
     }
 
-    public Boolean checkIfExistsFinalRecord(final DataDefinition dd, final Entity entity) {
+    public boolean checkIfExistsFinalRecord(final DataDefinition dd, final Entity entity) {
         if (entity.getId() != null) {
             return true;
         }
@@ -96,7 +96,7 @@ public class ProductionRecordService {
         return true;
     }
 
-    public Boolean checkIfOrderIsStarted(final DataDefinition dd, final Entity entity) {
+    public boolean checkIfOrderIsStarted(final DataDefinition dd, final Entity entity) {
         String orderState = entity.getBelongsToField("order").getStringField("state");
         if (orderState == null || "01new".equals(orderState) || "02accepted".equals(orderState)) {
             entity.addError(dd.getField("order"), "productionCounting.record.messages.error.orderIsNotStarted");
@@ -113,7 +113,7 @@ public class ProductionRecordService {
         Boolean registerInput = getBooleanValue(order.getField(PARAM_REGISTER_IN_PRODUCTS));
         Boolean registerOutput = getBooleanValue(order.getField(PARAM_REGISTER_OUT_PRODUCTS));
 
-        BigDecimal orderQuantity = getBigDecimal(order.getField("quantity"));
+        BigDecimal orderQuantity = getBigDecimal(order.getField("plannedQuantity"));
 
         if (!registerInput && !registerOutput) {
             return;
@@ -186,7 +186,7 @@ public class ProductionRecordService {
         productionRecord.setField(recordProductFieldName, newArrayList(recordProductsMap.values()));
     }
 
-    public Boolean checkIfOperationIsSet(final DataDefinition dd, final Entity productionRecord) {
+    public boolean checkIfOperationIsSet(final DataDefinition dd, final Entity productionRecord) {
         String recordingMode = productionRecord.getBelongsToField("order").getStringField("typeOfProductionRecording");
         Object orderOperation = productionRecord.getField("orderOperationComponent");
 
