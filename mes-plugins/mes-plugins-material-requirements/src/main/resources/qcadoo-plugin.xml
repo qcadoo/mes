@@ -65,7 +65,7 @@
 
 		<model:model-field plugin="orders" model="order">
 			<model:hasMany name="materialRequirements" plugin="materialRequirements"
-				model="materialRequirementComponent" joinField="order" cascade="none" />
+				model="materialRequirementComponent" joinField="order" cascade="nullify" />
 		</model:model-field>
 
 		<menu:menu-category name="reports" />

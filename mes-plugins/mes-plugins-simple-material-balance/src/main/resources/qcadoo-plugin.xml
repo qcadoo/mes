@@ -72,11 +72,11 @@
 		
 		<model:model-field plugin="orders" model="order">
 			<model:hasMany name="simpleMaterialBalance" plugin="simpleMaterialBalance"
-				model="simpleMaterialBalanceOrdersComponent" joinField="order" cascade="none" />
+				model="simpleMaterialBalanceOrdersComponent" joinField="order" cascade="nullify" />
 		</model:model-field>
 		<model:model-field plugin="inventory" model="warehouse">
 			<model:hasMany name="simpleMaterialBalance" plugin="simpleMaterialBalance"
-				model="simpleMaterialBalanceWarehousesComponent" joinField="warehouse" cascade="none" />
+				model="simpleMaterialBalanceWarehousesComponent" joinField="warehouse" cascade="nullify" />
 		</model:model-field>
 
 		<menu:menu-category name="reports" />

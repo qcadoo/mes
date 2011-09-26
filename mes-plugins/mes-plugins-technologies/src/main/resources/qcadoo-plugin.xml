@@ -71,13 +71,13 @@
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="operationProductInComponents"
 				plugin="technologies" model="operationProductInComponent" joinField="product"
-				cascade="none" />
+				cascade="nullify" />
 		</model:model-field>
 
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="operationProductOutComponents"
 				plugin="technologies" model="operationProductOutComponent"
-				joinField="product" cascade="none" />
+				joinField="product" cascade="nullify" />
 		</model:model-field>
 
 		<model:model-field plugin="basic" model="product">
