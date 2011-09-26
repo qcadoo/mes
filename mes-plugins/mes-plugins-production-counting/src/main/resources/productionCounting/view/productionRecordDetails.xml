@@ -109,19 +109,15 @@
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="label" name="borderLayoutCumulated"
-							reference="borderLayoutCumulated" >
+							reference="borderLayoutCumulated" defaultVisible="false" >
 							<option type="labelStyle" value="text" />
 						</component>
-					</layoutElement>
-					<layoutElement column="2" row="4">
 						<component type="label" name="borderLayoutForEach"
-							reference="borderLayoutForEach" >
+							reference="borderLayoutForEach" defaultVisible="false" >
 							<option type="labelStyle" value="text" />
 						</component>
-					</layoutElement>
-					<layoutElement column="2" row="5">
 						<component type="label" name="borderLayoutNone"
-							reference="borderLayoutNone">
+							reference="borderLayoutNone"  >
 							<option type="labelStyle" value="text" />
 						</component>
 					</layoutElement>

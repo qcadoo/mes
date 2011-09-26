@@ -75,7 +75,6 @@ public class ProductionRecordService {
         if (entity.getId() != null) {
             return true;
         }
-
         Entity order = entity.getBelongsToField("order");
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
 
@@ -87,12 +86,10 @@ public class ProductionRecordService {
             searchBuilder.add(SearchRestrictions.belongsTo("orderOperationComponent",
                     entity.getBelongsToField("orderOperationComponents")));
         }
-
         if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
             entity.addError(dd.getField("order"), "productionCounting.record.messages.error.finalExists");
             return false;
         }
-
         return true;
     }
 
