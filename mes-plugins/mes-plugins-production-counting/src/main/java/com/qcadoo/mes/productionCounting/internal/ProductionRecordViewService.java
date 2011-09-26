@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -39,9 +38,6 @@ public class ProductionRecordViewService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private CurrencyService currencyService;
-
-    @Autowired
     private TranslationService translationService;
 
     private final static String CLOSED_ORDER = "04done";
@@ -58,13 +54,24 @@ public class ProductionRecordViewService {
 
         view.getComponentByReference("order").setEnabled(false);
         view.getComponentByReference("orderOperationComponent").setEnabled(false);
+
         view.getComponentByReference("shift").setEnabled(false);
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
 
-        view.getComponentByReference("borderLayoutCumulated").setVisible(
-                PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording));
-        view.getComponentByReference("borderLayoutForEach").setVisible(
+        view.getComponentByReference("isFinal").setEnabled(false);
+        view.getComponentByReference("laborTime").setVisible(getBooleanValue(order.getField("registerProductionTime")));
+        view.getComponentByReference("machineTime").setVisible(getBooleanValue(order.getField("registerProductionTime")));
+        view.getComponentByReference("machineTime").setEnabled(getBooleanValue(false));
+        view.getComponentByReference("laborTime").setEnabled(getBooleanValue(false));
+
+        view.getComponentByReference("orderOperationComponent").setVisible(
                 PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording));
+        view.getComponentByReference("borderLayoutCumulated").setVisible(
+                PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)
+                        && getBooleanValue(order.getField("registerProductionTime")));
+        view.getComponentByReference("borderLayoutForEach").setVisible(
+                PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)
+                        && getBooleanValue(order.getField("registerProductionTime")));
         view.getComponentByReference("borderLayoutNone").setVisible(
                 getBooleanValue(!PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)
                         && !PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)));
@@ -135,6 +142,9 @@ public class ProductionRecordViewService {
         if (registerProductionTime) {
             view.getComponentByReference("machineTime").setVisible(true);
             view.getComponentByReference("laborTime").setVisible(true);
+        } else {
+            view.getComponentByReference("machineTime").setVisible(false);
+            view.getComponentByReference("laborTime").setVisible(false);
         }
     }
 

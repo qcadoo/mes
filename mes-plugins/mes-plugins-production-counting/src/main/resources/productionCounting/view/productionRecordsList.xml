@@ -13,7 +13,7 @@
 				width="300" expression="#order != null ? #order['name'] : 'N/A'" />
 			<option type="column" name="orderOperationComponent" fields="orderOperationComponent"
 				link="true" width="300"
-				expression="#orderOperationComponent != null ? #orderOperationComponent['operation'] : 'N/A'" />
+				expression="#orderOperationComponent != null ? #orderOperationComponent['nodeNumber'] : 'N/A'" />
 			<option type="column" name="type" fields="isFinal" link="true"
 				width="300" />
 			<option type="column" name="shift" fields="shift" link="true"
