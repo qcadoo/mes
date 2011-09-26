@@ -321,9 +321,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     .getBelongsToField("operation").getStringField("number"), PdfUtil.getArialRegular9Dark()));
             machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
                     .getBelongsToField("operation").getStringField("name")
-                    + " "
-                    + productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
-                            .getStringField("nodeNumber"), PdfUtil.getArialRegular9Dark()));
+                    + " " + productionRecord.getBelongsToField("orderOperationComponent").getStringField("nodeNumber"), PdfUtil
+                    .getArialRegular9Dark()));
             machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
                     .getField("plannedMachineTime"))), PdfUtil.getArialRegular9Dark()));
             machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
@@ -379,9 +378,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     .getBelongsToField("operation").getStringField("number"), PdfUtil.getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
                     .getBelongsToField("operation").getStringField("name")
-                    + " "
-                    + productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
-                            .getStringField("nodeNumber"), PdfUtil.getArialRegular9Dark()));
+                    + " " + productionRecord.getBelongsToField("orderOperationComponent").getStringField("nodeNumber"), PdfUtil
+                    .getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
                     .getField("plannedLaborTime"))), PdfUtil.getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(

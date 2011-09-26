@@ -101,11 +101,11 @@
 						<component type="grid" name="productionRecords" reference="productionRecords" model="productionRecord" >
 							<option type="column" name="number" fields="number" expression="#number" />
 							<option type="column" name="operation" fields="orderOperationComponent" 
-									expression="#orderOperationComponent['operation']" />
+									expression="#orderOperationComponent==null ? 'N/A' : #orderOperationComponent['operation']" />
 							<option type="column" name="type" fields="isFinal" 
-									expression="#isFinal == 'true'
- 												? '@productionCounting.productionCounting.report.panel.recordType.final'
- 												: '@productionCounting.productionCounting.report.panel.recordType.partial'" />
+									expression="#isFinal
+												? '@productionCounting.productionCounting.report.panel.recordType.final'
+												: '@productionCounting.productionCounting.report.panel.recordType.partial'" />
 							<option type="column" name="shift" fields="shift" expression="#shift['name']" />
 							<option type="column" name="date" fields="creationTime" />
 							<option type="column" name="worker" fields="worker" />
