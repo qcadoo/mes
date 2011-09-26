@@ -41,6 +41,8 @@
 		<priority name="priority" scope="parent" />
 		<integer name="tpz" />
 		<integer name="tj" />
+		<decimal name="machineUtilization" />
+		<decimal name="laborUtilization" />
 		<decimal name="productionInOneCycle" required="true" default="1" />
 		<enum name="countRealized" values="01all,02specified" default="01all"
 			required="true" />

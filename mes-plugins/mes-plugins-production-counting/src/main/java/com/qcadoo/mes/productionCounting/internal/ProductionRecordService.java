@@ -75,7 +75,6 @@ public class ProductionRecordService {
         if (entity.getId() != null) {
             return true;
         }
-
         Entity order = entity.getBelongsToField("order");
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
 
@@ -87,12 +86,10 @@ public class ProductionRecordService {
             searchBuilder.add(SearchRestrictions.belongsTo("orderOperationComponent",
                     entity.getBelongsToField("orderOperationComponents")));
         }
-
         if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
             entity.addError(dd.getField("order"), "productionCounting.record.messages.error.finalExists");
             return false;
         }
-
         return true;
     }
 
@@ -198,19 +195,20 @@ public class ProductionRecordService {
         return true;
     }
 
-    public void countPlannedTime(final DataDefinition dataDefinition, final Entity productionCounting) {
-        Entity order = productionCounting.getBelongsToField("order");
+    public void countPlannedTimeAndBalance(final DataDefinition dataDefinition, final Entity productionRecord) {
+        Entity order = productionRecord.getBelongsToField("order");
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
         List<Entity> operationComponents = null;
         if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
             operationComponents = order.getTreeField("orderOperationComponents");
         } else if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
-            operationComponents = newArrayList(productionCounting.getBelongsToField("orderOperationComponent"));
+            operationComponents = newArrayList(productionRecord.getBelongsToField("orderOperationComponent"));
         }
-        countPlannedTime(productionCounting, operationComponents);
+        countPlannedTime(productionRecord, operationComponents);
+        countTimeBalance(productionRecord);
     }
 
-    private void countPlannedTime(final Entity productionCounting, final List<Entity> operationComponents) {
+    private void countPlannedTime(final Entity productionRecord, final List<Entity> operationComponents) {
         if (checkIfOperationListIsEmpty(operationComponents)) {
             return;
         }
@@ -227,16 +225,26 @@ public class ProductionRecordService {
             BigDecimal productionInOneCycle = getBigDecimal(orderOperationComponent.getField("productionInOneCycle"));
             BigDecimal machineUtilization = getBigDecimal(orderOperationComponent.getField("machineUtilization"));
             BigDecimal laborUtilization = getBigDecimal(orderOperationComponent.getField("laborUtilization"));
-            plannedTime = (tj.multiply(productionInOneCycle)).add(tpz);
-            plannedMachineTime = plannedTime.multiply(machineUtilization);
-            plannedLaborTime = plannedTime.multiply(laborUtilization);
+            plannedTime = plannedTime.add(tj.multiply(productionInOneCycle)).add(tpz);
+            plannedMachineTime = plannedMachineTime.add(plannedTime.multiply(machineUtilization));
+            plannedLaborTime = plannedLaborTime.add(plannedTime.multiply(laborUtilization));
         }
-        productionCounting.setField("plannedTime", plannedTime.setScale(0, ROUND_UP).intValue());
-        productionCounting.setField("plannedMachineTime", plannedMachineTime.setScale(0, ROUND_UP).intValue());
-        productionCounting.setField("plannedLaborTime", plannedLaborTime.setScale(0, ROUND_UP).intValue());
+        productionRecord.setField("plannedTime", plannedTime.setScale(0, ROUND_UP).intValue());
+        productionRecord.setField("plannedMachineTime", plannedMachineTime.setScale(0, ROUND_UP).intValue());
+        productionRecord.setField("plannedLaborTime", plannedLaborTime.setScale(0, ROUND_UP).intValue());
     }
 
-    private static Boolean checkIfOperationListIsEmpty(final List<Entity> orderOperations) {
+    private void countTimeBalance(final Entity productionRecord) {
+        Integer plannedMachineTime = getInteger(productionRecord.getField("plannedMachineTime"));
+        Integer plannedLaborTime = getInteger(productionRecord.getField("plannedLaborTime"));
+        Integer machineTime = getInteger(productionRecord.getField("machineTime"));
+        Integer laborTime = getInteger(productionRecord.getField("laborTime"));
+        
+        productionRecord.setField("machineTimeBalance", machineTime - plannedMachineTime);
+        productionRecord.setField("laborTimeBalance", laborTime - plannedLaborTime);
+    }
+    
+    private static boolean checkIfOperationListIsEmpty(final List<Entity> orderOperations) {
         return orderOperations == null || orderOperations.isEmpty() || orderOperations.get(0) == null;
     }
 
@@ -248,6 +256,16 @@ public class ProductionRecordService {
             return (BigDecimal) value;
         }
         return BigDecimal.valueOf(Double.valueOf(value.toString()));
+    }
+    
+    public static Integer getInteger(final Object value) {
+        if (value == null) {
+            return 0;
+        }
+        if (value instanceof Integer) {
+            return (Integer) value;
+        }
+        return Integer.valueOf(value.toString());
     }
 
     public static Boolean getBooleanValue(Object fieldValue) {
