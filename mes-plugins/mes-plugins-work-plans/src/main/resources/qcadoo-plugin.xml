@@ -63,7 +63,7 @@
 
 		<model:model-field plugin="orders" model="order">
 			<model:hasMany name="workPlans" plugin="workPlans"
-				model="workPlanComponent" joinField="order" cascade="none" />
+				model="workPlanComponent" joinField="order" cascade="nullify" />
 		</model:model-field>
 
 		<menu:menu-category name="reports" />

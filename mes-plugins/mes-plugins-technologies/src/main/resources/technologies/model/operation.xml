@@ -41,7 +41,7 @@
 		<belongsTo name="machine" plugin="basic" model="machine"
 			lazy="false" />
 		<hasMany name="operationComponents" model="technologyOperationComponent"
-			joinField="operation" cascade="none" />
+			joinField="operation" cascade="nullify" />
 		<file name="attachment" />
 	</fields>
 	<hooks />
