@@ -61,8 +61,8 @@ public class ProductionRecordViewService {
         view.getComponentByReference("shift").setEnabled(false);
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
 
-        // view.getComponentByReference("borderLayoutCumulated").setVisible(
-        // PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording));
+        view.getComponentByReference("borderLayoutCumulated").setVisible(
+                PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording));
         view.getComponentByReference("borderLayoutForEach").setVisible(
                 PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording));
         view.getComponentByReference("borderLayoutNone").setVisible(
