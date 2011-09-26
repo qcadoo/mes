@@ -12,7 +12,7 @@
 	<packaging>qcadoo-plugin</packaging>
 	
 	
-	<name>Qcadoo MES :: Plugins :: Cost norms</name>
+	<name>Qcadoo MES :: Plugins :: Cost norms for operation</name>
 
 	<dependencies>
 		<dependency>
