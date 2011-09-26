@@ -108,18 +108,30 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">
-						<component type="label" name="borderLayoutConsumed"
-							reference="borderLayoutConsumed">
+						<component type="label" name="borderLayoutCumulated"
+							reference="borderLayoutCumulated" >
+							<option type="labelStyle" value="text" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="4">
+						<component type="label" name="borderLayoutForEach"
+							reference="borderLayoutForEach" >
+							<option type="labelStyle" value="text" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="5">
+						<component type="label" name="borderLayoutNone"
+							reference="borderLayoutNone">
 							<option type="labelStyle" value="text" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
 						<component type="time" name="laborTime" reference="laborTime"
-							field="laborTime" />
+							field="laborTime" defaultVisible="false" />
 					</layoutElement>
 					<layoutElement column="2" row="3">
 						<component type="time" name="machineTime" reference="machineTime"
-							field="machineTime" />
+							field="machineTime" defaultVisible="false" />
 					</layoutElement>
 					<layoutElement column="2" row="8">
 						<component type="separatorLine" name="line2" />
@@ -168,8 +180,6 @@
 		</windowTab>
 	</component>
 	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-			method="initializeRecordDetailsView" />
+		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="initializeRecordDetailsView" />
 	</hooks>
 </view>

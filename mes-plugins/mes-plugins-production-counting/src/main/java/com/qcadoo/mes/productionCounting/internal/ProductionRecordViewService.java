@@ -59,9 +59,15 @@ public class ProductionRecordViewService {
         view.getComponentByReference("order").setEnabled(false);
         view.getComponentByReference("orderOperationComponent").setEnabled(false);
         view.getComponentByReference("shift").setEnabled(false);
+        String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
 
-        view.getComponentByReference("borderLayoutConsumed")
-                .setVisible(getBooleanValue(order.getField("registerProductionTime")));
+        view.getComponentByReference("borderLayoutCumulated").setVisible(
+                PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording));
+        view.getComponentByReference("borderLayoutForEach").setVisible(
+                PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording));
+        view.getComponentByReference("borderLayoutNone").setVisible(
+                getBooleanValue(!PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)
+                        && !PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)));
         view.getComponentByReference("recordOperationProductOutComponent").setVisible(
                 getBooleanValue(order.getField("registerQuantityOutProduct")));
         view.getComponentByReference("recordOperationProductInComponent").setVisible(
@@ -100,18 +106,22 @@ public class ProductionRecordViewService {
         view.getComponentByReference("machineTime").setVisible(true);
         view.getComponentByReference("laborTime").setVisible(true);
 
-        if (PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)) {
-            view.getComponentByReference("borderLayoutConsumed").setEnabled(true);
-            view.getComponentByReference("borderLayoutConsumed").setFieldValue(
-                    translationService.translate("consumedTimeForEach", view.getLocale()));
+        if (PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType)) {
+            view.getComponentByReference("borderLayoutCumulated").setVisible(true);
+            view.getComponentByReference("borderLayoutForEach").setVisible(false);
+            view.getComponentByReference("borderLayoutNone").setVisible(false);
         }
         if (PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)) {
-            view.getComponentByReference("borderLayoutConsumed").setFieldValue(
-                    translationService.translate("consumedTimeCumulated", view.getLocale()));
+            view.getComponentByReference("borderLayoutCumulated").setVisible(false);
+            view.getComponentByReference("borderLayoutForEach").setVisible(true);
+            view.getComponentByReference("borderLayoutNone").setVisible(false);
         }
         if (!PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType) && !PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)) {
-            view.getComponentByReference("borderLayoutConsumed").setFieldValue(
-                    translationService.translate("operationNoneLabel", view.getLocale()));
+            view.getComponentByReference("borderLayoutCumulated").setVisible(false);
+            view.getComponentByReference("borderLayoutForEach").setVisible(false);
+            view.getComponentByReference("machineTime").setVisible(false);
+            view.getComponentByReference("laborTime").setVisible(false);
+            view.getComponentByReference("borderLayoutNone").setVisible(true);
         }
 
     }

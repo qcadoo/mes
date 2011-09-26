@@ -38,9 +38,9 @@
 		<integer name="machineTimeBalance" />
 		<integer name="laborTime" />
 		<integer name="laborTimeBalance" />
-		<integer name="plannedTime" default="0" />
-		<integer name="plannedMachineTime" default="0" />
-		<integer name="plannedLaborTime" default="0" />
+		<integer name="plannedTime"  />
+		<integer name="plannedMachineTime"  />
+		<integer name="plannedLaborTime"  />
 	</fields>
 	<hooks>
 		<onSave
