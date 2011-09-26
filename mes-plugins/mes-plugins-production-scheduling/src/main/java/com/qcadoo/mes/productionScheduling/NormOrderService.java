@@ -111,6 +111,8 @@ public class NormOrderService {
         orderOperationComponent.setField("countMachine", operationComponent.getField("countMachine"));
         orderOperationComponent.setField("timeNextOperation", operationComponent.getField("timeNextOperation"));
         orderOperationComponent.setField("nodeNumber", operationComponent.getField("nodeNumber"));
+        orderOperationComponent.setField("machineUtilization", operationComponent.getField("machineUtilization"));
+        orderOperationComponent.setField("laborUtilization", operationComponent.getField("laborUtilization"));
         
         List<Entity> newOrderOperationComponents = new ArrayList<Entity>();
 
