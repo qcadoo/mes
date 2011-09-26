@@ -103,7 +103,7 @@
 							<option type="column" name="operation" fields="orderOperationComponent" 
 									expression="#orderOperationComponent==null ? 'N/A' : #orderOperationComponent['operation']" />
 							<option type="column" name="type" fields="isFinal" 
-									expression="#isFinal
+									expression="#isFinal == '@qcadooView.true'
 												? '@productionCounting.productionCounting.report.panel.recordType.final'
 												: '@productionCounting.productionCounting.report.panel.recordType.partial'" />
 							<option type="column" name="shift" fields="shift" expression="#shift['name']" />
