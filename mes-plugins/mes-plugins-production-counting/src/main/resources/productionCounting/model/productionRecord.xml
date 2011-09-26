@@ -15,9 +15,7 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="number" unique="true">
-<!-- 			<validatesLength max="40" /> -->
-		</string>
+		<string name="number" unique="true" />
 		<belongsTo name="order" model="order" plugin="orders"
 			required="true" />
 		<belongsTo name="orderOperationComponent" model="orderOperationComponent"
@@ -50,7 +48,7 @@
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="copyProductsFromOrderOperation" />
 		<onSave class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
-			method="countPlannedTime" />
+			method="countPlannedTimeAndBalance" />
 		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="checkTypeOfProductionRecording" />
 		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="checkIfPartialIsAllowed"/>
