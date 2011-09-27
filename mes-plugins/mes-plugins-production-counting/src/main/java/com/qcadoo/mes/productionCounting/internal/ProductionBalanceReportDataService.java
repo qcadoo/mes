@@ -16,11 +16,21 @@ public class ProductionBalanceReportDataService {
 
         Entity prevProduct = productsList.get(0);
         BigDecimal plannedQuantity = (BigDecimal) productsList.get(0).getField("plannedQuantity");
-        BigDecimal usedQuantity = (BigDecimal) productsList.get(0).getField("usedQuantity");
+        BigDecimal usedQuantity = null;
 
         for (Entity product : productsList) {
             if (product.getBelongsToField("product").getStringField("number")
                     .equals(prevProduct.getBelongsToField("product").getStringField("number"))) {
+                if (product.getBelongsToField("productionRecord").getBelongsToField("orderOperationComponent") != null
+                        && !product
+                                .getBelongsToField("productionRecord")
+                                .getBelongsToField("orderOperationComponent")
+                                .getId()
+                                .toString()
+                                .equals(prevProduct.getBelongsToField("productionRecord")
+                                        .getBelongsToField("orderOperationComponent").getId().toString())) {
+                    plannedQuantity = plannedQuantity.add((BigDecimal) product.getField("plannedQuantity"));
+                }
                 if (product.getField("usedQuantity") != null) {
                     if (usedQuantity != null) {
                         usedQuantity = usedQuantity.add((BigDecimal) product.getField("usedQuantity"));
@@ -31,9 +41,10 @@ public class ProductionBalanceReportDataService {
             } else {
                 prevProduct.setField("plannedQuantity", plannedQuantity);
                 prevProduct.setField("usedQuantity", usedQuantity);
-                if (usedQuantity != null) {
+                if (usedQuantity != null)
                     prevProduct.setField("balance", usedQuantity.subtract(plannedQuantity));
-                }
+                else
+                    prevProduct.setField("balance", null);
                 groupedProducts.add(prevProduct);
                 prevProduct = product;
                 plannedQuantity = (BigDecimal) product.getField("plannedQuantity");
@@ -66,7 +77,9 @@ public class ProductionBalanceReportDataService {
                     .getBelongsToField("operation")
                     .getStringField("number")
                     .equals(prevRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
-                            .getStringField("number"))) {
+                            .getStringField("number"))
+                    && record.getBelongsToField("orderOperationComponent").getStringField("nodeNumber")
+                            .equals(prevRecord.getBelongsToField("orderOperationComponent").getStringField("nodeNumber"))) {
                 registeredMachineTime += (Integer) record.getField("machineTime");
                 registeredLaborTime += (Integer) record.getField("laborTime");
             } else {

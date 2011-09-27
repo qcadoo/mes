@@ -195,32 +195,33 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 getTranslationService().translate("productionCounting.productionCounting.report.panel.dateAndTime", locale),
                 (new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format((Date) productionRecord.getField("creationTime")))
                         .toString(), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        if (productionRecord.getField("machineTime") != null)
+        if ((Boolean) productionRecord.getBelongsToField("order").getField("registerProductionTime")) {
             addTableCellAsTable(
                     panelTable,
                     getTranslationService().translate("productionCounting.productionCounting.report.panel.machineOperationTime",
                             locale), convertTimeToString(new BigDecimal((Integer) productionRecord.getField("machineTime"))),
                     null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        else
+        } else {
             addTableCellAsTable(
                     panelTable,
                     getTranslationService().translate("productionCounting.productionCounting.report.panel.machineOperationTime",
                             locale), "N/A", null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+        }
         addTableCellAsTable(panelTable,
                 getTranslationService().translate("productionCounting.productionCounting.report.panel.worker", locale),
                 productionRecord.getStringField("worker"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        if (productionRecord.getField("laborTime") != null)
+        if ((Boolean) productionRecord.getBelongsToField("order").getField("registerProductionTime")) {
             addTableCellAsTable(
                     panelTable,
                     getTranslationService().translate("productionCounting.productionCounting.report.panel.laborOperationTime",
                             locale), convertTimeToString(new BigDecimal((Integer) productionRecord.getField("laborTime"))), null,
                     PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        else
+        } else {
             addTableCellAsTable(
                     panelTable,
                     getTranslationService().translate("productionCounting.productionCounting.report.panel.laborOperationTime",
                             locale), "N/A", null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-
+        }
         panelTable.setSpacingBefore(10);
         document.add(panelTable);
 
