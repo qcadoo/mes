@@ -14,8 +14,8 @@
 			<option type="column" name="orderOperationComponent" fields="orderOperationComponent"
 				link="true" width="300"
 				expression="#orderOperationComponent != null ? #orderOperationComponent['nodeNumber'] : 'N/A'" />
-			<option type="column" name="type" fields="isFinal" link="true"
-				width="300" expression="#isFinal" />
+			<option type="column" name="isFinal" fields="isFinal" 
+					expression="#isFinal" />
 			<option type="column" name="shift" fields="shift" link="true"
 				width="300" expression="#shift!=null ? #shift['name'] : 'N/A'" />
 			<option type="column" name="creationTime" fields="creationTime"
