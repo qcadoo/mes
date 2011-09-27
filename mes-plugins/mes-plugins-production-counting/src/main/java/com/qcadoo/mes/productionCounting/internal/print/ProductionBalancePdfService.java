@@ -219,8 +219,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
             if (inputProduct.getField("usedQuantity") != null) {
                 inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("usedQuantity")), PdfUtil
                         .getArialRegular9Dark()));
-                inputProductsTable.addCell(new Phrase(getDecimalFormat().format(
-                        inputProduct.getField("balance") != null ? inputProduct.getField("balance") : 0), PdfUtil
+                inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("balance")), PdfUtil
                         .getArialRegular9Dark()));
             } else {
                 inputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
@@ -276,8 +275,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
             if (outputProduct.getField("usedQuantity") != null) {
                 outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("usedQuantity")), PdfUtil
                         .getArialRegular9Dark()));
-                outputProductsTable.addCell(new Phrase(getDecimalFormat().format(
-                        outputProduct.getField("balance") != null ? outputProduct.getField("balance") : 0), PdfUtil
+                outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("balance")), PdfUtil
                         .getArialRegular9Dark()));
             } else {
                 outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
