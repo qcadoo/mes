@@ -40,7 +40,7 @@
 						<![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if (window.confirm("#{translate(qualityControl.qualityControl.window.ribbon.status.closeControl.confirm)}")) {
+									if (window.confirm("#{translate(qualityControls.qualityControl.window.ribbon.status.closeControl.confirm)}")) {
 										#{form}.performEvent('closeQualityControl', []);
 									};
 								}
