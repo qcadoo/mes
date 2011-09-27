@@ -77,12 +77,9 @@ public class ProductionBalanceReportDataService {
                     .getBelongsToField("operation")
                     .getStringField("number")
                     .equals(prevRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
-                            .getStringField("number"))) {
-                if (!record.getBelongsToField("orderOperationComponent").getStringField("nodeNumber")
-                        .equals(prevRecord.getBelongsToField("orderOperationComponent").getStringField("nodeNumber"))) {
-                    plannedMachineTime += (Integer) record.getField("plannedMachineTime");
-                    plannedLaborTime += (Integer) record.getField("plannedLaborTime");
-                }
+                            .getStringField("number"))
+                    && record.getBelongsToField("orderOperationComponent").getStringField("nodeNumber")
+                            .equals(prevRecord.getBelongsToField("orderOperationComponent").getStringField("nodeNumber"))) {
                 registeredMachineTime += (Integer) record.getField("machineTime");
                 registeredLaborTime += (Integer) record.getField("laborTime");
             } else {
