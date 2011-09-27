@@ -5,7 +5,7 @@
 	<parent>
     	<groupId>com.qcadoo.mes</groupId>
     	<artifactId>mes-plugins</artifactId>
-    	<version>0.4.8</version>
+    	<version>0.4.8-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mes-plugins-production-counting</artifactId>
@@ -16,12 +16,12 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-production-scheduling</artifactId>
-			<version>0.4.8</version>
+			<version>0.4.8-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-material-requirements</artifactId>
-			<version>0.4.8</version>
+			<version>0.4.8-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
