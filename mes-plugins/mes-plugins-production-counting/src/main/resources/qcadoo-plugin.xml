@@ -44,7 +44,7 @@
 		<model:model model="recordOperationProductOutComponent" resource="model/recordOperationProductOutComponent.xml" />
 		
 		<menu:menu-item name="productionCounting" category="orders" view="productionRecordsList" />
-		<menu:menu-item name="productionBalance" category="reports" view="productionBalancesList" />
+		<menu:menu-item name="productionBalance" category="orders" view="productionBalancesList" />
 		<menu:menu-item name="productionCountingsList" category="reports" view="productionCountingsList" />
 
 		<view:view resource="view/productionRecordsList.xml" />
@@ -117,6 +117,8 @@
 		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="setOrderDefaultValue" />
 		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="checkOrderState" />
 		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="checkFinalProductionCountingForOrder" />
+		<view:view-hook plugin="orders" view="ordersList" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="checkFinalProductionCountingForOrderOnGrid" />
+		
 	</modules>
 
 </plugin>
