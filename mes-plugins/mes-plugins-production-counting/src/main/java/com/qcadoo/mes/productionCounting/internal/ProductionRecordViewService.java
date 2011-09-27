@@ -28,6 +28,7 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
@@ -268,7 +269,35 @@ public class ProductionRecordViewService {
             start.requestUpdate(true);
             window.requestRibbonRender();
         }
-
     }
 
+    public void checkFinalProductionCountingForOrderOnGrid(final ViewDefinitionState view) {
+        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+
+        if (grid.getSelectedEntitiesIds().size() != 1 || grid.getSelectedEntitiesIds() == null) {
+            return;
+        }
+        for (Long entityId : grid.getSelectedEntitiesIds()) {
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                    .get(entityId);
+
+            if (order == null) {
+                return;
+            }
+            Boolean blockClosing = (Boolean) order.getField("blockClosing");
+            String orderState = order.getStringField("state");
+            List<Entity> productionRecordings = dataDefinitionService
+                    .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
+                    .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("isFinal", true)).list()
+                    .getEntities();
+            if (blockClosing && productionRecordings.size() == 0 && "03inProgress".equals(orderState)) {
+                WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+                RibbonActionItem start = window.getRibbon().getGroupByName("status").getItemByName("acceptOrder");
+                start.setEnabled(false);
+                start.setMessage("productionRecording");
+                start.requestUpdate(true);
+                window.requestRibbonRender();
+            }
+        }
+    }
 }
