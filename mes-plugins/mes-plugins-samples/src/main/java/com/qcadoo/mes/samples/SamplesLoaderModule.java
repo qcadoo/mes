@@ -191,18 +191,22 @@ public class SamplesLoaderModule extends Module {
         return pluginAccessor.getPlugin(pluginIdentifier) != null;
     }
 
-    private InputStream getXmlFile(final String type) throws IOException {
-        if (locale == null) {
+    private void checkLocale() {
+        if ((locale == null) || ("".equals(locale))) {
             locale = Locale.getDefault().toString().substring(0, 2);
 
             if (!"pl".equals(locale) && !"en".equals(locale)) {
                 locale = Locale.ENGLISH.toString().substring(0, 2);
             }
         }
+    }
+
+    private InputStream getXmlFile(final String type) throws IOException {
         return SamplesLoaderModule.class.getResourceAsStream("/com/qcadoo/mes/samples/" + type + "_" + locale + ".xml");
     }
 
     private void readDataFromXML(final String type, final String[] attributes) {
+        checkLocale();
         LOG.info("Loading test data from " + type + "_" + locale + ".xml ...");
 
         try {
