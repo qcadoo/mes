@@ -295,7 +295,8 @@ public class ProductionRecordViewService {
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("isFinal", true)).list()
                 .getEntities();
-        if (blockClosing && productionRecordings.size() == 0 && "03inProgress".equals(orderState.getFieldValue())) {
+        if (blockClosing != null && blockClosing && productionRecordings.size() == 0 && orderState.getFieldValue() != null
+                && "03inProgress".equals(orderState.getFieldValue())) {
             WindowComponent window = (WindowComponent) view.getComponentByReference("window");
             RibbonActionItem start = window.getRibbon().getGroupByName("status").getItemByName("acceptOrder");
             start.setEnabled(false);
@@ -324,7 +325,7 @@ public class ProductionRecordViewService {
                     .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
                     .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("isFinal", true)).list()
                     .getEntities();
-            if (blockClosing && productionRecordings.size() == 0 && "03inProgress".equals(orderState)) {
+            if (blockClosing != null && blockClosing && productionRecordings.size() == 0 && "03inProgress".equals(orderState)) {
                 WindowComponent window = (WindowComponent) view.getComponentByReference("window");
                 RibbonActionItem start = window.getRibbon().getGroupByName("status").getItemByName("acceptOrder");
                 start.setEnabled(false);
