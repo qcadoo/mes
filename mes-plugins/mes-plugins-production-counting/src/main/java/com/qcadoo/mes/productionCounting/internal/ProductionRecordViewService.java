@@ -128,26 +128,32 @@ public class ProductionRecordViewService {
             }
             return;
         }
+
         setComponentVisible((String) order.getField("typeOfProductionRecording"), view);
     }
 
     private void setComponentVisible(final String recordingType, final ViewDefinitionState view) {
         view.getComponentByReference("orderOperationComponent").setVisible(PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
         ((FieldComponent) view.getComponentByReference("orderOperationComponent")).requestComponentUpdateState();
-        view.getComponentByReference("machineTime").setVisible(true);
-        view.getComponentByReference("laborTime").setVisible(true);
 
         if (PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType)) {
             view.getComponentByReference("borderLayoutCumulated").setVisible(true);
             view.getComponentByReference("borderLayoutForEach").setVisible(false);
             view.getComponentByReference("borderLayoutNone").setVisible(false);
+            view.getComponentByReference("machineTime").setVisible(true);
+            view.getComponentByReference("laborTime").setVisible(true);
         }
         if (PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)) {
             view.getComponentByReference("borderLayoutCumulated").setVisible(false);
             view.getComponentByReference("borderLayoutForEach").setVisible(true);
             view.getComponentByReference("borderLayoutNone").setVisible(false);
+            view.getComponentByReference("machineTime").setVisible(true);
+            view.getComponentByReference("laborTime").setVisible(true);
         }
         if (!PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType) && !PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)) {
+            ((FieldComponent) view.getComponentByReference("order")).addMessage(
+                    translationService.translate("productionRecord.productionRecord.report.error.orderWithoutRecordingType",
+                            view.getLocale()), ComponentState.MessageType.FAILURE);
             view.getComponentByReference("borderLayoutCumulated").setVisible(false);
             view.getComponentByReference("borderLayoutForEach").setVisible(false);
             view.getComponentByReference("machineTime").setVisible(false);
@@ -163,12 +169,17 @@ public class ProductionRecordViewService {
             return;
         }
         Boolean registerProductionTime = getBooleanValue(order.getField("registerProductionTime"));
-        if (registerProductionTime) {
+        if (registerProductionTime && order.getStringField("typeOfProductionRecording") != null
+                && !("01none".equals(order.getStringField("typeOfProductionRecording")))) {
             view.getComponentByReference("machineTime").setVisible(true);
             view.getComponentByReference("laborTime").setVisible(true);
+
         } else {
             view.getComponentByReference("machineTime").setVisible(false);
             view.getComponentByReference("laborTime").setVisible(false);
+            view.getComponentByReference("borderLayoutCumulated").setVisible(false);
+            view.getComponentByReference("borderLayoutForEach").setVisible(false);
+            view.getComponentByReference("borderLayoutNone").setVisible(false);
         }
     }
 
@@ -176,8 +187,8 @@ public class ProductionRecordViewService {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity order = getOrderFromLookup(view);
         Boolean autoCloseOrder = getBooleanValue(order.getField("autoCloseOrder"));
-
-        if (autoCloseOrder && view.getComponentByReference("isFinal").getFieldValue() == "1") {
+        String orderState = order.getStringField("state");
+        if (autoCloseOrder && view.getComponentByReference("isFinal").getFieldValue() == "1" && "03inProgress".equals(orderState)) {
             order.setField("state", CLOSED_ORDER);
             dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(order);
             form.addMessage(translationService.translate("productionCounting.order.orderClosed", view.getLocale()),

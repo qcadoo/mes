@@ -262,11 +262,11 @@ public class ProductionRecordService {
         Integer plannedLaborTime = getInteger(productionRecord.getField("plannedLaborTime"));
         Integer machineTime = getInteger(productionRecord.getField("machineTime"));
         Integer laborTime = getInteger(productionRecord.getField("laborTime"));
-        
+
         productionRecord.setField("machineTimeBalance", machineTime - plannedMachineTime);
         productionRecord.setField("laborTimeBalance", laborTime - plannedLaborTime);
     }
-    
+
     private static boolean checkIfOperationListIsEmpty(final List<Entity> orderOperations) {
         return orderOperations == null || orderOperations.isEmpty() || orderOperations.get(0) == null;
     }
@@ -280,7 +280,7 @@ public class ProductionRecordService {
         }
         return BigDecimal.valueOf(Double.valueOf(value.toString()));
     }
-    
+
     public static Integer getInteger(final Object value) {
         if (value == null) {
             return 0;

@@ -149,5 +149,6 @@
 			method="setGenerateButtonState" />
 		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionCountingViewService"
 			method="fillProductionRecordsGrid" />
+		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionCountingViewService" method="disableFieldsWhenGenerated" />
 	</hooks>
 </view>

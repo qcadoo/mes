@@ -25,6 +25,7 @@ package com.qcadoo.mes.productionCounting.internal;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -46,6 +47,7 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
@@ -136,7 +138,9 @@ public class ProductionBalanceService {
             ComponentState generated = viewDefinitionState.getComponentByReference("generated");
             ComponentState date = viewDefinitionState.getComponentByReference("date");
             ComponentState worker = viewDefinitionState.getComponentByReference("worker");
-
+            FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference("name");
+            FieldComponent description = (FieldComponent) viewDefinitionState.getComponentByReference("description");
+            FieldComponent order = (FieldComponent) viewDefinitionState.getComponentByReference("order");
             Entity productionBalance = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                     ProductionCountingConstants.MODEL_PRODUCTION_BALANCE).get((Long) state.getFieldValue());
 
@@ -154,7 +158,11 @@ public class ProductionBalanceService {
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
+                name.setEnabled(false);
+                order.setEnabled(false);
+                description.setEnabled(false);
                 date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
+                requestComponentUpdateState(viewDefinitionState);
             }
 
             state.performEvent(viewDefinitionState, "save", new String[0]);
@@ -177,6 +185,13 @@ public class ProductionBalanceService {
             } catch (DocumentException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
+        }
+    }
+
+    private void requestComponentUpdateState(final ViewDefinitionState view) {
+        for (String reference : Arrays.asList("name", "description", "order")) {
+            FieldComponent component = (FieldComponent) view.getComponentByReference(reference);
+            component.requestComponentUpdateState();
         }
     }
 

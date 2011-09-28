@@ -25,6 +25,7 @@ package com.qcadoo.mes.productionCounting.internal;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -249,6 +250,17 @@ public class ProductionBalanceViewService {
             productionsTime.setEntities(productionBalanceReportDataService
                     .groupProductionRecordsByOperation(productionRecordsList));
             productionsTime.setVisible(true);
+        }
+    }
+
+    public void disableFieldsWhenGenerated(final ViewDefinitionState view) {
+        ComponentState generated = (ComponentState) view.getComponentByReference("generated");
+        if (generated == null || "0".equals(generated.getFieldValue()) || generated.getFieldValue() == null) {
+            return;
+        }
+        for (String reference : Arrays.asList("order", "name", "description")) {
+            FieldComponent component = (FieldComponent) view.getComponentByReference(reference);
+            component.setEnabled(false);
         }
     }
 

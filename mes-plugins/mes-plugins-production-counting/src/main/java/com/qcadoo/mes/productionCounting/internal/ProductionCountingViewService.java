@@ -24,6 +24,7 @@
 package com.qcadoo.mes.productionCounting.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -115,4 +116,14 @@ public class ProductionCountingViewService {
         productionRecords.setVisible(true);
     }
 
+    public void disableFieldsWhenGenerated(final ViewDefinitionState view) {
+        ComponentState generated = (ComponentState) view.getComponentByReference("generated");
+        if (generated == null || "0".equals(generated.getFieldValue()) || generated.getFieldValue() == null) {
+            return;
+        }
+        for (String reference : Arrays.asList("order", "name", "description")) {
+            FieldComponent component = (FieldComponent) view.getComponentByReference(reference);
+            component.setEnabled(false);
+        }
+    }
 }
