@@ -31,7 +31,8 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchQueryBuilder;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 
 @Service
@@ -44,12 +45,15 @@ public class QualityControlForNumberService {
 
         String qualityControlType = entity.getStringField("qualityControlType");
         String number = entity.getStringField("number");
+        Long id = entity.getId();
 
-        SearchQueryBuilder searchQueryBuilder = dataDefinition.find("where number = '" + number + "' and qualityControlType = '"
-                + qualityControlType + "'");
+        SearchCriteriaBuilder searchCriteriaBuilder = dataDefinition.find().add(SearchRestrictions.eq("number", number))
+                .add(SearchRestrictions.eq("qualityControlType", qualityControlType));
+        if (id != null)
+            searchCriteriaBuilder = searchCriteriaBuilder.add(SearchRestrictions.idNe(id));
 
-        if (searchQueryBuilder != null) {
-            SearchResult searchResult = searchQueryBuilder.list();
+        if (searchCriteriaBuilder != null) {
+            SearchResult searchResult = searchCriteriaBuilder.list();
             if (searchResult != null && searchResult.getTotalNumberOfEntities() > 0) {
                 entity.addError(dataDefinition.getField("number"), "qualityControls.quality.control.validate.global.error.number");
             }
