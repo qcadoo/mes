@@ -220,6 +220,9 @@ public class ProductionRecordService {
 
     public void countPlannedTimeAndBalance(final DataDefinition dataDefinition, final Entity productionRecord) {
         Entity order = productionRecord.getBelongsToField("order");
+        if (!getBooleanValue(order.getField("registerProductionTime"))) {
+            return;
+        }
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
         List<Entity> operationComponents = null;
         if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
