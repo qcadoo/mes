@@ -85,7 +85,7 @@ public class QualityControlForOperationXlsView extends ReportXlsView {
             Collections.sort(orders, new EntityNumberComparator());
             for (Entity order : orders) {
                 HSSFRow row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(entry.getKey() == null ? "" : entry.getKey().getField("number").toString());
+                row.createCell(0).setCellValue(entry.getKey() == null ? "" : entry.getKey().getField("nodeNumber").toString());
                 row.createCell(1).setCellValue(order.getField("number").toString());
                 String result = "";
                 if ("01correct".equals(order.getField("controlResult"))) {

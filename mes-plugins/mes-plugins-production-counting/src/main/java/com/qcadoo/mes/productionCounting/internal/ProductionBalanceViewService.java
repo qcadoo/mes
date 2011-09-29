@@ -222,24 +222,30 @@ public class ProductionBalanceViewService {
         FieldComponent machinePlannedTimeField = (FieldComponent) viewDefinitionState
                 .getComponentByReference("machinePlannedTime");
         machinePlannedTimeField.setFieldValue(productionBalancePdfService.convertTimeToString(machinePlannedTime));
+        machinePlannedTimeField.requestComponentUpdateState();
 
         FieldComponent machineRegisteredTimeField = (FieldComponent) viewDefinitionState
                 .getComponentByReference("machineRegisteredTime");
         machineRegisteredTimeField.setFieldValue(productionBalancePdfService.convertTimeToString(machineRegisteredTime));
+        machineRegisteredTimeField.requestComponentUpdateState();
 
         FieldComponent machineTimeBalanceField = (FieldComponent) viewDefinitionState
                 .getComponentByReference("machineTimeBalance");
         machineTimeBalanceField.setFieldValue(productionBalancePdfService.convertTimeToString(machineTimeBalance));
+        machineTimeBalanceField.requestComponentUpdateState();
 
         FieldComponent laborPlannedTimeField = (FieldComponent) viewDefinitionState.getComponentByReference("laborPlannedTime");
         laborPlannedTimeField.setFieldValue(productionBalancePdfService.convertTimeToString(laborPlannedTime));
+        laborPlannedTimeField.requestComponentUpdateState();
 
         FieldComponent laborRegisteredTimeField = (FieldComponent) viewDefinitionState
                 .getComponentByReference("laborRegisteredTime");
         laborRegisteredTimeField.setFieldValue(productionBalancePdfService.convertTimeToString(laborRegisteredTime));
+        laborRegisteredTimeField.requestComponentUpdateState();
 
         FieldComponent laborTimeBalanceField = (FieldComponent) viewDefinitionState.getComponentByReference("laborTimeBalance");
         laborTimeBalanceField.setFieldValue(productionBalancePdfService.convertTimeToString(laborTimeBalance));
+        laborTimeBalanceField.requestComponentUpdateState();
     }
 
     private void setProductionTimeGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
@@ -254,13 +260,14 @@ public class ProductionBalanceViewService {
     }
 
     public void disableFieldsWhenGenerated(final ViewDefinitionState view) {
+        Boolean enabled = false;
         ComponentState generated = (ComponentState) view.getComponentByReference("generated");
         if (generated == null || "0".equals(generated.getFieldValue()) || generated.getFieldValue() == null) {
-            return;
+            enabled = true;
         }
         for (String reference : Arrays.asList("order", "name", "description")) {
             FieldComponent component = (FieldComponent) view.getComponentByReference(reference);
-            component.setEnabled(false);
+            component.setEnabled(enabled);
         }
     }
 

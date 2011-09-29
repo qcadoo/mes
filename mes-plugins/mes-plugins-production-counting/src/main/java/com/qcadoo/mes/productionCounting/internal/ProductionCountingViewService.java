@@ -117,13 +117,14 @@ public class ProductionCountingViewService {
     }
 
     public void disableFieldsWhenGenerated(final ViewDefinitionState view) {
+        Boolean enabled = false;
         ComponentState generated = (ComponentState) view.getComponentByReference("generated");
         if (generated == null || "0".equals(generated.getFieldValue()) || generated.getFieldValue() == null) {
-            return;
+            enabled = true;
         }
         for (String reference : Arrays.asList("order", "name", "description")) {
             FieldComponent component = (FieldComponent) view.getComponentByReference(reference);
-            component.setEnabled(false);
+            component.setEnabled(enabled);
         }
     }
 }
