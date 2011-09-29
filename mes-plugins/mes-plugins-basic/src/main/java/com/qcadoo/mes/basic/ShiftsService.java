@@ -114,8 +114,7 @@ public class ShiftsService {
         try {
             convertDayHoursToInt(fieldValue);
         } catch (IllegalStateException e) {
-            entity.addError(dataDefinition.getField(day + "Hours"),
-                    "productionScheduling.validate.global.error.shift.hoursFieldWrongFormat");
+            entity.addError(dataDefinition.getField(day + "Hours"), "basic.validate.global.error.shift.hoursFieldWrongFormat");
             return false;
         }
         return true;
