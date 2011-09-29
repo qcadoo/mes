@@ -210,10 +210,10 @@ public class ProductionCountingPdfService extends PdfDocumentService {
             addTableCellAsTable(
                     panelTable,
                     getTranslationService().translate("productionCounting.productionCounting.report.panel.operationAndLevel",
-                            locale), productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
-                            .getStringField("name")
-                            + " " + productionRecord.getBelongsToField("orderOperationComponent").getStringField("nodeNumber"),
-                    null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+                            locale), productionRecord.getBelongsToField("orderOperationComponent").getStringField("nodeNumber")
+                            + " "
+                            + productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
+                                    .getStringField("name"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(panelTable,
                 getTranslationService().translate("productionCounting.productionCounting.report.panel.dateAndTime", locale),
                 (new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format((Date) productionRecord.getField("creationTime")))
