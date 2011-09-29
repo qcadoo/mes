@@ -210,10 +210,10 @@ public class ProductionCountingPdfService extends PdfDocumentService {
             addTableCellAsTable(
                     panelTable,
                     getTranslationService().translate("productionCounting.productionCounting.report.panel.operationAndLevel",
-                            locale), productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
-                            .getStringField("name")
-                            + " " + productionRecord.getBelongsToField("orderOperationComponent").getStringField("nodeNumber"),
-                    null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+                            locale), productionRecord.getBelongsToField("orderOperationComponent").getStringField("nodeNumber")
+                            + " "
+                            + productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
+                                    .getStringField("name"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(panelTable,
                 getTranslationService().translate("productionCounting.productionCounting.report.panel.dateAndTime", locale),
                 (new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format((Date) productionRecord.getField("creationTime")))
@@ -265,9 +265,9 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 "productionCounting.productionBalance.report.columnHeader.productionName", locale));
         inputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.type", locale));
-        inputProductsTableHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
         inputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionCounting.report.columnHeader.quantity", locale));
+        inputProductsTableHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
 
         PdfPTable inputProductsTable = PdfUtil.createTableWithHeader(5, inputProductsTableHeader, false);
 
@@ -284,13 +284,15 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                         "basic.product.typeOfMaterial.value."
                                 + productIn.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
                         .getArialRegular9Dark()));
-                inputProductsTable.addCell(new Phrase(productIn.getBelongsToField("product").getStringField("unit"), PdfUtil
-                        .getArialRegular9Dark()));
+                inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
                 if (productIn.getField("usedQuantity") != null)
                     inputProductsTable.addCell(new Phrase(getDecimalFormat().format(productIn.getField("usedQuantity")), PdfUtil
                             .getArialRegular9Dark()));
                 else
                     inputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
+                inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+                inputProductsTable.addCell(new Phrase(productIn.getBelongsToField("product").getStringField("unit"), PdfUtil
+                        .getArialRegular9Dark()));
             }
         }
 
@@ -309,9 +311,9 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 "productionCounting.productionBalance.report.columnHeader.productionName", locale));
         outputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.type", locale));
-        outputProductsTableHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
         outputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionCounting.report.columnHeader.quantity", locale));
+        outputProductsTableHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
 
         PdfPTable outputProductsTable = PdfUtil.createTableWithHeader(5, outputProductsTableHeader, false);
 
@@ -328,13 +330,15 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                         "basic.product.typeOfMaterial.value."
                                 + productOut.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
                         .getArialRegular9Dark()));
-                outputProductsTable.addCell(new Phrase(productOut.getBelongsToField("product").getStringField("unit"), PdfUtil
-                        .getArialRegular9Dark()));
+                outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
                 if (productOut.getField("usedQuantity") != null)
                     outputProductsTable.addCell(new Phrase(getDecimalFormat().format(productOut.getField("usedQuantity")),
                             PdfUtil.getArialRegular9Dark()));
                 else
                     outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
+                outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+                outputProductsTable.addCell(new Phrase(productOut.getBelongsToField("product").getStringField("unit"), PdfUtil
+                        .getArialRegular9Dark()));
             }
         }
 

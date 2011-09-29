@@ -50,8 +50,8 @@
 			<option type="order" column="number" direction="asc" />
 			<option type="correspondingView" value="productionCounting/productionRecordDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="name,number" />
-			<option type="orderable" value="name,number" />
+			<option type="searchable" value="number" />
+			<option type="orderable" value="number" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>

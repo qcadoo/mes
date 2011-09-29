@@ -113,10 +113,10 @@
 												#product['typeOfMaterial'] == '04waste' ?
 												'@basic.product.typeOfMaterial.value.04waste' :
 												''" />
-							<option type="column" name="unit" fields="product"
-								expression="#product['unit']" link="false" width="70" />
 							<option type="column" name="usedQuantity" fields="usedQuantity"
 								width="100" />
+							<option type="column" name="unit" fields="product"
+								expression="#product['unit']" link="false" width="70" />
 							<option type="order" column="number" direction="desc" />
 							<option type="correspondingView"
 								value="productionCounting/recordOperationProductInComponentDetails" />
@@ -172,10 +172,10 @@
 												#product['typeOfMaterial'] == '04waste' ?
 												'@basic.product.typeOfMaterial.value.04waste' :
 												''" />
-							<option type="column" name="unit" fields="product"
-								expression="#product['unit']" link="false" width="70" />
 							<option type="column" name="usedQuantity" fields="usedQuantity"
 								width="100" />
+							<option type="column" name="unit" fields="product"
+								expression="#product['unit']" link="false" width="70" />
 							<option type="order" column="number" direction="desc" />
 							<option type="correspondingView"
 								value="productionCounting/recordOperationProductOutComponentDetails" />
