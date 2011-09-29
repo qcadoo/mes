@@ -32,6 +32,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 
@@ -62,9 +63,9 @@ public class QualityControlForNumberService {
 
     public String generateNumber(final String plugin, final String model, final int digitsNumber, final String qualityControlType) {
         long longValue = 0;
-
-        SearchResult searchResult = dataDefinitionService.get(plugin, model)
-                .find("where qualityControlType = '" + qualityControlType + "'").setMaxResults(1).list();
+        SearchResult searchResult = dataDefinitionService.get(plugin, model).find()
+                .add(SearchRestrictions.eq("qualityControlType", qualityControlType)).addOrder(SearchOrders.desc("id"))
+                .setMaxResults(1).list();
         if (searchResult == null || searchResult.getEntities().isEmpty()) {
             longValue++;
         } else {
