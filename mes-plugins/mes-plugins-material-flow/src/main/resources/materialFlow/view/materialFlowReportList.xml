@@ -47,7 +47,6 @@
 				<option type="column" name="generated" fields="generated"
 					link="false" />
 				<option type="column" name="worker" fields="worker" width="200" />
-<!-- 				expression="#staff==worker?'N/A':#worker['name']+ ' ' +#worker['surname']" -->
 				<option type="order" column="name" direction="asc" />
 				<option type="searchable" value="name,generated,worker" />
 				<option type="orderable" value="name,generated,worker" />
@@ -56,7 +55,7 @@
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
  				<listener event="printMaterialFlow" 
- 					class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="printMaterialFlow" /> 
+ 					class="com.qcadoo.mes.materialFlow.MaterialFlowReportService" method="printMaterialFlow" /> 
 				<script>
 				<![CDATA[
 					var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
@@ -87,7 +86,7 @@
 		<option type="header" value="false" />
 	</component>
 	<hooks>
- 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService" 
+ 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowReportService" 
  			method="setGridGenerateButtonState" /> 
 	</hooks>
 </view>

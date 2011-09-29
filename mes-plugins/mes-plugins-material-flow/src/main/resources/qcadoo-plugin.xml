@@ -66,6 +66,13 @@
 		<model:model model="transfer" resource="model/transfer.xml" />
 		<model:model model="stockAreas" resource="model/stockAreas.xml" />		
 		<model:model model="materialFlowReport" resource="model/materialFlowReport.xml" />
+		<model:model model="materialFlowReportComponent"
+			resource="model/materialFlowReportComponent.xml" />
+		
+		<model:model-field plugin="materialFlow" model="stockAreas">
+			<model:hasMany name="materialFlowReport" plugin="materialFlow"
+				model="materialFlowReportComponent" joinField="stockAreas" cascade="none" />
+		</model:model-field>
 		
 		<menu:menu-category name="materialFlow" />
 		<menu:menu-category name="reports" />
@@ -90,6 +97,7 @@
 		<view:view resource="view/stockAreasDetail.xml" />
 		<view:view resource="view/materialFlowReportList.xml" />
 		<view:view resource="view/materialFlowReportDetails.xml" />		
+		<view:view resource="view/materialFlowReportComponentDetails.xml" />
 		
 		<view:resource uri="public/**/*" />
 	</modules>

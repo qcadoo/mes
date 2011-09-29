@@ -45,6 +45,7 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.qcadoo.mes.materialFlow.MaterialFlowReportService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfPageNumbering;
@@ -57,43 +58,17 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
     @Autowired
     private SecurityService securityService;
 
+    @Autowired
+    private MaterialFlowReportService materialFlowReportService;
+    
     private static final Logger LOG = LoggerFactory.getLogger(MaterialFlowPdfService.class);
-
-    public void generateDocument(final Entity entity, final Map<Entity, BigDecimal> reportData, final Entity company,
-            final Locale locale) throws IOException, DocumentException {
-        Document document = new Document(PageSize.A4);
-        try {
-            setDecimalFormat((DecimalFormat) DecimalFormat.getInstance(locale));
-            getDecimalFormat().setMaximumFractionDigits(3);
-            getDecimalFormat().setMinimumFractionDigits(3);
-            FileOutputStream fileOutputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix()
-                    + PdfUtil.PDF_EXTENSION);
-            PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
-            writer.setPageEvent(new PdfPageNumbering(
-                    getTranslationService().translate("qcadooReport.commons.page.label", locale), getTranslationService()
-                            .translate("qcadooReport.commons.of.label", locale), getTranslationService().translate(
-                            "basic.company.tax.label", locale), getTranslationService().translate("basic.company.phone.label",
-                            locale), company,
-                    getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale), securityService
-                            .getCurrentUserName()));
-            document.setMargins(40, 40, 60, 60);
-            buildPdfMetadata(document, locale);
-            writer.createXmpMetadata();
-            document.open();
-            buildPdfContent(document, entity, reportData, locale);
-            PdfUtil.addEndOfDocument(document, writer,
-                    getTranslationService().translate("qcadooReport.commons.endOfPrint.label", locale));
-            document.close();
-        } catch (DocumentException e) {
-            LOG.error("Problem with generating document - " + e.getMessage());
-            document.close();
-            throw e;
-        }
-    }
-
+    
+    @Override
     protected void buildPdfContent(final Document document, final Entity materialFlowReport,
-            final Map<Entity, BigDecimal> reportData, final Locale locale) throws DocumentException {
-        String documenTitle = getTranslationService().translate("materialFlow.materialFlow.report.title", locale);
+            final Locale locale) throws DocumentException {
+    	Map<Entity, BigDecimal> reportData = materialFlowReportService.createReportData(materialFlowReport);
+    	
+    	String documenTitle = getTranslationService().translate("materialFlow.materialFlow.report.title", locale);
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) materialFlowReport.getField("date"),
                 materialFlowReport.getStringField("worker"));
@@ -108,10 +83,11 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
                 ((Date) materialFlowReport.getField("date")).toString(), null, PdfUtil.getArialBold10Dark(),
 
                 PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(panelTable,
-                getTranslationService().translate("materialFlow.materialFlow.report.panel.stockAreas", locale), materialFlowReport
-                        .getBelongsToField("stockAreas").getStringField("number"), null, PdfUtil.getArialBold10Dark(), PdfUtil
-                        .getArialRegular10Dark());
+        /*PdfUtil.addTableCellAsTable(panelTable,
+                //getTranslationService().translate("materialFlow.materialFlow.report.panel.stockAreas", locale), materialFlowReport
+                        //.getBelongsToField("stockAreas").getStringField("number"), null, PdfUtil.getArialBold10Dark(), PdfUtil
+        		getTranslationService().translate("materialFlow.materialFlow.report.panel.stockAreas", locale), "1", null, PdfUtil.getArialBold10Dark(), PdfUtil
+                       .getArialRegular10Dark()); */
         PdfUtil.addTableCellAsTable(panelTable, "", "", null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
 
         panelTable.setSpacingBefore(20);
@@ -138,6 +114,38 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
         }
         document.add(table);
     }
+    
+    public void generateDocument(final Entity entity, final Map<Entity, BigDecimal> reportData, final Entity company,
+            final Locale locale) throws IOException, DocumentException {
+        Document document = new Document(PageSize.A4);
+        try {
+            setDecimalFormat((DecimalFormat) DecimalFormat.getInstance(locale));
+            getDecimalFormat().setMaximumFractionDigits(3);
+            getDecimalFormat().setMinimumFractionDigits(3);
+            FileOutputStream fileOutputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix()
+                    + PdfUtil.PDF_EXTENSION);
+            PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
+            writer.setPageEvent(new PdfPageNumbering(
+                    getTranslationService().translate("qcadooReport.commons.page.label", locale), getTranslationService()
+                            .translate("qcadooReport.commons.of.label", locale), getTranslationService().translate(
+                            "basic.company.tax.label", locale), getTranslationService().translate("basic.company.phone.label",
+                            locale), company,
+                    getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale), securityService
+                            .getCurrentUserName()));
+            document.setMargins(40, 40, 60, 60);
+            buildPdfMetadata(document, locale);
+            writer.createXmpMetadata();
+            document.open();
+            buildPdfContent(document, entity, locale);
+            PdfUtil.addEndOfDocument(document, writer,
+                    getTranslationService().translate("qcadooReport.commons.endOfPrint.label", locale));
+            document.close();
+        } catch (DocumentException e) {
+            LOG.error("Problem with generating document - " + e.getMessage());
+            document.close();
+            throw e;
+        }
+    }
 
     @Override
     protected String getReportTitle(final Locale locale) {
@@ -149,7 +157,4 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
         return "";
     }
 
-    @Override
-    protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-    }
 }

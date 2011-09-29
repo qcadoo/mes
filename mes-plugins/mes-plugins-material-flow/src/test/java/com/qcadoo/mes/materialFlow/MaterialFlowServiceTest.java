@@ -14,7 +14,7 @@ import com.qcadoo.model.api.Entity;
 
 public class MaterialFlowServiceTest {
 
-    private MaterialFlowService materialFlowService;
+    private MaterialFlowReportService materialFlowService;
 
     private Entity entity;
 
@@ -23,7 +23,7 @@ public class MaterialFlowServiceTest {
 
     @Before
     public void init() {
-        materialFlowService = new MaterialFlowService();
+        materialFlowService = new MaterialFlowReportService();
         entity = mock(Entity.class);
     }
 

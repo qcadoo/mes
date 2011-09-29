@@ -36,8 +36,10 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.materialFlow.MaterialFlowReportService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 import com.qcadoo.report.api.xls.XlsUtil;
@@ -45,10 +47,15 @@ import com.qcadoo.report.api.xls.XlsUtil;
 @Service
 public final class MaterialFlowXlsService extends XlsDocumentService {
 
+	@Autowired
+	private MaterialFlowReportService materialFlowReportService;
+	
     private static final Logger LOG = LoggerFactory.getLogger(MaterialFlowXlsService.class);
 
-    public final void generateDocument(final Entity entity, final Map<Entity, BigDecimal> reportData, final Locale locale)
+    public final void generateDocument(final Entity entity, final Locale locale)
             throws IOException {
+    	Map<Entity, BigDecimal> reportData = materialFlowReportService.createReportData(entity);
+    	
         setDecimalFormat((DecimalFormat) DecimalFormat.getInstance(locale));
         getDecimalFormat().setMaximumFractionDigits(3);
         getDecimalFormat().setMinimumFractionDigits(3);
