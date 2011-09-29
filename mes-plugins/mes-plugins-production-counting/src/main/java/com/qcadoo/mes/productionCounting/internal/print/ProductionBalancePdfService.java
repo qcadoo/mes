@@ -237,6 +237,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     .getArialRegular9Dark()));
             inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
                     .getArialRegular9Dark()));
+            inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
             inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("plannedQuantity")), PdfUtil
                     .getArialRegular9Dark()));
             if (inputProduct.getField("usedQuantity") != null) {
@@ -248,6 +249,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 inputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
                 inputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
             }
+            inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
         }
 
         document.add(inputProductsTable);
@@ -270,7 +272,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         outputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.plannedQuantity", locale));
         outputProductsTableHeader.add(getTranslationService().translate(
-                "productionCounting.productionBalance.report.columnHeader.usedQuantity", locale));
+                "productionCounting.productionBalance.report.columnHeader.producedQuantity", locale));
         outputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.balance", locale));
 
@@ -293,6 +295,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     .getArialRegular9Dark()));
             outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
                     .getArialRegular9Dark()));
+            outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
             outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("plannedQuantity")), PdfUtil
                     .getArialRegular9Dark()));
             if (outputProduct.getField("usedQuantity") != null) {
@@ -304,6 +307,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
                 outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
             }
+            outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
         }
 
         document.add(outputProductsTable);
@@ -317,7 +321,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
         List<String> operationsTimeTableHeader = new ArrayList<String>();
         operationsTimeTableHeader.add(getTranslationService().translate(
-                "productionCounting.productionBalance.report.columnHeader.opNumber", locale));
+                "productionCounting.productionBalance.report.columnHeader.opLevel", locale));
         operationsTimeTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.opName", locale));
         operationsTimeTableHeader.add(getTranslationService().translate(
@@ -338,12 +342,10 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         Collections.sort(productionRecords, new EntityProductionRecordOperationComparator());
 
         for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecords)) {
+            machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent").getStringField(
+                    "nodeNumber"), PdfUtil.getArialRegular9Dark()));
             machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
-                    .getBelongsToField("operation").getStringField("number"), PdfUtil.getArialRegular9Dark()));
-            machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
-                    .getBelongsToField("operation").getStringField("name")
-                    + " " + productionRecord.getBelongsToField("orderOperationComponent").getStringField("nodeNumber"), PdfUtil
-                    .getArialRegular9Dark()));
+                    .getBelongsToField("operation").getStringField("name"), PdfUtil.getArialRegular9Dark()));
             machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
                     .getField("plannedMachineTime"))), PdfUtil.getArialRegular9Dark()));
             machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
@@ -374,7 +376,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
         List<String> operationsTimeTableHeader = new ArrayList<String>();
         operationsTimeTableHeader.add(getTranslationService().translate(
-                "productionCounting.productionBalance.report.columnHeader.opNumber", locale));
+                "productionCounting.productionBalance.report.columnHeader.opLevel", locale));
         operationsTimeTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.opName", locale));
         operationsTimeTableHeader.add(getTranslationService().translate(
@@ -395,12 +397,10 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         Collections.sort(productionRecords, new EntityProductionRecordOperationComparator());
 
         for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecords)) {
+            laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent").getStringField(
+                    "nodeNumber"), PdfUtil.getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
-                    .getBelongsToField("operation").getStringField("number"), PdfUtil.getArialRegular9Dark()));
-            laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
-                    .getBelongsToField("operation").getStringField("name")
-                    + " " + productionRecord.getBelongsToField("orderOperationComponent").getStringField("nodeNumber"), PdfUtil
-                    .getArialRegular9Dark()));
+                    .getBelongsToField("operation").getStringField("name"), PdfUtil.getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
                     .getField("plannedLaborTime"))), PdfUtil.getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(
