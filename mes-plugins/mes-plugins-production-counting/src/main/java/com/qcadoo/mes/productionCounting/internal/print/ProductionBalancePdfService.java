@@ -210,13 +210,13 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 "productionCounting.productionBalance.report.columnHeader.productionName", locale));
         inputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.type", locale));
-        inputProductsTableHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
         inputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.plannedQuantity", locale));
         inputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.usedQuantity", locale));
         inputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.balance", locale));
+        inputProductsTableHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
 
         PdfPTable inputProductsTable = PdfUtil.createTableWithHeader(7, inputProductsTableHeader, false);
 
@@ -235,8 +235,6 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     "basic.product.typeOfMaterial.value."
                             + inputProduct.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
                     .getArialRegular9Dark()));
-            inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
-                    .getArialRegular9Dark()));
             inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
             inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("plannedQuantity")), PdfUtil
                     .getArialRegular9Dark()));
@@ -250,6 +248,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 inputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
             }
             inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+            inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
+                    .getArialRegular9Dark()));
         }
 
         document.add(inputProductsTable);
@@ -268,13 +268,13 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 "productionCounting.productionBalance.report.columnHeader.productionName", locale));
         outputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.type", locale));
-        outputProductsTableHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
         outputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.plannedQuantity", locale));
         outputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.producedQuantity", locale));
         outputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.balance", locale));
+        outputProductsTableHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
 
         PdfPTable outputProductsTable = PdfUtil.createTableWithHeader(7, outputProductsTableHeader, false);
 
@@ -293,8 +293,6 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     "basic.product.typeOfMaterial.value."
                             + outputProduct.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
                     .getArialRegular9Dark()));
-            outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
-                    .getArialRegular9Dark()));
             outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
             outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("plannedQuantity")), PdfUtil
                     .getArialRegular9Dark()));
@@ -308,6 +306,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
             }
             outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+            outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
+                    .getArialRegular9Dark()));
         }
 
         document.add(outputProductsTable);
