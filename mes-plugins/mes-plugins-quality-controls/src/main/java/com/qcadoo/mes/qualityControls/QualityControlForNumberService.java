@@ -55,7 +55,7 @@ public class QualityControlForNumberService {
         if (searchCriteriaBuilder != null) {
             SearchResult searchResult = searchCriteriaBuilder.list();
             if (searchResult != null && searchResult.getTotalNumberOfEntities() > 0) {
-                entity.addError(dataDefinition.getField("number"), "qualityControls.quality.control.validate.global.error.number");
+                entity.addError(dataDefinition.getField("number"), "qualityControls.qualityControl.number.label");
             }
         }
     }

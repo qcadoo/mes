@@ -30,7 +30,7 @@
 	<fields>
 		<belongsTo name="order" model="order" plugin="orders"
 			required="true" />
-		<belongsTo name="operation" model="operation" plugin="technologies" />
+		<belongsTo name="operation" model="orderOperationComponent" plugin="productionScheduling" />
 		<string name="number" required="true"  />
 		<enum name="controlResult" values="01correct,02incorrect,03objection" />
 		<string name="batchNr" />

@@ -112,14 +112,14 @@
 				</layoutElement>
 				<layoutElement column="1" row="3">
 					<component type="lookup" name="operation" reference="operation"
-						field="operation">
-						<option type="column" name="name" fields="name" link="true"
+						field="operation" source="#{order}.orderOperationComponents">
+						<option type="column" name="name" fields="operation" link="true" expression="#operation['name']"
 							width="200" />
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
 						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
+							value="'&lt;b&gt;' + #nodeNumber + '&lt;/b&gt; - ' + #operation['name']" />
+						<option type="fieldCode" value="nodeNumber" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4">
