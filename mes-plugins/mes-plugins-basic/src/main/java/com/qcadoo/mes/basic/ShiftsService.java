@@ -24,6 +24,7 @@
 package com.qcadoo.mes.basic;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -380,10 +381,6 @@ public class ShiftsService {
         range[0] = convertHoursToInt(parts[0]);
         range[1] = convertHoursToInt(parts[1]);
 
-        if (range[0].compareTo(range[1]) >= 0) {
-            throw new IllegalStateException("Invalid time range " + string + ", firts hour must be lower than the second one");
-        }
-
         return range;
     }
 
@@ -426,7 +423,13 @@ public class ShiftsService {
 
         public ShiftHour(final Date dateFrom, final Date dateTo) {
             this.dateFrom = dateFrom;
-            this.dateTo = dateTo;
+            if (dateFrom.after(dateTo)) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(dateTo);
+                cal.add(Calendar.DATE, 1);
+                this.dateTo = cal.getTime();
+            } else
+                this.dateTo = dateTo;
         }
 
         public Date getDateTo() {

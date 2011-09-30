@@ -63,5 +63,6 @@
 			cascade="delete" copyable="true" />
 	</fields>
 	<hooks>
+		<validatesWith class="com.qcadoo.mes.basic.ShiftsService" method="validateShiftHoursField"/>
 	</hooks>
 </model>

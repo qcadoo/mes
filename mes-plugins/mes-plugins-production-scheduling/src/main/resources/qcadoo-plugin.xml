@@ -95,10 +95,6 @@
 				method="createTechnologyInstanceForOrder" />
 		</model:model-hook>
 		
-		<model:model-hook model="shift" plugin="basic">
-			<model:validatesWith class="com.qcadoo.mes.basic.ShiftsService" method="validateShiftHoursField"/>
-		</model:model-hook>
-
 		<model:model-field plugin="orders" model="order">
 			<model:tree name="orderOperationComponents" plugin="productionScheduling" 
 			model="orderOperationComponent" joinField="order" cascade="delete">
