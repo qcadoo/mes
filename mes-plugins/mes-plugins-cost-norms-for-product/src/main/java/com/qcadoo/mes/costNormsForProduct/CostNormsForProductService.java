@@ -25,11 +25,14 @@ package com.qcadoo.mes.costNormsForProduct;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -40,6 +43,8 @@ import com.qcadoo.model.api.search.SearchDisjunction;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -53,6 +58,9 @@ public class CostNormsForProductService {
 
     @Autowired
     private CurrencyService currencyService;
+
+    @Autowired
+    private TranslationService translationService;
 
     /* ****** VIEW HOOKS ******* */
 
@@ -111,4 +119,31 @@ public class CostNormsForProductService {
         grid.setEntities(searchResult.getEntities());
     }
 
+    /* ******* MODEL HOOKS ******* */
+
+    public void checkTechnologyProductsInNorms(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        ComponentState form = (ComponentState) viewDefinitionState.getComponentByReference("form");
+        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) form.getFieldValue());
+        List<Entity> operationComponents = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
+                .add(SearchRestrictions.belongsTo("technology", technology)).list().getEntities();
+        List<Entity> productInComponents = new ArrayList<Entity>();
+        for (Entity operationComponent : operationComponents)
+            productInComponents.addAll(operationComponent.getHasManyField("operationProductInComponents"));
+        List<Entity> products = new ArrayList<Entity>();
+        for (Entity productInComponent : productInComponents)
+            products.add(productInComponent.getBelongsToField("product"));
+        for (Entity product : products) {
+            if (product.getStringField("typeOfMaterial").equals("01component")
+                    && (product.getField("costForNumber") == null || product.getField("nominalCost") == null
+                            || product.getField("lastPurchaseCost") == null || product.getField("averageCost") == null)) {
+                form.addMessage(translationService.translate(
+                        "technologies.technologyDetails.error.inputProductsWithoutCostNorms", viewDefinitionState.getLocale()),
+                        MessageType.INFO, false);
+                break;
+            }
+        }
+    }
 }
