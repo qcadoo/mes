@@ -124,7 +124,6 @@ public class ProductionBalanceService {
                 deleteButton.setMessage(null);
                 deleteButton.setEnabled(true);
             }
-
         }
         generateButton.requestUpdate(true);
         deleteButton.requestUpdate(true);
@@ -189,7 +188,7 @@ public class ProductionBalanceService {
     }
 
     private void requestComponentUpdateState(final ViewDefinitionState view) {
-        for (String reference : Arrays.asList("name", "description", "order")) {
+        for (String reference : Arrays.asList("name", "description", "order", "worker", "generated", "date")) {
             FieldComponent component = (FieldComponent) view.getComponentByReference(reference);
             component.requestComponentUpdateState();
         }

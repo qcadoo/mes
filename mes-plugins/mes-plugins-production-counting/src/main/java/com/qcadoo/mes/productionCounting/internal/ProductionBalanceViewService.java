@@ -143,8 +143,10 @@ public class ProductionBalanceViewService {
     }
 
     private void clearFieldValues(final ViewDefinitionState viewDefinitionState) {
-        viewDefinitionState.getComponentByReference("product").setFieldValue(null);
-        viewDefinitionState.getComponentByReference("recordsNumber").setFieldValue(null);
+        FieldComponent product = (FieldComponent) viewDefinitionState.getComponentByReference("product");
+        product.setFieldValue(null);
+        FieldComponent recordsNumber = (FieldComponent) viewDefinitionState.getComponentByReference("recordsNumber");
+        recordsNumber.setFieldValue(null);
     }
 
     private void setGridsVisibility(final ViewDefinitionState viewDefinitionState, final Boolean isVisible) {
@@ -262,7 +264,7 @@ public class ProductionBalanceViewService {
     public void disableFieldsWhenGenerated(final ViewDefinitionState view) {
         Boolean enabled = false;
         ComponentState generated = (ComponentState) view.getComponentByReference("generated");
-        if (generated == null || "0".equals(generated.getFieldValue()) || generated.getFieldValue() == null) {
+        if (generated == null || generated.getFieldValue() == null || "0".equals(generated.getFieldValue())) {
             enabled = true;
         }
         for (String reference : Arrays.asList("order", "name", "description")) {
@@ -270,5 +272,4 @@ public class ProductionBalanceViewService {
             component.setEnabled(enabled);
         }
     }
-
 }

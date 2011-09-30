@@ -119,7 +119,7 @@ public class ProductionCountingViewService {
     public void disableFieldsWhenGenerated(final ViewDefinitionState view) {
         Boolean enabled = false;
         ComponentState generated = (ComponentState) view.getComponentByReference("generated");
-        if (generated == null || "0".equals(generated.getFieldValue()) || generated.getFieldValue() == null) {
+        if (generated == null || generated.getFieldValue() == null || "0".equals(generated.getFieldValue())) {
             enabled = true;
         }
         for (String reference : Arrays.asList("order", "name", "description")) {
