@@ -30,8 +30,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
@@ -243,39 +246,32 @@ public class MaterialFlowService {
 	        for (Entity product : products) {
                 BigDecimal quantity = calculateShouldBe(stockAreaNumber,
                         product.getStringField("number"), forDate);
+               
                 if (reportData.containsKey(product))
                 	reportData.put(product, reportData.get(product).add(quantity));
                 else
                 	reportData.put(product, quantity);
 	        }
         }
-        
         return reportData;
     }
-
-    // TODO: change way of getting products
+    
     private List<Entity> getProductsForReport(String stockAreaNumber) {
     	List<Entity> products = new ArrayList<Entity>();
     	
-    	DataDefinition dataDefTransfer = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowConstants.MODEL_TRANSFER);
+    	Long id = Long.valueOf(stockAreaNumber);
     	
-    	DataDefinition dataDefProduct = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER_BASIC,
+    	DataDefinition dataDefProduct = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER_BASIC, 
     			MaterialFlowConstants.MODEL_PRODUCT);
     	
-    	List<Entity> transfers = dataDefTransfer
-	        .find("where stockAreasTo.id = " + stockAreaNumber).list()
-	        .getEntities();
-		List<Long> i = new ArrayList<Long>();
-		
-		for (Entity e : transfers) {
-			if (!i.contains(e.getBelongsToField("product").getId()));
-				i.add(e.getBelongsToField("product").getId());
-		}
-		
-		products = (List<Entity>) dataDefProduct.find()
-			.add(SearchRestrictions.in("id", i)).list().getEntities();
-
-		return products;
+    	products = (List<Entity>) dataDefProduct.find()
+    		.createAlias("transfer", "t")
+    		.add(SearchRestrictions.eqField("t.product.id", "id"))
+    		.add(SearchRestrictions.eq("t.stockAreasTo.id", id))
+    		.addOrder(SearchOrders.asc("id"))
+    		.list().getEntities();
+    	
+    	Set<Entity> set = new HashSet<Entity>(products);    	
+    	return new ArrayList<Entity>(set);
     }
 }
