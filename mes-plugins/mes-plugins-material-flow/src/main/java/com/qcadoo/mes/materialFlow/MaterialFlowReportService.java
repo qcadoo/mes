@@ -4,15 +4,10 @@ import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_COMPANY;
 import static com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants.MODEL_MATERIAL_FLOW_REPORT;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,15 +20,15 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.print.pdf.MaterialFlowPdfService;
-import com.qcadoo.mes.materialFlow.print.utils.EntityTransferComparator;
+import com.qcadoo.mes.materialFlow.print.xls.MaterialFlowXlsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -56,11 +51,11 @@ public class MaterialFlowReportService {
     private MaterialFlowPdfService materialFlowPdfService;
 	
     @Autowired
-    private MaterialFlowService materialFlowService;
+    private MaterialFlowXlsService materialFlowXlsService;
     
     @Value("${reportPath}")
     private String path;
-        
+     
 	public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
         entity.setField("generated", false);
@@ -178,7 +173,8 @@ public class MaterialFlowReportService {
             return false;
         }
 
-        SearchResult searchResult = dataDefinition.find().belongsTo("stockAreas", stockAreas.getId())
+        @SuppressWarnings("deprecation")
+		SearchResult searchResult = dataDefinition.find().belongsTo("stockAreas", stockAreas.getId())
                 .belongsTo("materialFlowReport", materialFlowReport.getId()).list();
 
         if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
@@ -252,7 +248,7 @@ public class MaterialFlowReportService {
         MaterialFlowConstants.MODEL_MATERIAL_FLOW_REPORT);
     	Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_COMPANY).find().uniqueResult();
     	materialFlowPdfService.generateDocument(materialFlowWithFileName, company, state.getLocale());
-    	materialFlowPdfService.generateDocument(materialFlowWithFileName, company, state.getLocale());
+    	materialFlowXlsService.generateDocument(materialFlowWithFileName, company, state.getLocale());
     }
     
     private String getFullFileName(final Date date, final String fileName) {
@@ -290,43 +286,6 @@ public class MaterialFlowReportService {
             }
         }
     }
-    
-    // TODO: change logic to make it more efficient
-    public Map<Entity, BigDecimal> createReportData(Entity materialFlowReport) {
-        DataDefinition dataDefTransfer = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowConstants.MODEL_TRANSFER);
-        
-        //List<Entity> stockAreas = materialFlowReport.getHasManyField("stockAreas");
-        List<Entity> stockAreas = new ArrayList<Entity>(materialFlowReport.getHasManyField("stockAreas"));
-        Map<Entity, BigDecimal> reportData = new HashMap<Entity, BigDecimal>();
-        
-        
-        for (Entity component : stockAreas) {
-        	Entity stockArea = (Entity) component.getField("stockAreas");
-	        String stockAreaId = stockArea.getField("number").toString(); //component.getId().toString();
-	        
-	        //List<Entity> transfers = dataDefTransfer
-	          //      .find("where stockAreasTo.id = " + Long.toString(materialFlowReport.getBelongsToField("stockAreas").getId())).list()
-	            //    .getEntities();
-	        List<Entity> transfers = dataDefTransfer.find("where stockAreasTo.id = " + stockAreaId).list().getEntities();
-	        Collections.sort(transfers, new EntityTransferComparator());
-	
-	        String stockAreasNumber = stockArea.getField("number").toString(); //component.getId().toString();//materialFlowReport.getBelongsToField("stockAreas").getId().toString();
-	        String forDate = ((Date) materialFlowReport.getField("materialFlowForDate")).toString();
-	
-	        String numberBefore = "";
-	        for (Entity transfer : transfers) {
-	            String numberNow = transfer.getBelongsToField("product").getStringField("number");
-	            if (!numberBefore.equals(numberNow)) {
-	                BigDecimal quantity = materialFlowService.calculateShouldBe(stockAreasNumber,
-	                        transfer.getBelongsToField("product").getStringField("number"), forDate);
-	                reportData.put(transfer, quantity);
-	                numberBefore = numberNow;
-	            }
-	        }
 
-        }
-        
-        return reportData;
-    }
 }
+

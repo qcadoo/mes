@@ -69,9 +69,14 @@
 		<model:model model="materialFlowReportComponent"
 			resource="model/materialFlowReportComponent.xml" />
 		
+		<model:model-field plugin="basic" model="product" >
+            <model:hasMany name="transfer" plugin="materialFlow"
+            	model="transfer" joinField="product" /> 
+        </model:model-field>
+		
 		<model:model-field plugin="materialFlow" model="stockAreas">
 			<model:hasMany name="materialFlowReport" plugin="materialFlow"
-				model="materialFlowReportComponent" joinField="stockAreas" cascade="none" />
+				model="materialFlowReportComponent" joinField="stockAreas" />
 		</model:model-field>
 		
 		<menu:menu-category name="materialFlow" />

@@ -45,7 +45,7 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.qcadoo.mes.materialFlow.MaterialFlowReportService;
+import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfPageNumbering;
@@ -59,14 +59,14 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
     private SecurityService securityService;
 
     @Autowired
-    private MaterialFlowReportService materialFlowReportService;
+    private MaterialFlowService materialFlowService;
     
     private static final Logger LOG = LoggerFactory.getLogger(MaterialFlowPdfService.class);
     
     @Override
     protected void buildPdfContent(final Document document, final Entity materialFlowReport,
             final Locale locale) throws DocumentException {
-    	Map<Entity, BigDecimal> reportData = materialFlowReportService.createReportData(materialFlowReport);
+    	Map<Entity, BigDecimal> reportData = materialFlowService.createReportData(materialFlowReport);
     	
     	String documenTitle = getTranslationService().translate("materialFlow.materialFlow.report.title", locale);
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
@@ -83,11 +83,17 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
                 ((Date) materialFlowReport.getField("date")).toString(), null, PdfUtil.getArialBold10Dark(),
 
                 PdfUtil.getArialRegular10Dark());
-        /*PdfUtil.addTableCellAsTable(panelTable,
-                //getTranslationService().translate("materialFlow.materialFlow.report.panel.stockAreas", locale), materialFlowReport
-                        //.getBelongsToField("stockAreas").getStringField("number"), null, PdfUtil.getArialBold10Dark(), PdfUtil
-        		getTranslationService().translate("materialFlow.materialFlow.report.panel.stockAreas", locale), "1", null, PdfUtil.getArialBold10Dark(), PdfUtil
-                       .getArialRegular10Dark()); */
+        
+        List<Entity> stockAreas = materialFlowReport.getHasManyField("stockAreas");
+        List<String> names = new ArrayList<String>();
+        for (Entity component : stockAreas) {
+        	Entity stockArea = (Entity) component.getField("stockAreas");
+        	names.add(stockArea.getField("number").toString());
+        }
+        PdfUtil.addTableCellAsTable(panelTable,
+                getTranslationService().translate("materialFlow.materialFlow.report.panel.stockAreas", locale), 
+                		names, null, PdfUtil.getArialBold10Dark(), PdfUtil
+        		       .getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(panelTable, "", "", null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
 
         panelTable.setSpacingBefore(20);
@@ -102,14 +108,14 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
         PdfPTable table = PdfUtil.createTableWithHeader(4, tableHeader, false);
 
         for (Map.Entry<Entity, BigDecimal> data : reportData.entrySet()) {
-            table.addCell(new Phrase(data.getKey().getBelongsToField("product").getStringField("number"), PdfUtil
+            table.addCell(new Phrase(data.getKey().getStringField("number"), PdfUtil
                     .getArialRegular9Dark()));
-            table.addCell(new Phrase(data.getKey().getBelongsToField("product").getStringField("name"), PdfUtil
+            table.addCell(new Phrase(data.getKey().getStringField("name"), PdfUtil
                     .getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             table.addCell(new Phrase(getDecimalFormat().format(data.getValue()), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            table.addCell(new Phrase(data.getKey().getBelongsToField("product").getStringField("unit"), PdfUtil
+            table.addCell(new Phrase(data.getKey().getStringField("unit"), PdfUtil
                     .getArialRegular9Dark()));
         }
         document.add(table);

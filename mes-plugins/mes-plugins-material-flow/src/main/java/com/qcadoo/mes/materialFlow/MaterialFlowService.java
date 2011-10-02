@@ -27,7 +27,11 @@ import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import static com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants.MODEL_TRANSFER;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +43,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -53,7 +58,6 @@ public class MaterialFlowService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
-
 
     public BigDecimal calculateShouldBe(final String stockAreas, final String product, final String forDate) {
 
@@ -187,7 +191,8 @@ public class MaterialFlowService {
     private Entity getAreaById(final Long productId) {
         DataDefinition instructionDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isIdEq(productId);
+        @SuppressWarnings("deprecation")
+		SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isIdEq(productId);
 
         SearchResult searchResult = searchCriteria.list();
         if (searchResult.getTotalNumberOfEntities() == 1) {
@@ -222,4 +227,55 @@ public class MaterialFlowService {
         }
     }
 
+    public Map<Entity, BigDecimal> createReportData(Entity materialFlowReport) {
+        List<Entity> stockAreas = new ArrayList<Entity>(materialFlowReport.getHasManyField("stockAreas"));
+        Map<Entity, BigDecimal> reportData = new HashMap<Entity, BigDecimal>();
+        
+        List<Entity> products = new ArrayList<Entity>();
+               
+        for (Entity component : stockAreas) {
+        	Entity stockArea = (Entity) component.getField("stockAreas");
+	        String stockAreaNumber = stockArea.getField("number").toString();
+	        
+	        products = getProductsForReport(stockAreaNumber);
+	        
+	        String forDate = ((Date) materialFlowReport.getField("materialFlowForDate")).toString();
+	        for (Entity product : products) {
+                BigDecimal quantity = calculateShouldBe(stockAreaNumber,
+                        product.getStringField("number"), forDate);
+                if (reportData.containsKey(product))
+                	reportData.put(product, reportData.get(product).add(quantity));
+                else
+                	reportData.put(product, quantity);
+	        }
+        }
+        
+        return reportData;
+    }
+
+    // TODO: change way of getting products
+    private List<Entity> getProductsForReport(String stockAreaNumber) {
+    	List<Entity> products = new ArrayList<Entity>();
+    	
+    	DataDefinition dataDefTransfer = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowConstants.MODEL_TRANSFER);
+    	
+    	DataDefinition dataDefProduct = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER_BASIC,
+    			MaterialFlowConstants.MODEL_PRODUCT);
+    	
+    	List<Entity> transfers = dataDefTransfer
+	        .find("where stockAreasTo.id = " + stockAreaNumber).list()
+	        .getEntities();
+		List<Long> i = new ArrayList<Long>();
+		
+		for (Entity e : transfers) {
+			if (!i.contains(e.getBelongsToField("product").getId()));
+				i.add(e.getBelongsToField("product").getId());
+		}
+		
+		products = (List<Entity>) dataDefProduct.find()
+			.add(SearchRestrictions.in("id", i)).list().getEntities();
+
+		return products;
+    }
 }

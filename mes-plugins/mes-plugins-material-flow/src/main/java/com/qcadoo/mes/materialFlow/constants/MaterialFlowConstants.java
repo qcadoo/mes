@@ -26,6 +26,8 @@ package com.qcadoo.mes.materialFlow.constants;
 public interface MaterialFlowConstants {
 
     public static final String PLUGIN_IDENTIFIER = "materialFlow";
+    
+    public static final String PLUGIN_IDENTIFIER_BASIC = "basic";
 
     // MODEL
     public static final String MODEL_STOCK_CORRECTION = "stockCorrection";
@@ -38,6 +40,8 @@ public interface MaterialFlowConstants {
 
     public static final String MODEL_MATERIAL_FLOW_REPORT = "materialFlowReport";
 
+    public static final String MODEL_PRODUCT = "product";
+    
     // VIEW
     public static final String VIEW_STOCK_CORRECTION_DETAIL = "stockCorrectionDetail";
 

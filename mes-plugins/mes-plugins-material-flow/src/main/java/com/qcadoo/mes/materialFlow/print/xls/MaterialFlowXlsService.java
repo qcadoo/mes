@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialFlow.MaterialFlowReportService;
+import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 import com.qcadoo.report.api.xls.XlsUtil;
@@ -48,21 +48,19 @@ import com.qcadoo.report.api.xls.XlsUtil;
 public final class MaterialFlowXlsService extends XlsDocumentService {
 
 	@Autowired
-	private MaterialFlowReportService materialFlowReportService;
+	private MaterialFlowService materialFlowService;
 	
     private static final Logger LOG = LoggerFactory.getLogger(MaterialFlowXlsService.class);
 
-    public final void generateDocument(final Entity entity, final Locale locale)
+    public final void generateDocument(final Entity entity, final Map<Entity, BigDecimal> reportData, final Locale locale)
             throws IOException {
-    	Map<Entity, BigDecimal> reportData = materialFlowReportService.createReportData(entity);
-    	
         setDecimalFormat((DecimalFormat) DecimalFormat.getInstance(locale));
         getDecimalFormat().setMaximumFractionDigits(3);
         getDecimalFormat().setMinimumFractionDigits(3);
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet(getReportTitle(locale));
         addHeader(sheet, locale);
-        addSeries(sheet, reportData);
+        addSeries(sheet, entity);
         sheet.setZoom(4, 3);
         FileOutputStream outputStream = null;
         try {
@@ -95,14 +93,17 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
         cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
     }
 
-    protected void addSeries(final HSSFSheet sheet, Map<Entity, BigDecimal> reportData) {
-        int rowNum = 1;
+    @Override
+    protected void addSeries(final HSSFSheet sheet, final Entity materialFlowReport) {
+    	Map<Entity, BigDecimal> reportData = materialFlowService.createReportData(materialFlowReport);
+    	
+    	int rowNum = 1;
         for (Map.Entry<Entity, BigDecimal> data : reportData.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(data.getKey().getBelongsToField("product").getStringField("number"));
-            row.createCell(1).setCellValue(data.getKey().getBelongsToField("product").getStringField("name"));
+            row.createCell(0).setCellValue(data.getKey().getStringField("number"));
+            row.createCell(1).setCellValue(data.getKey().getStringField("name"));
             row.createCell(2).setCellValue(this.getDecimalFormat().format(data.getValue()));
-            row.createCell(3).setCellValue(data.getKey().getBelongsToField("product").getStringField("unit"));
+            row.createCell(3).setCellValue(data.getKey().getStringField("unit"));
         }
         sheet.autoSizeColumn((short) 0);
         sheet.autoSizeColumn((short) 1);
@@ -120,7 +121,4 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
         return "";
     }
 
-    @Override
-    protected void addSeries(final HSSFSheet sheet, final Entity entity) {
-    }
 }
