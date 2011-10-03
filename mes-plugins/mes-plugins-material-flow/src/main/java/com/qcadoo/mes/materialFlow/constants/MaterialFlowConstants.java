@@ -38,7 +38,7 @@ public interface MaterialFlowConstants {
 
     public static final String MODEL_STOCK_AREAS = "stockAreas";
 
-    public static final String MODEL_MATERIAL_FLOW_REPORT = "materialFlowReport";
+    public static final String MODEL_MATERIALS_IN_STOCK_AREAS = "materialsInStockAreas";
 
     public static final String MODEL_PRODUCT = "product";
     
@@ -47,9 +47,9 @@ public interface MaterialFlowConstants {
 
     public static final String VIEW_STOCK_CORRECTION_LIST = "stockCorrectionDetail";
 
-    public static final String VIEW_MATERIAL_FLOW_REPORT_DETAILS = "materialFlowReportDetails";
+    public static final String VIEW_MATERIALS_IN_STOCK_AREAS_DETAILS = "materialsInStockAreasDetails";
 
-    public static final String VIEW_MATERIAL_FLOW_REPORT_LIST = "materialFlowReportList";
+    public static final String VIEW_MATERIALS_IN_STOCK_AREAS_LIST = "materialsInStockAreasList";
 
     public static final String VIEW_MATERIAL_FLOW_DETAIL = "materialFlowDetail";
 

@@ -64,27 +64,27 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
     private static final Logger LOG = LoggerFactory.getLogger(MaterialFlowPdfService.class);
     
     @Override
-    protected void buildPdfContent(final Document document, final Entity materialFlowReport,
+    protected void buildPdfContent(final Document document, final Entity materialsInStockAreas,
             final Locale locale) throws DocumentException {
-    	Map<Entity, BigDecimal> reportData = materialFlowService.createReportData(materialFlowReport);
+    	Map<Entity, BigDecimal> reportData = materialFlowService.createReportData(materialsInStockAreas);
     	
     	String documenTitle = getTranslationService().translate("materialFlow.materialFlow.report.title", locale);
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
-        PdfUtil.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) materialFlowReport.getField("date"),
-                materialFlowReport.getStringField("worker"));
+        PdfUtil.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) materialsInStockAreas.getField("date"),
+                materialsInStockAreas.getStringField("worker"));
 
         PdfPTable panelTable = PdfUtil.createPanelTable(2);
         PdfUtil.addTableCellAsTable(panelTable,
                 getTranslationService().translate("materialFlow.materialFlow.report.panel.materialFlowForDate", locale),
-                ((Date) materialFlowReport.getField("materialFlowForDate")).toString(), null, PdfUtil.getArialBold10Dark(),
+                ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString(), null, PdfUtil.getArialBold10Dark(),
                 PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(panelTable, getTranslationService()
                 .translate("materialFlow.materialFlow.report.panel.date", locale),
-                ((Date) materialFlowReport.getField("date")).toString(), null, PdfUtil.getArialBold10Dark(),
+                ((Date) materialsInStockAreas.getField("date")).toString(), null, PdfUtil.getArialBold10Dark(),
 
                 PdfUtil.getArialRegular10Dark());
         
-        List<Entity> stockAreas = materialFlowReport.getHasManyField("stockAreas");
+        List<Entity> stockAreas = materialsInStockAreas.getHasManyField("stockAreas");
         List<String> names = new ArrayList<String>();
         for (Entity component : stockAreas) {
         	Entity stockArea = (Entity) component.getField("stockAreas");

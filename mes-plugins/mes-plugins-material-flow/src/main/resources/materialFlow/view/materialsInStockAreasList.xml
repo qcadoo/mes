@@ -26,8 +26,8 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="materialFlowReportList" 
-	modelName="materialFlowReport" 
+	name="materialsInStockAreasList" 
+	modelName="materialsInStockAreas" 
 	menuAccessible="true">
 		<component type="window" name="window" reference = "window">
 			<ribbon>
@@ -41,7 +41,7 @@
 					message="qcadooView.message.noRecordSelected" />
 			</group>
 			</ribbon>
-			<component type="grid" name="materialFlowReports" reference="grid">
+			<component type="grid" name="materialsInStockAreas" reference="grid">
 				<option type="column" name="name" fields="name" link="true"
 					width="300" />
 				<option type="column" name="generated" fields="generated"
@@ -50,12 +50,12 @@
 				<option type="order" column="name" direction="asc" />
 				<option type="searchable" value="name,generated,worker" />
 				<option type="orderable" value="name,generated,worker" />
-				<option type="correspondingView" value="materialFlow/materialFlowReportDetails" />
+				<option type="correspondingView" value="materialFlow/materialsInStockAreasDetails" />
 				<option type="correspondingComponent" value="form" />
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
  				<listener event="printMaterialFlow" 
- 					class="com.qcadoo.mes.materialFlow.MaterialFlowReportService" method="printMaterialFlow" /> 
+ 					class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService" method="printMaterialFlow" /> 
 				<script>
 				<![CDATA[
 					var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
@@ -86,7 +86,7 @@
 		<option type="header" value="false" />
 	</component>
 	<hooks>
- 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowReportService" 
+ 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService" 
  			method="setGridGenerateButtonState" /> 
 	</hooks>
 </view>

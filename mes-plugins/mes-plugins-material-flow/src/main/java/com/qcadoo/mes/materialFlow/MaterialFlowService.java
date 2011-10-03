@@ -30,10 +30,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +44,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchProjection;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
@@ -232,8 +229,8 @@ public class MaterialFlowService {
         }
     }
 
-    public Map<Entity, BigDecimal> createReportData(Entity materialFlowReport) {
-        List<Entity> stockAreas = new ArrayList<Entity>(materialFlowReport.getHasManyField("stockAreas"));
+    public Map<Entity, BigDecimal> createReportData(Entity materialsInStockAreas) {
+        List<Entity> stockAreas = new ArrayList<Entity>(materialsInStockAreas.getHasManyField("stockAreas"));
         Map<Entity, BigDecimal> reportData = new HashMap<Entity, BigDecimal>();
         
         List<Entity> products = new ArrayList<Entity>();
@@ -244,7 +241,7 @@ public class MaterialFlowService {
 	        
 	        products = getProductsForReport(stockAreaNumber);
 	        
-	        String forDate = ((Date) materialFlowReport.getField("materialFlowForDate")).toString();
+	        String forDate = ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString();
 	        for (Entity product : products) {
                 BigDecimal quantity = calculateShouldBe(stockAreaNumber,
                         product.getStringField("number"), forDate);

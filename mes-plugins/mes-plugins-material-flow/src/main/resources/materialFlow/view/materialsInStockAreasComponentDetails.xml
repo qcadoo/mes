@@ -26,14 +26,14 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="materialFlowReportComponentDetails"
-	modelName="materialFlowReportComponent">
+	name="materialsInStockAreasComponentDetails"
+	modelName="materialsInStockAreasComponent">
 	
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back, actions.saveBack"/>
 		</ribbon>
-		<component type="form" name="materialFlowReportComponent"
+		<component type="form" name="materialsInStockAreasComponent"
 			reference="form">
 			<component type="gridLayout" name="gridLayout" columns="1"
 				rows="1">

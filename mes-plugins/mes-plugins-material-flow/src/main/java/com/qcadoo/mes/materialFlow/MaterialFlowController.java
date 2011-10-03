@@ -51,21 +51,21 @@ public class MaterialFlowController {
     @Autowired
     private TranslationService translationService;
 
-    @RequestMapping(value = "materialFlow/materialFlowReport.pdf", method = RequestMethod.GET)
-    public void materialFlowReportPdf(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
+    @RequestMapping(value = "materialFlow/materialsInStockAreas.pdf", method = RequestMethod.GET)
+    public void materialsInStockAreasPdf(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
         DataDefinition dataDefinition = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowConstants.MODEL_MATERIAL_FLOW_REPORT);
-        Entity materialFlowReport = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(materialFlowReport,
+                MaterialFlowConstants.MODEL_MATERIALS_IN_STOCK_AREAS);
+        Entity materialsInStockAreas = dataDefinition.get(Long.parseLong(id));
+        ReportUtil.sentTranslatedFileName(materialsInStockAreas,
                 translationService.translate("materialFlow.materialFlow.report.fileName", locale), "", PdfUtil.PDF_EXTENSION, response);
-        ReportUtil.sentFileAsAttachement(materialFlowReport.getStringField("fileName") + PdfUtil.PDF_EXTENSION,
+        ReportUtil.sentFileAsAttachement(materialsInStockAreas.getStringField("fileName") + PdfUtil.PDF_EXTENSION,
                 ReportUtil.PDF_CONTENT_TYPE, response);
     }
 
-    @RequestMapping(value = "materialFlow/materialFlowReport.xls", method = RequestMethod.GET)
-    public void materialFlowReportXls(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
+    @RequestMapping(value = "materialFlow/materialsInStockAreas.xls", method = RequestMethod.GET)
+    public void materialsInStockAreasXls(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
         DataDefinition dataDefinition = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowConstants.MODEL_MATERIAL_FLOW_REPORT);
+                MaterialFlowConstants.MODEL_MATERIALS_IN_STOCK_AREAS);
         Entity materialFlow = dataDefinition.get(Long.parseLong(id));
         ReportUtil.sentTranslatedFileName(materialFlow, translationService.translate("materialFlow.materialFlow.report.fileName", locale),
                 "", XlsUtil.XLS_EXTENSION, response);

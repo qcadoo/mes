@@ -24,19 +24,25 @@
     ***************************************************************************
 
 -->
-<model name="materialFlowReportComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+<model name="materialsInStockAreas" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="materialFlowReport" model="materialFlowReport"
-			lazy="false" required="true" />
-		<belongsTo name="stockAreas" plugin="materialFlow" model="stockAreas" lazy="false" required="true" />
+		<string name="name" required="true">
+			<validatesLength max="255" />
+		</string>
+		<date name="materialFlowForDate" required="true"/>
+		<datetime name="date" />
+		<string name="worker" />
+		<boolean name="generated" />
+		<string name= "fileName" />
+		<hasMany name="stockAreas" model="materialsInStockAreasComponent"
+			joinField="materialsInStockAreas" cascade="delete" copyable="true" />
 	</fields>
 	<hooks>
-		<!-- <validatesWith class="com.qcadoo.mes.orders.OrderService"
-			method="checkIfOrderHasTechnology" /> -->
-		<validatesWith class="com.qcadoo.mes.materialFlow.MaterialFlowReportService"
-			method="checkMaterialFlowComponentUniqueness" />
+		<onCopy class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService"
+			method="clearGeneratedOnCopy" />
 	</hooks>
-	<identifier expression="#stockAreas['number'] + ' - ' + #stockAreas['name']" />
-</model>	
+	<identifier expression="#name" />
+</model>

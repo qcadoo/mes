@@ -65,9 +65,9 @@
 		<model:model model="stockCorrection" resource="model/stockCorrection.xml" />
 		<model:model model="transfer" resource="model/transfer.xml" />
 		<model:model model="stockAreas" resource="model/stockAreas.xml" />		
-		<model:model model="materialFlowReport" resource="model/materialFlowReport.xml" />
-		<model:model model="materialFlowReportComponent"
-			resource="model/materialFlowReportComponent.xml" />
+		<model:model model="materialsInStockAreas" resource="model/materialsInStockAreas.xml" />
+		<model:model model="materialsInStockAreasComponent"
+			resource="model/materialsInStockAreasComponent.xml" />
 		
 		<model:model-field plugin="basic" model="product" >
             <model:hasMany name="transfer" plugin="materialFlow"
@@ -75,8 +75,8 @@
         </model:model-field>
 		
 		<model:model-field plugin="materialFlow" model="stockAreas">
-			<model:hasMany name="materialFlowReport" plugin="materialFlow"
-				model="materialFlowReportComponent" joinField="stockAreas" />
+			<model:hasMany name="materialsInStockAreas" plugin="materialFlow"
+				model="materialsInStockAreasComponent" joinField="stockAreas" />
 		</model:model-field>
 		
 		<menu:menu-category name="materialFlow" />
@@ -91,8 +91,8 @@
 			view="transferList" />
 		<menu:menu-item name="stockAreass" category="materialFlow"
 			view="stockAreasList" />			
-		<menu:menu-item name="materialFlowReport" category="reports"
-			view="materialFlowReportList" />
+		<menu:menu-item name="materialsInStockAreas" category="reports"
+			view="materialsInStockAreasList" />
 		
 		<view:view resource="view/transferList.xml" />
 		<view:view resource="view/transferDetail.xml" />
@@ -100,9 +100,9 @@
 		<view:view resource="view/stockCorrectionDetail.xml" />
 		<view:view resource="view/stockAreasList.xml" />
 		<view:view resource="view/stockAreasDetail.xml" />
-		<view:view resource="view/materialFlowReportList.xml" />
-		<view:view resource="view/materialFlowReportDetails.xml" />		
-		<view:view resource="view/materialFlowReportComponentDetails.xml" />
+		<view:view resource="view/materialsInStockAreasList.xml" />
+		<view:view resource="view/materialsInStockAreasDetails.xml" />		
+		<view:view resource="view/materialsInStockAreasComponentDetails.xml" />
 		
 		<view:resource uri="public/**/*" />
 	</modules>
