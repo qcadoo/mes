@@ -84,12 +84,13 @@ public class MaterialFlowService {
 
         SearchResult resultTo = null;
         SearchResult resultFrom = null;
-
+        
         if (lastCorrectionDate == null) {
             resultTo = transferTo.find(
                     "where stockAreasTo = '" + stockAreas + "' and product = '" + product + "' and date <= '" + forDate + "'")
                     .list();
-
+            
+            
             resultFrom = transferFrom.find(
                     "where stockAreasFrom = '" + stockAreas + "' and product = '" + product + "' and date <= '" + forDate + "'")
                     .list();
@@ -105,7 +106,7 @@ public class MaterialFlowService {
         }
 
         for (Entity e : resultTo.getEntities()) {
-            quantity = (BigDecimal) e.getField("quantity");
+           	quantity = (BigDecimal) e.getField("quantity");
             countProductIn = countProductIn.add(quantity);
         }
 
@@ -113,9 +114,8 @@ public class MaterialFlowService {
             quantity = (BigDecimal) e.getField("quantity");
             countProductOut = countProductOut.add(quantity);
         }
-
+        
         if (lastCorrectionDate == null) {
-
             countProductIn = countProductIn.subtract(countProductOut);
         } else {
             countProductIn = countProductIn.add(countProduct);
