@@ -46,6 +46,8 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchProjection;
+import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
@@ -266,12 +268,12 @@ public class MaterialFlowService {
     	
     	products = (List<Entity>) dataDefProduct.find()
     		.createAlias("transfer", "t")
+    		.addOrder(SearchOrders.asc("t.product.id"))
+    		.setProjection(SearchProjections.distinct(SearchProjections.field("t.product")))
     		.add(SearchRestrictions.eqField("t.product.id", "id"))
     		.add(SearchRestrictions.eq("t.stockAreasTo.id", id))
-    		.addOrder(SearchOrders.asc("id"))
     		.list().getEntities();
     	
-    	Set<Entity> set = new HashSet<Entity>(products);    	
-    	return new ArrayList<Entity>(set);
+    	return products;
     }
 }
