@@ -47,9 +47,9 @@ import com.qcadoo.report.api.xls.XlsUtil;
 @Service
 public final class MaterialFlowXlsService extends XlsDocumentService {
 
-	@Autowired
-	private MaterialFlowService materialFlowService;
-	
+    @Autowired
+    private MaterialFlowService materialFlowService;
+    
     private static final Logger LOG = LoggerFactory.getLogger(MaterialFlowXlsService.class);
 
     public final void generateDocument(final Entity entity, final Map<Entity, BigDecimal> reportData, final Locale locale)
@@ -95,9 +95,9 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
 
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity materialsInStockAreas) {
-    	Map<Entity, BigDecimal> reportData = materialFlowService.createReportData(materialsInStockAreas);
-    	
-    	int rowNum = 1;
+        Map<Entity, BigDecimal> reportData = materialFlowService.calculateMaterialQuantitiesInStockArea(materialsInStockAreas);
+        
+        int rowNum = 1;
         for (Map.Entry<Entity, BigDecimal> data : reportData.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(data.getKey().getStringField("number"));

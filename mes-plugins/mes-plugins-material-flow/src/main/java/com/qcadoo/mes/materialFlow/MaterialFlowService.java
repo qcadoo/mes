@@ -56,12 +56,12 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 public class MaterialFlowService {
 
     @Autowired
-    DataDefinitionService dataDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public BigDecimal calculateShouldBe(final String stockAreas, final String product, final String forDate) {
+    public BigDecimal calculateShouldBeInStockArea(final String stockAreas, final String product, final String forDate) {
 
         BigDecimal countProductIn = BigDecimal.ZERO;
         BigDecimal countProductOut = BigDecimal.ZERO;
@@ -106,7 +106,7 @@ public class MaterialFlowService {
         }
 
         for (Entity e : resultTo.getEntities()) {
-           	quantity = (BigDecimal) e.getField("quantity");
+               quantity = (BigDecimal) e.getField("quantity");
             countProductIn = countProductIn.add(quantity);
         }
 
@@ -144,7 +144,7 @@ public class MaterialFlowService {
                 String productNumber = product.getFieldValue().toString();
                 String forDate = date.getFieldValue().toString();
 
-                BigDecimal shouldBe = calculateShouldBe(stockAreasNumber, productNumber, forDate);
+                BigDecimal shouldBe = calculateShouldBeInStockArea(stockAreasNumber, productNumber, forDate);
 
                 if (shouldBe != null && shouldBe != BigDecimal.ZERO) {
                     should.setFieldValue(shouldBe);
@@ -194,7 +194,7 @@ public class MaterialFlowService {
         DataDefinition instructionDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
 
         @SuppressWarnings("deprecation")
-		SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isIdEq(productId);
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isIdEq(productId);
 
         SearchResult searchResult = searchCriteria.list();
         if (searchResult.getTotalNumberOfEntities() == 1) {
@@ -229,48 +229,48 @@ public class MaterialFlowService {
         }
     }
 
-    public Map<Entity, BigDecimal> createReportData(Entity materialsInStockAreas) {
+    public Map<Entity, BigDecimal> calculateMaterialQuantitiesInStockArea(Entity materialsInStockAreas) {
         List<Entity> stockAreas = new ArrayList<Entity>(materialsInStockAreas.getHasManyField("stockAreas"));
         Map<Entity, BigDecimal> reportData = new HashMap<Entity, BigDecimal>();
         
         List<Entity> products = new ArrayList<Entity>();
-               
+        
         for (Entity component : stockAreas) {
-        	Entity stockArea = (Entity) component.getField("stockAreas");
-	        String stockAreaNumber = stockArea.getField("number").toString();
-	        
-	        products = getProductsForReport(stockAreaNumber);
-	        
-	        String forDate = ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString();
-	        for (Entity product : products) {
-                BigDecimal quantity = calculateShouldBe(stockAreaNumber,
+            Entity stockArea = (Entity) component.getField("stockAreas");
+            String stockAreaNumber = stockArea.getField("number").toString();
+            
+            products = getProductsSeenInStockArea(stockAreaNumber);
+            
+            String forDate = ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString();
+            for (Entity product : products) {
+                BigDecimal quantity = calculateShouldBeInStockArea(stockAreaNumber,
                         product.getStringField("number"), forDate);
                
                 if (reportData.containsKey(product))
-                	reportData.put(product, reportData.get(product).add(quantity));
+                    reportData.put(product, reportData.get(product).add(quantity));
                 else
-                	reportData.put(product, quantity);
-	        }
+                    reportData.put(product, quantity);
+            }
         }
         return reportData;
     }
     
-    private List<Entity> getProductsForReport(String stockAreaNumber) {
-    	List<Entity> products = new ArrayList<Entity>();
-    	
-    	Long id = Long.valueOf(stockAreaNumber);
-    	
-    	DataDefinition dataDefProduct = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER_BASIC, 
-    			MaterialFlowConstants.MODEL_PRODUCT);
-    	
-    	products = (List<Entity>) dataDefProduct.find()
-    		.createAlias("transfer", "t")
-    		.addOrder(SearchOrders.asc("t.product.id"))
-    		.setProjection(SearchProjections.distinct(SearchProjections.field("t.product")))
-    		.add(SearchRestrictions.eqField("t.product.id", "id"))
-    		.add(SearchRestrictions.eq("t.stockAreasTo.id", id))
-    		.list().getEntities();
-    	
-    	return products;
+    public List<Entity> getProductsSeenInStockArea(String stockAreaNumber) {
+        List<Entity> products = new ArrayList<Entity>();
+        
+        Long id = Long.valueOf(stockAreaNumber);
+        
+        DataDefinition dataDefProduct = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER_BASIC, 
+                MaterialFlowConstants.MODEL_PRODUCT);
+        
+        products = (List<Entity>) dataDefProduct.find()
+            .createAlias("transfer", "t")
+            .addOrder(SearchOrders.asc("t.product.id"))
+            .setProjection(SearchProjections.distinct(SearchProjections.field("t.product")))
+            .add(SearchRestrictions.eqField("t.product.id", "id"))
+            .add(SearchRestrictions.eq("t.stockAreasTo.id", id))
+            .list().getEntities();
+        
+        return products;
     }
 }

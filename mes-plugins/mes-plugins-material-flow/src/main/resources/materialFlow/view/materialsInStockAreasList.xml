@@ -34,10 +34,10 @@
 				<template name="standardGridTemplate" />
 				<group name="export">
 				<smallButton name="pdf" icon="pdfIcon16.png"
-					action="#{grid}.fireEvent(printMaterialFlow,pdf);" state="disabled"
+					action="#{grid}.fireEvent(printMaterialsInStockAreasDocuments,pdf);" state="disabled"
 					message="qcadooView.message.noRecordSelected" />
 				<smallButton name="xls" icon="xlsIcon16.png"
-					action="#{grid}.fireEvent(printMaterialFlow,xls);" state="disabled"
+					action="#{grid}.fireEvent(printMaterialsInStockAreasDocuments,xls);" state="disabled"
 					message="qcadooView.message.noRecordSelected" />
 			</group>
 			</ribbon>
@@ -54,8 +54,8 @@
 				<option type="correspondingComponent" value="form" />
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
- 				<listener event="printMaterialFlow" 
- 					class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService" method="printMaterialFlow" /> 
+ 				<listener event="printMaterialsInStockAreasDocuments" 
+ 					class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService" method="printMaterialsInStockAreasDocuments" /> 
 				<script>
 				<![CDATA[
 					var xlsRibbonItem = #{window}.getRibbonItem("export.xls");

@@ -66,7 +66,7 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
     @Override
     protected void buildPdfContent(final Document document, final Entity materialsInStockAreas,
             final Locale locale) throws DocumentException {
-    	Map<Entity, BigDecimal> reportData = materialFlowService.createReportData(materialsInStockAreas);
+    	Map<Entity, BigDecimal> reportData = materialFlowService.calculateMaterialQuantitiesInStockArea(materialsInStockAreas);
     	
     	String documenTitle = getTranslationService().translate("materialFlow.materialFlow.report.title", locale);
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);

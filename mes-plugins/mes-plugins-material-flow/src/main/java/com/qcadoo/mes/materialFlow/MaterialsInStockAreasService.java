@@ -37,11 +37,11 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class MaterialsInStockAreasService {
-	
-	@Autowired
-	DataDefinitionService dataDefinitionService;
-	
-	@Autowired
+    
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+    
+    @Autowired
     private TranslationService translationService;
 
     @Autowired
@@ -49,27 +49,27 @@ public class MaterialsInStockAreasService {
 
     @Autowired
     private MaterialFlowPdfService materialFlowPdfService;
-	
+    
     @Autowired
     private MaterialFlowXlsService materialFlowXlsService;
     
     @Value("${reportPath}")
     private String path;
      
-	public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
         entity.setField("generated", false);
         entity.setField("date", null);
         entity.setField("worker", null);
         return true;
     }
-	
-	public void setGenerateButtonState(final ViewDefinitionState state) {
+    
+    public void setGenerateButtonState(final ViewDefinitionState state) {
         setGenerateButtonState(state, state.getLocale(), MaterialFlowConstants.PLUGIN_IDENTIFIER, MODEL_MATERIALS_IN_STOCK_AREAS);
     }
-	
-	@SuppressWarnings("unchecked")
-	public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
+    
+    @SuppressWarnings("unchecked")
+    public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
             final String entityName) {
         WindowComponent window = (WindowComponent) state.getComponentByReference("window");
         FormComponent form = (FormComponent) state.getComponentByReference("form");
@@ -112,44 +112,44 @@ public class MaterialsInStockAreasService {
         deleteButton.requestUpdate(true);
         window.requestRibbonRender();
     }
-	
-	public void setGridGenerateButtonState(final ViewDefinitionState state) {
+    
+    public void setGridGenerateButtonState(final ViewDefinitionState state) {
         setGridGenerateButtonState(state, state.getLocale(), MaterialFlowConstants.PLUGIN_IDENTIFIER, MODEL_MATERIALS_IN_STOCK_AREAS);
     }
-	
-	public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
-	            final String entityName) {
-	    WindowComponent window = (WindowComponent) state.getComponentByReference("window");
-	    GridComponent grid = (GridComponent) state.getComponentByReference("grid");
-	    RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
+    
+    public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
+                final String entityName) {
+        WindowComponent window = (WindowComponent) state.getComponentByReference("window");
+        GridComponent grid = (GridComponent) state.getComponentByReference("grid");
+        RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
 
-	    if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
-	    	deleteButton.setMessage(null);
-	        deleteButton.setEnabled(false);
-	    } else {
-	        boolean canDelete = true;
-	        for (Long entityId : grid.getSelectedEntitiesIds()) {
-	                Entity materialsInStockAreasEntity = dataDefinitionService.get(plugin, entityName).get(entityId);
+        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
+            deleteButton.setMessage(null);
+            deleteButton.setEnabled(false);
+        } else {
+            boolean canDelete = true;
+            for (Long entityId : grid.getSelectedEntitiesIds()) {
+                    Entity materialsInStockAreasEntity = dataDefinitionService.get(plugin, entityName).get(entityId);
 
-	                if ((Boolean) materialsInStockAreasEntity.getField("generated")) {
-	                    canDelete = false;
-	                        break;
-	                }
-	            }
-	            if (canDelete) {
-	                deleteButton.setMessage(null);
-	                deleteButton.setEnabled(true);
-	            } else {
-	                deleteButton.setMessage("materialFlow.ribbon.message.selectedRecordAlreadyGenerated");
-	                deleteButton.setEnabled(false);
-	            }
-	        }
+                    if ((Boolean) materialsInStockAreasEntity.getField("generated")) {
+                        canDelete = false;
+                            break;
+                    }
+                }
+                if (canDelete) {
+                    deleteButton.setMessage(null);
+                    deleteButton.setEnabled(true);
+                } else {
+                    deleteButton.setMessage("materialFlow.ribbon.message.selectedRecordAlreadyGenerated");
+                    deleteButton.setEnabled(false);
+                }
+            }
 
-	        deleteButton.requestUpdate(true);
-	        window.requestRibbonRender();
-	    }
-	
-	public void disableFormForExistingMaterialsInStockAreas(final ViewDefinitionState state) {
+            deleteButton.requestUpdate(true);
+            window.requestRibbonRender();
+        }
+    
+    public void disableFormForExistingMaterialsInStockAreas(final ViewDefinitionState state) {
         ComponentState name = state.getComponentByReference("name");
         ComponentState materialFlowForDate = state.getComponentByReference("materialFlowForDate");
         ComponentState materialsInStockAreasComponents = state.getComponentByReference("materialsInStockAreasComponents");
@@ -174,7 +174,7 @@ public class MaterialsInStockAreasService {
         }
 
         @SuppressWarnings("deprecation")
-		SearchResult searchResult = dataDefinition.find().belongsTo("stockAreas", stockAreas.getId())
+        SearchResult searchResult = dataDefinition.find().belongsTo("stockAreas", stockAreas.getId())
                 .belongsTo("materialsInStockAreas", materialsInStockAreas.getId()).list();
 
         if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
@@ -186,7 +186,7 @@ public class MaterialsInStockAreasService {
         }
     }
     
-    public void generateMaterialFlow(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void generateDataForMaterialsInStockAreasReport(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state instanceof FormComponent) {
             ComponentState generated = viewDefinitionState.getComponentByReference("generated");
             ComponentState date = viewDefinitionState.getComponentByReference("date");
@@ -231,7 +231,7 @@ public class MaterialsInStockAreasService {
                     (Long) state.getFieldValue());
 
             try {
-                generateMaterialReqDocuments(state, materialsInStockAreas);
+                generatePdfAndXlsDocumentsForMaterialsInStockAreas(state, materialsInStockAreas);
                 state.performEvent(viewDefinitionState, "reset", new String[0]);
             } catch (IOException e) {
                 throw new IllegalStateException(e.getMessage(), e);
@@ -241,14 +241,14 @@ public class MaterialsInStockAreasService {
         }
     }
     
-    private void generateMaterialReqDocuments(final ComponentState state, final Entity materialsInStockAreas) throws IOException,
-    	DocumentException {
-    	Entity materialFlowWithFileName = updateFileName(materialsInStockAreas,
-    			getFullFileName((Date) materialsInStockAreas.getField("date"), materialsInStockAreas.getStringField("name")),
+    private void generatePdfAndXlsDocumentsForMaterialsInStockAreas(final ComponentState state, final Entity materialsInStockAreas) throws IOException,
+        DocumentException {
+        Entity materialFlowWithFileName = updateFileName(materialsInStockAreas,
+                getFullFileName((Date) materialsInStockAreas.getField("date"), materialsInStockAreas.getStringField("name")),
         MaterialFlowConstants.MODEL_MATERIALS_IN_STOCK_AREAS);
-    	Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_COMPANY).find().uniqueResult();
-    	materialFlowPdfService.generateDocument(materialFlowWithFileName, company, state.getLocale());
-    	materialFlowXlsService.generateDocument(materialFlowWithFileName, company, state.getLocale());
+        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_COMPANY).find().uniqueResult();
+        materialFlowPdfService.generateDocument(materialFlowWithFileName, company, state.getLocale());
+        materialFlowXlsService.generateDocument(materialFlowWithFileName, company, state.getLocale());
     }
     
     private String getFullFileName(final Date date, final String fileName) {
@@ -260,7 +260,7 @@ public class MaterialsInStockAreasService {
         return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, entityName).save(entity);
     }
 
-    public void printMaterialFlow(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void printMaterialsInStockAreasDocuments(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state.getFieldValue() instanceof Long) {
             Entity materialsInStockAreas = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MODEL_MATERIALS_IN_STOCK_AREAS).get(
                     (Long) state.getFieldValue());

@@ -38,13 +38,13 @@
 				<!--<bigButton name="copy" icon="copyIcon24.png" action="#{form}.performCopy;" 
 					state="disabled"/> -->
 				<bigButton name="generate" icon="generateIcon24.png"
-					action="#{form}.fireEvent(generateMaterialFlow);" state="enabled" />
+					action="#{form}.fireEvent(generateDataForMaterialsInStockAreasReport);" state="enabled" />
 			</group>
 			<group name="export">
 				<smallButton name="pdf" icon="pdfIcon16.png"
-					action="#{form}.fireEvent(printMaterialFlow,pdf);" state="disabled" />
+					action="#{form}.fireEvent(printMaterialsInStockAreasDocuments,pdf);" state="disabled" />
 				<smallButton name="xls" icon="xlsIcon16.png"
-					action="#{form}.fireEvent(printMaterialFlow,xls);" state="disabled" />
+					action="#{form}.fireEvent(printMaterialsInStockAreasDocuments,xls);" state="disabled" />
 			</group>
 		</ribbon>
 		<component type="form" name="materialsInStockAreas" reference="form">
@@ -156,10 +156,10 @@
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
-			<listener event="printMaterialFlow"
-				class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService" method="printMaterialFlow" />
-			<listener event="generateMaterialFlow"
-				class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService" method="generateMaterialFlow" />
+			<listener event="printMaterialsInStockAreasDocuments"
+				class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService" method="printMaterialsInStockAreasDocuments" />
+			<listener event="generateDataForMaterialsInStockAreasReport"
+				class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService" method="generateDataForMaterialsInStockAreasReport" />
 		</component>
 	</component>
 	<hooks>
