@@ -23,18 +23,15 @@
  */
 package com.qcadoo.mes.ganttForShifts;
 
-import java.util.Date;
 import java.util.List;
 
-import org.joda.time.LocalTime;
-
-import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.components.ganttChart.GanttChartItem;
 import com.qcadoo.view.api.components.ganttChart.GanttChartItemResolver;
+import com.qcadoo.view.api.components.ganttChart.GanttChartScale;
 
 public interface ShiftsGanttChartItemResolver extends GanttChartItemResolver {
 
-    List<ShiftsService.ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo);
-
-    LocalTime[][] convertDayHoursToInt(final String string);
+    public List<GanttChartItem> getItemsForShift(final Entity shift, final GanttChartScale scale);
 
 }
