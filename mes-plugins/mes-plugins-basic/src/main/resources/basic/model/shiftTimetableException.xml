@@ -37,6 +37,6 @@
 		<belongsTo name="shift" model="shift" plugin="basic" lazy="false" required="true" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.basic.ShiftsService" method="validateShiftTimetableException"/>
+		<validatesWith class="com.qcadoo.mes.basic.ShiftsServiceImpl" method="validateShiftTimetableException"/>
 	</hooks>
 </model>
