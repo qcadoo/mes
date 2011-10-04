@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -81,7 +81,7 @@ public final class OrderService {
     private final Set<BeforeChangeStateListener> beforeChangeStateListeners = new HashSet<OrderService.BeforeChangeStateListener>();
 
     @Autowired
-    private ShiftsService shiftsService;
+    private ShiftsServiceImpl shiftsService;
 
     public boolean clearOrderDatesAndWorkersOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("state", "01new");
