@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.8
  *
  * This file is part of Qcadoo.
  *
@@ -23,14 +23,20 @@
  */
 package com.qcadoo.mes.orders;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -40,6 +46,9 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.plugin.api.Plugin;
+import com.qcadoo.plugin.api.PluginAccessor;
+import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -64,15 +73,25 @@ public final class OrderService {
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
+    private PluginAccessor pluginAccessor;
+
+    @Autowired
     private ExpressionService expressionService;
 
+    private final Set<BeforeChangeStateListener> beforeChangeStateListeners = new HashSet<OrderService.BeforeChangeStateListener>();
+
+    @Autowired
+    private ShiftsService shiftsService;
+
     public boolean clearOrderDatesAndWorkersOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("state", "01pending");
+        entity.setField("state", "01new");
         entity.setField("effectiveDateTo", null);
         entity.setField("endWorker", null);
         entity.setField("effectiveDateFrom", null);
         entity.setField("startWorker", null);
         entity.setField("doneQuantity", null);
+        entity.setField("externalNumber", null);
+        entity.setField("externalSynchronized", true);
         return true;
     }
 
@@ -122,7 +141,7 @@ public final class OrderService {
             return;
         }
 
-        orderState.setFieldValue("01pending");
+        orderState.setFieldValue("01new");
     }
 
     public void changeOrderStateForGrid(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -134,8 +153,10 @@ public final class OrderService {
 
             Entity order = orderDataDefinition.get((Long) state.getFieldValue());
 
-            if (Boolean.parseBoolean(args[0])) {
-                order.setField("state", "02inProgress");
+            if ("accept".equals(args[0])) {
+                order.setField("state", "02accepted");
+            } else if ("begin".equals(args[0])) {
+                order.setField("state", "03inProgress");
             } else {
                 if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
                     state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
@@ -150,7 +171,19 @@ public final class OrderService {
                     return;
                 }
 
-                order.setField("state", "03done");
+                order.setField("state", "04done");
+            }
+
+            if (hasIntegrationWithExternalSystem() && StringUtils.hasText((String) order.getField("externalNumber"))) {
+                order.setField("externalSynchronized", false);
+            } else {
+                order.setField("externalSynchronized", true);
+            }
+
+            for (BeforeChangeStateListener listener : beforeChangeStateListeners) {
+                if (!listener.canChange(state, order, order.getStringField("state"))) {
+                    return;
+                }
             }
 
             orderDataDefinition.save(order);
@@ -161,6 +194,11 @@ public final class OrderService {
             state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
                     MessageType.FAILURE);
         }
+    }
+
+    private boolean hasIntegrationWithExternalSystem() {
+        Plugin plugin = pluginAccessor.getPlugin("mesPluginsIntegrationErp");
+        return plugin != null && plugin.getState().equals(PluginState.ENABLED);
     }
 
     public void changeOrderStateForForm(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -175,8 +213,10 @@ public final class OrderService {
 
                 FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
 
-                if (Boolean.parseBoolean(args[0])) {
-                    orderState.setFieldValue("02inProgress");
+                if ("accept".equals(args[0])) {
+                    orderState.setFieldValue("02accepted");
+                } else if ("begin".equals(args[0])) {
+                    orderState.setFieldValue("03inProgress");
                 } else {
 
                     if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
@@ -191,7 +231,23 @@ public final class OrderService {
                         return;
                     }
 
-                    orderState.setFieldValue("03done");
+                    orderState.setFieldValue("04done");
+                }
+
+                FieldComponent externalSynchronized = (FieldComponent) viewDefinitionState
+                        .getComponentByReference("externalSynchronized");
+                FieldComponent externalNumber = (FieldComponent) viewDefinitionState.getComponentByReference("externalNumber");
+
+                if (hasIntegrationWithExternalSystem() && StringUtils.hasText((String) externalNumber.getFieldValue())) {
+                    externalSynchronized.setFieldValue("false");
+                } else {
+                    externalSynchronized.setFieldValue("true");
+                }
+
+                for (BeforeChangeStateListener listener : beforeChangeStateListeners) {
+                    if (!listener.canChange(state, order, (String) orderState.getFieldValue())) {
+                        return;
+                    }
                 }
 
                 state.performEvent(viewDefinitionState, "save", new String[0]);
@@ -291,7 +347,7 @@ public final class OrderService {
             Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     order.getEntityId());
 
-            if (entity != null && "03done".equals(entity.getStringField("state")) && order.isValid()) {
+            if (entity != null && "04done".equals(entity.getStringField("state")) && order.isValid()) {
                 disabled = true;
             }
         }
@@ -334,12 +390,12 @@ public final class OrderService {
         if (securityService.getCurrentUserName() == null) {
             return;
         }
-        if (("02inProgress".equals(entity.getField("state")) || "03done".equals(entity.getField("state")))
+        if (("03inProgress".equals(entity.getField("state")) || "04done".equals(entity.getField("state")))
                 && entity.getField("effectiveDateFrom") == null) {
             entity.setField("effectiveDateFrom", new Date());
             entity.setField("startWorker", securityService.getCurrentUserName());
         }
-        if ("03done".equals(entity.getField("state")) && entity.getField("effectiveDateTo") == null) {
+        if ("04done".equals(entity.getField("state")) && entity.getField("effectiveDateTo") == null) {
             entity.setField("effectiveDateTo", new Date());
             entity.setField("endWorker", securityService.getCurrentUserName());
         }
@@ -510,6 +566,58 @@ public final class OrderService {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public void disableOrderFormForExternalItems(final ViewDefinitionState state) {
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
+
+        if (form.getEntityId() == null) {
+            return;
+        }
+
+        Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                form.getEntityId());
+
+        if (entity == null) {
+            return;
+        }
+
+        String externalNumber = entity.getStringField("externalNumber");
+        boolean externalSynchronized = (Boolean) entity.getField("externalSynchronized");
+
+        if (StringUtils.hasText(externalNumber) || !externalSynchronized) {
+            state.getComponentByReference("number").setEnabled(false);
+            state.getComponentByReference("name").setEnabled(false);
+            state.getComponentByReference("contractor").setEnabled(false);
+            state.getComponentByReference("dateFrom").setEnabled(false);
+            state.getComponentByReference("dateTo").setEnabled(false);
+            state.getComponentByReference("product").setEnabled(false);
+            state.getComponentByReference("technology").setEnabled(false);
+            state.getComponentByReference("plannedQuantity").setEnabled(false);
+        }
+    }
+
+    public void registerBeforeChangeStateListener(final BeforeChangeStateListener listener) {
+        beforeChangeStateListeners.add(listener);
+    }
+
+    public static interface BeforeChangeStateListener {
+
+        boolean canChange(ComponentState gridOrForm, Entity order, String state);
+
+    }
+
+    public void checkPlannedDate(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        // TODO ALBR
+    }
+
+    public Date getDateFromField(final Object value) {
+        try {
+            return new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).parse((String) value);
+        } catch (ParseException e) {
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
 

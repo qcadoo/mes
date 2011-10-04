@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -40,7 +40,7 @@
 						<![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if (window.confirm("#{translate(qualityControl.qualityControl.window.ribbon.status.closeControl.confirm)}")) {
+									if (window.confirm("#{translate(qualityControls.qualityControl.window.ribbon.status.closeControl.confirm)}")) {
 										#{form}.performEvent('closeQualityControl', []);
 									};
 								}

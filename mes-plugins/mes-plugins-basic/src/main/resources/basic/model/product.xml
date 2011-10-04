@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="product" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" activable="true"
+<model name="product" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" activable="true" auditable="true"
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
@@ -40,7 +40,8 @@
 		<hasMany name="substitutes" model="substitute" joinField="product"
 			cascade="delete" copyable="true" />
 		<hasMany name="substituteComponents" model="substituteComponent"
-			joinField="product" cascade="none" />
+			joinField="product" cascade="nullify" />
+		<string name="externalNumber" />
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />

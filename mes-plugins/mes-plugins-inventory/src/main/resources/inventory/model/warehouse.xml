@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -31,7 +31,10 @@
 		<string name="number" required="true" unique="true">
 				<validatesLength max="40" />
 		</string>
+		<string name="name" required="true">
+		</string>
 	</fields>
 	<hooks>
-	</hooks>	
+	</hooks>
+	<identifier expression="#number + ' - ' + #name" />	
 </model>

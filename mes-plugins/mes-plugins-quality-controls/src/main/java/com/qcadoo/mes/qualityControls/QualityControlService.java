@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.8
  *
  * This file is part of Qcadoo.
  *
@@ -69,6 +69,8 @@ public final class QualityControlService {
 
     @Autowired
     private QualityControlForNumberService qualityControlForNumber;
+
+    private Integer DIGITS_NUMBER = 6;
 
     public void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state) {
         FieldComponent comment = (FieldComponent) state.getComponentByReference("comment");
@@ -511,6 +513,8 @@ public final class QualityControlService {
     public boolean clearQualityControlOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("closed", "0");
         entity.setField("controlResult", null);
+        entity.setField("number", qualityControlForNumber.generateNumber(dataDefinition.getPluginIdentifier(),
+                dataDefinition.getName(), DIGITS_NUMBER, entity.getStringField("qualityControlType")));
         return true;
     }
 

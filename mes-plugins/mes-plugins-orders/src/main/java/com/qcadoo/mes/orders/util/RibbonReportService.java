@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.8
  *
  * This file is part of Qcadoo.
  *
@@ -70,7 +70,7 @@ public class RibbonReportService {
                 boolean isAnyOrderClosed = false;
                 for (Entity orderComponent : orderComponents) {
                     Entity order = orderComponent.getBelongsToField("order");
-                    if (order.getField("state").equals("03done")) {
+                    if (order.getField("state").equals("04done")) {
                         isAnyOrderClosed = true;
                         break;
                     }
@@ -111,7 +111,7 @@ public class RibbonReportService {
                 boolean isAnyOrderClosed = false;
                 for (Entity orderComponent : orderComponents) {
                     Entity order = orderComponent.getBelongsToField("order");
-                    if (order.getField("state").equals("03done")) {
+                    if (order.getField("state").equals("04done")) {
                         isAnyOrderClosed = true;
                         break;
                     }

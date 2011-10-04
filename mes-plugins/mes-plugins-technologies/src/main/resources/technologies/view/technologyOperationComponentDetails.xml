@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -32,7 +32,7 @@
 	
 	<component type="window" name="window">
 		<ribbon>
-			<template name="standardFormTemplate"/>
+			<template name="standardFormTemplate" excludeItems="actions.copy, actions.delete" />
 		</ribbon>
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="1"
@@ -40,7 +40,7 @@
 				<layoutElement column="1" row="1">
 					<component type="lookup" name="operation" field="operation"
 						reference="operation">
-						<option type="column" name="name" fields="name" width="300" />
+						<option type="column" name="name" fields="name" width="300" link="true"/>
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
 						<option type="expression"
@@ -58,4 +58,7 @@
 		</component>
 		
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.technologies.TechnologyService" method="setLookupDisableInTechnologyOperationComponent" />
+	</hooks>
 </view>

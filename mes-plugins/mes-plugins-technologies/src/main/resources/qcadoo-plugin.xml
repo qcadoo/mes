@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="technologies" version="0.4.1"
+<plugin plugin="technologies" version="0.4.7"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -71,13 +71,13 @@
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="operationProductInComponents"
 				plugin="technologies" model="operationProductInComponent" joinField="product"
-				cascade="none" />
+				cascade="nullify" />
 		</model:model-field>
 
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="operationProductOutComponents"
 				plugin="technologies" model="operationProductOutComponent"
-				joinField="product" cascade="none" />
+				joinField="product" cascade="nullify" />
 		</model:model-field>
 
 		<model:model-field plugin="basic" model="product">

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.8
  *
  * This file is part of Qcadoo.
  *
@@ -28,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -83,9 +82,6 @@ public final class WorkPlanService {
 
     @Autowired
     private WorkPlanForProductXlsService workPlanForProductXlsService;
-
-    @Value("${reportPath}")
-    private String path;
 
     @Autowired
     private TranslationService translationService;
@@ -247,8 +243,7 @@ public final class WorkPlanService {
 
     private void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException,
             DocumentException {
-        Entity workPlanWithFileName = updateFileName(workPlan, getFullFileName((Date) workPlan.getField("date"), "Work_plan"),
-                WorkPlansConstants.MODEL_WORK_PLAN);
+        Entity workPlanWithFileName = workPlanForMachinePdfService.updateFileName(workPlan, "Work_plan");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .uniqueResult();
         workPlanForMachinePdfService.generateDocument(workPlanWithFileName, company, state.getLocale());
@@ -257,15 +252,6 @@ public final class WorkPlanService {
         workPlanForWorkerXlsService.generateDocument(workPlanWithFileName, company, state.getLocale());
         workPlanForProductPdfService.generateDocument(workPlanWithFileName, company, state.getLocale());
         workPlanForProductXlsService.generateDocument(workPlanWithFileName, company, state.getLocale());
-    }
-
-    private String getFullFileName(final Date date, final String fileName) {
-        return path + fileName + "_" + new SimpleDateFormat(DateUtils.REPORT_DATE_TIME_FORMAT).format(date) + "_";
-    }
-
-    private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
-        entity.setField("fileName", fileName);
-        return dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, entityName).save(entity);
     }
 
     public Entity printWorkPlanForOrder(final ComponentState state) {

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.8
  *
  * This file is part of Qcadoo.
  *
@@ -142,7 +142,9 @@ public class GanttOperationService {
 
         ComponentState window = (ComponentState) viewDefinitionState.getComponentByReference("form");
         Entity order = dataDefinitionService.get("orders", "order").get(orderId);
-        String realizationTime = order.getStringField("realizationTime");
+
+        String realizationTime = order.getField("realizationTime").toString();
+
         if ("".equals(realizationTime) || realizationTime == null) {
             window.addMessage(
                     translationService.translate("orders.order.report.realizationTime", viewDefinitionState.getLocale()),
@@ -151,4 +153,14 @@ public class GanttOperationService {
 
     }
 
+    public void fillTitleLabel(final ViewDefinitionState viewDefinitionState) {
+
+        ComponentState title = (ComponentState) viewDefinitionState.getComponentByReference("title");
+        Entity order = dataDefinitionService.get("orders", "order").get(orderId);
+        String number = order.getField("number").toString();
+        String name = order.getField("name").toString();
+
+        title.setFieldValue(name + " - " + number);
+
+    }
 }

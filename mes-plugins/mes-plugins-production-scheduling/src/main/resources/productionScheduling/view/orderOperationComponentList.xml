@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -37,7 +37,7 @@
 					reference="orderOperationComponents" field="#{form}.orderOperationComponents">
 					<dataType name="operation">
 						<option type="nodeLabelExpression"
-							value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
+							value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
 						<option type="correspondingView"
 							value="productionScheduling/orderOperationComponentDetails" />
 						<option type="correspondingComponent" value="form" />

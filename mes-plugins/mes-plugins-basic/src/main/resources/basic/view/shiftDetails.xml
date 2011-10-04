@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -34,7 +34,7 @@
 			<template name="standardFormTemplate" />
 		</ribbon>
 		<component type="form" name="shift" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="6"
+			<component type="gridLayout" name="gridLayout" columns="10"
 				rows="8" hasBorders="false">
 				<layoutElement column="1" row="1" width="3">
 					<component type="input" name="name" field="name">
@@ -44,7 +44,7 @@
 				
 				<layoutElement column="1" row="2">
 					<component type="checkbox" name="mondayWorking" field="mondayWorking" reference="mondayWorking">
-						<option type="labelWidth" value="70" />
+						<option type="labelWidth" value="80" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 					</component>
@@ -55,7 +55,7 @@
 				
 				<layoutElement column="1" row="3">
 					<component type="checkbox" name="tuesdayWorking" field="tuesdayWorking" reference="tuesdayWorking">
-						<option type="labelWidth" value="70" />
+						<option type="labelWidth" value="80" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 					</component>
@@ -66,7 +66,7 @@
 				
 				<layoutElement column="1" row="4">
 					<component type="checkbox" name="wensdayWorking" field="wensdayWorking" reference="wensdayWorking">
-						<option type="labelWidth" value="70" />
+						<option type="labelWidth" value="80" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 						</component>
@@ -77,7 +77,7 @@
 				
 				<layoutElement column="1" row="5">
 					<component type="checkbox" name="thursdayWorking" field="thursdayWorking" reference="thursdayWorking">
-						<option type="labelWidth" value="70" />
+						<option type="labelWidth" value="80" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 					</component>
@@ -88,7 +88,7 @@
 				
 				<layoutElement column="1" row="6">
 					<component type="checkbox" name="fridayWorking" field="fridayWorking" reference="fridayWorking">
-						<option type="labelWidth" value="70" />
+						<option type="labelWidth" value="80" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 					</component>
@@ -99,7 +99,7 @@
 				
 				<layoutElement column="1" row="7">
 					<component type="checkbox" name="saturdayWorking" field="saturdayWorking" reference="saturdayWorking">
-						<option type="labelWidth" value="70" />
+						<option type="labelWidth" value="80" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 					</component>
@@ -110,7 +110,7 @@
 				
 				<layoutElement column="1" row="8">
 					<component type="checkbox" name="sundayWorking" field="sundayWorking" reference="sundayWorking">
-						<option type="labelWidth" value="70" />
+						<option type="labelWidth" value="80" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsService"
 								method="onDayCheckboxChange" />
 					</component>
@@ -118,13 +118,12 @@
 				<layoutElement column="2" row="8" width="2">
 					<component type="input" name="sundayHours" field="sundayHours" reference="sundayHours" hasLabel="false"/>
 				</layoutElement>
-				
-				<layoutElement column="4" row="1" width="3" height="8">
+				<layoutElement column="4" row="1" width="7" height="8">
 					<component type="grid" name="timetableExceptions" reference="timetableExceptions" source="#{form}.timetableExceptions">
-						<option type="column" name="name" fields="name" link="true" width="100"/>
-						<option type="column" name="fromDate" fields="fromDate" link="true" width="100"/>
-						<option type="column" name="toDate" fields="toDate" link="true" width="100"/>
-						<option type="column" name="type" fields="type" link="false" width="100"/>
+						<option type="column" name="name" fields="name" link="true" width="200"/>
+						<option type="column" name="fromDate" fields="fromDate" link="true" width="200"/>
+						<option type="column" name="toDate" fields="toDate" link="true" width="200"/>
+						<option type="column" name="type" fields="type" link="false" width="200"/>
 						<option type="order" column="fromDate" direction="desc"/>
 						<option type="correspondingView" value="basic/shiftTimetableExceptionDetails" />
 						<option type="correspondingComponent" value="form" />

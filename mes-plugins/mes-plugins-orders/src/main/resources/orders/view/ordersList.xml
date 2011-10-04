@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -40,21 +40,24 @@
 			</group>
 			<template name="standardGridTemplate" excludeGroups="actions"/>
 			<group name="status">
-				<bigButton name="activateOrder" icon="startIcon24.png"
+				<bigButton name="acceptOrder" icon="startIcon24.png"
 					state="disabled">
 					<script>
 						<![CDATA[
-							this.element.width(100);
 							this.addOnChangeListener({
 								onClick: function() {
 									this.element.width(100);
-									if (this.state == "begin") {
+									if (this.state == "accept") {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.acceptOrder.confirm)}")) {
+											#{grid}.performEvent('changeOrderStateForGrid', ['accept']);
+										};
+									} else if (this.state == "begin") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.activateOrder.confirm)}")) {
-											#{grid}.performEvent('changeOrderStateForGrid', [true]);
+											#{grid}.performEvent('changeOrderStateForGrid', ['begin']);
 										};
 									} else if (this.state == "finish") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.finishOrder.confirm)}")) {
-											#{grid}.performEvent('changeOrderStateForGrid', [false]);
+											#{grid}.performEvent('changeOrderStateForGrid', ['finish']);
 										};
 									}
 								}
@@ -75,7 +78,7 @@
 				<![CDATA[
 					var print = #{window}.getRibbonItem("export.print");
 					var generateListOfOrdersReport = #{window}.getRibbonItem("export.generateListOfOrdersReport");
-					var activateOrder = #{window}.getRibbonItem("status.activateOrder");
+					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
 					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
 					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
 					var listener = {
@@ -83,7 +86,7 @@
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 								print.disable();
 								generateListOfOrdersReport.disable();
-								activateOrder.disable();
+								acceptOrder.disable();
 								deleteButton.disable();
 								copyButton.disable();
 							} else {
@@ -91,35 +94,47 @@
 								if (selectedEntitiesArray.length == 1) {
 									print.enable();
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
-									if (selectedEntityStatus == '01pending') {
-										activateOrder.enable();
-										activateOrder.state = "begin";
-										activateOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.activateOrder)}");
-										activateOrder.setIcon('startIcon24.png');
-									} else if (selectedEntityStatus == '02inProgress') {
-										activateOrder.enable();
-										activateOrder.state = "finish";
-										activateOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.finishOrder)}");
-										activateOrder.setIcon('acceptIcon24.png');
+									var externalSynchronized = selectedEntitiesArray[0].fields.externalSynchronized;									
+									if (selectedEntityStatus == '01new' && externalSynchronized == '1') {
+										acceptOrder.enable();
+										acceptOrder.state = "accept";
+										acceptOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.acceptOrder)}");
+										acceptOrder.setIcon('startIcon24.png');
+									} else if (selectedEntityStatus == '02accepted' && externalSynchronized == '1') {
+										acceptOrder.enable();
+										acceptOrder.state = "begin";
+										acceptOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.activateOrder)}");
+										acceptOrder.setIcon('startIcon24.png');
+									} else if (selectedEntityStatus == '03inProgress' && externalSynchronized == '1') {
+										acceptOrder.enable();
+										acceptOrder.state = "finish";
+										acceptOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.finishOrder)}");
+										acceptOrder.setIcon('acceptIcon24.png');
 									} else {
-										activateOrder.disable();
+										acceptOrder.disable();
 									}
 								} else {
 									print.disable("#{translate(moreThanOneRecordSelected)}");
-									activateOrder.disable("#{translate(moreThanOneRecordSelected)}");
+									acceptOrder.disable("#{translate(moreThanOneRecordSelected)}");
 								}
 								copyButton.enable();
-								var noneClosed = true;
+								var hasClosed = false;
+								var hasExternal = false;
 								for (var i in selectedEntitiesArray) {
-									if (selectedEntitiesArray[i].fields.state == "03done") {
-										noneClosed = false;
+									if (selectedEntitiesArray[i].fields.state == "04done") {
+										hasClosed = true;
 										break;
+									} else if (selectedEntitiesArray[0].fields.externalSynchronized == '0' || (selectedEntitiesArray[i].fields.externalNumber != '' && selectedEntitiesArray[i].fields.externalNumber != undefined)) {
+										hasExternal = true;
+										break;	
 									}
 								}
-								if (noneClosed) {
-									deleteButton.enable();
-								} else {
+								if (hasClosed) {
 									deleteButton.disable("#{translate(orders.orders.ribbon.message.someStateIsDone)}");
+								} else if (hasExternal) {
+									deleteButton.disable("#{translate(orders.orders.ribbon.message.someOrderIsExternal)}");
+								} else {
+									deleteButton.enable();
 								}
 							}
 						}
@@ -136,39 +151,49 @@
  			<option type="column" name="technology" fields="technology" expression="#technology==null?'N/A':#technology['name']" />
  			<option type="column" name="plannedQuantity" fields="plannedQuantity" width="35" />
  			<option type="column" name="doneQuantity" fields="doneQuantity" width="40" />
+ 			<option type="column" name="externalNumber" fields="externalNumber" hidden="true" />
+ 			<option type="column" name="externalSynchronized" fields="externalSynchronized" expression="#externalSynchronized?'1':'0'" hidden="true" />
 			<option type="order" column="number" direction="desc" />
 			<option type="correspondingView" value="orders/orderDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="name,number,state,dateFrom,dateTo" />
-			<option type="orderable" value="name,number,state,dateFrom,dateTo" />
+			<option type="searchable" value="name,number,state,dateFrom,dateTo,product,technology" />
+			<option type="orderable" value="name,number,state,dateFrom,dateTo,product,technology" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 			<option type="hasPredefinedFilters" value="true" />
 			<predefinedFilters>
 				<predefinedFilter name="all">
 				</predefinedFilter>
-				<predefinedFilter name="pending">
-					<filterRestriction column="state" value="01pending" />
+				<predefinedFilter name="new">
+					<filterRestriction column="state" value="01new" />
+					<filterOrder column="dateFrom" direction="asc" />
+				</predefinedFilter>
+				<predefinedFilter name="accepted">
+					<filterRestriction column="state" value="02accepted" />
+					<filterOrder column="dateFrom" direction="asc" />
+				</predefinedFilter>
+				<predefinedFilter name="accepted">
+					<filterRestriction column="state" value="02accepted" />
 					<filterOrder column="dateFrom" direction="asc" />
 				</predefinedFilter>
 				<predefinedFilter name="inProgress">
-					<filterRestriction column="state" value="02inProgress" />
+					<filterRestriction column="state" value="03inProgress" />
 					<filterOrder column="dateTo" direction="asc" />
 				</predefinedFilter>
-				<predefinedFilter name="overduePending">
-					<filterRestriction column="state" value="01pending" />
+				<predefinedFilter name="overdueAccepted">
+					<filterRestriction column="state" value="02accepted" />
 					<filterRestriction column="dateTo" value="&lt;= @{yesterday}" />
 				</predefinedFilter>
 				<predefinedFilter name="overdueInProgress">
-					<filterRestriction column="state" value="02inProgress" />
+					<filterRestriction column="state" value="03inProgress" />
 					<filterRestriction column="dateTo" value="&lt;= @{yesterday}" />
 				</predefinedFilter>
 				<predefinedFilter name="startingToday">
-					<filterRestriction column="state" value="01pending" />
+					<filterRestriction column="state" value="02accepted" />
 					<filterRestriction column="dateFrom" value="@{today}" />
 				</predefinedFilter>
 				<predefinedFilter name="startingTomorrow">
-					<filterRestriction column="state" value="01pending" />
+					<filterRestriction column="state" value="02accepted" />
 					<filterRestriction column="dateFrom" value="@{tomorrow}" />
 				</predefinedFilter>
 			</predefinedFilters>

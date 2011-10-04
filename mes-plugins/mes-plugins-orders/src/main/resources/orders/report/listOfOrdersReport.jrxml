@@ -18,7 +18,6 @@
 			 company.zipCode as zipCode,
 			 company.city as city,
 			 company.country as country,
-			 company.tax as tax,
 			 company.email as email,
 			 company.phone as phone,
 			 orders.number as orders_order_number,
@@ -38,7 +37,6 @@
 	<field name="zipCode" class="java.lang.String"/>
 	<field name="city" class="java.lang.String"/>
 	<field name="country" class="java.lang.String"/>
-	<field name="tax" class="java.lang.String"/>
 	<field name="email" class="java.lang.String"/>
 	<field name="phone" class="java.lang.String"/>
 	<field name="orders_order_number" class="java.lang.String"/>
@@ -166,7 +164,7 @@
 			<textField>
 				<reportElement style="qcadooValueSmall" x="725" y="1" width="82" height="26"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{orders_order_state}.startsWith("01"))?$R{orders.order.state.value.01pending}:(($F{orders_order_state}.startsWith("02"))?$R{orders.order.state.value.02inProgress}:$R{orders.order.state.value.03done})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{orders_order_state}.startsWith("01"))?$R{orders.order.state.value.01new}:(($F{orders_order_state}.startsWith("02"))?$R{orders.order.state.value.02accepted}:(($F{orders_order_state}.startsWith("03"))?$R{orders.order.state.value.03inProgress}:$R{orders.order.state.value.04done}))]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -178,17 +176,17 @@
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="3" width="380" height="13"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{companyFullName} + ($F{tax} != null ? (", " + $R{basic.company.tax.label} + ": " + $F{tax}) : "")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{companyFullName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="18" width="380" height="13"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{street} + " " + $F{house} + ($F{flat} != null ? "/" + $F{flat} : "") + ", " + $F{zipCode} + " " + $F{city} + ($F{country} != null ? ", " + $F{country} : "")) : ($F{email} != null ? "E-mail: " + $F{email} : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") )]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{street} + " " + $F{house} + ($F{flat} != null ? "/" + $F{flat} : "") + ", " + $F{zipCode} + " " + $F{city} + ($F{country} != null ? ", " + $F{country} : "")) : ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{email} != null ? "E-mail: " + $F{email} : "") )]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="33" width="380" height="13"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{email} != null ? "E-mail: " + $F{email} : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") : "")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{email} != null ? "E-mail: " + $F{email} : "") : "")]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooPageNumber" x="420" y="3" width="380" height="13"/>
@@ -200,27 +198,37 @@
 				<textElement/>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="427" y="18" width="380" height="13"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.generatedBy.label} + " " + $P{Author}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="427" y="33" width="380" height="13"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageFooter>
 	<lastPageFooter>
-		<band height="46" splitType="Stretch">
+		<band height="61" splitType="Stretch">
 			<line>
 				<reportElement style="qcadooPageNumberLine" x="0" y="-1" width="807" height="1"/>
 			</line>
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="3" width="380" height="13"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{companyFullName} + ($F{tax} != null ? (", " + $R{basic.company.tax.label} + ": " + $F{tax}) : "")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{companyFullName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="18" width="380" height="13"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{street} + " " + $F{house} + ($F{flat} != null ? "/" + $F{flat} : "") + ", " + $F{zipCode} + " " + $F{city} + ($F{country} != null ? ", " + $F{country} : "")) : ($F{email} != null ? "E-mail: " + $F{email} : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") )]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{street} + " " + $F{house} + ($F{flat} != null ? "/" + $F{flat} : "") + ", " + $F{zipCode} + " " + $F{city} + ($F{country} != null ? ", " + $F{country} : "")) : ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{email} != null ? "E-mail: " + $F{email} : "") )]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="33" width="380" height="13"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{email} != null ? "E-mail: " + $F{email} : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") : "")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{email} != null ? "E-mail: " + $F{email} : "") : "")]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooPageNumber" x="420" y="3" width="380" height="13"/>
@@ -233,7 +241,17 @@
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="qcadooPageNumber" x="510" y="18" width="297" height="13"/>
+				<reportElement style="qcadooPageNumber" x="427" y="18" width="380" height="13"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.generatedBy.label} + " " + $P{Author}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="427" y="33" width="380" height="13"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="qcadooPageNumber" x="510" y="48" width="297" height="13"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$R{qcadooReport.commons.endOfPrint.label}]]></textFieldExpression>
 			</textField>

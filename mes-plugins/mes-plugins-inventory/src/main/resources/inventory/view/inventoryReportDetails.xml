@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -106,16 +106,13 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
-					<component type="lookup" name="warehouse" field="warehouse"  reference ="warehouse">
-						<option type="searchable" value="number" />
-						<option type="orderable" value=" number" />
-						<option type="fullScreen" value="true" />
-						<option type="expression" value="#number" />
-						<option type="fieldCode" value="number" />
+					<component type="input" name="worker" reference="worker"
+						field="worker" defaultEnabled="false">
+						<option type="textRepresentationOnDisabled" value="false" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="lookup" name="staff" field="staff" reference="staff">
+					<component type="lookup" name="warehouse" field="warehouse"  reference ="warehouse">
 						<option type="searchable" value="name" />
 						<option type="orderable" value=" name" />
 						<option type="fullScreen" value="true" />

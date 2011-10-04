@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.8
  *
  * This file is part of Qcadoo.
  *
@@ -37,6 +37,8 @@ public interface TechnologiesConstants {
     public static final String MODEL_TECHNOLOGY = "technology";
 
     public static final String MODEL_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+    
+    public static final String MODEL_OPERATION_NUMBER_FIELD_NAME = "number";
 
     // VIEW
     public static final String VIEW_OPERATION_DETAILS = "operationDetails";

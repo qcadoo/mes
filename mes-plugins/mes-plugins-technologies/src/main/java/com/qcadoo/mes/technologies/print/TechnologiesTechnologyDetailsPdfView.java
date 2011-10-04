@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.8
  *
  * This file is part of Qcadoo.
  *
@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.technologies.print;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newLinkedList;
+import static com.google.common.collect.Maps.newLinkedHashMap;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,10 +43,10 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.print.utils.EntityOperationProductInOutComponentComparator;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 import com.qcadoo.security.api.SecurityService;
@@ -55,6 +59,9 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private TreeNumberingService treeNumberingService;
+
     @Override
     protected final String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
@@ -63,55 +70,42 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
 
-        DataDefinition dataDefTechnology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
-        Entity technologies = dataDefTechnology.find("where id = " + model.get("id").toString()).uniqueResult();
+        Entity technology = technologyDD.get(new Long(model.get("id").toString()));
 
-        PdfPTable panelTable = PdfUtil.createPanelTable(2);
-        PdfUtil.addTableCellAsTable(
-                panelTable,
-                getTranslationService().translate("technologies.technologiesTechnologyDetails.report.panel.technology.name",
-                        locale), technologies.getStringField("name"), null, PdfUtil.getArialBold10Dark(),
-                PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(
-                panelTable,
-                getTranslationService().translate("technologies.technologiesTechnologyDetails.report.panel.technology.number",
-                        locale), technologies.getStringField("number"), null, PdfUtil.getArialBold10Dark(),
-                PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(
-                panelTable,
-                getTranslationService().translate("technologies.technologiesTechnologyDetails.report.panel.technology.product",
-                        locale), technologies.getBelongsToField("product").getStringField("name"), null,
-                PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(
-                panelTable,
-                getTranslationService().translate("technologies.technologiesTechnologyDetails.report.panel.technology.default",
-                        locale),
-                (Boolean) technologies.getField("master") ? getTranslationService().translate("qcadooView.true", locale)
-                        : getTranslationService().translate("qcadooView.false", locale), null, PdfUtil.getArialBold10Dark(),
-                PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(
-                panelTable,
-                getTranslationService().translate("technologies.technologiesTechnologyDetails.report.panel.technology.algorithm",
-                        locale),
+        Map<String, String> panelTableValues = newLinkedHashMap();
+        panelTableValues.put("name", technology.getStringField("name"));
+        panelTableValues.put("number", technology.getStringField("number"));
+        panelTableValues.put("product", technology.getBelongsToField("product").getStringField("name"));
+        panelTableValues.put("default",
+                (Boolean) technology.getField("master") ? getTranslationService().translate("qcadooView.true", locale)
+                        : getTranslationService().translate("qcadooView.false", locale));
+        panelTableValues.put(
+                "algorithm",
                 getTranslationService().translate(
                         "technologies.technology.componentQuantityAlgorithm.value."
-                                + technologies.getStringField("componentQuantityAlgorithm"), locale), null,
-                PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(
-                panelTable,
-                getTranslationService().translate(
-                        "technologies.technologiesTechnologyDetails.report.panel.technology.description", locale),
-                technologies.getStringField("description"), null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                                + technology.getStringField("componentQuantityAlgorithm"), locale));
+        panelTableValues.put("description", technology.getStringField("description"));
+
+        PdfPTable panelTable = PdfUtil.createPanelTable(2);
+        for (Map.Entry<String, String> panelEntry : panelTableValues.entrySet()) {
+            PdfUtil.addTableCellAsTable(
+                    panelTable,
+                    getTranslationService().translate(
+                            "technologies.technologiesTechnologyDetails.report.panel.technology." + panelEntry.getKey(), locale),
+                    panelEntry.getValue(), null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+        }
+
         panelTable.setSpacingAfter(20);
         panelTable.setSpacingBefore(20);
         document.add(panelTable);
 
         List<String> technologyDetailsTableHeader = new ArrayList<String>();
         technologyDetailsTableHeader.add(getTranslationService().translate(
-                "technologies.technologiesTechnologyDetails.report.columnHeader.name", locale));
-        technologyDetailsTableHeader.add(getTranslationService().translate(
                 "technologies.technologiesTechnologyDetails.report.columnHeader.level", locale));
+        technologyDetailsTableHeader.add(getTranslationService().translate(
+                "technologies.technologiesTechnologyDetails.report.columnHeader.name", locale));
         technologyDetailsTableHeader.add(getTranslationService().translate(
                 "technologies.technologiesTechnologyDetails.report.columnHeader.direction", locale));
         technologyDetailsTableHeader.add(getTranslationService().translate(
@@ -122,33 +116,28 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                 "technologies.technologiesTechnologyDetails.report.columnHeader.unit", locale));
         PdfPTable table = PdfUtil.createTableWithHeader(6, technologyDetailsTableHeader, false);
 
-        DataDefinition dataDefOperationProductInComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
-        DataDefinition dataDefOperationProductOutComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
-        List<Entity> technologyDetailsTableContent = new ArrayList<Entity>();
-        technologyDetailsTableContent.addAll(dataDefOperationProductInComponent
-                .find("where operationComponent.technology.id = " + model.get("id").toString()).list().getEntities());
-        technologyDetailsTableContent.addAll(technologyDetailsTableContent.size(),
-                dataDefOperationProductOutComponent
-                        .find("where operationComponent.technology.id = " + model.get("id").toString()).list().getEntities());
-        Collections.sort(technologyDetailsTableContent, new EntityOperationProductInOutComponentComparator());
+        List<Entity> technologyOperations = newLinkedList(technology.getTreeField("operationComponents"));
+        Collections.sort(technologyOperations, treeNumberingService.getTreeNodesNumberComparator());
 
-        for (Entity e : technologyDetailsTableContent) {
-            table.addCell(new Phrase(e.getBelongsToField("operationComponent").getBelongsToField("operation")
-                    .getStringField("name"), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(e.getBelongsToField("operationComponent").getBelongsToField("operation").getId().toString(),
-                    PdfUtil.getArialRegular9Dark()));
-            if (e.getDataDefinition().getName().toString().equals("operationProductInComponent"))
-                table.addCell(new Phrase(getTranslationService().translate(
-                        "technologies.technologiesTechnologyDetails.report.direction.in", locale), PdfUtil.getArialRegular9Dark()));
-            else
-                table.addCell(new Phrase(getTranslationService().translate(
-                        "technologies.technologiesTechnologyDetails.report.direction.out", locale), PdfUtil
-                        .getArialRegular9Dark()));
-            table.addCell(new Phrase(e.getBelongsToField("product").getStringField("name"), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(e.getField("quantity").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(e.getBelongsToField("product").getStringField("unit"), PdfUtil.getArialRegular9Dark()));
+        for (Entity technologyOperation : technologyOperations) {
+            String nodeNumber = technologyOperation.getStringField("nodeNumber");
+            String operationName = technologyOperation.getBelongsToField("operation").getStringField("name");
+            List<Entity> technologyOperationProducts = newArrayList();
+            technologyOperationProducts.addAll(technologyOperation.getHasManyField("operationProductInComponents"));
+            technologyOperationProducts.addAll(technologyOperation.getHasManyField("operationProductOutComponents"));
+
+            for (Entity product : technologyOperationProducts) {
+                String productType = "technologies.technologiesTechnologyDetails.report.direction.out";
+                if (product.getDataDefinition().getName().toString().equals("operationProductInComponent")) {
+                    productType = "technologies.technologiesTechnologyDetails.report.direction.in";
+                }
+                table.addCell(new Phrase(nodeNumber, PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(operationName, PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(getTranslationService().translate(productType, locale), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(product.getBelongsToField("product").getStringField("name"), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(product.getField("quantity").toString(), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(product.getBelongsToField("product").getStringField("unit"), PdfUtil.getArialRegular9Dark()));
+            }
         }
 
         document.add(table);

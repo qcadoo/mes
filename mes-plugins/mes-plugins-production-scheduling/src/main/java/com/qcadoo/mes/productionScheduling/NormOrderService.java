@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.8
  *
  * This file is part of Qcadoo.
  *
@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -41,15 +40,13 @@ import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.TreeComponent;
 
 @Service
 public class NormOrderService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
+    
     @Transactional
     public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity entity) {
         DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
@@ -75,7 +72,7 @@ public class NormOrderService {
         }
 
         EntityTree operationComponents = technology.getTreeField("operationComponents");
-
+        
         entity.setField("orderOperationComponents", Collections.singletonList(createOrderOperationComponent(
                 operationComponents.getRoot(), entity, technology, null, orderOperationComponentDD)));
     }
@@ -108,11 +105,15 @@ public class NormOrderService {
         orderOperationComponent.setField("entityType", "operation");
         orderOperationComponent.setField("tpz", operationComponent.getField("tpz"));
         orderOperationComponent.setField("tj", operationComponent.getField("tj"));
+        orderOperationComponent.setField("productionInOneCycle", operationComponent.getField("productionInOneCycle"));
         orderOperationComponent.setField("countRealized",
                 operationComponent.getField("countRealized") != null ? operationComponent.getField("countRealized") : "01all");
         orderOperationComponent.setField("countMachine", operationComponent.getField("countMachine"));
         orderOperationComponent.setField("timeNextOperation", operationComponent.getField("timeNextOperation"));
-
+        orderOperationComponent.setField("nodeNumber", operationComponent.getField("nodeNumber"));
+        orderOperationComponent.setField("machineUtilization", operationComponent.getField("machineUtilization"));
+        orderOperationComponent.setField("laborUtilization", operationComponent.getField("laborUtilization"));
+        
         List<Entity> newOrderOperationComponents = new ArrayList<Entity>();
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
@@ -141,6 +142,8 @@ public class NormOrderService {
     public void disableComponents(final ViewDefinitionState viewDefinitionState) {
         FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
         FieldComponent tj = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
+        FieldComponent productionInOneCycle = (FieldComponent) viewDefinitionState
+                .getComponentByReference("productionInOneCycle");
         FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
         FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
         FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference("timeNextOperation");
@@ -149,6 +152,8 @@ public class NormOrderService {
         tpz.setRequired(true);
         tj.setEnabled(true);
         tj.setRequired(true);
+        productionInOneCycle.setEnabled(true);
+        productionInOneCycle.setRequired(true);
         countRealized.setEnabled(true);
         countRealized.setRequired(true);
 
@@ -167,5 +172,5 @@ public class NormOrderService {
         timeNextOperation.setEnabled(true);
         timeNextOperation.setRequired(true);
     }
-    
+
 }

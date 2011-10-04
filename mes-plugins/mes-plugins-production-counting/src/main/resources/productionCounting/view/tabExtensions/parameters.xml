@@ -1,0 +1,60 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.4.8
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+	plugin="basic" view="parameters">
+
+	<windowTab name="productionCounting" reference="productionCounting">
+		<component type="gridLayout" name="gridLayout" reference="gridLayout"
+			columns="2" rows="7">
+			<layoutElement column="1" row="1">
+				<component type="checkbox" name="registerQuantityInProduct"
+					reference="registerQuantityInProduct" field="#{form}.registerQuantityInProduct" />
+			</layoutElement>
+			<layoutElement column="1" row="2">
+				<component type="checkbox" name="registerQuantityOutProduct"
+					reference="registerQuantityOutProduct" field="#{form}.registerQuantityOutProduct" />
+			</layoutElement>
+			<layoutElement column="1" row="3">
+				<component type="checkbox" name="registerProductionTime"
+					reference="registerProductionTime" field="#{form}.registerProductionTime" />
+			</layoutElement>
+			<layoutElement column="1" row="5">
+				<component type="checkbox" name="allowedPartial"
+					reference="allowedPartial" field="#{form}.allowedPartial" />
+			</layoutElement>
+			<layoutElement column="1" row="6">
+				<component type="checkbox" name="blockClosing" reference="blockClosing"
+					field="#{form}.blockClosing" />
+			</layoutElement>
+			<layoutElement column="1" row="7">
+				<component type="checkbox" name="autoCloseOrder"
+					reference="autoCloseOrder" field="#{form}.autoCloseOrder" />
+			</layoutElement>
+		</component>
+	</windowTab>
+</windowTabExtension>

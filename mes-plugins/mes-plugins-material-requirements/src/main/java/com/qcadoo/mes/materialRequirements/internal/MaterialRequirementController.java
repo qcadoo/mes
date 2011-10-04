@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.8
  *
  * This file is part of Qcadoo.
  *
@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.materialRequirements.internal;
 
+import java.util.Date;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
@@ -57,7 +58,7 @@ public class MaterialRequirementController {
         DataDefinition dataDefinition = dataDefinitionService.get(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
                 MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT);
         Entity materialRequirement = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(materialRequirement,
+        ReportUtil.sentTranslatedFileName((Date) materialRequirement.getField("date"),
                 translationService.translate("materialRequirements.materialRequirement.report.fileName", locale), "",
                 PdfUtil.PDF_EXTENSION, response);
         ReportUtil.sentFileAsAttachement(materialRequirement.getStringField("fileName") + PdfUtil.PDF_EXTENSION,
@@ -70,7 +71,7 @@ public class MaterialRequirementController {
         DataDefinition dataDefinition = dataDefinitionService.get(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
                 MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT);
         Entity materialRequirement = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(materialRequirement,
+        ReportUtil.sentTranslatedFileName((Date) materialRequirement.getField("date"),
                 translationService.translate("materialRequirements.materialRequirement.report.fileName", locale), "",
                 XlsUtil.XLS_EXTENSION, response);
         ReportUtil.sentFileAsAttachement(materialRequirement.getStringField("fileName") + XlsUtil.XLS_EXTENSION,

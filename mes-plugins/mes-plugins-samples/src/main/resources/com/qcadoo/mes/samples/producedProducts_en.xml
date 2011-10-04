@@ -3,7 +3,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -23,3 +23,11 @@
     ***************************************************************************
 
 -->
+<producedProduct>
+	<row ID="1" ORDER="10" PRODUCT="24" PLANNED_QUANTITY="15" PRODUCED_QUANTITY="15" />
+	<row ID="2" ORDER="10" PRODUCT="22" PLANNED_QUANTITY="18" PRODUCED_QUANTITY="15" />
+	<row ID="3" ORDER="10" PRODUCT="24" PLANNED_QUANTITY="25" PRODUCED_QUANTITY="27" />
+	<row ID="4" ORDER="12" PRODUCT="28" PLANNED_QUANTITY="25" PRODUCED_QUANTITY="27" />
+	<row ID="5" ORDER="12" PRODUCT="33" PLANNED_QUANTITY="5" PRODUCED_QUANTITY="5" />
+	<row ID="6" ORDER="12" PRODUCT="21" PLANNED_QUANTITY="15" PRODUCED_QUANTITY="14" />
+</producedProduct>

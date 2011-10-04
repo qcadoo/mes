@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -38,7 +38,7 @@
 				<!--<bigButton name="copy" icon="copyIcon24.png" action="#{form}.performCopy;" 
 					state="disabled"/> -->
 				<bigButton name="generate" icon="generateIcon24.png"
-					action="#{form}.fireEvent(generateMaterialRequirement);" state="disabled" />
+					action="#{form}.fireEvent(generateMaterialRequirement);" state="enabled" />
 			</group>
 			<group name="export">
 				<smallButton name="pdf" icon="pdfIcon16.png"

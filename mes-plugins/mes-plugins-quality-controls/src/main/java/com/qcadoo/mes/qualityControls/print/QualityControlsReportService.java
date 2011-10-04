@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.8
  *
  * This file is part of Qcadoo.
  *
@@ -313,8 +313,13 @@ public class QualityControlsReportService {
         }
 
         String name = "";
+
         if (product != null) {
-            name = product.getField("name").toString();
+            if (type.equals("operation")) {
+                name = product.getBelongsToField("operation").getStringField("name");
+            } else {
+                name = product.getField("name").toString();
+            }
         }
         title.add(new Phrase(" " + name, PdfUtil.getArialBold11Dark()));
 

@@ -1,0 +1,203 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.4.8
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view name="productionRecordDetails" modelName="productionRecord"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardFormTemplate" />
+		</ribbon>
+		<windowTab name="mainTab">
+			<component type="form" name="productionRecordDetails"
+				reference="form">
+				<component type="gridLayout" name="gridLayout" columns="2"
+					rows="15">
+					<layoutElement column="1" row="1">
+						<component type="checkbox" name="isFinal" field="isFinal"
+							reference="isFinal" />
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="number" field="number"
+							reference="number" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="lookup" name="order" field="order"
+							reference="order">
+							<option type="column" name="name" fields="name" link="true" />
+							<option type="required" value="true" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="order" column="number" direction="desc" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+								method="enabledOrDisabledOperationField" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+								method="registeringProductionTime" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="lookup" name="orderOperationComponent"
+							field="orderOperationComponent" source="#{order}.orderOperationComponents"
+							reference="orderOperationComponent" defaultEnabled="false">
+							<option type="column" name="name" fields="operation"
+								expression="#operation['name']" link="true" />
+							<option type="fieldCode" value="nodeNumber" />
+							<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
+							<option type="searchable" value="name,nodeNumber" />
+							<option type="orderable" value="name,nodeNumber" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="5">
+						<component type="lookup" name="shift" reference="shift"
+							field="shift">
+							<option type="required" value="true" />
+							<option type="fieldCode" value="name" />
+							<option type="expression" value="#name" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="6">
+						<component type="input" name="creationTime" field="creationTime"
+							reference="creationTime" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="7">
+						<component type="input" name="worker" field="worker"
+							reference="worker" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="8">
+						<component type="separatorLine" name="line1" />
+					</layoutElement>
+					<layoutElement column="1" row="9">
+						<component type="grid" name="recordOperationProductInComponent"
+							reference="recordOperationProductInComponent" source="#{form}.recordOperationProductInComponents"
+							defaultEnabled="false">
+							<option type="column" name="number" fields="product"
+								expression="#product['number']" link="true" width="100" />
+							<option type="column" name="name" fields="product"
+								expression="#product['name']" link="true" width="200" />
+							<option type="column" name="type" fields="product" width="100"
+								expression="#product['typeOfMaterial'] == '01component' ?
+										'@basic.product.typeOfMaterial.value.01component' :
+										#product['typeOfMaterial'] == '02intermediate' ?
+											'@basic.product.typeOfMaterial.value.02intermediate' :
+											#product['typeOfMaterial'] == '03product' ?
+												'@basic.product.typeOfMaterial.value.03product' :
+												#product['typeOfMaterial'] == '04waste' ?
+												'@basic.product.typeOfMaterial.value.04waste' :
+												''" />
+							<option type="column" name="usedQuantity" fields="usedQuantity"
+								width="100" />
+							<option type="column" name="unit" fields="product"
+								expression="#product['unit']" link="false" width="70" />
+							<option type="order" column="number" direction="desc" />
+							<option type="correspondingView"
+								value="productionCounting/recordOperationProductInComponentDetails" />
+							<option type="correspondingComponent" value="form" />
+							<option type="correspondingViewInModal" value="true" />
+							<option type="paginable" value="false" />
+							<option type="creatable" value="false" />
+							<option type="deletable" value="false" />
+							<option type="fullscreen" value="true" />
+							<option type="multiselect" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="label" name="borderLayoutCumulated"
+							reference="borderLayoutCumulated" defaultVisible="false" >
+							<option type="labelStyle" value="text" />
+						</component>
+						<component type="label" name="borderLayoutForEach"
+							reference="borderLayoutForEach" defaultVisible="false" >
+							<option type="labelStyle" value="text" />
+						</component>
+						<component type="label" name="borderLayoutNone"
+							reference="borderLayoutNone"  >
+							<option type="labelStyle" value="text" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="2">
+						<component type="time" name="laborTime" reference="laborTime"
+							field="laborTime" defaultVisible="false" />
+					</layoutElement>
+					<layoutElement column="2" row="3">
+						<component type="time" name="machineTime" reference="machineTime"
+							field="machineTime" defaultVisible="false" />
+					</layoutElement>
+					<layoutElement column="2" row="8">
+						<component type="separatorLine" name="line2" />
+					</layoutElement>
+					<layoutElement column="2" row="9">
+						<component type="grid" name="recordOperationProductOutComponent"
+							reference="recordOperationProductOutComponent" source="#{form}.recordOperationProductOutComponents"
+							defaultEnabled="false">
+							<option type="column" name="number" fields="product"
+								expression="#product['number']" link="true" width="100" />
+							<option type="column" name="name" fields="product"
+								expression="#product['name']" link="true" width="200" />
+							<option type="column" name="type" fields="product" width="100"
+								expression="#product['typeOfMaterial'] == '01component' ?
+										'@basic.product.typeOfMaterial.value.01component' :
+										#product['typeOfMaterial'] == '02intermediate' ?
+											'@basic.product.typeOfMaterial.value.02intermediate' :
+											#product['typeOfMaterial'] == '03product' ?
+												'@basic.product.typeOfMaterial.value.03product' :
+												#product['typeOfMaterial'] == '04waste' ?
+												'@basic.product.typeOfMaterial.value.04waste' :
+												''" />
+							<option type="column" name="usedQuantity" fields="usedQuantity"
+								width="100" />
+							<option type="column" name="unit" fields="product"
+								expression="#product['unit']" link="false" width="70" />
+							<option type="order" column="number" direction="desc" />
+							<option type="correspondingView"
+								value="productionCounting/recordOperationProductOutComponentDetails" />
+							<option type="correspondingComponent" value="form" />
+							<option type="correspondingViewInModal" value="true" />
+							<option type="paginable" value="false" />
+							<option type="creatable" value="false" />
+							<option type="deletable" value="false" />
+							<option type="fullscreen" value="true" />
+							<option type="multiselect" value="false" />
+						</component>
+					</layoutElement>
+				</component>
+				<option type="header" value="true" />
+				<option type="expression" value="#name" />
+				<listener event="save"
+					class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+					method="closeOrder" />
+			</component>
+		</windowTab>
+	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="initializeRecordDetailsView" />
+	</hooks>
+</view>

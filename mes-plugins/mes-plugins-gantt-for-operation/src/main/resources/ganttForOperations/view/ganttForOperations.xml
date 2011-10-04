@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -27,20 +27,25 @@
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="ganttForOperations" modelName="shift" modelPlugin="basic"
-	windowHeight="450" windowWidth="900">
+	windowHeight="750" windowWidth="900">
 
-	<component type="window" name="window">
+	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back" />
 		</ribbon>
-		<component type="form" name="form" reference="form">
-			<component type="ganttChart" name="gantt" reference="gantt">
-				<option type="resolver"
-					value="com.qcadoo.mes.ganttForOperations.OperationsGanttChartItemResolver" />
-				<option type="defaultZoomLevel" value="H1" />
-				<option type="allowDateSelection" value="true" />
-			</component>
-			</component>
+		<component type="gridLayout" name="gridLayout" columns="1" rows="8" hasBorders="true">
+			<layoutElement column="1" row="1">
+				<component type="input" name="title" reference="title" hasLabel="false" defaultEnabled="false"/>
+			</layoutElement>
+			<layoutElement column="1" row="2" height="7">		
+				<component type="ganttChart" name="gantt" reference="gantt">
+					<option type="resolver"
+						value="com.qcadoo.mes.ganttForOperations.OperationsGanttChartItemResolver" />
+					<option type="defaultZoomLevel" value="H1" />
+					<option type="allowDateSelection" value="true" />
+				</component>
+			</layoutElement>		
+		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
@@ -48,6 +53,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.ganttForOperations.GanttOperationService"
 			method="checkDoneCalculate" />
+		<beforeRender
+			class="com.qcadoo.mes.ganttForOperations.GanttOperationService"
+			method="fillTitleLabel" />
 	</hooks>
 
 </view>

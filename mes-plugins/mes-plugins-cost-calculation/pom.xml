@@ -1,13 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-    <artifactId>mes-plugins</artifactId>
-    <groupId>com.qcadoo.mes</groupId>
-    <version>0.4.6-SNAPSHOT</version>
-  </parent>
+		<groupId>com.qcadoo.mes</groupId>
+		<artifactId>mes-plugins</artifactId>
+		<version>0.4.9-SNAPSHOT</version>
+	</parent>
 
 	<artifactId>mes-plugins-cost-calculation</artifactId>
 	<packaging>qcadoo-plugin</packaging>
@@ -16,13 +15,18 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-technologies</artifactId>
-			<version>0.4.6-SNAPSHOT</version>
+			<artifactId>mes-plugins-cost-norms-for-product</artifactId>
+			<version>0.4.9-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-orders</artifactId>
-			<version>0.4.6-SNAPSHOT</version>
+			<artifactId>mes-plugins-cost-norms-for-operation</artifactId>
+			<version>0.4.9-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-material-requirements</artifactId>
+			<version>0.4.9-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -32,7 +36,7 @@
 			<plugin>
 				<groupId>com.qcadoo</groupId>
 				<artifactId>qcadoo-maven-plugin</artifactId>
-				<version>${qcadoo.version}</version>
+				<version>${qcadoo.maven.plugin.version}</version>
 				<extensions>true</extensions>
 			</plugin>
 		</plugins>

@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.4.8
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
 <model name="costCalculation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
@@ -6,30 +31,75 @@
 		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
 		</string>
-		<belongsTo name="product" model="product" plugin="basic" required="true"/>
-		<belongsTo name="defaultTechnology" model="technology" plugin="technologies"/>
-		<belongsTo name="technology" model="technology" plugin="technologies" required="true"/>
-		<decimal name="quantity" required="true"/>
+		<tree name="calculationOperationComponents" joinField="costCalculation"
+			model="calculationOperationComponent" plugin="costNormsForOperation" cascade="delete" />
+		<belongsTo name="product" model="product" plugin="basic"
+			required="true" />
+		<belongsTo name="defaultTechnology" model="technology"
+			plugin="technologies" />
+		<belongsTo name="technology" model="technology" plugin="technologies"
+			required="true" />
+		<decimal name="quantity" required="true" />
 		<belongsTo name="order" model="order" plugin="orders" />
-		<decimal name="materialCost" readonly="true"/>
-		<decimal name="machineHourlyCost" readonly="true"/>
-		<decimal name="laborHourlyCost" readonly="true"/>
-		<decimal name="totalTechnicalProductionCost" />
-		<decimal name="productionCostMargin" />
+		<decimal name="totalMaterialCosts">
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="totalMachineHourlyCosts">
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="totalPieceworkCosts">
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="totalLaborHourlyCosts">
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="totalTechnicalProductionCosts">
+			<validatesRange from="0" exclusively="true" />
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="productionCostMargin" default="0">
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
 		<decimal name="productionCostMarginValue" />
-		<decimal name="materialCostMargin" />		
-		<decimal name="materialCostMarginValue"  />
-		<decimal name="additionalOverhead" />
-		<decimal name="totalOverhead" />
-		<decimal name="totalCost" />
-		<decimal name="costPerUnit" />
-		<string name="description"/>
-		<boolean name="includeTPZ"/>
-		<enum name="includeCostOfMaterial" values="01nominal,02lastPurchase,03average" />
-		<enum name="includeCostOfOperation" values="01piecework,02hourly" />
-		<date name="dateOfCalculation" />
-		<decimal name="technologyId" persistent="false" />
-		<decimal name="orderId" persistent="false"  />
+		<decimal name="materialCostMargin" default="0">
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="materialCostMarginValue" />
+		<decimal name="additionalOverhead" default="0">
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="additionalOverheadValue" default="0" />
+		<decimal name="totalOverhead">
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="totalCosts">
+			<validatesRange from="0" exclusively="true" />
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="costPerUnit">
+			<validatesRange from="0" exclusively="true" />
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<string name="description" />
+		<boolean name="includeTPZ" default="true" />
+		<enum name="calculateMaterialCostsMode" values="01nominal,03lastPurchase,02average"
+			required="true" default="nominal" />
+		<enum name="calculateOperationCostsMode" values="piecework,hourly"
+			required="true" default="hourly" />
+		<datetime name="dateOfCalculation" />
+		<boolean name="generated" />
+		<string name="fileName" />
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />

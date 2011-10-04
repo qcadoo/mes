@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.8
  *
  * This file is part of Qcadoo.
  *
@@ -34,13 +34,19 @@ public interface BasicConstants {
 
     public static final String MODEL_PRODUCT = "product";
 
+    public static final String MODEL_CONTRACTOR = "contractor";
+
     public static final String MODEL_STAFF = "staff";
 
     public static final String MODEL_SUBSTITUTE = "substitute";
 
     public static final String MODEL_SUBSTITUTE_COMPONENT = "substituteComponent";
-    
+
     public static final String MODEL_COMPANY = "company";
+
+    public static final String MODEL_CURRENCY = "currency";
+
+    public static final String MODEL_SHIFT = "shift";
 
     // VIEW
     public static final String VIEW_MACHINE_DETAILS = "machineDetails";
@@ -60,8 +66,7 @@ public interface BasicConstants {
     public static final String VIEW_STAFF_DETAILS = "staffDetails";
 
     public static final String VIEW_STAFFS_LIST = "staffsList";
-    
+
     public static final String VIEW_COMPANY_DETAILS = "companyDetails";
-    
 
 }

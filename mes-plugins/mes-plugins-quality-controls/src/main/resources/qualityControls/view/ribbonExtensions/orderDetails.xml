@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -48,7 +48,7 @@
 							var state = #{state}.getValue().content.value;
 							if (! value.content.entityId || ! state) {
 								this.disable();
-							} else if (state == "03done") {
+							} else if (state == "04done") {
 								this.disable("#{translate(orders.order.ribbon.message.stateIsDone)}");
 							} else {
 								this.enable();

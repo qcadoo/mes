@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="qualityControls" version="0.4.1"
+<plugin plugin="qualityControls" version="0.4.7"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -50,13 +50,10 @@
 
 	<dependencies>
 		<dependency>
-			<plugin>orders</plugin>
+			<plugin>productionScheduling</plugin>
 			<version>[0.4.0</version>
 		</dependency>
-		<dependency>
-			<plugin>genealogies</plugin>
-			<version>[0.4.0</version>
-		</dependency>
+		
 	</dependencies>
 
 
@@ -87,7 +84,7 @@
 		
 		<model:model-field plugin="orders" model="order">
 			<model:hasMany name="qualityControls" plugin="qualityControls" model="qualityControl"
-				joinField="order" cascade="none" />
+				joinField="order" cascade="nullify" />
 		</model:model-field>
 		
 		<model:model-hook plugin="genealogies" model="genealogy">

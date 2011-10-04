@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -28,23 +28,41 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="order" plugin="orders" model="order" required="true" />
-		<belongsTo name="technology" plugin="technologies" model="technology" required="true" />
-		<belongsTo name="operation" plugin="technologies" model="operation" required="true" />
-		<belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent" required="true" />
+		<belongsTo name="order" plugin="orders" model="order"
+			required="true" />
+		<belongsTo name="technology" plugin="technologies" model="technology"
+			required="true" />
+		<belongsTo name="operation" plugin="technologies" model="operation"
+			required="true" />
+		<belongsTo name="technologyOperationComponent" plugin="technologies"
+			model="technologyOperationComponent" required="true" />
 		<belongsTo name="parent" model="orderOperationComponent" />
-		<enum name="entityType" values="operation" required="true" default="operation" />	
-		<hasMany name="children" model="orderOperationComponent" joinField="parent" cascade="delete" copyable="true" />
+		<enum name="entityType" values="operation" required="true"
+			default="operation" />
+		<hasMany name="children" model="orderOperationComponent"
+			joinField="parent" cascade="delete" copyable="true" />
 		<priority name="priority" scope="parent" />
 		<integer name="tpz" />
 		<integer name="tj" />
-		<enum name="countRealized" values="01all,02specified" default="01all" required="true" />
+		<decimal name="productionInOneCycle" required="true" default="1" />
+		<enum name="countRealized" values="01all,02specified" default="01all"
+			required="true" />
 		<decimal name="countMachine" />
 		<integer name="timeNextOperation" />
+		<decimal name="machineUtilization">
+			<validatesLength max="7" />
+			<validatesPrecision max="3" />
+		</decimal>
+		<decimal name="laborUtilization">
+			<validatesLength max="7" />
+			<validatesPrecision max="3" />
+		</decimal>
 		<integer name="operationOffSet" />
 		<integer name="effectiveOperationRealizationTime" />
 		<datetime name="effectiveDateFrom" />
 		<datetime name="effectiveDateTo" />
+		
+		<string name="nodeNumber" />
 	</fields>
 	<hooks />
 </model>

@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -35,8 +35,9 @@
 		<string name="name" required="true" />
 		<datetime name="dateFrom" required="true" />
 		<datetime name="dateTo" required="true" />
-		<enum name="state" values="01pending,02inProgress,03done"
+		<enum name="state" values="01new,02accepted,03inProgress,04done"		
 			required="true" />
+		<belongsTo name="contractor" plugin="basic" model="contractor" />
 		<belongsTo name="product" plugin="basic" model="product" />
 		<string name="defaultTechnology" persistent="false" />
 		<belongsTo name="technology" plugin="technologies" model="technology" />
@@ -54,6 +55,8 @@
 		<datetime name="effectiveDateTo" readonly="true" />
 		<string name="startWorker" readonly="true" />
 		<string name="endWorker" readonly="true" />
+		<string name="externalNumber" />
+		<boolean name="externalSynchronized" default="true" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"

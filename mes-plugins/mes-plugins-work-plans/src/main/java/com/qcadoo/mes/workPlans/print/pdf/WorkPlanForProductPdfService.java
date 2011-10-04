@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.8
  *
  * This file is part of Qcadoo.
  *
@@ -47,7 +47,7 @@ public final class WorkPlanForProductPdfService extends PdfDocumentService {
 
     @Override
     protected String getSuffix() {
-        return "for_product";
+        return "_for_product";
     }
 
     @Override

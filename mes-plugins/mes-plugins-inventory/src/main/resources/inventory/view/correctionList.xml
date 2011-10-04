@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.6
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -37,10 +37,9 @@
 				<option type="column" name="number" fields="number" link="true" width="150" />
 				<option type="column" name="correctionDate" fields="correctionDate" />
 				<option type="column" name="warehouse" fields="warehouse" 
-					expression="#warehouse==null?'N/A':#warehouse['number']"/>
+					expression="#warehouse==null?'N/A':#warehouse['name']"/>
 				<option type="column" name="product" fields="product"
 				expression="#product==null?'N/A':#product['name']" />
-				<option type="column" name="shouldBe" fields="shouldBe" />
 				<option type="column" name="found" fields="found" />
 				<option type="column" name="staff" fields="staff"
 				expression="#staff==null?'N/A':#staff['name']" />

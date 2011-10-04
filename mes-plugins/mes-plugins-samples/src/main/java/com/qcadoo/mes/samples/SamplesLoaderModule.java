@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.6
+ * Version: 0.4.8
  *
  * This file is part of Qcadoo.
  *
@@ -56,6 +56,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityRole;
@@ -70,11 +71,13 @@ public class SamplesLoaderModule extends Module {
 
     private static final long MILLIS_IN_DAY = 86400000;
 
-    private static final String[] TYPE_OF_MATERIALS = new String[] { "03product", "01component", "02intermediate" };
-
     private static final List<String> UNITS = new ArrayList<String>();
 
-    private static final String[] PRODUCT_ATTRIBUTES = new String[] { "ean", "name", "product_nr", "batch" };
+    private static final String[] COMPANY_ATTRIBUTES = new String[] { "companyFullName", "tax", "street", "house", "flat",
+            "zipCode", "city", "state", "country", "email", "addressWww", "phone" };
+
+    private static final String[] PRODUCT_ATTRIBUTES = new String[] { "ean", "name", "product_nr", "batch", "costForNumber",
+            "nominalCost", "lastPurchaseCost", "averageCost", "typeOfProduct" };
 
     private static final String[] DICTIONARY_ATTRIBUTES = new String[] { "name", "item" };
 
@@ -87,7 +90,9 @@ public class SamplesLoaderModule extends Module {
     private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr",
             "algorithm", "minimal" };
 
-    private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number", "tpz", "tj" };
+    private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number", "tpz", "tj", "productionInOneCycle",
+            "pieceworkCost", "machineHourlyCost", "laborHourlyCost", "numberOfOperations", "machineUtilization",
+            "laborUtilization" };
 
     private static final String[] MACHINE_ATTRIBUTES = new String[] { "id", "name", "prod_line", "description" };
 
@@ -117,8 +122,10 @@ public class SamplesLoaderModule extends Module {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    // AlBR
-    // @Value("${loadTestDataLocale}")
+    @Autowired
+    private TreeNumberingService treeNumberingService;
+
+    @Value("${loadTestDataLocale}")
     private String locale;
 
     @Value("${setAsDemoEnviroment}")
@@ -141,6 +148,7 @@ public class SamplesLoaderModule extends Module {
 
                 readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
                 if (isEnabled("basic")) {
+                    readDataFromXML("company", COMPANY_ATTRIBUTES);
                     readDataFromXML("machines", MACHINE_ATTRIBUTES);
                     readDataFromXML("staff", STAFF_ATTRIBUTES);
                     readDataFromXML("units", new String[] { "name" });
@@ -183,15 +191,22 @@ public class SamplesLoaderModule extends Module {
         return pluginAccessor.getPlugin(pluginIdentifier) != null;
     }
 
-    private InputStream getXmlFile(final String type) throws IOException {
-        locale = Locale.getDefault().toString().substring(0, 2);
-        if (!"pl".equals(locale) && !"en".equals(locale)) {
-            locale = Locale.ENGLISH.toString().substring(0, 2);
+    private void checkLocale() {
+        if ((locale == null) || ("".equals(locale))) {
+            locale = Locale.getDefault().toString().substring(0, 2);
+
+            if (!"pl".equals(locale) && !"en".equals(locale)) {
+                locale = Locale.ENGLISH.toString().substring(0, 2);
+            }
         }
+    }
+
+    private InputStream getXmlFile(final String type) throws IOException {
         return SamplesLoaderModule.class.getResourceAsStream("/com/qcadoo/mes/samples/" + type + "_" + locale + ".xml");
     }
 
     private void readDataFromXML(final String type, final String[] attributes) {
+        checkLocale();
         LOG.info("Loading test data from " + type + "_" + locale + ".xml ...");
 
         try {
@@ -225,7 +240,9 @@ public class SamplesLoaderModule extends Module {
             }
         }
 
-        if ("products".equals(type)) {
+        if ("company".equals(type)) {
+            addCompany(values);
+        } else if ("products".equals(type)) {
             addProduct(values);
         } else if ("orders".equals(type)) {
             addOrder(values);
@@ -249,6 +266,38 @@ public class SamplesLoaderModule extends Module {
             addProducedProducts(values);
         } else if ("usedProducts".equals(type)) {
             addUsedProducts(values);
+        }
+    }
+
+    private void addCompany(final Map<String, String> values) {
+        Entity company = dataDefinitionService.get("basic", "company").create();
+
+        LOG.debug("id: " + values.get("id") + " companyFullName " + values.get("companyFullName") + " tax " + values.get("tax")
+                + " street " + values.get("street") + " house " + values.get("house") + " flat " + values.get("flat")
+                + " zipCode " + values.get("zipCode") + " city " + values.get("city") + " state " + values.get("state")
+                + " country " + values.get("country") + " email " + values.get("email") + " addressWww "
+                + values.get("addressWww") + " phone " + values.get("phone"));
+        company.setField("companyFullName", values.get("companyFullName"));
+        company.setField("tax", values.get("tax"));
+        company.setField("street", values.get("street"));
+        company.setField("house", values.get("house"));
+        company.setField("flat", values.get("flat"));
+        company.setField("zipCode", values.get("zipCode"));
+        company.setField("city", values.get("city"));
+        company.setField("state", values.get("state"));
+        company.setField("country", values.get("country"));
+        company.setField("email", values.get("email"));
+        company.setField("addressWww", values.get("addressWww"));
+        company.setField("phone", values.get("phone"));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test company item {company=" + company.getField("companyFullName") + "}");
+        }
+
+        company = dataDefinitionService.get("basic", "company").save(company);
+
+        if (!company.isValid()) {
+            throw new IllegalStateException("Saved entity has validation errors");
         }
     }
 
@@ -301,9 +350,19 @@ public class SamplesLoaderModule extends Module {
         operation.setField("number", values.get("number"));
         operation.setField("tpz", values.get("tpz"));
         operation.setField("tj", values.get("tj"));
+        operation.setField("productionInOneCycle", values.get("productionInOneCycle"));
         operation.setField("countRealized", values.get("countRealized"));
+        operation.setField("machineUtilization", values.get("machineUtilization"));
+        operation.setField("laborUtilization", values.get("laborUtilization"));
         operation.setField("machine", getMachine(values.get("number")));
         operation.setField("staff", getRandomStaff());
+
+        if (isEnabled("costNormsForOperation")) {
+            operation.setField("pieceworkCost", values.get("pieceworkCost"));
+            operation.setField("machineHourlyCost", values.get("machineHourlyCost"));
+            operation.setField("laborHourlyCost", values.get("laborHourlyCost"));
+            operation.setField("numberOfOperations", values.get("numberOfOperations"));
+        }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test operation item {name=" + operation.getField("name") + ", number=" + operation.getField("number")
@@ -403,8 +462,18 @@ public class SamplesLoaderModule extends Module {
         if (!values.get("product_nr").isEmpty()) {
             product.setField("number", values.get("product_nr"));
         }
-        product.setField("typeOfMaterial", getRandomTypeOfMaterial());
+        if (!values.get("typeOfProduct").isEmpty()) {
+            product.setField("typeOfMaterial", values.get("typeOfProduct"));
+        }
         product.setField("unit", getRandomUnit());
+
+        if (isEnabled("costNormsForProduct")) {
+            product.setField("costForNumber", values.get("costForNumber"));
+            product.setField("nominalCost", values.get("nominalCost"));
+            product.setField("lastPurchaseCost", values.get("lastPurchaseCost"));
+            product.setField("averageCost", values.get("averageCost"));
+        }
+
         product = dataDefinitionService.get("basic", "product").save(product);
 
         if (LOG.isDebugEnabled()) {
@@ -540,6 +609,7 @@ public class SamplesLoaderModule extends Module {
         Entity order = dataDefinitionService.get("orders", "order").create();
         order.setField("dateFrom", new Date(startDate));
         order.setField("dateTo", new Date(endDate));
+        order.setField("externalSynchronized", true);
 
         order.setField("technology", getTechnologyByName(values.get("bom_name")));
         order.setField("name",
@@ -551,7 +621,7 @@ public class SamplesLoaderModule extends Module {
             order.setField("plannedQuantity", null);
         }
 
-        order.setField("state", "01pending");
+        order.setField("state", "01new");
 
         Entity product = getProductByNumber(values.get("product_nr"));
 
@@ -634,9 +704,10 @@ public class SamplesLoaderModule extends Module {
                 } else if ("14".equals(values.get("bom_id"))) {
                     addTechnologyOperationComponentsForStoolAdvanced(technology);
                 }
-            } else {
-                addTechnologyOperationComponents(technology, null, 3);
             }
+
+            treeNumberingService.generateNumbersAndUpdateTree(
+                    dataDefinitionService.get("technologies", "technologyOperationComponent"), "technology", technology.getId());
         }
     }
 
@@ -758,6 +829,9 @@ public class SamplesLoaderModule extends Module {
         component.setField("entityType", "operation");
         component.setField("tpz", operation.getField("tpz"));
         component.setField("tj", operation.getField("tj"));
+        component.setField("machineUtilization", operation.getField("machineUtilization"));
+        component.setField("laborUtilization", operation.getField("laborUtilization"));
+        component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
         component.setField("countRealized", operation.getField("countRealized"));
 
         component = dataDefinitionService.get("technologies", "technologyOperationComponent").save(component);
@@ -812,36 +886,6 @@ public class SamplesLoaderModule extends Module {
                     + ", operation="
                     + ((Entity) ((Entity) productComponent.getField("operationComponent")).getField("operation"))
                             .getField("number") + ", quantity=" + productComponent.getField("quantity") + "}");
-        }
-    }
-
-    private void addTechnologyOperationComponents(final Entity technology, final Entity parent, final int depth) {
-        if (depth <= 0) {
-            return;
-        }
-
-        int childrenNumber = RANDOM.nextInt(4) + 1;
-
-        if (depth == 3) {
-            childrenNumber = 1;
-        }
-
-        for (int i = 0; i < childrenNumber; i++) {
-            Entity component = addOperationComponent(technology, parent, getRandomOperation());
-
-            for (int j = 0; j < RANDOM.nextInt(4) + 1; j++) {
-                addProductInComponent(component, new BigDecimal(100 * RANDOM.nextDouble()).setScale(3, RoundingMode.HALF_EVEN),
-                        getRandomProduct());
-            }
-
-            for (int j = 0; j < RANDOM.nextInt(4) + 1; j++) {
-                addProductOutComponent(component, new BigDecimal(100 * RANDOM.nextDouble()).setScale(3, RoundingMode.HALF_EVEN),
-                        getRandomProduct());
-            }
-
-            if (RANDOM.nextDouble() > 0.2) {
-                addTechnologyOperationComponents(technology, component, depth - 1);
-            }
         }
     }
 
@@ -997,20 +1041,10 @@ public class SamplesLoaderModule extends Module {
                 .setMaxResults(1).list().getEntities().get(0);
     }
 
-    private Entity getRandomOperation() {
-        Long total = (long) dataDefinitionService.get("technologies", "operation").find().list().getTotalNumberOfEntities();
-        return dataDefinitionService.get("technologies", "operation").find().setFirstResult(RANDOM.nextInt(total.intValue()))
-                .setMaxResults(1).list().getEntities().get(0);
-    }
-
     private Entity getRandomOrder() {
         Long total = (long) dataDefinitionService.get("orders", "order").find().list().getTotalNumberOfEntities();
         return dataDefinitionService.get("orders", "order").find().setFirstResult(RANDOM.nextInt(total.intValue()))
                 .setMaxResults(1).list().getEntities().get(0);
-    }
-
-    private String getRandomTypeOfMaterial() {
-        return TYPE_OF_MATERIALS[RANDOM.nextInt(TYPE_OF_MATERIALS.length)];
     }
 
     private String getRandomUnit() {
@@ -1023,6 +1057,16 @@ public class SamplesLoaderModule extends Module {
         parameter.setField("checkDoneOrderForQuality", false);
         parameter.setField("autoGenerateQualityControl", false);
         parameter.setField("batchForDoneOrder", "01none");
+
+        if (isEnabled("productionCounting")) {
+            parameter.setField("registerQuantityInProduct", true);
+            parameter.setField("registerQuantityOutProduct", true);
+            parameter.setField("registerProductionTime", true);
+            parameter.setField("allowedPartial", false);
+            parameter.setField("blockClosing", false);
+            parameter.setField("autoCloseOrder", false);
+        }
+
         dataDefinitionService.get("basic", "parameter").save(parameter);
     }
 
