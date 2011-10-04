@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -43,7 +43,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 public class GanttOperationService {
 
     @Autowired
-    private ShiftsService shiftsService;
+    private ShiftsServiceImpl shiftsService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;

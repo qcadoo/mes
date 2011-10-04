@@ -127,8 +127,8 @@
 							<option type="column" name="number" fields="number" expression="#number" />
 							<option type="column" name="operation" fields="orderOperationComponent" 
 									expression="#orderOperationComponent==null ? 'N/A' : #orderOperationComponent['nodeNumber'] + ' ' + #orderOperationComponent['operation']['name']" />
-							<option type="column" name="isFinal" fields="isFinal" 
-									expression="#isFinal" />
+							<option type="column" name="lastRecord" fields="lastRecord" 
+									expression="#lastRecord" />
 							<option type="column" name="shift" fields="shift" expression="#shift['name']" />
 							<option type="column" name="date" fields="creationTime" />
 							<option type="column" name="worker" fields="worker" />

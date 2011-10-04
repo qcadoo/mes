@@ -39,8 +39,8 @@
 			<option type="column" name="orderOperationComponent" fields="orderOperationComponent"
 				link="true" width="300"
 				expression="#orderOperationComponent != null ? #orderOperationComponent['nodeNumber'] + ' ' + #orderOperationComponent['operation']['name'] : 'N/A'" />
-			<option type="column" name="isFinal" fields="isFinal" 
-					expression="#isFinal" />
+			<option type="column" name="lastRecord" fields="lastRecord" 
+					expression="#lastRecord" />
 			<option type="column" name="shift" fields="shift" link="true"
 				width="300" expression="#shift!=null ? #shift['name'] : 'N/A'" />
 			<option type="column" name="creationTime" fields="creationTime"
@@ -50,8 +50,8 @@
 			<option type="order" column="number" direction="asc" />
 			<option type="correspondingView" value="productionCounting/productionRecordDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="number" />
-			<option type="orderable" value="number" />
+			<option type="searchable" value="number,order,orderOperationComponent" />
+			<option type="orderable" value="number,order,orderOperationComponent" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>

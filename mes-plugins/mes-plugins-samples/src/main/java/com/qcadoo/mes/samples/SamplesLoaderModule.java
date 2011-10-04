@@ -125,7 +125,7 @@ public class SamplesLoaderModule extends Module {
     @Autowired
     private TreeNumberingService treeNumberingService;
 
-    @Value("${loadTestDataLocale}")
+    // @Value("${loadTestDataLocale}")
     private String locale;
 
     @Value("${setAsDemoEnviroment}")
@@ -178,6 +178,11 @@ public class SamplesLoaderModule extends Module {
         } else {
             LOG.info("Database has been already prepared, skipping");
         }
+    }
+
+    @Value("${loadTestDataLocale}")
+    public void setLocale(String locale) {
+        this.locale = (locale != null) ? locale : "en";
     }
 
     private void changeAdminPassword() {
@@ -1062,8 +1067,8 @@ public class SamplesLoaderModule extends Module {
             parameter.setField("registerQuantityInProduct", true);
             parameter.setField("registerQuantityOutProduct", true);
             parameter.setField("registerProductionTime", true);
-            parameter.setField("allowedPartial", false);
-            parameter.setField("blockClosing", false);
+            parameter.setField("justOne", false);
+            parameter.setField("allowToClose", false);
             parameter.setField("autoCloseOrder", false);
         }
 

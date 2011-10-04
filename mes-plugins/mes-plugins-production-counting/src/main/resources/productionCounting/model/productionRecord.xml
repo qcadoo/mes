@@ -41,7 +41,7 @@
 		<hasMany name="recordOperationProductOutComponents" joinField="productionRecord"
 			model="recordOperationProductOutComponent" />
 
-		<boolean name="isFinal" />
+		<boolean name="lastRecord" />
 		<string name="worker" />
 		<datetime name="creationTime" />
 
