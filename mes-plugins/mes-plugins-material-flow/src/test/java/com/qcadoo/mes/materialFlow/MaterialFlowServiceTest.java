@@ -1,4 +1,4 @@
-/*package com.qcadoo.mes.materialFlow;
+package com.qcadoo.mes.materialFlow;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -18,6 +18,8 @@ import org.mockito.Mockito;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.internal.DefaultEntity;
 
@@ -28,12 +30,11 @@ public class MaterialFlowServiceTest {
     private DataDefinitionService dataDefinitionService;
     private DataDefinition transferDataCorrection;
     private DataDefinition transfer;
-    private SearchResult resultDataCorrection;
     private SearchResult resultTo;
     private SearchResult resultFrom;
     
-    private static final String stockAreas = "stockAreas";
-    private static final String product = "product";
+    private static final String stockAreas = "1";
+    private static final String product = "1";
     private static final String forDate = "date";
     
     @Before
@@ -45,7 +46,6 @@ public class MaterialFlowServiceTest {
         
         setField(materialFlowService, "dataDefinitionService", dataDefinitionService);
         
-        resultDataCorrection = mock(SearchResult.class);
         resultTo = mock(SearchResult.class);
         resultFrom = mock(SearchResult.class);
         
@@ -53,12 +53,20 @@ public class MaterialFlowServiceTest {
             .willReturn(transferDataCorrection);
         given(dataDefinitionService.get("materialFlow", "transfer"))
             .willReturn(transfer);
-        given(transferDataCorrection.find(Mockito.anyString()).list())
-            .willReturn(resultDataCorrection);
+        
     }
     
     @Test
     public void shouldCalculateShouldBeForOnlyTransfers() {
+        Long stockAreasId = Long.valueOf(stockAreas);
+        Long productId = Long.valueOf(product);
+        given(transferDataCorrection.find()
+                .add(SearchRestrictions.eq("stockAreas.id", stockAreasId))
+                .add(SearchRestrictions.eq("product.id", productId))
+                .addOrder(SearchOrders.desc("stockCorrectionDate"))
+                .setMaxResults(1)
+                .uniqueResult())
+            .willReturn(null);
         given(transfer.find(
                 "where stockAreasTo = '" + stockAreas + "' and product = '" + product + "' and date <= '" + forDate + "'")
                 .list())
@@ -83,13 +91,18 @@ public class MaterialFlowServiceTest {
     
     @Test
     public void shouldCalculateShouldBeForOnlyStockCorrections() {
-        List<Entity> list = new ArrayList<Entity>();
         Entity entity = new DefaultEntity(transferDataCorrection);
         entity.setField("stockCorrectionDate", new Date(0));
         entity.setField("found", new BigDecimal(1000));
-        list.add(entity);
         
-        given(resultDataCorrection.getEntities()).willReturn(list);
+        Long stockAreasId = Long.valueOf(stockAreas);
+        Long productId = Long.valueOf(product);
+        given(transferDataCorrection.find()
+                .add(SearchRestrictions.eq("stockAreas.id", stockAreasId))
+                .add(SearchRestrictions.eq("product.id", productId))
+                .addOrder(SearchOrders.desc("stockCorrectionDate"))
+                .setMaxResults(1)
+                .uniqueResult()).willReturn(entity);
         
         given(transfer.find(Mockito.anyString())
                 .list())
@@ -111,13 +124,18 @@ public class MaterialFlowServiceTest {
                 + "' and date > '" + lastCorrectionDate + "'").list())
                 .willReturn(resultFrom);
         
-        List<Entity> list = new ArrayList<Entity>();
         Entity entity = new DefaultEntity(transferDataCorrection);
         entity.setField("stockCorrectionDate", new Date(100));
         entity.setField("found", new BigDecimal(1000));
-        list.add(entity);
-        
-        given(resultDataCorrection.getEntities()).willReturn(list);
+
+        Long stockAreasId = Long.valueOf(stockAreas);
+        Long productId = Long.valueOf(product);
+        given(transferDataCorrection.find()
+                .add(SearchRestrictions.eq("stockAreas.id", stockAreasId))
+                .add(SearchRestrictions.eq("product.id", productId))
+                .addOrder(SearchOrders.desc("stockCorrectionDate"))
+                .setMaxResults(1)
+                .uniqueResult()).willReturn(entity);
         
         List<Entity> transferList = new ArrayList<Entity>();
         Entity entity2 = new DefaultEntity(transfer);
@@ -131,6 +149,4 @@ public class MaterialFlowServiceTest {
         
         assertEquals(new BigDecimal(2500), materialFlowService.calculateShouldBeInStockArea(stockAreas, product, forDate));
     }
-    
-    
-}*/
+}
