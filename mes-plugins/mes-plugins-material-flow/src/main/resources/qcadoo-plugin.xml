@@ -53,10 +53,10 @@
 	</information>
 	
 	<dependencies>
-        <dependency>
-            <plugin>basic</plugin>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<plugin>basic</plugin>
+		</dependency>
+	</dependencies>
 
 
 	<modules>
@@ -70,9 +70,14 @@
 			resource="model/materialsInStockAreasComponent.xml" />
 		
 		<model:model-field plugin="basic" model="product" >
-            <model:hasMany name="transfer" plugin="materialFlow"
-            	model="transfer" joinField="product" /> 
-        </model:model-field>
+			<model:hasMany name="transfer" plugin="materialFlow"
+				model="transfer" joinField="product" /> 
+		</model:model-field>
+		
+		<model:model-field plugin="basic" model="product" >
+			<model:hasMany name="stockCorrection" plugin="materialFlow"
+				model="stockCorrection" joinField="product" /> 
+		</model:model-field>
 		
 		<model:model-field plugin="materialFlow" model="stockAreas">
 			<model:hasMany name="materialsInStockAreas" plugin="materialFlow"
@@ -82,8 +87,8 @@
 		<menu:menu-category name="materialFlow" />
 		<menu:menu-category name="reports" />
 		
-	    <view:view-listener plugin="materialFlow" view="stockCorrectionDetail" component="form" event="refreshShouldBe" class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="refreshShouldBe" />
-		<view:view-hook plugin="materialFlow" view="stockCorrectionDetail" type="beforeRender" class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="refreshShouldBe" />
+		<view:view-listener plugin="materialFlow" view="stockCorrectionDetail" component="form" event="refreshShouldBeInStockCorrectionDetail" class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="refreshShouldBeInStockCorrectionDetail" />
+		<view:view-hook plugin="materialFlow" view="stockCorrectionDetail" type="beforeRender" class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="refreshShouldBeInStockCorrectionDetail" />
 
 		<menu:menu-item name="stockCorrections" category="materialFlow"
 			view="stockCorrectionList" />

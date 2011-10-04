@@ -127,11 +127,11 @@ public class MaterialFlowService {
         return countProductIn;
     }
 
-    public void refreshShouldBe(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
-        refreshShouldBe(state);
+    public void refreshShouldBeInStockCorrectionDetail(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+        refreshShouldBeInStockCorrectionDetail(state);
     }
 
-    public void refreshShouldBe(final ViewDefinitionState state) {
+    public void refreshShouldBeInStockCorrectionDetail(final ViewDefinitionState state) {
         FieldComponent stockAreas = (FieldComponent) state.getComponentByReference("stockAreas");
         FieldComponent product = (FieldComponent) state.getComponentByReference("product");
         FieldComponent date = (FieldComponent) state.getComponentByReference("stockCorrectionDate");
@@ -256,14 +256,13 @@ public class MaterialFlowService {
     }
     
     public List<Entity> getProductsSeenInStockArea(String stockAreaNumber) {
-        List<Entity> products = new ArrayList<Entity>();
-        
         Long id = Long.valueOf(stockAreaNumber);
         
         DataDefinition dataDefProduct = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER_BASIC, 
                 MaterialFlowConstants.MODEL_PRODUCT);
         
-        products = (List<Entity>) dataDefProduct.find()
+        List<Entity> productsFromTransfers = new ArrayList<Entity>();
+        productsFromTransfers = (List<Entity>) dataDefProduct.find()
             .createAlias("transfer", "t")
             .addOrder(SearchOrders.asc("t.product.id"))
             .setProjection(SearchProjections.distinct(SearchProjections.field("t.product")))
@@ -271,6 +270,19 @@ public class MaterialFlowService {
             .add(SearchRestrictions.eq("t.stockAreasTo.id", id))
             .list().getEntities();
         
-        return products;
+        List<Entity> productsFromStockCorrections = new ArrayList<Entity>();
+        productsFromStockCorrections = (List<Entity>) dataDefProduct.find()
+            .createAlias("stockCorrection", "sc")
+            .addOrder(SearchOrders.asc("sc.product.id"))
+            .setProjection(SearchProjections.distinct(SearchProjections.field("sc.product")))
+            .add(SearchRestrictions.eqField("sc.product.id", "id"))
+            .add(SearchRestrictions.eq("sc.stockAreas.id", id))
+            .list().getEntities();
+        
+        for (Entity product : productsFromStockCorrections)
+            if (!productsFromTransfers.contains(product))
+                productsFromTransfers.add(product);
+        
+        return productsFromTransfers;
     }
 }
