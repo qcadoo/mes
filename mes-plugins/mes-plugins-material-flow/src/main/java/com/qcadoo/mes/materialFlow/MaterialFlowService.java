@@ -72,16 +72,21 @@ public class MaterialFlowService {
         DataDefinition transferDataCorrection = dataDefinitionService.get("materialFlow", "stockCorrection");
         DataDefinition transferTo = dataDefinitionService.get("materialFlow", "transfer");
         DataDefinition transferFrom = dataDefinitionService.get("materialFlow", "transfer");
-
-        SearchResult resultDataCorrection = transferDataCorrection.find(
-                "where stockAreas = " + stockAreas + " order by stockCorrectionDate asc").list();
-
-        for (Entity e : resultDataCorrection.getEntities()) {
-            lastCorrectionDate = (Date) e.getField("stockCorrectionDate");
-            quantity = (BigDecimal) e.getField("found");
-            countProduct = quantity;
+        
+        Long stockAreasId = Long.valueOf(stockAreas);
+        Long productId = Long.valueOf(product);
+        Entity resultDataCorrection = transferDataCorrection.find()
+            .add(SearchRestrictions.eq("stockAreas.id", stockAreasId))
+            .add(SearchRestrictions.eq("product.id", productId))
+            .addOrder(SearchOrders.desc("stockCorrectionDate"))
+            .setMaxResults(1)
+            .uniqueResult();
+        
+        if (resultDataCorrection != null) {
+            lastCorrectionDate = (Date) resultDataCorrection.getField("stockCorrectionDate");
+            countProduct = (BigDecimal) resultDataCorrection.getField("found");
         }
-
+        
         SearchResult resultTo = null;
         SearchResult resultFrom = null;
         
