@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -56,7 +56,7 @@ public class OrderTimePredictionService {
     private TranslationService translationService;
 
     @Autowired
-    private ShiftsService shiftsService;
+    private ShiftsServiceImpl shiftsService;
 
     public void setFieldDisable(final ViewDefinitionState viewDefinitionState) {
 
