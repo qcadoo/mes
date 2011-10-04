@@ -64,7 +64,7 @@ public class ProductionRecordViewService {
     @Autowired
     private TranslationService translationService;
 
-    private final static String CLOSED_ORDER = "04done";
+    private final static String CLOSED_ORDER = "04completed";
 
     private final static Logger LOG = LoggerFactory.getLogger(ProductionRecordViewService.class);
 
@@ -268,7 +268,7 @@ public class ProductionRecordViewService {
 
     public void checkOrderState(final ViewDefinitionState viewDefinitionState) {
         FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
-        if ("03inProgress".equals(orderState.getFieldValue()) || "04done".equals(orderState.getFieldValue())) {
+        if ("03inProgress".equals(orderState.getFieldValue()) || "04completed".equals(orderState.getFieldValue())) {
             for (String componentName : Arrays.asList("typeOfProductionRecording", "registerQuantityInProduct",
                     "registerQuantityOutProduct", "registerProductionTime", "allowedPartial", "blockClosing", "autoCloseOrder")) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);

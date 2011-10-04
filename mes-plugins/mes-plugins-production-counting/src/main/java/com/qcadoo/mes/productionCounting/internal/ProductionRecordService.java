@@ -118,7 +118,7 @@ public class ProductionRecordService {
 
     public boolean checkIfOrderIsStarted(final DataDefinition dd, final Entity entity) {
         String orderState = entity.getBelongsToField("order").getStringField("state");
-        if (orderState == null || "01new".equals(orderState) || "02accepted".equals(orderState)) {
+        if (orderState == null || "01pending".equals(orderState) || "02accepted".equals(orderState)) {
             entity.addError(dd.getField("order"), "productionCounting.record.messages.error.orderIsNotStarted");
             return false;
         }

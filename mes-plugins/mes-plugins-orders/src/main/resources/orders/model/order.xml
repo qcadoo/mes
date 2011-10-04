@@ -35,7 +35,7 @@
 		<string name="name" required="true" />
 		<datetime name="dateFrom" required="true" />
 		<datetime name="dateTo" required="true" />
-		<enum name="state" values="01new,02accepted,03inProgress,04done"		
+		<enum name="state" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"		
 			required="true" />
 		<belongsTo name="contractor" plugin="basic" model="contractor" />
 		<belongsTo name="product" plugin="basic" model="product" />

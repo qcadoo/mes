@@ -41,7 +41,7 @@
 								this.disable();
 							} else if (selectedEntitiesArray.length == 1) {
 								var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
-								if (selectedEntityStatus == '04done') {
+								if (selectedEntityStatus == '04completed') {
 									this.disable("#{translate(orders.order.ribbon.message.stateIsDone)}");
 								} else {
 									this.enable();

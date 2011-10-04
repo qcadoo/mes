@@ -95,7 +95,7 @@
 									print.enable();
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
 									var externalSynchronized = selectedEntitiesArray[0].fields.externalSynchronized;									
-									if (selectedEntityStatus == '01new' && externalSynchronized == '1') {
+									if (selectedEntityStatus == '01pending' && externalSynchronized == '1') {
 										acceptOrder.enable();
 										acceptOrder.state = "accept";
 										acceptOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.acceptOrder)}");
@@ -121,7 +121,7 @@
 								var hasClosed = false;
 								var hasExternal = false;
 								for (var i in selectedEntitiesArray) {
-									if (selectedEntitiesArray[i].fields.state == "04done") {
+									if (selectedEntitiesArray[i].fields.state == "04completed") {
 										hasClosed = true;
 										break;
 									} else if (selectedEntitiesArray[0].fields.externalSynchronized == '0' || (selectedEntitiesArray[i].fields.externalNumber != '' && selectedEntitiesArray[i].fields.externalNumber != undefined)) {
@@ -165,7 +165,7 @@
 				<predefinedFilter name="all">
 				</predefinedFilter>
 				<predefinedFilter name="new">
-					<filterRestriction column="state" value="01new" />
+					<filterRestriction column="state" value="01pending" />
 					<filterOrder column="dateFrom" direction="asc" />
 				</predefinedFilter>
 				<predefinedFilter name="accepted">

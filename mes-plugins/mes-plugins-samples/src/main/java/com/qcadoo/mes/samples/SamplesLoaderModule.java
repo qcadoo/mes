@@ -621,7 +621,7 @@ public class SamplesLoaderModule extends Module {
             order.setField("plannedQuantity", null);
         }
 
-        order.setField("state", "01new");
+        order.setField("state", "01pending");
 
         Entity product = getProductByNumber(values.get("product_nr"));
 
