@@ -177,15 +177,15 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                                         .translate("qcadooView.true", locale) : getTranslationService().translate(
                                         "qcadooView.false", locale)), PdfUtil.getArialBold9Dark()));
         rightPanel.addCell(new Phrase("\t \t \t"
-                + getTranslationService().translate("productionCounting.productionBalance.report.panel.allowedPartial", locale)
+                + getTranslationService().translate("productionCounting.productionBalance.report.panel.justOne", locale)
                 + " "
-                + ((Boolean) productionBalance.getBelongsToField("order").getField("allowedPartial") ? getTranslationService()
+                + ((Boolean) productionBalance.getBelongsToField("order").getField("justOne") ? getTranslationService()
                         .translate("qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale)),
                 PdfUtil.getArialBold9Dark()));
         rightPanel.addCell(new Phrase("\t \t \t"
-                + getTranslationService().translate("productionCounting.productionBalance.report.panel.blockClosing", locale)
+                + getTranslationService().translate("productionCounting.productionBalance.report.panel.allowToClose", locale)
                 + " "
-                + ((Boolean) productionBalance.getBelongsToField("order").getField("blockClosing") ? getTranslationService()
+                + ((Boolean) productionBalance.getBelongsToField("order").getField("allowToClose") ? getTranslationService()
                         .translate("qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale)),
                 PdfUtil.getArialBold9Dark()));
         rightPanel.addCell(new Phrase("\t \t \t"

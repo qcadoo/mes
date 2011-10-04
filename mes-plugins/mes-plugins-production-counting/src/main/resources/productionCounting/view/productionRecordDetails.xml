@@ -36,8 +36,8 @@
 				<component type="gridLayout" name="gridLayout" columns="2"
 					rows="15">
 					<layoutElement column="1" row="1">
-						<component type="checkbox" name="isFinal" field="isFinal"
-							reference="isFinal" />
+						<component type="checkbox" name="lastRecord" field="lastRecord"
+							reference="lastRecord" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="number" field="number"
@@ -54,12 +54,17 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+								method="clearFields" />
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 								method="enabledOrDisabledOperationField" />
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 								method="registeringProductionTime" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+								method="checkJustOne" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">

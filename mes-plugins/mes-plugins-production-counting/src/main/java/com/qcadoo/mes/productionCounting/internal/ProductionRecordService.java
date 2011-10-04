@@ -82,13 +82,13 @@ public class ProductionRecordService {
         return true;
     }
 
+    // checkIfJustOneChoosen
     public boolean checkIfPartialIsAllowed(final DataDefinition dd, final Entity entity) {
         Entity order = entity.getBelongsToField("order");
-        Boolean allowedPartial = getBooleanValue(order.getField("allowedPartial"));
-        Boolean isFinal = getBooleanValue(entity.getField("isFinal"));
-        if (!isFinal && !allowedPartial) {
-            entity.addError(dd.getField("order"),
-                    "productionCounting.validate.global.error.productionRecord.orderError.allowedPartial");
+        Boolean justOne = getBooleanValue(order.getField("justOne"));
+        Boolean lastRecord = getBooleanValue(entity.getField("lastRecord"));
+        if (!lastRecord && justOne) {
+            entity.addError(dd.getField("order"), "productionCounting.validate.global.error.productionRecord.orderError.justOne");
             return false;
         }
         return true;
@@ -103,7 +103,7 @@ public class ProductionRecordService {
 
         SearchCriteriaBuilder searchBuilder = dd.find();
         searchBuilder.add(SearchRestrictions.belongsTo("order", order));
-        searchBuilder.add(SearchRestrictions.eq("isFinal", true));
+        searchBuilder.add(SearchRestrictions.eq("lastRecord", true));
 
         if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
             searchBuilder.add(SearchRestrictions.belongsTo("orderOperationComponent",
@@ -261,13 +261,14 @@ public class ProductionRecordService {
     }
 
     private void countTimeBalance(final Entity productionRecord) {
-        Integer plannedMachineTime = getInteger(productionRecord.getField("plannedMachineTime"));
-        Integer plannedLaborTime = getInteger(productionRecord.getField("plannedLaborTime"));
-        Integer machineTime = getInteger(productionRecord.getField("machineTime"));
-        Integer laborTime = getInteger(productionRecord.getField("laborTime"));
+        BigDecimal plannedMachineTime = getBigDecimal(productionRecord.getField("plannedMachineTime"));
+        BigDecimal plannedLaborTime = getBigDecimal(productionRecord.getField("plannedLaborTime"));
+        BigDecimal machineTime = getBigDecimal(productionRecord.getField("machineTime"));
+        BigDecimal laborTime = getBigDecimal(productionRecord.getField("laborTime"));
 
-        productionRecord.setField("machineTimeBalance", machineTime - plannedMachineTime);
-        productionRecord.setField("laborTimeBalance", laborTime - plannedLaborTime);
+        productionRecord
+                .setField("machineTimeBalance", machineTime.subtract(plannedMachineTime).setScale(0, ROUND_UP).intValue());
+        productionRecord.setField("laborTimeBalance", laborTime.subtract(plannedLaborTime).setScale(0, ROUND_UP).intValue());
     }
 
     private static boolean checkIfOperationListIsEmpty(final List<Entity> orderOperations) {
