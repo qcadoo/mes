@@ -184,9 +184,9 @@ public class SimpleMaterialBalanceService {
                         state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;
-            } else if (simpleMaterialBalance.getHasManyField("warehouses").isEmpty()) {
+            } else if (simpleMaterialBalance.getHasManyField("stockAreas").isEmpty()) {
                 String message = translationService.translate(
-                        "simpleMaterialBalance.simpleMaterialBalance.window.simpleMaterialBalance.missingAssosiatedWarehouses",
+                        "simpleMaterialBalance.simpleMaterialBalance.window.simpleMaterialBalance.missingAssosiatedStockAreas",
                         state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;

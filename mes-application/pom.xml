@@ -111,7 +111,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-inventory</artifactId>
+			<artifactId>mes-plugins-material-flow</artifactId>
 			<version>0.4.9-SNAPSHOT</version>
 		</dependency>
 		<dependency>

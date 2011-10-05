@@ -24,26 +24,23 @@
     ***************************************************************************
 
 -->
-<model name="simpleMaterialBalance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<model name="transfer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="name" required="true">
-			<validatesLength max="255" />
+		<string name="number" required="true" unique="true">
+			<validatesLength max="40" />
 		</string>
-		<datetime name="date" />
-		<string name="worker" />
-		<boolean name="onlyComponents" default="1"/>
-		<boolean name="generated" />
-		<string name="fileName" />
-		<hasMany name="orders" model="simpleMaterialBalanceOrdersComponent"
-			joinField="simpleMaterialBalance" cascade="delete" copyable="true" />
-		<hasMany name="stockAreas" model="simpleMaterialBalanceStockAreasComponent"
-			joinField="simpleMaterialBalance" cascade="delete" copyable="true" />
+		<enum name="type" values="Transport,Consumption,Production,Transformation" required="true"/>
+		<date name="date" required="true"/>
+		<belongsTo name="stockAreasFrom" model="stockAreas" plugin="materialFlow" />
+		<belongsTo name="stockAreasTo" model="stockAreas" plugin="materialFlow" />
+		<belongsTo name="product" model="product" plugin="basic" required="true"/>
+		<decimal name="quantity" required="true"/>
+		<belongsTo name="staff" model="staff" plugin="basic" />
 	</fields>
-	<hooks>
-		<onCopy class="com.qcadoo.mes.simpleMaterialBalance.internal.SimpleMaterialBalanceService"
-			method="clearGeneratedOnCopy" />
+	<hooks>		
+			<validatesWith class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="validateTransfer" />
 	</hooks>
-	<identifier expression="#name" />
+	<identifier expression="#number + ' - ' + #name" />	
 </model>

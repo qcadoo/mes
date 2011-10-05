@@ -24,26 +24,27 @@
     ***************************************************************************
 
 -->
-<model name="simpleMaterialBalance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="name" required="true">
-			<validatesLength max="255" />
-		</string>
-		<datetime name="date" />
-		<string name="worker" />
-		<boolean name="onlyComponents" default="1"/>
-		<boolean name="generated" />
-		<string name="fileName" />
-		<hasMany name="orders" model="simpleMaterialBalanceOrdersComponent"
-			joinField="simpleMaterialBalance" cascade="delete" copyable="true" />
-		<hasMany name="stockAreas" model="simpleMaterialBalanceStockAreasComponent"
-			joinField="simpleMaterialBalance" cascade="delete" copyable="true" />
-	</fields>
-	<hooks>
-		<onCopy class="com.qcadoo.mes.simpleMaterialBalance.internal.SimpleMaterialBalanceService"
-			method="clearGeneratedOnCopy" />
-	</hooks>
-	<identifier expression="#name" />
-</model>
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="stockAreasList" 
+	modelName="stockAreas" 
+	menuAccessible="true">
+		<component type="window" name="window">
+			<ribbon>
+				<group template="gridNewCopyAndRemoveAction" />
+			</ribbon>
+			<component type="grid" name="grid" reference="grid">
+				<option type="column" name="number" fields="number" link="true" width="150" />
+				<option type="column" name="name" fields="name" link="true"/>
+				<option type="order" column="number" direction="asc" />
+ 				<option type="searchable" value="number" /> 
+ 				<option type="orderable" value="number" /> 
+				<option type="correspondingView" value="materialFlow/stockAreasDetail" /> 
+ 				<option type="correspondingComponent" value="form" /> 
+ 				<option type="multiselect" value="true" /> 
+			</component>
+			<option type="header" value="false" />
+ 			<option type="fixedHeight" value="true" /> 
+		</component>
+</view>
+

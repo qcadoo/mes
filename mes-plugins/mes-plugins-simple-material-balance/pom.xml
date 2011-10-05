@@ -26,7 +26,17 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-inventory</artifactId>
+			<artifactId>mes-plugins-basic</artifactId>
+			<version>0.4.9-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-orders</artifactId>
+			<version>0.4.9-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-material-flow</artifactId>
 			<version>0.4.9-SNAPSHOT</version>
 		</dependency>
 		<dependency>

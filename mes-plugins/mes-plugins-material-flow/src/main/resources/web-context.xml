@@ -24,26 +24,18 @@
     ***************************************************************************
 
 -->
-<model name="simpleMaterialBalance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="name" required="true">
-			<validatesLength max="255" />
-		</string>
-		<datetime name="date" />
-		<string name="worker" />
-		<boolean name="onlyComponents" default="1"/>
-		<boolean name="generated" />
-		<string name="fileName" />
-		<hasMany name="orders" model="simpleMaterialBalanceOrdersComponent"
-			joinField="simpleMaterialBalance" cascade="delete" copyable="true" />
-		<hasMany name="stockAreas" model="simpleMaterialBalanceStockAreasComponent"
-			joinField="simpleMaterialBalance" cascade="delete" copyable="true" />
-	</fields>
-	<hooks>
-		<onCopy class="com.qcadoo.mes.simpleMaterialBalance.internal.SimpleMaterialBalanceService"
-			method="clearGeneratedOnCopy" />
-	</hooks>
-	<identifier expression="#name" />
-</model>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:component-scan base-package="com.qcadoo.mes.materialFlow" >
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+	
+  		
+</beans>

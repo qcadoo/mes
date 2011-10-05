@@ -24,26 +24,25 @@
     ***************************************************************************
 
 -->
-<model name="simpleMaterialBalance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="name" required="true">
-			<validatesLength max="255" />
-		</string>
-		<datetime name="date" />
-		<string name="worker" />
-		<boolean name="onlyComponents" default="1"/>
-		<boolean name="generated" />
-		<string name="fileName" />
-		<hasMany name="orders" model="simpleMaterialBalanceOrdersComponent"
-			joinField="simpleMaterialBalance" cascade="delete" copyable="true" />
-		<hasMany name="stockAreas" model="simpleMaterialBalanceStockAreasComponent"
-			joinField="simpleMaterialBalance" cascade="delete" copyable="true" />
-	</fields>
-	<hooks>
-		<onCopy class="com.qcadoo.mes.simpleMaterialBalance.internal.SimpleMaterialBalanceService"
-			method="clearGeneratedOnCopy" />
-	</hooks>
-	<identifier expression="#name" />
-</model>
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="stockAreasDetail" modelName="stockAreas">
+	<component type="window" name="window">
+		<ribbon>
+			<group template="navigation" />
+			<group template="formSaveCopyAndRemoveActions" />
+		</ribbon>
+		<component type="form" name="form" reference="form">
+			<component type="gridLayout" name="grid" reference="grid"
+				columns="3" rows="2">
+				<layoutElement column="1" row="1">
+					<component type="input" name="number" field="number" />
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="input" name="name" field="name" />
+				</layoutElement>			
+			</component>
+			<option type="header" value="true" />
+		</component>
+	</component>
+</view>
