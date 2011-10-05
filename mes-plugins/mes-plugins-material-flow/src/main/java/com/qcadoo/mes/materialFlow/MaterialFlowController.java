@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.materialFlow;
 
+import static com.qcadoo.report.api.ReportUtil.sentFileAsAttachement;
+import static com.qcadoo.report.api.ReportUtil.sentTranslatedFileName;
+
 import java.util.Date;
 import java.util.Locale;
 
@@ -53,24 +56,28 @@ public class MaterialFlowController {
     private TranslationService translationService;
 
     @RequestMapping(value = "materialFlow/materialsInStockAreas.pdf", method = RequestMethod.GET)
-    public void materialsInStockAreasPdf(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
+    public void materialsInStockAreasPdf(@RequestParam("id") final String id, final HttpServletResponse response,
+            final Locale locale) {
         DataDefinition dataDefinition = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_MATERIALS_IN_STOCK_AREAS);
         Entity materialsInStockAreas = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(materialsInStockAreas,
-                translationService.translate("materialFlow.materialFlow.report.fileName", locale), "", PdfUtil.PDF_EXTENSION, response);
-        ReportUtil.sentFileAsAttachement(materialsInStockAreas.getStringField("fileName") + PdfUtil.PDF_EXTENSION,
+        sentTranslatedFileName((Date) materialsInStockAreas.getField("date"),
+                translationService.translate("materialFlow.materialFlow.report.fileName", locale), "", PdfUtil.PDF_EXTENSION,
+                response);
+        sentFileAsAttachement(materialsInStockAreas.getStringField("fileName") + PdfUtil.PDF_EXTENSION,
                 ReportUtil.PDF_CONTENT_TYPE, response);
     }
 
     @RequestMapping(value = "materialFlow/materialsInStockAreas.xls", method = RequestMethod.GET)
-    public void materialsInStockAreasXls(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
+    public void materialsInStockAreasXls(@RequestParam("id") final String id, final HttpServletResponse response,
+            final Locale locale) {
         DataDefinition dataDefinition = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_MATERIALS_IN_STOCK_AREAS);
         Entity materialFlow = dataDefinition.get(Long.parseLong(id));
-        ReportUtil.sentTranslatedFileName(materialFlow, translationService.translate("materialFlow.materialFlow.report.fileName", locale),
-                "", XlsUtil.XLS_EXTENSION, response);
-        ReportUtil.sentFileAsAttachement(materialFlow.getStringField("fileName") + XlsUtil.XLS_EXTENSION,
-                ReportUtil.XLS_CONTENT_TYPE, response);
+        sentTranslatedFileName((Date) materialFlow.getField("date"),
+                translationService.translate("materialFlow.materialFlow.report.fileName", locale), "", XlsUtil.XLS_EXTENSION,
+                response);
+        sentFileAsAttachement(materialFlow.getStringField("fileName") + XlsUtil.XLS_EXTENSION, ReportUtil.XLS_CONTENT_TYPE,
+                response);
     }
 }

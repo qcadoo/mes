@@ -97,8 +97,9 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
             row.createCell(3).setCellValue(getDecimalFormat().format(product.getValue()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity stockAreas : stockAreass) {
-                available = available.add(materialFlowService.calculateShouldBe(stockAreas.getBelongsToField("stockAreas").getId()
-                        .toString(), product.getKey().getId().toString(), simpleMaterialBalance.getField("date").toString()));
+                available = available.add(materialFlowService.calculateShouldBeInStockArea(
+                        stockAreas.getBelongsToField("stockAreas").getId().toString(), product.getKey().getId().toString(),
+                        simpleMaterialBalance.getField("date").toString()));
             }
             row.createCell(4).setCellValue(getDecimalFormat().format(available));
             row.createCell(5).setCellValue(getDecimalFormat().format(available.subtract(product.getValue())));
