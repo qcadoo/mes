@@ -65,7 +65,6 @@ public class MaterialFlowService {
 
         BigDecimal countProductIn = BigDecimal.ZERO;
         BigDecimal countProductOut = BigDecimal.ZERO;
-        BigDecimal quantity = BigDecimal.ZERO;
         BigDecimal countProduct = BigDecimal.ZERO;
         Date lastCorrectionDate = null;
 
@@ -107,12 +106,12 @@ public class MaterialFlowService {
         }
 
         for (Entity e : resultTo.getEntities()) {
-            quantity = (BigDecimal) e.getField("quantity");
+            BigDecimal quantity = (BigDecimal) e.getField("quantity");
             countProductIn = countProductIn.add(quantity);
         }
 
         for (Entity e : resultFrom.getEntities()) {
-            quantity = (BigDecimal) e.getField("quantity");
+            BigDecimal quantity = (BigDecimal) e.getField("quantity");
             countProductOut = countProductOut.add(quantity);
         }
 
