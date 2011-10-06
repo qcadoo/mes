@@ -125,7 +125,7 @@ public class SamplesLoaderModule extends Module {
     @Autowired
     private TreeNumberingService treeNumberingService;
 
-    // @Value("${loadTestDataLocale}")
+    @Value("${loadTestDataLocale}")
     private String locale;
 
     @Value("${setAsDemoEnviroment}")
@@ -134,6 +134,7 @@ public class SamplesLoaderModule extends Module {
     @Override
     @Transactional
     public void multiTenantEnable() {
+        checkLocale();
         if (databaseHasToBePrepared()) {
             LOG.info("Database has to be prepared ...");
 
@@ -180,11 +181,6 @@ public class SamplesLoaderModule extends Module {
         }
     }
 
-    @Value("${loadTestDataLocale}")
-    public void setLocale(String locale) {
-        this.locale = (locale != null) ? locale : "en";
-    }
-
     private void changeAdminPassword() {
         DataDefinition userDD = dataDefinitionService.get("qcadooSecurity", "user");
         Entity user = userDD.find().add(SearchRestrictions.eq("userName", "admin")).setMaxResults(1).uniqueResult();
@@ -197,7 +193,7 @@ public class SamplesLoaderModule extends Module {
     }
 
     private void checkLocale() {
-        if ((locale == null) || ("".equals(locale))) {
+        if ((locale != null) || ("".equals(locale))) {
             locale = Locale.getDefault().toString().substring(0, 2);
 
             if (!"pl".equals(locale) && !"en".equals(locale)) {
@@ -211,7 +207,7 @@ public class SamplesLoaderModule extends Module {
     }
 
     private void readDataFromXML(final String type, final String[] attributes) {
-        checkLocale();
+
         LOG.info("Loading test data from " + type + "_" + locale + ".xml ...");
 
         try {
