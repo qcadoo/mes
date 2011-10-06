@@ -161,9 +161,6 @@
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 								method="fillFieldWhenOrderChanged" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-								method="setFieldEnable" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
@@ -207,9 +204,6 @@
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 								method="fillFieldWhenTechnologyChanged" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-								method="setFieldEnable" />
 						</component>
 
 					</layoutElement>
@@ -461,6 +455,7 @@
 		<beforeRender
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 			method="fillCurrencyFields" />
+		<beforeRender class="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="setFieldEnable" />
 	</hooks>
 </view>
 

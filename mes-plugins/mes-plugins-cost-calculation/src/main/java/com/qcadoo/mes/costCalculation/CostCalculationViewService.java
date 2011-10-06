@@ -257,7 +257,7 @@ public class CostCalculationViewService {
         applyValuesToFields(viewDefinitionState, technology, order);
     }
 
-    public void setFieldEnable(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void setFieldEnable(final ViewDefinitionState viewDefinitionState) {
         FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
         FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
 
@@ -268,11 +268,13 @@ public class CostCalculationViewService {
             product.setEnabled(true);
             quantity.setEnabled(true);
             orderLookup.setEnabled(true);
+            technologyLookup.setEnabled(true);
         } else {
             if (orderLookup.getFieldValue() == null) {
                 technologyLookup.setEnabled(true);
                 product.setEnabled(true);
                 quantity.setEnabled(true);
+
             }
         }
     }
