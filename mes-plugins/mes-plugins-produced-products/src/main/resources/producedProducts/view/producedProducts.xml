@@ -40,7 +40,7 @@
 				<option type="column" name="productName" fields="product" link="true" expression="#product['name']" />
 				<option type="column" name="plannedQuantity" fields="plannedQuantity" link="true" width="50" />
 				<option type="column" name="producedQuantity" fields="producedQuantity" expression="#producedQuantity==null?'N/A':#producedQuantity" link="true" width="50" />
-				<option type="order" column="product" direction="asc" />
+				<option type="order" column="productNumber" direction="asc" />
 				<option type="correspondingView" value="producedProducts/producedProductsDetails" />
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,number" />
