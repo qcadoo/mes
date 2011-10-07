@@ -55,6 +55,7 @@
 		<datetime name="effectiveDateTo" readonly="true" />
 		<string name="externalNumber" />
 		<boolean name="externalSynchronized" default="true" />
+		<hasMany name="loggings" joinField="order" model="logging" cascade="delete" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
