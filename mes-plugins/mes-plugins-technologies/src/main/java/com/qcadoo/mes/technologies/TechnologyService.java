@@ -351,4 +351,13 @@ public final class TechnologyService {
                 MODEL_TECHNOLOGY_OPERATION_COMPONENT);
         treeNumberingService.generateNumbersAndUpdateTree(technologyOperationDD, "technology", technology.getId());
     }
+    
+    public void setParentIfRootNodeAlreadyExists(final DataDefinition dd, final Entity technologyOperation) {
+        Entity technology = technologyOperation.getBelongsToField("technology");
+        EntityTreeNode rootNode = technology.getTreeField("operationComponents").getRoot();
+        if (rootNode == null || technologyOperation.getBelongsToField("parent") != null) {
+            return;
+        }
+        technologyOperation.setField("parent", rootNode);
+    }
 }

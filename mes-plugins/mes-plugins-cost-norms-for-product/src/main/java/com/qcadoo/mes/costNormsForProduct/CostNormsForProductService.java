@@ -124,6 +124,11 @@ public class CostNormsForProductService {
     public void checkTechnologyProductsInNorms(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
         ComponentState form = (ComponentState) viewDefinitionState.getComponentByReference("form");
+        
+        if (form.getFieldValue() == null) {
+        	return;
+        }
+        
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) form.getFieldValue());
         List<Entity> operationComponents = dataDefinitionService
