@@ -36,7 +36,6 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -80,15 +79,10 @@ public final class OrderService {
 
     private final Set<BeforeChangeStateListener> beforeChangeStateListeners = new HashSet<OrderService.BeforeChangeStateListener>();
 
-    @Autowired
-    private ShiftsServiceImpl shiftsService;
-
-    public boolean clearOrderDatesAndWorkersOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean clearOrderDatesOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("state", "01pending");
         entity.setField("effectiveDateTo", null);
-        entity.setField("endWorker", null);
         entity.setField("effectiveDateFrom", null);
-        entity.setField("startWorker", null);
         entity.setField("doneQuantity", null);
         entity.setField("externalNumber", null);
         entity.setField("externalSynchronized", true);
@@ -386,18 +380,13 @@ public final class OrderService {
         return true;
     }
 
-    public void fillOrderDatesAndWorkers(final DataDefinition dataDefinition, final Entity entity) {
-        if (securityService.getCurrentUserName() == null) {
-            return;
-        }
+    public void fillOrderDates(final DataDefinition dataDefinition, final Entity entity) {
         if (("03inProgress".equals(entity.getField("state")) || "04completed".equals(entity.getField("state")))
                 && entity.getField("effectiveDateFrom") == null) {
             entity.setField("effectiveDateFrom", new Date());
-            entity.setField("startWorker", securityService.getCurrentUserName());
         }
         if ("04completed".equals(entity.getField("state")) && entity.getField("effectiveDateTo") == null) {
             entity.setField("effectiveDateTo", new Date());
-            entity.setField("endWorker", securityService.getCurrentUserName());
         }
     }
 

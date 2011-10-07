@@ -121,14 +121,12 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
 
         // when
-        boolean result = orderService.clearOrderDatesAndWorkersOnCopy(dataDefinition, order);
+        boolean result = orderService.clearOrderDatesOnCopy(dataDefinition, order);
         // then
         assertTrue(result);
         verify(order).setField("state", "01pending");
         verify(order).setField("effectiveDateTo", null);
-        verify(order).setField("endWorker", null);
         verify(order).setField("effectiveDateFrom", null);
-        verify(order).setField("startWorker", null);
         verify(order).setField("doneQuantity", null);
     }
 
@@ -751,14 +749,13 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void shouldNotFillOrderDatesAndWorkers() throws Exception {
+    public void shouldNotFillOrderDates() throws Exception {
         // given
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        given(securityService.getCurrentUserName()).willReturn("user", "admin");
 
         // when
-        orderService.fillOrderDatesAndWorkers(dataDefinition, entity);
+        orderService.fillOrderDates(dataDefinition, entity);
 
         // then
         verify(entity, atLeastOnce()).getField("state");
@@ -766,57 +763,49 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void shouldFillInProgressOrderDatesAndWorkers() throws Exception {
+    public void shouldFillInProgressOrderDates() throws Exception {
         // given
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
         given(entity.getField("state")).willReturn("03inProgress");
-        given(securityService.getCurrentUserName()).willReturn("user");
 
         // when
-        orderService.fillOrderDatesAndWorkers(dataDefinition, entity);
+        orderService.fillOrderDates(dataDefinition, entity);
 
         // then
         verify(entity).setField(eq("effectiveDateFrom"), any(Date.class));
-        verify(entity).setField("startWorker", "user");
     }
 
     @Test
-    public void shouldFillDoneOrderDatesAndWorkers() throws Exception {
+    public void shouldFillDoneOrderDates() throws Exception {
         // given
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
         given(entity.getField("state")).willReturn("04completed");
-        given(securityService.getCurrentUserName()).willReturn("user", "user", "admin");
 
         // when
-        orderService.fillOrderDatesAndWorkers(dataDefinition, entity);
+        orderService.fillOrderDates(dataDefinition, entity);
 
         // then
         verify(entity).setField(eq("effectiveDateFrom"), any(Date.class));
-        verify(entity).setField("startWorker", "user");
         verify(entity).setField(eq("effectiveDateTo"), any(Date.class));
-        verify(entity).setField("endWorker", "admin");
     }
 
     @Test
-    public void shouldNotFillExistingDatesAndWorkers() throws Exception {
+    public void shouldNotFillExistingDates() throws Exception {
         // given
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
         given(entity.getField("state")).willReturn("04completed");
         given(entity.getField("effectiveDateFrom")).willReturn(new Date());
         given(entity.getField("effectiveDateTo")).willReturn(new Date());
-        given(securityService.getCurrentUserName()).willReturn("user", "admin");
 
         // when
-        orderService.fillOrderDatesAndWorkers(dataDefinition, entity);
+        orderService.fillOrderDates(dataDefinition, entity);
 
         // then
         verify(entity, never()).setField(eq("effectiveDateFrom"), any(Date.class));
-        verify(entity, never()).setField("startWorker", "user");
         verify(entity, never()).setField(eq("effectiveDateTo"), any(Date.class));
-        verify(entity, never()).setField("endWorker", "admin");
     }
 
     @Test

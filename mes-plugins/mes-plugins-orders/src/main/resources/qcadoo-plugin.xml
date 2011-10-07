@@ -62,6 +62,7 @@
 		<localization:translation path="locales" />
 
 		<model:model model="order" resource="model/order.xml" />
+		<model:model model="logging" resource="model/logging.xml" />
 
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="orders" plugin="orders" model="order"

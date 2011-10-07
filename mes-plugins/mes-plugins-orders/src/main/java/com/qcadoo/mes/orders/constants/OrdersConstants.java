@@ -35,4 +35,5 @@ public interface OrdersConstants {
 
     public static final String VIEW_ORDERS_LIST = "ordersList";
 
+    public static final String MODEL_LOGGING = "logging";
 }
