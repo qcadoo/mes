@@ -52,7 +52,7 @@
 			method="validateTechnologyOperationComponent" />
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="copyReferencedTechnology" />
-		<onSave class="com.qcadoo.mes.technologies.TechnologyService" 
+		<onCreate class="com.qcadoo.mes.technologies.TechnologyService" 
 			method="setParentIfRootNodeAlreadyExists" />
 	</hooks>
 </model>
