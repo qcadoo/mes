@@ -3,6 +3,7 @@ package com.qcadoo.mes.orders.states;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -36,11 +37,16 @@ public class OrderStatesViewService {
 
     public void changeOrderStateToAccepted(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
+        changeOrderStateTo(viewDefinitionState, state, OrderStates.ACCEPTED, OrderStates.PENDING);
+    }
+
+    private void changeOrderStateTo(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final OrderStates newState, final OrderStates oldState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         Entity order = form.getEntity();
-        order.setField("state", "02accepted");
+        order.setField("state", newState.getStringValue());
         order.getDataDefinition().save(order);
-        orderStateChangingService.saveLogging(order, "01pending", "02accepted");
+        orderStateChangingService.saveLogging(order, oldState.getStringValue(), newState.getStringValue());
     }
 
     public void changeOrderStateToInProgress(final ViewDefinitionState viewDefinitionState, final ComponentState state,

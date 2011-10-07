@@ -43,34 +43,36 @@ public class OrderStateChangingService {
         logging.getDataDefinition().save(logging);
     }
 
-    public boolean validationPending(final Entity entity) {
+    public ChangeOrderStateError validationPending(final Entity entity) {
         List<String> references = Arrays.asList("number", "name", "product", "plannedQuantity");
         return checkValidation(references, entity);
     }
 
-    public boolean validationAccepted(final Entity entity) {
+    public ChangeOrderStateError validationAccepted(final Entity entity) {
         List<String> references = Arrays.asList("number", "name", "product", "plannedQuantity", "dateTo", "dateFrom",
                 "defaultTechnology", "technology");
         return checkValidation(references, entity);
     }
 
-    public boolean validationInProgress(final Entity entity) {
+    public ChangeOrderStateError validationInProgress(final Entity entity) {
         return validationAccepted(entity);
     }
 
-    public boolean validationCompleted(final Entity entity) {
+    public ChangeOrderStateError validationCompleted(final Entity entity) {
         List<String> references = Arrays.asList("number", "name", "product", "plannedQuantity", "dateTo", "dateFrom",
                 "defaultTechnology", "technology", "doneQuantity");
         return checkValidation(references, entity);
     }
 
-    public boolean checkValidation(final List<String> references, final Entity entity) {
+    public ChangeOrderStateError checkValidation(final List<String> references, final Entity entity) {
+        ChangeOrderStateError error = null;
         for (String reference : references)
             if (entity.getField(reference) == null) {
-                entity.addError(entity.getDataDefinition().getField("order"), "orders.order.orderStates.fieldRequired");
-                return false;
+                error.setMessage("orders.order.orderStates.fieldRequired");
+                error.setReferenceToField(reference);
+                return error;
             }
-        return true;
+        return null;
     }
 
 }
