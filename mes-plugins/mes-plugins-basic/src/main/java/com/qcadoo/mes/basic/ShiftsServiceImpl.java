@@ -29,7 +29,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.IllegalFieldValueException;
@@ -38,9 +40,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -471,7 +476,38 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     @Override
     public Entity getShiftFromDate(final Date date) {
-        // TODO ALBR
+        Map<Integer, String> dayOfWeek = new HashMap<Integer, String>();
+        dayOfWeek.put(Calendar.MONDAY, "monday");
+        dayOfWeek.put(Calendar.TUESDAY, "tuesday");
+        dayOfWeek.put(Calendar.WEDNESDAY, "wensday");
+        dayOfWeek.put(Calendar.THURSDAY, "thursday");
+        dayOfWeek.put(Calendar.FRIDAY, "friday");
+        dayOfWeek.put(Calendar.SATURDAY, "saturday");
+        dayOfWeek.put(Calendar.SUNDAY, "sunday");
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int day = cal.get(Calendar.DAY_OF_WEEK);
+        SearchCriteriaBuilder searchCriteriaBuilder = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_SHIFT).find();
+        searchCriteriaBuilder.add(SearchRestrictions.eq(dayOfWeek.get(day) + "Working", true));
+        List<Entity> shifts = searchCriteriaBuilder.list().getEntities();
+
+        int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+        int minuteOfHour = cal.get(Calendar.MINUTE);
+
+        for (Entity shift : shifts) {
+            String stringHours = shift.getStringField(dayOfWeek.get(day) + "Hours");
+            LocalTime[][] dayHours = convertDayHoursToInt(stringHours);
+            for (LocalTime[] dayHour : dayHours) {
+                if ((dayHour[0].getHourOfDay() < hourOfDay || (dayHour[0].getHourOfDay() == hourOfDay && dayHour[0]
+                        .getMinuteOfHour() <= minuteOfHour))
+                        && (hourOfDay < dayHour[1].getHourOfDay() || (hourOfDay == dayHour[1].getHourOfDay() && minuteOfHour < dayHour[1]
+                                .getMinuteOfHour()))) {
+                    return shift;
+                }
+            }
+        }
         return null;
     }
 }
