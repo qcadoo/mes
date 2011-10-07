@@ -35,11 +35,6 @@ public class OrderStatesViewService {
         orderStateChangingService.saveLogging(order, "01pending", "02accepted");
     }
 
-    public void changeOrderStateToAccepted(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        changeOrderStateTo(viewDefinitionState, state, OrderStates.ACCEPTED, OrderStates.PENDING);
-    }
-
     private void changeOrderStateTo(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final OrderStates newState, final OrderStates oldState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
@@ -49,16 +44,14 @@ public class OrderStatesViewService {
         orderStateChangingService.saveLogging(order, oldState.getStringValue(), newState.getStringValue());
     }
 
+    public void changeOrderStateToAccepted(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        changeOrderStateTo(viewDefinitionState, state, OrderStates.ACCEPTED, OrderStates.PENDING);
+    }
+
     public void changeOrderStateToInProgress(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        Entity order = form.getEntity();
-        if (!("02accepted".equals(order.getStringField("state"))) && !("06interrupted".equals(order.getStringField("state")))) {
-            return;
-        }
-        order.setField("state", "03inProgress");
-        order.getDataDefinition().save(order);
-        orderStateChangingService.saveLogging(order, order.getStringField("state"), "03inProgress");
+        changeOrderStateTo(viewDefinitionState, state, OrderStates.ACCEPTED, OrderStates.PENDING);
     }
 
     public void changeOrderStateToCompleted(final ViewDefinitionState viewDefinitionState, final ComponentState state,
