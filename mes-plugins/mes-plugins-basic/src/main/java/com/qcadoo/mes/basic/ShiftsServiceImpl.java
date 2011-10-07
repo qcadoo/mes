@@ -469,4 +469,9 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     }
 
+    @Override
+    public Entity getShiftFromDate(final Date date) {
+        // TODO ALBR
+        return null;
+    }
 }
