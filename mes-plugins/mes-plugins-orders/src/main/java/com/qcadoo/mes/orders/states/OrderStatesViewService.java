@@ -16,10 +16,10 @@ public class OrderStatesViewService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
     private OrderStateChangingService orderStateChangingService;
 
     public void toAccepted(final DataDefinition dd, final Entity order) {
-
         if (!("02accepted".equals(order.getStringField("state")))) {
             return;
         }
@@ -41,7 +41,6 @@ public class OrderStatesViewService {
         order.setField("state", "02accepted");
         order.getDataDefinition().save(order);
         orderStateChangingService.saveLogging(order, "01pending", "02accepted");
-        // state.performEvent(viewDefinitionState, "save", new String[0]);
     }
 
     public void changeOrderStateToInProgress(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -65,7 +64,6 @@ public class OrderStatesViewService {
         }
         order.setField("state", "04completed");
         order.getDataDefinition().save(order);
-
         orderStateChangingService.saveLogging(order, order.getStringField("state"), "04completed");
     }
 
@@ -78,9 +76,7 @@ public class OrderStatesViewService {
         }
         order.setField("state", "05declined");
         order.getDataDefinition().save(order);
-
         orderStateChangingService.saveLogging(order, order.getStringField("state"), "05declined");
-
     }
 
     public void changeOrderStateToAbandoned(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -92,7 +88,6 @@ public class OrderStatesViewService {
         }
         order.setField("state", "07abandoned");
         order.getDataDefinition().save(order);
-
         orderStateChangingService.saveLogging(order, order.getStringField("state"), "07abandoned");
     }
 
@@ -105,7 +100,6 @@ public class OrderStatesViewService {
         }
         order.setField("state", "06interrupted");
         order.getDataDefinition().save(order);
-
         orderStateChangingService.saveLogging(order, order.getStringField("state"), "06interrupted");
     }
 
