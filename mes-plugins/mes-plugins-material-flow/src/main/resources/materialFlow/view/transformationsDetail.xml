@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.4.8
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="transformationsDetail" modelName="transformations">
+	<component type="window" name="window">
+		<ribbon>
+			<group template="navigation" />
+			<group template="formSaveCopyAndRemoveActions" />
+		</ribbon>
+
+		<component type="form" name="form" reference="form">
+			<component type="gridLayout" name="gridLayout" columns="2" rows="8" >
+				<layoutElement column="1" row="1">
+					<component type="input" name="number" reference="number" 
+						field="number" />
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="input" name="name" reference="name"
+						field="name" />
+				</layoutElement>
+				<layoutElement column="1" row="3">
+					<component type="calendar" name="date" reference="date"
+						field="date" />
+				</layoutElement>
+				<layoutElement column="1" row="4" width="1" height="5">
+					<component type="grid" name="transformationsConsumption"
+						reference="transformationsConsumption" source="#{form}.transfer">
+						<option type="column" name="number" fields="number"
+							expression="#number" width="2" />
+						<option type="column" name="product" fields="product"
+							width="3" expression="#product==null?'N/A':#product['name']"/>
+						<option type="column" name="quantity" fields="quantity" width="2" /> 
+						<option type="order" column="number" direction="desc" />
+						<option type="correspondingView" value="materialFlow/transformationsComponentDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="paginable" value="false" />
+						<option type="multiselect" value="true" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1">
+					<component type="lookup" name="staff" field="staff">
+						<option type="searchable" value="name" />
+						<option type="orderable" value=" name" />
+						<option type="fullScreen" value="true" />
+						<option type="expression" value="#name" />
+						<option type="fieldCode" value="name" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="2">
+					<component type="lookup" name="stockAreasFrom" field="stockAreasFrom" reference="stockAreasFrom">
+						<option type="searchable" value="name" />
+						<option type="orderable" value=" name" />
+						<option type="expression" value="#name" />
+						<option type="fieldCode" value="name" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="3">
+					<component type="lookup" name="stockAreasTo" field="stockAreasTo" reference="stockAreasTo">
+						<option type="searchable" value="name" />
+						<option type="orderable" value="name" />
+						<option type="expression" value="#name" />
+						<option type="fieldCode" value="name" />
+					</component>
+				</layoutElement>
+				<!-- <layoutElement column="2" row="4" width="1" height="5">
+					<component type="grid" name="transformationsProduction"
+						reference="transformationsProduction" source="#{form}.transfer">
+						<option type="column" name="number" fields="number"
+							expression="#number" width="20" />
+						<option type="order" column="number" direction="desc" />
+						<option type="correspondingView" value="materialFlow/transformationsComponentDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="paginable" value="false" />
+						<option type="multiselect" value="true" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+					</component>
+				</layoutElement>  -->
+			</component>
+			<option type="header" value="true" />
+		</component>
+	</component>
+</view>

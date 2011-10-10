@@ -162,7 +162,6 @@ public class MaterialFlowService {
     }
 
     public boolean validateTransfer(final DataDefinition dataDefinition, final Entity entity) {
-
         Entity stockAreasFrom = (Entity) (entity.getField("stockAreasFrom") != null ? entity.getField("stockAreasFrom") : null);
         Entity stockAreasTo = (Entity) (entity.getField("stockAreasTo") != null ? entity.getField("stockAreasTo") : null);
 
@@ -172,7 +171,6 @@ public class MaterialFlowService {
             return false;
         }
         return true;
-
     }
 
     public void generateTransferNumber(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
@@ -290,4 +288,6 @@ public class MaterialFlowService {
         
         return productsFromTransfers;
     }
+    
+    
 }

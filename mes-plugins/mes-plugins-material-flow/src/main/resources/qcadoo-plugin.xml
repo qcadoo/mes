@@ -58,16 +58,15 @@
 		</dependency>
 	</dependencies>
 
-
 	<modules>
 		<localization:translation path="locales" />
 		
 		<model:model model="stockCorrection" resource="model/stockCorrection.xml" />
 		<model:model model="transfer" resource="model/transfer.xml" />
-		<model:model model="stockAreas" resource="model/stockAreas.xml" />		
+		<model:model model="stockAreas" resource="model/stockAreas.xml" />
 		<model:model model="materialsInStockAreas" resource="model/materialsInStockAreas.xml" />
-		<model:model model="materialsInStockAreasComponent"
-			resource="model/materialsInStockAreasComponent.xml" />
+		<model:model model="materialsInStockAreasComponent" resource="model/materialsInStockAreasComponent.xml" />
+		<model:model model="transformations" resource="model/transformations.xml" />
 		
 		<model:model-field plugin="basic" model="product" >
 			<model:hasMany name="transfer" plugin="materialFlow"
@@ -95,9 +94,11 @@
 		<menu:menu-item name="transfers" category="materialFlow"
 			view="transferList" />
 		<menu:menu-item name="stockAreass" category="materialFlow"
-			view="stockAreasList" />			
+			view="stockAreasList" />
 		<menu:menu-item name="materialsInStockAreas" category="reports"
 			view="materialsInStockAreasList" />
+		<menu:menu-item name="transformations" category="materialFlow"
+			view="transformationsList" />
 		
 		<view:view resource="view/transferList.xml" />
 		<view:view resource="view/transferDetail.xml" />
@@ -108,6 +109,9 @@
 		<view:view resource="view/materialsInStockAreasList.xml" />
 		<view:view resource="view/materialsInStockAreasDetails.xml" />		
 		<view:view resource="view/materialsInStockAreasComponentDetails.xml" />
+		<view:view resource="view/transformationsList.xml" />
+		<view:view resource="view/transformationsDetail.xml" />
+		<view:view resource="view/transformationsComponentDetails.xml" />
 		
 		<view:resource uri="public/**/*" />
 	</modules>
