@@ -71,16 +71,17 @@ public class OrderStatesServiceTest {
         verify(order.getDataDefinition()).save(order);
     }
 
-    @Test
-    public void shouldChangeStateToInProgressWhenOrderStateAccepted() throws Exception {
-        // when
-        when(order.getStringField("state")).thenReturn("02accepted");
-        orderStatesService.changeOrderStateToInProgress(viewDefinitionState, componentState, new String[0]);
-        orderStateChangingService.saveLogging(order, "02pending", "03inProgress");
-        // then
-        verify(order).setField("state", "03inProgress");
-        verify(order.getDataDefinition()).save(order);
-    }
+    //
+    // @Test
+    // public void shouldChangeStateToInProgressWhenOrderStateAccepted() throws Exception {
+    // // when
+    // when(order.getStringField("state")).thenReturn("02accepted");
+    // orderStatesService.changeOrderStateToInProgress(viewDefinitionState, componentState, new String[0]);
+    // orderStateChangingService.saveLogging(order, "02pending", "03inProgress");
+    // // then
+    // verify(order).setField("state", "03inProgress");
+    // verify(order.getDataDefinition()).save(order);
+    // }
 
     @Test
     public void shouldChangeStateToDeclinedWhenOrderStatePending() throws Exception {
@@ -104,16 +105,17 @@ public class OrderStatesServiceTest {
         verify(order.getDataDefinition()).save(order);
     }
 
-    @Test
-    public void shouldChangeStateToInProgressWhenOrderStateInterrupted() throws Exception {
-        // when
-        when(order.getStringField("state")).thenReturn("06interrupted");
-        orderStatesService.changeOrderStateToInProgress(viewDefinitionState, componentState, new String[0]);
-        orderStateChangingService.saveLogging(order, "06interrupted", "03inProgress");
-        // then
-        verify(order).setField("state", "03inProgress");
-        verify(order.getDataDefinition()).save(order);
-    }
+    //
+    // @Test
+    // public void shouldChangeStateToInProgressWhenOrderStateInterrupted() throws Exception {
+    // // when
+    // when(order.getStringField("state")).thenReturn("06interrupted");
+    // orderStatesService.changeOrderStateToInProgress(viewDefinitionState, componentState, new String[0]);
+    // orderStateChangingService.saveLogging(order, "06interrupted", "03inProgress");
+    // // then
+    // verify(order).setField("state", "03inProgress");
+    // verify(order.getDataDefinition()).save(order);
+    // }
 
     @Test
     public void shouldChangeStateToAbandonedWhenOrderStateInProgress() throws Exception {
