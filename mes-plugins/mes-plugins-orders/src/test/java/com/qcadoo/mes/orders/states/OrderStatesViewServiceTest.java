@@ -7,20 +7,21 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.Plugin;
+import com.qcadoo.plugin.api.PluginAccessor;
+import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 public class OrderStatesViewServiceTest {
 
     private OrderStatesViewService orderStatesViewService;
-
-    private OrderStateChangingService orderStateChangingService;
 
     private ViewDefinitionState view;
 
@@ -32,22 +33,38 @@ public class OrderStatesViewServiceTest {
 
     private DataDefinition dataDefinition;
 
+    private FieldComponent stateFromField, externalSynchronizedState, externalNumber;
+
+    private PluginAccessor pluginAccessor;
+
+    private Plugin plugin;
+
     @Before
     public void init() {
         orderStatesViewService = new OrderStatesViewService();
 
-        orderStateChangingService = Mockito.mock(OrderStateChangingService.class);
-        view = mock(ViewDefinitionState.class);
-        state = mock(ComponentState.class);
-        form = mock(FormComponent.class);
         order = mock(Entity.class);
+        view = mock(ViewDefinitionState.class);
+        form = mock(FormComponent.class);
+        state = mock(ComponentState.class);
         dataDefinition = mock(DataDefinition.class);
+        stateFromField = mock(FieldComponent.class);
+        externalSynchronizedState = mock(FieldComponent.class);
+        externalNumber = mock(FieldComponent.class);
+        pluginAccessor = mock(PluginAccessor.class);
+        plugin = mock(Plugin.class);
 
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(form.getEntity()).thenReturn(order);
         when(order.getDataDefinition()).thenReturn(dataDefinition);
+        when(view.getComponentByReference("form")).thenReturn(form);
+        when(view.getComponentByReference("state")).thenReturn(stateFromField);
+        when(view.getComponentByReference("externalSynchronized")).thenReturn(externalSynchronizedState);
+        when(view.getComponentByReference("externalNumber")).thenReturn(externalNumber);
+        when(externalNumber.getFieldValue()).thenReturn("1");
+        when(form.getEntity()).thenReturn(order);
+        when(pluginAccessor.getPlugin("mesPluginsIntegrationErp")).thenReturn(plugin);
+        when(plugin.getState()).thenReturn(PluginState.ENABLED);
 
-        setField(orderStatesViewService, "orderStateChangingService", orderStateChangingService);
+        setField(orderStatesViewService, "pluginAccessor", pluginAccessor);
     }
 
     @Test
@@ -60,6 +77,7 @@ public class OrderStatesViewServiceTest {
     public void shouldChangeOrderStateToInProgressFromAccepted() throws Exception {
         // given
         given(order.getStringField("state")).willReturn(OrderStates.ACCEPTED.getStringValue());
+        given(view.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
         // when
         orderStatesViewService.changeOrderStateToInProgress(view, state, new String[0]);
     }
@@ -68,6 +86,7 @@ public class OrderStatesViewServiceTest {
     public void shouldChangeOrderStateToInProgressFromInterrupted() throws Exception {
         // given
         given(order.getStringField("state")).willReturn(OrderStates.INTERRUPTED.getStringValue());
+        given(view.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
         // when
         orderStatesViewService.changeOrderStateToInProgress(view, state, new String[0]);
     }
