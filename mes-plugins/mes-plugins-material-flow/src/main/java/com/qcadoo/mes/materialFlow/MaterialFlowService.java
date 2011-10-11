@@ -289,5 +289,10 @@ public class MaterialFlowService {
         return productsFromTransfers;
     }
     
-    
+    public void getTransformationsData(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+        FieldComponent number = (FieldComponent) state.getComponentByReference("number");
+        number.setFieldValue("252");
+        
+        
+    }
 }

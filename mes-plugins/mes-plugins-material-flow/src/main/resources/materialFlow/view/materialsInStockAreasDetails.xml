@@ -115,7 +115,7 @@
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="input" name="date" field="date" reference="date" defaultEnabled="false">	
-						<option type="textRepresentationOnDisabled" value="false" />									
+						<option type="textRepresentationOnDisabled" value="false" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
