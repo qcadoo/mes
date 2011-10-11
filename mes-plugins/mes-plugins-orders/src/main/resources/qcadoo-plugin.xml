@@ -87,8 +87,6 @@
 		<view:view resource="view/orderDetails.xml" />
 		
 		<report:report-template name="order" resource="report/order.jrxml" />
-		<report:report-template name="listOfOrdersReport" resource="report/listOfOrdersReport.jrxml" />
-
 	</modules>
 
 </plugin>
