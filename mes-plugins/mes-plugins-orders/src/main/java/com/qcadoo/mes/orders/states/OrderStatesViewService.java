@@ -1,5 +1,6 @@
 package com.qcadoo.mes.orders.states;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,6 @@ public class OrderStatesViewService {
 
     private void changeOrderStateTo(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final OrderStates oldState, final OrderStates newState) {
-        FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
-        orderState.setFieldValue(newState.getStringValue());
 
         FieldComponent externalSynchronized = (FieldComponent) viewDefinitionState
                 .getComponentByReference("externalSynchronized");
@@ -54,7 +53,7 @@ public class OrderStatesViewService {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         Entity order = form.getEntity();
 
-        if (newState.getStringValue().equals(OrderStates.COMPLETED)) {
+        if (newState.getStringValue().equals(OrderStates.COMPLETED.getStringValue())) {
             if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
                 state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
                         MessageType.FAILURE);
@@ -67,12 +66,25 @@ public class OrderStatesViewService {
             }
         }
 
+        FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
+        orderState.setFieldValue(newState.getStringValue());
         state.performEvent(viewDefinitionState, "save", new String[0]);
+
+        Entity orderFromDB = order.getDataDefinition().get(order.getId());
+        if (!orderFromDB.getStringField("state").equals(newState.getStringValue())) {
+            orderState.setFieldValue(oldState.getStringValue());
+        }
+
     }
 
     public void changeOrderStateToAccepted(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         changeOrderStateTo(viewDefinitionState, state, OrderStates.PENDING, OrderStates.ACCEPTED);
+        for (String reference : Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "defaultTechnology",
+                "technology")) {
+            FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(reference);
+            field.setRequired(true);
+        }
     }
 
     public void changeOrderStateToInProgress(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -81,8 +93,14 @@ public class OrderStatesViewService {
         Entity order = form.getEntity();
         if ((OrderStates.ACCEPTED.getStringValue().equals(order.getStringField("state")))) {
             changeOrderStateTo(viewDefinitionState, state, OrderStates.ACCEPTED, OrderStates.IN_PROGRESS);
+
         } else if (OrderStates.INTERRUPTED.getStringValue().equals(order.getStringField("state"))) {
             changeOrderStateTo(viewDefinitionState, state, OrderStates.INTERRUPTED, OrderStates.IN_PROGRESS);
+        }
+        for (String reference : Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "defaultTechnology",
+                "technology", "doneQuantity")) {
+            FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(reference);
+            field.setRequired(true);
         }
     }
 

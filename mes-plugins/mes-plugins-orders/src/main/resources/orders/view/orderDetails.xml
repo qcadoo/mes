@@ -307,7 +307,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="6">
-						<component type="input" name="doneQuantity" field="doneQuantity">
+						<component type="input" name="doneQuantity" field="doneQuantity" reference="doneQuantity">
 							<option type="labelWidth" value="55" />
 						</component>
 					</layoutElement>

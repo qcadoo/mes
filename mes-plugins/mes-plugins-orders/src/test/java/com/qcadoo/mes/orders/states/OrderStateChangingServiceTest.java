@@ -6,8 +6,6 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,12 +41,6 @@ public class OrderStateChangingServiceTest {
 
     private String currentState;
 
-    private Date dataAndTime;
-
-    private List<String> list;
-
-    private Iterator<String> listIterator;
-
     @Before
     public void init() {
         orderStateChangingService = new OrderStateChangingService();
@@ -57,13 +49,9 @@ public class OrderStateChangingServiceTest {
         securityService = mock(SecurityService.class);
         shiftsServiceImpl = mock(ShiftsServiceImpl.class);
         entity = mock(Entity.class);
-        dataAndTime = mock(Date.class);
         order = mock(Entity.class);
         dataDefinition = mock(DataDefinition.class);
         shift = mock(Entity.class);
-        list = mock(List.class);
-
-        listIterator = mock(Iterator.class);
 
         setField(orderStateChangingService, "dataDefinitionService", dataDefinitionService);
         setField(orderStateChangingService, "securityService", securityService);

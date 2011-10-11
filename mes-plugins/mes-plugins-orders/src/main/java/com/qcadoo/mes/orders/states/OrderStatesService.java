@@ -112,12 +112,8 @@ public class OrderStatesService {
     }
 
     ChangeOrderStateError performInterrupted(final Entity newEntity, final Entity oldEntity) {
-        ChangeOrderStateError errorMessage = orderStateChangingService.validationCompleted(newEntity);
-        if (errorMessage != null) {
-            return errorMessage;
-        }
         for (OrderStateListener listener : listeners) {
-            errorMessage = listener.onInterrupted(newEntity);
+            ChangeOrderStateError errorMessage = listener.onInterrupted(newEntity);
             if (errorMessage != null) {
                 return errorMessage;
             }
