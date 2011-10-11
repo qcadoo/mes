@@ -11,7 +11,7 @@ import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.Entity;
 
 @Service
-class OrderStatesService {
+public class OrderStatesService {
 
     @Autowired
     OrderStateChangingService orderStateChangingService;
@@ -27,10 +27,11 @@ class OrderStatesService {
     }
 
     ChangeOrderStateError performChangeState(final Entity newEntity, final Entity oldEntity) {
-        if (oldEntity == null && !newEntity.getField("state").equals("pending")) {
+        if (oldEntity == null && !newEntity.getStringField("state").equals("pending")) {
             throw new IllegalStateException();
         }
-        if (oldEntity != null && newEntity.getField("state").equals("open") && !oldEntity.getField("state").equals("pending")) {
+        if (oldEntity != null && newEntity.getStringField("state").equals("open")
+                && !oldEntity.getStringField("state").equals("pending")) {
             throw new IllegalStateException();
         }
         ChangeOrderStateError error = globalValidation(newEntity);
@@ -38,19 +39,17 @@ class OrderStatesService {
             return error;
         }
         String newState = newEntity.getStringField("state");
-        if (newState.equals(OrderStates.PENDING)) {
-            return performPending(newEntity, oldEntity);
-        } else if (newState.equals(OrderStates.ACCEPTED)) {
+        if (newState.equals(OrderStates.ACCEPTED.getStringValue())) {
             return performAccepted(newEntity, oldEntity);
-        } else if (newState.equals(OrderStates.IN_PROGRESS)) {
+        } else if (newState.equals(OrderStates.IN_PROGRESS.getStringValue())) {
             return performInProgress(newEntity, oldEntity);
-        } else if (newState.equals(OrderStates.COMPLETED)) {
+        } else if (newState.equals(OrderStates.COMPLETED.getStringValue())) {
             return performCompleted(newEntity, oldEntity);
-        } else if (newState.equals(OrderStates.INTERRUPTED)) {
+        } else if (newState.equals(OrderStates.INTERRUPTED.getStringValue())) {
             return performInterrupted(newEntity, oldEntity);
-        } else if (newState.equals(OrderStates.DECLINED)) {
+        } else if (newState.equals(OrderStates.DECLINED.getStringValue())) {
             return performDeclined(newEntity, oldEntity);
-        } else if (newState.equals(OrderStates.ABANDONED)) {
+        } else if (newState.equals(OrderStates.ABANDONED.getStringValue())) {
             return performAbandoned(newEntity, oldEntity);
         }
 
@@ -60,24 +59,11 @@ class OrderStatesService {
     ChangeOrderStateError globalValidation(final Entity newEntity) {
         ChangeOrderStateError error = null;
         for (String reference : Arrays.asList("number", "name")) {
-            if (newEntity.getField(reference) == null) {
+            if (newEntity.getStringField(reference) == null) {
+                error = new ChangeOrderStateError();
                 error.setMessage("orders.order.orderStates.fieldRequired");
                 error.setReferenceToField(reference);
                 return error;
-            }
-        }
-        return null;
-    }
-
-    ChangeOrderStateError performPending(final Entity newEntity, final Entity oldEntity) {
-        ChangeOrderStateError errorMessage = orderStateChangingService.validationPending(newEntity);
-        if (errorMessage != null) {
-            return errorMessage;
-        }
-        for (OrderStateListener listener : listeners) {
-            errorMessage = listener.onPending(newEntity);
-            if (errorMessage != null) {
-                return errorMessage;
             }
         }
         return null;
@@ -158,4 +144,5 @@ class OrderStatesService {
         }
         return null;
     }
+
 }

@@ -21,6 +21,6 @@ public class ChangeStateHook {
         if (oldEntity != null && oldEntity.getField("state").equals(newEntity.getField("state"))) {
             return;
         }
-        ChangeOrderStateError error = orderStatesService.performChangeState(newEntity, oldEntity);
+        orderStatesService.performChangeState(newEntity, oldEntity);
     }
 }
