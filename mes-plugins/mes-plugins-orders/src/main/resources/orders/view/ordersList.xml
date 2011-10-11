@@ -100,18 +100,15 @@
 						</script>
 					</smallButton>
 			</group>
-			<group name="export">
-				<smallButton name="print" icon="pdfIcon16.png" state="disabled"
-					action="#{grid}.generateReportForEntity('orders','order','pdf')" />
-				<smallButton name="generateListOfOrdersReport" icon="pdfIcon16.png" state="disabled"
-					action="#{grid}.generateReportForEntity('orders','listOfOrdersReport','pdf')" />
+			<group name="export2">
+				<smallButton name="print" icon="pdfIcon16.png"
+					action="#{grid}.generateReportForEntity('orders','order','pdf')" state="disabled" />
 			</group>
 		</ribbon>
 		<component type="grid" name="orders" reference="grid">
 			<script>
  				<![CDATA[ 
  					var print = #{window}.getRibbonItem("export.print");
- 					var generateListOfOrdersReport = #{window}.getRibbonItem("export.generateListOfOrdersReport");
 					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
 					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
 					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
@@ -121,15 +118,13 @@
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
- 								print.disable();
- 								generateListOfOrdersReport.disable();
+								print.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
 								deleteButton.disable();
 								copyButton.disable();
 							} else {
- 								generateListOfOrdersReport.enable();
 								if (selectedEntitiesArray.length == 1) {
  									print.enable();
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
