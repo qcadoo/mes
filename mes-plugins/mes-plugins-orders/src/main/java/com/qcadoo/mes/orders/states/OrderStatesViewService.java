@@ -2,11 +2,16 @@ package com.qcadoo.mes.orders.states;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.Plugin;
+import com.qcadoo.plugin.api.PluginAccessor;
+import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
@@ -15,13 +20,29 @@ public class OrderStatesViewService {
     @Autowired
     private OrderStateChangingService orderStateChangingService;
 
+    @Autowired
+    private PluginAccessor pluginAccessor;
+
     private void changeOrderStateTo(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final OrderStates newState, final OrderStates oldState) {
+            final OrderStates oldState, final OrderStates newState) {
+
+        FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
+        orderState.setFieldValue(newState.getStringValue());
+
+        FieldComponent externalSynchronized = (FieldComponent) viewDefinitionState
+                .getComponentByReference("externalSynchronized");
+        FieldComponent externalNumber = (FieldComponent) viewDefinitionState.getComponentByReference("externalNumber");
+
+        if (hasIntegrationWithExternalSystem() && StringUtils.hasText((String) externalNumber.getFieldValue())) {
+            externalSynchronized.setFieldValue("false");
+        } else {
+            externalSynchronized.setFieldValue("true");
+        }
+
+        state.performEvent(viewDefinitionState, "save", new String[0]);
 
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         Entity order = form.getEntity();
-        order.setField("state", newState.getStringValue());
-        order.getDataDefinition().save(order);
         orderStateChangingService.saveLogging(order, oldState.getStringValue(), newState.getStringValue());
     }
 
@@ -73,4 +94,8 @@ public class OrderStatesViewService {
         changeOrderStateTo(viewDefinitionState, state, OrderStates.IN_PROGRESS, OrderStates.INTERRUPTED);
     }
 
+    private boolean hasIntegrationWithExternalSystem() {
+        Plugin plugin = pluginAccessor.getPlugin("mesPluginsIntegrationErp");
+        return plugin != null && plugin.getState().equals(PluginState.ENABLED);
+    }
 }
