@@ -41,9 +41,6 @@ public class OrderStatesViewService {
 
         state.performEvent(viewDefinitionState, "save", new String[0]);
 
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        Entity order = form.getEntity();
-        orderStateChangingService.saveLogging(order, oldState.getStringValue(), newState.getStringValue());
     }
 
     public void changeOrderStateToAccepted(final ViewDefinitionState viewDefinitionState, final ComponentState state,

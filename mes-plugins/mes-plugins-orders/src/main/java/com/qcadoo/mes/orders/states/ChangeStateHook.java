@@ -34,6 +34,7 @@ public class ChangeStateHook {
             return;
         }
         orderStatesService.performChangeState(newEntity, oldEntity);
+
         orderStateChangingService.saveLogging(newEntity, oldEntity.getStringField("state"), newEntity.getStringField("state"));
     }
 }
