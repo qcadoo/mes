@@ -34,7 +34,7 @@
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<group name="orderListActions">
-				<bigButton name="new" icon="newIcon16.png" state="enabled" action="#{grid}.performNew;"/>
+				<bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.performNew;"/>
 				<smallButton name="copy" icon="copyIcon16.png" action="#{grid}.performCopy;" state="disabled" />
 				<smallButton name="delete" icon="deleteIcon16.png" action="#{grid}.performDelete;" state="disabled" />
 			</group>
@@ -47,27 +47,19 @@
 								onClick: function() {
 									if (this.state == "accept") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.acceptOrder.confirm)}")) {
-											if(window.canClose()) {
-												#{grid}.performEvent('changeOrderStateToAccepted', ['grid']);
-											}
+												#{grid}.performEvent('changeOrderStateToAcceptedForGrid', []);
 										};
 									} else if (this.state == "begin") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.activateOrder.confirm)}")) {
-											if(window.canClose()) {
-												#{grid}.performEvent('changeOrderStateToInProgress', ['grid']);
-											}
+												#{grid}.performEvent('changeOrderStateToInProgressForGrid', []);
 										};
 									} else if (this.state == "finish") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.finishOrder.confirm)}")) {
-											if(window.canClose()) {
-												#{grid}.performEvent('changeOrderStateToCompleted', ['grid']);
-											}
+												#{grid}.performEvent('changeOrderStateToCompletedForGrid', []);
 										};
 									} else if (this.state == "restart") {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.restartOrder.confirm)}")) {
-											if(window.canClose()) {
-												#{grid}.performEvent('changeOrderStateToInProgress', ['grid']);
-											}
+												#{grid}.performEvent('changeOrderStateToInProgressForGrid', []);
 										};
 									}
 								}
@@ -82,15 +74,11 @@
 									onClick: function() {
 										if (this.state == "decline") {
 											if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.declineOrder.confirm)}")) {
-												if(window.canClose()) {
-													#{grid}.performEvent('changeOrderStateToDeclined', ['grid']);
-												}
+													#{grid}.performEvent('changeOrderStateToDeclinedForGrid', []);
 											};
 										} else if (this.state == "abandon") {
 											if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.abandonOrder.confirm)}")) {
-												if(window.canClose()) {
-													#{grid}.performEvent('changeOrderStateToAbandoned', ['grid']);
-												}
+													#{grid}.performEvent('changeOrderStateToAbandonedForGrid', []);
 											};
 										}
 									}
@@ -104,9 +92,7 @@
 								this.addOnChangeListener({
 									onClick: function() {
 										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.interruptOrder.confirm)}")) {
-											if(window.canClose()) {
-												#{grid}.performEvent('changeOrderStateToInterrupted', ['grid']);
-											}
+												#{grid}.performEvent('changeOrderStateToInterruptedForGrid', []);
 										};
 									}
 								});
@@ -115,36 +101,37 @@
 					</smallButton>
 			</group>
 			<group name="export">
-				<smallButton name="print" icon="pdfIcon16.png"
-					action="#{grid}.generateReportForEntity('orders','order','pdf')" state="disabled" />
-				<smallButton name="generateListOfOrdersReport" icon="pdfIcon16.png"
-					action="#{grid}.generateReportForEntity('orders','listOfOrdersReport','pdf')" state="disabled" />
+				<smallButton name="print" icon="pdfIcon16.png" state="disabled"
+					action="#{grid}.generateReportForEntity('orders','order','pdf')" />
+				<smallButton name="generateListOfOrdersReport" icon="pdfIcon16.png" state="disabled"
+					action="#{grid}.generateReportForEntity('orders','listOfOrdersReport','pdf')" />
 			</group>
 		</ribbon>
 		<component type="grid" name="orders" reference="grid">
 			<script>
-				<![CDATA[
-					var print = #{window}.getRibbonItem("export.print");
-					var generateListOfOrdersReport = #{window}.getRibbonItem("export.generateListOfOrdersReport");
+ 				<![CDATA[ 
+ 					var print = #{window}.getRibbonItem("export.print");
+ 					var generateListOfOrdersReport = #{window}.getRibbonItem("export.generateListOfOrdersReport");
+					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
+					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
 					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
 					var declineOrder = #{window}.getRibbonItem("status.declineOrder");
 					var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
-					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
-					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
+					
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								print.disable();
-								generateListOfOrdersReport.disable();
+ 								print.disable();
+ 								generateListOfOrdersReport.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
 								deleteButton.disable();
 								copyButton.disable();
 							} else {
-								generateListOfOrdersReport.enable();
+ 								generateListOfOrdersReport.enable();
 								if (selectedEntitiesArray.length == 1) {
-									print.enable();
+ 									print.enable();
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
 									var externalSynchronized = selectedEntitiesArray[0].fields.externalSynchronized;									
 									if (selectedEntityStatus == '01pending' && externalSynchronized == '1') {
@@ -193,10 +180,10 @@
 										interruptOrder.disable();
 									}
 								} else {
-									print.disable("#{translate(moreThanOneRecordSelected)}");
+ 									print.disable("#{translate(moreThanOneRecordSelected)}");
 									acceptOrder.disable("#{translate(moreThanOneRecordSelected)}");
-									declineOrder.disable();
-									interruptOrder.disable();
+									declineOrder.disable("#{translate(moreThanOneRecordSelected)}");
+									interruptOrder.disable("#{translate(moreThanOneRecordSelected)}");
 								}
 								copyButton.enable();
 								var hasClosed = false;
@@ -220,6 +207,7 @@
 							}
 						}
 					}
+					
 					this.addOnChangeListener(listener);
 				]]>
 			</script>
@@ -278,18 +266,18 @@
 					<filterRestriction column="dateFrom" value="@{tomorrow}" />
 				</predefinedFilter>
 			</predefinedFilters>
-<!-- 				<listener event="changeOrderStateToAccepted" class="com.qcadoo.mes.orders.states.OrderStatesViewService" -->
-<!-- 					method="changeOrderStateToAccepted" /> -->
-<!-- 				<listener event="changeOrderStateToInProgress" class="com.qcadoo.mes.orders.states.OrderStatesViewService" -->
-<!-- 					method="changeOrderStateToInProgress" /> -->
-<!-- 				<listener event="changeOrderStateToCompleted" class="com.qcadoo.mes.orders.states.OrderStatesViewService" -->
-<!-- 					method="changeOrderStateToCompleted" /> -->
-<!-- 				<listener event="changeOrderStateToDeclined" class="com.qcadoo.mes.orders.states.OrderStatesViewService" -->
-<!-- 					method="changeOrderStateToDeclined" /> -->
-<!-- 				<listener event="changeOrderStateToAbandoned" class="com.qcadoo.mes.orders.states.OrderStatesViewService" -->
-<!-- 					method="changeOrderStateToAbandoned" /> -->
-<!-- 				<listener event="changeOrderStateToInterrupted" class="com.qcadoo.mes.orders.states.OrderStatesViewService" -->
-<!-- 					method="changeOrderStateToInterrupted" /> -->
+			<listener event="changeOrderStateToAcceptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+				method="changeOrderStateToAcceptedForGrid" />
+			<listener event="changeOrderStateToInProgressForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+				method="changeOrderStateToInProgressForGrid" />
+			<listener event="changeOrderStateToCompletedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+				method="changeOrderStateToCompletedForGrid" />
+			<listener event="changeOrderStateToDeclinedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+				method="changeOrderStateToDeclinedForGrid" />
+			<listener event="changeOrderStateToAbandonedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+				method="changeOrderStateToAbandonedForGrid" />
+			<listener event="changeOrderStateToInterruptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+				method="changeOrderStateToInterruptedForGrid" />
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
