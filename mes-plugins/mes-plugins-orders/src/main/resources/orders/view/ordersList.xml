@@ -108,7 +108,7 @@
 		<component type="grid" name="orders" reference="grid">
 			<script>
  				<![CDATA[ 
- 					var print = #{window}.getRibbonItem("export.print");
+ 					var print = #{window}.getRibbonItem("export2.print");
 					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
 					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
 					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
