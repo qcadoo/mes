@@ -44,7 +44,9 @@
 				rows="7">
 				<layoutElement column="1" row="1">
 					<component type="input" name="quantity" reference="quantity"
-						field="plannedQuantity" />
+						field="plannedQuantity">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="calendar" name="startTime" reference="startTime"

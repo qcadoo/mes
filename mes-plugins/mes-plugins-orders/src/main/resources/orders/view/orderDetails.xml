@@ -227,7 +227,9 @@
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="number" reference="number"
-							field="number" />
+							field="number">
+							<option type="alignment" value="right" />
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3" height="2">
 						<component type="textarea" name="name" field="name"
@@ -304,17 +306,20 @@
 						<component type="input" name="plannedQuantity"
 							reference="plannedQuantity" field="plannedQuantity">
 							<option type="labelWidth" value="55" />
+							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="6">
 						<component type="input" name="doneQuantity" field="doneQuantity">
 							<option type="labelWidth" value="55" />
+							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="7">
 						<component type="input" name="unit" reference="unit"
 							defaultEnabled="false">
 							<option type="labelWidth" value="55" />
+							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
 				</component>

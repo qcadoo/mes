@@ -121,7 +121,9 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
-						<component type="input" name="recordsNumber" reference="recordsNumber" field="#{form}.recordsNumber" defaultEnabled="false"/>
+						<component type="input" name="recordsNumber" reference="recordsNumber" field="#{form}.recordsNumber" defaultEnabled="false">
+							<option type="alignment" value="right" />
+						</component>
 					</layoutElement>
 					<layoutElement column="2" row="3" height="4">
 						<component type="textarea" name="description" reference="description" field="description" />

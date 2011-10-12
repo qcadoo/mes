@@ -35,8 +35,12 @@
             </ribbon>
 
             <component type="form" name="form" reference="form">
-                <component type="input" name="plannedQuantity" field="plannedQuantity" reference="plannedQuantity"  />
-                <component type="input" name="producedQuantity" field="producedQuantity"/>
+                <component type="input" name="plannedQuantity" field="plannedQuantity" reference="plannedQuantity" >
+                	<option type="alignment" value="right" />
+                </component>
+                <component type="input" name="producedQuantity" field="producedQuantity">
+                	<option type="alignment" value="right" />
+                </component>
                 <option type="header" value="true" />
                 <option type="expression" value="#product['name']" />
             </component>

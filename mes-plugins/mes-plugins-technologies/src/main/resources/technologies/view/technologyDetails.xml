@@ -49,7 +49,9 @@
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="input" name="number" field="number"
-						reference="number" hasDescription="true" />
+						reference="number" hasDescription="true">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3" height="2">
 					<component type="textarea" name="name" field="name" />
