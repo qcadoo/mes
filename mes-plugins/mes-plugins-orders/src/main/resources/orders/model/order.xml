@@ -33,15 +33,15 @@
 			<validatesRegex pattern="^[a-zA-Z0-9\\_\\.\\(\\)]+$" />
 		</string>
 		<string name="name" required="true" />
-		<datetime name="dateFrom" required="true" />
-		<datetime name="dateTo" required="true" />
+		<datetime name="dateFrom" />
+		<datetime name="dateTo"  />
 		<enum name="state" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"		
 			required="true" />
 		<belongsTo name="contractor" plugin="basic" model="contractor" />
-		<belongsTo name="product" plugin="basic" model="product" />
+		<belongsTo name="product" plugin="basic" model="product"  required="true"/>
 		<string name="defaultTechnology" persistent="false" />
 		<belongsTo name="technology" plugin="technologies" model="technology" />
-		<decimal name="plannedQuantity">
+		<decimal name="plannedQuantity" required="true">
 			<validatesRange from="0" exclusively="true" />
 			<validatesPrecision max="8" />
 			<validatesScale max="3" />

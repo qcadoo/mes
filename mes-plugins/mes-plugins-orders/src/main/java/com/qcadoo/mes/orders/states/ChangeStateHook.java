@@ -33,7 +33,13 @@ public class ChangeStateHook {
         if (oldEntity != null && oldEntity.getField("state").equals(newEntity.getField("state"))) {
             return;
         }
-        orderStatesService.performChangeState(newEntity, oldEntity);
+        ChangeOrderStateError error = orderStatesService.performChangeState(newEntity, oldEntity);
+        if (error != null) {
+            newEntity.setField("state", oldEntity.getStringField("state"));
+
+            newEntity.addGlobalError(error.getMessage() + "." + error.getReferenceToField());
+            return;
+        }
 
         orderStateChangingService.saveLogging(newEntity, oldEntity.getStringField("state"), newEntity.getStringField("state"));
     }
