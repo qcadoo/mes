@@ -1,5 +1,7 @@
 package com.qcadoo.mes.orders.states;
 
+import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -72,6 +74,10 @@ public class OrderStatesViewService {
 
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderFromDB.getStringField("state").equals(newState.getStringValue())) {
+            viewDefinitionState.getComponentByReference("form")
+                    .addMessage(
+                            translationService.translate("orders.order.orderStates.fieldRequired",
+                                    viewDefinitionState.getLocale()), INFO);
             orderState.setFieldValue(oldState.getStringValue());
         }
 
@@ -136,8 +142,8 @@ public class OrderStatesViewService {
         changeOrderStateTo(viewDefinitionState, state, OrderStates.IN_PROGRESS, OrderStates.INTERRUPTED);
     }
 
-    private void changeOrderStateToForGrid(final ComponentState state, final Long id, final OrderStates oldState,
-            final OrderStates newState) {
+    private void changeOrderStateToForGrid(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final Long id, final OrderStates oldState, final OrderStates newState) {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
         order.setField("state", newState.getStringValue());
 
@@ -147,7 +153,7 @@ public class OrderStatesViewService {
             order.setField("externalSynchronized", true);
         }
 
-        if (newState.getStringValue().equals(OrderStates.COMPLETED)) {
+        if (newState.getStringValue().equals(OrderStates.COMPLETED.getStringValue())) {
             if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
                 state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
                         MessageType.FAILURE);
@@ -159,7 +165,7 @@ public class OrderStatesViewService {
                 return;
             }
         }
-
+        // state.performEvent(viewDefinitionState, "save", new String[0]);
         order.getDataDefinition().save(order);
     }
 
@@ -167,7 +173,7 @@ public class OrderStatesViewService {
             final String[] args) {
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
         for (Long id : grid.getSelectedEntitiesIds()) {
-            changeOrderStateToForGrid(state, id, OrderStates.PENDING, OrderStates.ACCEPTED);
+            changeOrderStateToForGrid(viewDefinitionState, state, id, OrderStates.PENDING, OrderStates.ACCEPTED);
         }
     }
 
@@ -177,9 +183,9 @@ public class OrderStatesViewService {
         for (Long id : grid.getSelectedEntitiesIds()) {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
             if ((OrderStates.ACCEPTED.getStringValue().equals(order.getStringField("state")))) {
-                changeOrderStateToForGrid(state, id, OrderStates.ACCEPTED, OrderStates.IN_PROGRESS);
+                changeOrderStateToForGrid(viewDefinitionState, state, id, OrderStates.ACCEPTED, OrderStates.IN_PROGRESS);
             } else if (OrderStates.INTERRUPTED.getStringValue().equals(order.getStringField("state"))) {
-                changeOrderStateToForGrid(state, id, OrderStates.INTERRUPTED, OrderStates.IN_PROGRESS);
+                changeOrderStateToForGrid(viewDefinitionState, state, id, OrderStates.INTERRUPTED, OrderStates.IN_PROGRESS);
             }
         }
     }
@@ -188,7 +194,7 @@ public class OrderStatesViewService {
             final String[] args) {
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
         for (Long id : grid.getSelectedEntitiesIds()) {
-            changeOrderStateToForGrid(state, id, OrderStates.IN_PROGRESS, OrderStates.COMPLETED);
+            changeOrderStateToForGrid(viewDefinitionState, state, id, OrderStates.IN_PROGRESS, OrderStates.COMPLETED);
         }
     }
 
@@ -198,9 +204,9 @@ public class OrderStatesViewService {
         for (Long id : grid.getSelectedEntitiesIds()) {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
             if ((OrderStates.ACCEPTED.getStringValue().equals(order.getStringField("state")))) {
-                changeOrderStateToForGrid(state, id, OrderStates.ACCEPTED, OrderStates.DECLINED);
+                changeOrderStateToForGrid(viewDefinitionState, state, id, OrderStates.ACCEPTED, OrderStates.DECLINED);
             } else if (OrderStates.PENDING.getStringValue().equals(order.getStringField("state"))) {
-                changeOrderStateToForGrid(state, id, OrderStates.PENDING, OrderStates.DECLINED);
+                changeOrderStateToForGrid(viewDefinitionState, state, id, OrderStates.PENDING, OrderStates.DECLINED);
             }
         }
     }
@@ -211,9 +217,9 @@ public class OrderStatesViewService {
         for (Long id : grid.getSelectedEntitiesIds()) {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
             if ((OrderStates.IN_PROGRESS.getStringValue().equals(order.getStringField("state")))) {
-                changeOrderStateToForGrid(state, id, OrderStates.IN_PROGRESS, OrderStates.ABANDONED);
+                changeOrderStateToForGrid(viewDefinitionState, state, id, OrderStates.IN_PROGRESS, OrderStates.ABANDONED);
             } else if (OrderStates.INTERRUPTED.getStringValue().equals(order.getStringField("state"))) {
-                changeOrderStateToForGrid(state, id, OrderStates.INTERRUPTED, OrderStates.ABANDONED);
+                changeOrderStateToForGrid(viewDefinitionState, state, id, OrderStates.INTERRUPTED, OrderStates.ABANDONED);
             }
         }
     }
@@ -222,7 +228,7 @@ public class OrderStatesViewService {
             final String[] args) {
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
         for (Long id : grid.getSelectedEntitiesIds()) {
-            changeOrderStateToForGrid(state, id, OrderStates.IN_PROGRESS, OrderStates.INTERRUPTED);
+            changeOrderStateToForGrid(viewDefinitionState, state, id, OrderStates.IN_PROGRESS, OrderStates.INTERRUPTED);
         }
     }
 

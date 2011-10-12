@@ -53,8 +53,7 @@ public class OrderStateChangingService {
 
     public ChangeOrderStateError validationAccepted(final Entity entity) {
         checkArgument(entity != null, "entity is null");
-        List<String> references = Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "defaultTechnology",
-                "technology");
+        List<String> references = Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "technology");
         return checkValidation(references, entity);
     }
 
@@ -65,8 +64,7 @@ public class OrderStateChangingService {
 
     public ChangeOrderStateError validationCompleted(final Entity entity) {
         checkArgument(entity != null, "entity is null");
-        List<String> references = Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "defaultTechnology",
-                "technology", "doneQuantity");
+        List<String> references = Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "technology", "doneQuantity");
         return checkValidation(references, entity);
     }
 

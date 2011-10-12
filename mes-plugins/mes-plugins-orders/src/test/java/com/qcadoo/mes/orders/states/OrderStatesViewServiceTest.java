@@ -6,10 +6,12 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -46,9 +48,13 @@ public class OrderStatesViewServiceTest {
 
     private FieldComponent field;
 
-    private DataDefinitionService dataDefinitionService;
-
     private Entity orderFromDB;
+
+    private Locale locale;
+
+    private TranslationService translationService;
+
+    private DataDefinitionService dataDefinitionService;
 
     @Before
     public void init() {
@@ -63,6 +69,8 @@ public class OrderStatesViewServiceTest {
         externalSynchronizedState = mock(FieldComponent.class);
         externalNumber = mock(FieldComponent.class);
         pluginAccessor = mock(PluginAccessor.class);
+        dataDefinitionService = mock(DataDefinitionService.class);
+        translationService = mock(TranslationService.class);
         plugin = mock(Plugin.class);
         field = mock(FieldComponent.class);
         parameter = mock(Entity.class);
@@ -80,12 +88,15 @@ public class OrderStatesViewServiceTest {
         when(plugin.getState()).thenReturn(PluginState.ENABLED);
         when(dataDefinition.get(order.getId())).thenReturn(orderFromDB);
         when(orderFromDB.getStringField("state")).thenReturn("state");
+        when(view.getLocale()).thenReturn(locale);
+        when(translationService.translate("orders.order.orderStates.fieldRequired", view.getLocale())).thenReturn("translate");
 
         for (String reference : Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "defaultTechnology",
                 "technology")) {
             when(view.getComponentByReference(reference)).thenReturn(field);
         }
-
+        setField(orderStatesViewService, "dataDefinitionService", dataDefinitionService);
+        setField(orderStatesViewService, "translationService", translationService);
         setField(orderStatesViewService, "pluginAccessor", pluginAccessor);
     }
 
