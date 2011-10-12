@@ -41,11 +41,11 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
-import com.qcadoo.mes.inventory.InventoryService;
+import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.materialRequirements.internal.MaterialRequirementReportDataServiceImpl;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.simpleMaterialBalance.util.EntityOrderNumberComparator;
-import com.qcadoo.mes.simpleMaterialBalance.util.EntityWarehouseNumberComparator;
+import com.qcadoo.mes.simpleMaterialBalance.util.EntityStockAreasNumberComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -62,7 +62,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
     private MaterialRequirementReportDataServiceImpl materialRequirementReportDataService;
 
     @Autowired
-    private InventoryService inventoryService;
+    private MaterialFlowService materialFlowService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity simpleMaterialBalance, final Locale locale)
@@ -75,7 +75,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         addPanel(document, simpleMaterialBalance, locale);
         addBalance(document, simpleMaterialBalance, locale);
         addOrders(document, simpleMaterialBalance, locale);
-        addWarehouses(document, simpleMaterialBalance, locale);
+        addstockAreass(document, simpleMaterialBalance, locale);
     }
 
     private void addPanel(final Document document, final Entity simpleMaterialBalance, final Locale locale)
@@ -133,7 +133,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField("onlyComponents");
         Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForMaterialRequirementProducts(
                 orders, onlyComponents);
-        List<Entity> warehouses = simpleMaterialBalance.getHasManyField("warehouses");
+        List<Entity> stockAreass = simpleMaterialBalance.getHasManyField("stockAreass");
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
@@ -141,9 +141,10 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
             table.addCell(new Phrase(entry.getKey().getField("unit").toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(getDecimalFormat().format(entry.getValue()), PdfUtil.getArialRegular9Dark()));
             BigDecimal available = BigDecimal.ZERO;
-            for (Entity warehouse : warehouses) {
-                available = available.add(inventoryService.calculateShouldBe(warehouse.getBelongsToField("warehouse").getId()
-                        .toString(), entry.getKey().getId().toString(), simpleMaterialBalance.getField("date").toString()));
+            for (Entity stockAreas : stockAreass) {
+                available = available.add(materialFlowService.calculateShouldBeInStockArea(
+                        stockAreas.getBelongsToField("stockAreas").getId().toString(), entry.getKey().getId().toString(),
+                        simpleMaterialBalance.getField("date").toString()));
             }
             table.addCell(new Phrase(getDecimalFormat().format(available), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(getDecimalFormat().format(available.subtract(entry.getValue())), PdfUtil.getArialBold9Dark()));
@@ -173,24 +174,24 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         document.add(table);
     }
 
-    private void addWarehouses(final Document document, final Entity simpleMaterialBalance, final Locale locale)
+    private void addstockAreass(final Document document, final Entity simpleMaterialBalance, final Locale locale)
             throws DocumentException {
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(getTranslationService().translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.paragrah3", locale), PdfUtil.getArialBold11Dark()));
 
-        List<String> simpleMaterialBalanceWarehousesTableHeader = new ArrayList<String>();
-        simpleMaterialBalanceWarehousesTableHeader.add(getTranslationService().translate(
+        List<String> simpleMaterialBalancestockAreassTableHeader = new ArrayList<String>();
+        simpleMaterialBalancestockAreassTableHeader.add(getTranslationService().translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.number", locale));
-        simpleMaterialBalanceWarehousesTableHeader.add(getTranslationService().translate(
+        simpleMaterialBalancestockAreassTableHeader.add(getTranslationService().translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.name", locale));
 
-        PdfPTable table = PdfUtil.createTableWithHeader(2, simpleMaterialBalanceWarehousesTableHeader, false);
-        List<Entity> warehouses = new ArrayList<Entity>(simpleMaterialBalance.getHasManyField("warehouses"));
-        Collections.sort(warehouses, new EntityWarehouseNumberComparator());
-        for (Entity e : warehouses) {
-            table.addCell(new Phrase(e.getBelongsToField("warehouse").getStringField("number"), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(e.getBelongsToField("warehouse").getStringField("name"), PdfUtil.getArialRegular9Dark()));
+        PdfPTable table = PdfUtil.createTableWithHeader(2, simpleMaterialBalancestockAreassTableHeader, false);
+        List<Entity> stockAreas = new ArrayList<Entity>(simpleMaterialBalance.getHasManyField("stockAreas"));
+        Collections.sort(stockAreas, new EntityStockAreasNumberComparator());
+        for (Entity e : stockAreas) {
+            table.addCell(new Phrase(e.getBelongsToField("stockAreas").getStringField("number"), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField("stockAreas").getStringField("name"), PdfUtil.getArialRegular9Dark()));
         }
         document.add(table);
     }

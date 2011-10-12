@@ -44,12 +44,12 @@
 					reference="registerProductionTime" field="#{form}.registerProductionTime" />
 			</layoutElement>
 			<layoutElement column="1" row="5">
-				<component type="checkbox" name="allowedPartial"
-					reference="allowedPartial" field="#{form}.allowedPartial" />
+				<component type="checkbox" name="justOne"
+					reference="justOne" field="#{form}.justOne" />
 			</layoutElement>
 			<layoutElement column="1" row="6">
-				<component type="checkbox" name="blockClosing" reference="blockClosing"
-					field="#{form}.blockClosing" />
+				<component type="checkbox" name="allowToClose" reference="allowToClose"
+					field="#{form}.allowToClose" hasDescription="true" />
 			</layoutElement>
 			<layoutElement column="1" row="7">
 				<component type="checkbox" name="autoCloseOrder"

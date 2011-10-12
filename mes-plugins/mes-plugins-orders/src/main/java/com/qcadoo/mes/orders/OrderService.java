@@ -36,7 +36,6 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -80,15 +79,10 @@ public final class OrderService {
 
     private final Set<BeforeChangeStateListener> beforeChangeStateListeners = new HashSet<OrderService.BeforeChangeStateListener>();
 
-    @Autowired
-    private ShiftsService shiftsService;
-
-    public boolean clearOrderDatesAndWorkersOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("state", "01new");
+    public boolean clearOrderDatesOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+        entity.setField("state", "01pending");
         entity.setField("effectiveDateTo", null);
-        entity.setField("endWorker", null);
         entity.setField("effectiveDateFrom", null);
-        entity.setField("startWorker", null);
         entity.setField("doneQuantity", null);
         entity.setField("externalNumber", null);
         entity.setField("externalSynchronized", true);
@@ -141,7 +135,7 @@ public final class OrderService {
             return;
         }
 
-        orderState.setFieldValue("01new");
+        orderState.setFieldValue("01pending");
     }
 
     public void changeOrderStateForGrid(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -171,7 +165,7 @@ public final class OrderService {
                     return;
                 }
 
-                order.setField("state", "04done");
+                order.setField("state", "04completed");
             }
 
             if (hasIntegrationWithExternalSystem() && StringUtils.hasText((String) order.getField("externalNumber"))) {
@@ -231,7 +225,7 @@ public final class OrderService {
                         return;
                     }
 
-                    orderState.setFieldValue("04done");
+                    orderState.setFieldValue("04completed");
                 }
 
                 FieldComponent externalSynchronized = (FieldComponent) viewDefinitionState
@@ -347,7 +341,7 @@ public final class OrderService {
             Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     order.getEntityId());
 
-            if (entity != null && "04done".equals(entity.getStringField("state")) && order.isValid()) {
+            if (entity != null && "04completed".equals(entity.getStringField("state")) && order.isValid()) {
                 disabled = true;
             }
         }
@@ -386,18 +380,13 @@ public final class OrderService {
         return true;
     }
 
-    public void fillOrderDatesAndWorkers(final DataDefinition dataDefinition, final Entity entity) {
-        if (securityService.getCurrentUserName() == null) {
-            return;
-        }
-        if (("03inProgress".equals(entity.getField("state")) || "04done".equals(entity.getField("state")))
+    public void fillOrderDates(final DataDefinition dataDefinition, final Entity entity) {
+        if (("03inProgress".equals(entity.getField("state")) || "04completed".equals(entity.getField("state")))
                 && entity.getField("effectiveDateFrom") == null) {
             entity.setField("effectiveDateFrom", new Date());
-            entity.setField("startWorker", securityService.getCurrentUserName());
         }
-        if ("04done".equals(entity.getField("state")) && entity.getField("effectiveDateTo") == null) {
+        if ("04completed".equals(entity.getField("state")) && entity.getField("effectiveDateTo") == null) {
             entity.setField("effectiveDateTo", new Date());
-            entity.setField("endWorker", securityService.getCurrentUserName());
         }
     }
 

@@ -27,16 +27,16 @@
     	<module>mes-plugins-genealogies-for-components</module>
     	<module>mes-plugins-samples</module>
     	<module>mes-plugins-production-scheduling</module>
-    	<module>mes-plugins-used-products</module>
+<!--     	<module>mes-plugins-used-products</module> -->
     	<module>mes-plugins-stoppage</module>
     	<module>mes-plugins-minimal-affordable-quantity</module>
     	<module>mes-plugins-gantt-for-operation</module>
     	<module>mes-plugins-gantt-for-orders</module>
     	<module>mes-plugins-gantt-for-shifts</module>
-    	<module>mes-plugins-produced-products</module>
-    	<module>mes-plugins-inventory</module>
+<!--     	<module>mes-plugins-produced-products</module> -->
+    	<module>mes-plugins-material-flow</module>
     	<module>mes-plugins-production-time-norms</module>
-    	<module>mes-plugins-production-balance</module>
+<!--     	<module>mes-plugins-production-balance</module> -->
         <module>mes-plugins-cost-norms-for-operation</module>
         <module>mes-plugins-cost-norms-for-product</module>
         <module>mes-plugins-cost-calculation</module>

@@ -70,7 +70,7 @@ public class RibbonReportService {
                 boolean isAnyOrderClosed = false;
                 for (Entity orderComponent : orderComponents) {
                     Entity order = orderComponent.getBelongsToField("order");
-                    if (order.getField("state").equals("04done")) {
+                    if (order.getField("state").equals("04completed")) {
                         isAnyOrderClosed = true;
                         break;
                     }
@@ -111,7 +111,7 @@ public class RibbonReportService {
                 boolean isAnyOrderClosed = false;
                 for (Entity orderComponent : orderComponents) {
                     Entity order = orderComponent.getBelongsToField("order");
-                    if (order.getField("state").equals("04done")) {
+                    if (order.getField("state").equals("04completed")) {
                         isAnyOrderClosed = true;
                         break;
                     }

@@ -165,15 +165,15 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                                         .translate("qcadooView.true", locale) : getTranslationService().translate(
                                         "qcadooView.false", locale)), PdfUtil.getArialBold9Dark()));
         rightPanel.addCell(new Phrase("\t \t \t"
-                + getTranslationService().translate("productionCounting.productionBalance.report.panel.allowedPartial", locale)
+                + getTranslationService().translate("productionCounting.productionBalance.report.panel.justOne", locale)
                 + " "
-                + ((Boolean) productionCounting.getBelongsToField("order").getField("allowedPartial") ? getTranslationService()
+                + ((Boolean) productionCounting.getBelongsToField("order").getField("justOne") ? getTranslationService()
                         .translate("qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale)),
                 PdfUtil.getArialBold9Dark()));
         rightPanel.addCell(new Phrase("\t \t \t"
-                + getTranslationService().translate("productionCounting.productionBalance.report.panel.blockClosing", locale)
+                + getTranslationService().translate("productionCounting.productionBalance.report.panel.allowToClose", locale)
                 + " "
-                + ((Boolean) productionCounting.getBelongsToField("order").getField("blockClosing") ? getTranslationService()
+                + ((Boolean) productionCounting.getBelongsToField("order").getField("allowToClose") ? getTranslationService()
                         .translate("qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale)),
                 PdfUtil.getArialBold9Dark()));
         rightPanel.addCell(new Phrase("\t \t \t"
@@ -196,7 +196,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         addTableCellAsTable(
                 panelTable,
                 getTranslationService().translate("productionCounting.productionCounting.report.panel.recordType", locale),
-                (Boolean) productionRecord.getField("isFinal") == false ? getTranslationService().translate(
+                (Boolean) productionRecord.getField("lastRecord") == false ? getTranslationService().translate(
                         "productionCounting.productionCounting.report.panel.recordType.partial", locale)
                         : getTranslationService().translate(
                                 "productionCounting.productionCounting.report.panel.recordType.final", locale), null,

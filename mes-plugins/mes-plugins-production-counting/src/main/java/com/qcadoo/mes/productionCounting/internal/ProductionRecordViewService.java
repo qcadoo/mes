@@ -31,6 +31,7 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCou
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class ProductionRecordViewService {
     @Autowired
     private TranslationService translationService;
 
-    private final static String CLOSED_ORDER = "04done";
+    private final static String CLOSED_ORDER = "04completed";
 
     private final static Logger LOG = LoggerFactory.getLogger(ProductionRecordViewService.class);
 
@@ -75,18 +76,10 @@ public class ProductionRecordViewService {
         }
 
         Entity order = getOrderFromLookup(view);
-
-        view.getComponentByReference("order").setEnabled(false);
-        view.getComponentByReference("orderOperationComponent").setEnabled(false);
-
-        view.getComponentByReference("shift").setEnabled(false);
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
 
-        view.getComponentByReference("isFinal").setEnabled(false);
         view.getComponentByReference("laborTime").setVisible(getBooleanValue(order.getField("registerProductionTime")));
         view.getComponentByReference("machineTime").setVisible(getBooleanValue(order.getField("registerProductionTime")));
-        view.getComponentByReference("machineTime").setEnabled(getBooleanValue(false));
-        view.getComponentByReference("laborTime").setEnabled(getBooleanValue(false));
 
         view.getComponentByReference("orderOperationComponent").setVisible(
                 PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording));
@@ -117,6 +110,20 @@ public class ProductionRecordViewService {
                 component.requestComponentUpdateState();
             }
         }
+    }
+
+    public void clearFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FieldComponent operation = (FieldComponent) view.getComponentByReference("orderOperationComponent");
+        operation.setFieldValue("");
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
+        GridComponent productsIn = (GridComponent) view.getComponentByReference("recordOperationProductInComponent");
+        GridComponent productOut = (GridComponent) view.getComponentByReference("recordOperationProductOutComponent");
+
+        productOut.setEntities(new ArrayList<Entity>());
+        productsIn.setEntities(new ArrayList<Entity>());
     }
 
     public void enabledOrDisabledOperationField(final ViewDefinitionState view, final ComponentState componentState,
@@ -188,7 +195,8 @@ public class ProductionRecordViewService {
         Entity order = getOrderFromLookup(view);
         Boolean autoCloseOrder = getBooleanValue(order.getField("autoCloseOrder"));
         String orderState = order.getStringField("state");
-        if (autoCloseOrder && view.getComponentByReference("isFinal").getFieldValue() == "1" && "03inProgress".equals(orderState)) {
+        if (autoCloseOrder && view.getComponentByReference("lastRecord").getFieldValue() == "1"
+                && "03inProgress".equals(orderState)) {
             order.setField("state", CLOSED_ORDER);
             dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(order);
             form.addMessage(translationService.translate("productionCounting.order.orderClosed", view.getLocale()),
@@ -222,16 +230,18 @@ public class ProductionRecordViewService {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get((Long) lookup.getFieldValue());
     }
 
-    public void copyTimeValue(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        if (componentState.getName().contains("cumulated")) {
-            view.getComponentByReference("laborTimeForEach").setFieldValue(view.getComponentByReference("laborTimeCumulated"));
-            view.getComponentByReference("machineTimeForEach")
-                    .setFieldValue(view.getComponentByReference("machineTimeCumulated"));
-        } else {
-            view.getComponentByReference("laborTimeCumulated").setFieldValue(view.getComponentByReference("laborTimeForEach"));
-            view.getComponentByReference("machineTimeCumulated")
-                    .setFieldValue(view.getComponentByReference("machineTimeForEach"));
+    public void checkJustOne(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        Entity order = getOrderFromLookup(view);
+        if (order == null) {
+            return;
         }
+        FieldComponent lastRecord = (FieldComponent) view.getComponentByReference("lastRecord");
+        if (order.getField("justOne") != null && (Boolean) order.getField("justOne")) {
+            lastRecord.setFieldValue(true);
+        } else {
+            lastRecord.setFieldValue(false);
+        }
+        lastRecord.requestComponentUpdateState();
     }
 
     // VIEW HOOK for OrderDetails
@@ -268,9 +278,9 @@ public class ProductionRecordViewService {
 
     public void checkOrderState(final ViewDefinitionState viewDefinitionState) {
         FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
-        if ("03inProgress".equals(orderState.getFieldValue()) || "04done".equals(orderState.getFieldValue())) {
+        if ("03inProgress".equals(orderState.getFieldValue()) || "04completed".equals(orderState.getFieldValue())) {
             for (String componentName : Arrays.asList("typeOfProductionRecording", "registerQuantityInProduct",
-                    "registerQuantityOutProduct", "registerProductionTime", "allowedPartial", "blockClosing", "autoCloseOrder")) {
+                    "registerQuantityOutProduct", "registerProductionTime", "justOne", "allowToClose", "autoCloseOrder")) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(false);
                 component.requestComponentUpdateState();
@@ -288,15 +298,15 @@ public class ProductionRecordViewService {
         if (order == null) {
             return;
         }
-        Boolean blockClosing = (Boolean) order.getField("blockClosing");
-        FieldComponent orderState = (FieldComponent) view.getComponentByReference("state");
 
-        List<Entity> productionRecordings = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("isFinal", true)).list()
-                .getEntities();
-        if (blockClosing != null && blockClosing && productionRecordings.size() == 0 && orderState.getFieldValue() != null
-                && "03inProgress".equals(orderState.getFieldValue())) {
+        String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
+        Boolean finalNotExists = false;
+        if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
+            finalNotExists = checkFinalProductionCountingForOrderCumulated(order, view);
+        } else if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
+            finalNotExists = checkFinalProductionCountingForOrderForEach(order, view);
+        }
+        if (finalNotExists) {
             WindowComponent window = (WindowComponent) view.getComponentByReference("window");
             RibbonActionItem start = window.getRibbon().getGroupByName("status").getItemByName("acceptOrder");
             start.setEnabled(false);
@@ -304,6 +314,37 @@ public class ProductionRecordViewService {
             start.requestUpdate(true);
             window.requestRibbonRender();
         }
+    }
+
+    private Boolean checkFinalProductionCountingForOrderCumulated(final Entity order, final ViewDefinitionState view) {
+        Boolean allowToClose = (Boolean) order.getField("allowToClose");
+        FieldComponent orderState = (FieldComponent) view.getComponentByReference("state");
+        List<Entity> productionRecordings = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("lastRecord", true)).list()
+                .getEntities();
+
+        return allowToClose != null && allowToClose && productionRecordings.size() == 0 && orderState.getFieldValue() != null
+                && "03inProgress".equals(orderState.getFieldValue());
+    }
+
+    private Boolean checkFinalProductionCountingForOrderForEach(final Entity order, final ViewDefinitionState view) {
+        Boolean allowToClose = (Boolean) order.getField("allowToClose");
+        FieldComponent orderState = (FieldComponent) view.getComponentByReference("state");
+        List<Entity> operations = order.getTreeField("orderOperationComponents");
+        Integer numberOfRecord = Integer.valueOf(0);
+        for (Entity operation : operations) {
+            List<Entity> productionRecordings = dataDefinitionService
+                    .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
+                    .add(SearchRestrictions.belongsTo("order", order))
+                    .add(SearchRestrictions.belongsTo("orderOperationComponent", operation))
+                    .add(SearchRestrictions.eq("lastRecord", true)).list().getEntities();
+            if (productionRecordings.size() != 0) {
+                numberOfRecord++;
+            }
+        }
+        return allowToClose != null && allowToClose && orderState.getFieldValue() != null
+                && "03inProgress".equals(orderState.getFieldValue()) && operations.size() != numberOfRecord;
     }
 
     public void checkFinalProductionCountingForOrderOnGrid(final ViewDefinitionState view) {
@@ -319,13 +360,14 @@ public class ProductionRecordViewService {
             if (order == null) {
                 return;
             }
-            Boolean blockClosing = (Boolean) order.getField("blockClosing");
-            String orderState = order.getStringField("state");
-            List<Entity> productionRecordings = dataDefinitionService
-                    .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
-                    .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("isFinal", true)).list()
-                    .getEntities();
-            if (blockClosing != null && blockClosing && productionRecordings.size() == 0 && "03inProgress".equals(orderState)) {
+            String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
+            Boolean finalNotExists = false;
+            if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
+                finalNotExists = checkFinalProductionCountingForOrderCumulated(order, view);
+            } else if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
+                finalNotExists = checkFinalProductionCountingForOrderForEach(order, view);
+            }
+            if (finalNotExists) {
                 WindowComponent window = (WindowComponent) view.getComponentByReference("window");
                 RibbonActionItem start = window.getRibbon().getGroupByName("status").getItemByName("acceptOrder");
                 start.setEnabled(false);

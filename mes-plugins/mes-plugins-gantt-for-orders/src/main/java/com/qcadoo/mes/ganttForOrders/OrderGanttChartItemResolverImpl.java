@@ -22,6 +22,7 @@
  * ***************************************************************************
  */
 package com.qcadoo.mes.ganttForOrders;
+
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
@@ -45,7 +46,6 @@ package com.qcadoo.mes.ganttForOrders;
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,8 +78,8 @@ public class OrderGanttChartItemResolverImpl implements OrderGanttChartItemResol
     @Override
     @Transactional
     public Map<String, List<GanttChartItem>> resolve(final GanttChartScale scale, final JSONObject context, final Locale locale) {
-        List<Entity> orders = dataDefinitionService.get("orders", "order").find().add(SearchRestrictions.ne("state", "04done"))
-                .add(SearchRestrictions.lt("dateFrom", scale.getDateTo()))
+        List<Entity> orders = dataDefinitionService.get("orders", "order").find()
+                .add(SearchRestrictions.ne("state", "04completed")).add(SearchRestrictions.lt("dateFrom", scale.getDateTo()))
                 .add(SearchRestrictions.gt("dateTo", scale.getDateFrom())).list().getEntities();
 
         List<GanttChartItem> items = new ArrayList<GanttChartItem>();

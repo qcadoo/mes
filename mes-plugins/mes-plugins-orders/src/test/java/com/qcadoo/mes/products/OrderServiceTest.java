@@ -1,6 +1,5 @@
 /**
  * ***************************************************************************
- * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 0.4.8
  *
@@ -121,14 +120,12 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
 
         // when
-        boolean result = orderService.clearOrderDatesAndWorkersOnCopy(dataDefinition, order);
+        boolean result = orderService.clearOrderDatesOnCopy(dataDefinition, order);
         // then
         assertTrue(result);
-        verify(order).setField("state", "01new");
+        verify(order).setField("state", "01pending");
         verify(order).setField("effectiveDateTo", null);
-        verify(order).setField("endWorker", null);
         verify(order).setField("effectiveDateFrom", null);
-        verify(order).setField("startWorker", null);
         verify(order).setField("doneQuantity", null);
     }
 
@@ -232,7 +229,7 @@ public class OrderServiceTest {
 
         // then
         verify(orderState).setEnabled(false);
-        verify(orderState).setFieldValue("01new");
+        verify(orderState).setFieldValue("01pending");
     }
 
     @Test
@@ -250,7 +247,7 @@ public class OrderServiceTest {
 
         // then
         verify(orderState).setEnabled(false);
-        verify(orderState, never()).setFieldValue("01new");
+        verify(orderState, never()).setFieldValue("01pending");
     }
 
     @Test
@@ -493,7 +490,7 @@ public class OrderServiceTest {
         given(order.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
                 entity);
-        given(entity.getStringField("state")).willReturn("01new");
+        given(entity.getStringField("state")).willReturn("01pending");
         given(order.isValid()).willReturn(true);
 
         // when
@@ -517,7 +514,7 @@ public class OrderServiceTest {
         given(order.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
                 entity);
-        given(entity.getStringField("state")).willReturn("04done");
+        given(entity.getStringField("state")).willReturn("04completed");
         given(order.isValid()).willReturn(false);
 
         // when
@@ -541,7 +538,7 @@ public class OrderServiceTest {
         given(order.getEntityId()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
                 entity);
-        given(entity.getStringField("state")).willReturn("04done");
+        given(entity.getStringField("state")).willReturn("04completed");
         given(order.isValid()).willReturn(true);
 
         // when
@@ -751,14 +748,13 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void shouldNotFillOrderDatesAndWorkers() throws Exception {
+    public void shouldNotFillOrderDates() throws Exception {
         // given
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        given(securityService.getCurrentUserName()).willReturn("user", "admin");
 
         // when
-        orderService.fillOrderDatesAndWorkers(dataDefinition, entity);
+        orderService.fillOrderDates(dataDefinition, entity);
 
         // then
         verify(entity, atLeastOnce()).getField("state");
@@ -766,57 +762,49 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void shouldFillInProgressOrderDatesAndWorkers() throws Exception {
+    public void shouldFillInProgressOrderDates() throws Exception {
         // given
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
         given(entity.getField("state")).willReturn("03inProgress");
-        given(securityService.getCurrentUserName()).willReturn("user");
 
         // when
-        orderService.fillOrderDatesAndWorkers(dataDefinition, entity);
+        orderService.fillOrderDates(dataDefinition, entity);
 
         // then
         verify(entity).setField(eq("effectiveDateFrom"), any(Date.class));
-        verify(entity).setField("startWorker", "user");
     }
 
     @Test
-    public void shouldFillDoneOrderDatesAndWorkers() throws Exception {
+    public void shouldFillDoneOrderDates() throws Exception {
         // given
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        given(entity.getField("state")).willReturn("04done");
-        given(securityService.getCurrentUserName()).willReturn("user", "user", "admin");
+        given(entity.getField("state")).willReturn("04completed");
 
         // when
-        orderService.fillOrderDatesAndWorkers(dataDefinition, entity);
+        orderService.fillOrderDates(dataDefinition, entity);
 
         // then
         verify(entity).setField(eq("effectiveDateFrom"), any(Date.class));
-        verify(entity).setField("startWorker", "user");
         verify(entity).setField(eq("effectiveDateTo"), any(Date.class));
-        verify(entity).setField("endWorker", "admin");
     }
 
     @Test
-    public void shouldNotFillExistingDatesAndWorkers() throws Exception {
+    public void shouldNotFillExistingDates() throws Exception {
         // given
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        given(entity.getField("state")).willReturn("04done");
+        given(entity.getField("state")).willReturn("04completed");
         given(entity.getField("effectiveDateFrom")).willReturn(new Date());
         given(entity.getField("effectiveDateTo")).willReturn(new Date());
-        given(securityService.getCurrentUserName()).willReturn("user", "admin");
 
         // when
-        orderService.fillOrderDatesAndWorkers(dataDefinition, entity);
+        orderService.fillOrderDates(dataDefinition, entity);
 
         // then
         verify(entity, never()).setField(eq("effectiveDateFrom"), any(Date.class));
-        verify(entity, never()).setField("startWorker", "user");
         verify(entity, never()).setField(eq("effectiveDateTo"), any(Date.class));
-        verify(entity, never()).setField("endWorker", "admin");
     }
 
     @Test
@@ -1179,7 +1167,7 @@ public class OrderServiceTest {
         orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "finish" });
 
         // then
-        verify(orderState).setFieldValue("04done");
+        verify(orderState).setFieldValue("04completed");
     }
 
     @Test
@@ -1211,7 +1199,7 @@ public class OrderServiceTest {
         orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "finish" });
 
         // then
-        verify(orderState).setFieldValue("04done");
+        verify(orderState).setFieldValue("04completed");
     }
 
     @Test
@@ -1233,7 +1221,7 @@ public class OrderServiceTest {
         orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
 
         // then
-        verify(order).setField("state", "04done");
+        verify(order).setField("state", "04completed");
         verify(dataDefinition).save(order);
         verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
     }
@@ -1263,7 +1251,7 @@ public class OrderServiceTest {
         orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
 
         // then
-        verify(order).setField("state", "04done");
+        verify(order).setField("state", "04completed");
         verify(dataDefinition).save(order);
         verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
     }

@@ -130,14 +130,14 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="3" row="4" width="2" height="6">
-					<component type="grid" name="simpleMaterialBalanceWarehousesComponent"
-						reference="simpleMaterialBalanceWarehousesComponent" source="#{form}.warehouses">
-						<option type="column" name="number" fields="warehouse"
-							expression="#warehouse['number']" width="50" />
-						<option type="column" name="name" fields="warehouse"
-							expression="#warehouse['name']" width="50" />
+					<component type="grid" name="simpleMaterialBalancestockAreasComponent"
+						reference="simpleMaterialBalancestockAreasComponent" source="#{form}.stockAreas">
+						<option type="column" name="number" fields="stockAreas"
+							expression="#stockAreas['number']" width="50" />
+						<option type="column" name="name" fields="stockAreas"
+							expression="#stockAreas['name']" width="50" />
 						<option type="order" column="number" direction="desc" />
-						<option type="correspondingView" value="simpleMaterialBalance/simpleMaterialBalanceWarehousesComponentDetails" />
+						<option type="correspondingView" value="simpleMaterialBalance/simpleMaterialBalancestockAreasComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 						<option type="paginable" value="false" />

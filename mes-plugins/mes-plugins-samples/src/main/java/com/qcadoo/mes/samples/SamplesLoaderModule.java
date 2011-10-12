@@ -134,6 +134,7 @@ public class SamplesLoaderModule extends Module {
     @Override
     @Transactional
     public void multiTenantEnable() {
+        checkLocale();
         if (databaseHasToBePrepared()) {
             LOG.info("Database has to be prepared ...");
 
@@ -192,7 +193,7 @@ public class SamplesLoaderModule extends Module {
     }
 
     private void checkLocale() {
-        if ((locale == null) || ("".equals(locale))) {
+        if ((locale != null) || ("".equals(locale))) {
             locale = Locale.getDefault().toString().substring(0, 2);
 
             if (!"pl".equals(locale) && !"en".equals(locale)) {
@@ -206,7 +207,7 @@ public class SamplesLoaderModule extends Module {
     }
 
     private void readDataFromXML(final String type, final String[] attributes) {
-        checkLocale();
+
         LOG.info("Loading test data from " + type + "_" + locale + ".xml ...");
 
         try {
@@ -621,7 +622,7 @@ public class SamplesLoaderModule extends Module {
             order.setField("plannedQuantity", null);
         }
 
-        order.setField("state", "01new");
+        order.setField("state", "01pending");
 
         Entity product = getProductByNumber(values.get("product_nr"));
 
@@ -1062,8 +1063,8 @@ public class SamplesLoaderModule extends Module {
             parameter.setField("registerQuantityInProduct", true);
             parameter.setField("registerQuantityOutProduct", true);
             parameter.setField("registerProductionTime", true);
-            parameter.setField("allowedPartial", false);
-            parameter.setField("blockClosing", false);
+            parameter.setField("justOne", false);
+            parameter.setField("allowToClose", false);
             parameter.setField("autoCloseOrder", false);
         }
 

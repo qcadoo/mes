@@ -79,11 +79,11 @@
 			<artifactId>mes-plugins-stoppage</artifactId>
 			<version>0.4.9-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-used-products</artifactId>
-			<version>0.4.9-SNAPSHOT</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.qcadoo.mes</groupId> -->
+<!-- 			<artifactId>mes-plugins-used-products</artifactId> -->
+<!-- 			<version>0.4.9-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-minimal-affordable-quantity</artifactId>
@@ -104,14 +104,14 @@
 			<artifactId>mes-plugins-gantt-for-orders</artifactId>
 			<version>0.4.9-SNAPSHOT</version>
 		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.qcadoo.mes</groupId> -->
+<!-- 			<artifactId>mes-plugins-produced-products</artifactId> -->
+<!-- 			<version>0.4.9-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-produced-products</artifactId>
-			<version>0.4.9-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-inventory</artifactId>
+			<artifactId>mes-plugins-material-flow</artifactId>
 			<version>0.4.9-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -119,11 +119,11 @@
 			<artifactId>mes-plugins-production-time-norms</artifactId>
 			<version>0.4.9-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-production-balance</artifactId>
-			<version>0.4.9-SNAPSHOT</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.qcadoo.mes</groupId> -->
+<!-- 			<artifactId>mes-plugins-production-balance</artifactId> -->
+<!-- 			<version>0.4.9-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-cost-norms-for-product</artifactId>
@@ -271,8 +271,7 @@
 								${basedir}/../../qcadoo/qcadoo-view/src/main/resources;
 								${basedir}/../../qcadoo/qcadoo-report/src/main/resources;
 								${basedir}/../../qcadoo/qcadoo-plugins-plugin-management/src/main/resources;
-								${basedir}/../../qcadoo/qcadoo-plugins-export-to-csv/src/main/resources;
-								${basedir}/../../qcadoo/qcadoo-plugins-export-to-pdf/src/main/resources;
+								${basedir}/../../qcadoo/qcadoo-plugins-export/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-basic/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-stoppage/src/main/resources;

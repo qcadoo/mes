@@ -73,7 +73,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     @Autowired
     CurrencyService currencyService;
-    
+
     @Autowired
     TreeNumberingService treeNumberingService;
 
@@ -379,10 +379,11 @@ public class CostCalculationPdfService extends PdfDocumentService {
         }
 
         int[] columnWitdh = { 20, 20, 20, 20, 20, 20, 20, 20, 20 };
-        List<Entity> calculationOperationComponents = newLinkedList(costCalculation.getTreeField("calculationOperationComponents"));
+        List<Entity> calculationOperationComponents = newLinkedList(costCalculation
+                .getTreeField("calculationOperationComponents"));
 
         Collections.sort(calculationOperationComponents, treeNumberingService.getTreeNodesNumberComparator());
-        
+
         PdfPTable operationsTable = PdfUtil.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false,
                 columnWitdh);
 

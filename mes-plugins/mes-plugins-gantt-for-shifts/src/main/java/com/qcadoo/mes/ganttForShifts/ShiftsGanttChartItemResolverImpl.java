@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.ganttForShifts;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,7 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.basic.ShiftsServiceImpl;
+import com.qcadoo.mes.basic.ShiftsServiceImpl.ShiftHour;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.components.ganttChart.GanttChartItem;
@@ -48,7 +50,7 @@ public class ShiftsGanttChartItemResolverImpl implements ShiftsGanttChartItemRes
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    ShiftsService shiftsService;
+    ShiftsServiceImpl shiftsService;
 
     @Override
     @Transactional
@@ -57,18 +59,31 @@ public class ShiftsGanttChartItemResolverImpl implements ShiftsGanttChartItemRes
         Map<String, List<GanttChartItem>> items = new LinkedHashMap<String, List<GanttChartItem>>();
 
         for (Entity shift : shifts) {
-            items.put(shift.getStringField("name"), shiftsService.getItemsForShift(shift, scale));
+            items.put(shift.getStringField("name"), getItemsForShift(shift, scale));
         }
 
         return items;
     }
 
     @Override
-    public List<ShiftsService.ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo) {
+    public List<GanttChartItem> getItemsForShift(final Entity shift, final GanttChartScale scale) {
+        String shiftName = shift.getStringField("name");
+
+        List<ShiftHour> hours = shiftsService.getHoursForShift(shift, scale.getDateFrom(), scale.getDateTo());
+
+        List<GanttChartItem> items = new ArrayList<GanttChartItem>();
+
+        for (ShiftHour hour : hours) {
+            items.add(scale.createGanttChartItem(shiftName, shiftName, null, hour.getDateFrom(), hour.getDateTo()));
+        }
+
+        return items;
+    }
+
+    public List<ShiftsServiceImpl.ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo) {
         return shiftsService.getHoursForAllShifts(dateFrom, dateTo);
     }
 
-    @Override
     public LocalTime[][] convertDayHoursToInt(final String string) {
         return shiftsService.convertDayHoursToInt(string);
     }
