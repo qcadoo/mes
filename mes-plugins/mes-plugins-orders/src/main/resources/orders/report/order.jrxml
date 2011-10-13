@@ -30,10 +30,24 @@
 		     orders.effectiveDateFrom as orders_order_effectivedatefrom,
 		     orders.effectiveDateTo as orders_order_effectivedateto,
 		     technology.name as technologies_technology_name,
-		     product.name as basic_product_name
-		from com.qcadoo.model.beans.basic.BasicCompany as company, com.qcadoo.model.beans.orders.OrdersOrder as orders left outer join orders.technology as technology left outer join orders.product as product where orders.id in ($P{EntityIds})]]>
-		<!-- orders.startWorker as orders_order_startworker,
-		     orders.endWorker as orders_order_endworker, -->
+			product.name as basic_product_name,
+			(
+				select 
+					logging.worker as startWorker 
+				from 
+					orders.loggings as logging
+				where
+					logging.previousState = '02accepted' and logging.currentState = '03inProgress'
+			) as orders_order_startworker,
+			(
+				select 
+					logging.worker as endWorker 
+				from 
+					orders.loggings as logging
+				where
+					logging.currentState = '04completed'
+			) as orders_order_endworker
+			from com.qcadoo.model.beans.basic.BasicCompany as company, com.qcadoo.model.beans.orders.OrdersOrder as orders left outer join orders.technology as technology left outer join orders.product as product where orders.id in ($P{EntityIds})]]>
 	</queryString>
 	<field name="companyFullName" class="java.lang.String"/>
 	<field name="street" class="java.lang.String"/>
@@ -53,10 +67,8 @@
 	<field name="orders_order_donequantity" class="java.math.BigDecimal"/>
 	<field name="orders_order_effectivedatefrom" class="java.util.Date"/>
 	<field name="orders_order_effectivedateto" class="java.util.Date"/>
-	<!--
 	<field name="orders_order_startworker" class="java.lang.String"/>
 	<field name="orders_order_endworker" class="java.lang.String"/>
-	-->
 	<field name="technologies_technology_name" class="java.lang.String"/>
 	<field name="basic_product_name" class="java.lang.String"/>
 	<background>
@@ -190,8 +202,7 @@
 			<textField isBlankWhenNull="true">
 				<reportElement style="qcadooValue" x="10" y="335" width="250" height="30"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"></textFieldExpression>
-				<!--<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_startworker}]]></textFieldExpression>-->
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_startworker}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooLabel" x="10" y="370" width="250" height="15"/>
@@ -201,8 +212,7 @@
 			<textField isBlankWhenNull="true">
 				<reportElement style="qcadooValue" x="10" y="395" width="250" height="30"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"></textFieldExpression>
-				<!--<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_endworker}]]></textFieldExpression>-->
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_endworker}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooLabel" x="290" y="205" width="250" height="15"/>
