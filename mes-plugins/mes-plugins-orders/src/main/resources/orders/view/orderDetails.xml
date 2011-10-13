@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 0.4.8
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 0.4.8 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="orderDetails" modelName="order" defaultAuthorizationRole="ROLE_SUPERVISOR">
@@ -32,7 +19,8 @@
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="status">
-				<smallButton name="acceptOrder" icon="startIcon16.png" state="disabled">
+				<smallButton name="acceptOrder" icon="startIcon16.png"
+					state="disabled">
 					<script>
 						<![CDATA[
 							this.addOnChangeListener({
@@ -67,8 +55,9 @@
 						]]>
 					</script>
 				</smallButton>
-					<smallButton name="declineOrder" icon="startIcon16.png" state="disabled">
-						<script>
+				<smallButton name="declineOrder" icon="startIcon16.png"
+					state="disabled">
+					<script>
 							<![CDATA[
 								this.addOnChangeListener({
 									onClick: function() {
@@ -88,10 +77,11 @@
 									}
 								});
 							]]>
-						</script>
-					</smallButton>
-					<smallButton name="interruptOrder" icon="startIcon16.png" state="disabled">
-						<script>
+					</script>
+				</smallButton>
+				<smallButton name="interruptOrder" icon="startIcon16.png"
+					state="disabled">
+					<script>
 							<![CDATA[
 								this.addOnChangeListener({
 									onClick: function() {
@@ -103,8 +93,8 @@
 									}
 								});
 							]]>
-						</script>
-					</smallButton>
+					</script>
+				</smallButton>
 			</group>
 		</ribbon>
 		<windowTab name="mainTab">
@@ -222,8 +212,10 @@
 					<layoutElement column="1" row="1">
 						<component type="select" name="state" field="state"
 							reference="state" defaultEnabled="false" />
- 						<component type="hidden" name="externalNumber" field="externalNumber" reference="externalNumber" />
-						<component type="hidden" name="externalSynchronized" field="externalSynchronized" reference="externalSynchronized" />
+						<component type="hidden" name="externalNumber" field="externalNumber"
+							reference="externalNumber" />
+						<component type="hidden" name="externalSynchronized"
+							field="externalSynchronized" reference="externalSynchronized" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="number" reference="number"
@@ -243,7 +235,7 @@
 							<option type="orderable" value="name,number" />
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />							
+							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="6">
@@ -310,7 +302,8 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="6">
-						<component type="input" name="doneQuantity" field="doneQuantity" reference="doneQuantity">
+						<component type="input" name="doneQuantity" field="doneQuantity"
+							reference="doneQuantity">
 							<option type="labelWidth" value="55" />
 							<option type="alignment" value="right" />
 						</component>
@@ -325,18 +318,18 @@
 				</component>
 				<option type="header" value="true" />
 				<option type="expression" value="#name + ' - ' + #number" />
-				<listener event="changeOrderStateToAccepted" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
-					method="changeOrderStateToAccepted" />
-				<listener event="changeOrderStateToInProgress" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
-					method="changeOrderStateToInProgress" />
-				<listener event="changeOrderStateToCompleted" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
-					method="changeOrderStateToCompleted" />
-				<listener event="changeOrderStateToDeclined" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
-					method="changeOrderStateToDeclined" />
-				<listener event="changeOrderStateToAbandoned" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
-					method="changeOrderStateToAbandoned" />
-				<listener event="changeOrderStateToInterrupted" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
-					method="changeOrderStateToInterrupted" />
+				<listener event="changeOrderStateToAccepted"
+					class="com.qcadoo.mes.orders.states.OrderStatesViewService" method="changeOrderStateToAccepted" />
+				<listener event="changeOrderStateToInProgress"
+					class="com.qcadoo.mes.orders.states.OrderStatesViewService" method="changeOrderStateToInProgress" />
+				<listener event="changeOrderStateToCompleted"
+					class="com.qcadoo.mes.orders.states.OrderStatesViewService" method="changeOrderStateToCompleted" />
+				<listener event="changeOrderStateToDeclined"
+					class="com.qcadoo.mes.orders.states.OrderStatesViewService" method="changeOrderStateToDeclined" />
+				<listener event="changeOrderStateToAbandoned"
+					class="com.qcadoo.mes.orders.states.OrderStatesViewService" method="changeOrderStateToAbandoned" />
+				<listener event="changeOrderStateToInterrupted"
+					class="com.qcadoo.mes.orders.states.OrderStatesViewService" method="changeOrderStateToInterrupted" />
 			</component>
 		</windowTab>
 		<windowTab name="detailsTab">
@@ -358,11 +351,31 @@
 			</component>
 		</windowTab>
 		<windowTab name="history">
-			<component type="grid" name="loggings" reference="grid" source="#{form}.loggings" >
-				<option type="column" name="dateAndTime" fields="dateAndTime" link="true" />
-				<option type="column" name="previousState" fields="previousState" link="true" />
-				<option type="column" name="currentState" fields="currentState" link="true" />
-				<option type="column" name="shift" fields="shift"  expression="#shift['name']"/>
+			"01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
+
+			<component type="grid" name="loggings" reference="grid"
+				source="#{form}.loggings">
+				<option type="column" name="dateAndTime" fields="dateAndTime"
+					link="true" />
+				<option type="column" name="previousState" fields="previousState"
+					link="true"
+					expression="#previousState == '01pending' ?	'@orders.order.state.value.01pending' :
+										#previousState == '02accepted' ? '@orders.order.state.value.02accepted' :
+										#previousState == '03inProgress' ?'@orders.order.state.value.03inProgress' :
+										#previousState == '04completed' ?	'@orders.order.state.value.04completed' :
+										#previousState == '05declined' ?'@orders.order.state.value.05declined' :
+										#previousState == '06interrupted' ?	'@orders.order.state.value.06interrupted' :
+										#previousState == '07abandoned' ?'@orders.order.state.value.value.07abandoned' :''" />
+				<option type="column" name="currentState" fields="currentState"
+					link="true" 
+				expression="#currentState == '01pending' ?	'@orders.order.state.value.' :
+										#currentState == '02accepted' ? '@orders.order.state.value.02accepted' :
+										#currentState == '03inProgress' ?'@orders.order.state.value.03inProgress' :
+										#currentState == '04completed' ?	'@orders.order.state.value.04completed' :
+										#currentState == '05declined' ?'@orders.order.state.value.05declined' :
+										#currentState == '06interrupted' ?	'@orders.order.state.value.06interrupted' :
+										#currentState == '07abandoned' ?'@orders.order.state.value.value.07abandoned' :''" />/>
+				<option type="column" name="shift" fields="shift" expression="#shift['name']" />
 				<option type="column" name="worker" fields="worker" />
 				<option type="order" column="dateAndTime" direction="desc" />
 				<option type="searchable" value="dateAndTime,previousState,currentState" />
@@ -383,6 +396,7 @@
 			method="setAndDisableState" />
 		<beforeRender class="com.qcadoo.mes.basic.util.UnitService"
 			method="fillProductUnitBeforeRender" />
-		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="disableOrderFormForExternalItems" />
+		<beforeRender class="com.qcadoo.mes.orders.OrderService"
+			method="disableOrderFormForExternalItems" />
 	</hooks>
 </view>
