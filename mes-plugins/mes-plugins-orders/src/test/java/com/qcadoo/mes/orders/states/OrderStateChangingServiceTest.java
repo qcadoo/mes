@@ -80,7 +80,7 @@ public class OrderStateChangingServiceTest {
         verify(dataDefinition).save(entity);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenShiftIsNull() throws Exception {
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_LOGGING)).willReturn(
                 dataDefinition);
