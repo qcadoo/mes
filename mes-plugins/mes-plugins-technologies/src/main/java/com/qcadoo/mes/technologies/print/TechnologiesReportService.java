@@ -42,7 +42,7 @@ public class TechnologiesReportService {
             final String[] args) {
         if (state instanceof FormComponent) {
             viewDefinitionState.redirectTo("/technologies/technologyDetailsReport." + args[0] + "?id=" + state.getFieldValue(),
-                    false, false);
+                    true, false);
         } else {
             state.addMessage(translationService.translate("technologies.report.componentError", state.getLocale()),
                     MessageType.FAILURE);
