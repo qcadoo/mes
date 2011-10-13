@@ -100,7 +100,7 @@
 						</script>
 					</smallButton>
 			</group>
-			<group name="export2">
+			<group name="export">
 				<smallButton name="print" icon="pdfIcon16.png"
 					action="#{grid}.generateReportForEntity('orders','order','pdf')" state="disabled" />
 			</group>
@@ -108,7 +108,7 @@
 		<component type="grid" name="orders" reference="grid">
 			<script>
  				<![CDATA[ 
- 					var print = #{window}.getRibbonItem("export2.print");
+ 					var print = #{window}.getRibbonItem("export.print");
 					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
 					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
 					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
@@ -125,7 +125,20 @@
 								deleteButton.disable();
 								copyButton.disable();
 							} else {
-								if (selectedEntitiesArray.length == 1) {
+								var noDifferentStates = true;
+ 								if(selectedEntitiesArray.length > 1)
+								{
+ 									print.disable("#{translate(moreThanOneRecordSelected)}");
+									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state
+										|| selectedEntitiesArray[i-1].fields.externalSynchronized == '0'
+										|| selectedEntitiesArray[i].fields.externalSynchronized == '0') {
+											noDifferentStates = false;
+											break;
+										}
+									}
+								} 
+								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
  									print.enable();
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
 									var externalSynchronized = selectedEntitiesArray[0].fields.externalSynchronized;									
@@ -175,10 +188,9 @@
 										interruptOrder.disable();
 									}
 								} else {
- 									print.disable("#{translate(moreThanOneRecordSelected)}");
-									acceptOrder.disable("#{translate(moreThanOneRecordSelected)}");
-									declineOrder.disable("#{translate(moreThanOneRecordSelected)}");
-									interruptOrder.disable("#{translate(moreThanOneRecordSelected)}");
+									acceptOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
+									declineOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
+									interruptOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
 								}
 								copyButton.enable();
 								var hasClosed = false;
