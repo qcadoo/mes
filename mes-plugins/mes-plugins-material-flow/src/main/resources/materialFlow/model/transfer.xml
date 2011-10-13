@@ -35,10 +35,16 @@
 		<date name="date" />
 		<belongsTo name="stockAreasFrom" model="stockAreas" plugin="materialFlow" />
 		<belongsTo name="stockAreasTo" model="stockAreas" plugin="materialFlow" />
-		<belongsTo name="product" model="product" plugin="basic" required="true"/>
-		<decimal name="quantity" required="true"/>
+		<belongsTo name="product" model="product" plugin="basic" />
+		<!--
+		  required="true"/>
+		 -->
+		<decimal name="quantity" />
+		<!--  required="true"/>
+		 -->
 		<belongsTo name="staff" model="staff" plugin="basic" />
-		<belongsTo name="transformations" plugin="materialFlow" model="transformations" lazy="false"/>
+		<belongsTo name="transformationsConsumption" plugin="materialFlow" model="transformations" />
+		<belongsTo name="transformationsProduction" plugin="materialFlow" model="transformations" />
 	</fields>
 	<hooks>
 <!-- 

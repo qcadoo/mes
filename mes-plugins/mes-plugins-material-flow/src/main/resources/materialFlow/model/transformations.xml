@@ -34,10 +34,11 @@
 		<string name="name" required="true">
 		</string>
 		<date name="date" required="true"/>
-		<belongsTo name="stockAreasFrom" model="stockAreas" plugin="materialFlow" />
-		<belongsTo name="stockAreasTo" model="stockAreas" plugin="materialFlow" />
+		<belongsTo name="stockAreasFrom" model="stockAreas" plugin="materialFlow" required="true" />
+		<belongsTo name="stockAreasTo" model="stockAreas" plugin="materialFlow" required="true" />
 		<belongsTo name="staff" model="staff" plugin="basic" />
-		<hasMany name="transfer" plugin="materialFlow" model="transfer" joinField="transformations" />
+		<hasMany name="transfersConsumption" plugin="materialFlow" model="transfer" joinField="transformationsConsumption" />
+		<hasMany name="transfersProduction" plugin="materialFlow" model="transfer" joinField="transformationsProduction" />
 	</fields>
 	<hooks>
 	</hooks>

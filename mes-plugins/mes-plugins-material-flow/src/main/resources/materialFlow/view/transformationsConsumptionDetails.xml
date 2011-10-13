@@ -26,33 +26,18 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="transformationsComponentDetails"
+	name="transformationsConsumptionDetails"
 	modelName="transfer">
 	
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<template name="standardFormTemplate" />
+			<template name="standardFormTemplate" includeItems="navigation.back"/>
 			<group name="actions">
 				<bigButton name="save" icon="saveIcon24.png"
-					action="#{form}.fireEvent(generateIt);" state="enabled" />
+					action="#{form}.fireEvent(fillTransferConsumptionDataFromTransformation);" state="enabled" />
 			</group>
 		</ribbon>
-		<component type="form" name="transformationsComponent" reference="form">
-<!-- 		
-		<script>
-			<![CDATA[
-				var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
-				
-				saveBackRibbonItem.disable();
-				
-				this.addOnChangeListener({
-					onSetValue: function(value) {
-						saveBackRibbonItem.disable();
-					}
-				});
-			]]>
-		</script>
- -->
+		<component type="form" name="transformationsConsumption" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="10"
 				rows="5">
 				<layoutElement column="1" row="1" width="6">
@@ -76,14 +61,11 @@
 					<component type="input" name="quantityUNIT" width="1"
 						defaultEnabled="false" hasLabel="false" reference="quantityUNIT" />
 				</layoutElement>
-				<layoutElement column="1" row="5" width="8">
-					<component type="input" name="stockAreasFrom" reference="stockAreasFrom" />
-				</layoutElement>
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#number" />
-			<listener event="generateIt"
-				class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="getTransformationsData" />
+			<listener event="fillTransferConsumptionDataFromTransformation"
+				class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillTransferConsumptionDataFromTransformation" />
 		</component>
 	</component>
 </view>

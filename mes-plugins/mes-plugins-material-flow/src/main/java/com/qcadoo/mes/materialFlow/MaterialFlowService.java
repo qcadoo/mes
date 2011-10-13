@@ -289,10 +289,41 @@ public class MaterialFlowService {
         return productsFromTransfers;
     }
     
-    public void getTransformationsData(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
-        FieldComponent number = (FieldComponent) state.getComponentByReference("number");
-        number.setFieldValue("252");
+    public void fillTransferConsumptionDataFromTransformation(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+        String number = state.getComponentByReference("number").getFieldValue().toString();
+        componentState.performEvent(state, "save", new String[0]); // saving it to get related transformation
         
+        DataDefinition transferDataDefinition = dataDefinitionService.get("materialFlow", "transfer");
+        Long id = transferDataDefinition.find("where number = '" + number + "'").uniqueResult().getId(); // get id of created transfer
         
+        Entity transferCopy = transferDataDefinition.get(id); // get transfer to fill it's data
+        
+        Entity transformation = transferCopy.getBelongsToField("transformationsConsumption");
+        transferCopy.setField("type", "Consumption");
+        transferCopy.setField("date", transformation.getField("date"));
+        transferCopy.setField("stockAreasFrom", transformation.getField("stockAreasFrom"));
+        transferCopy.setField("stockAreasTo", transformation.getField("stockAreasTo"));
+        transferCopy.setField("staff", transformation.getField("staff"));
+        
+        transferDataDefinition.save(transferCopy);
+    }
+    
+    public void fillTransferProductionDataFromTransformation(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+        String number = state.getComponentByReference("number").getFieldValue().toString();
+        componentState.performEvent(state, "save", new String[0]); // saving it to get related transformation
+        
+        DataDefinition transferDataDefinition = dataDefinitionService.get("materialFlow", "transfer");
+        Long id = transferDataDefinition.find("where number = '" + number + "'").uniqueResult().getId(); // get id of created transfer
+        
+        Entity transferCopy = transferDataDefinition.get(id); // get transfer to fill it's data
+        
+        Entity transformation = transferCopy.getBelongsToField("transformationsProduction");
+        transferCopy.setField("type", "Production");
+        transferCopy.setField("date", transformation.getField("date"));
+        transferCopy.setField("stockAreasFrom", transformation.getField("stockAreasFrom"));
+        transferCopy.setField("stockAreasTo", transformation.getField("stockAreasTo"));
+        transferCopy.setField("staff", transformation.getField("staff"));
+        
+        transferDataDefinition.save(transferCopy);
     }
 }

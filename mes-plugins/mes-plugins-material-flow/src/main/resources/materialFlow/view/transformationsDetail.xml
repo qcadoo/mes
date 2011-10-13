@@ -49,14 +49,14 @@
 				</layoutElement>
 				<layoutElement column="1" row="4" width="1" height="5">
 					<component type="grid" name="transformationsConsumption"
-						reference="transformationsConsumption" source="#{form}.transfer">
+						reference="transformationsConsumption" source="#{form}.transfersConsumption">
 						<option type="column" name="number" fields="number"
 							expression="#number" width="2" />
 						<option type="column" name="product" fields="product"
 							width="3" expression="#product==null?'N/A':#product['name']"/>
 						<option type="column" name="quantity" fields="quantity" width="2" /> 
 						<option type="order" column="number" direction="desc" />
-						<option type="correspondingView" value="materialFlow/transformationsComponentDetails" />
+						<option type="correspondingView" value="materialFlow/transformationsConsumptionDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 						<option type="paginable" value="false" />
@@ -90,13 +90,16 @@
 						<option type="fieldCode" value="name" />
 					</component>
 				</layoutElement>
-				<!-- <layoutElement column="2" row="4" width="1" height="5">
+				<layoutElement column="2" row="4" width="1" height="5">
 					<component type="grid" name="transformationsProduction"
-						reference="transformationsProduction" source="#{form}.transfer">
+						reference="transformationsProduction" source="#{form}.transfersProduction">
 						<option type="column" name="number" fields="number"
-							expression="#number" width="20" />
+							expression="#number" width="2" />
+						<option type="column" name="product" fields="product"
+							width="3" expression="#product==null?'N/A':#product['name']"/>
+						<option type="column" name="quantity" fields="quantity" width="2" /> 
 						<option type="order" column="number" direction="desc" />
-						<option type="correspondingView" value="materialFlow/transformationsComponentDetails" />
+						<option type="correspondingView" value="materialFlow/transformationsProductionDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 						<option type="paginable" value="false" />
@@ -104,7 +107,7 @@
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 					</component>
-				</layoutElement>  -->
+				</layoutElement>
 			</component>
 			<option type="header" value="true" />
 		</component>
