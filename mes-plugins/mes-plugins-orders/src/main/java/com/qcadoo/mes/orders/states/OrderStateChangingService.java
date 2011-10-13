@@ -38,7 +38,7 @@ public class OrderStateChangingService {
         if (shift != null)
             logging.setField("shift", shift);
         else
-            throw new IllegalStateException();
+            logging.setField("shift", null);
         logging.setField("worker", securityService.getCurrentUserName());
         logging.setField("dateAndTime", dateTime);
 

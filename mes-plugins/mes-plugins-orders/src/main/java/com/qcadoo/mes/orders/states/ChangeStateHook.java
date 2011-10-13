@@ -30,13 +30,15 @@ public class ChangeStateHook {
         Entity oldEntity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 newEntity.getId());
 
-        if (oldEntity != null && oldEntity.getField("state").equals(newEntity.getField("state"))) {
+        if (oldEntity == null) {
+            return;
+        }
+        if (oldEntity.getStringField("state").equals(newEntity.getStringField("state"))) {
             return;
         }
         ChangeOrderStateError error = orderStatesService.performChangeState(newEntity, oldEntity);
         if (error != null) {
             newEntity.setField("state", oldEntity.getStringField("state"));
-
             newEntity.addGlobalError(error.getMessage() + "." + error.getReferenceToField());
             return;
         }
