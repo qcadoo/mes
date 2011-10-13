@@ -56,7 +56,7 @@
 			<plugin>orders</plugin>
 		</dependency>
 		<dependency>
-			<plugin>material-flow</plugin>
+			<plugin>materialFlow</plugin>
 		</dependency>
 		<dependency>
 			<plugin>materialRequirements</plugin>
