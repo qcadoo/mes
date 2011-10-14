@@ -2,6 +2,8 @@ package com.qcadoo.mes.orders.states;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,10 +38,12 @@ public class ChangeStateHook {
         if (oldEntity.getStringField("state").equals(newEntity.getStringField("state"))) {
             return;
         }
-        ChangeOrderStateMessage error = orderStatesService.performChangeState(newEntity, oldEntity);
-        if (error != null) {
+        List<ChangeOrderStateMessage> errors = orderStatesService.performChangeState(newEntity, oldEntity);
+        if (errors != null && errors.size() > 0) {
             newEntity.setField("state", oldEntity.getStringField("state"));
-            newEntity.addGlobalError(error.getMessage() + "." + error.getReferenceToField());
+            for (ChangeOrderStateMessage error : errors) {
+                newEntity.addGlobalError(error.getMessage() + "." + error.getReferenceToField());
+            }
             return;
         }
 

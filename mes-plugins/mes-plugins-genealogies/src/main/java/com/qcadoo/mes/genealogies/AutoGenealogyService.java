@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.genealogies;
 
-import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +39,8 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
+import com.qcadoo.mes.orders.states.OrderStateListener;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -52,7 +54,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public class AutoGenealogyService {
+public class AutoGenealogyService extends OrderStateListener {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -69,46 +71,67 @@ public class AutoGenealogyService {
     @Autowired
     private PluginAccessor pluginAccessor;
 
-    @Transactional(propagation = REQUIRES_NEW)
-    public void generateGenalogyOnChangeOrderStatusForDone(final ViewDefinitionState viewDefinitionState,
-            final ComponentState state, final String[] args) {
-        if (state.getFieldValue() instanceof Long) {
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                    (Long) state.getFieldValue());
-            if (order == null) {
-                state.addMessage(
-                        translationService.translate("qcadooView.message.entityNotFound", viewDefinitionState.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                boolean inProgressState = Boolean.parseBoolean(args[0]);
-                if (!inProgressState) {
-                    SearchResult searchResult = dataDefinitionService
-                            .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).list();
-                    Entity parameter = null;
-                    if (searchResult.getEntities().size() > 0) {
-                        parameter = searchResult.getEntities().get(0);
-                    }
-                    if (parameter != null) {
-                        if (parameter.getField("batchForDoneOrder").toString().equals("02active")) {
-                            createGenealogy(state, order, false);
-                        } else if (parameter.getField("batchForDoneOrder").toString().equals("03lastUsed")) {
-                            createGenealogy(state, order, true);
-                        }
-                    }
-                }
-            }
-        } else {
-            if (state instanceof FormComponent) {
-                state.addMessage(
-                        translationService.translate("qcadooView.form.entityWithoutIdentifier", viewDefinitionState.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                state.addMessage(
-                        translationService.translate("qcadooView.grid.noRowSelectedError", viewDefinitionState.getLocale()),
-                        MessageType.FAILURE);
-            }
+    // @Transactional(propagation = REQUIRES_NEW)
+    @Override
+    public List<ChangeOrderStateMessage> onCompleted(final Entity newEntity) {
+        checkArgument(newEntity != null, "entity is null");
+        List<ChangeOrderStateMessage> listOfMessage = new ArrayList<ChangeOrderStateMessage>();
+        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
+                .find().setMaxResults(1).list();
+        Entity parameter = null;
+
+        if (searchResult.getEntities().size() > 0) {
+            parameter = searchResult.getEntities().get(0);
         }
+        if (parameter != null) {
+            if (parameter.getField("batchForDoneOrder").toString().equals("02active")) {
+                listOfMessage = createGenealogy(newEntity, false);
+            }
+        } else if (parameter.getField("batchForDoneOrder").toString().equals("03lastUsed")) {
+            listOfMessage = createGenealogy(newEntity, true);
+        }
+        return listOfMessage;
     }
+
+    // public void generateGenalogyOnChangeOrderStatusForDone(final ViewDefinitionState viewDefinitionState,
+    // final ComponentState state, final String[] args) {
+    // if (state.getFieldValue() instanceof Long) {
+    // Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+    // (Long) state.getFieldValue());
+    // if (order == null) {
+    // state.addMessage(
+    // translationService.translate("qcadooView.message.entityNotFound", viewDefinitionState.getLocale()),
+    // MessageType.FAILURE);
+    // } else {
+    // boolean inProgressState = Boolean.parseBoolean(args[0]);
+    // if (!inProgressState) {
+    // SearchResult searchResult = dataDefinitionService
+    // .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).list();
+    // Entity parameter = null;
+    // if (searchResult.getEntities().size() > 0) {
+    // parameter = searchResult.getEntities().get(0);
+    // }
+    // if (parameter != null) {
+    // if (parameter.getField("batchForDoneOrder").toString().equals("02active")) {
+    // createGenealogy(state, order, false);
+    // } else if (parameter.getField("batchForDoneOrder").toString().equals("03lastUsed")) {
+    // createGenealogy(state, order, true);
+    // }
+    // }
+    // }
+    // }
+    // } else {
+    // if (state instanceof FormComponent) {
+    // state.addMessage(
+    // translationService.translate("qcadooView.form.entityWithoutIdentifier", viewDefinitionState.getLocale()),
+    // MessageType.FAILURE);
+    // } else {
+    // state.addMessage(
+    // translationService.translate("qcadooView.grid.noRowSelectedError", viewDefinitionState.getLocale()),
+    // MessageType.FAILURE);
+    // }
+    // }
+    // }
 
     public void fillLastUsedBatchForProduct(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
@@ -143,7 +166,10 @@ public class AutoGenealogyService {
                         translationService.translate("qcadooView.message.entityNotFound", viewDefinitionState.getLocale()),
                         MessageType.FAILURE);
             } else {
-                createGenealogy(state, order, Boolean.parseBoolean(args[0]));
+                List<ChangeOrderStateMessage> listOfMessage = createGenealogy(order, Boolean.parseBoolean(args[0]));
+                for (ChangeOrderStateMessage message : listOfMessage) {
+                    state.addMessage(message.getMessage(), message.getType());
+                }
             }
         } else {
             if (state instanceof FormComponent) {
@@ -203,14 +229,16 @@ public class AutoGenealogyService {
         }
     }
 
-    private void createGenealogy(final ComponentState state, final Entity order, final boolean lastUsedMode) {
+    private List<ChangeOrderStateMessage> createGenealogy(final Entity order, final boolean lastUsedMode) {
         Entity mainProduct = order.getBelongsToField("product");
         Entity technology = order.getBelongsToField("technology");
+        List<ChangeOrderStateMessage> listOfMessage = new ArrayList<ChangeOrderStateMessage>();
         if (mainProduct == null || technology == null) {
-            state.addMessage(
-                    translationService.translate("genealogies.message.autoGenealogy.failure.product", state.getLocale()),
-                    MessageType.INFO);
-            return;
+            listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.failure.product"));
+            // state.addMessage(
+            // translationService.translate("genealogies.message.autoGenealogy.failure.product", state.getLocale()),
+            // MessageType.INFO);
+            return listOfMessage;
         }
         Object mainBatch = null;
         if (lastUsedMode) {
@@ -219,15 +247,18 @@ public class AutoGenealogyService {
             mainBatch = mainProduct.getField("batch");
         }
         if (mainBatch == null) {
-            state.addMessage(
-                    translationService.translate("genealogies.message.autoGenealogy.missingMainBatch", state.getLocale())
-                            + mainProduct.getField("number") + "-" + mainProduct.getField("name"), MessageType.INFO, false);
-            return;
+            listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.missingMainBatch"));
+            // state.addMessage(
+            // translationService.translate("genealogies.message.autoGenealogy.missingMainBatch", state.getLocale())
+            // + mainProduct.getField("number") + "-" + mainProduct.getField("name"), MessageType.INFO, false);
+            return listOfMessage;
         }
         if (checkIfExistGenealogyWithBatch(order, mainBatch.toString())) {
-            state.addMessage(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", state.getLocale())
-                    + " " + mainBatch, MessageType.INFO);
-            return;
+            listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.genealogyExist"));
+            // state.addMessage(translationService.translate("genealogies.message.autoGenealogy.genealogyExist",
+            // state.getLocale())
+            // + " " + mainBatch, MessageType.INFO);
+            return listOfMessage;
         }
         DataDefinition genealogyDef = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
                 GenealogiesConstants.MODEL_GENEALOGY);
@@ -246,21 +277,26 @@ public class AutoGenealogyService {
         if (!genealogy.isValid()) {
             if (!genealogy.getGlobalErrors().isEmpty()) {
                 for (ErrorMessage error : genealogy.getGlobalErrors()) {
-                    StringBuilder message = new StringBuilder(translationService.translate(error.getMessage(), state.getLocale()));
+                    StringBuilder message = new StringBuilder(error.getMessage());
                     for (String var : error.getVars()) {
                         message.append("\n" + var);
                     }
-                    state.addMessage(message.toString(), MessageType.INFO, false);
+                    listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.genealogyExist"));
+                    // state.addMessage(message.toString(), MessageType.INFO, false);
                 }
             } else {
-                state.addMessage(translationService.translate("genealogies.message.autoGenealogy.failure", state.getLocale()),
-                        MessageType.INFO);
+                listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.failure"));
+                // state.addMessage(translationService.translate("genealogies.message.autoGenealogy.failure", state.getLocale()),
+                // MessageType.INFO);
             }
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         } else {
-            state.addMessage(translationService.translate("genealogies.message.autoGenealogy.success", state.getLocale()),
-                    MessageType.SUCCESS);
+            listOfMessage.add(ChangeOrderStateMessage.success("genealogies.message.autoGenealogy.success"));
+            // state.addMessage(translationService.translate("genealogies.message.autoGenealogy.success", state.getLocale()),
+            // MessageType.SUCCESS);
         }
+
+        return listOfMessage;
     }
 
     private boolean checkIfExistGenealogyWithBatch(final Entity order, final String batch) {

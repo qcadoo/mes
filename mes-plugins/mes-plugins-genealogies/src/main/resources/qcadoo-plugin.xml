@@ -38,7 +38,9 @@
        http://schema.qcadoo.org/modules/localization
        http://schema.qcadoo.org/modules/localization.xsd
        http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>MES - Genealogies</name>
@@ -57,6 +59,8 @@
 
 
 	<modules>
+<!-- 		<custom:custom class="com.qcadoo.mes.samples.SamplesLoaderModule" /> -->
+				
 		<localization:translation path="locales" />
 
 		<model:model model="currentAttribute" resource="model/currentAttribute.xml" />

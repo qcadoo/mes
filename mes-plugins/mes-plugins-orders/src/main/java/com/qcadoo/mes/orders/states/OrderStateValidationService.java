@@ -2,6 +2,7 @@ package com.qcadoo.mes.orders.states;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -70,12 +71,11 @@ public class OrderStateValidationService {
 
     private List<ChangeOrderStateMessage> checkValidation(final List<String> references, final Entity entity) {
         checkArgument(entity != null, "entity is null");
-        List<ChangeOrderStateMessage> error = null;
+        List<ChangeOrderStateMessage> errors = new ArrayList<ChangeOrderStateMessage>();
         for (String reference : references)
             if (entity.getField(reference) == null) {
-                error.equals("orders.order.orderStates.fieldRequired", reference);
-                return error;
+                errors.add(ChangeOrderStateMessage.error("orders.order.orderStates.fieldRequired", reference));
             }
-        return null;
+        return errors;
     }
 }

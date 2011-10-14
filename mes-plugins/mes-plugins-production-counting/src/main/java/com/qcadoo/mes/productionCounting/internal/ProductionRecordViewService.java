@@ -278,7 +278,8 @@ public class ProductionRecordViewService {
 
     public void checkOrderState(final ViewDefinitionState viewDefinitionState) {
         FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
-        if ("03inProgress".equals(orderState.getFieldValue()) || "04completed".equals(orderState.getFieldValue())) {
+        if ("03inProgress".equals(orderState.getFieldValue()) || "04completed".equals(orderState.getFieldValue())
+                || "06interrupted".equals(orderState.getFieldValue())) {
             for (String componentName : Arrays.asList("typeOfProductionRecording", "registerQuantityInProduct",
                     "registerQuantityOutProduct", "registerProductionTime", "justOne", "allowToClose", "autoCloseOrder")) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
