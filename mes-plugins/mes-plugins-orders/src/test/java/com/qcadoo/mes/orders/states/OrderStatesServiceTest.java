@@ -35,7 +35,7 @@ import com.qcadoo.view.api.components.GridComponent;
 
 public class OrderStatesServiceTest {
 
-    private OrderStatesService orderStatesViewService;
+    private OrderStatesService orderStatesService;
 
     private ViewDefinitionState view;
 
@@ -73,7 +73,7 @@ public class OrderStatesServiceTest {
 
     @Before
     public void init() {
-        orderStatesViewService = new OrderStatesService();
+        orderStatesService = new OrderStatesService();
 
         order = mock(Entity.class);
         view = mock(ViewDefinitionState.class);
@@ -127,16 +127,16 @@ public class OrderStatesServiceTest {
                 "technology")) {
             when(view.getComponentByReference(reference)).thenReturn(field);
         }
-        setField(orderStatesViewService, "dataDefinitionService", dataDefinitionService);
-        setField(orderStatesViewService, "translationService", translationService);
-        setField(orderStatesViewService, "pluginAccessor", pluginAccessor);
+        setField(orderStatesService, "dataDefinitionService", dataDefinitionService);
+        setField(orderStatesService, "translationService", translationService);
+        setField(orderStatesService, "pluginAccessor", pluginAccessor);
     }
 
     @Test
     public void shouldChangeOrderStateToAccepted() throws Exception {
         // when
 
-        orderStatesViewService.changeOrderStateToAccepted(view, state, new String[0]);
+        orderStatesService.changeOrderStateToAccepted(view, state, new String[0]);
     }
 
     @Test
@@ -146,7 +146,7 @@ public class OrderStatesServiceTest {
         given(view.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
         when(view.getComponentByReference("doneQuantity")).thenReturn(field);
         // when
-        orderStatesViewService.changeOrderStateToInProgress(view, state, new String[0]);
+        orderStatesService.changeOrderStateToInProgress(view, state, new String[0]);
 
     }
 
@@ -157,7 +157,7 @@ public class OrderStatesServiceTest {
         given(view.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
         when(view.getComponentByReference("doneQuantity")).thenReturn(field);
         // when
-        orderStatesViewService.changeOrderStateToInProgress(view, state, new String[0]);
+        orderStatesService.changeOrderStateToInProgress(view, state, new String[0]);
     }
 
     @Test
@@ -168,7 +168,7 @@ public class OrderStatesServiceTest {
         when(dataDefinitionForBasic.find()).thenReturn(searchCriteriaBuilder);
         when(searchCriteriaBuilder.setMaxResults(1)).thenReturn(searchCriteriaBuilder);
         when(searchCriteriaBuilder.list()).thenReturn(searchResult);
-        orderStatesViewService.changeOrderStateToCompleted(view, state, new String[0]);
+        orderStatesService.changeOrderStateToCompleted(view, state, new String[0]);
     }
 
     @Test
@@ -176,7 +176,7 @@ public class OrderStatesServiceTest {
         // given
         given(order.getStringField("state")).willReturn(OrderStates.PENDING.getStringValue());
         // when
-        orderStatesViewService.changeOrderStateToDeclined(view, state, new String[0]);
+        orderStatesService.changeOrderStateToDeclined(view, state, new String[0]);
     }
 
     @Test
@@ -184,7 +184,7 @@ public class OrderStatesServiceTest {
         // given
         given(order.getStringField("state")).willReturn(OrderStates.ACCEPTED.getStringValue());
         // when
-        orderStatesViewService.changeOrderStateToDeclined(view, state, new String[0]);
+        orderStatesService.changeOrderStateToDeclined(view, state, new String[0]);
     }
 
     @Test
@@ -192,7 +192,7 @@ public class OrderStatesServiceTest {
         // given
         given(order.getStringField("state")).willReturn(OrderStates.IN_PROGRESS.getStringValue());
         // when
-        orderStatesViewService.changeOrderStateToAbandoned(view, state, new String[0]);
+        orderStatesService.changeOrderStateToAbandoned(view, state, new String[0]);
     }
 
     @Test
@@ -200,25 +200,25 @@ public class OrderStatesServiceTest {
         // given
         given(order.getStringField("state")).willReturn(OrderStates.INTERRUPTED.getStringValue());
         // when
-        orderStatesViewService.changeOrderStateToAbandoned(view, state, new String[0]);
+        orderStatesService.changeOrderStateToAbandoned(view, state, new String[0]);
     }
 
     @Test
     public void shouldChangeOrderStateToInterrupted() throws Exception {
         // when
-        orderStatesViewService.changeOrderStateToInterrupted(view, state, new String[0]);
+        orderStatesService.changeOrderStateToInterrupted(view, state, new String[0]);
     }
 
     @Test
     public void shouldChangeOrderStateToAcceptedForGrid() throws Exception {
         // when
-        orderStatesViewService.changeOrderStateToAcceptedForGrid(view, state, new String[0]);
+        orderStatesService.changeOrderStateToAcceptedForGrid(view, state, new String[0]);
     }
 
     @Test
     public void shouldChangeOrderStateToInProgressForGrid() throws Exception {
         // when
-        orderStatesViewService.changeOrderStateToInProgressForGrid(view, state, new String[0]);
+        orderStatesService.changeOrderStateToInProgressForGrid(view, state, new String[0]);
         // then
     }
 
@@ -228,25 +228,25 @@ public class OrderStatesServiceTest {
         when(dataDefinitionForBasic.find()).thenReturn(searchCriteriaBuilder);
         when(searchCriteriaBuilder.setMaxResults(1)).thenReturn(searchCriteriaBuilder);
         when(searchCriteriaBuilder.list()).thenReturn(searchResult);
-        orderStatesViewService.changeOrderStateToCompletedForGrid(view, state, new String[0]);
+        orderStatesService.changeOrderStateToCompletedForGrid(view, state, new String[0]);
     }
 
     @Test
     public void shouldChangeOrderStateToDeclinedForGrid() throws Exception {
         // when
-        orderStatesViewService.changeOrderStateToDeclinedForGrid(view, state, new String[0]);
+        orderStatesService.changeOrderStateToDeclinedForGrid(view, state, new String[0]);
     }
 
     @Test
     public void shouldChangeOrderStateToAbandonedForGrid() throws Exception {
         // when
-        orderStatesViewService.changeOrderStateToAbandonedForGrid(view, state, new String[0]);
+        orderStatesService.changeOrderStateToAbandonedForGrid(view, state, new String[0]);
     }
 
     @Test
     public void shouldChangeOrderStateToInterruptedForGrid() throws Exception {
         // when
-        orderStatesViewService.changeOrderStateToInterruptedForGrid(view, state, new String[0]);
+        orderStatesService.changeOrderStateToInterruptedForGrid(view, state, new String[0]);
     }
 
 }
