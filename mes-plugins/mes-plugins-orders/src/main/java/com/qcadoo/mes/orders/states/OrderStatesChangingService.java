@@ -27,7 +27,7 @@ public class OrderStatesChangingService {
         listeners.remove(listener);
     }
 
-    ChangeOrderStateMessage performChangeState(final Entity newEntity, final Entity oldEntity) {
+    List<ChangeOrderStateMessage> performChangeState(final Entity newEntity, final Entity oldEntity) {
         if (oldEntity == null && !newEntity.getStringField("state").equals("pending")) {
             throw new IllegalStateException();
         }
@@ -57,7 +57,7 @@ public class OrderStatesChangingService {
         return null;
     }
 
-    ChangeOrderStateMessage globalValidation(final Entity newEntity) {
+    List<ChangeOrderStateMessage> globalValidation(final Entity newEntity) {
         ChangeOrderStateMessage error = null;
         for (String reference : Arrays.asList("number", "name")) {
             if (newEntity.getStringField(reference) == null) {
@@ -68,8 +68,8 @@ public class OrderStatesChangingService {
         return null;
     }
 
-    ChangeOrderStateMessage performAccepted(final Entity newEntity, final Entity oldEntity) {
-        ChangeOrderStateMessage errorMessage = orderStateChangingService.validationAccepted(newEntity);
+    List<ChangeOrderStateMessage> performAccepted(final Entity newEntity, final Entity oldEntity) {
+        List<ChangeOrderStateMessage> errorMessage = orderStateChangingService.validationAccepted(newEntity);
         if (errorMessage != null) {
             return errorMessage;
         }
@@ -82,8 +82,8 @@ public class OrderStatesChangingService {
         return null;
     }
 
-    ChangeOrderStateMessage performInProgress(final Entity newEntity, final Entity oldEntity) {
-        ChangeOrderStateMessage errorMessage = orderStateChangingService.validationInProgress(newEntity);
+    List<ChangeOrderStateMessage> performInProgress(final Entity newEntity, final Entity oldEntity) {
+        List<ChangeOrderStateMessage> errorMessage = orderStateChangingService.validationInProgress(newEntity);
         if (errorMessage != null) {
             return errorMessage;
         }
@@ -96,8 +96,8 @@ public class OrderStatesChangingService {
         return null;
     }
 
-    ChangeOrderStateMessage performCompleted(final Entity newEntity, final Entity oldEntity) {
-        ChangeOrderStateMessage errorMessage = orderStateChangingService.validationCompleted(newEntity);
+    List<ChangeOrderStateMessage> performCompleted(final Entity newEntity, final Entity oldEntity) {
+        List<ChangeOrderStateMessage> errorMessage = orderStateChangingService.validationCompleted(newEntity);
         if (errorMessage != null) {
             return errorMessage;
         }
@@ -110,9 +110,9 @@ public class OrderStatesChangingService {
         return null;
     }
 
-    ChangeOrderStateMessage performInterrupted(final Entity newEntity, final Entity oldEntity) {
+    List<ChangeOrderStateMessage> performInterrupted(final Entity newEntity, final Entity oldEntity) {
         for (OrderStateListener listener : listeners) {
-            ChangeOrderStateMessage errorMessage = listener.onInterrupted(newEntity);
+            List<ChangeOrderStateMessage> errorMessage = listener.onInterrupted(newEntity);
             if (errorMessage != null) {
                 return errorMessage;
             }
@@ -120,9 +120,9 @@ public class OrderStatesChangingService {
         return null;
     }
 
-    ChangeOrderStateMessage performDeclined(final Entity newEntity, final Entity oldEntity) {
+    List<ChangeOrderStateMessage> performDeclined(final Entity newEntity, final Entity oldEntity) {
         for (OrderStateListener listener : listeners) {
-            ChangeOrderStateMessage errorMessage = listener.onDeclined(newEntity);
+            List<ChangeOrderStateMessage> errorMessage = listener.onDeclined(newEntity);
             if (errorMessage != null) {
                 return errorMessage;
             }
@@ -130,9 +130,9 @@ public class OrderStatesChangingService {
         return null;
     }
 
-    ChangeOrderStateMessage performAbandoned(final Entity newEntity, final Entity oldEntity) {
+    List<ChangeOrderStateMessage> performAbandoned(final Entity newEntity, final Entity oldEntity) {
         for (OrderStateListener listener : listeners) {
-            ChangeOrderStateMessage errorMessage = listener.onDeclined(newEntity);
+            List<ChangeOrderStateMessage> errorMessage = listener.onDeclined(newEntity);
             if (errorMessage != null) {
                 return errorMessage;
             }

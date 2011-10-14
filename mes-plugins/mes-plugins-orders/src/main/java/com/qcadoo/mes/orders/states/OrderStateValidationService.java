@@ -14,7 +14,6 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.view.api.ComponentState.MessageType;
 
 @Service
 public class OrderStateValidationService {
@@ -46,35 +45,35 @@ public class OrderStateValidationService {
         logging.getDataDefinition().save(logging);
     }
 
-    public ChangeOrderStateMessage validationPending(final Entity entity) {
+    public List<ChangeOrderStateMessage> validationPending(final Entity entity) {
         checkArgument(entity != null, "entity is null");
         List<String> references = Arrays.asList("product", "plannedQuantity");
         return checkValidation(references, entity);
     }
 
-    public ChangeOrderStateMessage validationAccepted(final Entity entity) {
+    public List<ChangeOrderStateMessage> validationAccepted(final Entity entity) {
         checkArgument(entity != null, "entity is null");
         List<String> references = Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "technology");
         return checkValidation(references, entity);
     }
 
-    public ChangeOrderStateMessage validationInProgress(final Entity entity) {
+    public List<ChangeOrderStateMessage> validationInProgress(final Entity entity) {
         checkArgument(entity != null, "entity is null");
         return validationAccepted(entity);
     }
 
-    public ChangeOrderStateMessage validationCompleted(final Entity entity) {
+    public List<ChangeOrderStateMessage> validationCompleted(final Entity entity) {
         checkArgument(entity != null, "entity is null");
         List<String> references = Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "technology", "doneQuantity");
         return checkValidation(references, entity);
     }
 
-    private ChangeOrderStateMessage checkValidation(final List<String> references, final Entity entity) {
+    private List<ChangeOrderStateMessage> checkValidation(final List<String> references, final Entity entity) {
         checkArgument(entity != null, "entity is null");
-        ChangeOrderStateMessage error = null;
+        List<ChangeOrderStateMessage> error = null;
         for (String reference : references)
             if (entity.getField(reference) == null) {
-                error = new ChangeOrderStateMessage("orders.order.orderStates.fieldRequired", reference, MessageType.FAILURE);
+                error.equals("orders.order.orderStates.fieldRequired", reference);
                 return error;
             }
         return null;
