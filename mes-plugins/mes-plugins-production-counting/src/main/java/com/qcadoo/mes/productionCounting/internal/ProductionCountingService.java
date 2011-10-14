@@ -193,7 +193,7 @@ public class ProductionCountingService {
                         MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo(
-                        "/productionCounting/productionCounting." + args[0] + "?id=" + state.getFieldValue(), false, false);
+                        "/productionCounting/productionCounting." + args[0] + "?id=" + state.getFieldValue(), true, false);
             }
         } else {
             if (state instanceof FormComponent) {

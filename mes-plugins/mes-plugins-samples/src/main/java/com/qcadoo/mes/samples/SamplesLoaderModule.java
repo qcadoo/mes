@@ -640,8 +640,7 @@ public class SamplesLoaderModule extends Module {
                     + ", dateFrom=" + order.getField("dateFrom") + ", dateTo=" + order.getField("dateTo")
                     + ", effectiveDateFrom=" + order.getField("effectiveDateFrom") + ", effectiveDateTo="
                     + order.getField("effectiveDateTo") + ", doneQuantity=" + order.getField("doneQuantity")
-                    + ", plannedQuantity=" + order.getField("plannedQuantity") + ", state=" + order.getField("state")
-                    + ", startWorker=" + order.getField("startWorker") + ", endWorker=" + order.getField("endWorker") + "}");
+                    + ", plannedQuantity=" + order.getField("plannedQuantity") + ", state=" + order.getField("state") + "}");
         }
 
         order = dataDefinitionService.get("orders", "order").save(order);

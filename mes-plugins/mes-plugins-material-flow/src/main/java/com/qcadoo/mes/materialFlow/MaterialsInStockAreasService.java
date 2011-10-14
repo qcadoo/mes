@@ -273,7 +273,7 @@ public class MaterialsInStockAreasService {
                                 "materialFlow.materialsInStockAreasDetails.window.materialRequirement.documentsWasNotGenerated",
                                 state.getLocale()), MessageType.FAILURE);
             } else {
-                viewDefinitionState.redirectTo("/materialFlow/materialsInStockAreas." + args[0] + "?id=" + state.getFieldValue(), false,
+                viewDefinitionState.redirectTo("/materialFlow/materialsInStockAreas." + args[0] + "?id=" + state.getFieldValue(), true,
                         false);
             }
         } else {
