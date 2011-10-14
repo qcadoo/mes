@@ -37,7 +37,7 @@ public class OrderStatesChangingService {
             throw new IllegalStateException();
         }
         List<ChangeOrderStateMessage> errors = globalValidation(newEntity);
-        if (errors != null) {
+        if (errors != null && errors.size() > 0) {
             return errors;
         }
         String newState = newEntity.getStringField("state");
@@ -70,12 +70,12 @@ public class OrderStatesChangingService {
 
     List<ChangeOrderStateMessage> performAccepted(final Entity newEntity, final Entity oldEntity) {
         List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationAccepted(newEntity);
-        if (errorMessages != null) {
+        if (errorMessages != null && errorMessages.size() > 0) {
             return errorMessages;
         }
         for (OrderStateListener listener : listeners) {
             errorMessages = listener.onAccepted(newEntity);
-            if (errorMessages != null) {
+            if (errorMessages != null && errorMessages.size() > 0) {
                 return errorMessages;
             }
         }
@@ -84,12 +84,12 @@ public class OrderStatesChangingService {
 
     List<ChangeOrderStateMessage> performInProgress(final Entity newEntity, final Entity oldEntity) {
         List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationInProgress(newEntity);
-        if (errorMessages != null) {
+        if (errorMessages != null && errorMessages.size() > 0) {
             return errorMessages;
         }
         for (OrderStateListener listener : listeners) {
             errorMessages = listener.onInProgress(newEntity);
-            if (errorMessages != null) {
+            if (errorMessages != null && errorMessages.size() > 0) {
                 return errorMessages;
             }
         }
@@ -98,12 +98,12 @@ public class OrderStatesChangingService {
 
     List<ChangeOrderStateMessage> performCompleted(final Entity newEntity, final Entity oldEntity) {
         List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationCompleted(newEntity);
-        if (errorMessages != null) {
+        if (errorMessages != null && errorMessages.size() > 0) {
             return errorMessages;
         }
         for (OrderStateListener listener : listeners) {
             errorMessages = listener.onCompleted(newEntity);
-            if (errorMessages != null) {
+            if (errorMessages != null && errorMessages.size() > 0) {
                 return errorMessages;
             }
         }
@@ -113,7 +113,7 @@ public class OrderStatesChangingService {
     List<ChangeOrderStateMessage> performInterrupted(final Entity newEntity, final Entity oldEntity) {
         for (OrderStateListener listener : listeners) {
             List<ChangeOrderStateMessage> errorMessages = listener.onInterrupted(newEntity);
-            if (errorMessages != null) {
+            if (errorMessages != null && errorMessages.size() > 0) {
                 return errorMessages;
             }
         }
@@ -123,7 +123,7 @@ public class OrderStatesChangingService {
     List<ChangeOrderStateMessage> performDeclined(final Entity newEntity, final Entity oldEntity) {
         for (OrderStateListener listener : listeners) {
             List<ChangeOrderStateMessage> errorMessages = listener.onDeclined(newEntity);
-            if (errorMessages != null) {
+            if (errorMessages != null && errorMessages.size() > 0) {
                 return errorMessages;
             }
         }
@@ -133,7 +133,7 @@ public class OrderStatesChangingService {
     List<ChangeOrderStateMessage> performAbandoned(final Entity newEntity, final Entity oldEntity) {
         for (OrderStateListener listener : listeners) {
             List<ChangeOrderStateMessage> errorMessages = listener.onDeclined(newEntity);
-            if (errorMessages != null) {
+            if (errorMessages != null && errorMessages.size() > 0) {
                 return errorMessages;
             }
         }
