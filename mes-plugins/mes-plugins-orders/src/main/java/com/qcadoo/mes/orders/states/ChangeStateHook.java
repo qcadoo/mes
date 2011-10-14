@@ -14,10 +14,10 @@ import com.qcadoo.model.api.Entity;
 public class ChangeStateHook {
 
     @Autowired
-    private OrderStatesService orderStatesService;
+    private OrderStatesChangingService orderStatesService;
 
     @Autowired
-    private OrderStateChangingService orderStateChangingService;
+    private OrderStateValidationService orderStateChangingService;
 
     @Autowired
     DataDefinitionService dataDefinitionService;
@@ -36,7 +36,7 @@ public class ChangeStateHook {
         if (oldEntity.getStringField("state").equals(newEntity.getStringField("state"))) {
             return;
         }
-        ChangeOrderStateError error = orderStatesService.performChangeState(newEntity, oldEntity);
+        ChangeOrderStateMessage error = orderStatesService.performChangeState(newEntity, oldEntity);
         if (error != null) {
             newEntity.setField("state", oldEntity.getStringField("state"));
             newEntity.addGlobalError(error.getMessage() + "." + error.getReferenceToField());

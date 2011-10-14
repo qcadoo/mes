@@ -7,31 +7,31 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class OrderStateListener {
 
-    public ChangeOrderStateError onPending(final Entity newEntity) {
+    public ChangeOrderStateMessage onPending(final Entity newEntity) {
         return null;
     }
 
-    public ChangeOrderStateError onAccepted(final Entity newEntity) {
+    public ChangeOrderStateMessage onAccepted(final Entity newEntity) {
         return null;
     }
 
-    public ChangeOrderStateError onInProgress(final Entity newEntity) {
+    public ChangeOrderStateMessage onInProgress(final Entity newEntity) {
         return null;
     }
 
-    public ChangeOrderStateError onCompleted(final Entity newEntity) {
+    public ChangeOrderStateMessage onCompleted(final Entity newEntity) {
         return null;
     }
 
-    public ChangeOrderStateError onDeclined(final Entity newEntity) {
+    public ChangeOrderStateMessage onDeclined(final Entity newEntity) {
         return null;
     }
 
-    public ChangeOrderStateError onInterrupted(final Entity newEntity) {
+    public ChangeOrderStateMessage onInterrupted(final Entity newEntity) {
         return null;
     }
 
-    public ChangeOrderStateError onAbandoned(final Entity newEntity) {
+    public ChangeOrderStateMessage onAbandoned(final Entity newEntity) {
         return null;
     }
 

@@ -273,17 +273,17 @@
 					<filterRestriction column="dateFrom" value="@{tomorrow}" />
 				</predefinedFilter>
 			</predefinedFilters>
-			<listener event="changeOrderStateToAcceptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+			<listener event="changeOrderStateToAcceptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
 				method="changeOrderStateToAcceptedForGrid" />
-			<listener event="changeOrderStateToInProgressForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+			<listener event="changeOrderStateToInProgressForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
 				method="changeOrderStateToInProgressForGrid" />
-			<listener event="changeOrderStateToCompletedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+			<listener event="changeOrderStateToCompletedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
 				method="changeOrderStateToCompletedForGrid" />
-			<listener event="changeOrderStateToDeclinedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+			<listener event="changeOrderStateToDeclinedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
 				method="changeOrderStateToDeclinedForGrid" />
-			<listener event="changeOrderStateToAbandonedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+			<listener event="changeOrderStateToAbandonedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
 				method="changeOrderStateToAbandonedForGrid" />
-			<listener event="changeOrderStateToInterruptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+			<listener event="changeOrderStateToInterruptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
 				method="changeOrderStateToInterruptedForGrid" />
 		</component>
 		<option type="fixedHeight" value="true" />

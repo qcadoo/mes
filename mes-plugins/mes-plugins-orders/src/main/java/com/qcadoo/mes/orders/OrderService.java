@@ -26,9 +26,7 @@ package com.qcadoo.mes.orders;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,7 +75,8 @@ public final class OrderService {
     @Autowired
     private ExpressionService expressionService;
 
-    private final Set<BeforeChangeStateListener> beforeChangeStateListeners = new HashSet<OrderService.BeforeChangeStateListener>();
+    // private final Set<BeforeChangeStateListener> beforeChangeStateListeners = new
+    // HashSet<OrderService.BeforeChangeStateListener>();
 
     public boolean clearOrderDatesOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("state", "01pending");
@@ -174,11 +173,11 @@ public final class OrderService {
                 order.setField("externalSynchronized", true);
             }
 
-            for (BeforeChangeStateListener listener : beforeChangeStateListeners) {
-                if (!listener.canChange(state, order, order.getStringField("state"))) {
-                    return;
-                }
-            }
+            // for (BeforeChangeStateListener listener : beforeChangeStateListeners) {
+            // if (!listener.canChange(state, order, order.getStringField("state"))) {
+            // return;
+            // }
+            // }
 
             orderDataDefinition.save(order);
 
@@ -238,11 +237,11 @@ public final class OrderService {
                     externalSynchronized.setFieldValue("true");
                 }
 
-                for (BeforeChangeStateListener listener : beforeChangeStateListeners) {
-                    if (!listener.canChange(state, order, (String) orderState.getFieldValue())) {
-                        return;
-                    }
-                }
+                // for (BeforeChangeStateListener listener : beforeChangeStateListeners) {
+                // if (!listener.canChange(state, order, (String) orderState.getFieldValue())) {
+                // return;
+                // }
+                // }
 
                 state.performEvent(viewDefinitionState, "save", new String[0]);
             }
@@ -587,20 +586,15 @@ public final class OrderService {
         }
     }
 
-    public void registerBeforeChangeStateListener(final BeforeChangeStateListener listener) {
-        beforeChangeStateListeners.add(listener);
-    }
-
-    public static interface BeforeChangeStateListener {
-
-        boolean canChange(ComponentState gridOrForm, Entity order, String state);
-
-    }
-
-    public void checkPlannedDate(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
-            final String[] args) {
-        // TODO ALBR
-    }
+    // public void registerBeforeChangeStateListener(final BeforeChangeStateListener listener) {
+    // beforeChangeStateListeners.add(listener);
+    // }
+    //
+    // public static interface BeforeChangeStateListener {
+    //
+    // boolean canChange(ComponentState gridOrForm, Entity order, String state);
+    //
+    // }
 
     public Date getDateFromField(final Object value) {
         try {
