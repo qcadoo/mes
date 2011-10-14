@@ -16,7 +16,7 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 public class OrderStatesChangingService {
 
     @Autowired
-    OrderStateValidationService orderStateChangingService;
+    OrderStateValidationService orderStateValidationService;
 
     private List<OrderStateListener> listeners = new LinkedList<OrderStateListener>();
 
@@ -69,7 +69,7 @@ public class OrderStatesChangingService {
     }
 
     List<ChangeOrderStateMessage> performAccepted(final Entity newEntity, final Entity oldEntity) {
-        List<ChangeOrderStateMessage> errorMessages = orderStateChangingService.validationAccepted(newEntity);
+        List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationAccepted(newEntity);
         if (errorMessages != null) {
             return errorMessages;
         }
@@ -83,7 +83,7 @@ public class OrderStatesChangingService {
     }
 
     List<ChangeOrderStateMessage> performInProgress(final Entity newEntity, final Entity oldEntity) {
-        List<ChangeOrderStateMessage> errorMessages = orderStateChangingService.validationInProgress(newEntity);
+        List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationInProgress(newEntity);
         if (errorMessages != null) {
             return errorMessages;
         }
@@ -97,7 +97,7 @@ public class OrderStatesChangingService {
     }
 
     List<ChangeOrderStateMessage> performCompleted(final Entity newEntity, final Entity oldEntity) {
-        List<ChangeOrderStateMessage> errorMessages = orderStateChangingService.validationCompleted(newEntity);
+        List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationCompleted(newEntity);
         if (errorMessages != null) {
             return errorMessages;
         }

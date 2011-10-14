@@ -16,10 +16,10 @@ import com.qcadoo.model.api.Entity;
 public class ChangeStateHook {
 
     @Autowired
-    private OrderStatesChangingService orderStatesService;
+    private OrderStatesChangingService orderStatesChangingService;
 
     @Autowired
-    private OrderStateValidationService orderStateChangingService;
+    private OrderStateValidationService orderStateValidationService;
 
     @Autowired
     DataDefinitionService dataDefinitionService;
@@ -38,7 +38,7 @@ public class ChangeStateHook {
         if (oldEntity.getStringField("state").equals(newEntity.getStringField("state"))) {
             return;
         }
-        List<ChangeOrderStateMessage> errors = orderStatesService.performChangeState(newEntity, oldEntity);
+        List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newEntity, oldEntity);
         if (errors != null && errors.size() > 0) {
             newEntity.setField("state", oldEntity.getStringField("state"));
             for (ChangeOrderStateMessage error : errors) {
@@ -47,6 +47,6 @@ public class ChangeStateHook {
             return;
         }
 
-        orderStateChangingService.saveLogging(newEntity, oldEntity.getStringField("state"), newEntity.getStringField("state"));
+        orderStateValidationService.saveLogging(newEntity, oldEntity.getStringField("state"), newEntity.getStringField("state"));
     }
 }

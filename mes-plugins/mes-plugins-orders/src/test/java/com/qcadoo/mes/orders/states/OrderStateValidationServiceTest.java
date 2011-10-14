@@ -22,7 +22,7 @@ import com.qcadoo.security.api.SecurityService;
 
 public class OrderStateValidationServiceTest {
 
-    private OrderStateValidationService orderStateChangingService;
+    private OrderStateValidationService orderStateValidationService;
 
     private DataDefinitionService dataDefinitionService;
 
@@ -44,7 +44,7 @@ public class OrderStateValidationServiceTest {
 
     @Before
     public void init() {
-        orderStateChangingService = new OrderStateValidationService();
+        orderStateValidationService = new OrderStateValidationService();
 
         dataDefinitionService = mock(DataDefinitionService.class);
         securityService = mock(SecurityService.class);
@@ -54,9 +54,9 @@ public class OrderStateValidationServiceTest {
         dataDefinition = mock(DataDefinition.class);
         shift = mock(Entity.class);
 
-        setField(orderStateChangingService, "dataDefinitionService", dataDefinitionService);
-        setField(orderStateChangingService, "securityService", securityService);
-        setField(orderStateChangingService, "shiftsServiceImpl", shiftsServiceImpl);
+        setField(orderStateValidationService, "dataDefinitionService", dataDefinitionService);
+        setField(orderStateValidationService, "securityService", securityService);
+        setField(orderStateValidationService, "shiftsServiceImpl", shiftsServiceImpl);
     }
 
     @Test
@@ -70,7 +70,7 @@ public class OrderStateValidationServiceTest {
         given(securityService.getCurrentUserName()).willReturn("userName");
         given(entity.getDataDefinition()).willReturn(dataDefinition);
 
-        orderStateChangingService.saveLogging(order, previousState, currentState);
+        orderStateValidationService.saveLogging(order, previousState, currentState);
         // then
         verify(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_LOGGING)).create();
         verify(entity).setField("order", order);
@@ -89,37 +89,37 @@ public class OrderStateValidationServiceTest {
         given(shiftsServiceImpl.getShiftFromDate(Mockito.any(Date.class))).willReturn(null);
         given(entity.getDataDefinition()).willReturn(dataDefinition);
 
-        orderStateChangingService.saveLogging(order, previousState, currentState);
+        orderStateValidationService.saveLogging(order, previousState, currentState);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenEntityIsNullValidationPending() throws Exception {
         // when
-        orderStateChangingService.validationPending(null);
+        orderStateValidationService.validationPending(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenEntityIsNullValidationAccepted() throws Exception {
         // when
-        orderStateChangingService.validationAccepted(null);
+        orderStateValidationService.validationAccepted(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenEntityIsNullValidationInProgress() throws Exception {
         // when
-        orderStateChangingService.validationInProgress(null);
+        orderStateValidationService.validationInProgress(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenEntityIsNullValidationCompleted() throws Exception {
         // when
-        orderStateChangingService.validationCompleted(null);
+        orderStateValidationService.validationCompleted(null);
     }
 
     @Test
     public void shouldReturnErrorWhenValidatingAccepted() throws Exception {
         // when
-        orderStateChangingService.validationAccepted(order);
+        orderStateValidationService.validationAccepted(order);
     }
 
     @Test
@@ -127,7 +127,7 @@ public class OrderStateValidationServiceTest {
         // given
         Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
         // when
-        List<ChangeOrderStateMessage> errors = orderStateChangingService.validationAccepted(order);
+        List<ChangeOrderStateMessage> errors = orderStateValidationService.validationAccepted(order);
         // then
         Assert.assertEquals(0, errors.size());
     }
@@ -135,7 +135,7 @@ public class OrderStateValidationServiceTest {
     @Test
     public void shouldReturnErrorWhenValidatingInProgress() throws Exception {
         // when
-        orderStateChangingService.validationInProgress(order);
+        orderStateValidationService.validationInProgress(order);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class OrderStateValidationServiceTest {
         // given
         Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
         // when
-        List<ChangeOrderStateMessage> errors = orderStateChangingService.validationInProgress(order);
+        List<ChangeOrderStateMessage> errors = orderStateValidationService.validationInProgress(order);
         // then
         Assert.assertEquals(0, errors.size());
     }
@@ -151,7 +151,7 @@ public class OrderStateValidationServiceTest {
     @Test
     public void shouldReturnErrorWhenValidatingCompleted() throws Exception {
         // when
-        orderStateChangingService.validationCompleted(order);
+        orderStateValidationService.validationCompleted(order);
     }
 
     @Test
@@ -159,7 +159,7 @@ public class OrderStateValidationServiceTest {
         // given
         Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
         // when
-        List<ChangeOrderStateMessage> errors = orderStateChangingService.validationCompleted(order);
+        List<ChangeOrderStateMessage> errors = orderStateValidationService.validationCompleted(order);
         // then
         Assert.assertEquals(0, errors.size());
     }
@@ -167,7 +167,7 @@ public class OrderStateValidationServiceTest {
     @Test
     public void shouldReturnErrorWhenValidatingPending() throws Exception {
         // when
-        orderStateChangingService.validationPending(order);
+        orderStateValidationService.validationPending(order);
     }
 
     @Test
@@ -175,7 +175,7 @@ public class OrderStateValidationServiceTest {
         // given
         Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
         // when
-        List<ChangeOrderStateMessage> errors = orderStateChangingService.validationPending(order);
+        List<ChangeOrderStateMessage> errors = orderStateValidationService.validationPending(order);
         // then
         Assert.assertEquals(0, errors.size());
     }
