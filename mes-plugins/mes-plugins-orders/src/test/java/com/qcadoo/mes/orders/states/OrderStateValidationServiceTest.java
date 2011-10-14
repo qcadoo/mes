@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -126,10 +127,9 @@ public class OrderStateValidationServiceTest {
         // given
         Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
         // when
-        ChangeOrderStateMessage error = orderStateChangingService.validationAccepted(order);
+        List<ChangeOrderStateMessage> errors = orderStateChangingService.validationAccepted(order);
         // then
-        Assert.assertNull(error);
-
+        Assert.assertEquals(0, errors.size());
     }
 
     @Test
@@ -143,10 +143,9 @@ public class OrderStateValidationServiceTest {
         // given
         Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
         // when
-        ChangeOrderStateMessage error = orderStateChangingService.validationInProgress(order);
+        List<ChangeOrderStateMessage> errors = orderStateChangingService.validationInProgress(order);
         // then
-        Assert.assertNull(error);
-
+        Assert.assertEquals(0, errors.size());
     }
 
     @Test
@@ -160,10 +159,9 @@ public class OrderStateValidationServiceTest {
         // given
         Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
         // when
-        ChangeOrderStateMessage error = orderStateChangingService.validationCompleted(order);
+        List<ChangeOrderStateMessage> errors = orderStateChangingService.validationCompleted(order);
         // then
-        Assert.assertNull(error);
-
+        Assert.assertEquals(0, errors.size());
     }
 
     @Test
@@ -177,9 +175,8 @@ public class OrderStateValidationServiceTest {
         // given
         Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
         // when
-        ChangeOrderStateMessage error = orderStateChangingService.validationPending(order);
+        List<ChangeOrderStateMessage> errors = orderStateChangingService.validationPending(order);
         // then
-        Assert.assertNull(error);
-
+        Assert.assertEquals(0, errors.size());
     }
 }

@@ -76,7 +76,7 @@
 		</model:model-field>
 		<model:model-field plugin="materialFlow" model="stockAreas">
 			<model:hasMany name="simpleMaterialBalance" plugin="simpleMaterialBalance"
-				model="simpleMaterialBalanceStockAreasComponent" joinField="stockAreas" cascade="none" />
+				model="simpleMaterialBalanceStockAreasComponent" joinField="stockAreas" cascade="nullify" />
 		</model:model-field>
 
 		<menu:menu-category name="reports" />

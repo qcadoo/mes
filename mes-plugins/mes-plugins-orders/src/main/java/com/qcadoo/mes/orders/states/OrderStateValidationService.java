@@ -2,6 +2,7 @@ package com.qcadoo.mes.orders.states;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -46,37 +47,36 @@ public class OrderStateValidationService {
         logging.getDataDefinition().save(logging);
     }
 
-    public ChangeOrderStateMessage validationPending(final Entity entity) {
+    public List<ChangeOrderStateMessage> validationPending(final Entity entity) {
         checkArgument(entity != null, "entity is null");
         List<String> references = Arrays.asList("product", "plannedQuantity");
         return checkValidation(references, entity);
     }
 
-    public ChangeOrderStateMessage validationAccepted(final Entity entity) {
+    public List<ChangeOrderStateMessage> validationAccepted(final Entity entity) {
         checkArgument(entity != null, "entity is null");
         List<String> references = Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "technology");
         return checkValidation(references, entity);
     }
 
-    public ChangeOrderStateMessage validationInProgress(final Entity entity) {
+    public List<ChangeOrderStateMessage> validationInProgress(final Entity entity) {
         checkArgument(entity != null, "entity is null");
         return validationAccepted(entity);
     }
 
-    public ChangeOrderStateMessage validationCompleted(final Entity entity) {
+    public List<ChangeOrderStateMessage> validationCompleted(final Entity entity) {
         checkArgument(entity != null, "entity is null");
         List<String> references = Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "technology", "doneQuantity");
         return checkValidation(references, entity);
     }
 
-    private ChangeOrderStateMessage checkValidation(final List<String> references, final Entity entity) {
+    private List<ChangeOrderStateMessage> checkValidation(final List<String> references, final Entity entity) {
         checkArgument(entity != null, "entity is null");
-        ChangeOrderStateMessage error = null;
+        List<ChangeOrderStateMessage> errors = new ArrayList<ChangeOrderStateMessage>();
         for (String reference : references)
             if (entity.getField(reference) == null) {
-                error = new ChangeOrderStateMessage("orders.order.orderStates.fieldRequired", reference, MessageType.FAILURE);
-                return error;
+                errors.add(new ChangeOrderStateMessage("orders.order.orderStates.fieldRequired", reference, MessageType.FAILURE));
             }
-        return null;
+        return errors;
     }
 }
