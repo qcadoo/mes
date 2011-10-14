@@ -1,12 +1,14 @@
 package com.qcadoo.mes.orders.states;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -23,6 +25,9 @@ public class ChangeStateHook {
 
     @Autowired
     DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TranslationService translationService;
 
     public void changedState(final DataDefinition dataDefinition, final Entity newEntity) {
         checkArgument(newEntity != null, "entity is null");
@@ -42,7 +47,8 @@ public class ChangeStateHook {
         if (errors != null && errors.size() > 0) {
             newEntity.setField("state", oldEntity.getStringField("state"));
             for (ChangeOrderStateMessage error : errors) {
-                newEntity.addGlobalError(error.getMessage() + "." + error.getReferenceToField());
+                newEntity.addGlobalError(translationService.translate(error.getMessage() + "." + error.getReferenceToField(),
+                        getLocale()));
             }
             return;
         }

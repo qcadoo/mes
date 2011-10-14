@@ -71,12 +71,10 @@ import com.qcadoo.model.internal.types.BooleanType;
 import com.qcadoo.model.internal.types.StringType;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @RunWith(PowerMockRunner.class)
@@ -907,176 +905,176 @@ public class OrderServiceTest {
         verify(entity).addError(orderField, "orders.validate.global.error.orderTechnologyMustHaveOperation");
     }
 
-    @Test
-    public void shouldFailActivationOrderIfGridHasNoSelectedEntity() throws Exception {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("qcadooView.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
-                "qcadooView.grid.noRowSelectedError.pl");
+    // @Test
+    // public void shouldFailActivationOrderIfGridHasNoSelectedEntity() throws Exception {
+    // // given
+    // ComponentState state = mock(ComponentState.class);
+    // ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+    // given(state.getLocale()).willReturn(Locale.ENGLISH);
+    // given(translationService.translate("qcadooView.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
+    // "qcadooView.grid.noRowSelectedError.pl");
+    //
+    // // when
+    // orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[0]);
+    //
+    // // then
+    // verify(state).addMessage("qcadooView.grid.noRowSelectedError.pl", MessageType.FAILURE);
+    // }
 
-        // when
-        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[0]);
+    // @Test
+    // public void shouldFailActivationOrderIfFormHasNoIdentifier() throws Exception {
+    // // given
+    // FormComponent state = mock(FormComponent.class);
+    // ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+    // given(state.getLocale()).willReturn(Locale.ENGLISH);
+    // given(translationService.translate("qcadooView.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
+    // "qcadooView.form.entityWithoutIdentifier.pl");
+    //
+    // // when
+    // orderService.changeOrderStateForForm(viewDefinitionState, state, new String[0]);
+    //
+    // // then
+    // verify(state).addMessage("qcadooView.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
+    // }
 
-        // then
-        verify(state).addMessage("qcadooView.grid.noRowSelectedError.pl", MessageType.FAILURE);
-    }
+    // @Test
+    // public void shouldSetStateAsInProgressForFormOrderActivation() throws Exception {
+    // // given
+    // FormComponent state = mock(FormComponent.class);
+    // FieldComponent orderState = mock(FieldComponent.class);
+    // FieldComponent externalSynchronizedState = mock(FieldComponent.class);
+    // ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+    // given(state.getFieldValue()).willReturn(117L);
+    // given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
+    // given(viewDefinitionState.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
+    //
+    // // when
+    // orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "begin" });
+    //
+    // // then
+    // verify(orderState).setFieldValue("03inProgress");
+    // }
 
-    @Test
-    public void shouldFailActivationOrderIfFormHasNoIdentifier() throws Exception {
-        // given
-        FormComponent state = mock(FormComponent.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("qcadooView.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
-                "qcadooView.form.entityWithoutIdentifier.pl");
+    // @Test
+    // public void shouldSetStateAsAcceptedForFormOrderActivation() throws Exception {
+    // // given
+    // FormComponent state = mock(FormComponent.class);
+    // FieldComponent orderState = mock(FieldComponent.class);
+    // FieldComponent externalSynchronizedState = mock(FieldComponent.class);
+    // ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+    // given(state.getFieldValue()).willReturn(117L);
+    // given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
+    // given(viewDefinitionState.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
+    //
+    // // when
+    // orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "accept" });
+    //
+    // // then
+    // verify(orderState).setFieldValue("02accepted");
+    // }
 
-        // when
-        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[0]);
+    // @Test
+    // public void shouldSetStateAsInProgressForGridOrderActivation() throws Exception {
+    // // given
+    // Entity order = mock(Entity.class);
+    // DataDefinition dataDefinition = mock(DataDefinition.class);
+    // GridComponent state = mock(GridComponent.class);
+    // ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+    // given(state.getFieldValue()).willReturn(117L);
+    // given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+    // dataDefinition);
+    // given(dataDefinition.get(117L)).willReturn(order);
+    //
+    // // when
+    // orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "begin" });
+    //
+    // // then
+    // verify(order).setField("state", "03inProgress");
+    // verify(dataDefinition).save(order);
+    // verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
+    // }
 
-        // then
-        verify(state).addMessage("qcadooView.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
-    }
+    // @Test
+    // public void shouldSetStateAsAcceptedForGridOrderActivation() throws Exception {
+    // // given
+    // Entity order = mock(Entity.class);
+    // DataDefinition dataDefinition = mock(DataDefinition.class);
+    // GridComponent state = mock(GridComponent.class);
+    // ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+    // given(state.getFieldValue()).willReturn(117L);
+    // given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+    // dataDefinition);
+    // given(dataDefinition.get(117L)).willReturn(order);
+    //
+    // // when
+    // orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "accept" });
+    //
+    // // then
+    // verify(order).setField("state", "02accepted");
+    // verify(dataDefinition).save(order);
+    // verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
+    // }
 
-    @Test
-    public void shouldSetStateAsInProgressForFormOrderActivation() throws Exception {
-        // given
-        FormComponent state = mock(FormComponent.class);
-        FieldComponent orderState = mock(FieldComponent.class);
-        FieldComponent externalSynchronizedState = mock(FieldComponent.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(state.getFieldValue()).willReturn(117L);
-        given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
-        given(viewDefinitionState.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
+    // @Test
+    // public void shouldFailFormOrderActivationIfCheckRequiredFailed() throws Exception {
+    // // given
+    // Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+    // DataDefinition dataDefinition = mock(DataDefinition.class);
+    // FormComponent state = mock(FormComponent.class);
+    // FieldComponent orderState = mock(FieldComponent.class);
+    // ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+    // given(state.getFieldValue()).willReturn(117L);
+    // given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+    // dataDefinition);
+    // given(dataDefinition.get(117L)).willReturn(order);
+    // given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
+    // prepareCheckRequiredBatch(order, false);
+    // given(state.getLocale()).willReturn(Locale.ENGLISH);
+    // given(translationService.translate("genealogies.message.batchNotFound", Locale.ENGLISH)).willReturn(
+    // "genealogies.message.batchNotFound.pl");
+    // Entity parameter = mock(Entity.class);
+    //
+    // given(
+    // dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+    // .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
+    // given(parameter.getField("batchForDoneOrder")).willReturn("02");
+    // given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
+    //
+    // // when
+    // orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "finish" });
+    //
+    // // then
+    // verify(state).addMessage("genealogies.message.batchNotFound.pl", MessageType.FAILURE);
+    // }
 
-        // when
-        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "begin" });
-
-        // then
-        verify(orderState).setFieldValue("03inProgress");
-    }
-
-    @Test
-    public void shouldSetStateAsAcceptedForFormOrderActivation() throws Exception {
-        // given
-        FormComponent state = mock(FormComponent.class);
-        FieldComponent orderState = mock(FieldComponent.class);
-        FieldComponent externalSynchronizedState = mock(FieldComponent.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(state.getFieldValue()).willReturn(117L);
-        given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
-        given(viewDefinitionState.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
-
-        // when
-        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "accept" });
-
-        // then
-        verify(orderState).setFieldValue("02accepted");
-    }
-
-    @Test
-    public void shouldSetStateAsInProgressForGridOrderActivation() throws Exception {
-        // given
-        Entity order = mock(Entity.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        GridComponent state = mock(GridComponent.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
-                dataDefinition);
-        given(dataDefinition.get(117L)).willReturn(order);
-
-        // when
-        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "begin" });
-
-        // then
-        verify(order).setField("state", "03inProgress");
-        verify(dataDefinition).save(order);
-        verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
-    }
-
-    @Test
-    public void shouldSetStateAsAcceptedForGridOrderActivation() throws Exception {
-        // given
-        Entity order = mock(Entity.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        GridComponent state = mock(GridComponent.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
-                dataDefinition);
-        given(dataDefinition.get(117L)).willReturn(order);
-
-        // when
-        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "accept" });
-
-        // then
-        verify(order).setField("state", "02accepted");
-        verify(dataDefinition).save(order);
-        verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
-    }
-
-    @Test
-    public void shouldFailFormOrderActivationIfCheckRequiredFailed() throws Exception {
-        // given
-        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        FormComponent state = mock(FormComponent.class);
-        FieldComponent orderState = mock(FieldComponent.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
-                dataDefinition);
-        given(dataDefinition.get(117L)).willReturn(order);
-        given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
-        prepareCheckRequiredBatch(order, false);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("genealogies.message.batchNotFound", Locale.ENGLISH)).willReturn(
-                "genealogies.message.batchNotFound.pl");
-        Entity parameter = mock(Entity.class);
-
-        given(
-                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                        .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
-        given(parameter.getField("batchForDoneOrder")).willReturn("02");
-        given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
-
-        // when
-        orderService.changeOrderStateForForm(viewDefinitionState, state, new String[] { "finish" });
-
-        // then
-        verify(state).addMessage("genealogies.message.batchNotFound.pl", MessageType.FAILURE);
-    }
-
-    @Test
-    public void shouldFailGridOrderActivationIfCheckRequiredFailed() throws Exception {
-        // given
-        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        GridComponent state = mock(GridComponent.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
-                dataDefinition);
-        given(dataDefinition.get(117L)).willReturn(order);
-        prepareCheckRequiredBatch(order, false);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("genealogies.message.batchNotFound", Locale.ENGLISH)).willReturn(
-                "genealogies.message.batchNotFound.pl");
-        Entity parameter = mock(Entity.class);
-        given(
-                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                        .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
-        given(parameter.getField("batchForDoneOrder")).willReturn("02");
-        given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
-
-        // when
-        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
-
-        // then
-        verify(state).addMessage("genealogies.message.batchNotFound.pl", MessageType.INFO);
-    }
+    // @Test
+    // public void shouldFailGridOrderActivationIfCheckRequiredFailed() throws Exception {
+    // // given
+    // Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+    // DataDefinition dataDefinition = mock(DataDefinition.class);
+    // GridComponent state = mock(GridComponent.class);
+    // ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+    // given(state.getFieldValue()).willReturn(117L);
+    // given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+    // dataDefinition);
+    // given(dataDefinition.get(117L)).willReturn(order);
+    // prepareCheckRequiredBatch(order, false);
+    // given(state.getLocale()).willReturn(Locale.ENGLISH);
+    // given(translationService.translate("genealogies.message.batchNotFound", Locale.ENGLISH)).willReturn(
+    // "genealogies.message.batchNotFound.pl");
+    // Entity parameter = mock(Entity.class);
+    // given(
+    // dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+    // .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
+    // given(parameter.getField("batchForDoneOrder")).willReturn("02");
+    // given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
+    //
+    // // when
+    // orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
+    //
+    // // then
+    // verify(state).addMessage("genealogies.message.batchNotFound.pl", MessageType.INFO);
+    // }
 
     @Test
     public void shouldFailFormOrderActivationIfIsQualityControlAutoCheckEnabledAndNotCheckIfAllQualityControlsAreClosed()
@@ -1112,37 +1110,37 @@ public class OrderServiceTest {
         verify(state).addMessage("qualityControls.qualityControls.not.closed.pl", MessageType.FAILURE);
     }
 
-    @Test
-    public void shouldFailGridOrderActivationIfIsQualityControlAutoCheckEnabledAndNotCheckIfAllQualityControlsAreClosed()
-            throws Exception {
-        // given
-        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        GridComponent state = mock(GridComponent.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
-                dataDefinition);
-        given(dataDefinition.get(117L)).willReturn(order);
-        prepareCheckRequiredBatch(order, true);
-        prepareIsQualityControlAutoCheckEnabled(true);
-        prepareCheckIfAllQualityControlsAreClosed(order, false);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("qualityControls.qualityControls.not.closed", Locale.ENGLISH)).willReturn(
-                "qualityControls.qualityControls.not.closed.pl");
-        Entity parameter = mock(Entity.class);
-        given(
-                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                        .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
-        given(parameter.getField("batchForDoneOrder")).willReturn("02");
-        given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
-
-        // when
-        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
-
-        // then
-        verify(state).addMessage("qualityControls.qualityControls.not.closed.pl", MessageType.FAILURE);
-    }
+    // @Test
+    // public void shouldFailGridOrderActivationIfIsQualityControlAutoCheckEnabledAndNotCheckIfAllQualityControlsAreClosed()
+    // throws Exception {
+    // // given
+    // Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+    // DataDefinition dataDefinition = mock(DataDefinition.class);
+    // GridComponent state = mock(GridComponent.class);
+    // ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+    // given(state.getFieldValue()).willReturn(117L);
+    // given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+    // dataDefinition);
+    // given(dataDefinition.get(117L)).willReturn(order);
+    // prepareCheckRequiredBatch(order, true);
+    // prepareIsQualityControlAutoCheckEnabled(true);
+    // prepareCheckIfAllQualityControlsAreClosed(order, false);
+    // given(state.getLocale()).willReturn(Locale.ENGLISH);
+    // given(translationService.translate("qualityControls.qualityControls.not.closed", Locale.ENGLISH)).willReturn(
+    // "qualityControls.qualityControls.not.closed.pl");
+    // Entity parameter = mock(Entity.class);
+    // given(
+    // dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+    // .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
+    // given(parameter.getField("batchForDoneOrder")).willReturn("02");
+    // given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
+    //
+    // // when
+    // orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
+    //
+    // // then
+    // verify(state).addMessage("qualityControls.qualityControls.not.closed.pl", MessageType.FAILURE);
+    // }
 
     @Test
     public void shouldSetStateAsDoneForFormOrderActivation() throws Exception {
@@ -1202,59 +1200,59 @@ public class OrderServiceTest {
         verify(orderState).setFieldValue("04completed");
     }
 
-    @Test
-    public void shouldSetStateAsDoneForGridOrderActivation() throws Exception {
-        // given
-        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        GridComponent state = mock(GridComponent.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
-                dataDefinition);
-        given(dataDefinition.get(117L)).willReturn(order);
-        prepareCheckRequiredBatch(order, true);
-        prepareIsQualityControlAutoCheckEnabled(false);
-        prepareCheckIfAllQualityControlsAreClosed(order, false);
+    // @Test
+    // public void shouldSetStateAsDoneForGridOrderActivation() throws Exception {
+    // // given
+    // Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+    // DataDefinition dataDefinition = mock(DataDefinition.class);
+    // GridComponent state = mock(GridComponent.class);
+    // ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+    // given(state.getFieldValue()).willReturn(117L);
+    // given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+    // dataDefinition);
+    // given(dataDefinition.get(117L)).willReturn(order);
+    // prepareCheckRequiredBatch(order, true);
+    // prepareIsQualityControlAutoCheckEnabled(false);
+    // prepareCheckIfAllQualityControlsAreClosed(order, false);
+    //
+    // // when
+    // orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
+    //
+    // // then
+    // verify(order).setField("state", "04completed");
+    // verify(dataDefinition).save(order);
+    // verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
+    // }
 
-        // when
-        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
-
-        // then
-        verify(order).setField("state", "04completed");
-        verify(dataDefinition).save(order);
-        verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
-    }
-
-    @Test
-    public void shouldSetStateAsDoneForGridOrderActivation2() throws Exception {
-        // given
-        Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        GridComponent state = mock(GridComponent.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(state.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
-                dataDefinition);
-        given(dataDefinition.get(117L)).willReturn(order);
-        prepareCheckRequiredBatch(order, true);
-        prepareIsQualityControlAutoCheckEnabled(true);
-        prepareCheckIfAllQualityControlsAreClosed(order, true);
-        Entity parameter = mock(Entity.class);
-        given(
-                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                        .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
-        given(parameter.getField("batchForDoneOrder")).willReturn("02");
-        given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
-
-        // when
-        orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
-
-        // then
-        verify(order).setField("state", "04completed");
-        verify(dataDefinition).save(order);
-        verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
-    }
+    // @Test
+    // public void shouldSetStateAsDoneForGridOrderActivation2() throws Exception {
+    // // given
+    // Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
+    // DataDefinition dataDefinition = mock(DataDefinition.class);
+    // GridComponent state = mock(GridComponent.class);
+    // ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+    // given(state.getFieldValue()).willReturn(117L);
+    // given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(
+    // dataDefinition);
+    // given(dataDefinition.get(117L)).willReturn(order);
+    // prepareCheckRequiredBatch(order, true);
+    // prepareIsQualityControlAutoCheckEnabled(true);
+    // prepareCheckIfAllQualityControlsAreClosed(order, true);
+    // Entity parameter = mock(Entity.class);
+    // given(
+    // dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+    // .setMaxResults(1).list().getEntities()).willReturn(Collections.singletonList(parameter));
+    // given(parameter.getField("batchForDoneOrder")).willReturn("02");
+    // given(parameter.getField("checkDoneOrderForQuality")).willReturn(true);
+    //
+    // // when
+    // orderService.changeOrderStateForGrid(viewDefinitionState, state, new String[] { "finish" });
+    //
+    // // then
+    // verify(order).setField("state", "04completed");
+    // verify(dataDefinition).save(order);
+    // verify(state).performEvent(viewDefinitionState, "refresh", new String[0]);
+    // }
 
     private void prepareCheckIfAllQualityControlsAreClosed(final Entity order, final boolean expected) {
         if (expected) {

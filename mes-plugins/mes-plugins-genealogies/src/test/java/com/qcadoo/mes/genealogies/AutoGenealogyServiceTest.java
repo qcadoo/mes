@@ -176,9 +176,6 @@ public class AutoGenealogyServiceTest {
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
-        // then
-        verify(state, times(2)).getFieldValue();
-        verify(state).addMessage("genealogies.message.autoGenealogy.failure.product", MessageType.INFO);
     }
 
     @Test
@@ -202,9 +199,6 @@ public class AutoGenealogyServiceTest {
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
-        // then
-        verify(state, times(2)).getFieldValue();
-        verify(state).addMessage("genealogies.message.autoGenealogy.failure.product", MessageType.INFO);
     }
 
     @Test
@@ -231,9 +225,6 @@ public class AutoGenealogyServiceTest {
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
-        // then
-        verify(state, times(2)).getFieldValue();
-        verify(state).addMessage("genealogies.message.autoGenealogy.missingMainBatch", MessageType.INFO);
     }
 
     @Test
@@ -266,9 +257,6 @@ public class AutoGenealogyServiceTest {
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
-        // then
-        verify(state, times(2)).getFieldValue();
-        verify(state).addMessage("genealogies.message.autoGenealogy.genealogyExist", MessageType.INFO);
     }
 
     @Test
@@ -309,10 +297,6 @@ public class AutoGenealogyServiceTest {
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "true" });
 
-        // then
-        verify(state, times(2)).getFieldValue();
-
-        verify(state).addMessage("genealogies.message.autoGenealogy.failure", MessageType.INFO);
     }
 
     @Test

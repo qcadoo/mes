@@ -8,8 +8,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -27,6 +29,9 @@ public class OrderStateValidationService {
 
     @Autowired
     private ShiftsServiceImpl shiftsServiceImpl;
+
+    @Autowired
+    public TranslationService translationService;
 
     public void saveLogging(final Entity order, final String previousState, final String currentState) {
         Entity logging = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_LOGGING).create();
@@ -74,7 +79,9 @@ public class OrderStateValidationService {
         List<ChangeOrderStateMessage> errors = new ArrayList<ChangeOrderStateMessage>();
         for (String reference : references)
             if (entity.getField(reference) == null) {
-                errors.add(ChangeOrderStateMessage.error("orders.order.orderStates.fieldRequired", reference));
+                errors.add(ChangeOrderStateMessage.error(
+                        translationService.translate("orders.order.orderStates.fieldRequired", LocaleContextHolder.getLocale()),
+                        reference));
             }
         return errors;
     }

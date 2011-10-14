@@ -6,14 +6,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState.MessageType;
 
 @Service
 public class OrderStatesChangingService {
+
+    @Autowired
+    TranslationService translationService;
 
     @Autowired
     OrderStateValidationService orderStateValidationService;
@@ -62,7 +67,8 @@ public class OrderStatesChangingService {
         List<ChangeOrderStateMessage> errors = new ArrayList<ChangeOrderStateMessage>();
         for (String reference : Arrays.asList("number", "name")) {
             if (newEntity.getStringField(reference) == null) {
-                errors.add(new ChangeOrderStateMessage("orders.order.orderStates.fieldRequired", reference, MessageType.FAILURE));
+                errors.add(new ChangeOrderStateMessage(translationService.translate("orders.order.orderStates.fieldRequired",
+                        LocaleContextHolder.getLocale()), reference, MessageType.FAILURE));
             }
         }
         return errors;

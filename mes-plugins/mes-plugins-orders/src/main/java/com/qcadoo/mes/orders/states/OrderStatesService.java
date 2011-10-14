@@ -266,7 +266,7 @@ public class OrderStatesService {
     }
 
     private boolean checkRequiredBatch(final Entity order) {
-        Entity technology = (Entity) order.getField("technology");
+        Entity technology = (Entity) order.getBelongsToField("technology");
         if (technology != null) {
             if (order.getHasManyField("genealogies").size() == 0) {
                 if ((Boolean) technology.getField("batchRequired")) {

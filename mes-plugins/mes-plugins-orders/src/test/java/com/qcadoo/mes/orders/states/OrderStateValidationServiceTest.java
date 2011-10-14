@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -42,6 +43,8 @@ public class OrderStateValidationServiceTest {
 
     private String currentState;
 
+    private TranslationService translationService;
+
     @Before
     public void init() {
         orderStateValidationService = new OrderStateValidationService();
@@ -53,10 +56,12 @@ public class OrderStateValidationServiceTest {
         order = mock(Entity.class);
         dataDefinition = mock(DataDefinition.class);
         shift = mock(Entity.class);
+        translationService = mock(TranslationService.class);
 
         setField(orderStateValidationService, "dataDefinitionService", dataDefinitionService);
         setField(orderStateValidationService, "securityService", securityService);
         setField(orderStateValidationService, "shiftsServiceImpl", shiftsServiceImpl);
+        setField(orderStateValidationService, "translationService", translationService);
     }
 
     @Test

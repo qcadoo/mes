@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.genealogies;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -70,68 +71,6 @@ public class AutoGenealogyService extends OrderStateListener {
 
     @Autowired
     private PluginAccessor pluginAccessor;
-
-    // @Transactional(propagation = REQUIRES_NEW)
-    @Override
-    public List<ChangeOrderStateMessage> onCompleted(final Entity newEntity) {
-        checkArgument(newEntity != null, "entity is null");
-        List<ChangeOrderStateMessage> listOfMessage = new ArrayList<ChangeOrderStateMessage>();
-        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
-                .find().setMaxResults(1).list();
-        Entity parameter = null;
-
-        if (searchResult.getEntities().size() > 0) {
-            parameter = searchResult.getEntities().get(0);
-        }
-        if (parameter != null) {
-            if (parameter.getField("batchForDoneOrder").toString().equals("02active")) {
-                listOfMessage = createGenealogy(newEntity, false);
-            }
-        } else if (parameter.getField("batchForDoneOrder").toString().equals("03lastUsed")) {
-            listOfMessage = createGenealogy(newEntity, true);
-        }
-        return listOfMessage;
-    }
-
-    // public void generateGenalogyOnChangeOrderStatusForDone(final ViewDefinitionState viewDefinitionState,
-    // final ComponentState state, final String[] args) {
-    // if (state.getFieldValue() instanceof Long) {
-    // Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-    // (Long) state.getFieldValue());
-    // if (order == null) {
-    // state.addMessage(
-    // translationService.translate("qcadooView.message.entityNotFound", viewDefinitionState.getLocale()),
-    // MessageType.FAILURE);
-    // } else {
-    // boolean inProgressState = Boolean.parseBoolean(args[0]);
-    // if (!inProgressState) {
-    // SearchResult searchResult = dataDefinitionService
-    // .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).list();
-    // Entity parameter = null;
-    // if (searchResult.getEntities().size() > 0) {
-    // parameter = searchResult.getEntities().get(0);
-    // }
-    // if (parameter != null) {
-    // if (parameter.getField("batchForDoneOrder").toString().equals("02active")) {
-    // createGenealogy(state, order, false);
-    // } else if (parameter.getField("batchForDoneOrder").toString().equals("03lastUsed")) {
-    // createGenealogy(state, order, true);
-    // }
-    // }
-    // }
-    // }
-    // } else {
-    // if (state instanceof FormComponent) {
-    // state.addMessage(
-    // translationService.translate("qcadooView.form.entityWithoutIdentifier", viewDefinitionState.getLocale()),
-    // MessageType.FAILURE);
-    // } else {
-    // state.addMessage(
-    // translationService.translate("qcadooView.grid.noRowSelectedError", viewDefinitionState.getLocale()),
-    // MessageType.FAILURE);
-    // }
-    // }
-    // }
 
     public void fillLastUsedBatchForProduct(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
@@ -229,15 +168,13 @@ public class AutoGenealogyService extends OrderStateListener {
         }
     }
 
-    private List<ChangeOrderStateMessage> createGenealogy(final Entity order, final boolean lastUsedMode) {
+    List<ChangeOrderStateMessage> createGenealogy(final Entity order, final boolean lastUsedMode) {
         Entity mainProduct = order.getBelongsToField("product");
         Entity technology = order.getBelongsToField("technology");
         List<ChangeOrderStateMessage> listOfMessage = new ArrayList<ChangeOrderStateMessage>();
         if (mainProduct == null || technology == null) {
-            listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.failure.product"));
-            // state.addMessage(
-            // translationService.translate("genealogies.message.autoGenealogy.failure.product", state.getLocale()),
-            // MessageType.INFO);
+            listOfMessage.add(ChangeOrderStateMessage.info(translationService.translate(
+                    "genealogies.message.autoGenealogy.failure.product", getLocale())));
             return listOfMessage;
         }
         Object mainBatch = null;
@@ -247,17 +184,13 @@ public class AutoGenealogyService extends OrderStateListener {
             mainBatch = mainProduct.getField("batch");
         }
         if (mainBatch == null) {
-            listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.missingMainBatch"));
-            // state.addMessage(
-            // translationService.translate("genealogies.message.autoGenealogy.missingMainBatch", state.getLocale())
-            // + mainProduct.getField("number") + "-" + mainProduct.getField("name"), MessageType.INFO, false);
+            listOfMessage.add(ChangeOrderStateMessage.info(translationService.translate(
+                    "genealogies.message.autoGenealogy.missingMainBatch", getLocale())));
             return listOfMessage;
         }
         if (checkIfExistGenealogyWithBatch(order, mainBatch.toString())) {
-            listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.genealogyExist"));
-            // state.addMessage(translationService.translate("genealogies.message.autoGenealogy.genealogyExist",
-            // state.getLocale())
-            // + " " + mainBatch, MessageType.INFO);
+            listOfMessage.add(ChangeOrderStateMessage.info(translationService.translate(
+                    "genealogies.message.autoGenealogy.genealogyExist", getLocale())));
             return listOfMessage;
         }
         DataDefinition genealogyDef = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
@@ -281,19 +214,17 @@ public class AutoGenealogyService extends OrderStateListener {
                     for (String var : error.getVars()) {
                         message.append("\n" + var);
                     }
-                    listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.genealogyExist"));
-                    // state.addMessage(message.toString(), MessageType.INFO, false);
+                    listOfMessage
+                            .add(ChangeOrderStateMessage.error(translationService.translate(message.toString(), getLocale())));
                 }
             } else {
-                listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.failure"));
-                // state.addMessage(translationService.translate("genealogies.message.autoGenealogy.failure", state.getLocale()),
-                // MessageType.INFO);
+                listOfMessage.add(ChangeOrderStateMessage.info(translationService.translate(
+                        "genealogies.message.autoGenealogy.failure", getLocale())));
             }
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         } else {
-            listOfMessage.add(ChangeOrderStateMessage.success("genealogies.message.autoGenealogy.success"));
-            // state.addMessage(translationService.translate("genealogies.message.autoGenealogy.success", state.getLocale()),
-            // MessageType.SUCCESS);
+            listOfMessage.add(ChangeOrderStateMessage.success(translationService.translate(
+                    "genealogies.message.autoGenealogy.success", getLocale())));
         }
 
         return listOfMessage;
@@ -332,7 +263,8 @@ public class AutoGenealogyService extends OrderStateListener {
             if (shift.getField("value") != null) {
                 genealogy.setField("shiftFeatures", Collections.singletonList(shift));
             } else {
-                genealogy.addGlobalError("genealogies.message.autoGenealogy.missingShift");
+                genealogy.addGlobalError(translationService.translate("genealogies.message.autoGenealogy.missingShift",
+                        getLocale()));
             }
         }
         if ((Boolean) technology.getField("otherFeatureRequired")) {
@@ -349,7 +281,8 @@ public class AutoGenealogyService extends OrderStateListener {
             if (other.getField("value") != null) {
                 genealogy.setField("otherFeatures", Collections.singletonList(other));
             } else {
-                genealogy.addGlobalError("genealogies.message.autoGenealogy.missingOther");
+                genealogy.addGlobalError(translationService.translate("genealogies.message.autoGenealogy.missingOther",
+                        getLocale()));
             }
         }
         if ((Boolean) technology.getField("postFeatureRequired")) {
@@ -366,7 +299,8 @@ public class AutoGenealogyService extends OrderStateListener {
             if (post.getField("value") != null) {
                 genealogy.setField("postFeatures", Collections.singletonList(post));
             } else {
-                genealogy.addGlobalError("genealogies.message.autoGenealogy.missingPost");
+                genealogy.addGlobalError(translationService.translate("genealogies.message.autoGenealogy.missingPost",
+                        getLocale()));
             }
         }
     }
@@ -409,7 +343,9 @@ public class AutoGenealogyService extends OrderStateListener {
             }
         }
         if (componentsWithoutBatch.size() > 0) {
-            genealogy.addGlobalError("genealogies.message.autoGenealogy.missingBatch",
+            genealogy.addGlobalError(
+                    translationService.translate("genealogies.message.autoGenealogy.missingBatch",
+                            LocaleContextHolder.getLocale()),
                     componentsWithoutBatch.toArray(new String[componentsWithoutBatch.size()]));
         }
     }
