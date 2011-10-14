@@ -14,6 +14,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.api.ComponentState.MessageType;
 
 @Service
 public class OrderStateValidationService {
@@ -73,9 +74,7 @@ public class OrderStateValidationService {
         ChangeOrderStateMessage error = null;
         for (String reference : references)
             if (entity.getField(reference) == null) {
-                error = new ChangeOrderStateMessage();
-                error.setMessage("orders.order.orderStates.fieldRequired");
-                error.setReferenceToField(reference);
+                error = new ChangeOrderStateMessage("orders.order.orderStates.fieldRequired", reference, MessageType.FAILURE);
                 return error;
             }
         return null;

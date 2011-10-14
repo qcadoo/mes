@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState.MessageType;
 
 @Service
 public class OrderStatesChangingService {
@@ -60,9 +61,7 @@ public class OrderStatesChangingService {
         ChangeOrderStateMessage error = null;
         for (String reference : Arrays.asList("number", "name")) {
             if (newEntity.getStringField(reference) == null) {
-                error = new ChangeOrderStateMessage();
-                error.setMessage("orders.order.orderStates.fieldRequired");
-                error.setReferenceToField(reference);
+                error = new ChangeOrderStateMessage("orders.order.orderStates.fieldRequired", reference, MessageType.FAILURE);
                 return error;
             }
         }

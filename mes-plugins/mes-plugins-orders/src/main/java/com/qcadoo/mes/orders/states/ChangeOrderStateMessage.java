@@ -10,9 +10,7 @@ public class ChangeOrderStateMessage {
 
     private MessageType type;
 
-    // statyczne konstruktory
-
-    private ChangeOrderStateMessage(String message, String referenceToField, MessageType type) {
+    public ChangeOrderStateMessage(String message, String referenceToField, MessageType type) {
         this.referenceToField = referenceToField;
         this.message = message;
         this.type = type;
@@ -24,6 +22,14 @@ public class ChangeOrderStateMessage {
 
     public static ChangeOrderStateMessage error(String message) {
         return new ChangeOrderStateMessage(message, null, MessageType.FAILURE);
+    }
+
+    public static ChangeOrderStateMessage info(String message) {
+        return new ChangeOrderStateMessage(message, null, MessageType.INFO);
+    }
+
+    public static ChangeOrderStateMessage success(String message) {
+        return new ChangeOrderStateMessage(message, null, MessageType.SUCCESS);
     }
 
     public String getMessage() {
