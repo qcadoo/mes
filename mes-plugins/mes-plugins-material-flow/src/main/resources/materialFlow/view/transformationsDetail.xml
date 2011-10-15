@@ -27,13 +27,61 @@
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="transformationsDetail" modelName="transformations">
-	<component type="window" name="window">
+	<component type="window" name="window" reference="window">
 		<ribbon>
 			<group template="navigation" />
 			<group template="formSaveCopyAndRemoveActions" />
 		</ribbon>
-
 		<component type="form" name="form" reference="form">
+			<script>
+				<![CDATA[
+					var containsAtLeastOneConsumption = false;
+					var containsArLeastOneProduction = false;
+					var entityExists = false;
+					var date = #{date};
+					var staff = #{staff};
+					var stockAreasFrom = #{stockAreasFrom};
+					var stockAreasTo = #{stockAreasTo};
+					
+					#{transformationsConsumption}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (value.content.totalEntities > 0) {
+								containsAtLeastOneConsumption = true;
+							} else {
+								containsAtLeastOneConsumption = false;
+							}
+							updateFieldsState();
+						}
+					});
+					
+					#{transformationsProduction}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (value.content.totalEntities > 0) {
+								containsAtLeastOneProduction = true;
+							} else {
+								containsAtLeastOneProduction = false;
+							}
+							updateFieldsState();
+						}
+					});
+					
+					
+					function updateFieldsState() {
+						if (containsAtLeastOneConsumption || containsAtLeastOneProduction) {
+							date.setEnabled(false);
+							staff.setEnabled(false);
+							stockAreasFrom.setEnabled(false);
+							stockAreasTo.setEnabled(false);
+						} else {
+							date.setEnabled(true);
+							staff.setEnabled(true);
+							stockAreasFrom.setEnabled(true);
+							stockAreasTo.setEnabled(true);
+						}
+					}
+					
+				]]>
+			</script>
 			<component type="gridLayout" name="gridLayout" columns="2" rows="8" >
 				<layoutElement column="1" row="1">
 					<component type="input" name="number" reference="number" 
@@ -66,7 +114,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1">
-					<component type="lookup" name="staff" field="staff">
+					<component type="lookup" name="staff" field="staff" reference="staff">
 						<option type="searchable" value="name" />
 						<option type="orderable" value=" name" />
 						<option type="fullScreen" value="true" />
@@ -80,6 +128,8 @@
 						<option type="orderable" value=" name" />
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="name" />
+						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService" 
+							method="fillDefaultStockAreaToFieldInTransformations" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="3">

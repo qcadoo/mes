@@ -133,7 +133,6 @@
 					<component type="textarea" name="name" reference="name"
 						field="name" />
 				</layoutElement>
-				
 				<layoutElement column="2" row="1" width="2" height="6">
 					<component type="grid" name="materialsInStockAreasComponents"
 						reference="materialsInStockAreasComponents" source="#{form}.stockAreas">

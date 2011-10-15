@@ -88,7 +88,7 @@
 		
 		<view:view-listener plugin="materialFlow" view="stockCorrectionDetail" component="form" event="refreshShouldBeInStockCorrectionDetail" class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="refreshShouldBeInStockCorrectionDetail" />
 		<view:view-hook plugin="materialFlow" view="stockCorrectionDetail" type="beforeRender" class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="refreshShouldBeInStockCorrectionDetail" />
-
+		
 		<menu:menu-item name="stockCorrections" category="materialFlow"
 			view="stockCorrectionList" />
 		<menu:menu-item name="transfers" category="materialFlow"
