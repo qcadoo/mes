@@ -85,12 +85,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo</groupId>
-			<artifactId>qcadoo-plugins-export-to-csv</artifactId>
-			<version>${qcadoo.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo</groupId>
-			<artifactId>qcadoo-plugins-export-to-pdf</artifactId>
+			<artifactId>qcadoo-plugins-export</artifactId>
 			<version>${qcadoo.version}</version>
 		</dependency>
 		<dependency>

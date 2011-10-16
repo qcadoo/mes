@@ -142,7 +142,9 @@
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="input" name="number" field="number"
-							reference="number" />
+							reference="number">
+							<option type="alignment" value="right" />
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4" height="3">
 						<component type="textarea" name="description" field="description"
@@ -161,9 +163,6 @@
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 								method="fillFieldWhenOrderChanged" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-								method="setFieldEnable" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
@@ -207,15 +206,14 @@
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 								method="fillFieldWhenTechnologyChanged" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-								method="setFieldEnable" />
 						</component>
 
 					</layoutElement>
 					<layoutElement column="2" row="5">
 						<component type="input" name="quantity" field="quantity"
-							reference="quantity" />
+							reference="quantity">
+							<option type="alignment" value="right" />
+						</component>
 					</layoutElement>
 				</component>
 
@@ -268,7 +266,9 @@
 								reference="overheads" columns="4" rows="3" hasBorders="false">
 								<layoutElement column="1" row="1" width="3">
 									<component type="input" name="productionCostMargin"
-										field="#{form}.productionCostMargin" reference="productionCostMargin" />
+										field="#{form}.productionCostMargin" reference="productionCostMargin">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="1">
 									<component type="input" name="productionCostMarginProc"
@@ -276,7 +276,9 @@
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="materialCostMargin"
-										field="#{form}.materialCostMargin" reference="materialCostMargin" />
+										field="#{form}.materialCostMargin" reference="materialCostMargin">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="materialCostMarginProc"
@@ -284,7 +286,9 @@
 								</layoutElement>
 								<layoutElement column="1" row="3" width="3">
 									<component type="input" name="additionalOverhead"
-										field="#{form}.additionalOverhead" reference="additionalOverhead" />
+										field="#{form}.additionalOverhead" reference="additionalOverhead">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="3">
 									<component type="input" name="additionalOverheadCurrency"
@@ -310,7 +314,9 @@
 								<layoutElement column="1" row="1" width="3">
 									<component type="input" name="totalMaterialCosts"
 										field="#{form}.totalMaterialCosts" reference="totalMaterialCosts"
-										defaultEnabled="false" />
+										defaultEnabled="false">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="1">
 									<component type="input" name="totalMaterialCostsCurrency"
@@ -319,7 +325,9 @@
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="totalMachineHourlyCosts"
 										reference="totalMachineHourlyCosts" field="#{form}.totalMachineHourlyCosts"
-										defaultEnabled="false" />
+										defaultEnabled="false">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="totalMachineHourlyCostsCurrency"
@@ -329,7 +337,9 @@
 								<layoutElement column="1" row="3" width="3">
 									<component type="input" name="totalLaborHourlyCosts"
 										field="#{form}.totalLaborHourlyCosts" reference="totalLaborHourlyCosts"
-										defaultEnabled="false" />
+										defaultEnabled="false">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="3">
 									<component type="input" name="totalLaborHourlyCostsCurrency"
@@ -339,7 +349,9 @@
 								<layoutElement column="1" row="4" width="3">
 									<component type="input" name="totalPieceworkCosts"
 										field="#{form}.totalPieceworkCosts" reference="totalPieceworkCosts"
-										defaultEnabled="false" />
+										defaultEnabled="false">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="4">
 									<component type="input" name="totalPieceworkCostsCurrency"
@@ -353,7 +365,9 @@
 								<layoutElement column="1" row="6" width="3">
 									<component type="input" name="totalTechnicalProductionCosts"
 										reference="totalTechnicalProductionCosts" field="#{form}.totalTechnicalProductionCosts"
-										defaultEnabled="false" hasLabel="false" />
+										defaultEnabled="false" hasLabel="false">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="6">
 									<component type="input"
@@ -372,7 +386,9 @@
 								<layoutElement column="1" row="1" width="3">
 									<component type="input" name="productionCostMarginValue"
 										field="#{form}.productionCostMarginValue" defaultEnabled="false"
-										reference="productionCostMarginValue" />
+										reference="productionCostMarginValue">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="1">
 									<component type="input" name="productionCostMarginValueCurrency"
@@ -382,7 +398,9 @@
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="materialCostMarginValue"
 										field="#{form}.materialCostMarginValue" defaultEnabled="false"
-										reference="materialCostMarginValue" />
+										reference="materialCostMarginValue">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="materialCostMarginValueCurrency"
@@ -392,7 +410,9 @@
 								<layoutElement column="1" row="3" width="3">
 									<component type="input" name="additionalOverheadValue"
 										field="#{form}.additionalOverheadValue" defaultEnabled="false"
-										reference="additionalOverheadValue" />
+										reference="additionalOverheadValue">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="3">
 									<component type="input" name="additionalOverheadValueCurrency"
@@ -407,7 +427,9 @@
 								</layoutElement>
 								<layoutElement column="1" row="5" width="3">
 									<component type="input" name="totalOverhead" field="#{form}.totalOverhead"
-										defaultEnabled="false" reference="totalOverhead" hasLabel="false" />
+										defaultEnabled="false" reference="totalOverhead" hasLabel="false">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="5">
 									<component type="input" name="totalOverheadCurrency"
@@ -430,7 +452,9 @@
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="totalCosts" field="#{form}.totalCosts"
-										defaultEnabled="false" reference="totalCosts" hasLabel="false" />
+										defaultEnabled="false" reference="totalCosts" hasLabel="false">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="totalCostsCurrency"
@@ -444,7 +468,9 @@
 								</layoutElement>
 								<layoutElement column="1" row="4" width="3">
 									<component type="input" name="costPerUnit" field="#{form}.costPerUnit"
-										defaultEnabled="false" reference="totalCostsPerUnit" hasLabel="false" />
+										defaultEnabled="false" reference="totalCostsPerUnit" hasLabel="false">
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="4">
 									<component type="input" name="totalCostsPerUnitUNIT"
@@ -461,6 +487,7 @@
 		<beforeRender
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 			method="fillCurrencyFields" />
+		<beforeRender class="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="setFieldEnable" />
 	</hooks>
 </view>
 

@@ -65,7 +65,6 @@ public class MaterialFlowService {
 
         BigDecimal countProductIn = BigDecimal.ZERO;
         BigDecimal countProductOut = BigDecimal.ZERO;
-        BigDecimal quantity = BigDecimal.ZERO;
         BigDecimal countProduct = BigDecimal.ZERO;
         Date lastCorrectionDate = null;
 
@@ -78,27 +77,23 @@ public class MaterialFlowService {
         
         Long stockAreasId = Long.valueOf(stockAreas);
         Long productId = Long.valueOf(product);
-        Entity resultDataCorrection = transferDataCorrection.find()
-            .add(SearchRestrictions.eq("stockAreas.id", stockAreasId))
-            .add(SearchRestrictions.eq("product.id", productId))
-            .addOrder(SearchOrders.desc("stockCorrectionDate"))
-            .setMaxResults(1)
-            .uniqueResult();
-        
+        Entity resultDataCorrection = transferDataCorrection.find().add(SearchRestrictions.eq("stockAreas.id", stockAreasId))
+                .add(SearchRestrictions.eq("product.id", productId)).addOrder(SearchOrders.desc("stockCorrectionDate"))
+                .setMaxResults(1).uniqueResult();
+
         if (resultDataCorrection != null) {
             lastCorrectionDate = (Date) resultDataCorrection.getField("stockCorrectionDate");
             countProduct = (BigDecimal) resultDataCorrection.getField("found");
         }
-        
+
         SearchResult resultTo = null;
         SearchResult resultFrom = null;
-        
+
         if (lastCorrectionDate == null) {
             resultTo = transferTo.find(
                     "where stockAreasTo = '" + stockAreas + "' and product = '" + product + "' and date <= '" + forDate + "'")
                     .list();
-            
-            
+
             resultFrom = transferFrom.find(
                     "where stockAreasFrom = '" + stockAreas + "' and product = '" + product + "' and date <= '" + forDate + "'")
                     .list();
@@ -114,15 +109,15 @@ public class MaterialFlowService {
         }
 
         for (Entity e : resultTo.getEntities()) {
-               quantity = (BigDecimal) e.getField("quantity");
+            BigDecimal quantity = (BigDecimal) e.getField("quantity");
             countProductIn = countProductIn.add(quantity);
         }
 
         for (Entity e : resultFrom.getEntities()) {
-            quantity = (BigDecimal) e.getField("quantity");
+            BigDecimal quantity = (BigDecimal) e.getField("quantity");
             countProductOut = countProductOut.add(quantity);
         }
-        
+
         if (lastCorrectionDate == null) {
             countProductIn = countProductIn.subtract(countProductOut);
         } else {
@@ -135,7 +130,8 @@ public class MaterialFlowService {
         return countProductIn;
     }
 
-    public void refreshShouldBeInStockCorrectionDetail(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+    public void refreshShouldBeInStockCorrectionDetail(final ViewDefinitionState state, final ComponentState componentState,
+            final String[] args) {
         refreshShouldBeInStockCorrectionDetail(state);
     }
 
@@ -163,7 +159,7 @@ public class MaterialFlowService {
             }
         }
     }
-    
+
     public void generateTransferNumber(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
         if (!(componentState instanceof FieldComponent)) {
             throw new IllegalStateException("component is not FieldComponentState");
@@ -183,7 +179,7 @@ public class MaterialFlowService {
             }
         }
     }
-    
+
     private Entity getAreaById(final Long productId) {
         DataDefinition instructionDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
 
@@ -196,7 +192,7 @@ public class MaterialFlowService {
         }
         return null;
     }
-       
+
     public void fillNumberFieldValue(final ViewDefinitionState view) {
         if (view.getComponentByReference("number").getFieldValue() != null) {
             return;
@@ -226,20 +222,17 @@ public class MaterialFlowService {
     public Map<Entity, BigDecimal> calculateMaterialQuantitiesInStockArea(Entity materialsInStockAreas) {
         List<Entity> stockAreas = new ArrayList<Entity>(materialsInStockAreas.getHasManyField("stockAreas"));
         Map<Entity, BigDecimal> reportData = new HashMap<Entity, BigDecimal>();
-        
-        List<Entity> products = new ArrayList<Entity>();
-        
+
         for (Entity component : stockAreas) {
             Entity stockArea = (Entity) component.getField("stockAreas");
             String stockAreaNumber = stockArea.getField("number").toString();
-            
-            products = getProductsSeenInStockArea(stockAreaNumber);
-            
+
+            List<Entity> products = getProductsSeenInStockArea(stockAreaNumber);
+
             String forDate = ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString();
             for (Entity product : products) {
-                BigDecimal quantity = calculateShouldBeInStockArea(stockAreaNumber,
-                        product.getStringField("number"), forDate);
-               
+                BigDecimal quantity = calculateShouldBeInStockArea(stockAreaNumber, product.getStringField("number"), forDate);
+
                 if (reportData.containsKey(product))
                     reportData.put(product, reportData.get(product).add(quantity));
                 else
@@ -248,35 +241,29 @@ public class MaterialFlowService {
         }
         return reportData;
     }
-    
+
     public List<Entity> getProductsSeenInStockArea(String stockAreaNumber) {
         Long id = Long.valueOf(stockAreaNumber);
-        
-        DataDefinition dataDefProduct = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, 
+
+        DataDefinition dataDefProduct = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER_BASIC,
                 MaterialFlowConstants.MODEL_PRODUCT);
-        
-        List<Entity> productsFromTransfers = new ArrayList<Entity>();
-        productsFromTransfers = (List<Entity>) dataDefProduct.find()
-            .createAlias("transfer", "t")
-            .addOrder(SearchOrders.asc("t.product.id"))
-            .setProjection(SearchProjections.distinct(SearchProjections.field("t.product")))
-            .add(SearchRestrictions.eqField("t.product.id", "id"))
-            .add(SearchRestrictions.eq("t.stockAreasTo.id", id))
-            .list().getEntities();
-        
-        List<Entity> productsFromStockCorrections = new ArrayList<Entity>();
-        productsFromStockCorrections = (List<Entity>) dataDefProduct.find()
-            .createAlias("stockCorrection", "sc")
-            .addOrder(SearchOrders.asc("sc.product.id"))
-            .setProjection(SearchProjections.distinct(SearchProjections.field("sc.product")))
-            .add(SearchRestrictions.eqField("sc.product.id", "id"))
-            .add(SearchRestrictions.eq("sc.stockAreas.id", id))
-            .list().getEntities();
-        
+
+        List<Entity> productsFromTransfers = dataDefProduct.find().createAlias("transfer", "t")
+                .addOrder(SearchOrders.asc("t.product.id"))
+                .setProjection(SearchProjections.distinct(SearchProjections.field("t.product")))
+                .add(SearchRestrictions.eqField("t.product.id", "id")).add(SearchRestrictions.eq("t.stockAreasTo.id", id)).list()
+                .getEntities();
+
+        List<Entity> productsFromStockCorrections = dataDefProduct.find().createAlias("stockCorrection", "sc")
+                .addOrder(SearchOrders.asc("sc.product.id"))
+                .setProjection(SearchProjections.distinct(SearchProjections.field("sc.product")))
+                .add(SearchRestrictions.eqField("sc.product.id", "id")).add(SearchRestrictions.eq("sc.stockAreas.id", id)).list()
+                .getEntities();
+
         for (Entity product : productsFromStockCorrections)
             if (!productsFromTransfers.contains(product))
                 productsFromTransfers.add(product);
-        
+
         return productsFromTransfers;
     }
     

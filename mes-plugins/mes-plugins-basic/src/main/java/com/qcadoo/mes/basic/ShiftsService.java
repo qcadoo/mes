@@ -19,4 +19,6 @@ public interface ShiftsService {
     public Date findDateToForOrder(final Date dateFrom, final long seconds);
 
     public List<ShiftHour> getHoursForShift(final Entity shift, final Date dateFrom, final Date dateTo);
+
+    public Entity getShiftFromDate(final Date date);
 }

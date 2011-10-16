@@ -50,7 +50,9 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="2" width="2">
-					<component type="input" name="mondayHours" field="mondayHours" hasLabel="false" reference="mondayHours"/>
+					<component type="input" name="mondayHours" field="mondayHours" hasLabel="false" reference="mondayHours">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				
 				<layoutElement column="1" row="3">
@@ -61,7 +63,9 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="3" width="2">
-					<component type="input" name="tuesdayHours" field="tuesdayHours" reference="tuesdayHours" hasLabel="false"/>
+					<component type="input" name="tuesdayHours" field="tuesdayHours" reference="tuesdayHours" hasLabel="false">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				
 				<layoutElement column="1" row="4">
@@ -72,7 +76,9 @@
 						</component>
 				</layoutElement>
 				<layoutElement column="2" row="4" width="2">
-					<component type="input" name="wensdayHours" field="wensdayHours" reference="wensdayHours" hasLabel="false"/>
+					<component type="input" name="wensdayHours" field="wensdayHours" reference="wensdayHours" hasLabel="false">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				
 				<layoutElement column="1" row="5">
@@ -83,7 +89,9 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="5" width="2">
-					<component type="input" name="thursdayHours" field="thursdayHours" reference="thursdayHours" hasLabel="false"/>
+					<component type="input" name="thursdayHours" field="thursdayHours" reference="thursdayHours" hasLabel="false">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				
 				<layoutElement column="1" row="6">
@@ -94,7 +102,9 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="6" width="2">
-					<component type="input" name="fridayHours" field="fridayHours" reference="fridayHours" hasLabel="false"/>
+					<component type="input" name="fridayHours" field="fridayHours" reference="fridayHours" hasLabel="false">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				
 				<layoutElement column="1" row="7">
@@ -105,7 +115,9 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="7" width="2">
-					<component type="input" name="saturdayHours" field="saturdayHours" reference="saturdayHours" hasLabel="false"/>
+					<component type="input" name="saturdayHours" field="saturdayHours" reference="saturdayHours" hasLabel="false">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				
 				<layoutElement column="1" row="8">
@@ -116,7 +128,9 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="8" width="2">
-					<component type="input" name="sundayHours" field="sundayHours" reference="sundayHours" hasLabel="false"/>
+					<component type="input" name="sundayHours" field="sundayHours" reference="sundayHours" hasLabel="false">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="4" row="1" width="7" height="8">
 					<component type="grid" name="timetableExceptions" reference="timetableExceptions" source="#{form}.timetableExceptions">

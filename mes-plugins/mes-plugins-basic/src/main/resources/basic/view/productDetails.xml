@@ -76,7 +76,9 @@
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3" rows="4">
 					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number" reference="number" />
+						<component type="input" name="number" field="number" reference="number">
+							<option type="alignment" value="right" />
+						</component>
 						<component type="hidden" name="externalNumber" field="externalNumber" reference="externalNumber" />
 					</layoutElement>
 					<layoutElement column="1" row="2">

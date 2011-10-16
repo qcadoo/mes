@@ -1,0 +1,15 @@
+<model name="logging" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	activable="true" xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<belongsTo name="order" model="order" />
+		<datetime name="dateAndTime" />
+		<string name="previousState" />
+		<string name="currentState" />
+		<belongsTo name="shift" model="shift" plugin="basic" />
+		<string name="worker" />
+	</fields>
+	<hooks>
+	</hooks>
+
+</model>

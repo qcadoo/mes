@@ -69,7 +69,7 @@ public class CostCalculationReportService {
                         state.getLocale()), MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo("/costCalculation/costCalculation." + args[0] + "?id=" + state.getFieldValue(),
-                        false, false);
+                        true, false);
             }
         } else {
             if (state instanceof FormComponent) {

@@ -29,11 +29,25 @@
 		     orders.doneQuantity as orders_order_donequantity,
 		     orders.effectiveDateFrom as orders_order_effectivedatefrom,
 		     orders.effectiveDateTo as orders_order_effectivedateto,
-		     orders.startWorker as orders_order_startworker,
-		     orders.endWorker as orders_order_endworker,
 		     technology.name as technologies_technology_name,
-		     product.name as basic_product_name
-		from com.qcadoo.model.beans.basic.BasicCompany as company, com.qcadoo.model.beans.orders.OrdersOrder as orders left outer join orders.technology as technology left outer join orders.product as product where orders.id in ($P{EntityIds})]]>
+			product.name as basic_product_name,
+			(
+				select 
+					logging.worker as startWorker 
+				from 
+					orders.loggings as logging
+				where
+					logging.previousState = '02accepted' and logging.currentState = '03inProgress'
+			) as orders_order_startworker,
+			(
+				select 
+					logging.worker as endWorker 
+				from 
+					orders.loggings as logging
+				where
+					logging.currentState = '04completed'
+			) as orders_order_endworker
+			from com.qcadoo.model.beans.basic.BasicCompany as company, com.qcadoo.model.beans.orders.OrdersOrder as orders left outer join orders.technology as technology left outer join orders.product as product where orders.id in ($P{EntityIds})]]>
 	</queryString>
 	<field name="companyFullName" class="java.lang.String"/>
 	<field name="street" class="java.lang.String"/>

@@ -56,7 +56,7 @@
 			<plugin>orders</plugin>
 		</dependency>
 		<dependency>
-			<plugin>material-flow</plugin>
+			<plugin>materialFlow</plugin>
 		</dependency>
 		<dependency>
 			<plugin>materialRequirements</plugin>
@@ -76,7 +76,7 @@
 		</model:model-field>
 		<model:model-field plugin="materialFlow" model="stockAreas">
 			<model:hasMany name="simpleMaterialBalance" plugin="simpleMaterialBalance"
-				model="simpleMaterialBalanceStockAreasComponent" joinField="stockAreas" cascade="none" />
+				model="simpleMaterialBalanceStockAreasComponent" joinField="stockAreas" cascade="nullify" />
 		</model:model-field>
 
 		<menu:menu-category name="reports" />

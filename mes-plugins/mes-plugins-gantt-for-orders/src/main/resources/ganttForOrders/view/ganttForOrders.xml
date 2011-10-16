@@ -50,7 +50,9 @@
 				<component type="form" name="order" reference="form" field="#{gantt}">
 					<component type="gridLayout" name="formGridLayout" columns="2" rows="3" hasBorders="false">
 						<layoutElement column="1" row="1">
-							<component type="input" name="number" field="number" defaultEnabled="false" />
+							<component type="input" name="number" field="number" defaultEnabled="false">
+								<option type="alignment" value="right" />
+							</component>
 						</layoutElement>
 						<layoutElement column="1" row="2">
 							<component type="input" name="name" field="name" defaultEnabled="false"/>

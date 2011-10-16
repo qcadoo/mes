@@ -208,7 +208,7 @@ public class ProductionBalanceService {
                         MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo(
-                        "/productionCounting/productionBalance." + args[0] + "?id=" + state.getFieldValue(), false, false);
+                        "/productionCounting/productionBalance." + args[0] + "?id=" + state.getFieldValue(), true, false);
             }
         } else {
             if (state instanceof FormComponent) {

@@ -41,7 +41,9 @@
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="number" field="number"
-							reference="number" defaultEnabled="false" />
+							reference="number" defaultEnabled="false">
+							<option type="alignment" value="right" />
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="lookup" name="order" field="order"
