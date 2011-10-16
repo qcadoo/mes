@@ -81,7 +81,6 @@
 					<component type="input" name="quantity" field="quantity">
 						<option type="alignment" value="right" />
 					</component>
-					<component type="lookup" name="staff" field="staff" reference="staff">
 					
 					<component type="lookup" name="staff" field="staff">
 						<option type="searchable" value="name" />
