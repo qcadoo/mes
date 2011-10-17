@@ -146,13 +146,6 @@
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="checkOrderState" />
-		<!-- <view:view-hook plugin="orders" view="orderDetails" type="beforeRender" 
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" 
-			method="checkFinalProductionCountingForOrder" /> -->
-		<!-- <view:view-hook plugin="orders" view="ordersList" type="beforeRender" 
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" 
-			method="checkFinalProductionCountingForOrderOnGrid" /> -->
-
 	</modules>
 
 </plugin>
