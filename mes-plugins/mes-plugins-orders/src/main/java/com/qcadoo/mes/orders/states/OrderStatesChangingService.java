@@ -1,7 +1,5 @@
 package com.qcadoo.mes.orders.states;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState.MessageType;
 
 @Service
 public class OrderStatesChangingService {
@@ -40,10 +37,7 @@ public class OrderStatesChangingService {
                 && !oldEntity.getStringField("state").equals("01pending")) {
             throw new IllegalStateException();
         }
-        List<ChangeOrderStateMessage> errors = globalValidation(newEntity);
-        if (errors != null && errors.size() > 0) {
-            return errors;
-        }
+
         String newState = newEntity.getStringField("state");
         if (newState.equals(OrderStates.ACCEPTED.getStringValue())) {
             return performAccepted(newEntity, oldEntity);
@@ -62,19 +56,9 @@ public class OrderStatesChangingService {
         return null;
     }
 
-    List<ChangeOrderStateMessage> globalValidation(final Entity newEntity) {
-        List<ChangeOrderStateMessage> errors = new ArrayList<ChangeOrderStateMessage>();
-        for (String reference : Arrays.asList("number", "name")) {
-            if (newEntity.getStringField(reference) == null) {
-                errors.add(new ChangeOrderStateMessage("orders.order.orderStates.fieldRequired", reference, MessageType.FAILURE));
-            }
-        }
-        return errors;
-    }
-
     List<ChangeOrderStateMessage> performAccepted(final Entity newEntity, final Entity oldEntity) {
         List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationAccepted(newEntity);
-        if (errorMessages != null && errorMessages.size() > 0) {
+        if (errorMessages.size() > 0) {
             return errorMessages;
         }
         for (OrderStateListener listener : listeners) {
@@ -88,7 +72,7 @@ public class OrderStatesChangingService {
 
     List<ChangeOrderStateMessage> performInProgress(final Entity newEntity, final Entity oldEntity) {
         List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationInProgress(newEntity);
-        if (errorMessages != null && errorMessages.size() > 0) {
+        if (errorMessages.size() > 0) {
             return errorMessages;
         }
         for (OrderStateListener listener : listeners) {
@@ -102,7 +86,7 @@ public class OrderStatesChangingService {
 
     List<ChangeOrderStateMessage> performCompleted(final Entity newEntity, final Entity oldEntity) {
         List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationCompleted(newEntity);
-        if (errorMessages != null && errorMessages.size() > 0) {
+        if (errorMessages.size() > 0) {
             return errorMessages;
         }
         for (OrderStateListener listener : listeners) {
@@ -115,8 +99,12 @@ public class OrderStatesChangingService {
     }
 
     List<ChangeOrderStateMessage> performInterrupted(final Entity newEntity, final Entity oldEntity) {
+        List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationInProgress(newEntity);
+        if (errorMessages.size() > 0) {
+            return errorMessages;
+        }
         for (OrderStateListener listener : listeners) {
-            List<ChangeOrderStateMessage> errorMessages = listener.onInterrupted(newEntity);
+            errorMessages = listener.onInterrupted(newEntity);
             if (errorMessages != null && errorMessages.size() > 0) {
                 return errorMessages;
             }
@@ -136,7 +124,7 @@ public class OrderStatesChangingService {
 
     List<ChangeOrderStateMessage> performAbandoned(final Entity newEntity, final Entity oldEntity) {
         for (OrderStateListener listener : listeners) {
-            List<ChangeOrderStateMessage> errorMessages = listener.onDeclined(newEntity);
+            List<ChangeOrderStateMessage> errorMessages = listener.onAbandoned(newEntity);
             if (errorMessages != null && errorMessages.size() > 0) {
                 return errorMessages;
             }
