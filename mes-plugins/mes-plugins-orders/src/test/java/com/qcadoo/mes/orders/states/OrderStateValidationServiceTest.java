@@ -98,12 +98,6 @@ public class OrderStateValidationServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenEntityIsNullValidationPending() throws Exception {
-        // when
-        orderStateValidationService.validationPending(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenEntityIsNullValidationAccepted() throws Exception {
         // when
         orderStateValidationService.validationAccepted(null);
@@ -169,19 +163,4 @@ public class OrderStateValidationServiceTest {
         Assert.assertEquals(0, errors.size());
     }
 
-    @Test
-    public void shouldReturnErrorWhenValidatingPending() throws Exception {
-        // when
-        orderStateValidationService.validationPending(order);
-    }
-
-    @Test
-    public void shouldPerformValidationPending() throws Exception {
-        // given
-        Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
-        // when
-        List<ChangeOrderStateMessage> errors = orderStateValidationService.validationPending(order);
-        // then
-        Assert.assertEquals(0, errors.size());
-    }
 }

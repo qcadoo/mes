@@ -87,11 +87,6 @@ public class OrderStatesService {
     public void changeOrderStateToAccepted(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         changeOrderStateTo(viewDefinitionState, state, OrderStates.PENDING, OrderStates.ACCEPTED);
-        for (String reference : Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "defaultTechnology",
-                "technology")) {
-            FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(reference);
-            field.setRequired(true);
-        }
     }
 
     public void changeOrderStateToInProgress(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -100,14 +95,8 @@ public class OrderStatesService {
         Entity order = form.getEntity();
         if ((OrderStates.ACCEPTED.getStringValue().equals(order.getStringField("state")))) {
             changeOrderStateTo(viewDefinitionState, state, OrderStates.ACCEPTED, OrderStates.IN_PROGRESS);
-
         } else if (OrderStates.INTERRUPTED.getStringValue().equals(order.getStringField("state"))) {
             changeOrderStateTo(viewDefinitionState, state, OrderStates.INTERRUPTED, OrderStates.IN_PROGRESS);
-        }
-        for (String reference : Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "defaultTechnology",
-                "technology", "doneQuantity")) {
-            FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(reference);
-            field.setRequired(true);
         }
     }
 
@@ -363,6 +352,8 @@ public class OrderStatesService {
             if (qualityControlDD != null) {
                 SearchResult searchResult = qualityControlDD.find().belongsTo("order", order.getId()).isEq("closed", false)
                         .list();
+                // qualityControlDD.find().add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("closed",
+                // false));
                 return (searchResult.getTotalNumberOfEntities() <= 0);
             } else {
                 return false;
@@ -381,4 +372,21 @@ public class OrderStatesService {
         boolean canChange(ComponentState gridOrForm, Entity order, String state);
     }
 
+    public void setFieldsRequired(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity order = form.getEntity();
+        if (order != null)
+            if (order.getField("state").toString().equals("02accepted")
+                    || order.getField("state").toString().equals("03inProgress")
+                    || order.getField("state").toString().equals("06interrupted"))
+                for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology")) {
+                    FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+                    field.setRequired(true);
+                }
+            else if (order.getField("state").toString().equals("04completed"))
+                for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology", "doneQuantity")) {
+                    FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+                    field.setRequired(true);
+                }
+    }
 }
