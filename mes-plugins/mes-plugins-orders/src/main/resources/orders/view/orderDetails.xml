@@ -361,7 +361,7 @@
 										#previousState == '04completed' ?	'@orders.order.state.value.04completed' :
 										#previousState == '05declined' ?'@orders.order.state.value.05declined' :
 										#previousState == '06interrupted' ?	'@orders.order.state.value.06interrupted' :
-										#previousState == '07abandoned' ?'@orders.order.state.value.value.07abandoned' :''" />
+										#previousState == '07abandoned' ?'@orders.order.state.value.07abandoned' :''" />
 				<option type="column" name="currentState" fields="currentState"
 					link="true" 
 				expression="#currentState == '01pending' ?	'@orders.order.state.value.' :
@@ -370,7 +370,7 @@
 										#currentState == '04completed' ?	'@orders.order.state.value.04completed' :
 										#currentState == '05declined' ?'@orders.order.state.value.05declined' :
 										#currentState == '06interrupted' ?	'@orders.order.state.value.06interrupted' :
-										#currentState == '07abandoned' ?'@orders.order.state.value.value.07abandoned' :''" />/>
+										#currentState == '07abandoned' ?'@orders.order.state.value.07abandoned' :''" />/>
 				<option type="column" name="shift" fields="shift" expression="#shift == null ? 'N/A' : #shift['name']" />
 				<option type="column" name="worker" fields="worker" />
 				<option type="order" column="dateAndTime" direction="desc" />
