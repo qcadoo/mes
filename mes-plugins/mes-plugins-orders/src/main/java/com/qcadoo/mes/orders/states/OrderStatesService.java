@@ -374,16 +374,16 @@ public class OrderStatesService {
 
     public void setFieldsRequired(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
-        Entity order = form.getEntity();
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                form.getEntityId());
         if (order != null)
-            if (order.getField("state").toString().equals("02accepted")
-                    || order.getField("state").toString().equals("03inProgress")
-                    || order.getField("state").toString().equals("06interrupted"))
+            if (order.getStringField("state").equals("02accepted") || order.getStringField("state").equals("03inProgress")
+                    || order.getStringField("state").equals("06interrupted"))
                 for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology")) {
                     FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
                     field.setRequired(true);
                 }
-            else if (order.getField("state").toString().equals("04completed"))
+            else if (order.getStringField("state").equals("04completed"))
                 for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology", "doneQuantity")) {
                     FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
                     field.setRequired(true);
