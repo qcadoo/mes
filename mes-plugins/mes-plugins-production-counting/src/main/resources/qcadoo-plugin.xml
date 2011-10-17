@@ -1,33 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 0.4.8
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 0.4.8 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA 
+	*************************************************************************** -->
 <plugin plugin="productionCounting" version="0.4.8"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
@@ -38,7 +27,8 @@
        http://schema.qcadoo.org/modules/localization
        http://schema.qcadoo.org/modules/localization.xsd
        http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/custom http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>Qcadoo MES :: Plugins :: Production Counting and Balance</name>
@@ -60,17 +50,23 @@
 	</dependencies>
 
 	<modules>
+		<custom:custom class="com.qcadoo.mes.productionCounting.internal.orderStates.ProductionCountingOnStartupService"/>
 		<localization:translation path="locales" />
-		
+
 		<model:model model="productionRecord" resource="model/productionRecord.xml" />
 		<model:model model="productionBalance" resource="model/productionBalance.xml" />
 		<model:model model="productionCounting" resource="model/productionCounting.xml" />
-		<model:model model="recordOperationProductInComponent" resource="model/recordOperationProductInComponent.xml" />
-		<model:model model="recordOperationProductOutComponent" resource="model/recordOperationProductOutComponent.xml" />
-		
-		<menu:menu-item name="productionCounting" category="orders" view="productionRecordsList" />
-		<menu:menu-item name="productionBalance" category="orders" view="productionBalancesList" />
-		<menu:menu-item name="productionCountingsList" category="reports" view="productionCountingsList" />
+		<model:model model="recordOperationProductInComponent"
+			resource="model/recordOperationProductInComponent.xml" />
+		<model:model model="recordOperationProductOutComponent"
+			resource="model/recordOperationProductOutComponent.xml" />
+
+		<menu:menu-item name="productionCounting" category="orders"
+			view="productionRecordsList" />
+		<menu:menu-item name="productionBalance" category="orders"
+			view="productionBalancesList" />
+		<menu:menu-item name="productionCountingsList"
+			category="reports" view="productionCountingsList" />
 
 		<view:view resource="view/productionRecordsList.xml" />
 		<view:view resource="view/productionRecordDetails.xml" />
@@ -78,9 +74,9 @@
 		<view:view resource="view/productionBalanceDetails.xml" />
 		<view:view resource="view/productionCountingsList.xml" />
 		<view:view resource="view/productionCountingDetails.xml" />
-		<view:view resource="view/recordOperationProductInComponentDetails.xml"/>
-		<view:view resource="view/recordOperationProductOutComponentDetails.xml"/>
-		
+		<view:view resource="view/recordOperationProductInComponentDetails.xml" />
+		<view:view resource="view/recordOperationProductOutComponentDetails.xml" />
+
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="registerQuantityInProduct" />
 		</model:model-field>
@@ -91,17 +87,18 @@
 			<model:boolean name="registerProductionTime" />
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="justOne"  />
+			<model:boolean name="justOne" />
 		</model:model-field>
-		<model:model-field model="parameter" plugin="basic" >
-			<model:boolean name="allowToClose"  />
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="allowToClose" />
 		</model:model-field>
-		<model:model-field model="parameter" plugin="basic" >
-			<model:boolean name="autoCloseOrder"  />
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="autoCloseOrder" />
 		</model:model-field>
-		
+
 		<model:model-field model="order" plugin="orders">
-			<model:enum name="typeOfProductionRecording" values="02cumulated,03forEach" default="02cumulated"/>
+			<model:enum name="typeOfProductionRecording" values="02cumulated,03forEach"
+				default="02cumulated" />
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:boolean name="registerQuantityInProduct" />
@@ -113,13 +110,13 @@
 			<model:boolean name="registerProductionTime" />
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
-			<model:boolean name="justOne"  />
+			<model:boolean name="justOne" />
 		</model:model-field>
-		<model:model-field model="order" plugin="orders" >
-			<model:boolean name="allowToClose"  />
+		<model:model-field model="order" plugin="orders">
+			<model:boolean name="allowToClose" />
 		</model:model-field>
-		<model:model-field model="order" plugin="orders" >
-			<model:boolean name="autoCloseOrder"  />
+		<model:model-field model="order" plugin="orders">
+			<model:boolean name="autoCloseOrder" />
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="productionRecords" model="productionRecord"
@@ -137,13 +134,25 @@
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 		<view:resource uri="public/**/*" />
-		
-		<view:view-hook plugin="basic" view="parameters" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="setParametersDefaultValue" />
-		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="setOrderDefaultValue" />
-		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="checkOrderState" />
-		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="checkFinalProductionCountingForOrder" />
-		<view:view-hook plugin="orders" view="ordersList" type="beforeRender" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="checkFinalProductionCountingForOrderOnGrid" />
-		
+
+		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+			method="setParametersDefaultValue" />
+		<view:view-hook plugin="orders" view="orderDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+			method="setOrderDefaultValue" />
+		<view:view-hook plugin="orders" view="orderDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+			method="checkOrderState" />
+		<!-- <view:view-hook plugin="orders" view="orderDetails" type="beforeRender" 
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" 
+			method="checkFinalProductionCountingForOrder" /> -->
+		<!-- <view:view-hook plugin="orders" view="ordersList" type="beforeRender" 
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" 
+			method="checkFinalProductionCountingForOrderOnGrid" /> -->
+
 	</modules>
 
 </plugin>

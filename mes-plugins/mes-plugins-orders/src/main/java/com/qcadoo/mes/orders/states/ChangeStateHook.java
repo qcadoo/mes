@@ -47,8 +47,12 @@ public class ChangeStateHook {
         if (errors != null && errors.size() > 0) {
             newEntity.setField("state", oldEntity.getStringField("state"));
             for (ChangeOrderStateMessage error : errors) {
-                newEntity.addGlobalError(translationService.translate(error.getMessage() + "." + error.getReferenceToField(),
-                        getLocale()));
+                if (error.getReferenceToField() != null) {
+                    newEntity.addGlobalError(translationService.translate(error.getMessage() + "." + error.getReferenceToField(),
+                            getLocale()));
+                } else {
+                    newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale()));
+                }
             }
             return;
         }

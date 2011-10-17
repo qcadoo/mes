@@ -1,5 +1,7 @@
 package com.qcadoo.mes.orders.states;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +19,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.plugin.api.PluginState;
@@ -76,9 +79,9 @@ public class OrderStatesService {
 
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderFromDB.getStringField("state").equals(newState.getStringValue())) {
-            viewDefinitionState.getComponentByReference("form").addMessage(
-                    translationService.translate("orders.order.orderStates.fieldRequired", viewDefinitionState.getLocale()),
-                    MessageType.FAILURE);
+            // viewDefinitionState.getComponentByReference("form").addMessage(
+            // translationService.translate("orders.order.orderStates.fieldRequired", viewDefinitionState.getLocale()),
+            // MessageType.FAILURE);
             orderState.setFieldValue(oldState.getStringValue());
         }
 
@@ -174,12 +177,15 @@ public class OrderStatesService {
         order.getDataDefinition().save(order);
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderFromDB.getStringField("state").equals(newState.getStringValue())) {
-            StringBuilder error = new StringBuilder();
-            error = error.append(translationService.translate("orders.order.orderStates.fieldRequired", state.getLocale()));
-            error = error.append(" ");
-            error = error.append(orderFromDB.getStringField("name"));
-            state.addMessage(error.toString(), MessageType.FAILURE, false);
-        }
+            for (ErrorMessage error : order.getGlobalErrors()) {
+                StringBuilder message = new StringBuilder();
+                message = message.append(translationService.translate("orders.order.orderStates.fieldRequired", state.getLocale()));
+                message = message.append(" ");
+                message = message.append(error.getMessage());
+                message = message.append(" ");
+                message = message.append(orderFromDB.getStringField("name"));
+            state.addMessage(message.toString(), MessageType.FAILURE, false);
+        }}
 
     }
 
@@ -265,8 +271,12 @@ public class OrderStatesService {
         }
     }
 
-    private boolean checkRequiredBatch(final Entity order) {
-        Entity technology = (Entity) order.getBelongsToField("technology");
+    private boolean checkRequiredBatch(final Entity entity) {
+        checkArgument(entity != null, "order is null");
+
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                entity.getId());
+        Entity technology = order.getBelongsToField("technology");
         if (technology != null) {
             if (order.getHasManyField("genealogies").size() == 0) {
                 if ((Boolean) technology.getField("batchRequired")) {
