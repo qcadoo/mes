@@ -19,6 +19,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.plugin.api.PluginState;
@@ -78,9 +79,6 @@ public class OrderStatesService {
 
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderFromDB.getStringField("state").equals(newState.getStringValue())) {
-            // viewDefinitionState.getComponentByReference("form").addMessage(
-            // translationService.translate("orders.order.orderStates.fieldRequired", viewDefinitionState.getLocale()),
-            // MessageType.FAILURE);
             orderState.setFieldValue(oldState.getStringValue());
         }
 
@@ -176,11 +174,15 @@ public class OrderStatesService {
         order.getDataDefinition().save(order);
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderFromDB.getStringField("state").equals(newState.getStringValue())) {
-            StringBuilder error = new StringBuilder();
-            error = error.append(translationService.translate("orders.order.orderStates.error", state.getLocale()));
-            error = error.append(" ");
-            error = error.append(orderFromDB.getStringField("name"));
-            state.addMessage(error.toString(), MessageType.FAILURE, false);
+            for (ErrorMessage message : order.getGlobalErrors()) {
+                StringBuilder error = new StringBuilder();
+                error = error.append(translationService.translate("orders.order.orderStates.error", state.getLocale()));
+                error = error.append(" ");
+                error = error.append(orderFromDB.getStringField("name"));
+                error = error.append(" ");
+                error = error.append(message.getMessage());
+                state.addMessage(error.toString(), MessageType.FAILURE, false);
+            }
         }
 
     }

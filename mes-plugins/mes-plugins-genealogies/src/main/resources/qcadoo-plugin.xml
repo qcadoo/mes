@@ -136,9 +136,6 @@
 			component="product" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
 
-<!-- 		<view:view-listener plugin="orders" view="ordersList" -->
-<!-- 			component="grid" event="changeOrderStateForGrid" -->
-<!-- 			class="com.qcadoo.mes.genealogies.AutoGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone" /> -->
 		<view:view-listener plugin="orders" view="ordersList"
 			component="grid" event="showGenealogy" class="com.qcadoo.mes.genealogies.GenealogyService"
 			method="showGenealogy" />
@@ -146,9 +143,6 @@
 			component="grid" event="newGenealogy" class="com.qcadoo.mes.genealogies.GenealogyService"
 			method="newGenealogy" />
 
-<!-- 		<view:view-listener plugin="orders" view="orderDetails" -->
-<!-- 			component="form" event="changeOrderStateForForm" -->
-<!-- 			class="com.qcadoo.mes.genealogies.AutoGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone" /> -->
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="showGenealogy" class="com.qcadoo.mes.genealogies.GenealogyService"
 			method="showGenealogy" />

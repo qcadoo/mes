@@ -119,9 +119,6 @@
 			method="changeQualityControlType" />
 
 		<view:view-listener plugin="orders"
-			view="ordersList" component="grid" event="changeOrderStateForGrid"
-			class="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
-		<view:view-listener plugin="orders"
 			view="ordersList" component="grid" event="generateQualityControl"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
 
