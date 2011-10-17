@@ -55,7 +55,7 @@
 						]]>
 					</script>
 				</smallButton>
-				<smallButton name="declineOrder" icon="startIcon16.png"
+				<smallButton name="declineOrder" icon="deleteIcon16.png"
 					state="disabled">
 					<script>
 							<![CDATA[
@@ -146,7 +146,7 @@
 									declineOrder.enable();
 									declineOrder.state = "decline";
 									declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
-									declineOrder.setIcon('startIcon16.png');
+									declineOrder.setIcon('deleteIcon16.png');
 									interruptOrder.disable();
  								} else if (state == "02accepted") {
  									acceptOrder.enable();
@@ -156,7 +156,7 @@
 									declineOrder.enable();
 									declineOrder.state = "decline";
 									declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
-									declineOrder.setIcon('startIcon16.png');
+									declineOrder.setIcon('deleteIcon16.png');
 									interruptOrder.disable();
  								} else if (state == "03inProgress") { 
 									acceptOrder.enable();
@@ -166,7 +166,7 @@
 									declineOrder.enable();
 									declineOrder.state = "abandon";
 									declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
-									declineOrder.setIcon('startIcon16.png');
+									declineOrder.setIcon('deleteIcon16.png');
 									interruptOrder.enable();
 								} else if (state == "06interrupted"){
 									acceptOrder.enable();
@@ -176,7 +176,7 @@
 									declineOrder.enable();
 									declineOrder.state = "abandon";
 									declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
-									declineOrder.setIcon('startIcon16.png');
+									declineOrder.setIcon('deleteIcon16.png');
 									interruptOrder.disable();
 								} else {
  									save.disable();
@@ -352,20 +352,20 @@
 				<option type="column" name="dateAndTime" fields="dateAndTime" />
 				<option type="column" name="previousState" fields="previousState"
 					expression="#previousState == '01pending' ?	'@orders.order.state.value.01pending' :
- 										#previousState == '02accepted' ? '@orders.order.state.value.02accepted' : 
- 										#previousState == '03inProgress' ?'@orders.order.state.value.03inProgress' : 
- 										#previousState == '04completed' ?	'@orders.order.state.value.04completed' : 
- 										#previousState == '05declined' ?'@orders.order.state.value.05declined' : 
- 										#previousState == '06interrupted' ?	'@orders.order.state.value.06interrupted' : 
- 										#previousState == '07abandoned' ?'@orders.order.state.value.07abandoned' :''" /> 
-				<option type="column" name="currentState" fields="currentState"
-				expression="#currentState == '01pending' ?	'@orders.order.state.value.' :
- 										#currentState == '02accepted' ? '@orders.order.state.value.02accepted' : 
- 										#currentState == '03inProgress' ?'@orders.order.state.value.03inProgress' : 
- 										#currentState == '04completed' ?	'@orders.order.state.value.04completed' : 
- 										#currentState == '05declined' ?'@orders.order.state.value.05declined' : 
- 										#currentState == '06interrupted' ?	'@orders.order.state.value.06interrupted' : 
- 										#currentState == '07abandoned' ?'@orders.order.state.value.07abandoned' :''" /> 
+ 										#previousState == '02accepted' ? '@orders.order.state.value.02accepted' :
+ 										#previousState == '03inProgress' ? '@orders.order.state.value.03inProgress' :
+ 										#previousState == '04completed' ?	'@orders.order.state.value.04completed' :
+ 										#previousState == '05declined' ? '@orders.order.state.value.05declined' :
+ 										#previousState == '06interrupted' ?	'@orders.order.state.value.06interrupted' :
+ 										#previousState == '07abandoned' ? '@orders.order.state.value.07abandoned' : ''" />
+				<option type="column" name="currentState" fields="currentState" 
+				expression="#currentState == '01pending' ?	'@orders.order.state.value.01pending' :
+ 										#currentState == '02accepted' ? '@orders.order.state.value.02accepted' :
+ 										#currentState == '03inProgress' ? '@orders.order.state.value.03inProgress' :
+ 										#currentState == '04completed' ?	'@orders.order.state.value.04completed' :
+ 										#currentState == '05declined' ? '@orders.order.state.value.05declined' :
+ 										#currentState == '06interrupted' ?	'@orders.order.state.value.06interrupted' :
+ 										#currentState == '07abandoned' ? '@orders.order.state.value.07abandoned' : ''" />
 				<option type="column" name="shift" fields="shift" expression="#shift == null ? 'N/A' : #shift['name']" />
 				<option type="column" name="worker" fields="worker" />
 				<option type="order" column="dateAndTime" direction="desc" />
@@ -389,7 +389,7 @@
 			method="fillProductUnitBeforeRender" />
 		<beforeRender class="com.qcadoo.mes.orders.OrderService"
 			method="disableOrderFormForExternalItems" />
-		<beforeRender class="com.qcadoo.mes.orders.states.OrderStatesService"
-			method="setFieldsRequired" />
+<!-- 		<beforeRender class="com.qcadoo.mes.orders.states.OrderStatesService" -->
+<!-- 			method="setFieldsRequired" /> -->
 	</hooks>
 </view>
