@@ -232,6 +232,7 @@ public class ProductionRecordViewService {
         FieldComponent lastRecord = (FieldComponent) view.getComponentByReference("lastRecord");
         if (order.getField("justOne") != null && (Boolean) order.getField("justOne")) {
             lastRecord.setFieldValue(true);
+            lastRecord.setEnabled(false);
         } else {
             lastRecord.setFieldValue(false);
         }

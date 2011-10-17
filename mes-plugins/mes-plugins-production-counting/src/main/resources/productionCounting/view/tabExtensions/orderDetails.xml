@@ -56,7 +56,7 @@
 			</layoutElement>
 			<layoutElement column="2" row="3" width="2">
 				<component type="checkbox" name="autoCloseOrder"
-					reference="autoCloseOrder" field="#{form}.autoCloseOrder" />
+					reference="autoCloseOrder" field="#{form}.autoCloseOrder" hasDescription="true" />
 			</layoutElement>
 		</component>
 	</windowTab>
