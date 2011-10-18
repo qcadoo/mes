@@ -30,7 +30,6 @@
 	<fields>
 		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
-			<validatesRegex pattern="^[a-zA-Z0-9\\_\\.\\(\\)]+$" />
 		</string>
 		<string name="name" required="true" />
 		<datetime name="dateFrom" />
