@@ -63,12 +63,12 @@ public class OrderStatesService {
         if (newState.getStringValue().equals(OrderStates.COMPLETED.getStringValue())) {
             if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
                 state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
-                        MessageType.FAILURE);
+                        MessageType.FAILURE, false);
                 return;
             }
             if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
                 state.addMessage(translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
-                        MessageType.FAILURE);
+                        MessageType.FAILURE, false);
                 return;
             }
         }
@@ -151,12 +151,12 @@ public class OrderStatesService {
         if (newState.getStringValue().equals(OrderStates.COMPLETED.getStringValue())) {
             if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
                 state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
-                        MessageType.FAILURE);
+                        MessageType.FAILURE, false);
                 return;
             }
             if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
                 state.addMessage(translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
-                        MessageType.FAILURE);
+                        MessageType.FAILURE, false);
                 return;
             }
         }
