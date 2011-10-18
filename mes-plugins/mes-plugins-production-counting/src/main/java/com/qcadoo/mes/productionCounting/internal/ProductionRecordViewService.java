@@ -196,6 +196,8 @@ public class ProductionRecordViewService {
             dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(order);
             Entity orderFromDB = order.getDataDefinition().get(order.getId());
             if (!orderFromDB.getStringField("state").equals(CLOSED_ORDER)) {
+                form.addMessage(translationService.translate("productionCounting.order.orderCannotBeClosed", view.getLocale()),
+                        MessageType.INFO, false);
                 for (ErrorMessage message : order.getErrors().values()) {
                     StringBuilder error = new StringBuilder();
                     error = error.append(translationService.translate("orders.order.orderStates.error", form.getLocale()));
