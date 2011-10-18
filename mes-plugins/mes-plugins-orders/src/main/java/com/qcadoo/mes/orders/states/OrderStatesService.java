@@ -163,7 +163,7 @@ public class OrderStatesService {
         order.getDataDefinition().save(order);
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderFromDB.getStringField("state").equals(newState.getStringValue())) {
-            for (ErrorMessage message : order.getGlobalErrors()) {
+            for (ErrorMessage message : order.getErrors().values()) {
                 StringBuilder error = new StringBuilder();
                 error = error.append(translationService.translate("orders.order.orderStates.error", state.getLocale()));
                 error = error.append(" ");
