@@ -389,7 +389,7 @@
 			method="fillProductUnitBeforeRender" />
 		<beforeRender class="com.qcadoo.mes.orders.OrderService"
 			method="disableOrderFormForExternalItems" />
-<!-- 		<beforeRender class="com.qcadoo.mes.orders.states.OrderStatesService" -->
-<!-- 			method="setFieldsRequired" /> -->
+		<beforeRender class="com.qcadoo.mes.orders.states.OrderStatesService"
+			method="setFieldsRequired" />
 	</hooks>
 </view>

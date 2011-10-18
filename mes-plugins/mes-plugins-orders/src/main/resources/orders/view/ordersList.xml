@@ -139,7 +139,7 @@
 									}
 								} 
 								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
- 									print.enable();
+ 									if (selectedEntitiesArray.length == 1) print.enable();
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
 									var externalSynchronized = selectedEntitiesArray[0].fields.externalSynchronized;									
 									if (selectedEntityStatus == '01pending' && externalSynchronized == '1') {
