@@ -43,6 +43,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -193,8 +194,25 @@ public class ProductionRecordViewService {
                 && "03inProgress".equals(orderState)) {
             order.setField("state", CLOSED_ORDER);
             dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(order);
-            form.addMessage(translationService.translate("productionCounting.order.orderClosed", view.getLocale()),
-                    MessageType.INFO, false);
+            Entity orderFromDB = order.getDataDefinition().get(order.getId());
+            if (!orderFromDB.getStringField("state").equals(CLOSED_ORDER)) {
+                for (ErrorMessage message : order.getErrors().values()) {
+                    StringBuilder error = new StringBuilder();
+                    error = error.append(translationService.translate("orders.order.orderStates.error", form.getLocale()));
+                    error = error.append(" ");
+                    error = error.append(message.getMessage());
+                    form.addMessage(error.toString(), MessageType.FAILURE, false);
+                }
+                for (ErrorMessage message : order.getGlobalErrors()) {
+                    StringBuilder error = new StringBuilder();
+                    error = error.append(translationService.translate("orders.order.orderStates.error", form.getLocale()));
+                    error = error.append(" ");
+                    error = error.append(message.getMessage());
+                    form.addMessage(error.toString(), MessageType.FAILURE, false);
+                }
+            } else
+                form.addMessage(translationService.translate("productionCounting.order.orderClosed", view.getLocale()),
+                        MessageType.INFO, false);
         }
     }
 
