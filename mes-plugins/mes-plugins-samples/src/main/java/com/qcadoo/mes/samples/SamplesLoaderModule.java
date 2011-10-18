@@ -73,6 +73,8 @@ public class SamplesLoaderModule extends Module {
 
     private static final List<String> UNITS = new ArrayList<String>();
 
+    private static final String[] ACTIVE_CURRENCY_ATTRIBUTES = new String[] { "code" };
+
     private static final String[] COMPANY_ATTRIBUTES = new String[] { "companyFullName", "tax", "street", "house", "flat",
             "zipCode", "city", "state", "country", "email", "addressWww", "phone" };
 
@@ -149,6 +151,7 @@ public class SamplesLoaderModule extends Module {
 
                 readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
                 if (isEnabled("basic")) {
+                    readDataFromXML("activeCurrency", ACTIVE_CURRENCY_ATTRIBUTES);
                     readDataFromXML("company", COMPANY_ATTRIBUTES);
                     readDataFromXML("machines", MACHINE_ATTRIBUTES);
                     readDataFromXML("staff", STAFF_ATTRIBUTES);
@@ -241,7 +244,9 @@ public class SamplesLoaderModule extends Module {
             }
         }
 
-        if ("company".equals(type)) {
+        if ("activeCurrency".equals(type)) {
+            setCurrency(values);
+        } else if ("company".equals(type)) {
             addCompany(values);
         } else if ("products".equals(type)) {
             addProduct(values);
@@ -268,6 +273,21 @@ public class SamplesLoaderModule extends Module {
         } else if ("usedProducts".equals(type)) {
             addUsedProducts(values);
         }
+    }
+
+    private void setCurrency(final Map<String, String> values) {
+        DataDefinition dd = dataDefinitionService.get("basic", "currency");
+        Entity currency = dd.find().add(SearchRestrictions.eq("isActive", true)).uniqueResult();
+
+        if (currency != null) {
+            currency.setField("isActive", false);
+            dd.save(currency);
+        }
+
+        String alphabeticCode = values.get("code");
+        currency = dd.find().add(SearchRestrictions.eq("alphabeticCode", alphabeticCode)).uniqueResult();
+        currency.setField("isActive", true);
+        dd.save(currency);
     }
 
     private void addCompany(final Map<String, String> values) {
