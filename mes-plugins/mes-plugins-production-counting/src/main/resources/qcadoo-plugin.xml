@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- *************************************************************************** 
-	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 0.4.8 This 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: ${qcadoo.plugin.version}
 	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
 	and/or modify it under the terms of the GNU Affero General Public License 
 	as published by the Free Software Foundation; either version 3 of the License, 
@@ -12,7 +12,7 @@
 	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
 	Floor, Boston, MA 02110-1301 USA 
 	*************************************************************************** -->
-<plugin plugin="productionCounting" version="0.4.8"
+<plugin plugin="productionCounting" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
