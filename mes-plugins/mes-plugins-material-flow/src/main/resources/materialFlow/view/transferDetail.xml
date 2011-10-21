@@ -81,8 +81,7 @@
 					<component type="input" name="quantity" field="quantity">
 						<option type="alignment" value="right" />
 					</component>
-					
-					<component type="lookup" name="staff" field="staff">
+					<component type="lookup" name="staff" field="staff" reference="staff">
 						<option type="searchable" value="name" />
 						<option type="orderable" value=" name" />
 						<option type="fullScreen" value="true" />
@@ -101,5 +100,7 @@
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 			method="checkIfTransferHasTransformation" />
+		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
+			method="fillUnitFieldValue" />
 	</hooks>
 </view>

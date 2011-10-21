@@ -38,7 +38,7 @@
 			</group>
 		</ribbon>
 		<component type="form" name="transformationsConsumption" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="10"
+			<component type="gridLayout" name="gridLayout" columns="10" hasBorders="false"
 				rows="5">
 				<layoutElement column="1" row="1" width="6">
 					<component type="input" name="number" field="number" reference="number" />
@@ -57,7 +57,7 @@
 				<layoutElement column="1" row="3" width="6">
 					<component type="input" name="quantity" field="quantity" />
 				</layoutElement>
-				<layoutElement column="6" row="4" width="1">
+				<layoutElement column="7" row="3" width="1">
 					<component type="input" name="quantityUNIT" width="1"
 						defaultEnabled="false" hasLabel="false" reference="quantityUNIT" />
 				</layoutElement>
