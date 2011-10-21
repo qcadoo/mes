@@ -90,14 +90,14 @@
 		</model:model-field>
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:decimal name="machineUtilization">
-				<model:validatesLength max="7" />
-				<model:validatesPrecision max="3" />
+				<validatesPrecision max="7" />
+				<validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:decimal name="laborUtilization">
-				<model:validatesLength max="7" />
-				<model:validatesPrecision max="3" />
+				<validatesPrecision max="7" />
+				<validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
@@ -112,20 +112,20 @@
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="countMachineOperation">
-				<model:validatesLength max="7" />
-				<model:validatesPrecision max="3" />
+				<validatesPrecision max="7" />
+				<validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="machineUtilization">
-				<model:validatesLength max="7" />
-				<model:validatesPrecision max="3" />
+				<validatesPrecision max="7" />
+				<validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="laborUtilization">
-				<model:validatesLength max="7" />
-				<model:validatesPrecision max="3" />
+				<validatesPrecision max="7" />
+				<validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">

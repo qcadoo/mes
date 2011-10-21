@@ -61,13 +61,13 @@ public class OrderStatesService {
         Entity order = form.getEntity();
 
         if (newState.getStringValue().equals(OrderStates.COMPLETED.getStringValue())) {
-            if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
-                state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
+            if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
+                state.addMessage(translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
                         MessageType.FAILURE, false);
                 return;
             }
-            if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
-                state.addMessage(translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
+            if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
+                state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
                         MessageType.FAILURE, false);
                 return;
             }

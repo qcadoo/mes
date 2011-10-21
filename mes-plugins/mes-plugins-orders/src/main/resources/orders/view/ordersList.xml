@@ -86,7 +86,7 @@
 							]]>
 						</script>
 					</smallButton>
-					<smallButton name="interruptOrder" icon="startIcon16.png" state="disabled">
+					<smallButton name="interruptOrder" icon="pauseIcon16.png" state="disabled">
 						<script>
 							<![CDATA[
 								this.addOnChangeListener({
