@@ -317,6 +317,10 @@ public class MaterialFlowService {
     }
     
     public void disableStockAreaFieldForParticularTransferType (final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+        disableStockAreaFieldForParticularTransferType(state);
+    }
+    
+    public void disableStockAreaFieldForParticularTransferType(final ViewDefinitionState state) {
         String type = state.getComponentByReference("type").getFieldValue().toString();
         FieldComponent toStockArea = (FieldComponent) state.getComponentByReference("stockAreasTo");
         FieldComponent fromStockArea = (FieldComponent) state.getComponentByReference("stockAreasFrom");
@@ -374,23 +378,23 @@ public class MaterialFlowService {
     
     public void checkIfTransferHasTransformation(final ViewDefinitionState state) {
         String number = (String) state.getComponentByReference("number").getFieldValue();
+        Entity transfer = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowConstants.MODEL_TRANSFER).find("where number = '" + number.toString() + "'").uniqueResult();
+        if (transfer == null)
+        	return;
         
-        if (number != null ) {
-            Entity transfer = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
-                    MaterialFlowConstants.MODEL_TRANSFER).find("where number = '" + number.toString() + "'").uniqueResult();
-            if (transfer.getBelongsToField("transformationsConsumption") != null || 
-                    transfer.getBelongsToField("transformationsProduction") != null) {
-                FieldComponent type = (FieldComponent) state.getComponentByReference("type");
-                FieldComponent date = (FieldComponent) state.getComponentByReference("date");
-                FieldComponent stockAreasTo = (FieldComponent) state.getComponentByReference("stockAreasTo");
-                FieldComponent stockAreasFrom = (FieldComponent) state.getComponentByReference("stockAreasFrom");
-                FieldComponent staff = (FieldComponent) state.getComponentByReference("staff");
-                type.setEnabled(false);
-                date.setEnabled(false);
-                stockAreasTo.setEnabled(false);
-                stockAreasFrom.setEnabled(false);
-                staff.setEnabled(false);
-            }
+        if (transfer.getBelongsToField("transformationsConsumption") != null || 
+                transfer.getBelongsToField("transformationsProduction") != null) {
+            FieldComponent type = (FieldComponent) state.getComponentByReference("type");
+            FieldComponent date = (FieldComponent) state.getComponentByReference("date");
+            FieldComponent stockAreasTo = (FieldComponent) state.getComponentByReference("stockAreasTo");
+            FieldComponent stockAreasFrom = (FieldComponent) state.getComponentByReference("stockAreasFrom");
+            FieldComponent staff = (FieldComponent) state.getComponentByReference("staff");
+            type.setEnabled(false);
+            date.setEnabled(false);
+            stockAreasTo.setEnabled(false);
+            stockAreasFrom.setEnabled(false);
+            staff.setEnabled(false);
         }
     }
 }

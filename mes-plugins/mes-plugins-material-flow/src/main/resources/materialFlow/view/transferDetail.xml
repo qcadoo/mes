@@ -102,5 +102,7 @@
 			method="checkIfTransferHasTransformation" />
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 			method="fillUnitFieldValue" />
+		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
+			method="disableStockAreaFieldForParticularTransferType" />
 	</hooks>
 </view>
