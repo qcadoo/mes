@@ -114,7 +114,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="input" name="date" field="date" reference="date" defaultEnabled="false">	
+					<component type="input" name="time" field="time" reference="time" defaultEnabled="false">
 						<option type="textRepresentationOnDisabled" value="false" />
 					</component>
 				</layoutElement>
@@ -127,6 +127,7 @@
 				<layoutElement column="1" row="4">
 					<component type="calendar" name="materialFlowForDate" field="materialFlowForDate" 
 						reference="materialFlowForDate">
+						<option type="withTimePicker" value="true" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="5" >

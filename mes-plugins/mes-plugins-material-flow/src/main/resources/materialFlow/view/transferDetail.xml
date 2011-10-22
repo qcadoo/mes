@@ -48,7 +48,9 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3" width="5">
-					<component type="calendar" name="date" field="date" reference="date" />
+					<component type="calendar" name="time" field="time" reference="time">
+						<option type="withTimePicker" value="true" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4" width="5">
 					<component type="lookup" name="stockAreasFrom" field="stockAreasFrom" reference="stockAreasFrom">

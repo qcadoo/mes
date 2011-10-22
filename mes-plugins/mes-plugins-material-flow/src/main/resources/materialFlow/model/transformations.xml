@@ -33,7 +33,7 @@
 		</string>
 		<string name="name" required="true">
 		</string>
-		<date name="date" required="true"/>
+		<datetime name="time" required="true"/>
 		<belongsTo name="stockAreasFrom" model="stockAreas" plugin="materialFlow" required="true" />
 		<belongsTo name="stockAreasTo" model="stockAreas" plugin="materialFlow" required="true" />
 		<belongsTo name="staff" model="staff" plugin="basic" />

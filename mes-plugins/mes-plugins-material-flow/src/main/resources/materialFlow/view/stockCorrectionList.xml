@@ -31,7 +31,7 @@
 	menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
-				<group template="gridNewCopyAndRemoveAction" />
+				<template name="standardGridTemplate" />
 			</ribbon>
 			<component type="grid" name="grid" reference="grid">
 				<option type="column" name="number" fields="number" link="true" width="150" />

@@ -61,7 +61,7 @@ public class MaterialFlowController {
         DataDefinition dataDefinition = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_MATERIALS_IN_STOCK_AREAS);
         Entity materialsInStockAreas = dataDefinition.get(Long.parseLong(id));
-        sentTranslatedFileName((Date) materialsInStockAreas.getField("date"),
+        sentTranslatedFileName((Date) materialsInStockAreas.getField("time"),
                 translationService.translate("materialFlow.materialFlow.report.fileName", locale), "", PdfUtil.PDF_EXTENSION,
                 response);
         sentFileAsAttachement(materialsInStockAreas.getStringField("fileName") + PdfUtil.PDF_EXTENSION,
@@ -74,7 +74,7 @@ public class MaterialFlowController {
         DataDefinition dataDefinition = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_MATERIALS_IN_STOCK_AREAS);
         Entity materialFlow = dataDefinition.get(Long.parseLong(id));
-        sentTranslatedFileName((Date) materialFlow.getField("date"),
+        sentTranslatedFileName((Date) materialFlow.getField("time"),
                 translationService.translate("materialFlow.materialFlow.report.fileName", locale), "", XlsUtil.XLS_EXTENSION,
                 response);
         sentFileAsAttachement(materialFlow.getStringField("fileName") + XlsUtil.XLS_EXTENSION, ReportUtil.XLS_CONTENT_TYPE,

@@ -94,21 +94,21 @@ public class MaterialFlowService {
 
         if (lastCorrectionDate == null) {
             resultTo = transferTo.find(
-                    "where stockAreasTo = '" + stockAreasId + "' and product = '" + product + "' and date <= '" + forDate + "'")
+                    "where stockAreasTo = '" + stockAreasId + "' and product = '" + product + "' and time <= '" + forDate + "'")
                     .list();
 
             resultFrom = transferFrom.find(
-                    "where stockAreasFrom = '" + stockAreasId + "' and product = '" + product + "' and date <= '" + forDate + "'")
+                    "where stockAreasFrom = '" + stockAreasId + "' and product = '" + product + "' and time <= '" + forDate + "'")
                     .list();
 
         } else {
             resultTo = transferTo.find(
-                    "where stockAreasTo = '" + stockAreasId + "' and product = '" + product + "' and date <= '" + forDate
-                            + "' and date > '" + lastCorrectionDate + "'").list();
+                    "where stockAreasTo = '" + stockAreasId + "' and product = '" + product + "' and time <= '" + forDate
+                            + "' and time > '" + lastCorrectionDate + "'").list();
 
             resultFrom = transferFrom.find(
-                    "where stockAreasFrom = '" + stockAreasId + "' and product = '" + product + "' and date <= '" + forDate
-                            + "' and date > '" + lastCorrectionDate + "'").list();
+                    "where stockAreasFrom = '" + stockAreasId + "' and product = '" + product + "' and time <= '" + forDate
+                            + "' and time > '" + lastCorrectionDate + "'").list();
         }
 
         for (Entity e : resultTo.getEntities()) {
@@ -298,7 +298,7 @@ public class MaterialFlowService {
         
         Entity transformation = transferCopy.getBelongsToField("transformationsConsumption");
         transferCopy.setField("type", "Consumption");
-        transferCopy.setField("date", transformation.getField("date"));
+        transferCopy.setField("time", transformation.getField("time"));
         transferCopy.setField("stockAreasFrom", transformation.getField("stockAreasFrom"));
         transferCopy.setField("staff", transformation.getField("staff"));
         
@@ -317,7 +317,7 @@ public class MaterialFlowService {
         
         Entity transformation = transferCopy.getBelongsToField("transformationsProduction");
         transferCopy.setField("type", "Production");
-        transferCopy.setField("date", transformation.getField("date"));
+        transferCopy.setField("time", transformation.getField("time"));
         transferCopy.setField("stockAreasTo", transformation.getField("stockAreasTo"));
         transferCopy.setField("staff", transformation.getField("staff"));
         
@@ -329,6 +329,8 @@ public class MaterialFlowService {
     }
     
     public void disableStockAreaFieldForParticularTransferType(final ViewDefinitionState state) {
+        if (state.getComponentByReference("type").getFieldValue() == null)
+            return;
         String type = state.getComponentByReference("type").getFieldValue().toString();
         FieldComponent toStockArea = (FieldComponent) state.getComponentByReference("stockAreasTo");
         FieldComponent fromStockArea = (FieldComponent) state.getComponentByReference("stockAreasFrom");
@@ -362,7 +364,7 @@ public class MaterialFlowService {
         if (entity.getField("transformationsConsumption") == null && entity.getField("transformationsProduction") == null) {
             Entity stockAreasFrom = (Entity) (entity.getField("stockAreasFrom") != null ? entity.getField("stockAreasFrom") : null);
             Entity stockAreasTo = (Entity) (entity.getField("stockAreasTo") != null ? entity.getField("stockAreasTo") : null);
-            Date date = (Date) (entity.getField("date") != null ? entity.getField("date") : null);
+            Date date = (Date) (entity.getField("time") != null ? entity.getField("time") : null);
             String type = (String) (entity.getStringField("type") != null ? entity.getStringField("type") : null);
             
             boolean validate = true;
@@ -376,7 +378,7 @@ public class MaterialFlowService {
                 validate = false;
             }
             if (date == null) {
-                entity.addError(dataDefinition.getField("date"), "materialFlow.validate.global.error.fillDate");
+                entity.addError(dataDefinition.getField("time"), "materialFlow.validate.global.error.fillDate");
                 validate = false;
             }
             return validate;
@@ -386,6 +388,8 @@ public class MaterialFlowService {
     
     public void checkIfTransferHasTransformation(final ViewDefinitionState state) {
         String number = (String) state.getComponentByReference("number").getFieldValue();
+        if (number == null)
+            return;
         Entity transfer = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER).find("where number = '" + number.toString() + "'").uniqueResult();
         if (transfer == null)
@@ -394,7 +398,7 @@ public class MaterialFlowService {
         if (transfer.getBelongsToField("transformationsConsumption") != null || 
                 transfer.getBelongsToField("transformationsProduction") != null) {
             FieldComponent type = (FieldComponent) state.getComponentByReference("type");
-            FieldComponent date = (FieldComponent) state.getComponentByReference("date");
+            FieldComponent date = (FieldComponent) state.getComponentByReference("time");
             FieldComponent stockAreasTo = (FieldComponent) state.getComponentByReference("stockAreasTo");
             FieldComponent stockAreasFrom = (FieldComponent) state.getComponentByReference("stockAreasFrom");
             FieldComponent staff = (FieldComponent) state.getComponentByReference("staff");

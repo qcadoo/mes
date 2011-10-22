@@ -38,7 +38,7 @@
 					var containsAtLeastOneConsumption = false;
 					var containsArLeastOneProduction = false;
 					var entityExists = false;
-					var date = #{date};
+					var time = #{time};
 					var staff = #{staff};
 					var stockAreasFrom = #{stockAreasFrom};
 					var stockAreasTo = #{stockAreasTo};
@@ -68,12 +68,12 @@
 					
 					function updateFieldsState() {
 						if (containsAtLeastOneConsumption || containsAtLeastOneProduction) {
-							date.setEnabled(false);
+							time.setEnabled(false);
 							staff.setEnabled(false);
 							stockAreasFrom.setEnabled(false);
 							stockAreasTo.setEnabled(false);
 						} else {
-							date.setEnabled(true);
+							time.setEnabled(true);
 							staff.setEnabled(true);
 							stockAreasFrom.setEnabled(true);
 							stockAreasTo.setEnabled(true);
@@ -92,8 +92,10 @@
 						field="name" />
 				</layoutElement>
 				<layoutElement column="1" row="3">
-					<component type="calendar" name="date" reference="date"
-						field="date" />
+					<component type="calendar" name="time" reference="time"
+						field="time">
+						<option type="withTimePicker" value="true" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4" width="1" height="5">
 					<component type="grid" name="transformationsConsumption"
