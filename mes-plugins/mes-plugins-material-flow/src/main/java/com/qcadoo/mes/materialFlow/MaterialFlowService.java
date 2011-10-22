@@ -24,7 +24,6 @@
 package com.qcadoo.mes.materialFlow;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
-import static com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants.MODEL_TRANSFER;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -164,7 +163,23 @@ public class MaterialFlowService {
         }
     }
 
-    public void generateTransferNumber(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+    public void fillNumberFieldValue(final ViewDefinitionState view) {
+        if (view.getComponentByReference("number").getFieldValue() != null) {
+            return;
+        }
+        numberGeneratorService.generateAndInsertNumber(view, MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFORMATIONS,
+                "form", "number");
+    }
+
+    public void generateNumberForTransfer(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+        generateNumberAfterSelectingProduct(state, componentState, MaterialFlowConstants.MODEL_TRANSFER);
+    }
+
+    public void generateNumberForStockCorrection(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+        generateNumberAfterSelectingProduct(state, componentState, MaterialFlowConstants.MODEL_STOCK_CORRECTION);
+    }
+    
+    public void generateNumberAfterSelectingProduct(final ViewDefinitionState state, final ComponentState componentState, String tableToGenerateNumber) {
         if (!(componentState instanceof FieldComponent)) {
             throw new IllegalStateException("component is not FieldComponentState");
         }
@@ -178,7 +193,7 @@ public class MaterialFlowService {
             Entity product = getAreaById((Long) productState.getFieldValue());
             if (product != null) {
                 String numberValue = product.getField("number") + "-" +
-                        numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, "transfer", 3);
+                        numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, tableToGenerateNumber, 3);
                 number.setFieldValue(numberValue);
             }
         }
@@ -197,13 +212,6 @@ public class MaterialFlowService {
         return null;
     }
 
-    public void fillNumberFieldValue(final ViewDefinitionState view) {
-        if (view.getComponentByReference("number").getFieldValue() != null) {
-            return;
-        }
-        numberGeneratorService.generateAndInsertNumber(view, MaterialFlowConstants.PLUGIN_IDENTIFIER, MODEL_TRANSFER, "form",
-                "number");
-    }
 
     public void fillUnitFieldValue(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         fillUnitFieldValue(view);
@@ -381,7 +389,7 @@ public class MaterialFlowService {
         Entity transfer = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER).find("where number = '" + number.toString() + "'").uniqueResult();
         if (transfer == null)
-        	return;
+            return;
         
         if (transfer.getBelongsToField("transformationsConsumption") != null || 
                 transfer.getBelongsToField("transformationsProduction") != null) {

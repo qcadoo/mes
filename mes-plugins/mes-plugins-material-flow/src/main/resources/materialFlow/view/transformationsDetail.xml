@@ -162,4 +162,7 @@
 			<option type="header" value="true" />
 		</component>
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillNumberFieldValue" />
+	</hooks>
 </view>
