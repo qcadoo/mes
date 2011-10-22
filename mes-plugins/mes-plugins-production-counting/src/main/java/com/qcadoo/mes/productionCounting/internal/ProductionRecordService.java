@@ -63,6 +63,8 @@ public class ProductionRecordService {
     @Autowired
     SecurityService securityService;
 
+    private final static String CLOSED_ORDER = "04completed";
+
     public void generateData(final DataDefinition dd, final Entity entity) {
         if (entity.getField("number") == null) {
             entity.setField("number", numberGeneratorService.generateNumber(ProductionCountingConstants.PLUGIN_IDENTIFIER, entity

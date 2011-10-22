@@ -24,33 +24,6 @@
     ***************************************************************************
 
 -->
-<plugin plugin="samples" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:custom="http://schema.qcadoo.org/modules/custom"
-	xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
-       http://schema.qcadoo.org/plugin.xsd
-       http://schema.qcadoo.org/modules/custom
-       http://schema.qcadoo.org/modules/custom.xsd">
-
-	<information>
-		<name>MES - Samples</name>
-		<vendor>
-			<name>Qcadoo Limited</name>
-			<url>http://www.qcadoo.com/</url>
-		</vendor>
-	</information>
-
-	<dependencies>
-		<dependency>
-			<plugin>basic</plugin>
-			<version>[0.4.0</version>
-		</dependency>
-	</dependencies>
-
-
-	<modules>
-		<custom:custom class="com.qcadoo.mes.samples.SamplesLoaderModule" />
-	</modules>
-
-</plugin>
+<activeCurrency>
+	<row CODE="PLN" />
+</activeCurrency>

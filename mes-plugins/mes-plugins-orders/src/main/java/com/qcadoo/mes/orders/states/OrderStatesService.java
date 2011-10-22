@@ -1,5 +1,7 @@
 package com.qcadoo.mes.orders.states;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +19,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.plugin.api.PluginState;
@@ -60,12 +63,12 @@ public class OrderStatesService {
         if (newState.getStringValue().equals(OrderStates.COMPLETED.getStringValue())) {
             if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
                 state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
-                        MessageType.FAILURE);
+                        MessageType.FAILURE, false);
                 return;
             }
             if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
                 state.addMessage(translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
-                        MessageType.FAILURE);
+                        MessageType.FAILURE, false);
                 return;
             }
         }
@@ -76,9 +79,6 @@ public class OrderStatesService {
 
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderFromDB.getStringField("state").equals(newState.getStringValue())) {
-            viewDefinitionState.getComponentByReference("form").addMessage(
-                    translationService.translate("orders.order.orderStates.fieldRequired", viewDefinitionState.getLocale()),
-                    MessageType.FAILURE);
             orderState.setFieldValue(oldState.getStringValue());
         }
 
@@ -87,11 +87,6 @@ public class OrderStatesService {
     public void changeOrderStateToAccepted(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         changeOrderStateTo(viewDefinitionState, state, OrderStates.PENDING, OrderStates.ACCEPTED);
-        for (String reference : Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "defaultTechnology",
-                "technology")) {
-            FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(reference);
-            field.setRequired(true);
-        }
     }
 
     public void changeOrderStateToInProgress(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -100,14 +95,8 @@ public class OrderStatesService {
         Entity order = form.getEntity();
         if ((OrderStates.ACCEPTED.getStringValue().equals(order.getStringField("state")))) {
             changeOrderStateTo(viewDefinitionState, state, OrderStates.ACCEPTED, OrderStates.IN_PROGRESS);
-
         } else if (OrderStates.INTERRUPTED.getStringValue().equals(order.getStringField("state"))) {
             changeOrderStateTo(viewDefinitionState, state, OrderStates.INTERRUPTED, OrderStates.IN_PROGRESS);
-        }
-        for (String reference : Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "defaultTechnology",
-                "technology", "doneQuantity")) {
-            FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(reference);
-            field.setRequired(true);
         }
     }
 
@@ -162,23 +151,27 @@ public class OrderStatesService {
         if (newState.getStringValue().equals(OrderStates.COMPLETED.getStringValue())) {
             if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
                 state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
-                        MessageType.FAILURE);
+                        MessageType.FAILURE, false);
                 return;
             }
             if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
                 state.addMessage(translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
-                        MessageType.FAILURE);
+                        MessageType.FAILURE, false);
                 return;
             }
         }
         order.getDataDefinition().save(order);
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderFromDB.getStringField("state").equals(newState.getStringValue())) {
-            StringBuilder error = new StringBuilder();
-            error = error.append(translationService.translate("orders.order.orderStates.fieldRequired", state.getLocale()));
-            error = error.append(" ");
-            error = error.append(orderFromDB.getStringField("name"));
-            state.addMessage(error.toString(), MessageType.FAILURE, false);
+            for (ErrorMessage message : order.getErrors().values()) {
+                StringBuilder error = new StringBuilder();
+                error = error.append(translationService.translate("orders.order.orderStates.error", state.getLocale()));
+                error = error.append(" ");
+                error = error.append(orderFromDB.getStringField("name"));
+                error = error.append(" ");
+                error = error.append(message.getMessage());
+                state.addMessage(error.toString(), MessageType.FAILURE, false);
+            }
         }
 
     }
@@ -265,8 +258,12 @@ public class OrderStatesService {
         }
     }
 
-    private boolean checkRequiredBatch(final Entity order) {
-        Entity technology = (Entity) order.getBelongsToField("technology");
+    private boolean checkRequiredBatch(final Entity entity) {
+        checkArgument(entity != null, "order is null");
+
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                entity.getId());
+        Entity technology = order.getBelongsToField("technology");
         if (technology != null) {
             if (order.getHasManyField("genealogies").size() == 0) {
                 if ((Boolean) technology.getField("batchRequired")) {
@@ -355,6 +352,8 @@ public class OrderStatesService {
             if (qualityControlDD != null) {
                 SearchResult searchResult = qualityControlDD.find().belongsTo("order", order.getId()).isEq("closed", false)
                         .list();
+                // qualityControlDD.find().add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("closed",
+                // false));
                 return (searchResult.getTotalNumberOfEntities() <= 0);
             } else {
                 return false;
@@ -373,4 +372,21 @@ public class OrderStatesService {
         boolean canChange(ComponentState gridOrForm, Entity order, String state);
     }
 
+    public void setFieldsRequired(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                form.getEntityId());
+        if (order != null)
+            if (order.getStringField("state").equals("02accepted") || order.getStringField("state").equals("03inProgress")
+                    || order.getStringField("state").equals("06interrupted"))
+                for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology")) {
+                    FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+                    field.setRequired(true);
+                }
+            else if (order.getStringField("state").equals("04completed"))
+                for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology", "doneQuantity")) {
+                    FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+                    field.setRequired(true);
+                }
+    }
 }

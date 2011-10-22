@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -41,14 +42,39 @@ public class ChangeStateHook {
             return;
         }
         if (oldEntity.getStringField("state").equals(newEntity.getStringField("state"))) {
+            String state = oldEntity.getStringField("state");
+            List<ChangeOrderStateMessage> errors = null;
+            if (state.equals(OrderStates.ACCEPTED.getStringValue())) {
+                errors = orderStateValidationService.validationAccepted(newEntity);
+            } else if (state.equals(OrderStates.IN_PROGRESS.getStringValue())
+                    || state.equals(OrderStates.INTERRUPTED.getStringValue())) {
+                errors = orderStateValidationService.validationInProgress(newEntity);
+            } else if (state.equals(OrderStates.COMPLETED.getStringValue())) {
+                errors = orderStateValidationService.validationCompleted(newEntity);
+            }
+            if (errors != null && errors.size() > 0) {
+                for (ChangeOrderStateMessage error : errors) {
+                    if (error.getReferenceToField() != null) {
+                        newEntity
+                                .addError(dataDefinition.getField(error.getReferenceToField()), translationService.translate(
+                                        error.getMessage() + "." + error.getReferenceToField(), getLocale()));
+                    } else {
+                        newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale()));
+                    }
+                }
+            }
             return;
         }
         List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newEntity, oldEntity);
         if (errors != null && errors.size() > 0) {
             newEntity.setField("state", oldEntity.getStringField("state"));
             for (ChangeOrderStateMessage error : errors) {
-                newEntity.addGlobalError(translationService.translate(error.getMessage() + "." + error.getReferenceToField(),
-                        getLocale()));
+                if (error.getReferenceToField() != null) {
+                    newEntity.addError(dataDefinition.getField(error.getReferenceToField()),
+                            translationService.translate(error.getMessage() + "." + error.getReferenceToField(), getLocale()));
+                } else {
+                    newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale()));
+                }
             }
             return;
         }

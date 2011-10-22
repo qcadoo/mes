@@ -67,7 +67,7 @@
 						]]>
 					</script>
 				</smallButton>
-					<smallButton name="declineOrder" icon="startIcon16.png" state="disabled">
+					<smallButton name="declineOrder" icon="deleteIcon16.png" state="disabled">
 						<script>
 							<![CDATA[
 								this.addOnChangeListener({
@@ -139,7 +139,7 @@
 									}
 								} 
 								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
- 									print.enable();
+ 									if (selectedEntitiesArray.length == 1) print.enable();
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
 									var externalSynchronized = selectedEntitiesArray[0].fields.externalSynchronized;									
 									if (selectedEntityStatus == '01pending' && externalSynchronized == '1') {
@@ -150,7 +150,7 @@
 										declineOrder.enable();
 										declineOrder.state = "decline";
 										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
-										declineOrder.setIcon('startIcon16.png');
+										declineOrder.setIcon('deleteIcon16.png');
 										interruptOrder.disable();
 									} else if (selectedEntityStatus == '02accepted' && externalSynchronized == '1') {
 										acceptOrder.enable();
@@ -160,7 +160,7 @@
 										declineOrder.enable();
 										declineOrder.state = "decline";
 										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
-										declineOrder.setIcon('startIcon16.png');
+										declineOrder.setIcon('deleteIcon16.png');
 										interruptOrder.disable();
 									} else if (selectedEntityStatus == '03inProgress' && externalSynchronized == '1') {
 										acceptOrder.enable();
@@ -170,7 +170,7 @@
 										declineOrder.enable();
 										declineOrder.state = "abandon";
 										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
-										declineOrder.setIcon('startIcon16.png');
+										declineOrder.setIcon('deleteIcon16.png');
 										interruptOrder.enable();
 									} else if (selectedEntityStatus == '06interrupted' && externalSynchronized == '1') {
 										acceptOrder.enable();
@@ -180,7 +180,7 @@
 										declineOrder.enable();
 										declineOrder.state = "abandon";
 										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
-										declineOrder.setIcon('startIcon16.png');
+										declineOrder.setIcon('deleteIcon16.png');
 										interruptOrder.disable();
 									} else {
 										acceptOrder.disable();
