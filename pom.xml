@@ -34,10 +34,10 @@
 	  </modules>	
 
 	<properties>
-		<qcadoo.version>0.4.9</qcadoo.version>
-		<qcadoo.plugin.version>0.4.9</qcadoo.plugin.version>
-		<qcadoo.saas.version>0.4.9</qcadoo.saas.version>
-		<qcadoo.maven.plugin.version>0.4.9</qcadoo.maven.plugin.version>
+		<qcadoo.version>0.4.10-SNAPSHOT</qcadoo.version>
+		<qcadoo.plugin.version>0.4.10-SNAPSHOT</qcadoo.plugin.version>
+		<qcadoo.saas.version>0.4.10-SNAPSHOT</qcadoo.saas.version>
+		<qcadoo.maven.plugin.version>0.4.10-SNAPSHOT</qcadoo.maven.plugin.version>
 		<slf4j.version>1.6.1</slf4j.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<profile.name>default</profile.name>
