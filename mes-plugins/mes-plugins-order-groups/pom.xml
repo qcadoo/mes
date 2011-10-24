@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>mes-plugins</artifactId>
 		<groupId>com.qcadoo.mes</groupId>
-		<version>0.4.9-SNAPSHOT</version>
+		<version>0.4.9</version>
 	</parent>	
 
 	<artifactId>mes-plugins-order-groups</artifactId>
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
     		<artifactId>mes-plugins-orders</artifactId>
-    		<version>0.4.9-SNAPSHOT</version>
+    		<version>0.4.9</version>
 	   	</dependency>
 	</dependencies>
 
