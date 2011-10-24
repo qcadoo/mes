@@ -24,8 +24,9 @@
 package com.qcadoo.mes.productionTimeNorms;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.productionTimeNorms.TimeNormsConstants.*;
-import static com.qcadoo.view.api.ComponentState.MessageType.*;
+import static com.qcadoo.mes.productionTimeNorms.TimeNormsConstants.FIELDS_OPERATION;
+import static com.qcadoo.mes.productionTimeNorms.TimeNormsConstants.FIELDS_TECHNOLOGY;
+import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

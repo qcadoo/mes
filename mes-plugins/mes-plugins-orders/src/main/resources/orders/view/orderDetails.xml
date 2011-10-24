@@ -52,47 +52,47 @@
 									}
 								}
 							});
-						]]>
+							]]>
 					</script>
 				</smallButton>
 				<smallButton name="declineOrder" icon="deleteIcon16.png"
 					state="disabled">
 					<script>
-							<![CDATA[
-								this.addOnChangeListener({
-									onClick: function() {
-										if (this.state == "decline") {
-											if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.declineOrder.confirm)}")) {
-												if(window.canClose()) {
-													#{form}.performEvent('changeOrderStateToDeclined', []);
-												}
-											};
-										} else if (this.state == "abandon") {
-											if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.abandonOrder.confirm)}")) {
-												if(window.canClose()) {
-													#{form}.performEvent('changeOrderStateToAbandoned', []);
-												}
-											};
+					<![CDATA[
+						this.addOnChangeListener({
+							onClick: function() {
+								if (this.state == "decline") {
+									if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.declineOrder.confirm)}")) {
+										if(window.canClose()) {
+											#{form}.performEvent('changeOrderStateToDeclined', []);
 										}
-									}
-								});
+									};
+								} else if (this.state == "abandon") {
+									if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.abandonOrder.confirm)}")) {
+										if(window.canClose()) {
+											#{form}.performEvent('changeOrderStateToAbandoned', []);
+										}
+									};
+								}
+							}
+						});
 							]]>
 					</script>
 				</smallButton>
 				<smallButton name="interruptOrder" icon="pauseIcon16.png"
 					state="disabled">
 					<script>
-							<![CDATA[
-								this.addOnChangeListener({
-									onClick: function() {
-										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.interruptOrder.confirm)}")) {
-											if(window.canClose()) {
-												#{form}.performEvent('changeOrderStateToInterrupted', []);
-											}
-										};
+						<![CDATA[
+						this.addOnChangeListener({
+							onClick: function() {
+								if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.interruptOrder.confirm)}")) {
+									if(window.canClose()) {
+										#{form}.performEvent('changeOrderStateToInterrupted', []);
 									}
-								});
-							]]>
+								};
+							}
+						});
+						]]>
 					</script>
 				</smallButton>
 			</group>
@@ -101,127 +101,125 @@
 			<component type="form" name="order" reference="form">
 				<script>
 					<![CDATA[
-						var save = #{window}.getRibbonItem("actions.save");
-						var saveBack = #{window}.getRibbonItem("actions.saveBack");
-						var saveNew = #{window}.getRibbonItem("actions.saveNew");
-						var cancel = #{window}.getRibbonItem("actions.cancel");
-						var del = #{window}.getRibbonItem("actions.delete");
-						var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
-						var declineOrder = #{window}.getRibbonItem("status.declineOrder");
-						var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
+					var save = #{window}.getRibbonItem("actions.save");
+					var saveBack = #{window}.getRibbonItem("actions.saveBack");
+					var saveNew = #{window}.getRibbonItem("actions.saveNew");
+					var cancel = #{window}.getRibbonItem("actions.cancel");
+					var del = #{window}.getRibbonItem("actions.delete");
+					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
+					var declineOrder = #{window}.getRibbonItem("status.declineOrder");
+					var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
+					this.addOnChangeListener({
+					onSetValue: function(value) {
+						if (! value || ! value.content) {
+						return;
+						}
+						save.enable();
+						saveBack.enable();
+						saveNew.enable();
+						if (! value.content.entityId) {
+							cancel.disable();
+							del.disable();
+							acceptOrder.disable();
+							declineOrder.disable();
+							interruptOrder.disable();
+							return;
+						}
+						cancel.enable();
+						del.enable();
+						var state = #{state}.getValue().content.value;
+						var externalNumber = #{externalNumber}.getValue().content.value;
+						var externalSynchronized = #{externalSynchronized}.getValue().content.value;
+						if (!state) {
+							return;
+						}
+						if (state == "01pending") {
+							acceptOrder.enable();
+							acceptOrder.state = "accept";
+							acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.acceptOrder)}");
+							acceptOrder.setIcon('startIcon16.png');
+							declineOrder.enable();
+							declineOrder.state = "decline";
+							declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
+							declineOrder.setIcon('deleteIcon16.png');
+							interruptOrder.disable();
+						} else if (state == "02accepted") {
+							acceptOrder.enable();
+							acceptOrder.state = "begin";
+							acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.activateOrder)}");
+							acceptOrder.setIcon('startIcon16.png');
+							declineOrder.enable();
+							declineOrder.state = "decline";
+							declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
+							declineOrder.setIcon('deleteIcon16.png');
+							interruptOrder.disable();
+						} else if (state == "03inProgress") {
+							acceptOrder.enable();
+							acceptOrder.state = "finish";
+							acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.finishOrder)}");
+							acceptOrder.setIcon('acceptIcon16.png');
+							declineOrder.enable();
+							declineOrder.state = "abandon";
+							declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
+							declineOrder.setIcon('deleteIcon16.png');
+							interruptOrder.enable();
+						} else if (state == "06interrupted"){
+							acceptOrder.enable();
+							acceptOrder.state = "restart";
+							acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.restartOrder)}");
+							acceptOrder.setIcon('acceptIcon16.png');
+							declineOrder.enable();
+							declineOrder.state = "abandon";
+							declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
+							declineOrder.setIcon('deleteIcon16.png');
+							interruptOrder.disable();
+						} else {
+							save.disable();
+							saveBack.disable();
+							saveNew.disable();
+							cancel.disable();
+							del.disable();
+							acceptOrder.disable();
+							declineOrder.disable();
+							interruptOrder.disable();
+						}
 						
-						this.addOnChangeListener({
-							onSetValue: function(value) {
-								if (! value || ! value.content) {
-									return;
-								}
-								save.enable();
-								saveBack.enable();
-								saveNew.enable();
-								if (! value.content.entityId) {
-									cancel.disable();
-									del.disable();
-									acceptOrder.disable();
-									declineOrder.disable();
-									interruptOrder.disable();
-									return;
-								}
-								
-								cancel.enable();
-								del.enable();
-								
-								var state = #{state}.getValue().content.value;
-								var externalNumber = #{externalNumber}.getValue().content.value;
-								var externalSynchronized = #{externalSynchronized}.getValue().content.value;
-								
-								if (!state) {
-									return;
-								}
-								
- 								if (state == "01pending") {
- 									acceptOrder.enable();
- 									acceptOrder.state = "accept";
- 									acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.acceptOrder)}");
- 									acceptOrder.setIcon('startIcon16.png');
-									declineOrder.enable();
-									declineOrder.state = "decline";
-									declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
-									declineOrder.setIcon('deleteIcon16.png');
-									interruptOrder.disable();
- 								} else if (state == "02accepted") {
- 									acceptOrder.enable();
-									acceptOrder.state = "begin";
- 									acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.activateOrder)}");
- 									acceptOrder.setIcon('startIcon16.png');
-									declineOrder.enable();
-									declineOrder.state = "decline";
-									declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
-									declineOrder.setIcon('deleteIcon16.png');
-									interruptOrder.disable();
- 								} else if (state == "03inProgress") { 
-									acceptOrder.enable();
- 									acceptOrder.state = "finish";
- 									acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.finishOrder)}");
- 									acceptOrder.setIcon('acceptIcon16.png');
-									declineOrder.enable();
-									declineOrder.state = "abandon";
-									declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
-									declineOrder.setIcon('deleteIcon16.png');
-									interruptOrder.enable();
-								} else if (state == "06interrupted"){
-									acceptOrder.enable();
- 									acceptOrder.state = "restart";
- 									acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.restartOrder)}");
- 									acceptOrder.setIcon('acceptIcon16.png');
-									declineOrder.enable();
-									declineOrder.state = "abandon";
-									declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
-									declineOrder.setIcon('deleteIcon16.png');
-									interruptOrder.disable();
-								} else {
- 									save.disable();
- 									saveBack.disable();
- 									saveNew.disable();
- 									cancel.disable();
- 									del.disable();
-									acceptOrder.disable();
-									declineOrder.disable();
-									interruptOrder.disable();
-								}
-
-								if(externalSynchronized == '0') {
-									save.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-									saveBack.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-									saveNew.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-									cancel.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-									del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-									acceptOrder.disable();
-									declineOrder.disable();
-									interruptOrder.disable();
-								}
-								
-								if(externalNumber != undefined && externalNumber != '') {
-									del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								}
-							}
-						});
+						if(externalSynchronized == '0') {
+							save.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+							saveBack.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+							saveNew.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+							cancel.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+							del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+							acceptOrder.disable();
+							declineOrder.disable();
+							interruptOrder.disable();
+						}
+						if(externalNumber != undefined && externalNumber != '') {
+						del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+						}
+						}
+					});
 					]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3"
 					rows="7">
 					<layoutElement column="1" row="1">
-						<component type="hidden" name="externalNumber" field="externalNumber"
-							reference="externalNumber" />
-						<component type="hidden" name="externalSynchronized"
-							field="externalSynchronized" reference="externalSynchronized" />
 						<component type="input" name="number" reference="number"
 							field="number">
 							<option type="alignment" value="right" />
 						</component>
+						<component type="hidden" name="externalNumber" field="externalNumber"
+							reference="externalNumber" />
+						<component type="hidden" name="externalSynchronized"
+							field="externalSynchronized" reference="externalSynchronized" />
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
 						<component type="textarea" name="name" field="name"
 							reference="name" hasDescription="true" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="select" name="state" field="state"
+							reference="state" defaultVisible="false" />
 					</layoutElement>
 					<layoutElement column="1" row="5">
 						<component type="lookup" name="contractor" reference="contractor"
@@ -309,14 +307,13 @@
 					</layoutElement>
 				</component>
 				<option type="header" value="true" />
-				<option type="expression"
-					value="#name + ' - ' + #number + ' - ' + (#state == '01pending' ?	'@orders.order.state.value.01pending' :
- 							#state == '02accepted' ? '@orders.order.state.value.02accepted' :
-							 #state == '03inProgress' ? '@orders.order.state.value.03inProgress' :
-							 #state == '04completed' ?	'@orders.order.state.value.04completed' :
-							 #state == '05declined' ? '@orders.order.state.value.05declined' :
-							 #state == '06interrupted' ?	'@orders.order.state.value.06interrupted' :
-							 #state == '07abandoned' ? '@orders.order.state.value.07abandoned' : '')" />
+				<option type="expression" value="#name + ' - ' + #number + (#state =='01pending' ? '@orders.order.state.value.01pending' :
+#state == '02accepted' ? '@orders.order.state.value.02accepted' :
+#state == '03inProgress' ? '@orders.order.state.value.03inProgress' :
+#state == '04completed' ? '@orders.order.state.value.04completed' :
+#state == '05declined' ? '@orders.order.state.value.05declined' :
+#state == '06interrupted' ? '@orders.order.state.value.06interrupted' :
+#state == '07abandoned' ? '@orders.order.state.value.07abandoned' : '')" />
 				<listener event="changeOrderStateToAccepted"
 					class="com.qcadoo.mes.orders.states.OrderStatesService" method="changeOrderStateToAccepted" />
 				<listener event="changeOrderStateToInProgress"
@@ -354,21 +351,21 @@
 				source="#{form}.loggings">
 				<option type="column" name="dateAndTime" fields="dateAndTime" />
 				<option type="column" name="previousState" fields="previousState"
-					expression="#previousState == '01pending' ?	'@orders.order.state.value.01pending' :
- 										#previousState == '02accepted' ? '@orders.order.state.value.02accepted' :
- 										#previousState == '03inProgress' ? '@orders.order.state.value.03inProgress' :
- 										#previousState == '04completed' ?	'@orders.order.state.value.04completed' :
- 										#previousState == '05declined' ? '@orders.order.state.value.05declined' :
- 										#previousState == '06interrupted' ?	'@orders.order.state.value.06interrupted' :
- 										#previousState == '07abandoned' ? '@orders.order.state.value.07abandoned' : ''" />
+					expression="#previousState == '01pending' ? '@orders.order.state.value.01pending' :
+#previousState == '02accepted' ? '@orders.order.state.value.02accepted' :
+#previousState == '03inProgress' ? '@orders.order.state.value.03inProgress' :
+#previousState == '04completed' ? '@orders.order.state.value.04completed' :
+#previousState == '05declined' ? '@orders.order.state.value.05declined' :
+#previousState == '06interrupted' ? '@orders.order.state.value.06interrupted' :
+#previousState == '07abandoned' ? '@orders.order.state.value.07abandoned' : ''" />
 				<option type="column" name="currentState" fields="currentState"
-					expression="#currentState == '01pending' ?	'@orders.order.state.value.01pending' :
- 										#currentState == '02accepted' ? '@orders.order.state.value.02accepted' :
- 										#currentState == '03inProgress' ? '@orders.order.state.value.03inProgress' :
- 										#currentState == '04completed' ?	'@orders.order.state.value.04completed' :
- 										#currentState == '05declined' ? '@orders.order.state.value.05declined' :
- 										#currentState == '06interrupted' ?	'@orders.order.state.value.06interrupted' :
- 										#currentState == '07abandoned' ? '@orders.order.state.value.07abandoned' : ''" />
+					expression="#currentState == '01pending' ? '@orders.order.state.value.01pending' :
+#currentState == '02accepted' ? '@orders.order.state.value.02accepted' :
+#currentState == '03inProgress' ? '@orders.order.state.value.03inProgress' :
+#currentState == '04completed' ? '@orders.order.state.value.04completed' :
+#currentState == '05declined' ? '@orders.order.state.value.05declined' :
+#currentState == '06interrupted' ? '@orders.order.state.value.06interrupted' :
+#currentState == '07abandoned' ? '@orders.order.state.value.07abandoned' : ''" />
 				<option type="column" name="shift" fields="shift"
 					expression="#shift == null ? 'N/A' : #shift['name']" />
 				<option type="column" name="worker" fields="worker" />

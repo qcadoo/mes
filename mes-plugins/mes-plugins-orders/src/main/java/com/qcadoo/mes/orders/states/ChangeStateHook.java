@@ -14,6 +14,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState.MessageType;
 
 @Service
 public class ChangeStateHook {
@@ -67,6 +68,9 @@ public class ChangeStateHook {
         }
         List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newEntity, oldEntity);
         if (errors != null && errors.size() > 0) {
+            if (errors.size() == 1 && errors.get(0).getType().equals(MessageType.INFO)) {
+                return;
+            }
             newEntity.setField("state", oldEntity.getStringField("state"));
             for (ChangeOrderStateMessage error : errors) {
                 if (error.getReferenceToField() != null) {
