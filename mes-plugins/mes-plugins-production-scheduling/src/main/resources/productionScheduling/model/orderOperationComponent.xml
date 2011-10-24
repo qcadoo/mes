@@ -42,20 +42,20 @@
 		<hasMany name="children" model="orderOperationComponent"
 			joinField="parent" cascade="delete" copyable="true" />
 		<priority name="priority" scope="parent" />
-		<integer name="tpz" />
-		<integer name="tj" />
+		<integer name="tpz" default="0" required="true"/>
+		<integer name="tj" default="0" required="true"/>
 		<decimal name="productionInOneCycle" required="true" default="1" />
 		<enum name="countRealized" values="01all,02specified" default="01all"
 			required="true" />
-		<decimal name="countMachine" />
-		<integer name="timeNextOperation" />
-		<decimal name="machineUtilization">
-			<validatesPrecision max="7" />
-			<validatesScale max="3" />
+		<decimal name="countMachine" default="0.0" required="true"/>
+		<integer name="timeNextOperation" default="0" required="true"/>
+		<decimal name="machineUtilization" required="true" default="1.0" >
+			<validatesLength max="7" />
+			<validatesPrecision max="3" />
 		</decimal>
-		<decimal name="laborUtilization">
-			<validatesPrecision max="7" />
-			<validatesScale max="3" />
+		<decimal name="laborUtilization" required="true" default="1.0">
+			<validatesLength max="7" />
+			<validatesPrecision max="3" />
 		</decimal>
 		<integer name="operationOffSet" />
 		<integer name="effectiveOperationRealizationTime" />

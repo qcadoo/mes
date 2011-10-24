@@ -1,10 +1,7 @@
 package com.qcadoo.mes.orders.states;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.plugin.api.Plugin;
 import com.qcadoo.plugin.api.PluginAccessor;
@@ -59,19 +53,6 @@ public class OrderStatesService {
 
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         Entity order = form.getEntity();
-
-        if (newState.getStringValue().equals(OrderStates.COMPLETED.getStringValue())) {
-            if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
-                state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
-                        MessageType.FAILURE, false);
-                return;
-            }
-            if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
-                state.addMessage(translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
-                        MessageType.FAILURE, false);
-                return;
-            }
-        }
 
         FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
         orderState.setFieldValue(newState.getStringValue());
@@ -148,18 +129,18 @@ public class OrderStatesService {
             }
         }
 
-        if (newState.getStringValue().equals(OrderStates.COMPLETED.getStringValue())) {
-            if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
-                state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
-                        MessageType.FAILURE, false);
-                return;
-            }
-            if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
-                state.addMessage(translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
-                        MessageType.FAILURE, false);
-                return;
-            }
-        }
+        // if (newState.getStringValue().equals(OrderStates.COMPLETED.getStringValue())) {
+        // if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
+        // state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
+        // MessageType.FAILURE, false);
+        // return;
+        // }
+        // if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
+        // state.addMessage(translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
+        // MessageType.FAILURE, false);
+        // return;
+        // }
+        // }
         order.getDataDefinition().save(order);
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderFromDB.getStringField("state").equals(newState.getStringValue())) {
@@ -244,124 +225,124 @@ public class OrderStatesService {
         return plugin != null && plugin.getState().equals(PluginState.ENABLED);
     }
 
-    private boolean checkAutogenealogyRequired() {
-        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
-                .find().setMaxResults(1).list();
-        Entity parameter = null;
-        if (searchResult.getEntities().size() > 0) {
-            parameter = searchResult.getEntities().get(0);
-        }
-        if (parameter != null && parameter.getField("batchForDoneOrder") != null) {
-            return !(parameter.getField("batchForDoneOrder").toString().equals("01none"));
-        } else {
-            return false;
-        }
-    }
+    // private boolean checkAutogenealogyRequired() {
+    // SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
+    // .find().setMaxResults(1).list();
+    // Entity parameter = null;
+    // if (searchResult.getEntities().size() > 0) {
+    // parameter = searchResult.getEntities().get(0);
+    // }
+    // if (parameter != null && parameter.getField("batchForDoneOrder") != null) {
+    // return !(parameter.getField("batchForDoneOrder").toString().equals("01none"));
+    // } else {
+    // return false;
+    // }
+    // }
+    //
+    // private boolean checkRequiredBatch(final Entity entity) {
+    // checkArgument(entity != null, "order is null");
+    //
+    // Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+    // entity.getId());
+    // Entity technology = order.getBelongsToField("technology");
+    // if (technology != null) {
+    // if (order.getHasManyField("genealogies").size() == 0) {
+    // if ((Boolean) technology.getField("batchRequired")) {
+    // return false;
+    // }
+    // if ((Boolean) technology.getField("shiftFeatureRequired")) {
+    // return false;
+    // }
+    // if ((Boolean) technology.getField("postFeatureRequired")) {
+    // return false;
+    // }
+    // if ((Boolean) technology.getField("otherFeatureRequired")) {
+    // return false;
+    // }
+    // for (Entity operationComponent : technology.getTreeField("operationComponents")) {
+    // for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
+    // if ((Boolean) operationProductComponent.getField("batchRequired")) {
+    // return false;
+    // }
+    // }
+    // }
+    // }
+    // for (Entity genealogy : order.getHasManyField("genealogies")) {
+    // if ((Boolean) technology.getField("batchRequired") && genealogy.getField("batch") == null) {
+    // return false;
+    // }
+    // if ((Boolean) technology.getField("shiftFeatureRequired")) {
+    // List<Entity> entityList = genealogy.getHasManyField("shiftFeatures");
+    // if (entityList.size() == 0) {
+    // return false;
+    // }
+    // }
+    // if ((Boolean) technology.getField("postFeatureRequired")) {
+    // List<Entity> entityList = genealogy.getHasManyField("postFeatures");
+    // if (entityList.size() == 0) {
+    // return false;
+    // }
+    // }
+    // if ((Boolean) technology.getField("otherFeatureRequired")) {
+    // List<Entity> entityList = genealogy.getHasManyField("otherFeatures");
+    // if (entityList.size() == 0) {
+    // return false;
+    // }
+    // }
+    // for (Entity genealogyProductIn : genealogy.getHasManyField("productInComponents")) {
+    // if ((Boolean) (genealogyProductIn.getBelongsToField("productInComponent").getField("batchRequired"))) {
+    // List<Entity> entityList = genealogyProductIn.getHasManyField("batch");
+    // if (entityList.size() == 0) {
+    // return false;
+    // }
+    // }
+    // }
+    // }
+    // }
+    // return true;
+    // }
 
-    private boolean checkRequiredBatch(final Entity entity) {
-        checkArgument(entity != null, "order is null");
-
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                entity.getId());
-        Entity technology = order.getBelongsToField("technology");
-        if (technology != null) {
-            if (order.getHasManyField("genealogies").size() == 0) {
-                if ((Boolean) technology.getField("batchRequired")) {
-                    return false;
-                }
-                if ((Boolean) technology.getField("shiftFeatureRequired")) {
-                    return false;
-                }
-                if ((Boolean) technology.getField("postFeatureRequired")) {
-                    return false;
-                }
-                if ((Boolean) technology.getField("otherFeatureRequired")) {
-                    return false;
-                }
-                for (Entity operationComponent : technology.getTreeField("operationComponents")) {
-                    for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                        if ((Boolean) operationProductComponent.getField("batchRequired")) {
-                            return false;
-                        }
-                    }
-                }
-            }
-            for (Entity genealogy : order.getHasManyField("genealogies")) {
-                if ((Boolean) technology.getField("batchRequired") && genealogy.getField("batch") == null) {
-                    return false;
-                }
-                if ((Boolean) technology.getField("shiftFeatureRequired")) {
-                    List<Entity> entityList = genealogy.getHasManyField("shiftFeatures");
-                    if (entityList.size() == 0) {
-                        return false;
-                    }
-                }
-                if ((Boolean) technology.getField("postFeatureRequired")) {
-                    List<Entity> entityList = genealogy.getHasManyField("postFeatures");
-                    if (entityList.size() == 0) {
-                        return false;
-                    }
-                }
-                if ((Boolean) technology.getField("otherFeatureRequired")) {
-                    List<Entity> entityList = genealogy.getHasManyField("otherFeatures");
-                    if (entityList.size() == 0) {
-                        return false;
-                    }
-                }
-                for (Entity genealogyProductIn : genealogy.getHasManyField("productInComponents")) {
-                    if ((Boolean) (genealogyProductIn.getBelongsToField("productInComponent").getField("batchRequired"))) {
-                        List<Entity> entityList = genealogyProductIn.getHasManyField("batch");
-                        if (entityList.size() == 0) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    private boolean isQualityControlAutoCheckEnabled() {
-        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
-                .find().setMaxResults(1).list();
-
-        Entity parameter = null;
-        if (searchResult.getEntities().size() > 0) {
-            parameter = searchResult.getEntities().get(0);
-        }
-
-        if (parameter != null) {
-            return (Boolean) parameter.getField("checkDoneOrderForQuality");
-        } else {
-            return false;
-        }
-    }
-
-    private boolean checkIfAllQualityControlsAreClosed(final Entity order) {
-        if (order.getBelongsToField("technology") == null) {
-            return true;
-        }
-
-        Object controlTypeField = order.getBelongsToField("technology").getField("qualityControlType");
-
-        if (controlTypeField != null) {
-            DataDefinition qualityControlDD = null;
-
-            qualityControlDD = dataDefinitionService.get("qualityControls", "qualityControl");
-
-            if (qualityControlDD != null) {
-                SearchResult searchResult = qualityControlDD.find().belongsTo("order", order.getId()).isEq("closed", false)
-                        .list();
-                // qualityControlDD.find().add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("closed",
-                // false));
-                return (searchResult.getTotalNumberOfEntities() <= 0);
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
+    // private boolean isQualityControlAutoCheckEnabled() {
+    // SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
+    // .find().setMaxResults(1).list();
+    //
+    // Entity parameter = null;
+    // if (searchResult.getEntities().size() > 0) {
+    // parameter = searchResult.getEntities().get(0);
+    // }
+    //
+    // if (parameter != null) {
+    // return (Boolean) parameter.getField("checkDoneOrderForQuality");
+    // } else {
+    // return false;
+    // }
+    // }
+    //
+    // private boolean checkIfAllQualityControlsAreClosed(final Entity order) {
+    // if (order.getBelongsToField("technology") == null) {
+    // return true;
+    // }
+    //
+    // Object controlTypeField = order.getBelongsToField("technology").getField("qualityControlType");
+    //
+    // if (controlTypeField != null) {
+    // DataDefinition qualityControlDD = null;
+    //
+    // qualityControlDD = dataDefinitionService.get("qualityControls", "qualityControl");
+    //
+    // if (qualityControlDD != null) {
+    // SearchResult searchResult = qualityControlDD.find().belongsTo("order", order.getId()).isEq("closed", false)
+    // .list();
+    // // qualityControlDD.find().add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("closed",
+    // // false));
+    // return (searchResult.getTotalNumberOfEntities() <= 0);
+    // } else {
+    // return false;
+    // }
+    // } else {
+    // return false;
+    // }
+    // }
 
     public void registerBeforeChangeStateListener(final BeforeChangeStateListener listener) {
         beforeChangeStateListeners.add(listener);

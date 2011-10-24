@@ -94,7 +94,7 @@ public class SamplesLoaderModule extends Module {
 
     private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number", "tpz", "tj", "productionInOneCycle",
             "pieceworkCost", "machineHourlyCost", "laborHourlyCost", "numberOfOperations", "machineUtilization",
-            "laborUtilization" };
+            "laborUtilization", "countMachine", "countRealized", "timeNextOperation" };
 
     private static final String[] MACHINE_ATTRIBUTES = new String[] { "id", "name", "prod_line", "description" };
 
@@ -136,6 +136,7 @@ public class SamplesLoaderModule extends Module {
     @Override
     @Transactional
     public void multiTenantEnable() {
+
         checkLocale();
         if (databaseHasToBePrepared()) {
             LOG.info("Database has to be prepared ...");
@@ -375,6 +376,9 @@ public class SamplesLoaderModule extends Module {
         operation.setField("countRealized", values.get("countRealized"));
         operation.setField("machineUtilization", values.get("machineUtilization"));
         operation.setField("laborUtilization", values.get("laborUtilization"));
+        operation.setField("countMachineOperation", values.get("countMachine"));
+        operation.setField("countRealizedOperation", "01all");
+        operation.setField("timeNextOperation", values.get("timeNextOperation"));
         operation.setField("machine", getMachine(values.get("number")));
         operation.setField("staff", getRandomStaff());
 
@@ -852,7 +856,9 @@ public class SamplesLoaderModule extends Module {
         component.setField("machineUtilization", operation.getField("machineUtilization"));
         component.setField("laborUtilization", operation.getField("laborUtilization"));
         component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
-        component.setField("countRealized", operation.getField("countRealized"));
+        component.setField("countRealized", operation.getField("countRealizedOperation"));
+        component.setField("countMachine", operation.getField("countMachineOperation"));
+        component.setField("timeNextOperation", operation.getField("timeNextOperation"));
 
         component = dataDefinitionService.get("technologies", "technologyOperationComponent").save(component);
         if (!component.isValid()) {

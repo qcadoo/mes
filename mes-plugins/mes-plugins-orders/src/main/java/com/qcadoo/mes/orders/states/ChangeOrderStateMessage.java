@@ -29,7 +29,7 @@ public class ChangeOrderStateMessage {
     }
 
     public static ChangeOrderStateMessage success(String message) {
-        return new ChangeOrderStateMessage(message, null, MessageType.SUCCESS);
+        return new ChangeOrderStateMessage(message, null, MessageType.INFO);
     }
 
     public String getMessage() {

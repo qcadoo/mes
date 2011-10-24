@@ -41,9 +41,11 @@ public class OperationService {
 
         if (countRealizedOperation.getFieldValue().equals("02specified")) {
             countMachineOperation.setVisible(true);
+
         } else {
             countMachineOperation.setVisible(false);
         }
+        countMachineOperation.requestComponentUpdateState();
     }
 
     public void updateCountMachineOperationFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
@@ -61,6 +63,7 @@ public class OperationService {
         } else {
             countMachineOperation.setVisible(false);
         }
+        countMachineOperation.requestComponentUpdateState();
     }
 
     public void setCountRealizedOperationValue(final ViewDefinitionState viewDefinitionState) {

@@ -24,27 +24,23 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="stockAreasDetail" modelName="stockAreas">
-	<component type="window" name="window">
-		<ribbon>
-			<group template="navigation" />
-			<group template="formSaveCopyAndRemoveActions" />
-		</ribbon>
-		<component type="form" name="form" reference="form">
-			<component type="gridLayout" name="grid" reference="grid"
-				columns="3" rows="2">
-				<layoutElement column="1" row="1">
-					<component type="input" name="number" field="number">
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="input" name="name" field="name" />
-				</layoutElement>
-			</component>
-			<option type="header" value="true" />
-		</component>
-	</component>
-</view>
+<model name="transformations" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<string name="number" required="true" unique="true">
+			<validatesLength max="40" />
+		</string>
+		<string name="name" required="true">
+		</string>
+		<datetime name="time" required="true"/>
+		<belongsTo name="stockAreasFrom" model="stockAreas" plugin="materialFlow" required="true" />
+		<belongsTo name="stockAreasTo" model="stockAreas" plugin="materialFlow" required="true" />
+		<belongsTo name="staff" model="staff" plugin="basic" />
+		<hasMany name="transfersConsumption" model="transfer" joinField="transformationsConsumption" cascade="delete" />
+		<hasMany name="transfersProduction" model="transfer" joinField="transformationsProduction" cascade="delete" />
+	</fields>
+	<hooks>
+	</hooks>
+	<identifier expression="#number + ' - ' + #name" />	
+</model>

@@ -33,8 +33,7 @@
 		<ribbon>
 			<group name="timeOfTechnology">
 				<bigButton name="back" action="#{window}.closeThisModalWindow;" icon="backIcon24.png"/>
-				<bigButton name="copyDateToMainForm" icon="saveIcon24.png"
-					action="#{form}.performSave; #{window}.performBack;" />
+				<bigButton name="copyDateToMainForm" icon="saveIcon24.png" action="#{form}.performSave; #{window}.performBack;" />
 				<bigButton name="countTimeOfTechnology" icon="calculateTimeIcon24.png"
 					action="#{form}.fireEvent(changeRealizationTime);" />
 			</group>

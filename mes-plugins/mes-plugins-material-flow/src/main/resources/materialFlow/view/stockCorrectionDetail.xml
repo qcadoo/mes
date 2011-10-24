@@ -42,9 +42,10 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="5">
-					<component type="calendar" name="stockCorrectionDate" field="stockCorrectionDate"  reference="stockCorrectionDate">
-					<listener event="onChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
-								method="refreshShouldBeInStockCorrectionDetail" />						
+					<component type="calendar" name="stockCorrectionDate" field="stockCorrectionDate" reference="stockCorrectionDate">
+						<option type="withTimePicker" value="true" />
+						<listener event="onChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
+								method="refreshShouldBeInStockCorrectionDetail" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3" width="5">
@@ -69,6 +70,8 @@
 								method="refreshShouldBeInStockCorrectionDetail" />
 							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 								method="fillUnitFieldValue" />
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
+								method="generateNumberForStockCorrection" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="5" width="5">
@@ -100,6 +103,5 @@
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="refreshShouldBeInStockCorrectionDetail" /> 
-		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillNumberFieldValue" />
 	</hooks>
 </view>

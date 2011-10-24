@@ -31,8 +31,8 @@
 		<string name="number" required="true" unique="true">
 			<validatesLength max="40" />
 		</string>
-		<date name="stockCorrectionDate"  required="true"/>
-		<belongsTo name="stockAreas" required="true" model="stockAreas" plugin="materialFlow"/>
+		<datetime name="stockCorrectionDate" required="true" />
+		<belongsTo name="stockAreas" required="true" model="stockAreas" plugin="materialFlow" />
 		<belongsTo name="product" required="true" model="product" plugin="basic" />
 		<decimal name="shouldBe" readonly="true" persistent="false"/>
 		<decimal name="found" required="true"/>
