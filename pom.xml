@@ -176,6 +176,22 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<includes>
+					<include>qcadoo-plugin.xml</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<excludes>
+					<exclude>qcadoo-plugin.xml</exclude>
+				</excludes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
 	</build>
 
 	<reporting>
