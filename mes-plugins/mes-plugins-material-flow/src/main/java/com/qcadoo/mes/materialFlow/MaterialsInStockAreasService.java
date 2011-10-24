@@ -59,7 +59,7 @@ public class MaterialsInStockAreasService {
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
         entity.setField("generated", false);
-        entity.setField("date", null);
+        entity.setField("time", null);
         entity.setField("worker", null);
         return true;
     }
@@ -189,7 +189,7 @@ public class MaterialsInStockAreasService {
     public void generateDataForMaterialsInStockAreasReport(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state instanceof FormComponent) {
             ComponentState generated = viewDefinitionState.getComponentByReference("generated");
-            ComponentState date = viewDefinitionState.getComponentByReference("date");
+            ComponentState date = viewDefinitionState.getComponentByReference("time");
             ComponentState worker = viewDefinitionState.getComponentByReference("worker");
 
             Entity materialsInStockAreas = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MODEL_MATERIALS_IN_STOCK_AREAS).get(
@@ -244,7 +244,7 @@ public class MaterialsInStockAreasService {
     private void generatePdfAndXlsDocumentsForMaterialsInStockAreas(final ComponentState state, final Entity materialsInStockAreas) throws IOException,
         DocumentException {
         Entity materialFlowWithFileName = updateFileName(materialsInStockAreas,
-                getFullFileName((Date) materialsInStockAreas.getField("date"), materialsInStockAreas.getStringField("name")),
+                getFullFileName((Date) materialsInStockAreas.getField("time"), materialsInStockAreas.getStringField("name")),
         MaterialFlowConstants.MODEL_MATERIALS_IN_STOCK_AREAS);
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_COMPANY).find().uniqueResult();
         materialFlowPdfService.generateDocument(materialFlowWithFileName, company, state.getLocale());

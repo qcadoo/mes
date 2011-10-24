@@ -41,7 +41,10 @@ public interface MaterialFlowConstants {
     public static final String MODEL_MATERIALS_IN_STOCK_AREAS = "materialsInStockAreas";
 
     public static final String MODEL_PRODUCT = "product";
-    
+
+    public static final String MODEL_TRANSFORMATIONS = "transformations";
+
+
     // VIEW
     public static final String VIEW_STOCK_CORRECTION_DETAIL = "stockCorrectionDetail";
 
