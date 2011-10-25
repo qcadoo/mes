@@ -467,7 +467,7 @@ public class OrderServiceTest {
         given(order.getFieldValue()).willReturn(null);
 
         // when
-        orderService.disableFormForDoneOrder(viewDefinitionState);
+        orderService.disableFieldOrder(viewDefinitionState);
 
         // then
         verify(order).setFormEnabled(true);
@@ -488,7 +488,7 @@ public class OrderServiceTest {
                 null);
 
         // when
-        orderService.disableFormForDoneOrder(viewDefinitionState);
+        orderService.disableFieldOrder(viewDefinitionState);
 
         // then
         verify(order).setFormEnabled(true);
@@ -512,7 +512,7 @@ public class OrderServiceTest {
         given(order.isValid()).willReturn(true);
 
         // when
-        orderService.disableFormForDoneOrder(viewDefinitionState);
+        orderService.disableFieldOrder(viewDefinitionState);
 
         // then
         verify(order).setFormEnabled(true);
@@ -536,7 +536,7 @@ public class OrderServiceTest {
         given(order.isValid()).willReturn(false);
 
         // when
-        orderService.disableFormForDoneOrder(viewDefinitionState);
+        orderService.disableFieldOrder(viewDefinitionState);
 
         // then
         verify(order).setFormEnabled(true);
@@ -560,7 +560,7 @@ public class OrderServiceTest {
         given(order.isValid()).willReturn(true);
 
         // when
-        orderService.disableFormForDoneOrder(viewDefinitionState);
+        orderService.disableFieldOrder(viewDefinitionState);
 
         // then
         verify(order).setFormEnabled(false);
@@ -680,92 +680,6 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void shouldReturnTrueForTechnologyValidationIfThereIsNoProduct() throws Exception {
-        // given
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        Entity entity = mock(Entity.class);
-        given(entity.getBelongsToField("product")).willReturn(null);
-
-        // when
-        boolean results = orderService.checkOrderTechnology(dataDefinition, entity);
-
-        // then
-        assertTrue(results);
-    }
-
-    @Test
-    public void shouldReturnTrueForTechnologyValidation() throws Exception {
-        // given
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        Entity entity = mock(Entity.class);
-        Entity product = mock(Entity.class);
-        Entity technology = mock(Entity.class);
-        given(entity.getBelongsToField("product")).willReturn(product);
-        given(entity.getField("technology")).willReturn(technology);
-
-        // when
-        boolean results = orderService.checkOrderTechnology(dataDefinition, entity);
-
-        // then
-        assertTrue(results);
-    }
-
-    @Test
-    public void shouldReturnTrueForTechnologyValidationIfProductDoesNotHaveAnyTechnologies() throws Exception {
-        // given
-        Entity entity = mock(Entity.class);
-        Entity product = mock(Entity.class);
-        given(entity.getBelongsToField("product")).willReturn(product);
-        given(entity.getField("technology")).willReturn(null);
-        given(product.getId()).willReturn(117L);
-
-        FieldDefinition productField = mock(FieldDefinition.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        SearchResult searchResult = mock(SearchResult.class);
-        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
-                .willReturn(dataDefinition);
-        given(dataDefinition.find().setMaxResults(1).list()).willReturn(searchResult);
-        given(dataDefinition.getField("product")).willReturn(productField);
-        given(productField.getType()).willReturn(new StringType());
-        given(searchResult.getTotalNumberOfEntities()).willReturn(0);
-
-        // when
-        boolean results = orderService.checkOrderTechnology(dataDefinition, entity);
-
-        // then
-        assertTrue(results);
-    }
-
-    @Test
-    public void shouldReturnFalseForTechnologyValidation() throws Exception {
-        // given
-        Entity entity = mock(Entity.class);
-        Entity product = mock(Entity.class);
-        given(entity.getBelongsToField("product")).willReturn(product);
-        given(entity.getField("technology")).willReturn(null);
-        given(product.getId()).willReturn(117L);
-
-        FieldDefinition technologyField = mock(FieldDefinition.class);
-        FieldDefinition productField = mock(FieldDefinition.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        SearchResult searchResult = mock(SearchResult.class);
-        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
-                .willReturn(dataDefinition);
-        given(dataDefinition.find().setMaxResults(1).belongsTo(anyString(), any()).list()).willReturn(searchResult);
-        given(dataDefinition.getField("product")).willReturn(productField);
-        given(productField.getType()).willReturn(new StringType());
-        given(searchResult.getTotalNumberOfEntities()).willReturn(1);
-        given(dataDefinition.getField("technology")).willReturn(technologyField);
-
-        // when
-        boolean results = orderService.checkOrderTechnology(dataDefinition, entity);
-
-        // then
-        assertFalse(results);
-        verify(entity).addError(technologyField, "orders.validate.global.error.technologyError");
-    }
-
-    @Test
     public void shouldNotFillOrderDates() throws Exception {
         // given
         Entity entity = mock(Entity.class);
@@ -824,33 +738,6 @@ public class OrderServiceTest {
         verify(entity, never()).setField(eq("effectiveDateFrom"), any(Date.class));
         verify(entity, never()).setField(eq("effectiveDateTo"), any(Date.class));
     }
-
-    @Test
-    public void shouldReturnTrueForTechnologyValidationIfThereIsNoOrder() throws Exception {
-        // given
-        Entity entity = mock(Entity.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-
-        // when
-        boolean results = orderService.checkIfOrderHasTechnology(dataDefinition, entity);
-
-        // then
-        assertTrue(results);
-    }
-
-    /*
-     * @Test public void shouldReturnTrueForTechnologyValidationIfOrderHasTechnology() throws Exception { // given Entity entity =
-     * mock(Entity.class); Entity order = mock(Entity.class); Entity technology = mock(Entity.class); DataDefinition
-     * dataDefinition = mock(DataDefinition.class); given(entity.getBelongsToField("order")).willReturn(order);
-     * given(order.getField("technology")).willReturn(technology); // when boolean results =
-     * orderService.checkIfOrderHasTechnology(dataDefinition, entity); // then assertTrue(results); }
-     * @Test public void shouldReturnFalseForTechnologyValidationIfOrderDoesNotHaveTechnology() throws Exception { // given Entity
-     * entity = mock(Entity.class); Entity order = mock(Entity.class); DataDefinition dataDefinition = mock(DataDefinition.class);
-     * FieldDefinition orderField = mock(FieldDefinition.class); given(entity.getBelongsToField("order")).willReturn(order);
-     * given(dataDefinition.getField("order")).willReturn(orderField); // when boolean results =
-     * orderService.checkIfOrderHasTechnology(dataDefinition, entity); // then assertFalse(results);
-     * verify(entity).addError(orderField, "orders.validate.global.error.orderMustHaveTechnology"); }
-     */
 
     @Test
     public void shouldReturnTrueForOperationValidationIfThereIsNoOrder() throws Exception {

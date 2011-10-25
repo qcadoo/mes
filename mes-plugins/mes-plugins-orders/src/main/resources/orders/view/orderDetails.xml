@@ -394,7 +394,7 @@
 		<beforeRender class="com.qcadoo.mes.orders.OrderService"
 			method="fillDefaultTechnology" />
 		<beforeRender class="com.qcadoo.mes.orders.OrderService"
-			method="disableFormForDoneOrder" />
+			method="disableFieldOrder" />
 		<beforeRender class="com.qcadoo.mes.orders.OrderService"
 			method="disableTechnologiesIfProductDoesNotAny" />
 		<beforeRender class="com.qcadoo.mes.orders.OrderService"

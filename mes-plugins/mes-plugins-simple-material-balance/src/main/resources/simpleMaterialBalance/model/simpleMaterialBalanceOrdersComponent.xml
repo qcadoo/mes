@@ -34,7 +34,7 @@
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
-			method="checkIfOrderHasTechnology" />
+			method="checkComponentOrderHasTechnology" />
 	</hooks>
 	<identifier expression="#order['number'] + ' - ' + #order['name']" />
 </model>	
