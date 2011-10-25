@@ -56,7 +56,6 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
@@ -122,13 +121,10 @@ public class OrderServiceTest {
         pluginAccessor = mock(PluginAccessor.class);
         ExpressionService expressionService = mock(ExpressionService.class);
         orderService = new OrderService();
-        setField(orderService, "securityService", securityService);
         setField(orderService, "dataDefinitionService", dataDefinitionService);
         setField(orderService, "translationService", translationService);
         setField(orderService, "numberGeneratorService", numberGeneratorService);
         setField(orderService, "expressionService", expressionService);
-        setField(orderService, "pluginAccessor", pluginAccessor);
-        when(pluginAccessor.getEnabledPlugin("mesPluginsIntegrationErp")).thenReturn(null);
     }
 
     @Test
