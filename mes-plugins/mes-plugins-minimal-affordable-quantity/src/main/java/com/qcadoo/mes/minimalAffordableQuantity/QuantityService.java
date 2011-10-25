@@ -74,10 +74,10 @@ public class QuantityService {
                         viewDefinitionState.getLocale());
 
                 if (plannedQuantityBigDecFormat.compareTo(technologyBigDecimal) < 0) {
+                    String message = translationService.translate("orders.order.report.minimalQuantity",
+                            viewDefinitionState.getLocale());
 
-                    form.addMessage(
-                            translationService.translate("orders.order.report.minimalQuantity", viewDefinitionState.getLocale()),
-                            MessageType.INFO, false);
+                    form.addMessage(message + " (" + technologyBigDecimal + ")", MessageType.INFO, false);
                 }
             }
         }
