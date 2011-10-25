@@ -43,8 +43,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.plugin.api.PluginAccessor;
-import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -58,22 +56,13 @@ public final class OrderService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private SecurityService securityService;
-
-    @Autowired
     private TranslationService translationService;
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private PluginAccessor pluginAccessor;
-
-    @Autowired
     private ExpressionService expressionService;
-
-    // private final Set<BeforeChangeStateListener> beforeChangeStateListeners = new
-    // HashSet<OrderService.BeforeChangeStateListener>();
 
     public boolean clearOrderDatesOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("state", "01pending");

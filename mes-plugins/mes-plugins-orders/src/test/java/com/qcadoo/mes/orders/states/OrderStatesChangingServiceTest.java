@@ -47,8 +47,6 @@ public class OrderStatesChangingServiceTest {
 
     private OrderStateListener orderStateListener;
 
-    private ChangeOrderStateMessage changeOrderStateMessage;
-
     private TranslationService translationService;
 
     private List<OrderStateListener> listeners = new LinkedList<OrderStateListener>();
