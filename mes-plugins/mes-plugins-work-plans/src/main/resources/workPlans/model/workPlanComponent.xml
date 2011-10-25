@@ -34,7 +34,7 @@
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
-			method="checkIfOrderHasTechnology" />
+			method="checkComponentOrderHasTechnology" />
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
 			method="checkIfOrderTechnologyHasOperations" />
 		<validatesWith class="com.qcadoo.mes.workPlans.WorkPlanService"

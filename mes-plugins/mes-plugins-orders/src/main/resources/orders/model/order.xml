@@ -61,14 +61,8 @@
 			method="checkOrderDates" />
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
 			method="checkOrderPlannedQuantity" />
-		<validatesWith class="com.qcadoo.mes.orders.OrderService"
-			method="checkOrderTechnology" />
 		<validatesWith class="com.qcadoo.mes.basic.ProductService"
 			method="checkIfProductIsNotRemoved" />
-		<validatesWith class="com.qcadoo.mes.orders.OrderService"
-			method="checkIfTechnologyIsNotRemoved" />
-		<validatesWith class="com.qcadoo.mes.orders.OrderService"
-            method="checkIfOrderHasTechnology" />
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillOrderDates" />
 		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesOnCopy" />
 		<onSave class="com.qcadoo.mes.orders.states.ChangeStateHook" method="changedState"/>

@@ -92,7 +92,9 @@ public final class OrderService {
         }
         FieldComponent product = (FieldComponent) state;
         FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference("name");
-
+        if (product.getFieldValue() == null) {
+            return;
+        }
         if (!StringUtils.hasText((String) name.getFieldValue())) {
             Entity entity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
                     (Long) product.getFieldValue());
@@ -172,17 +174,18 @@ public final class OrderService {
         }
     }
 
-    public void disableFormForDoneOrder(final ViewDefinitionState state) {
-        FormComponent order = (FormComponent) state.getComponentByReference("form");
-        FieldComponent technology = (FieldComponent) state.getComponentByReference("technology");
+    public void disableFieldOrder(final ViewDefinitionState view) {
+        FormComponent order = (FormComponent) view.getComponentByReference("form");
+        FieldComponent technology = (FieldComponent) view.getComponentByReference("technology");
 
         boolean disabled = false;
 
         if (order.getEntityId() != null) {
             Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     order.getEntityId());
-
-            if (entity != null && "04completed".equals(entity.getStringField("state")) && order.isValid()) {
+            String state = entity.getStringField("state");
+            if (entity != null && ("04completed".equals(state) || "05declined".equals(state) || "07abandoned".equals(state))
+                    && order.isValid()) {
                 disabled = true;
             }
         }
@@ -231,17 +234,15 @@ public final class OrderService {
         }
     }
 
-    public boolean checkIfOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField("product");
+    public boolean checkComponentOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
+        Entity order = entity.getBelongsToField("order");
 
-        if (product == null) {
+        if (order == null) {
             return true;
         }
 
-        int count = product.getHasManyField("technologies").size();
-
-        if (count == 0) {
-            entity.addError(dataDefinition.getField("product"), "orders.validate.global.error.orderMustHaveTechnology");
+        if (order.getField("technology") == null) {
+            entity.addError(dataDefinition.getField("order"), "orders.validate.global.error.orderMustHaveTechnology");
             return false;
         } else {
             return true;
