@@ -96,6 +96,26 @@
 					<layoutElement column="2" row="2">
 						<component type="select" name="category" field="category" />
 					</layoutElement>
+					<layoutElement column="3" row="1" height="4">
+						<component type="borderLayout" name="auditBorderLayout"
+							reference="auditBorderLayout">
+							<option type="label" value="auditLayoutLabel" />
+							<component type="gridLayout" name="gridLayout" columns="1" rows="4">
+								<layoutElement column="1" row="1">
+									<component type="input" name="createDate" field="createDate" defaultEnabled="false"/>
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="input" name="createUser" field="createUser" defaultEnabled="false"/>
+								</layoutElement>
+								<layoutElement column="1" row="3">
+									<component type="input" name="updateDate" field="updateDate" defaultEnabled="false"/>
+								</layoutElement>
+								<layoutElement column="1" row="4">
+									<component type="input" name="updateUser" field="updateUser" defaultEnabled="false"/>
+								</layoutElement>
+							</component>
+						</component>
+					</layoutElement>
 				</component>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
