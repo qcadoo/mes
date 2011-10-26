@@ -35,7 +35,7 @@
 
 	<properties>
 		<qcadoo.version>0.4.10-SNAPSHOT</qcadoo.version>
-		<qcadoo.plugin.version>0.4.10-SNAPSHOT</qcadoo.plugin.version>
+		<qcadoo.plugin.version>0.4.10</qcadoo.plugin.version>
 		<qcadoo.saas.version>0.4.10-SNAPSHOT</qcadoo.saas.version>
 		<qcadoo.maven.plugin.version>0.4.10-SNAPSHOT</qcadoo.maven.plugin.version>
 		<slf4j.version>1.6.1</slf4j.version>
