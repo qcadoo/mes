@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
@@ -54,7 +55,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public final class MaterialRequirementService {
+public class MaterialRequirementService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -131,6 +132,7 @@ public final class MaterialRequirementService {
                 MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT);
     }
 
+    @Transactional
     public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
