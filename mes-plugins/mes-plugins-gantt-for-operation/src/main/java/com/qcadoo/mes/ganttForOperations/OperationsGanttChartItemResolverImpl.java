@@ -127,8 +127,10 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
     }
 
     private String getDescriptionForOperarion(final Entity operation) {
-        return operation.getBelongsToField("operation").getStringField("number") + " - "
-                + operation.getBelongsToField("operation").getStringField("name");
+        // return operation.getBelongsToField("operation").getStringField("number") + " - "
+        // + operation.getBelongsToField("operation").getStringField("name");
+        return operation.getStringField("nodeNumber") + " " + operation.getBelongsToField("operation").getStringField("number")
+                + " " + operation.getBelongsToField("operation").getStringField("name");
     }
 
 }
