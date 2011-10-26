@@ -29,6 +29,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
@@ -241,6 +242,7 @@ public final class WorkPlanService {
         }
     }
 
+    @Transactional
     private void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException,
             DocumentException {
         Entity workPlanWithFileName = workPlanForMachinePdfService.updateFileName(workPlan, "Work_plan");
