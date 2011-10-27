@@ -172,9 +172,11 @@ public final class OrderService {
         if (order.getEntityId() != null) {
             Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     order.getEntityId());
+            if (entity == null) {
+                return;
+            }
             String state = entity.getStringField("state");
-            if (entity != null && ("04completed".equals(state) || "05declined".equals(state) || "07abandoned".equals(state))
-                    && order.isValid()) {
+            if (("04completed".equals(state) || "05declined".equals(state) || "07abandoned".equals(state)) && order.isValid()) {
                 disabled = true;
             }
         }
