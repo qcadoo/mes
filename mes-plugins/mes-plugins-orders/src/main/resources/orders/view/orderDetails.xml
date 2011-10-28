@@ -109,6 +109,10 @@
 					</script>
 				</smallButton>
 			</group>
+			<group name="export">
+				<bigButton name="print" icon="pdfIcon24.png"
+					action="#{form}.generateReportForEntity('orders','order','pdf')" />
+			</group>
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="order" reference="form">

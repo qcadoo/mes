@@ -100,10 +100,6 @@
 						</script>
 					</smallButton>
 			</group>
-			<group name="export">
-				<smallButton name="print" icon="pdfIcon16.png"
-					action="#{grid}.generateReportForEntity('orders','order','pdf')" state="disabled" />
-			</group>
 		</ribbon>
 		<component type="grid" name="orders" reference="grid">
 			<script>
