@@ -154,7 +154,7 @@ public final class OrderService {
         defaultTechnology.setEnabled(false);
 
         if (product.getFieldValue() == null || !hasAnyTechnologies((Long) product.getFieldValue())) {
-            technology.setEnabled(false);
+            // technology.setEnabled(false);
             technology.setRequired(false);
             plannedQuantity.setRequired(false);
         } else {
@@ -412,6 +412,8 @@ public final class OrderService {
             state.getComponentByReference("number").setEnabled(false);
             state.getComponentByReference("name").setEnabled(false);
             state.getComponentByReference("contractor").setEnabled(false);
+            state.getComponentByReference("dateFrom").setEnabled(false);
+            state.getComponentByReference("dateTo").setEnabled(false);
             state.getComponentByReference("product").setEnabled(false);
             state.getComponentByReference("plannedQuantity").setEnabled(false);
         }

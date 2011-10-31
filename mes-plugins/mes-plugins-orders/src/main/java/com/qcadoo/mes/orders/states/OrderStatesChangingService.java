@@ -53,11 +53,11 @@ public class OrderStatesChangingService {
     }
 
     List<ChangeOrderStateMessage> performChangeState(final Entity newEntity, final Entity oldEntity) {
-        if (oldEntity == null && !newEntity.getStringField("state").equals("01pending")) {
+        if (oldEntity == null && !newEntity.getStringField("state").equals(OrderStates.PENDING.getStringValue())) {
             throw new IllegalStateException();
         }
-        if (oldEntity != null && newEntity.getStringField("state").equals("02accepted")
-                && !oldEntity.getStringField("state").equals("01pending")) {
+        if (oldEntity != null && newEntity.getStringField("state").equals(OrderStates.ACCEPTED.getStringValue())
+                && !oldEntity.getStringField("state").equals(OrderStates.PENDING.getStringValue())) {
             throw new IllegalStateException();
         }
 

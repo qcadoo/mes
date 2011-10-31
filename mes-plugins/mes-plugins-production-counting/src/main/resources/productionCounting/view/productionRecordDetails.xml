@@ -1,43 +1,110 @@
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 0.4.9
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 0.4.9 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view name="productionRecordDetails" modelName="productionRecord"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
-	<component type="window" name="window">
+	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
+			<group name="status">
+				<bigButton name="accept" icon="startIcon24.png" state="disabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (this.state == "accept") {
+										if (window.confirm("#{translate(productionCounting.productionRecord.window.ribbon.status.accept.confirm)}")) {
+											if(window.canClose()) {
+												#{form}.performEvent('changeRecordStateToAccepted', []);
+											}
+										};
+									} else if (this.state == "declined") {
+										if (window.confirm("#{translate(productionCounting.productionRecord.window.ribbon.status.declined.confirm)}")) {
+											if(window.canClose()) {
+												#{form}.performEvent('changeRecordStateToDeclined', []);
+											}
+										};
+									}
+									}
+									});
+							]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="productionRecordDetails"
 				reference="form">
+				<script>
+					<![CDATA[
+						var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
+						var cancel = #{window}.getRibbonItem("actions.cancel");
+						var del = #{window}.getRibbonItem("actions.delete");
+						var accept = #{window}.getRibbonItem("status.accept");
+						
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								save.enable();
+								saveBack.enable();
+								saveNew.enable();
+								if (! value.content.entityId) {
+									cancel.disable();
+									del.disable();
+									accept.disable();
+									return;
+								}
+								cancel.enable();
+								del.enable();
+								var state = #{state}.getValue().content.value; 
+								if (!state) {
+									return;
+								}
+								if (state == "01draft") {
+									accept.enable();
+									accept.state = "accept";
+									accept.setLabel("#{translate(productionCounting.productionRecord.ribbon.status.accept)}");
+									accept.setIcon('startIcon24.png');
+								} else if (state == "02accepted") { 
+									accept.enable();
+									accept.state = "declined";
+									accept.setLabel("#{translate(productionCounting.productionRecord.ribbon.status.declined)}");
+									accept.setIcon('deleteIcon24.png');
+								}else if (state == "03declined") {
+									save.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}");
+									saveBack.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}");
+									saveNew.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}");
+									cancel.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}");
+									del.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}");
+									accept.disable();
+								}
+							}
+						});
+					]]>
+				</script>
 				<component type="gridLayout" name="gridLayout" columns="2"
 					rows="15">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="lastRecord" field="lastRecord"
 							reference="lastRecord" />
+							</layoutElement>
+					<layoutElement column="2" row="5">
+						<component type="select" name="state" field="state"
+							 reference="state" defaultVisible="false" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="number" field="number"
@@ -56,7 +123,8 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 								method="clearFields" />
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
@@ -138,15 +206,15 @@
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="label" name="borderLayoutCumulated"
-							reference="borderLayoutCumulated" defaultVisible="false" >
+							reference="borderLayoutCumulated" defaultVisible="false">
 							<option type="labelStyle" value="text" />
 						</component>
 						<component type="label" name="borderLayoutForEach"
-							reference="borderLayoutForEach" defaultVisible="false" >
+							reference="borderLayoutForEach" defaultVisible="false">
 							<option type="labelStyle" value="text" />
 						</component>
 						<component type="label" name="borderLayoutNone"
-							reference="borderLayoutNone"  >
+							reference="borderLayoutNone">
 							<option type="labelStyle" value="text" />
 						</component>
 					</layoutElement>
@@ -201,10 +269,16 @@
 				<listener event="save"
 					class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 					method="closeOrder" />
+				<listener event="changeRecordStateToAccepted"
+					class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService" method="changeRecordStateToAccepted" />
+				<listener event="changeRecordStateToDeclined"
+					class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService" method="changeRecordStateToDeclined" />
 			</component>
 		</windowTab>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="initializeRecordDetailsView" />
+		<beforeRender
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+			method="initializeRecordDetailsView" />
 	</hooks>
 </view>

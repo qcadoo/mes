@@ -377,7 +377,6 @@ public class OrderServiceTest {
 
         // then
         verify(defaultTechnology).setEnabled(false);
-        verify(technology).setEnabled(false);
         verify(technology).setRequired(false);
         verify(plannedQuantity).setRequired(false);
     }
@@ -412,7 +411,6 @@ public class OrderServiceTest {
 
         // then
         verify(defaultTechnology).setEnabled(false);
-        verify(technology).setEnabled(false);
         verify(technology).setRequired(false);
         verify(plannedQuantity).setRequired(false);
     }

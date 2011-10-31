@@ -30,7 +30,7 @@
     view="orderDetails">
 
      <group name="basicProductionCounting">
-          <bigButton name="producctionCounting" icon="iconProducts24.png" state="disabled">
+          <bigButton name="productionCounting" icon="iconProducts24.png" state="disabled">
           	<script>
 				<![CDATA[
 					this.addOnChangeListener({

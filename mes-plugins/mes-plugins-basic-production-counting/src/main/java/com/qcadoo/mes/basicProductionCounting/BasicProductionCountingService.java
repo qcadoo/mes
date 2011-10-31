@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
+import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -42,6 +43,8 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class BasicProductionCountingService {
@@ -144,4 +147,21 @@ public class BasicProductionCountingService {
         productField.setFieldValue(product.getField("name"));
         productField.requestComponentUpdateState();
     }
+
+    public void disabledButtonForAppropriateState(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntity() == null) {
+            return;
+        }
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        RibbonActionItem productionCounting = window.getRibbon().getGroupByName("basicProductionCounting")
+                .getItemByName("productionCounting");
+        Entity order = form.getEntity();
+        String state = order.getStringField("state");
+        if (OrderStates.DECLINED.getStringValue().equals(state) || OrderStates.PENDING.getStringValue().equals(state)) {
+            productionCounting.setEnabled(false);
+            productionCounting.requestUpdate(true);
+        }
+    }
+
 }
