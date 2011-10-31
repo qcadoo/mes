@@ -139,18 +139,15 @@ public class GanttOperationService {
     }
 
     public void checkDoneCalculate(final ViewDefinitionState viewDefinitionState) {
-
-        ComponentState window = (ComponentState) viewDefinitionState.getComponentByReference("form");
+        ComponentState form = (ComponentState) viewDefinitionState.getComponentByReference("form");
         Entity order = dataDefinitionService.get("orders", "order").get(orderId);
 
         String realizationTime = order.getField("realizationTime").toString();
 
-        if ("".equals(realizationTime) || realizationTime == null) {
-            window.addMessage(
-                    translationService.translate("orders.order.report.realizationTime", viewDefinitionState.getLocale()),
+        if ("0".equals(realizationTime) || "".equals(realizationTime) || realizationTime == null) {
+            form.addMessage(translationService.translate("orders.order.report.realizationTime", viewDefinitionState.getLocale()),
                     MessageType.INFO, false);
         }
-
     }
 
     public void fillTitleLabel(final ViewDefinitionState viewDefinitionState) {
