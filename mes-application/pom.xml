@@ -44,11 +44,11 @@
 			<artifactId>mes-plugins-quality-controls</artifactId>
 			<version>0.4.10-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-quality-controls-for-operation</artifactId>
-			<version>0.4.10-SNAPSHOT</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.qcadoo.mes</groupId> -->
+<!-- 			<artifactId>mes-plugins-quality-controls-for-operation</artifactId> -->
+<!-- 			<version>0.4.10-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-quality-controls-for-batch</artifactId>
@@ -104,26 +104,27 @@
 			<artifactId>mes-plugins-gantt-for-orders</artifactId>
 			<version>0.4.10-SNAPSHOT</version>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.qcadoo.mes</groupId> -->
-<!-- 			<artifactId>mes-plugins-produced-products</artifactId> -->
-<!-- 			<version>0.4.9-SNAPSHOT</version> -->
-<!-- 		</dependency> -->
+		<!-- dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-produced-products</artifactId>
+			<version>0.4.9-SNAPSHOT</version>
+		</dependency-->
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-material-flow</artifactId>
 			<version>0.4.10-SNAPSHOT</version>
 		</dependency>
+<!-- 		THIS CAUSES ERRORS ! -->
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-production-time-norms</artifactId>
 			<version>0.4.10-SNAPSHOT</version>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.qcadoo.mes</groupId> -->
-<!-- 			<artifactId>mes-plugins-production-balance</artifactId> -->
-<!-- 			<version>0.4.9-SNAPSHOT</version> -->
-<!-- 		</dependency> -->
+		<!-- dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-production-balance</artifactId>
+			<version>0.4.9-SNAPSHOT</version>
+		</dependency -->
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-cost-norms-for-product</artifactId>
@@ -144,11 +145,11 @@
 			<artifactId>mes-plugins-cost-calculation</artifactId>
 			<version>0.4.10-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-simple-material-balance</artifactId>
-			<version>0.4.10-SNAPSHOT</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.qcadoo.mes</groupId> -->
+<!-- 			<artifactId>mes-plugins-simple-material-balance</artifactId> -->
+<!-- 			<version>0.4.10-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-order-groups</artifactId>
@@ -157,6 +158,11 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-production-counting</artifactId>
+			<version>0.4.10-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-basic-production-counting</artifactId>
 			<version>0.4.10-SNAPSHOT</version>
 		</dependency>
 
