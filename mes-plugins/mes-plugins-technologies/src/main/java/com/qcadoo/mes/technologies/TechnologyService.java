@@ -68,7 +68,7 @@ public final class TechnologyService {
 
     @Autowired
     private ReportDataService reportDataService;
-    
+
     @Autowired
     private TreeNumberingService treeNumberingService;
 
@@ -345,13 +345,14 @@ public final class TechnologyService {
 
         operationLookup.setEnabled(form.getEntityId() == null);
     }
-    
+
     public void performTreeNumbering(final DataDefinition dd, final Entity technology) {
         DataDefinition technologyOperationDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 MODEL_TECHNOLOGY_OPERATION_COMPONENT);
         treeNumberingService.generateNumbersAndUpdateTree(technologyOperationDD, "technology", technology.getId());
+
     }
-    
+
     public void setParentIfRootNodeAlreadyExists(final DataDefinition dd, final Entity technologyOperation) {
         Entity technology = technologyOperation.getBelongsToField("technology");
         EntityTreeNode rootNode = technology.getTreeField("operationComponents").getRoot();
