@@ -136,8 +136,8 @@ public class SamplesLoaderModule extends Module {
     @Override
     @Transactional
     public void multiTenantEnable() {
-
-        checkLocale();
+    	//FIXME albr fix with system locale
+        //checkLocale();
         if (databaseHasToBePrepared()) {
             LOG.info("Database has to be prepared ...");
 
