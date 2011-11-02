@@ -134,7 +134,29 @@
 							</script>
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="1" height="4">
+					<layoutElement column="2" row="1" height="3">
+						<component type="grid" name="outProducts" reference="outProducts"
+							source="#{technologyTree}.operationProductOutComponents">
+							<option type="column" name="number" fields="product"
+								expression="#product['number']" link="true" />
+							<option type="column" name="name" fields="product"
+								expression="#product['name']" link="true" />
+							<option type="column" name="quantity" fields="quantity" />
+							<option type="column" name="unit" fields="product"
+								expression="#product['unit']" link="false" width="70" />
+							<option type="order" column="number" direction="desc" />
+							<option type="correspondingView"
+								value="technologies/operationProductOutComponentDetails" />
+							<option type="correspondingComponent" value="form" />
+							<option type="correspondingViewInModal" value="true" />
+							<option type="paginable" value="false" />
+							<option type="creatable" value="true" />
+							<option type="deletable" value="true" />
+							<option type="fullscreen" value="true" />
+							<option type="multiselect" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="4" height="4">
 						<component type="grid" name="inProducts" reference="inProducts"
 							source="#{technologyTree}.operationProductInComponents">
 							<option type="column" name="number" fields="product"
@@ -148,28 +170,6 @@
 							<option type="order" column="number" direction="desc" />
 							<option type="correspondingView"
 								value="technologies/operationProductInComponentDetails" />
-							<option type="correspondingComponent" value="form" />
-							<option type="correspondingViewInModal" value="true" />
-							<option type="paginable" value="false" />
-							<option type="creatable" value="true" />
-							<option type="deletable" value="true" />
-							<option type="fullscreen" value="true" />
-							<option type="multiselect" value="true" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="5" height="3">
-						<component type="grid" name="outProducts" reference="outProducts"
-							source="#{technologyTree}.operationProductOutComponents">
-							<option type="column" name="number" fields="product"
-								expression="#product['number']" link="true" />
-							<option type="column" name="name" fields="product"
-								expression="#product['name']" link="true" />
-							<option type="column" name="quantity" fields="quantity" />
-							<option type="column" name="unit" fields="product"
-								expression="#product['unit']" link="false" width="70" />
-							<option type="order" column="number" direction="desc" />
-							<option type="correspondingView"
-								value="technologies/operationProductOutComponentDetails" />
 							<option type="correspondingComponent" value="form" />
 							<option type="correspondingViewInModal" value="true" />
 							<option type="paginable" value="false" />
