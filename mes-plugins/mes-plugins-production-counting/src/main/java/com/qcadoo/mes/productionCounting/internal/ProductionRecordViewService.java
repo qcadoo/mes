@@ -304,4 +304,27 @@ public class ProductionRecordViewService {
         }
     }
 
+    public void disableFields(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
+        FieldComponent typeOfProductionRecording = (FieldComponent) viewState
+                .getComponentByReference("typeOfProductionRecording");
+        FieldComponent registerQuanitityInProduct = (FieldComponent) viewState
+                .getComponentByReference("registerQuantityInProduct");
+        FieldComponent registerQuantityOutProduct = (FieldComponent) viewState
+                .getComponentByReference("registerQuantityOutProduct");
+        FieldComponent registerProductionTime = (FieldComponent) viewState.getComponentByReference("registerProductionTime");
+
+        if (typeOfProductionRecording.getFieldValue().equals("01basic")) {
+            registerProductionTime.setEnabled(false);
+            registerQuanitityInProduct.setEnabled(false);
+            registerQuantityOutProduct.setEnabled(false);
+        }
+        if (typeOfProductionRecording.getFieldValue().equals("02cumulated")
+                || typeOfProductionRecording.getFieldValue().equals("03forEach")) {
+            registerQuanitityInProduct.setEnabled(true);
+            registerProductionTime.setEnabled(true);
+            registerQuantityOutProduct.setEnabled(true);
+        }
+        registerProductionTime.requestComponentUpdateState();
+    }
+
 }
