@@ -142,9 +142,8 @@ public class GanttOperationService {
         ComponentState form = (ComponentState) viewDefinitionState.getComponentByReference("form");
         Entity order = dataDefinitionService.get("orders", "order").get(orderId);
 
-        String realizationTime = order.getField("realizationTime").toString();
-
-        if ("0".equals(realizationTime) || "".equals(realizationTime) || realizationTime == null) {
+        Object realizationTime = order.getField("realizationTime");
+        if (realizationTime == null || "0".equals(realizationTime.toString()) || "".equals(realizationTime.toString())) {
             form.addMessage(translationService.translate("orders.order.report.realizationTime", viewDefinitionState.getLocale()),
                     MessageType.INFO, false);
         }
