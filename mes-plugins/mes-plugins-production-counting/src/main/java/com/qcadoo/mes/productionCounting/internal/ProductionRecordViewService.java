@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
@@ -190,8 +191,10 @@ public class ProductionRecordViewService {
         Entity order = getOrderFromLookup(view);
         Boolean autoCloseOrder = getBooleanValue(order.getField("autoCloseOrder"));
         String orderState = order.getStringField("state");
-        if (autoCloseOrder && view.getComponentByReference("lastRecord").getFieldValue() == "1"
-                && "03inProgress".equals(orderState)) {
+        if (autoCloseOrder
+                && view.getComponentByReference("lastRecord").getFieldValue() == "1"
+                && view.getComponentByReference("state").getFieldValue()
+                        .equals(ProductionCountingStates.ACCEPTED.getStringValue()) && "03inProgress".equals(orderState)) {
             order.setField("state", CLOSED_ORDER);
             dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(order);
             Entity orderFromDB = order.getDataDefinition().get(order.getId());

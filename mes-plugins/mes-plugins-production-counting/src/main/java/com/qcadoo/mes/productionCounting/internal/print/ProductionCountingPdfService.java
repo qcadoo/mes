@@ -43,10 +43,13 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordComparator;
+import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.security.api.SecurityService;
@@ -78,9 +81,10 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         panelTable.setSpacingAfter(20);
         panelTable.setSpacingBefore(20);
         document.add(panelTable);
-
-        List<Entity> productionRecordsList = new ArrayList<Entity>(productionCounting.getBelongsToField("order").getHasManyField(
-                "productionRecords"));
+        List<Entity> productionRecordsList = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
+                .add(SearchRestrictions.belongsTo("order", productionCounting.getBelongsToField("order"))).list().getEntities();
         Collections.sort(productionRecordsList, new EntityProductionRecordComparator());
         for (Entity productionRecord : productionRecordsList) {
             addProductionRecord(document, productionRecord, locale);

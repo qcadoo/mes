@@ -38,8 +38,10 @@ import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingCo
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordOperationComparator;
+import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -117,7 +119,6 @@ public class ProductionBalanceViewService {
     private void setFieldValues(final ViewDefinitionState viewDefinitionState, final Entity order) {
         FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference("product");
         productField.setFieldValue(order.getBelongsToField("product").getId());
-
         FieldComponent recordsNumberField = (FieldComponent) viewDefinitionState.getComponentByReference("recordsNumber");
         Integer recordsNumberValue = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD)
@@ -159,7 +160,11 @@ public class ProductionBalanceViewService {
     private void setInputProductsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
         GridComponent inputProducts = (GridComponent) viewDefinitionState.getComponentByReference("inputProductsGrid");
         List<Entity> inputProductsList = new ArrayList<Entity>();
-        for (Entity productionRecord : order.getHasManyField("productionRecords")) {
+        List<Entity> productionRecordList = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
+                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+        for (Entity productionRecord : productionRecordList) {
             inputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductInComponents"));
         }
         if (inputProductsList.size() > 0) {
@@ -172,7 +177,11 @@ public class ProductionBalanceViewService {
     private void setOutputProductsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
         GridComponent outputProducts = (GridComponent) viewDefinitionState.getComponentByReference("outputProductsGrid");
         List<Entity> outputProductsList = new ArrayList<Entity>();
-        for (Entity productionRecord : order.getHasManyField("productionRecords")) {
+        List<Entity> productionRecordList = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
+                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+        for (Entity productionRecord : productionRecordList) {
             outputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductOutComponents"));
         }
         if (outputProductsList.size() > 0) {
@@ -213,7 +222,11 @@ public class ProductionBalanceViewService {
 
         BigDecimal machineRegisteredTime = BigDecimal.ZERO;
         BigDecimal laborRegisteredTime = BigDecimal.ZERO;
-        for (Entity productionRecord : order.getHasManyField("productionRecords")) {
+        List<Entity> productionRecordsList = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
+                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+        for (Entity productionRecord : productionRecordsList) {
             machineRegisteredTime = machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")));
             laborRegisteredTime = laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")));
         }
@@ -252,7 +265,10 @@ public class ProductionBalanceViewService {
 
     private void setProductionTimeGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
         GridComponent productionsTime = (GridComponent) viewDefinitionState.getComponentByReference("operationsTimeGrid");
-        List<Entity> productionRecordsList = new ArrayList<Entity>(order.getHasManyField("productionRecords"));
+        List<Entity> productionRecordsList = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
+                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
         if (productionRecordsList.size() > 0) {
             Collections.sort(productionRecordsList, new EntityProductionRecordOperationComparator());
             productionsTime.setEntities(productionBalanceReportDataService
