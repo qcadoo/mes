@@ -23,6 +23,11 @@
 			<artifactId>mes-plugins-material-requirements</artifactId>
 			<version>0.4.10-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-basic-production-counting</artifactId>
+			<version>0.4.10-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>

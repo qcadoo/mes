@@ -59,6 +59,10 @@
 			<plugin>materialRequirements</plugin>
 			<version>[0.4.1</version>
 		</dependency>
+				<dependency>
+			<plugin>basicProductionCounting</plugin>
+			<version>[0.4.0</version>
+		</dependency>
 	</dependencies>
 
 	<modules>
@@ -109,7 +113,7 @@
 		</model:model-field>
 
 		<model:model-field model="order" plugin="orders">
-			<model:enum name="typeOfProductionRecording" values="02cumulated,03forEach"
+			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
 				default="02cumulated" />
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
@@ -158,6 +162,7 @@
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="checkOrderState" />
+		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordsService" method="generateUsedProducts"/>
 	</modules>
 
 </plugin>

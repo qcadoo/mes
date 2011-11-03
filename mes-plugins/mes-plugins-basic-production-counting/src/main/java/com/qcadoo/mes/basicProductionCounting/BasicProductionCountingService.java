@@ -34,15 +34,18 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
@@ -130,7 +133,7 @@ public class BasicProductionCountingService {
         try {
             json.put("order.id", orderId);
         } catch (JSONException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // TODO : BAKU fix it to new IllegalStateException();
         }
 
         String url = "../page/basicProductionCounting/basicProductionCountingList.html?context=" + json.toString();
@@ -162,6 +165,33 @@ public class BasicProductionCountingService {
             productionCounting.setEnabled(false);
             productionCounting.requestUpdate(true);
         }
+    }
+
+    public void sortProductsHook(ViewDefinitionState viewState) {
+        GridComponent grid = (GridComponent) viewState.getComponentByReference("grid");
+        SearchCriteriaBuilder searchBuilder = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find();
+
+        List<Entity> products = searchBuilder.add(SearchRestrictions.eq("typeOfMaterial", "03product")).list().getEntities();
+        List<Entity> intermediates = searchBuilder.add(SearchRestrictions.eq("typeOfMaterial", "02intermediate")).list()
+                .getEntities();
+        List<Entity> components = searchBuilder.add(SearchRestrictions.eq("typeOfMaterial", "01component")).list().getEntities();
+        List<Entity> gridContent = grid.getEntities();
+
+        if (!gridContent.isEmpty()) {
+            gridContent.clear();
+        }
+        for (Entity product : products) {
+            gridContent.add(product);
+        }
+        for (Entity intermediate : intermediates) {
+            gridContent.add(intermediate);
+        }
+        for (Entity component : components) {
+            gridContent.add(component);
+        }
+        grid.setEntities(gridContent);
+
     }
 
 }
