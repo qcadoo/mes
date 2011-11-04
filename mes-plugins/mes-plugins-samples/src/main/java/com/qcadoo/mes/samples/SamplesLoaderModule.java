@@ -136,8 +136,8 @@ public class SamplesLoaderModule extends Module {
     @Override
     @Transactional
     public void multiTenantEnable() {
-    	//FIXME albr fix with system locale
-        //checkLocale();
+        checkLocale();
+
         if (databaseHasToBePrepared()) {
             LOG.info("Database has to be prepared ...");
 
@@ -197,12 +197,12 @@ public class SamplesLoaderModule extends Module {
     }
 
     private void checkLocale() {
-        if ((locale != null) || ("".equals(locale))) {
+        if (locale.equals("default")) {
             locale = Locale.getDefault().toString().substring(0, 2);
+        }
 
-            if (!"pl".equals(locale) && !"en".equals(locale)) {
-                locale = Locale.ENGLISH.toString().substring(0, 2);
-            }
+        if (!("pl".equals(locale) || "en".equals(locale))) {
+            locale = "en";
         }
     }
 
