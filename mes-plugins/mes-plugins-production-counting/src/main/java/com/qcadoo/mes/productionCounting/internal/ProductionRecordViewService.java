@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
@@ -190,8 +191,10 @@ public class ProductionRecordViewService {
         Entity order = getOrderFromLookup(view);
         Boolean autoCloseOrder = getBooleanValue(order.getField("autoCloseOrder"));
         String orderState = order.getStringField("state");
-        if (autoCloseOrder && view.getComponentByReference("lastRecord").getFieldValue() == "1"
-                && "03inProgress".equals(orderState)) {
+        if (autoCloseOrder
+                && view.getComponentByReference("lastRecord").getFieldValue() == "1"
+                && view.getComponentByReference("state").getFieldValue()
+                        .equals(ProductionCountingStates.ACCEPTED.getStringValue()) && "03inProgress".equals(orderState)) {
             order.setField("state", CLOSED_ORDER);
             dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(order);
             Entity orderFromDB = order.getDataDefinition().get(order.getId());
@@ -302,6 +305,29 @@ public class ProductionRecordViewService {
                 component.requestComponentUpdateState();
             }
         }
+    }
+
+    public void disableFields(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
+        FieldComponent typeOfProductionRecording = (FieldComponent) viewState
+                .getComponentByReference("typeOfProductionRecording");
+        FieldComponent registerQuanitityInProduct = (FieldComponent) viewState
+                .getComponentByReference("registerQuantityInProduct");
+        FieldComponent registerQuantityOutProduct = (FieldComponent) viewState
+                .getComponentByReference("registerQuantityOutProduct");
+        FieldComponent registerProductionTime = (FieldComponent) viewState.getComponentByReference("registerProductionTime");
+
+        if (typeOfProductionRecording.getFieldValue().equals("01basic")) {
+            registerProductionTime.setEnabled(false);
+            registerQuanitityInProduct.setEnabled(false);
+            registerQuantityOutProduct.setEnabled(false);
+        }
+        if (typeOfProductionRecording.getFieldValue().equals("02cumulated")
+                || typeOfProductionRecording.getFieldValue().equals("03forEach")) {
+            registerQuanitityInProduct.setEnabled(true);
+            registerProductionTime.setEnabled(true);
+            registerQuantityOutProduct.setEnabled(true);
+        }
+        registerProductionTime.requestComponentUpdateState();
     }
 
 }

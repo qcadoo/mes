@@ -54,6 +54,8 @@
 		<view:view resource="view/basicProductionCountingList.xml" />
 		<view:view resource="view/basicProductionCountingDetails.xml" />
 		
+<!-- 		<view:view-hook view="basicProductionCountingList" type="beforeRender" plugin="basicProductionCounting" class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService" method="sortProductsHook"/> -->
+		
 		<view:resource uri="public/**/*" />
 	</modules>
 

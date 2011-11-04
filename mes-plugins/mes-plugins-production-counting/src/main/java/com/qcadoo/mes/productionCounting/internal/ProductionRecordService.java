@@ -43,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -62,8 +63,6 @@ public class ProductionRecordService {
 
     @Autowired
     SecurityService securityService;
-
-    private final static String CLOSED_ORDER = "04completed";
 
     public void generateData(final DataDefinition dd, final Entity entity) {
         if (entity.getField("number") == null) {
@@ -104,6 +103,7 @@ public class ProductionRecordService {
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
 
         SearchCriteriaBuilder searchBuilder = dd.find();
+        searchBuilder.add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()));
         searchBuilder.add(SearchRestrictions.belongsTo("order", order));
         searchBuilder.add(SearchRestrictions.eq("lastRecord", true));
 

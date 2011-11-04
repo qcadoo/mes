@@ -43,10 +43,13 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.productionCounting.internal.ProductionBalanceReportDataService;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordOperationComparator;
+import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.security.api.SecurityService;
@@ -221,7 +224,11 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         PdfPTable inputProductsTable = PdfUtil.createTableWithHeader(7, inputProductsTableHeader, false);
 
         List<Entity> inputProductsList = new ArrayList<Entity>();
-        for (Entity productionRecord : productionBalance.getBelongsToField("order").getHasManyField("productionRecords")) {
+        List<Entity> productionRecords = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.belongsTo("order", productionBalance.getBelongsToField("order")))
+                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue())).list().getEntities();
+        for (Entity productionRecord : productionRecords) {
             inputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductInComponents"));
         }
         Collections.sort(inputProductsList, new EntityProductInOutComparator());
@@ -279,8 +286,14 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         PdfPTable outputProductsTable = PdfUtil.createTableWithHeader(7, outputProductsTableHeader, false);
 
         List<Entity> outputProductsList = new ArrayList<Entity>();
-        for (Entity productionRecord : productionBalance.getBelongsToField("order").getHasManyField("productionRecords")) {
-            outputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductOutComponents"));
+        List<Entity> productionRecords = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.belongsTo("order", productionBalance.getBelongsToField("order")))
+                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue())).list().getEntities();
+        for (Entity productionRecord : productionRecords) {
+            if (productionRecord.getStringField("state").equals(ProductionCountingStates.ACCEPTED.getStringValue())) {
+                outputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductOutComponents"));
+            }
         }
         Collections.sort(outputProductsList, new EntityProductInOutComparator());
 
@@ -391,11 +404,13 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         Integer plannedTimeSum = 0;
         Integer registeredTimeSum = 0;
         Integer timeBalanceSum = 0;
-
-        List<Entity> productionRecords = new ArrayList<Entity>(productionBalance.getBelongsToField("order").getHasManyField(
-                "productionRecords"));
+        // List<Entity> productionRecords = new ArrayList<Entity>(productionBalance.getBelongsToField("order").getHasManyField(
+        // "productionRecords"));
+        List<Entity> productionRecords = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.belongsTo("order", productionBalance.getBelongsToField("order")))
+                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue())).list().getEntities();
         Collections.sort(productionRecords, new EntityProductionRecordOperationComparator());
-
         for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecords)) {
             laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent").getStringField(
                     "nodeNumber"), PdfUtil.getArialRegular9Dark()));
