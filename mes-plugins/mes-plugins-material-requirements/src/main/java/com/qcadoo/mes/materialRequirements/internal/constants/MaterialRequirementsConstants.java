@@ -30,10 +30,10 @@ public interface MaterialRequirementsConstants {
     // MODEL
     public static final String MODEL_MATERIAL_REQUIREMENT = "materialRequirement";
 
-    public static final String MODEL_MATERIAL_REQUIREMENT_COMPONENT = "materialRequirementComponent";
+//    public static final String MODEL_MATERIAL_REQUIREMENT_COMPONENT = "materialRequirementComponent";
 
     // VIEW
-    public static final String VIEW_MATERIAL_REQUIREMENT_COMPONENT_DETAILS = "materialRequirementComponentDetails";
+//    public static final String VIEW_MATERIAL_REQUIREMENT_COMPONENT_DETAILS = "materialRequirementComponentDetails";
 
     public static final String VIEW_MATERIAL_REQUIREMENT_DETAILS = "materialRequirementDetails";
 

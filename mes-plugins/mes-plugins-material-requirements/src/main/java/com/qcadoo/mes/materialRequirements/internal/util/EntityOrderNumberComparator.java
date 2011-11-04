@@ -34,8 +34,7 @@ public class EntityOrderNumberComparator implements Comparator<Entity>, Serializ
 
     @Override
     public int compare(final Entity o1, final Entity o2) {
-        return ((Entity) o1.getField("order")).getField("number").toString()
-                .compareTo(((Entity) o2.getField("order")).getField("number").toString());
+        return o1.getField("number").toString().compareTo(o2.getField("number").toString());
     }
 
 }

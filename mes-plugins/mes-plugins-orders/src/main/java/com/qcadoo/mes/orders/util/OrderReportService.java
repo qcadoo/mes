@@ -57,7 +57,7 @@ public class OrderReportService {
     private TranslationService translationService;
 
     public Entity printForOrder(final ComponentState state, final String plugin, final String entityName,
-            final String detailEntityName, final Map<String, Object> entityFieldsMap, final OrderValidator orderValidator) {
+            final Map<String, Object> entityFieldsMap, final OrderValidator orderValidator) {
         if (!(state instanceof GridComponent)) {
             throw new IllegalStateException("method avalible only for grid");
         }
@@ -92,13 +92,13 @@ public class OrderReportService {
             }
             state.addMessage(errorMessage.toString(), MessageType.FAILURE, false);
         } else {
-            return createNewOrderPrint(ordersEntities, plugin, entityName, detailEntityName, entityFieldsMap, state.getLocale());
+            return createNewOrderPrint(ordersEntities, plugin, entityName, entityFieldsMap, state.getLocale());
         }
         return null;
     }
 
     private Entity createNewOrderPrint(final Set<Entity> orders, final String plugin, final String entityName,
-            final String detailEntityName, final Map<String, Object> entityFieldsMap, final Locale locale) {
+            final Map<String, Object> entityFieldsMap, final Locale locale) {
 
         DataDefinition data = dataDefinitionService.get(plugin, entityName);
 
@@ -115,15 +115,6 @@ public class OrderReportService {
         }
 
         Entity saved = data.save(materialReq);
-
-        for (Entity order : orders) {
-            Entity materialReqComponent = dataDefinitionService.get(plugin, detailEntityName).create();
-            materialReqComponent.setField("order", order);
-            materialReqComponent.setField(entityName, saved);
-            dataDefinitionService.get(plugin, detailEntityName).save(materialReqComponent);
-        }
-
-        saved = data.get(saved.getId());
 
         return saved;
     }
