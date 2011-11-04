@@ -33,9 +33,6 @@ public class ProductionRecordStateService {
     }
 
     public void disabledFieldWhenStateNotDraft(final ViewDefinitionState view) {
-        if (!(view instanceof ViewDefinitionState)) {
-            return;
-        }
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         if (form.getEntity() == null) {
             return;
