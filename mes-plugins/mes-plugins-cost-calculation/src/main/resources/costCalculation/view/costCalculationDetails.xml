@@ -80,6 +80,9 @@
 					
 					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
 					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+					var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
+					var saveNewRibbonItem = #{window}.getRibbonItem("actions.saveNew");
+					
 					var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
 					
 					var containsAtLeastOneOrder = false;
@@ -116,7 +119,10 @@
 							saveRibbonItem.disable();
 							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
 								pdfRibbonItem.enable();
+								generatedRibbonItem.disable();
 								saveRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
+								saveBackRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
+								saveNewRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
 							} else {
 								pdfRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordNotGenerated)}");
 								saveRibbonItem.enable();
