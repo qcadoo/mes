@@ -54,7 +54,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3" height="2">
-						<component type="textarea" name="name" field="name" />
+						<component type="textarea" name="name" field="name" reference="name" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="lookup" name="product" field="product"
@@ -69,6 +69,8 @@
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyNumber" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyName" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2" height="2">
