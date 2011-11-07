@@ -82,17 +82,22 @@ public final class OrderService {
         }
 
         FieldComponent productField = (FieldComponent) view.getComponentByReference("product");
-        FieldComponent technologyField = (FieldComponent) component;
+        FieldComponent technologyField = (FieldComponent) view.getComponentByReference("product");
         FieldComponent name = (FieldComponent) view.getComponentByReference("name");
-        if (technologyField.getFieldValue() == null || StringUtils.hasText((String) name.getFieldValue())) {
+        
+        if (technologyField.getFieldValue() == null || productField.getFieldValue() == null || StringUtils.hasText((String) name.getFieldValue())) {
             return;
         }
 
         Entity productEntity = getProductById((Long) productField.getFieldValue());
         Entity technologyEntity = getTechnologyById((Long) technologyField.getFieldValue());
 
-        if (productEntity == null || technologyEntity == null) {
+        if (productEntity == null) {
             return;
+        }
+        
+        if (productEntity != null && technologyEntity == null) {
+            technologyEntity = getDefaultTechnology(productEntity.getId());
         }
 
         Calendar cal = Calendar.getInstance(view.getLocale());

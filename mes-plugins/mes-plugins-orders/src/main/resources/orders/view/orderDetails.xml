@@ -278,6 +278,8 @@
 								method="changeOrderProduct" />
 							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.basic.util.UnitService"
 								method="fillProductUnit" />
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
+								method="setDefaultNameUsingTechnology" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
