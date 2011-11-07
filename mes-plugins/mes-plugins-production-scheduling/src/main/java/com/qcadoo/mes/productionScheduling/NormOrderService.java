@@ -46,7 +46,7 @@ public class NormOrderService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-    
+
     @Transactional
     public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity entity) {
         DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
@@ -74,7 +74,7 @@ public class NormOrderService {
         EntityTree operationComponents = technology.getTreeField("operationComponents");
         
         entity.setField("orderOperationComponents", Collections.singletonList(createOrderOperationComponent(
-                operationComponents.getRoot(), entity, technology, null, orderOperationComponentDD)));
+                    operationComponents.getRoot(), entity, technology, null, orderOperationComponentDD)));
     }
 
     private Entity createOrderOperationComponent(final EntityTreeNode operationComponent, final Entity order,
@@ -113,7 +113,7 @@ public class NormOrderService {
         orderOperationComponent.setField("nodeNumber", operationComponent.getField("nodeNumber"));
         orderOperationComponent.setField("machineUtilization", operationComponent.getField("machineUtilization"));
         orderOperationComponent.setField("laborUtilization", operationComponent.getField("laborUtilization"));
-        
+
         List<Entity> newOrderOperationComponents = new ArrayList<Entity>();
 
         for (EntityTreeNode child : operationComponent.getChildren()) {

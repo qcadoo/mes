@@ -159,6 +159,10 @@ public class NormService {
             view.getComponentByReference("productionInOneCycle").setFieldValue("1");
         }
 
+        if (source.getField("countMachine") == null) {
+            view.getComponentByReference("countMachine").setFieldValue("0");
+        }
+
         // FIXME MAKU fix problem with double notifications after operation changed
         // view.getComponentByReference("form").addMessage(translationService.translate("productionTimeNorms.messages.success.copyTimeNormsSuccess",
         // view.getLocale()), SUCCESS);
