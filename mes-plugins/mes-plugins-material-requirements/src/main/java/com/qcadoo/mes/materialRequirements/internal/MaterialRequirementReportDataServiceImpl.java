@@ -24,6 +24,7 @@
 package com.qcadoo.mes.materialRequirements.internal;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,16 @@ public class MaterialRequirementReportDataServiceImpl implements MaterialRequire
 
     @Autowired
     private ReportDataService reportDataService;
+
+    @Override
+    public final Map<Entity, BigDecimal> getQuantitiesForMaterialRequirementProducts(
+            final List<Entity> materialRequirementComponents, final Boolean onlyComponents) {
+        List<Entity> orders = new ArrayList<Entity>();
+        for (Entity component : materialRequirementComponents) {
+            orders.add(component.getBelongsToField("order"));
+        }
+        return getQuantitiesForOrdersTechnologyProducts(orders, onlyComponents);
+    }
 
     @Override
     public final Map<Entity, BigDecimal> getQuantitiesForOrdersTechnologyProducts(final List<Entity> orders,
