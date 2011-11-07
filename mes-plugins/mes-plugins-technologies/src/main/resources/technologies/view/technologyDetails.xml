@@ -119,19 +119,6 @@
 							</dataType>
 							<listener event="select"
 								class="com.qcadoo.mes.technologies.TechnologyService" method="loadProductsForReferencedTechnology" />
-							<script>
-							<![CDATA[
-								this.addOnChangeListener({
-									onMoveModeChange: function(isMoveMode) {
-										if (isMoveMode) {
-											#{treeBorderLayout}.setBackground(QCD.components.containers.layout.Layout.COLOR_DISABLED);
-										} else {
-											#{treeBorderLayout}.setBackground(QCD.components.containers.layout.Layout.COLOR_NORMAL);
-										}
-									}
-								});
-							]]>
-							</script>
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1" height="3">

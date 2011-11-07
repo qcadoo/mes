@@ -46,7 +46,6 @@ import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -84,26 +83,6 @@ public class MaterialRequirementService {
         entity.setField("date", null);
         entity.setField("worker", null);
         return true;
-    }
-
-    public boolean checkMaterialRequirementComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
-        Entity order = entity.getBelongsToField("order");
-        Entity materialRequirement = entity.getBelongsToField("materialRequirement");
-
-        if (materialRequirement == null || order == null) {
-            return false;
-        }
-
-        SearchResult searchResult = dataDefinition.find().belongsTo("order", order.getId())
-                .belongsTo("materialRequirement", materialRequirement.getId()).list();
-
-        if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
-            entity.addError(dataDefinition.getField("order"),
-                    "materialRequirements.validate.global.error.materialRequirementDuplicated");
-            return false;
-        } else {
-            return true;
-        }
     }
 
     public void disableFormForExistingMaterialRequirement(final ViewDefinitionState state) {
@@ -153,7 +132,7 @@ public class MaterialRequirementService {
                         state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;
-            } else if (materialRequirement.getHasManyField("orders").isEmpty()) {
+            } else if (materialRequirement.getManyToManyField("orders").isEmpty()) {
                 String message = translationService.translate(
                         "materialRequirements.materialRequirement.window.materialRequirement.missingAssosiatedOrders",
                         state.getLocale());
@@ -265,8 +244,7 @@ public class MaterialRequirementService {
         };
 
         return orderReportService.printForOrder(state, MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
-                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT,
-                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT_COMPONENT, entityFieldsMap, orderValidator);
+                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT, entityFieldsMap, orderValidator);
     }
 
 }

@@ -52,6 +52,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -935,26 +936,11 @@ public class SamplesLoaderModule extends Module {
                     + requirement.getField("onlyComponents") + ", generated=" + requirement.getField("generated") + "}");
         }
 
+        requirement.setField("orders", Lists.newArrayList(getRandomOrder(), getRandomOrder(), getRandomOrder()));
+        
         requirement = dataDefinitionService.get("materialRequirements", "materialRequirement").save(requirement);
         if (!requirement.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
-        }
-
-        for (int i = 0; i < 1; i++) {
-            Entity component = dataDefinitionService.get("materialRequirements", "materialRequirementComponent").create();
-            component.setField("materialRequirement", requirement);
-            component.setField("order", getRandomOrder());
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test material requirement component {requirement="
-                        + ((Entity) component.getField("materialRequirement")).getField("name") + ", order="
-                        + ((Entity) component.getField("order")).getField("number") + "}");
-            }
-
-            component = dataDefinitionService.get("materialRequirements", "materialRequirementComponent").save(component);
-            if (!component.isValid()) {
-                throw new IllegalStateException("Saved entity have validation errors");
-            }
         }
     }
 
