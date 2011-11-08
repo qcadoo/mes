@@ -282,7 +282,7 @@
 								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-stoppage/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-used-products/src/main/resources;
-</resourcesAsCSV>
+							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>
 				</configuration>
@@ -308,12 +308,10 @@
 									buildApplicationName = Qcadoo MES
 									buildApplicationVersion = ${project.version}
 									buildFrameworkVersion = ${qcadoo.version}
-									buildTime =
-									${build.time}
+									buildTime = ${build.time}
 									buildNumber = ${build.number}
-									buildRevision =
-									${build.revision}
-</echo>
+									buildRevision = ${build.revision}
+								</echo>
 							</tasks>
 						</configuration>
 					</execution>
