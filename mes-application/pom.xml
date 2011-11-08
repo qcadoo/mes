@@ -299,7 +299,7 @@
 						<configuration>
 							<tasks>
 								<mkdir dir="${basedir}/target/classes" />
-								<exec command="git rev-list --max-count=1 --all" osfamily="unix" outputproperty="build.revision" />
+								<exec command="git rev-list --max-count=1 --all" outputproperty="build.revision" />
 								<tstamp>
 									<format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" />
 								</tstamp>

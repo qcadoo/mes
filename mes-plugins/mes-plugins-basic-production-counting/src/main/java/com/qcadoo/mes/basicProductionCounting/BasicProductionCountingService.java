@@ -194,4 +194,21 @@ public class BasicProductionCountingService {
 
     }
 
+    public void fillFieldsCurrency(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntity() == null) {
+            return;
+        }
+        Entity basicProductionCountingEntity = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).get(form.getEntityId());
+        Entity product = basicProductionCountingEntity.getBelongsToField("product");
+        if (product == null) {
+            return;
+        }
+        for (String reference : Arrays.asList("usedQuantityCurrency", "producedQuantityCurrency", "plannedQuantityCurrency")) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+            field.setFieldValue(product.getField("unit"));
+            field.requestComponentUpdateState();
+        }
+    }
 }
