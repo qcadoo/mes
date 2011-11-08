@@ -96,7 +96,7 @@ public final class OrderService {
             return;
         }
         
-        if (productEntity != null && technologyEntity == null) {
+        if (technologyEntity == null) {
             technologyEntity = getDefaultTechnology(productEntity.getId());
         }
 
