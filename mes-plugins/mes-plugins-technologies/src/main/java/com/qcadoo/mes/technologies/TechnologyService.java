@@ -75,7 +75,7 @@ public final class TechnologyService {
 
     @Autowired
     private TreeNumberingService treeNumberingService;
-    
+
     @Autowired
     private TranslationService translationService;
 

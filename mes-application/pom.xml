@@ -282,7 +282,7 @@
 								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-stoppage/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-used-products/src/main/resources;
-</resourcesAsCSV>
+							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>
 				</configuration>
@@ -299,7 +299,7 @@
 						<configuration>
 							<tasks>
 								<mkdir dir="${basedir}/target/classes" />
-								<exec command="git rev-list --max-count=1 --all" osfamily="unix" outputproperty="build.revision" />
+								<exec command="git rev-list --max-count=1 --all" outputproperty="build.revision" />
 								<tstamp>
 									<format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" />
 								</tstamp>
@@ -308,12 +308,10 @@
 									buildApplicationName = Qcadoo MES
 									buildApplicationVersion = ${project.version}
 									buildFrameworkVersion = ${qcadoo.version}
-									buildTime =
-									${build.time}
+									buildTime = ${build.time}
 									buildNumber = ${build.number}
-									buildRevision =
-									${build.revision}
-</echo>
+									buildRevision = ${build.revision}
+								</echo>
 							</tasks>
 						</configuration>
 					</execution>
