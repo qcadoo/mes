@@ -215,9 +215,10 @@ public class ProductionRecordViewService {
                     error = error.append(message.getMessage());
                     form.addMessage(error.toString(), MessageType.FAILURE, false);
                 }
-            } else
+            } else {
                 form.addMessage(translationService.translate("productionCounting.order.orderClosed", view.getLocale()),
                         MessageType.INFO, false);
+            }
         }
     }
 

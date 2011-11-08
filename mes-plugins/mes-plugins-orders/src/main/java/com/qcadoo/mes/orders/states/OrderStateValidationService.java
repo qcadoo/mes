@@ -64,10 +64,11 @@ public class OrderStateValidationService {
         logging.setField("currentState", currentState);
         Date dateTime = new Date();
         Entity shift = shiftsServiceImpl.getShiftFromDate(dateTime);
-        if (shift != null)
+        if (shift != null) {
             logging.setField("shift", shift);
-        else
+        } else {
             logging.setField("shift", null);
+        }
         logging.setField("worker", securityService.getCurrentUserName());
         logging.setField("dateAndTime", dateTime);
 
@@ -94,12 +95,13 @@ public class OrderStateValidationService {
     private List<ChangeOrderStateMessage> checkValidation(final List<String> references, final Entity entity) {
         checkArgument(entity != null, "entity is null");
         List<ChangeOrderStateMessage> errors = new ArrayList<ChangeOrderStateMessage>();
-        for (String reference : references)
+        for (String reference : references) {
             if (entity.getField(reference) == null) {
                 errors.add(ChangeOrderStateMessage.error(
                         translationService.translate("orders.order.orderStates.fieldRequired", LocaleContextHolder.getLocale()),
                         reference));
             }
+        }
         return errors;
     }
 }
