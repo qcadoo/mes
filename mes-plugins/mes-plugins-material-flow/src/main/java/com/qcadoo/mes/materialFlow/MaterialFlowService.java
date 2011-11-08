@@ -69,17 +69,17 @@ public class MaterialFlowService {
 
         DataDefinition transferDataCorrection = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_STOCK_CORRECTION);
-        DataDefinition transferTo = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, 
+        DataDefinition transferTo = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
-        DataDefinition transferFrom = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, 
+        DataDefinition transferFrom = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
-        
-        DataDefinition dataDefStockAreas = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, 
+
+        DataDefinition dataDefStockAreas = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_STOCK_AREAS);
-        
+
         Long stockAreasId = dataDefStockAreas.find("where number = '" + stockAreas + "'").uniqueResult().getId();
         Long productId = Long.valueOf(product);
-        
+
         Entity resultDataCorrection = transferDataCorrection.find().add(SearchRestrictions.eq("stockAreas.id", stockAreasId))
                 .add(SearchRestrictions.eq("product.id", productId)).addOrder(SearchOrders.desc("stockCorrectionDate"))
                 .setMaxResults(1).uniqueResult();
@@ -97,9 +97,9 @@ public class MaterialFlowService {
                     "where stockAreasTo = '" + stockAreasId + "' and product = '" + product + "' and time <= '" + forDate + "'")
                     .list();
 
-            resultFrom = transferFrom.find(
-                    "where stockAreasFrom = '" + stockAreasId + "' and product = '" + product + "' and time <= '" + forDate + "'")
-                    .list();
+            resultFrom = transferFrom
+                    .find("where stockAreasFrom = '" + stockAreasId + "' and product = '" + product + "' and time <= '" + forDate
+                            + "'").list();
 
         } else {
             resultTo = transferTo.find(
@@ -143,7 +143,7 @@ public class MaterialFlowService {
         FieldComponent product = (FieldComponent) state.getComponentByReference("product");
         FieldComponent date = (FieldComponent) state.getComponentByReference("stockCorrectionDate");
         FieldComponent should = (FieldComponent) state.getComponentByReference("shouldBe");
-        
+
         if (stockAreas != null && product != null && date != null) {
             if (stockAreas.getFieldValue() != null && product.getFieldValue() != null
                     && !date.getFieldValue().toString().equals("")) {
@@ -167,19 +167,22 @@ public class MaterialFlowService {
         if (view.getComponentByReference("number").getFieldValue() != null) {
             return;
         }
-        numberGeneratorService.generateAndInsertNumber(view, MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFORMATIONS,
-                "form", "number");
+        numberGeneratorService.generateAndInsertNumber(view, MaterialFlowConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowConstants.MODEL_TRANSFORMATIONS, "form", "number");
     }
 
-    public void generateNumberForTransfer(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+    public void generateNumberForTransfer(final ViewDefinitionState state, final ComponentState componentState,
+            final String[] args) {
         generateNumberAfterSelectingProduct(state, componentState, MaterialFlowConstants.MODEL_TRANSFER);
     }
 
-    public void generateNumberForStockCorrection(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+    public void generateNumberForStockCorrection(final ViewDefinitionState state, final ComponentState componentState,
+            final String[] args) {
         generateNumberAfterSelectingProduct(state, componentState, MaterialFlowConstants.MODEL_STOCK_CORRECTION);
     }
-    
-    public void generateNumberAfterSelectingProduct(final ViewDefinitionState state, final ComponentState componentState, String tableToGenerateNumber) {
+
+    public void generateNumberAfterSelectingProduct(final ViewDefinitionState state, final ComponentState componentState,
+            String tableToGenerateNumber) {
         if (!(componentState instanceof FieldComponent)) {
             throw new IllegalStateException("component is not FieldComponentState");
         }
@@ -192,8 +195,10 @@ public class MaterialFlowService {
         if (productState.getFieldValue() != null) {
             Entity product = getAreaById((Long) productState.getFieldValue());
             if (product != null) {
-                String numberValue = product.getField("number") + "-" +
-                        numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, tableToGenerateNumber, 3);
+                String numberValue = product.getField("number")
+                        + "-"
+                        + numberGeneratorService
+                                .generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, tableToGenerateNumber, 3);
                 number.setFieldValue(numberValue);
             }
         }
@@ -211,7 +216,6 @@ public class MaterialFlowService {
         }
         return null;
     }
-
 
     public void fillUnitFieldValue(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         fillUnitFieldValue(view);
@@ -234,7 +238,7 @@ public class MaterialFlowService {
             unitField.requestComponentUpdateState();
         }
     }
-    
+
     public Map<Entity, BigDecimal> calculateMaterialQuantitiesInStockArea(Entity materialsInStockAreas) {
         List<Entity> stockAreas = new ArrayList<Entity>(materialsInStockAreas.getHasManyField("stockAreas"));
         Map<Entity, BigDecimal> reportData = new HashMap<Entity, BigDecimal>();
@@ -249,19 +253,20 @@ public class MaterialFlowService {
             for (Entity product : products) {
                 BigDecimal quantity = calculateShouldBeInStockArea(stockAreaNumber, product.getStringField("number"), forDate);
 
-                if (reportData.containsKey(product))
+                if (reportData.containsKey(product)) {
                     reportData.put(product, reportData.get(product).add(quantity));
-                else
+                } else {
                     reportData.put(product, quantity);
+                }
             }
         }
         return reportData;
     }
 
     public List<Entity> getProductsSeenInStockArea(String stockAreaNumber) {
-        DataDefinition dataDefStockAreas = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, 
+        DataDefinition dataDefStockAreas = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_STOCK_AREAS);
-        
+
         Long id = dataDefStockAreas.find("where number = '" + stockAreaNumber + "'").uniqueResult().getId();
 
         DataDefinition dataDefProduct = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER_BASIC,
@@ -285,56 +290,59 @@ public class MaterialFlowService {
 
         return productsFromTransfers;
     }
-    
-    public void fillTransferConsumptionDataFromTransformation(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+
+    public void fillTransferConsumptionDataFromTransformation(final ViewDefinitionState state,
+            final ComponentState componentState, final String[] args) {
         String number = state.getComponentByReference("number").getFieldValue().toString();
         componentState.performEvent(state, "save", new String[0]);
-        
+
         DataDefinition transferDataDefinition = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
         Long id = transferDataDefinition.find("where number = '" + number + "'").uniqueResult().getId();
-        
+
         Entity transferCopy = transferDataDefinition.get(id);
-        
+
         Entity transformation = transferCopy.getBelongsToField("transformationsConsumption");
         transferCopy.setField("type", "Consumption");
         transferCopy.setField("time", transformation.getField("time"));
         transferCopy.setField("stockAreasFrom", transformation.getField("stockAreasFrom"));
         transferCopy.setField("staff", transformation.getField("staff"));
-        
+
         transferDataDefinition.save(transferCopy);
     }
-    
-    public void fillTransferProductionDataFromTransformation(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+
+    public void fillTransferProductionDataFromTransformation(final ViewDefinitionState state,
+            final ComponentState componentState, final String[] args) {
         String number = state.getComponentByReference("number").getFieldValue().toString();
         componentState.performEvent(state, "save", new String[0]);
-        
+
         DataDefinition transferDataDefinition = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
         Long id = transferDataDefinition.find("where number = '" + number + "'").uniqueResult().getId();
-        
+
         Entity transferCopy = transferDataDefinition.get(id);
-        
+
         Entity transformation = transferCopy.getBelongsToField("transformationsProduction");
         transferCopy.setField("type", "Production");
         transferCopy.setField("time", transformation.getField("time"));
         transferCopy.setField("stockAreasTo", transformation.getField("stockAreasTo"));
         transferCopy.setField("staff", transformation.getField("staff"));
-        
+
         transferDataDefinition.save(transferCopy);
     }
-    
-    public void disableStockAreaFieldForParticularTransferType (final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+
+    public void disableStockAreaFieldForParticularTransferType(final ViewDefinitionState state,
+            final ComponentState componentState, final String[] args) {
         disableStockAreaFieldForParticularTransferType(state);
     }
-    
+
     public void disableStockAreaFieldForParticularTransferType(final ViewDefinitionState state) {
         if (state.getComponentByReference("type").getFieldValue() == null)
             return;
         String type = state.getComponentByReference("type").getFieldValue().toString();
         FieldComponent toStockArea = (FieldComponent) state.getComponentByReference("stockAreasTo");
         FieldComponent fromStockArea = (FieldComponent) state.getComponentByReference("stockAreasFrom");
-        
+
         if (type.compareTo("Consumption") == 0) {
             toStockArea.setEnabled(false);
             toStockArea.setFieldValue("");
@@ -350,27 +358,31 @@ public class MaterialFlowService {
             fromStockArea.setEnabled(true);
         }
     }
-    
-    public void fillDefaultStockAreaToFieldInTransformations (final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+
+    public void fillDefaultStockAreaToFieldInTransformations(final ViewDefinitionState state,
+            final ComponentState componentState, final String[] args) {
         FieldComponent stockAreaTo = (FieldComponent) state.getComponentByReference("stockAreasTo");
-        
+
         if (stockAreaTo.getFieldValue() == null) {
             FieldComponent stockAreaFrom = (FieldComponent) state.getComponentByReference("stockAreasFrom");
             stockAreaTo.setFieldValue(stockAreaFrom.getFieldValue());
         }
     }
-    
+
     public boolean validateTransfer(final DataDefinition dataDefinition, final Entity entity) {
         if (entity.getField("transformationsConsumption") == null && entity.getField("transformationsProduction") == null) {
-            Entity stockAreasFrom = (Entity) (entity.getField("stockAreasFrom") != null ? entity.getField("stockAreasFrom") : null);
+            Entity stockAreasFrom = (Entity) (entity.getField("stockAreasFrom") != null ? entity.getField("stockAreasFrom")
+                    : null);
             Entity stockAreasTo = (Entity) (entity.getField("stockAreasTo") != null ? entity.getField("stockAreasTo") : null);
             Date date = (Date) (entity.getField("time") != null ? entity.getField("time") : null);
-            String type = (String) (entity.getStringField("type") != null ? entity.getStringField("type") : null);
-            
+            String type = (entity.getStringField("type") != null ? entity.getStringField("type") : null);
+
             boolean validate = true;
             if (stockAreasFrom == null && stockAreasTo == null) {
-                entity.addError(dataDefinition.getField("stockAreasFrom"), "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
-                entity.addError(dataDefinition.getField("stockAreasTo"), "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
+                entity.addError(dataDefinition.getField("stockAreasFrom"),
+                        "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
+                entity.addError(dataDefinition.getField("stockAreasTo"),
+                        "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
                 validate = false;
             }
             if (type == null) {
@@ -385,18 +397,19 @@ public class MaterialFlowService {
         }
         return true;
     }
-    
+
     public void checkIfTransferHasTransformation(final ViewDefinitionState state) {
         String number = (String) state.getComponentByReference("number").getFieldValue();
         if (number == null)
             return;
-        Entity transfer = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowConstants.MODEL_TRANSFER).find("where number = '" + number.toString() + "'").uniqueResult();
+        Entity transfer = dataDefinitionService
+                .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFER)
+                .find("where number = '" + number.toString() + "'").uniqueResult();
         if (transfer == null)
             return;
-        
-        if (transfer.getBelongsToField("transformationsConsumption") != null || 
-                transfer.getBelongsToField("transformationsProduction") != null) {
+
+        if (transfer.getBelongsToField("transformationsConsumption") != null
+                || transfer.getBelongsToField("transformationsProduction") != null) {
             FieldComponent type = (FieldComponent) state.getComponentByReference("type");
             FieldComponent date = (FieldComponent) state.getComponentByReference("time");
             FieldComponent stockAreasTo = (FieldComponent) state.getComponentByReference("stockAreasTo");

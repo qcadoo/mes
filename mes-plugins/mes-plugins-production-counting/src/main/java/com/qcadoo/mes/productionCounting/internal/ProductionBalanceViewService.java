@@ -127,17 +127,19 @@ public class ProductionBalanceViewService {
     }
 
     private void setGridsContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        if ((Boolean) order.getField("registerQuantityInProduct"))
+        if ((Boolean) order.getField("registerQuantityInProduct")) {
             setInputProductsGridContent(viewDefinitionState, order);
-        else
+        } else {
             viewDefinitionState.getComponentByReference("inputProductsGrid").setVisible(false);
-        if ((Boolean) order.getField("registerQuantityOutProduct"))
+        }
+        if ((Boolean) order.getField("registerQuantityOutProduct")) {
             setOutputProductsGridContent(viewDefinitionState, order);
-        else
+        } else {
             viewDefinitionState.getComponentByReference("outputProductsGrid").setVisible(false);
-        if ((Boolean) order.getField("registerProductionTime"))
+        }
+        if ((Boolean) order.getField("registerProductionTime")) {
             setProductionTimeTabContent(viewDefinitionState, order);
-        else {
+        } else {
             viewDefinitionState.getComponentByReference("operationsTimeGrid").setVisible(false);
             viewDefinitionState.getComponentByReference("productionTimeGridLayout").setVisible(false);
         }
@@ -279,7 +281,7 @@ public class ProductionBalanceViewService {
 
     public void disableFieldsWhenGenerated(final ViewDefinitionState view) {
         Boolean enabled = false;
-        ComponentState generated = (ComponentState) view.getComponentByReference("generated");
+        ComponentState generated = view.getComponentByReference("generated");
         if (generated == null || generated.getFieldValue() == null || "0".equals(generated.getFieldValue())) {
             enabled = true;
         }
