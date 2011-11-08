@@ -3,8 +3,14 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window">
 		<ribbon>
-			<template name="standardFormTemplate" />
-			<!-- <group template="navigation" /> -->
+			<group name="navigation">
+				<bigButton name="back" icon="backIcon24.png" state="enabled"
+					action="#{window}.performBack" />
+			</group>
+			<group name="actions">
+				<bigButton name="saveBack" icon="saveBackIcon24.png"
+					state="enabled" action="#{form}.performSave; #{window}.performBack;" />
+			</group>
 		</ribbon>
 		<component type="form" name="order" reference="order" />
 		<component type="form" name="basicProductionCountingDetails"
@@ -13,7 +19,7 @@
 				rows="4" hasBorders="false">
 				<layoutElement column="1" row="1" width="3">
 					<component type="input" name="productName" reference="product"
-						defaultEnabled="false" >
+						defaultEnabled="false">
 						<option type="labelWidth" value="50" />
 					</component>
 				</layoutElement>
