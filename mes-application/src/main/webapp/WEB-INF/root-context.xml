@@ -50,7 +50,6 @@
 
 		<util:properties id="defaultConfiguration">
 			<prop key="loadTestDataLocale">default</prop>
-			<prop key="buildRevision">-</prop> <!--  workaround for windows where exec command from maven seems to fail -->
 		</util:properties>
 
 	<bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
