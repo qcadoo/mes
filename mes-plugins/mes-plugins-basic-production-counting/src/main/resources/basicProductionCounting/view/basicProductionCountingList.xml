@@ -25,18 +25,13 @@
 				<option type="correspondingView"
 					value="basicProductionCounting/basicProductionCountingDetails" />
 				<option type="correspondingComponent" value="form" />
-<!-- 				<option type="correspondingViewInModal" value="true" /> -->
 				<option type="paginable" value="false" />
-				<option type="creatable" value="true" />
-				<option type="deletable" value="true" />
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
 			</component>
-<!-- 		</component> -->
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
 	<hooks>
-<!-- 		<beforeRender class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService" method="sortProductsHook"/> -->
 	</hooks>
 </view>

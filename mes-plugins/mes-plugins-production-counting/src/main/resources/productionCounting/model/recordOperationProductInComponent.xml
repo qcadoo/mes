@@ -32,12 +32,12 @@
 		<belongsTo name="product" model="product" plugin="basic"/>
 		<decimal name="usedQuantity" >
 			<validatesRange from="0" exclusively="true" />
-			<validatesPrecision max="7" />
+			<validatesUnscaledValue max="5" />
 			<validatesScale max="3" />
 		</decimal>
 		<decimal name="plannedQuantity" >
 			<validatesRange from="0" exclusively="true" />
-			<validatesPrecision max="7" />
+			<validatesUnscaledValue max="5" />
 			<validatesScale max="3" />
 		</decimal>
 		<decimal name="balance" />

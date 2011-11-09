@@ -3,34 +3,73 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window">
 		<ribbon>
-			<template name="standardFormTemplate" />
-			<!-- <group template="navigation" /> -->
+			<group name="navigation">
+				<bigButton name="back" icon="backIcon24.png" state="enabled"
+					action="#{window}.performBack" />
+			</group>
+			<group name="actions">
+				<bigButton name="saveBack" icon="saveBackIcon24.png"
+					state="enabled" action="#{form}.performSave; #{window}.performBack;" />
+			</group>
 		</ribbon>
-		<component type="form" name="order" reference="order"/>
+		<component type="form" name="order" reference="order" />
 		<component type="form" name="basicProductionCountingDetails"
 			reference="form">
-			<component type="gridLayout" name="gridLayout" columns="1"
-				rows="4">
-				<layoutElement column="1" row="1">
-					<component type="input" name="productName" reference="product" defaultEnabled="false"/>
+			<component type="gridLayout" name="gridLayout" columns="8"
+				rows="4" hasBorders="false">
+				<layoutElement column="1" row="1" width="3">
+					<component type="input" name="productName" reference="product"
+						defaultEnabled="false">
+						<option type="labelWidth" value="50" />
+					</component>
 				</layoutElement>
-				<layoutElement column="1" row="2">
+				<layoutElement column="1" row="2" width="3">
 					<component type="input" name="plannedQuantity" field="plannedQuantity"
-						defaultEnabled="false" />
+						defaultEnabled="false">
+						<option type="alignment" value="right" />
+						<option type="labelWidth" value="50" />
+					</component>
 				</layoutElement>
-				<layoutElement column="1" row="3">
-					<component type="input" name="producedQuantity" field="producedQuantity"/>
+				<layoutElement column="1" row="3" width="3">
+					<component type="input" name="producedQuantity" field="producedQuantity">
+						<option type="alignment" value="right" />
+						<option type="labelWidth" value="50" />
+					</component>
 				</layoutElement>
-				<layoutElement column="1" row="4">
-					<component type="input" name="usedQuantity" field="usedQuantity" />
+				<layoutElement column="1" row="4" width="3">
+					<component type="input" name="usedQuantity" field="usedQuantity">
+						<option type="alignment" value="right" />
+						<option type="labelWidth" value="50" />
+					</component>
 				</layoutElement>
+				<layoutElement column="4" row="2">
+					<component type="input" name="plannedQuantityCurrency"
+						defaultEnabled="false" hasLabel="false" reference="plannedQuantityCurrency">
+					</component>
+				</layoutElement>
+				<layoutElement column="4" row="3">
+					<component type="input" name="producedQuantityCurrency"
+						defaultEnabled="false" hasLabel="false" reference="producedQuantityCurrency">
+					</component>
+				</layoutElement>
+				<layoutElement column="4" row="4">
+					<component type="input" name="usedQuantityCurrency"
+						defaultEnabled="false" hasLabel="false" reference="usedQuantityCurrency">
+					</component>
+				</layoutElement>
+
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#product['name']" />
 		</component>
 	</component>
-	
+
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService" method="getProductNameFromCounting"/>
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
+			method="getProductNameFromCounting" />
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
+			method="fillFieldsCurrency" />
 	</hooks>
 </view>

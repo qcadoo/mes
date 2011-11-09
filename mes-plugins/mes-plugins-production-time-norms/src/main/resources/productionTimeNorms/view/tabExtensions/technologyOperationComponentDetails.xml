@@ -72,8 +72,6 @@
 			<layoutElement column="1" row="8" width="5">
 				<component type="input" name="countMachine" field="#{form}.countMachine"
 					reference="countMachine" hasDescription="true" defaultEnabled="false">
-					<validatesLength max="7" />
-					<validatesPrecision max="3" />
 				</component>
 			</layoutElement>
 			<layoutElement column="6" row="8" width="1">

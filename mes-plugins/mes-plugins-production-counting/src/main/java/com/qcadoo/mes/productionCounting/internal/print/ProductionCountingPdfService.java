@@ -205,12 +205,12 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                         : getTranslationService().translate(
                                 "productionCounting.productionCounting.report.panel.recordType.final", locale), null,
                 PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        if (productionRecord.getBelongsToField("order").getStringField("typeOfProductionRecording").equals("02cumulated"))
+        if (productionRecord.getBelongsToField("order").getStringField("typeOfProductionRecording").equals("02cumulated")) {
             addTableCellAsTable(
                     panelTable,
                     getTranslationService().translate("productionCounting.productionCounting.report.panel.operationAndLevel",
                             locale), "N/A", null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        else
+        } else {
             addTableCellAsTable(
                     panelTable,
                     getTranslationService().translate("productionCounting.productionCounting.report.panel.operationAndLevel",
@@ -218,21 +218,24 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                             + " "
                             + productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
                                     .getStringField("name"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        addTableCellAsTable(panelTable,
-                getTranslationService().translate("productionCounting.productionCounting.report.panel.dateAndTime", locale),
-                (new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format((Date) productionRecord.getField("creationTime")))
-                        .toString(), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        if ((Boolean) productionRecord.getBelongsToField("order").getField("registerProductionTime")) {
-            addTableCellAsTable(
-                    panelTable,
-                    getTranslationService().translate("productionCounting.productionCounting.report.panel.machineOperationTime",
-                            locale), convertTimeToString(new BigDecimal((Integer) productionRecord.getField("machineTime"))),
-                    null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        } else {
-            addTableCellAsTable(
-                    panelTable,
-                    getTranslationService().translate("productionCounting.productionCounting.report.panel.machineOperationTime",
-                            locale), "N/A", null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+            addTableCellAsTable(panelTable,
+                    getTranslationService().translate("productionCounting.productionCounting.report.panel.dateAndTime", locale),
+                    (new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format((Date) productionRecord.getField("creationTime")))
+                            .toString(), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+            if ((Boolean) productionRecord.getBelongsToField("order").getField("registerProductionTime")) {
+                addTableCellAsTable(
+                        panelTable,
+                        getTranslationService().translate(
+                                "productionCounting.productionCounting.report.panel.machineOperationTime", locale),
+                        convertTimeToString(new BigDecimal((Integer) productionRecord.getField("machineTime"))), null,
+                        PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+            } else {
+                addTableCellAsTable(
+                        panelTable,
+                        getTranslationService().translate(
+                                "productionCounting.productionCounting.report.panel.machineOperationTime", locale), "N/A", null,
+                        PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+            }
         }
         addTableCellAsTable(panelTable,
                 getTranslationService().translate("productionCounting.productionCounting.report.panel.worker", locale),
@@ -289,11 +292,12 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                                 + productIn.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
                         .getArialRegular9Dark()));
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-                if (productIn.getField("usedQuantity") != null)
+                if (productIn.getField("usedQuantity") != null) {
                     inputProductsTable.addCell(new Phrase(getDecimalFormat().format(productIn.getField("usedQuantity")), PdfUtil
                             .getArialRegular9Dark()));
-                else
+                } else {
                     inputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
+                }
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
                 inputProductsTable.addCell(new Phrase(productIn.getBelongsToField("product").getStringField("unit"), PdfUtil
                         .getArialRegular9Dark()));
@@ -335,11 +339,12 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                                 + productOut.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
                         .getArialRegular9Dark()));
                 outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-                if (productOut.getField("usedQuantity") != null)
+                if (productOut.getField("usedQuantity") != null) {
                     outputProductsTable.addCell(new Phrase(getDecimalFormat().format(productOut.getField("usedQuantity")),
                             PdfUtil.getArialRegular9Dark()));
-                else
+                } else {
                     outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
+                }
                 outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
                 outputProductsTable.addCell(new Phrase(productOut.getBelongsToField("product").getStringField("unit"), PdfUtil
                         .getArialRegular9Dark()));

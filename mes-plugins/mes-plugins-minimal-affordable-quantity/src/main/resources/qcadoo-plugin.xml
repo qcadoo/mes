@@ -63,7 +63,7 @@
 		<model:model-field plugin="technologies" model="technology">
 			<model:decimal name="minimalQuantity">
 				<model:validatesRange from="0" exclusively="true" />
-				<model:validatesPrecision max="8"/>
+				<model:validatesUnscaledValue max="5"/>
 				<model:validatesScale max="3" />
 			</model:decimal>			
 		</model:model-field>

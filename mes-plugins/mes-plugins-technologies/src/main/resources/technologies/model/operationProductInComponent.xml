@@ -33,7 +33,7 @@
 		<belongsTo name="product" plugin="basic" model="product" required="true" />
 		<decimal name="quantity" required="true">
 			<validatesRange from="0" exclusively="true" />
-			<validatesPrecision max="7" />
+			<validatesUnscaledValue max="5" />
 			<validatesScale max="3" />
 		</decimal>
 	</fields>

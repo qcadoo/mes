@@ -42,12 +42,12 @@
 		<belongsTo name="technology" plugin="technologies" model="technology" />
 		<decimal name="plannedQuantity" required="true">
 			<validatesRange from="0" exclusively="true" />
-			<validatesPrecision max="8" />
+			<validatesUnscaledValue max="5" />
 			<validatesScale max="3" />
 		</decimal>
 		<decimal name="doneQuantity">
 			<validatesRange from="0" exclusively="true" />
-			<validatesPrecision max="8" />
+			<validatesUnscaledValue max="5" />
 			<validatesScale max="3" />
 		</decimal>
 		<datetime name="effectiveDateFrom" readonly="true" />
