@@ -3,8 +3,9 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window">
 		<ribbon>
-			<template name="standardFormTemplate" />
-			<!-- <group template="navigation" /> -->
+<!-- 			<template name="standardFormTemplate" /> -->
+			<group template="navigation" />
+			<group template="formSaveAction"/>
 		</ribbon>
 		<component type="form" name="order" reference="order"/>
 		<component type="form" name="basicProductionCountingDetails"
