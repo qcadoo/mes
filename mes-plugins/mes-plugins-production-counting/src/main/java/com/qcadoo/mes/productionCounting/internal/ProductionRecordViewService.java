@@ -297,38 +297,36 @@ public class ProductionRecordViewService {
 
     public void checkOrderState(final ViewDefinitionState viewDefinitionState) {
         FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
+        FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
+                .getComponentByReference("typeOfProductionRecording");
         if ("03inProgress".equals(orderState.getFieldValue()) || "04completed".equals(orderState.getFieldValue())
                 || "06interrupted".equals(orderState.getFieldValue())) {
             for (String componentName : Arrays.asList("typeOfProductionRecording", "registerQuantityInProduct",
                     "registerQuantityOutProduct", "registerProductionTime", "justOne", "allowToClose", "autoCloseOrder")) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(false);
-                component.requestComponentUpdateState();
+            }
+        } else if (typeOfProductionRecording.getFieldValue().equals("")
+                || typeOfProductionRecording.getFieldValue().equals("01basic")) {
+            for (String componentName : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
+                    "registerProductionTime")) {
+                FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
+                component.setEnabled(false);
             }
         }
     }
 
-    public void disableFields(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
-        FieldComponent typeOfProductionRecording = (FieldComponent) viewState
+    public void disableFields(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
+            final String[] args) {
+        FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
                 .getComponentByReference("typeOfProductionRecording");
-        FieldComponent registerQuanitityInProduct = (FieldComponent) viewState
-                .getComponentByReference("registerQuantityInProduct");
-        FieldComponent registerQuantityOutProduct = (FieldComponent) viewState
-                .getComponentByReference("registerQuantityOutProduct");
-        FieldComponent registerProductionTime = (FieldComponent) viewState.getComponentByReference("registerProductionTime");
-
-        if (typeOfProductionRecording.getFieldValue().equals("01basic")) {
-            registerProductionTime.setEnabled(false);
-            registerQuanitityInProduct.setEnabled(false);
-            registerQuantityOutProduct.setEnabled(false);
-        }
         if (typeOfProductionRecording.getFieldValue().equals("02cumulated")
                 || typeOfProductionRecording.getFieldValue().equals("03forEach")) {
-            registerQuanitityInProduct.setEnabled(true);
-            registerProductionTime.setEnabled(true);
-            registerQuantityOutProduct.setEnabled(true);
+            for (String componentName : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
+                    "registerProductionTime")) {
+                FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
+                component.setEnabled(true);
+            }
         }
-        registerProductionTime.requestComponentUpdateState();
     }
-
 }
