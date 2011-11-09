@@ -60,6 +60,8 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.internal.components.form.FormComponentState;
+import com.qcadoo.view.internal.components.grid.GridComponentState;
 
 @Service
 public final class TechnologyService {
@@ -78,6 +80,10 @@ public final class TechnologyService {
 
     @Autowired
     private TranslationService translationService;
+
+    private enum ProductDirection {
+        IN, OUT;
+    }
 
     public boolean clearMasterOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("master", false);
@@ -394,5 +400,92 @@ public final class TechnologyService {
             return;
         }
         technologyOperation.setField("parent", rootNode);
+    }
+
+    public void myTest(final ViewDefinitionState viewDefinitionState) {
+        GridComponentState grid = (GridComponentState) viewDefinitionState.getComponentByReference("inProducts");
+        FormComponentState form = (FormComponentState) viewDefinitionState.getComponentByReference("form");
+
+        for (Entity entity : grid.getEntities()) {
+            entity.setField("quantity", "dupa");
+        }
+    }
+
+    private boolean productComponentsContainProduct(List<Entity> components, Entity product) {
+        boolean contains = false;
+
+        for (Entity entity : components) {
+            if (entity.getBelongsToField("product").getId() == product.getId()) {
+                contains = true;
+                break;
+            }
+        }
+
+        return contains;
+    }
+
+    private SearchCriteriaBuilder createSearchCriteria(Entity product, Entity technology, ProductDirection direction) {
+        String model = direction.equals(ProductDirection.IN) ? TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT
+                : TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT;
+
+        DataDefinition dd = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, model);
+
+        SearchCriteriaBuilder search = dd.find();
+        search.add(SearchRestrictions.eq("product.id", product.getId()));
+        search.createAlias("operationComponent", "operationComponent");
+        search.add(SearchRestrictions.belongsTo("operationComponent.technology", technology));
+
+        return search;
+    }
+
+    private boolean isTypeProduct(Entity product, Entity technology) {
+        SearchCriteriaBuilder search = createSearchCriteria(product, technology, ProductDirection.OUT);
+        search.add(SearchRestrictions.isNull("operationComponent.parent"));
+
+        return productComponentsContainProduct(search.list().getEntities(), product);
+    }
+
+    private boolean isTypeComponent(Entity product, Entity technology) {
+        SearchCriteriaBuilder searchIns = createSearchCriteria(product, technology, ProductDirection.IN);
+        SearchCriteriaBuilder searchOuts = createSearchCriteria(product, technology, ProductDirection.OUT);
+
+        boolean goesIn = productComponentsContainProduct(searchIns.list().getEntities(), product);
+        boolean goesOut = productComponentsContainProduct(searchOuts.list().getEntities(), product);
+
+        return (goesIn && !goesOut);
+    }
+
+    private boolean isTypeWaste(Entity product, Entity technology) {
+        SearchCriteriaBuilder searchIns = createSearchCriteria(product, technology, ProductDirection.IN);
+        SearchCriteriaBuilder searchOuts = createSearchCriteria(product, technology, ProductDirection.OUT);
+
+        boolean goesIn = productComponentsContainProduct(searchIns.list().getEntities(), product);
+        boolean goesOut = productComponentsContainProduct(searchOuts.list().getEntities(), product);
+
+        return (!goesIn && goesOut);
+    }
+
+    private boolean isTypeIntermediate(Entity product, Entity technology) {
+        SearchCriteriaBuilder searchIns = createSearchCriteria(product, technology, ProductDirection.IN);
+        SearchCriteriaBuilder searchOuts = createSearchCriteria(product, technology, ProductDirection.OUT);
+
+        boolean goesIn = productComponentsContainProduct(searchIns.list().getEntities(), product);
+        boolean goesOut = productComponentsContainProduct(searchOuts.list().getEntities(), product);
+
+        return (goesIn && goesOut);
+    }
+
+    public String getProductType(Entity product, Entity technology) {
+        if (isTypeProduct(product, technology)) {
+            return "03product";
+        } else if (isTypeComponent(product, technology)) {
+            return "01component";
+        } else if (isTypeWaste(product, technology)) {
+            return "04waste";
+        } else if (isTypeIntermediate(product, technology)) {
+            return "02intermediate";
+        }
+
+        return "00nonRelated";
     }
 }
