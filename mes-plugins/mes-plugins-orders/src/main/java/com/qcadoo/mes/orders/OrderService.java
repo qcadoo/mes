@@ -25,6 +25,7 @@ package com.qcadoo.mes.orders;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -74,24 +75,49 @@ public final class OrderService {
         return true;
     }
 
-    public void setDefaultNameUsingProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+    public void setDefaultNameUsingTechnology(final ViewDefinitionState view, final ComponentState component,
             final String[] args) {
-        if (!(state instanceof FieldComponent)) {
+        if (!(component instanceof FieldComponent)) {
             return;
         }
-        FieldComponent product = (FieldComponent) state;
-        FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference("name");
-        if (product.getFieldValue() == null) {
+
+        FieldComponent productField = (FieldComponent) view.getComponentByReference("product");
+        FieldComponent technologyField = (FieldComponent) view.getComponentByReference("product");
+        FieldComponent name = (FieldComponent) view.getComponentByReference("name");
+        
+        if (technologyField.getFieldValue() == null || productField.getFieldValue() == null || StringUtils.hasText((String) name.getFieldValue())) {
             return;
         }
-        if (!StringUtils.hasText((String) name.getFieldValue())) {
-            Entity entity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
-                    (Long) product.getFieldValue());
-            name.setFieldValue(translationService.translate("orders.order.name.default", state.getLocale(),
-                    entity.getStringField("number")));
+
+        Entity productEntity = getProductById((Long) productField.getFieldValue());
+        Entity technologyEntity = getTechnologyById((Long) technologyField.getFieldValue());
+
+        if (productEntity == null) {
+            return;
         }
+        
+        if (technologyEntity == null) {
+            technologyEntity = getDefaultTechnology(productEntity.getId());
+        }
+
+        Calendar cal = Calendar.getInstance(view.getLocale());
+        cal.setTime(new Date());
+
+        name.setFieldValue(translationService.translate("orders.order.name.default", component.getLocale(), 
+                productEntity.getStringField("name"),
+                productEntity.getStringField("number"),
+                technologyEntity.getStringField("number"),
+                cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH)) + "." + cal.get(Calendar.DAY_OF_MONTH));
     }
 
+    private Entity getProductById(final Long id) {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(id); 
+    }
+    
+    private Entity getTechnologyById(final Long id) {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(id);
+    }
+    
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof FieldComponent)) {
             return;

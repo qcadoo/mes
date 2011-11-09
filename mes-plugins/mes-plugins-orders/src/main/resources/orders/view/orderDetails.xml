@@ -276,10 +276,10 @@
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
 								method="changeOrderProduct" />
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
-								method="setDefaultNameUsingProduct" />
 							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.basic.util.UnitService"
 								method="fillProductUnit" />
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
+								method="setDefaultNameUsingTechnology" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
@@ -297,10 +297,11 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
+								method="setDefaultNameUsingTechnology" />
 						</component>
 					</layoutElement>
-					<!--<layoutElement column="2" row="4"> <component type="separatorLine" 
-						name="line2" /> </layoutElement> -->
 					<layoutElement column="2" row="5">
 						<component type="input" name="plannedQuantity"
 							reference="plannedQuantity" field="plannedQuantity">

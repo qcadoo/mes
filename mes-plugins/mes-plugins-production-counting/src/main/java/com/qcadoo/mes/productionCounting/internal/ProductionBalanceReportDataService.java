@@ -64,10 +64,11 @@ public class ProductionBalanceReportDataService {
             } else {
                 prevProduct.setField("plannedQuantity", plannedQuantity);
                 prevProduct.setField("usedQuantity", usedQuantity);
-                if (usedQuantity != null)
+                if (usedQuantity != null) {
                     prevProduct.setField("balance", usedQuantity.subtract(plannedQuantity));
-                else
+                } else {
                     prevProduct.setField("balance", null);
+                }
                 groupedProducts.add(prevProduct);
                 prevProduct = product;
                 plannedQuantity = (BigDecimal) product.getField("plannedQuantity");
@@ -76,10 +77,11 @@ public class ProductionBalanceReportDataService {
         }
         prevProduct.setField("plannedQuantity", plannedQuantity);
         prevProduct.setField("usedQuantity", usedQuantity);
-        if (usedQuantity != null)
+        if (usedQuantity != null) {
             prevProduct.setField("balance", usedQuantity.subtract(plannedQuantity));
-        else
+        } else {
             prevProduct.setField("balance", null);
+        }
         groupedProducts.add(prevProduct);
 
         return groupedProducts;

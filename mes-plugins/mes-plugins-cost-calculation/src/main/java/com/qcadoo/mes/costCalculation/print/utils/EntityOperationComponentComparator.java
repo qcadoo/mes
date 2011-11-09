@@ -42,8 +42,9 @@ public class EntityOperationComponentComparator implements Comparator<Entity>, S
             if (result == 0) {
                 return o1.getBelongsToField("operation").getId().toString()
                         .compareTo(o2.getBelongsToField("operation").getId().toString());
-            } else
+            } else {
                 return result;
+            }
         }
         return result;
     }

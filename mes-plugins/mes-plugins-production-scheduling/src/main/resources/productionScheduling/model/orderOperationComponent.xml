@@ -50,12 +50,12 @@
 		<decimal name="countMachine" default="0.0" required="true"/>
 		<integer name="timeNextOperation" default="0" required="true"/>
 		<decimal name="machineUtilization" required="true" default="1.0" >
-			<validatesLength max="7" />
-			<validatesPrecision max="3" />
+			<validatesUnscaledValue max="3" />
+			<validatesScale max="3" />
 		</decimal>
 		<decimal name="laborUtilization" required="true" default="1.0">
-			<validatesLength max="7" />
-			<validatesPrecision max="3" />
+			<validatesUnscaledValue max="3" />
+			<validatesScale max="3" />
 		</decimal>
 		<integer name="operationOffSet" />
 		<integer name="effectiveOperationRealizationTime" />

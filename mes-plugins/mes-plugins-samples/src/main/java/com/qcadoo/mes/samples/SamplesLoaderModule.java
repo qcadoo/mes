@@ -88,7 +88,7 @@ public class SamplesLoaderModule extends Module {
 
     private static final String[] ORDER_ATTRIBUTES = new String[] { "scheduled_start_date", "scheduled_end_date",
             "quantity_completed", "started_date", "finished_date", "name", "order_nr", "quantity_scheduled", "machine_nr",
-            "bom_name", "product_nr", "effective_started_date" };
+            "tech_nr", "product_nr", "effective_started_date" };
 
     private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr",
             "algorithm", "minimal" };
@@ -637,7 +637,7 @@ public class SamplesLoaderModule extends Module {
         order.setField("dateTo", new Date(endDate));
         order.setField("externalSynchronized", true);
 
-        order.setField("technology", getTechnologyByName(values.get("bom_name")));
+        order.setField("technology", getTechnologyByNumber(values.get("tech_nr")));
         order.setField("name",
                 (values.get("name").isEmpty() || values.get("name") == null) ? values.get("order_nr") : values.get("name"));
         order.setField("number", values.get("order_nr"));
@@ -999,14 +999,8 @@ public class SamplesLoaderModule extends Module {
         }
     }
 
-    private Entity getTechnologyByName(final String name) {
-        List<Entity> technologies = dataDefinitionService.get("technologies", "technology").find().isEq("name", name)
-                .setMaxResults(1).list().getEntities();
-        if (technologies.size() > 0) {
-            return technologies.get(0);
-        } else {
-            return null;
-        }
+    private Entity getTechnologyByNumber(final String number) {
+        return dataDefinitionService.get("technologies", "technology").find().add(SearchRestrictions.eq("number", number)).setMaxResults(1).uniqueResult();
     }
 
     private Entity getDefaultTechnologyForProduct(final Entity product) {

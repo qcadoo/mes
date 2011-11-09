@@ -32,7 +32,7 @@
 		<belongsTo name="substitute" model="substitute" required="true" />
 		<decimal name="quantity" required="true">
 			<validatesRange from="0" exclusively="true" />
-			<validatesPrecision max="7" />
+			<validatesUnscaledValue max="4" />
 			<validatesScale max="3" />
 		</decimal>
 	</fields>

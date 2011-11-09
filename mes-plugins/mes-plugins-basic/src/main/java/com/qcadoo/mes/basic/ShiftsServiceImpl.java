@@ -422,8 +422,9 @@ public class ShiftsServiceImpl implements ShiftsService {
                 cal.setTime(dateTo);
                 cal.add(Calendar.DATE, 1);
                 this.dateTo = cal.getTime();
-            } else
+            } else {
                 this.dateTo = dateTo;
+            }
         }
 
         public Date getDateTo() {

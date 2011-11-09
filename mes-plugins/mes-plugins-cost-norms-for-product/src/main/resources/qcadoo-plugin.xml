@@ -79,25 +79,25 @@
         <!-- product -->
         <model:model-field plugin="basic" model="product" >
             <model:decimal name="costForNumber" default="1" >
-                <model:validatesPrecision max="7" />
+                <model:validatesUnscaledValue max="7" />
                 <model:validatesScale max="3" />
             </model:decimal>
         </model:model-field>
         <model:model-field plugin="basic" model="product" >
             <model:decimal name="nominalCost" default="0">
-                <model:validatesPrecision max="7" />
+                <model:validatesUnscaledValue max="7" />
                 <model:validatesScale max="3" />
             </model:decimal>
         </model:model-field>
         <model:model-field plugin="basic" model="product" >
             <model:decimal name="lastPurchaseCost" default="0">
-                <model:validatesPrecision max="7" />
+                <model:validatesUnscaledValue max="7" />
                 <model:validatesScale max="3" />
             </model:decimal>
         </model:model-field>
         <model:model-field plugin="basic" model="product" >
             <model:decimal name="averageCost" default="0">
-                <model:validatesPrecision max="7" />
+                <model:validatesUnscaledValue max="7" />
                 <model:validatesScale max="3" />
             </model:decimal>
         </model:model-field>

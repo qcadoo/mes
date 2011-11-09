@@ -61,69 +61,82 @@
 	<modules>
 		<localization:translation path="locales" />
 
-		<model:model-field plugin="orders"
-			model="order">
+		<model:model-field plugin="orders" model="order">
 			<model:integer name="realizationTime" />
 		</model:model-field>
-		<model:model-field plugin="orders"
-			model="order">
+		<model:model-field plugin="orders" model="order">
 			<model:string name="alert" />
 		</model:model-field>
-		<model:model-field plugin="orders"
-			model="order">
+		<model:model-field plugin="orders" model="order">
 			<model:boolean name="calculate" />
 		</model:model-field>
 
-		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService" method="setVisibleAlert"/>
-		
+		<view:view-hook view="orderDetails" type="beforeRender"
+			plugin="orders"
+			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
+			method="setVisibleAlert" />
+
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
-		
-		<view:view-grid-column plugin="orders" view="ordersList" component="grid">
-			<view:column name="realizationTime" fields="realizationTime" orderable="true" searchable="false" width="30" link="false" />
+
+		<view:view-grid-column plugin="orders" view="ordersList"
+			component="grid">
+			<view:column name="realizationTime" fields="realizationTime"
+				orderable="true" searchable="false" width="30" link="false" />
 		</view:view-grid-column>
-		
-		<view:view resource="view/orderTimePrediction.xml"/>
-		
-		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction" category="orders"/>
+
+		<view:view resource="view/orderTimePrediction.xml" />
+
+		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction"
+			category="orders" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
 
 		<model:model model="orderOperationComponent" resource="model/orderOperationComponent.xml" />
 
 		<model:model-hook plugin="orders" model="order">
+			<model:validatesWith
+				class="com.qcadoo.mes.productionScheduling.NormOrderService" method="checkIfChosenTechnologyTreeIsNotEmpty" />
+		</model:model-hook>
+
+		<model:model-hook plugin="orders" model="order">
 			<model:onSave class="com.qcadoo.mes.productionScheduling.NormOrderService"
 				method="createTechnologyInstanceForOrder" />
 		</model:model-hook>
-		
+
 		<model:model-field plugin="orders" model="order">
-			<model:tree name="orderOperationComponents" plugin="productionScheduling" 
-			model="orderOperationComponent" joinField="order" cascade="delete">
+			<model:tree name="orderOperationComponents" plugin="productionScheduling"
+				model="orderOperationComponent" joinField="order" cascade="delete">
 			</model:tree>
 		</model:model-field>
-		
-		<view:view-listener plugin="orders"
-			view="orderDetails" component="form" event="showOrderParameters"
+
+		<view:view-listener plugin="orders" view="orderDetails"
+			component="form" event="showOrderParameters"
 			class="com.qcadoo.mes.productionScheduling.NormOrderService" method="showOrderParameters" />
-			
+
 		<view:view resource="view/orderOperationComponentList.xml" />
 		<view:view resource="view/orderOperationComponentDetails.xml" />
-		<view:view resource="view/orderOperationProductInComponentDetails.xml"/>
-		<view:view resource="view/timeTechnologyInOrderDetails.xml"/>
-		
+		<view:view resource="view/orderOperationProductInComponentDetails.xml" />
+		<view:view resource="view/timeTechnologyInOrderDetails.xml" />
+
 		<view:view-listener plugin="productionScheduling"
 			view="timeTechnologyInOrderDetails" component="form" event="changeRealizationTime"
-			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService" method="changeRealizationTime" />
-			
+			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
+			method="changeRealizationTime" />
+
 		<view:view-listener plugin="productionScheduling"
 			view="orderTimePrediction" component="window" event="countTimeOfTechnology"
-			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="changeRealizationTime" />
-		
+			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
+			method="changeRealizationTime" />
+
 		<view:view-listener plugin="productionScheduling"
 			view="orderTimePrediction" component="window" event="clearAllField"
-			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="clearAllField" />
-			
-		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
-			 method="disableRealizationTime"/>
-			
+			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
+			method="clearAllField" />
+
+		<view:view-hook view="orderDetails" type="beforeRender"
+			plugin="orders"
+			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
+			method="disableRealizationTime" />
+
 	</modules>
 </plugin>

@@ -79,28 +79,28 @@ http://schema.qcadoo.org/modules/menu.xsd">
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="pieceworkCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
-				<model:validatesPrecision max="7" />
+				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="laborHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
-				<model:validatesPrecision max="7" />
+				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="machineHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
-				<model:validatesPrecision max="7" />
+				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:integer name="numberOfOperations" default="1">
 				<model:validatesRange from="0" exclusively="true" />
-				<model:validatesPrecision max="7" />
+				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="0" />
 			</model:integer>
 		</model:model-field>
@@ -110,7 +110,7 @@ http://schema.qcadoo.org/modules/menu.xsd">
 			model="technologyOperationComponent">
 			<model:decimal name="pieceworkCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
-				<model:validatesPrecision max="7" />
+				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
@@ -118,7 +118,7 @@ http://schema.qcadoo.org/modules/menu.xsd">
 			model="technologyOperationComponent">
 			<model:decimal name="laborHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
-				<model:validatesPrecision max="7" />
+				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
@@ -126,7 +126,7 @@ http://schema.qcadoo.org/modules/menu.xsd">
 			model="technologyOperationComponent">
 			<model:decimal name="machineHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
-				<model:validatesPrecision max="7" />
+				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
@@ -134,7 +134,7 @@ http://schema.qcadoo.org/modules/menu.xsd">
 			model="technologyOperationComponent">
 			<model:integer name="numberOfOperations" default="1">
 				<model:validatesRange from="0" exclusively="true" />
-				<model:validatesPrecision max="7" />
+				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="0" />
 			</model:integer>
 		</model:model-field>
@@ -145,7 +145,7 @@ http://schema.qcadoo.org/modules/menu.xsd">
 			model="orderOperationComponent">
 			<model:decimal name="pieceworkCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
-				<model:validatesPrecision max="7" />
+				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
@@ -153,7 +153,7 @@ http://schema.qcadoo.org/modules/menu.xsd">
 			model="orderOperationComponent">
 			<model:decimal name="laborHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
-				<model:validatesPrecision max="7" />
+				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
@@ -161,7 +161,7 @@ http://schema.qcadoo.org/modules/menu.xsd">
 			model="orderOperationComponent">
 			<model:decimal name="machineHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
-				<model:validatesPrecision max="7" />
+				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
@@ -169,7 +169,7 @@ http://schema.qcadoo.org/modules/menu.xsd">
 			model="orderOperationComponent">
 			<model:integer name="numberOfOperations" default="1">
 				<model:validatesRange from="0" exclusively="true" />
-				<model:validatesPrecision max="7" />
+				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="0" />
 			</model:integer>
 		</model:model-field>
