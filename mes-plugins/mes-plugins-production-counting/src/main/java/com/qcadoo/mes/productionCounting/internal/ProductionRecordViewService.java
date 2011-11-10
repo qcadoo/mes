@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionCounting.internal;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PARAMETER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.productionCounting.internal.ProductionRecordService.getBooleanValue;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_BASIC;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE;
@@ -51,6 +52,8 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class ProductionRecordViewService {
@@ -153,7 +156,8 @@ public class ProductionRecordViewService {
             view.getComponentByReference("machineTime").setVisible(true);
             view.getComponentByReference("laborTime").setVisible(true);
         }
-        if (!PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType) && !PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)) {
+        if (!PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType) && !PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)
+                && !PARAM_RECORDING_TYPE_BASIC.equals(recordingType)) {
             ((FieldComponent) view.getComponentByReference("order")).addMessage(
                     translationService.translate("productionRecord.productionRecord.report.error.orderWithoutRecordingType",
                             view.getLocale()), ComponentState.MessageType.FAILURE);
@@ -327,6 +331,44 @@ public class ProductionRecordViewService {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(true);
             }
+        }
+    }
+
+    public void disableFieldsIfBasicSelected(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        FieldComponent shift = (FieldComponent) view.getComponentByReference("shift");
+        FieldComponent laborTime = (FieldComponent) view.getComponentByReference("laborTime");
+        FieldComponent machineTime = (FieldComponent) view.getComponentByReference("machineTime");
+        FieldComponent orderComponent = (FieldComponent) view.getComponentByReference("order");
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+
+        RibbonActionItem save = window.getRibbon().getGroupByName("actions").getItemByName("save");
+        RibbonActionItem saveBack = window.getRibbon().getGroupByName("actions").getItemByName("saveBack");
+        RibbonActionItem saveNew = window.getRibbon().getGroupByName("actions").getItemByName("saveNew");
+
+        Entity order = getOrderFromLookup(view);
+
+        if (order == null) {
+            return;
+        }
+
+        if ("01basic".equals(order.getField("typeOfProductionRecording"))) {
+            shift.setEnabled(false);
+            laborTime.setEnabled(false);
+            machineTime.setEnabled(false);
+            save.setEnabled(false);
+            saveNew.setEnabled(false);
+            saveBack.setEnabled(false);
+            orderComponent.addMessage(translationService.translate(
+                    "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting", view.getLocale()),
+                    ComponentState.MessageType.INFO);
+        } else {
+            shift.setEnabled(true);
+            laborTime.setEnabled(true);
+            machineTime.setEnabled(true);
+            save.setEnabled(true);
+            saveNew.setEnabled(true);
+            saveBack.setEnabled(true);
         }
     }
 }

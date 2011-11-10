@@ -162,7 +162,6 @@
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="checkOrderState" />
-		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordsService" method="generateUsedProducts"/>
 	</modules>
 
 </plugin>
