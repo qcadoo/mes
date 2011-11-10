@@ -313,7 +313,7 @@ public class ProductionRecordViewService {
         } else if (typeOfProductionRecording.getFieldValue().equals("")
                 || typeOfProductionRecording.getFieldValue().equals("01basic")) {
             for (String componentName : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
-                    "registerProductionTime")) {
+                    "registerProductionTime", "justOne", "allowToClose", "autoCloseOrder")) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(false);
             }
@@ -327,7 +327,7 @@ public class ProductionRecordViewService {
         if (typeOfProductionRecording.getFieldValue().equals("02cumulated")
                 || typeOfProductionRecording.getFieldValue().equals("03forEach")) {
             for (String componentName : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
-                    "registerProductionTime")) {
+                    "registerProductionTime", "justOne", "allowToClose", "autoCloseOrder")) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(true);
             }
