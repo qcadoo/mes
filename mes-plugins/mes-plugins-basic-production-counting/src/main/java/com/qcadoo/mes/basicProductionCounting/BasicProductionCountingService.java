@@ -34,8 +34,10 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.constants.OrderStates;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -43,6 +45,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
@@ -139,9 +142,14 @@ public class BasicProductionCountingService {
     public void getProductNameFromCounting(final ViewDefinitionState view) {
         FieldComponent productField = (FieldComponent) view.getComponentByReference("product");
         FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
-        Entity basicProductionCountingEntity = formComponent.getEntity();
-        basicProductionCountingEntity = basicProductionCountingEntity.getDataDefinition().get(
-                basicProductionCountingEntity.getId());
+        if (formComponent.getEntityId() == null) {
+            return;
+        }
+        Entity basicProductionCountingEntity = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).get(formComponent.getEntityId());
+        if (basicProductionCountingEntity == null) {
+            return;
+        }
         Entity product = basicProductionCountingEntity.getBelongsToField("product");
         productField.setFieldValue(product.getField("name"));
         productField.requestComponentUpdateState();
@@ -160,6 +168,41 @@ public class BasicProductionCountingService {
         if (OrderStates.DECLINED.getStringValue().equals(state) || OrderStates.PENDING.getStringValue().equals(state)) {
             productionCounting.setEnabled(false);
             productionCounting.requestUpdate(true);
+        }
+    }
+
+    public void setUneditableGridWhenOrderTypeRecordingIsBasic(final ViewDefinitionState view) {
+        FormComponent order = (FormComponent) view.getComponentByReference("order");
+        if (order.getEntityId() == null) {
+            return;
+        }
+        Entity orderFromDB = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                order.getEntityId());
+        if (orderFromDB == null) {
+            return;
+        }
+        String orderState = orderFromDB.getStringField("typeOfProductionRecording");
+        if (!("01basic".equals(orderState))) {
+            GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+            grid.setEditable(false);
+        }
+    }
+
+    public void fillFieldsCurrency(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntity() == null) {
+            return;
+        }
+        Entity basicProductionCountingEntity = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).get(form.getEntityId());
+        Entity product = basicProductionCountingEntity.getBelongsToField("product");
+        if (product == null) {
+            return;
+        }
+        for (String reference : Arrays.asList("usedQuantityCurrency", "producedQuantityCurrency", "plannedQuantityCurrency")) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+            field.setFieldValue(product.getField("unit"));
+            field.requestComponentUpdateState();
         }
     }
 
