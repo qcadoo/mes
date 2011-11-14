@@ -176,7 +176,4 @@
 				</component>
 		</windowTab>
 	</component>
-	<hooks>
-		<beforeRender class="com.qcadoo.mes.technologies.TechnologyService" method="myTest" />
-	</hooks>
 </view>

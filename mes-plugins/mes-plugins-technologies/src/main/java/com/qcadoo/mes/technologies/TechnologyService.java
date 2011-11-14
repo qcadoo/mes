@@ -54,7 +54,6 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -409,26 +408,6 @@ public final class TechnologyService {
             return;
         }
         technologyOperation.setField("parent", rootNode);
-    }
-
-    public void myTest(final ViewDefinitionState viewDefinitionState) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        GridComponent gridIn = (GridComponent) viewDefinitionState.getComponentByReference("inProducts");
-        GridComponent gridOut = (GridComponent) viewDefinitionState.getComponentByReference("outProducts");
-
-        if (form != null && gridIn != null) {
-            for (Entity gridEntity : gridIn.getEntities()) {
-                Entity product = (Entity) gridEntity.getField("product");
-                form.addMessage(product.getId() + ": " + getProductType(product, form.getEntity()), MessageType.INFO);
-            }
-        }
-
-        if (form != null && gridOut != null) {
-            for (Entity gridEntity : gridOut.getEntities()) {
-                Entity product = (Entity) gridEntity.getField("product");
-                form.addMessage(product.getId() + ": " + getProductType(product, form.getEntity()), MessageType.INFO);
-            }
-        }
     }
 
     private boolean productComponentsContainProduct(List<Entity> components, Entity product) {
