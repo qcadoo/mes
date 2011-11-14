@@ -33,6 +33,7 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCou
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -224,6 +226,12 @@ public class ProductionRecordViewService {
                         MessageType.INFO, false);
             }
         }
+        if ("01basic".equals(order.getField("typeOfProductionRecording"))) {
+            form.addMessage(translationService.translate(
+                    "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting", view.getLocale()),
+                    ComponentState.MessageType.FAILURE);
+        }
+
     }
 
     public void fillFieldFromProduct(final ViewDefinitionState view) {
@@ -324,12 +332,63 @@ public class ProductionRecordViewService {
             final String[] args) {
         FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
                 .getComponentByReference("typeOfProductionRecording");
+        FieldComponent doneQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("doneQuantity");
+        if ("".equals(typeOfProductionRecording.getFieldValue())) {
+            doneQuantity.setEnabled(true);
+        } else {
+            doneQuantity.setEnabled(false);
+        }
         if (typeOfProductionRecording.getFieldValue().equals("02cumulated")
                 || typeOfProductionRecording.getFieldValue().equals("03forEach")) {
             for (String componentName : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
                     "registerProductionTime")) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(true);
+            }
+        }
+    }
+
+    public void changeProducedQuantityFieldState(final ViewDefinitionState viewDefinitionState) {
+        FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
+                .getComponentByReference("typeOfProductionRecording");
+        FieldComponent doneQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("doneQuantity");
+        if ("".equals(typeOfProductionRecording.getFieldValue())) {
+            doneQuantity.setEnabled(true);
+        } else {
+            doneQuantity.setEnabled(false);
+        }
+    }
+
+    public void setProducedQuantity(final ViewDefinitionState view) {
+        FieldComponent typeOfProductionRecording = (FieldComponent) view.getComponentByReference("typeOfProductionRecording");
+        FieldComponent doneQuantity = (FieldComponent) view.getComponentByReference("doneQuantity");
+        String orderNumber = (String) view.getComponentByReference("number").getFieldValue();
+        Entity order;
+        List<Entity> productionCountings;
+
+        if ("".equals(typeOfProductionRecording.getFieldValue())) {
+            return;
+        }
+
+        if (orderNumber == null) {
+            return;
+        }
+        order = dataDefinitionService.get("orders", "order").find().add(SearchRestrictions.eq("number", orderNumber))
+                .uniqueResult();
+        if (order == null) {
+            return;
+        }
+        productionCountings = dataDefinitionService.get("basicProductionCounting", "basicProductionCounting").find()
+                .add(SearchRestrictions.eq("order", order)).list().getEntities();
+
+        if (productionCountings.isEmpty()) {
+            return;
+        }
+        for (Entity counting : productionCountings) {
+            Entity aProduct = (Entity) counting.getField("product");
+            if (aProduct.getField("typeOfMaterial").equals("03product")) {
+                doneQuantity.setFieldValue(counting.getField("producedQuantity"));
+                break;
             }
         }
     }

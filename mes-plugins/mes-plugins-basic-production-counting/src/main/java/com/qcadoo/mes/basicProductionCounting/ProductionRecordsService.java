@@ -17,6 +17,7 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class ProductionRecordsService {
@@ -150,6 +151,40 @@ public class ProductionRecordsService {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get((Long) lookup.getFieldValue());
     }
 
+    public void setProducedQuantity(final ViewDefinitionState view) {
+        FieldComponent typeOfProductionRecording = (FieldComponent) view.getComponentByReference("typeOfProductionRecording");
+        FieldComponent doneQuantity = (FieldComponent) view.getComponentByReference("doneQuantity");
+        String orderNumber = (String) view.getComponentByReference("number").getFieldValue();
+        Entity order;
+        List<Entity> productionCountings;
+
+        if ("".equals(typeOfProductionRecording.getFieldValue())) {
+            return;
+        }
+
+        if (orderNumber == null) {
+            return;
+        }
+        order = dataDefinitionService.get("orders", "order").find().add(SearchRestrictions.eq("number", orderNumber))
+                .uniqueResult();
+        if (order == null) {
+            return;
+        }
+        productionCountings = dataDefinitionService.get("basicProductionCounting", "basicProductionCounting").find()
+                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+
+        if (productionCountings.isEmpty()) {
+            return;
+        }
+        for (Entity counting : productionCountings) {
+            Entity aProduct = (Entity) counting.getField("product");
+            if (aProduct.getField("typeOfMaterial").equals("03product")) {
+                doneQuantity.setFieldValue(counting.getField("producedQuantity"));
+                break;
+            }
+        }
+    }
+
     public void getProductsFromOrder(ViewDefinitionState view) {
         String orderNumber = (String) view.getComponentByReference("number").getFieldValue();
 
@@ -161,6 +196,11 @@ public class ProductionRecordsService {
         if (order == null) {
             return;
         }
+
+        if (!"01basic".equals(order.getField("typeOfProductionRecording"))) {
+            return;
+        }
+
         List<Entity> operationComponents = order.getTreeField("orderOperationComponents");
 
         if (operationComponents == null)

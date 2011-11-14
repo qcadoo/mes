@@ -20,7 +20,7 @@
 				<option type="column" name="plannedQuantity" fields="plannedQuantity" />
 				<option type="column" name="producedQuantity" fields="producedQuantity" />
 				<option type="column" name="usedQuantity" fields="usedQuantity" />
-				<option type="column" name="productType" expression="#product['typeOfMaterial']" defaultVisible="false"/>
+				<option type="column" name="productType" expression="#product['typeOfMaterial']" hidden="false"/>
 				<option type="order" column="productType" direction="desc" />
 				<option type="correspondingView"
 					value="basicProductionCounting/basicProductionCountingDetails" />
