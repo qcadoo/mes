@@ -47,8 +47,21 @@ public class NormOrderService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    public boolean checkIfChosenTechnologyTreeIsNotEmpty(final DataDefinition orderDataDefinition, final Entity order) {
+        Entity technology = order.getBelongsToField("technology");
+        List<Entity> technologyTree = technology.getTreeField("operationComponents");
+        if (technologyTree.isEmpty()) {
+            order.addError(orderDataDefinition.getField("technology"), "productionScheduling.order.emptyTechnologyTree");
+            return false;
+        }
+        return true;
+    }
+
     @Transactional
     public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity entity) {
+        if (! checkIfChosenTechnologyTreeIsNotEmpty(dataDefinition, entity)) {
+            return;
+        }
         DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
 
         EntityTree orderOperationComponents = entity.getTreeField("orderOperationComponents");
@@ -72,9 +85,9 @@ public class NormOrderService {
         }
 
         EntityTree operationComponents = technology.getTreeField("operationComponents");
-        
+
         entity.setField("orderOperationComponents", Collections.singletonList(createOrderOperationComponent(
-                    operationComponents.getRoot(), entity, technology, null, orderOperationComponentDD)));
+                operationComponents.getRoot(), entity, technology, null, orderOperationComponentDD)));
     }
 
     private Entity createOrderOperationComponent(final EntityTreeNode operationComponent, final Entity order,

@@ -90,8 +90,13 @@
 		</windowTab>
 		<windowTab name="treeTab">
 				<component type="gridLayout" name="gridsLayout" columns="2"
-					rows="7" hasBorders="false">
-					<layoutElement column="1" row="1" height="7">
+					rows="8" hasBorders="false">
+					<layoutElement column="1" row="1" height="1">
+						<component type="label" name="description">
+							<option type="labelStyle" value="text" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2" height="7">
 						<component type="tree" name="technologyTree" reference="technologyTree"
 							field="#{form}.operationComponents">
 							<dataType name="operation">
@@ -123,7 +128,7 @@
 								class="com.qcadoo.mes.technologies.TechnologyService" method="loadProductsForReferencedTechnology" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="1" height="3">
+					<layoutElement column="2" row="1" height="4">
 						<component type="grid" name="outProducts" reference="outProducts"
 							source="#{technologyTree}.operationProductOutComponents">
 							<option type="column" name="number" fields="product"
@@ -145,7 +150,7 @@
 							<option type="multiselect" value="true" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="4" height="4">
+					<layoutElement column="2" row="5" height="4">
 						<component type="grid" name="inProducts" reference="inProducts"
 							source="#{technologyTree}.operationProductInComponents">
 							<option type="column" name="number" fields="product"

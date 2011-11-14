@@ -120,7 +120,7 @@ public class OrderGroupsService {
     }
 
     public void redirectToGroupsList(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
-        // FIXME
+        // FIXME MAKU
         state.redirectTo("../page/orderGroups/orderGroupList.html", false, true);
     }
 

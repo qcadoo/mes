@@ -11,7 +11,7 @@
 
 	<artifactId>mes-plugins-basic-production-counting</artifactId>
 	<packaging>qcadoo-plugin</packaging>
-	<name>Qcadoo MES :: Plugin :: Basic Production Counting</name>
+	<name>Qcadoo MES :: Plugins :: Basic Production Counting</name>
 
 	<dependencies>
 		<dependency>

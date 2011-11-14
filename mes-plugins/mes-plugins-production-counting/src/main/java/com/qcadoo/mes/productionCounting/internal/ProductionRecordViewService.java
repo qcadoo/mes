@@ -26,12 +26,14 @@ package com.qcadoo.mes.productionCounting.internal;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PARAMETER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.productionCounting.internal.ProductionRecordService.getBooleanValue;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_BASIC;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +46,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -51,6 +54,8 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class ProductionRecordViewService {
@@ -153,7 +158,8 @@ public class ProductionRecordViewService {
             view.getComponentByReference("machineTime").setVisible(true);
             view.getComponentByReference("laborTime").setVisible(true);
         }
-        if (!PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType) && !PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)) {
+        if (!PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType) && !PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)
+                && !PARAM_RECORDING_TYPE_BASIC.equals(recordingType)) {
             ((FieldComponent) view.getComponentByReference("order")).addMessage(
                     translationService.translate("productionRecord.productionRecord.report.error.orderWithoutRecordingType",
                             view.getLocale()), ComponentState.MessageType.FAILURE);
@@ -220,6 +226,12 @@ public class ProductionRecordViewService {
                         MessageType.INFO, false);
             }
         }
+        if ("01basic".equals(order.getField("typeOfProductionRecording"))) {
+            form.addMessage(translationService.translate(
+                    "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting", view.getLocale()),
+                    ComponentState.MessageType.FAILURE);
+        }
+
     }
 
     public void fillFieldFromProduct(final ViewDefinitionState view) {
@@ -297,38 +309,125 @@ public class ProductionRecordViewService {
 
     public void checkOrderState(final ViewDefinitionState viewDefinitionState) {
         FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
+        FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
+                .getComponentByReference("typeOfProductionRecording");
         if ("03inProgress".equals(orderState.getFieldValue()) || "04completed".equals(orderState.getFieldValue())
                 || "06interrupted".equals(orderState.getFieldValue())) {
             for (String componentName : Arrays.asList("typeOfProductionRecording", "registerQuantityInProduct",
                     "registerQuantityOutProduct", "registerProductionTime", "justOne", "allowToClose", "autoCloseOrder")) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(false);
-                component.requestComponentUpdateState();
+            }
+        } else if (typeOfProductionRecording.getFieldValue().equals("")
+                || typeOfProductionRecording.getFieldValue().equals("01basic")) {
+            for (String componentName : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
+                    "registerProductionTime", "justOne", "allowToClose", "autoCloseOrder")) {
+                FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
+                component.setEnabled(false);
             }
         }
     }
 
-    public void disableFields(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
-        FieldComponent typeOfProductionRecording = (FieldComponent) viewState
+    public void disableFields(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
+            final String[] args) {
+        FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
                 .getComponentByReference("typeOfProductionRecording");
-        FieldComponent registerQuanitityInProduct = (FieldComponent) viewState
-                .getComponentByReference("registerQuantityInProduct");
-        FieldComponent registerQuantityOutProduct = (FieldComponent) viewState
-                .getComponentByReference("registerQuantityOutProduct");
-        FieldComponent registerProductionTime = (FieldComponent) viewState.getComponentByReference("registerProductionTime");
-
-        if (typeOfProductionRecording.getFieldValue().equals("01basic")) {
-            registerProductionTime.setEnabled(false);
-            registerQuanitityInProduct.setEnabled(false);
-            registerQuantityOutProduct.setEnabled(false);
+        FieldComponent doneQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("doneQuantity");
+        if ("".equals(typeOfProductionRecording.getFieldValue())) {
+            doneQuantity.setEnabled(true);
+        } else {
+            doneQuantity.setEnabled(false);
         }
         if (typeOfProductionRecording.getFieldValue().equals("02cumulated")
                 || typeOfProductionRecording.getFieldValue().equals("03forEach")) {
-            registerQuanitityInProduct.setEnabled(true);
-            registerProductionTime.setEnabled(true);
-            registerQuantityOutProduct.setEnabled(true);
+            for (String componentName : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
+                    "registerProductionTime", "justOne", "allowToClose", "autoCloseOrder")) {
+                FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
+                component.setEnabled(true);
+            }
         }
-        registerProductionTime.requestComponentUpdateState();
     }
 
+    public void changeProducedQuantityFieldState(final ViewDefinitionState viewDefinitionState) {
+        FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
+                .getComponentByReference("typeOfProductionRecording");
+        FieldComponent doneQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("doneQuantity");
+        if ("".equals(typeOfProductionRecording.getFieldValue())) {
+            doneQuantity.setEnabled(true);
+        } else {
+            doneQuantity.setEnabled(false);
+        }
+    }
+
+    public void setProducedQuantity(final ViewDefinitionState view) {
+        FieldComponent typeOfProductionRecording = (FieldComponent) view.getComponentByReference("typeOfProductionRecording");
+        FieldComponent doneQuantity = (FieldComponent) view.getComponentByReference("doneQuantity");
+        String orderNumber = (String) view.getComponentByReference("number").getFieldValue();
+        Entity order;
+        List<Entity> productionCountings;
+
+        if ("".equals(typeOfProductionRecording.getFieldValue())) {
+            return;
+        }
+
+        if (orderNumber == null) {
+            return;
+        }
+        order = dataDefinitionService.get("orders", "order").find().add(SearchRestrictions.eq("number", orderNumber))
+                .uniqueResult();
+        if (order == null) {
+            return;
+        }
+        productionCountings = dataDefinitionService.get("basicProductionCounting", "basicProductionCounting").find()
+                .add(SearchRestrictions.eq("order", order)).list().getEntities();
+
+        if (productionCountings.isEmpty()) {
+            return;
+        }
+        for (Entity counting : productionCountings) {
+            Entity aProduct = (Entity) counting.getField("product");
+            if (aProduct.getField("typeOfMaterial").equals("03product")) {
+                doneQuantity.setFieldValue(counting.getField("producedQuantity"));
+                break;
+            }
+        }
+    }
+
+    public void disableFieldsIfBasicSelected(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        FieldComponent shift = (FieldComponent) view.getComponentByReference("shift");
+        FieldComponent laborTime = (FieldComponent) view.getComponentByReference("laborTime");
+        FieldComponent machineTime = (FieldComponent) view.getComponentByReference("machineTime");
+        FieldComponent orderComponent = (FieldComponent) view.getComponentByReference("order");
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+
+        RibbonActionItem save = window.getRibbon().getGroupByName("actions").getItemByName("save");
+        RibbonActionItem saveBack = window.getRibbon().getGroupByName("actions").getItemByName("saveBack");
+        RibbonActionItem saveNew = window.getRibbon().getGroupByName("actions").getItemByName("saveNew");
+
+        Entity order = getOrderFromLookup(view);
+
+        if (order == null) {
+            return;
+        }
+
+        if ("01basic".equals(order.getField("typeOfProductionRecording"))) {
+            shift.setEnabled(false);
+            laborTime.setEnabled(false);
+            machineTime.setEnabled(false);
+            save.setEnabled(false);
+            saveNew.setEnabled(false);
+            saveBack.setEnabled(false);
+            orderComponent.addMessage(translationService.translate(
+                    "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting", view.getLocale()),
+                    ComponentState.MessageType.INFO);
+        } else {
+            shift.setEnabled(true);
+            laborTime.setEnabled(true);
+            machineTime.setEnabled(true);
+            save.setEnabled(true);
+            saveNew.setEnabled(true);
+            saveBack.setEnabled(true);
+        }
+    }
 }
