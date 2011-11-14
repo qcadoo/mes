@@ -44,6 +44,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -65,6 +66,9 @@ public class ProductionRecordViewService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     private final static String CLOSED_ORDER = "04completed";
 
@@ -381,12 +385,14 @@ public class ProductionRecordViewService {
         productionCountings = dataDefinitionService.get("basicProductionCounting", "basicProductionCounting").find()
                 .add(SearchRestrictions.eq("order", order)).list().getEntities();
 
+        Entity technology = order.getBelongsToField("technology");
+
         if (productionCountings.isEmpty()) {
             return;
         }
         for (Entity counting : productionCountings) {
             Entity aProduct = (Entity) counting.getField("product");
-            if (aProduct.getField("typeOfMaterial").equals("03product")) {
+            if (technologyService.getProductType(aProduct, technology).equals(TechnologyService.PRODUCT)) {
                 doneQuantity.setFieldValue(counting.getField("producedQuantity"));
                 break;
             }

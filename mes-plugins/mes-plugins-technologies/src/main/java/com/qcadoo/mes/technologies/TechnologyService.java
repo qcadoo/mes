@@ -65,6 +65,16 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public final class TechnologyService {
 
+    public static final String WASTE = "04waste";
+
+    public static final String PRODUCT = "03product";
+
+    public static final String COMPONENT = "01component";
+
+    public static final String INTERMEDIATE = "02intermediate";
+
+    public static final String UNRELATED = "00unrelated";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -459,15 +469,15 @@ public final class TechnologyService {
         boolean goesOutInAroot = productComponentsContainProduct(searchOutsForRoots.list().getEntities(), product);
 
         if (goesOutInAroot) {
-            return "03product";
+            return PRODUCT;
         } else if (goesIn && !goesOut) {
-            return "01component";
+            return COMPONENT;
         } else if (goesIn && goesOut) {
-            return "02intermediate";
+            return INTERMEDIATE;
         } else if (!goesIn && goesOut) {
-            return "04waste";
+            return WASTE;
         }
 
-        return "00unrelated";
+        return UNRELATED;
     }
 }
