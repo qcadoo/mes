@@ -295,7 +295,6 @@ public class ProductionRecordViewService {
                 }
             }
         } else {
-            typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
             for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
                     "registerProductionTime")) {
                 FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
@@ -304,6 +303,16 @@ public class ProductionRecordViewService {
                     component.requestComponentUpdateState();
                 }
             }
+            for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
+                    "registerProductionTime", "justOne", "allowToClose", "autoCloseOrder")) {
+                FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
+                component.setEnabled(false);
+            }
+            typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
+            typeOfProductionRecording.setEnabled(false);
+            typeOfProductionRecording.addMessage(translationService.translate(
+                    "orders.orderDetails.window.productionCounting.typeOfProductionRecording.error.saveOrderFirst",
+                    view.getLocale()), MessageType.INFO);
         }
     }
 
