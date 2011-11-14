@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -20,6 +21,9 @@ public class ProductionRecordsService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     private Entity order;
 
@@ -164,9 +168,13 @@ public class ProductionRecordsService {
         if (productionCountings.isEmpty()) {
             return;
         }
+
+        Entity technology = order.getBelongsToField("technology");
+
         for (Entity counting : productionCountings) {
             Entity aProduct = (Entity) counting.getField("product");
-            if (aProduct.getField("typeOfMaterial").equals("03product")) {
+            String type = technologyService.getProductType(aProduct, technology);
+            if (type.equals(TechnologyService.PRODUCT)) {
                 doneQuantity.setFieldValue(counting.getField("producedQuantity"));
                 break;
             }
