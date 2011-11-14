@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.9
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -24,16 +24,6 @@
     ***************************************************************************
 
 -->
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="
-       http://www.springframework.org/schema/beans 
-       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.springframework.org/schema/context 
-       http://www.springframework.org/schema/context/spring-context-3.0.xsd">
-	
-	<context:property-placeholder location="classpath*:samples.properties" ignore-resource-not-found="true" ignore-unresolvable="true" order="-1"/>
-	<context:component-scan base-package="com.qcadoo.mes.samples" />
-
-</beans>
+<company>
+	<row COMPANYFULLNAME="Qcadoo Limited Sp. z o.o." TAX="676-241-35-25" STREET="Basztowa" HOUSE="4" FLAT="4" ZIPCODE="31-134" CITY="Kraków" STATE="małopolskie" COUNTRY="Poland" EMAIL="welcome@qcadoo.com" ADDRESSWWW="http://www.qcadoo.com/" PHONE="+48 12 633 02 03" />
+</company>

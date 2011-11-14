@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.9
+    Version: 0.4.8
 
     This file is part of Qcadoo.
 
@@ -24,16 +24,13 @@
     ***************************************************************************
 
 -->
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="
-       http://www.springframework.org/schema/beans 
-       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.springframework.org/schema/context 
-       http://www.springframework.org/schema/context/spring-context-3.0.xsd">
-	
-	<context:property-placeholder location="classpath*:samples.properties" ignore-resource-not-found="true" ignore-unresolvable="true" order="-1"/>
-	<context:component-scan base-package="com.qcadoo.mes.samples" />
-
-</beans>
+<units>
+	<row NAME="kg" DESCRIPTION="Kilogram"/>
+	<row NAME="m" DESCRIPTION="Metr"/>
+	<row NAME="m2" DESCRIPTION="Meter kwadratowy"/>
+	<row NAME="m3" DESCRIPTION="Metr sześcienny"/>
+	<row NAME="l" DESCRIPTION="Litr"/>
+	<row NAME="pc" DESCRIPTION="Sztuka"/>
+	<row NAME="pair" DESCRIPTION="Para"/>
+	<row NAME="set" DESCRIPTION="Komplet"/>
+</units>
