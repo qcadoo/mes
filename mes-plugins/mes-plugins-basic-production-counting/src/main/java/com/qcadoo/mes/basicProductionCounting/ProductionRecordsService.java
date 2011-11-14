@@ -225,11 +225,6 @@ public class ProductionRecordsService {
                         if (found) {
                             break;
                         }
-                        // if (isEntitiAlreadyInDatabase(product, order, BPC, (BigDecimal) productIn.getField("quantity")) ==
-                        // true) {
-                        // found = true;
-                        // break;
-                        // }
                     }
                     if (found) {
                         continue;
@@ -257,10 +252,6 @@ public class ProductionRecordsService {
                         if (found) {
                             break;
                         }
-                        // if (isEntitiAlreadyInDatabase(product, order, BPC, (BigDecimal) productOut.getField("quantity"))) {
-                        // found = true;
-                        // break;
-                        // }
                     }
                     if (found) {
                         continue;

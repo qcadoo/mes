@@ -104,7 +104,6 @@
 		<component type="grid" name="orders" reference="grid">
 			<script>
  				<![CDATA[ 
- 					var print = #{window}.getRibbonItem("export.print");
 					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
 					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
 					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
@@ -114,7 +113,6 @@
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								print.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
@@ -124,7 +122,6 @@
 								var noDifferentStates = true;
  								if(selectedEntitiesArray.length > 1)
 								{
- 									print.disable("#{translate(moreThanOneRecordSelected)}");
 									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
 										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state
 										|| selectedEntitiesArray[i-1].fields.externalSynchronized == '0'
@@ -135,7 +132,6 @@
 									}
 								} 
 								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
- 									if (selectedEntitiesArray.length == 1) print.enable();
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
 									var externalSynchronized = selectedEntitiesArray[0].fields.externalSynchronized;									
 									if (selectedEntityStatus == '01pending' && externalSynchronized == '1') {
