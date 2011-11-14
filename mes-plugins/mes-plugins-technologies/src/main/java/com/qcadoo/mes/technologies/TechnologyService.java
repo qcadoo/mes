@@ -54,14 +54,13 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import com.qcadoo.view.internal.components.form.FormComponentState;
-import com.qcadoo.view.internal.components.grid.GridComponentState;
 
 @Service
 public final class TechnologyService {
@@ -403,11 +402,22 @@ public final class TechnologyService {
     }
 
     public void myTest(final ViewDefinitionState viewDefinitionState) {
-        GridComponentState grid = (GridComponentState) viewDefinitionState.getComponentByReference("inProducts");
-        FormComponentState form = (FormComponentState) viewDefinitionState.getComponentByReference("form");
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        GridComponent gridIn = (GridComponent) viewDefinitionState.getComponentByReference("inProducts");
+        GridComponent gridOut = (GridComponent) viewDefinitionState.getComponentByReference("outProducts");
 
-        for (Entity entity : grid.getEntities()) {
-            entity.setField("quantity", "dupa");
+        if (form != null && gridIn != null) {
+            for (Entity gridEntity : gridIn.getEntities()) {
+                Entity product = (Entity) gridEntity.getField("product");
+                form.addMessage(product.getId() + ": " + getProductType(product, form.getEntity()), MessageType.INFO);
+            }
+        }
+
+        if (form != null && gridOut != null) {
+            for (Entity gridEntity : gridOut.getEntities()) {
+                Entity product = (Entity) gridEntity.getField("product");
+                form.addMessage(product.getId() + ": " + getProductType(product, form.getEntity()), MessageType.INFO);
+            }
         }
     }
 
@@ -438,54 +448,26 @@ public final class TechnologyService {
         return search;
     }
 
-    private boolean isTypeProduct(Entity product, Entity technology) {
-        SearchCriteriaBuilder search = createSearchCriteria(product, technology, ProductDirection.OUT);
-        search.add(SearchRestrictions.isNull("operationComponent.parent"));
-
-        return productComponentsContainProduct(search.list().getEntities(), product);
-    }
-
-    private boolean isTypeComponent(Entity product, Entity technology) {
-        SearchCriteriaBuilder searchIns = createSearchCriteria(product, technology, ProductDirection.IN);
-        SearchCriteriaBuilder searchOuts = createSearchCriteria(product, technology, ProductDirection.OUT);
-
-        boolean goesIn = productComponentsContainProduct(searchIns.list().getEntities(), product);
-        boolean goesOut = productComponentsContainProduct(searchOuts.list().getEntities(), product);
-
-        return (goesIn && !goesOut);
-    }
-
-    private boolean isTypeWaste(Entity product, Entity technology) {
-        SearchCriteriaBuilder searchIns = createSearchCriteria(product, technology, ProductDirection.IN);
-        SearchCriteriaBuilder searchOuts = createSearchCriteria(product, technology, ProductDirection.OUT);
-
-        boolean goesIn = productComponentsContainProduct(searchIns.list().getEntities(), product);
-        boolean goesOut = productComponentsContainProduct(searchOuts.list().getEntities(), product);
-
-        return (!goesIn && goesOut);
-    }
-
-    private boolean isTypeIntermediate(Entity product, Entity technology) {
-        SearchCriteriaBuilder searchIns = createSearchCriteria(product, technology, ProductDirection.IN);
-        SearchCriteriaBuilder searchOuts = createSearchCriteria(product, technology, ProductDirection.OUT);
-
-        boolean goesIn = productComponentsContainProduct(searchIns.list().getEntities(), product);
-        boolean goesOut = productComponentsContainProduct(searchOuts.list().getEntities(), product);
-
-        return (goesIn && goesOut);
-    }
-
     public String getProductType(Entity product, Entity technology) {
-        if (isTypeProduct(product, technology)) {
+        SearchCriteriaBuilder searchIns = createSearchCriteria(product, technology, ProductDirection.IN);
+        SearchCriteriaBuilder searchOuts = createSearchCriteria(product, technology, ProductDirection.OUT);
+        SearchCriteriaBuilder searchOutsForRoots = createSearchCriteria(product, technology, ProductDirection.OUT);
+        searchOutsForRoots.add(SearchRestrictions.isNull("operationComponent.parent"));
+
+        boolean goesIn = productComponentsContainProduct(searchIns.list().getEntities(), product);
+        boolean goesOut = productComponentsContainProduct(searchOuts.list().getEntities(), product);
+        boolean goesOutInAroot = productComponentsContainProduct(searchOutsForRoots.list().getEntities(), product);
+
+        if (goesOutInAroot) {
             return "03product";
-        } else if (isTypeComponent(product, technology)) {
+        } else if (goesIn && !goesOut) {
             return "01component";
-        } else if (isTypeWaste(product, technology)) {
-            return "04waste";
-        } else if (isTypeIntermediate(product, technology)) {
+        } else if (goesIn && goesOut) {
             return "02intermediate";
+        } else if (!goesIn && goesOut) {
+            return "04waste";
         }
 
-        return "00nonRelated";
+        return "00unrelated";
     }
 }
