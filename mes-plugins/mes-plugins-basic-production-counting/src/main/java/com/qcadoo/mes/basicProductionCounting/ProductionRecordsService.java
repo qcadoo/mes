@@ -22,15 +22,9 @@ public class ProductionRecordsService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-<<<<<<< HEAD
     @Autowired
     private TechnologyService technologyService;
 
-    @Autowired
-    private TranslationService translationService;
-
-=======
->>>>>>> 2e377755cc88f6ce64c651e99e7524d1899920e5
     private Entity order;
 
     private void getProductionRecordsFromOrder(final Entity order) {
