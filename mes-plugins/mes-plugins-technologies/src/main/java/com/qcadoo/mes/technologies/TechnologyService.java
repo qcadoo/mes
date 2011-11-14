@@ -414,7 +414,7 @@ public final class TechnologyService {
         boolean contains = false;
 
         for (Entity entity : components) {
-            if (entity.getBelongsToField("product").getId() == product.getId()) {
+            if (entity.getBelongsToField("product").getId().equals(product.getId())) {
                 contains = true;
                 break;
             }
