@@ -3,7 +3,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -23,9 +23,6 @@
     ***************************************************************************
 
 -->
-
-
-
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="recordOperationProductOutComponentDetails" modelName="recordOperationProductOutComponent">
@@ -41,8 +38,9 @@
 				columns="6" rows="6" hasBorders="false">
 				<layoutElement column="1" row="1" width="5">
 					<component type="input" name="number" reference="number"
-
-						defaultEnabled="false" />
+						defaultEnabled="false">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="5">
 					<component type="input" name="name" reference="name"
@@ -54,14 +52,18 @@
 				</layoutElement>
 				<layoutElement column="1" row="4" width="5">
 					<component type="input" name="plannedQuantity" field="plannedQuantity"
-						reference="plannedQuantity" defaultEnabled="false"  />
+						reference="plannedQuantity" defaultEnabled="false">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="6" row="4" >
 					<component type="input" name="plannedQuantityUNIT" 
 						reference="plannedQuantityUNIT" defaultEnabled="false"  hasLabel="false"/>
 				</layoutElement>
 				<layoutElement column="1" row="5" width="5">
-					<component type="input" name="usedQuantity" field="usedQuantity" />
+					<component type="input" name="usedQuantity" field="usedQuantity">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="6" row="5" >
 					<component type="input" name="usedQuantityUNIT" 

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -56,6 +56,11 @@ public class OrderReportService {
     @Autowired
     private TranslationService translationService;
 
+    public Entity printForOrder(final ComponentState state, final String plugin, final String entityName,
+            final Map<String, Object> entityFieldsMap, final OrderValidator orderValidator) {
+        return printForOrder(state, plugin, entityName, null, entityFieldsMap, orderValidator);
+    }
+    
     public Entity printForOrder(final ComponentState state, final String plugin, final String entityName,
             final String detailEntityName, final Map<String, Object> entityFieldsMap, final OrderValidator orderValidator) {
         if (!(state instanceof GridComponent)) {
@@ -116,13 +121,16 @@ public class OrderReportService {
 
         Entity saved = data.save(materialReq);
 
+        if (detailEntityName == null) {
+            return saved;
+        }
+        
         for (Entity order : orders) {
             Entity materialReqComponent = dataDefinitionService.get(plugin, detailEntityName).create();
             materialReqComponent.setField("order", order);
             materialReqComponent.setField(entityName, saved);
             dataDefinitionService.get(plugin, detailEntityName).save(materialReqComponent);
         }
-
         saved = data.get(saved.getId());
 
         return saved;

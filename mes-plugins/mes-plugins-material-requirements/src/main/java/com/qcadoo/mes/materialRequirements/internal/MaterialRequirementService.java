@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
@@ -45,7 +46,6 @@ import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -54,7 +54,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public final class MaterialRequirementService {
+public class MaterialRequirementService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -85,26 +85,6 @@ public final class MaterialRequirementService {
         return true;
     }
 
-    public boolean checkMaterialRequirementComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
-        Entity order = entity.getBelongsToField("order");
-        Entity materialRequirement = entity.getBelongsToField("materialRequirement");
-
-        if (materialRequirement == null || order == null) {
-            return false;
-        }
-
-        SearchResult searchResult = dataDefinition.find().belongsTo("order", order.getId())
-                .belongsTo("materialRequirement", materialRequirement.getId()).list();
-
-        if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
-            entity.addError(dataDefinition.getField("order"),
-                    "materialRequirements.validate.global.error.materialRequirementDuplicated");
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     public void disableFormForExistingMaterialRequirement(final ViewDefinitionState state) {
         ComponentState name = state.getComponentByReference("name");
         ComponentState onlyComponents = state.getComponentByReference("onlyComponents");
@@ -131,6 +111,7 @@ public final class MaterialRequirementService {
                 MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT);
     }
 
+    @Transactional
     public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
@@ -151,7 +132,7 @@ public final class MaterialRequirementService {
                         state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;
-            } else if (materialRequirement.getHasManyField("orders").isEmpty()) {
+            } else if (materialRequirement.getManyToManyField("orders").isEmpty()) {
                 String message = translationService.translate(
                         "materialRequirements.materialRequirement.window.materialRequirement.missingAssosiatedOrders",
                         state.getLocale());
@@ -203,7 +184,7 @@ public final class MaterialRequirementService {
                         state.getLocale()), MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo(
-                        "/materialRequirements/materialRequirement." + args[0] + "?id=" + state.getFieldValue(), false, false);
+                        "/materialRequirements/materialRequirement." + args[0] + "?id=" + state.getFieldValue(), true, false);
             }
         } else {
             if (state instanceof FormComponent) {
@@ -225,7 +206,7 @@ public final class MaterialRequirementService {
         try {
             generateMaterialReqDocuments(state, materialRequirement);
             viewDefinitionState.redirectTo(
-                    "/materialRequirements/materialRequirement." + args[0] + "?id=" + materialRequirement.getId(), false, false);
+                    "/materialRequirements/materialRequirement." + args[0] + "?id=" + materialRequirement.getId(), true, false);
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage(), e);
         } catch (DocumentException e) {
@@ -263,8 +244,7 @@ public final class MaterialRequirementService {
         };
 
         return orderReportService.printForOrder(state, MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
-                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT,
-                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT_COMPONENT, entityFieldsMap, orderValidator);
+                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT, entityFieldsMap, orderValidator);
     }
 
 }

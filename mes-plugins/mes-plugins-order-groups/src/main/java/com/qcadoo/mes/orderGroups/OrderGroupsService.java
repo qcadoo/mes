@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -120,7 +120,7 @@ public class OrderGroupsService {
     }
 
     public void redirectToGroupsList(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
-        // FIXME
+        // FIXME MAKU
         state.redirectTo("../page/orderGroups/orderGroupList.html", false, true);
     }
 

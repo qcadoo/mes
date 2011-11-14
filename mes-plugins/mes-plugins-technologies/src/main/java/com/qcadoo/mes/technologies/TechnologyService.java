@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -28,6 +28,8 @@ import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,7 +38,9 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.print.ReportDataService;
@@ -68,9 +72,12 @@ public final class TechnologyService {
 
     @Autowired
     private ReportDataService reportDataService;
-    
+
     @Autowired
     private TreeNumberingService treeNumberingService;
+
+    @Autowired
+    private TranslationService translationService;
 
     public boolean clearMasterOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("master", false);
@@ -187,17 +194,44 @@ public final class TechnologyService {
         FieldComponent number = (FieldComponent) state.getComponentByReference("number");
         FieldComponent productState = (FieldComponent) componentState;
 
-        if (!numberGeneratorService.checkIfShouldInsertNumber(state, "form", "number")) {
+        if (!numberGeneratorService.checkIfShouldInsertNumber(state, "form", "number") || productState.getFieldValue() == null) {
             return;
         }
-        if (productState.getFieldValue() != null) {
-            Entity product = getProductById((Long) productState.getFieldValue());
-            if (product != null) {
-                String numberValue = product.getField("number") + "-"
-                        + numberGeneratorService.generateNumber("technologies", "technology", 3);
-                number.setFieldValue(numberValue);
-            }
+
+        Entity product = getProductById((Long) productState.getFieldValue());
+
+        if (product == null) {
+            return;
         }
+
+        String numberValue = product.getField("number") + "-"
+                + numberGeneratorService.generateNumber("technologies", "technology", 3);
+        number.setFieldValue(numberValue);
+    }
+
+    public void generateTechnologyName(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+        if (!(componentState instanceof FieldComponent)) {
+            throw new IllegalStateException("component is not FieldComponentState");
+        }
+        FieldComponent name = (FieldComponent) state.getComponentByReference("name");
+        FieldComponent productState = (FieldComponent) componentState;
+
+        if (StringUtils.hasText((String) name.getFieldValue()) || productState.getFieldValue() == null) {
+            return;
+        }
+
+        Entity product = getProductById((Long) productState.getFieldValue());
+
+        if (product == null) {
+            return;
+        }
+
+        Calendar cal = Calendar.getInstance(state.getLocale());
+        cal.setTime(new Date());
+
+        name.setFieldValue(translationService.translate("technologies.operation.name.default", state.getLocale(),
+                product.getStringField("name"), product.getStringField("number"),
+                cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH)));
     }
 
     public void hideReferenceMode(final ViewDefinitionState viewDefinitionState) {
@@ -345,13 +379,14 @@ public final class TechnologyService {
 
         operationLookup.setEnabled(form.getEntityId() == null);
     }
-    
+
     public void performTreeNumbering(final DataDefinition dd, final Entity technology) {
         DataDefinition technologyOperationDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 MODEL_TECHNOLOGY_OPERATION_COMPONENT);
         treeNumberingService.generateNumbersAndUpdateTree(technologyOperationDD, "technology", technology.getId());
+
     }
-    
+
     public void setParentIfRootNodeAlreadyExists(final DataDefinition dd, final Entity technologyOperation) {
         Entity technology = technologyOperation.getBelongsToField("technology");
         EntityTreeNode rootNode = technology.getTreeField("operationComponents").getRoot();

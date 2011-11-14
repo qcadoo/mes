@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -37,12 +37,15 @@
 			<component type="gridLayout" name="grid" reference="grid" hasBorders="false"
 				columns="15" rows="7">
 				<layoutElement column="1" row="1" width="5">
-					<component type="input" name="number" field="number" reference="number" />
+					<component type="input" name="number" field="number" reference="number">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="5">
-					<component type="calendar" name="stockCorrectionDate" field="stockCorrectionDate"  reference="stockCorrectionDate">
-					<listener event="onChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
-								method="refreshShouldBeInStockCorrectionDetail" />						
+					<component type="calendar" name="stockCorrectionDate" field="stockCorrectionDate" reference="stockCorrectionDate">
+						<option type="withTimePicker" value="true" />
+						<listener event="onChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
+								method="refreshShouldBeInStockCorrectionDetail" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3" width="5">
@@ -67,6 +70,8 @@
 								method="refreshShouldBeInStockCorrectionDetail" />
 							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 								method="fillUnitFieldValue" />
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
+								method="generateNumberForStockCorrection" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="5" width="5">
@@ -98,6 +103,5 @@
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="refreshShouldBeInStockCorrectionDetail" /> 
-		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillNumberFieldValue" />
 	</hooks>
 </view>

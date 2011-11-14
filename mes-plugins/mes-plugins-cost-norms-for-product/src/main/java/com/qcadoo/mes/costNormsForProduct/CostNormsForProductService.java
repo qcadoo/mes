@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -123,23 +123,25 @@ public class CostNormsForProductService {
 
     public void checkTechnologyProductsInNorms(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
-        ComponentState form = (ComponentState) viewDefinitionState.getComponentByReference("form");
-        
+        ComponentState form = viewDefinitionState.getComponentByReference("form");
+
         if (form.getFieldValue() == null) {
-        	return;
+            return;
         }
-        
+
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) form.getFieldValue());
         List<Entity> operationComponents = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
                 .add(SearchRestrictions.belongsTo("technology", technology)).list().getEntities();
         List<Entity> productInComponents = new ArrayList<Entity>();
-        for (Entity operationComponent : operationComponents)
+        for (Entity operationComponent : operationComponents) {
             productInComponents.addAll(operationComponent.getHasManyField("operationProductInComponents"));
+        }
         List<Entity> products = new ArrayList<Entity>();
-        for (Entity productInComponent : productInComponents)
+        for (Entity productInComponent : productInComponents) {
             products.add(productInComponent.getBelongsToField("product"));
+        }
         for (Entity product : products) {
             if (product.getStringField("typeOfMaterial").equals("01component")
                     && (product.getField("costForNumber") == null || product.getField("nominalCost") == null

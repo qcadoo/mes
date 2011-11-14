@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -27,6 +27,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newLinkedList;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.PLUGIN_IDENTIFIER;
+import static com.qcadoo.model.api.types.TreeType.NODE_NUMBER_FIELD;
 
 import java.util.Collections;
 import java.util.List;
@@ -83,7 +84,7 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
 
         int rowNum = 1;
         for (Entity technologyOperation : technologyOperations) {
-            String nodeNumber = technologyOperation.getStringField("nodeNumber");
+            String nodeNumber = technologyOperation.getStringField(NODE_NUMBER_FIELD);
             String operationName = technologyOperation.getBelongsToField("operation").getStringField("name");
             List<Entity> technologyOperationProducts = newArrayList();
             technologyOperationProducts.addAll(technologyOperation.getHasManyField("operationProductInComponents"));

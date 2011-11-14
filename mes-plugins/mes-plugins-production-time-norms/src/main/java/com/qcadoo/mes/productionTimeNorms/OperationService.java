@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -41,9 +41,11 @@ public class OperationService {
 
         if (countRealizedOperation.getFieldValue().equals("02specified")) {
             countMachineOperation.setVisible(true);
+
         } else {
             countMachineOperation.setVisible(false);
         }
+        countMachineOperation.requestComponentUpdateState();
     }
 
     public void updateCountMachineOperationFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
@@ -61,6 +63,7 @@ public class OperationService {
         } else {
             countMachineOperation.setVisible(false);
         }
+        countMachineOperation.requestComponentUpdateState();
     }
 
     public void setCountRealizedOperationValue(final ViewDefinitionState viewDefinitionState) {

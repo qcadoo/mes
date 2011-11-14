@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -26,6 +26,7 @@ package com.qcadoo.mes.technologies.print;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Maps.newLinkedHashMap;
+import static com.qcadoo.model.api.types.TreeType.NODE_NUMBER_FIELD;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -120,7 +121,7 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
         Collections.sort(technologyOperations, treeNumberingService.getTreeNodesNumberComparator());
 
         for (Entity technologyOperation : technologyOperations) {
-            String nodeNumber = technologyOperation.getStringField("nodeNumber");
+            String nodeNumber = technologyOperation.getStringField(NODE_NUMBER_FIELD);
             String operationName = technologyOperation.getBelongsToField("operation").getStringField("name");
             List<Entity> technologyOperationProducts = newArrayList();
             technologyOperationProducts.addAll(technologyOperation.getHasManyField("operationProductInComponents"));

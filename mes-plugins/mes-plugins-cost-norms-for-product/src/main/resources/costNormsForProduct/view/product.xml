@@ -3,7 +3,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -35,8 +35,9 @@
 			<component type="gridLayout" name="gridLayout" columns="3"
 				rows="4">
 				<layoutElement column="1" row="1">
-					<component type="input" name="number" field="number"
-						reference="number" />
+					<component type="input" name="number" field="number" reference="number">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="textarea" name="name" field="name"

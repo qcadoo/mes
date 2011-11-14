@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -70,7 +70,7 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
     	
     	String documenTitle = getTranslationService().translate("materialFlow.materialFlow.report.title", locale);
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
-        PdfUtil.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) materialsInStockAreas.getField("date"),
+        PdfUtil.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) materialsInStockAreas.getField("time"),
                 materialsInStockAreas.getStringField("worker"));
 
         PdfPTable panelTable = PdfUtil.createPanelTable(2);
@@ -79,8 +79,8 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
                 ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString(), null, PdfUtil.getArialBold10Dark(),
                 PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(panelTable, getTranslationService()
-                .translate("materialFlow.materialFlow.report.panel.date", locale),
-                ((Date) materialsInStockAreas.getField("date")).toString(), null, PdfUtil.getArialBold10Dark(),
+                .translate("materialFlow.materialFlow.report.panel.time", locale),
+                ((Date) materialsInStockAreas.getField("time")).toString(), null, PdfUtil.getArialBold10Dark(),
 
                 PdfUtil.getArialRegular10Dark());
         

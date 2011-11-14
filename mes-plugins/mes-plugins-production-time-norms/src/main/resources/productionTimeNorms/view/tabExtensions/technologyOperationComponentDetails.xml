@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -43,7 +43,7 @@
 			<layoutElement column="1" row="3" width="5">
 				<component type="input" name="productionInOneCycle"
 					field="#{form}.productionInOneCycle" reference="productionInOneCycle"
-					defaultEnabled="true" required="true" />
+					defaultEnabled="true" />
 			</layoutElement>
 			<layoutElement column="6" row="3" width="1">
 				<component type="input" name="productionInOneCycleUNIT"
@@ -55,11 +55,11 @@
 			</layoutElement>
 			<layoutElement column="1" row="5" width="5">
 				<component type="input" name="machineUtilization" field="#{form}.machineUtilization"
-					reference="machineUtilization" defaultEnabled="true" required="true"/>
+					reference="machineUtilization" defaultEnabled="true"/>
 			</layoutElement>
 			<layoutElement column="1" row="6" width="5">
 				<component type="input" name="laborUtilization" field="#{form}.laborUtilization"
-					reference="laborUtilization" defaultEnabled="true" required="true"/>
+					reference="laborUtilization" defaultEnabled="true" />
 			</layoutElement>
 			<layoutElement column="1" row="7" width="5">
 				<component type="select" name="countRealized" field="#{form}.countRealized"
@@ -72,8 +72,6 @@
 			<layoutElement column="1" row="8" width="5">
 				<component type="input" name="countMachine" field="#{form}.countMachine"
 					reference="countMachine" hasDescription="true" defaultEnabled="false">
-					<validatesLength max="7" />
-					<validatesPrecision max="3" />
 				</component>
 			</layoutElement>
 			<layoutElement column="6" row="8" width="1">

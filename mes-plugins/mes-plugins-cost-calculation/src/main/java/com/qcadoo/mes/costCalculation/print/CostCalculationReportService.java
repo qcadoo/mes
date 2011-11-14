@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -69,7 +69,7 @@ public class CostCalculationReportService {
                         state.getLocale()), MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo("/costCalculation/costCalculation." + args[0] + "?id=" + state.getFieldValue(),
-                        false, false);
+                        true, false);
             }
         } else {
             if (state instanceof FormComponent) {

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.4.9
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="transformationsDetail" modelName="transformations">
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<group template="navigation" />
+			<group template="formSaveCopyAndRemoveActions" />
+		</ribbon>
+		<component type="form" name="form" reference="form">
+			<script>
+				<![CDATA[
+					var containsAtLeastOneConsumption = false;
+					var containsArLeastOneProduction = false;
+					var entityExists = false;
+					var time = #{time};
+					var staff = #{staff};
+					var stockAreasFrom = #{stockAreasFrom};
+					var stockAreasTo = #{stockAreasTo};
+					
+					#{transformationsConsumption}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (value.content.totalEntities > 0) {
+								containsAtLeastOneConsumption = true;
+							} else {
+								containsAtLeastOneConsumption = false;
+							}
+							updateFieldsState();
+						}
+					});
+					
+					#{transformationsProduction}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (value.content.totalEntities > 0) {
+								containsAtLeastOneProduction = true;
+							} else {
+								containsAtLeastOneProduction = false;
+							}
+							updateFieldsState();
+						}
+					});
+					
+					
+					function updateFieldsState() {
+						if (containsAtLeastOneConsumption || containsAtLeastOneProduction) {
+							time.setEnabled(false);
+							staff.setEnabled(false);
+							stockAreasFrom.setEnabled(false);
+							stockAreasTo.setEnabled(false);
+						} else {
+							time.setEnabled(true);
+							staff.setEnabled(true);
+							stockAreasFrom.setEnabled(true);
+							stockAreasTo.setEnabled(true);
+						}
+					}
+					
+				]]>
+			</script>
+			<component type="gridLayout" name="gridLayout" columns="2" rows="8" >
+				<layoutElement column="1" row="1">
+					<component type="input" name="number" reference="number" 
+						field="number" />
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="input" name="name" reference="name"
+						field="name" />
+				</layoutElement>
+				<layoutElement column="1" row="3">
+					<component type="calendar" name="time" reference="time"
+						field="time">
+						<option type="withTimePicker" value="true" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="4" width="1" height="5">
+					<component type="grid" name="transformationsConsumption"
+						reference="transformationsConsumption" source="#{form}.transfersConsumption">
+						<option type="column" name="number" fields="number"
+							expression="#number" width="2" />
+						<option type="column" name="product" fields="product"
+							width="3" expression="#product==null?'N/A':#product['name']"/>
+						<option type="column" name="quantity" fields="quantity" width="2" /> 
+						<option type="order" column="number" direction="desc" />
+						<option type="correspondingView" value="materialFlow/transformationsConsumptionDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="paginable" value="false" />
+						<option type="multiselect" value="true" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1">
+					<component type="lookup" name="staff" field="staff" reference="staff">
+						<option type="searchable" value="name" />
+						<option type="orderable" value=" name" />
+						<option type="fullScreen" value="true" />
+						<option type="expression" value="#name" />
+						<option type="fieldCode" value="name" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="2">
+					<component type="lookup" name="stockAreasFrom" field="stockAreasFrom" reference="stockAreasFrom">
+						<option type="searchable" value="name" />
+						<option type="orderable" value=" name" />
+						<option type="expression" value="#name" />
+						<option type="fieldCode" value="name" />
+						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService" 
+							method="fillDefaultStockAreaToFieldInTransformations" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="3">
+					<component type="lookup" name="stockAreasTo" field="stockAreasTo" reference="stockAreasTo">
+						<option type="searchable" value="name" />
+						<option type="orderable" value="name" />
+						<option type="expression" value="#name" />
+						<option type="fieldCode" value="name" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="4" width="1" height="5">
+					<component type="grid" name="transformationsProduction"
+						reference="transformationsProduction" source="#{form}.transfersProduction">
+						<option type="column" name="number" fields="number"
+							expression="#number" width="2" />
+						<option type="column" name="product" fields="product"
+							width="3" expression="#product==null?'N/A':#product['name']"/>
+						<option type="column" name="quantity" fields="quantity" width="2" /> 
+						<option type="order" column="number" direction="desc" />
+						<option type="correspondingView" value="materialFlow/transformationsProductionDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="paginable" value="false" />
+						<option type="multiselect" value="true" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+					</component>
+				</layoutElement>
+			</component>
+			<option type="header" value="true" />
+		</component>
+	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillNumberFieldValue" />
+	</hooks>
+</view>

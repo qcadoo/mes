@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -93,7 +93,9 @@
 			<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="14">
 				<layoutElement column="1" row="1">
-					<component type="input" name="number" field="number" />
+					<component type="input" name="number" field="number">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="lookup" name="order" reference="order"
@@ -123,18 +125,24 @@
 				</layoutElement>
 				<layoutElement column="1" row="7">
 					<component type="input" name="takenForControlQuantity"
-						field="takenForControlQuantity" reference="takenForControlQuantity" />
+						field="takenForControlQuantity" reference="takenForControlQuantity">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="8">
 					<component type="input" name="rejectedQuantity" field="rejectedQuantity"
-						reference="rejectedQuantity" />
+						reference="rejectedQuantity">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="9">
 					<component type="input" name="acceptedDefectsQuantity"
 						field="acceptedDefectsQuantity" reference="acceptedDefectsQuantity">
 						<listener event="onInputChange"
 							class="com.qcadoo.mes.qualityControls.QualityControlService"
-							method="checkAcceptedDefectsQuantity" />
+							method="checkAcceptedDefectsQuantity">
+							<option type="alignment" value="right" />
+						</listener>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="10">

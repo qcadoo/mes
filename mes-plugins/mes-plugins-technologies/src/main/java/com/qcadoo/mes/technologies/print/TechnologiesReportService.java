@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -42,7 +42,7 @@ public class TechnologiesReportService {
             final String[] args) {
         if (state instanceof FormComponent) {
             viewDefinitionState.redirectTo("/technologies/technologyDetailsReport." + args[0] + "?id=" + state.getFieldValue(),
-                    false, false);
+                    true, false);
         } else {
             state.addMessage(translationService.translate("technologies.report.componentError", state.getLocale()),
                     MessageType.FAILURE);

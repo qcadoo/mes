@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -74,7 +74,7 @@ public class QualityControlsReportService {
                 if (!(dateFrom.getFieldValue().toString().compareTo(dateTo.getFieldValue().toString()) > 0)) {
 
                     viewDefinitionState.redirectTo("/qualityControl/qualityControlByDates." + args[0] + "?type=" + args[1]
-                            + "&dateFrom=" + dateFrom.getFieldValue() + "&dateTo=" + dateTo.getFieldValue(), false, false);
+                            + "&dateFrom=" + dateFrom.getFieldValue() + "&dateTo=" + dateTo.getFieldValue(), true, false);
                 } else {
                     state.addMessage(translationService.translate("qualityControl.report.invalidDates.fromBiggerThanTo",
                             state.getLocale()), MessageType.FAILURE);
@@ -110,7 +110,7 @@ public class QualityControlsReportService {
             redirectUrl.append("&id=");
             redirectUrl.append(entityId);
         }
-        viewDefinitionState.redirectTo(redirectUrl.toString(), false, false);
+        viewDefinitionState.redirectTo(redirectUrl.toString(), true, false);
     }
 
     public final void addQualityControlReportHeader(final Document document, final Map<String, Object> model, final Locale locale)

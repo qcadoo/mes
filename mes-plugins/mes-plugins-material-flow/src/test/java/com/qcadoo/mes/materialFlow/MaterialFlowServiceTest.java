@@ -1,3 +1,26 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo MES
+ * Version: 0.4.9
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
 package com.qcadoo.mes.materialFlow;
 
 import static org.junit.Assert.assertEquals;
@@ -15,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -30,6 +54,7 @@ public class MaterialFlowServiceTest {
     private DataDefinitionService dataDefinitionService;
     private DataDefinition transferDataCorrection;
     private DataDefinition transfer;
+    private DataDefinition dataDefStockAreas;
     private SearchResult resultTo;
     private SearchResult resultFrom;
     
@@ -42,6 +67,7 @@ public class MaterialFlowServiceTest {
         materialFlowService = new MaterialFlowService();
         dataDefinitionService = mock(DataDefinitionService.class);
         transferDataCorrection = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        dataDefStockAreas = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         transfer = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         
         setField(materialFlowService, "dataDefinitionService", dataDefinitionService);
@@ -53,12 +79,16 @@ public class MaterialFlowServiceTest {
             .willReturn(transferDataCorrection);
         given(dataDefinitionService.get("materialFlow", "transfer"))
             .willReturn(transfer);
-        
+        given(dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, 
+                MaterialFlowConstants.MODEL_STOCK_AREAS)).willReturn(dataDefStockAreas);
     }
     
     @Test
     public void shouldCalculateShouldBeForOnlyTransfers() {
         Long stockAreasId = Long.valueOf(stockAreas);
+        given(dataDefStockAreas.find("where number = '" + stockAreas + "'").uniqueResult().getId())
+            .willReturn(Long.valueOf(stockAreasId));
+        
         Long productId = Long.valueOf(product);
         given(transferDataCorrection.find()
                 .add(SearchRestrictions.eq("stockAreas.id", stockAreasId))
@@ -68,11 +98,11 @@ public class MaterialFlowServiceTest {
                 .uniqueResult())
             .willReturn(null);
         given(transfer.find(
-                "where stockAreasTo = '" + stockAreas + "' and product = '" + product + "' and date <= '" + forDate + "'")
+                "where stockAreasTo = '" + stockAreas + "' and product = '" + product + "' and time <= '" + forDate + "'")
                 .list())
                 .willReturn(resultTo);
         given(transfer.find(
-                "where stockAreasFrom = '" + stockAreas + "' and product = '" + product + "' and date <= '" + forDate + "'")
+                "where stockAreasFrom = '" + stockAreas + "' and product = '" + product + "' and time <= '" + forDate + "'")
                 .list())
                 .willReturn(resultFrom);
         
@@ -96,6 +126,8 @@ public class MaterialFlowServiceTest {
         entity.setField("found", new BigDecimal(1000));
         
         Long stockAreasId = Long.valueOf(stockAreas);
+        given(dataDefStockAreas.find("where number = '" + stockAreas + "'").uniqueResult().getId())
+            .willReturn(Long.valueOf(stockAreasId));
         Long productId = Long.valueOf(product);
         given(transferDataCorrection.find()
                 .add(SearchRestrictions.eq("stockAreas.id", stockAreasId))
@@ -116,12 +148,12 @@ public class MaterialFlowServiceTest {
         Date date = new Date(100);
         String lastCorrectionDate = date.toString();
         given(transfer.find(
-                "where stockAreasTo = '" + stockAreas + "' and product = '" + product + "' and date <= '" + forDate
-                + "' and date > '" + lastCorrectionDate + "'").list())
+                "where stockAreasTo = '" + stockAreas + "' and product = '" + product + "' and time <= '" + forDate
+                + "' and time > '" + lastCorrectionDate + "'").list())
                 .willReturn(resultTo);
         given(transfer.find(
-                "where stockAreasFrom = '" + stockAreas + "' and product = '" + product + "' and date <= '" + forDate
-                + "' and date > '" + lastCorrectionDate + "'").list())
+                "where stockAreasFrom = '" + stockAreas + "' and product = '" + product + "' and time <= '" + forDate
+                + "' and time > '" + lastCorrectionDate + "'").list())
                 .willReturn(resultFrom);
         
         Entity entity = new DefaultEntity(transferDataCorrection);
@@ -129,6 +161,8 @@ public class MaterialFlowServiceTest {
         entity.setField("found", new BigDecimal(1000));
 
         Long stockAreasId = Long.valueOf(stockAreas);
+        given(dataDefStockAreas.find("where number = '" + stockAreas + "'").uniqueResult().getId())
+            .willReturn(Long.valueOf(stockAreasId));
         Long productId = Long.valueOf(product);
         given(transferDataCorrection.find()
                 .add(SearchRestrictions.eq("stockAreas.id", stockAreasId))

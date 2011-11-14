@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -422,8 +422,9 @@ public class ShiftsServiceImpl implements ShiftsService {
                 cal.setTime(dateTo);
                 cal.add(Calendar.DATE, 1);
                 this.dateTo = cal.getTime();
-            } else
+            } else {
                 this.dateTo = dateTo;
+            }
         }
 
         public Date getDateTo() {

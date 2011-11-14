@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -33,8 +33,7 @@
 		<ribbon>
 			<group name="timeOfTechnology">
 				<bigButton name="back" action="#{window}.closeThisModalWindow;" icon="backIcon24.png"/>
-				<bigButton name="copyDateToMainForm" icon="saveIcon24.png"
-					action="#{form}.performSave; #{window}.performBack;" />
+				<bigButton name="copyDateToMainForm" icon="saveIcon24.png" action="#{form}.performSave; #{window}.performBack;" />
 				<bigButton name="countTimeOfTechnology" icon="calculateTimeIcon24.png"
 					action="#{form}.fireEvent(changeRealizationTime);" />
 			</group>
@@ -44,7 +43,9 @@
 				rows="7">
 				<layoutElement column="1" row="1">
 					<component type="input" name="quantity" reference="quantity"
-						field="plannedQuantity" />
+						field="plannedQuantity">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="calendar" name="startTime" reference="startTime"

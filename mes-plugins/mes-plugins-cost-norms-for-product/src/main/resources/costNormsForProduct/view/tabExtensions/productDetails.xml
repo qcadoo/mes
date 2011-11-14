@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -46,7 +46,9 @@
 	 </script> 
 		<component type="gridLayout" name="gridLayout" hasBorders="false" columns="3" rows="4">
 			<layoutElement column="1" row="1">
-			    <component type="input" name="costForNumber" field="#{form}.costForNumber" />
+			    <component type="input" name="costForNumber" field="#{form}.costForNumber">
+			    	<option type="alignment" value="right" />
+			    </component>
 			</layoutElement>
 			<layoutElement column="2" row="1">
 			    <component type="gridLayout" name="unitGridLayout" hasBorders="false" columns="3" rows="1">
@@ -57,7 +59,9 @@
 			</layoutElement>
 			
 			<layoutElement column="1" row="2">
-			    <component type="input" name="nominalCost" reference="nominalCost" field="#{form}.nominalCost" />
+			    <component type="input" name="nominalCost" reference="nominalCost" field="#{form}.nominalCost">
+			    	<option type="alignment" value="right" />
+			    </component>
 			</layoutElement>
 			<layoutElement column="2" row="2">
                 <component type="gridLayout" name="nominalCostCurrencyGridLayout" hasBorders="false" columns="5" rows="1">
@@ -68,7 +72,9 @@
             </layoutElement>
 			
 			<layoutElement column="1" row="3">
-                <component type="input" name="lastPurchaseCost" reference="lastPurchaseCost" field="#{form}.lastPurchaseCost" />
+                <component type="input" name="lastPurchaseCost" reference="lastPurchaseCost" field="#{form}.lastPurchaseCost">
+                	<option type="alignment" value="right" />
+                </component>
             </layoutElement>
             <layoutElement column="2" row="3">
                 <component type="gridLayout" name="lastPurchaseCostCurrencyGridLayout" hasBorders="false" columns="5" rows="1">
@@ -79,7 +85,9 @@
             </layoutElement>
             
             <layoutElement column="1" row="4">
-                <component type="input" name="averageCost" reference="averageCost" field="#{form}.averageCost" />
+                <component type="input" name="averageCost" reference="averageCost" field="#{form}.averageCost">
+                	<option type="alignment" value="right" />
+                </component>
             </layoutElement>
             <layoutElement column="2" row="4">
                 <component type="gridLayout" name="averageCostCurrencyGridLayout" hasBorders="false" columns="5" rows="1">

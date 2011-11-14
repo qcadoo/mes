@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -67,7 +67,7 @@
 						]]>
 					</script>
 				</smallButton>
-					<smallButton name="declineOrder" icon="startIcon16.png" state="disabled">
+					<smallButton name="declineOrder" icon="deleteIcon16.png" state="disabled">
 						<script>
 							<![CDATA[
 								this.addOnChangeListener({
@@ -86,7 +86,7 @@
 							]]>
 						</script>
 					</smallButton>
-					<smallButton name="interruptOrder" icon="startIcon16.png" state="disabled">
+					<smallButton name="interruptOrder" icon="pauseIcon16.png" state="disabled">
 						<script>
 							<![CDATA[
 								this.addOnChangeListener({
@@ -100,15 +100,10 @@
 						</script>
 					</smallButton>
 			</group>
-			<group name="export2">
-				<smallButton name="print" icon="pdfIcon16.png"
-					action="#{grid}.generateReportForEntity('orders','order','pdf')" state="disabled" />
-			</group>
 		</ribbon>
 		<component type="grid" name="orders" reference="grid">
 			<script>
  				<![CDATA[ 
- 					var print = #{window}.getRibbonItem("export2.print");
 					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
 					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
 					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
@@ -118,15 +113,25 @@
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								print.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
 								deleteButton.disable();
 								copyButton.disable();
 							} else {
-								if (selectedEntitiesArray.length == 1) {
- 									print.enable();
+								var noDifferentStates = true;
+ 								if(selectedEntitiesArray.length > 1)
+								{
+									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state
+										|| selectedEntitiesArray[i-1].fields.externalSynchronized == '0'
+										|| selectedEntitiesArray[i].fields.externalSynchronized == '0') {
+											noDifferentStates = false;
+											break;
+										}
+									}
+								} 
+								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
 									var externalSynchronized = selectedEntitiesArray[0].fields.externalSynchronized;									
 									if (selectedEntityStatus == '01pending' && externalSynchronized == '1') {
@@ -137,7 +142,7 @@
 										declineOrder.enable();
 										declineOrder.state = "decline";
 										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
-										declineOrder.setIcon('startIcon16.png');
+										declineOrder.setIcon('deleteIcon16.png');
 										interruptOrder.disable();
 									} else if (selectedEntityStatus == '02accepted' && externalSynchronized == '1') {
 										acceptOrder.enable();
@@ -147,7 +152,7 @@
 										declineOrder.enable();
 										declineOrder.state = "decline";
 										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
-										declineOrder.setIcon('startIcon16.png');
+										declineOrder.setIcon('deleteIcon16.png');
 										interruptOrder.disable();
 									} else if (selectedEntityStatus == '03inProgress' && externalSynchronized == '1') {
 										acceptOrder.enable();
@@ -157,7 +162,7 @@
 										declineOrder.enable();
 										declineOrder.state = "abandon";
 										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
-										declineOrder.setIcon('startIcon16.png');
+										declineOrder.setIcon('deleteIcon16.png');
 										interruptOrder.enable();
 									} else if (selectedEntityStatus == '06interrupted' && externalSynchronized == '1') {
 										acceptOrder.enable();
@@ -167,7 +172,7 @@
 										declineOrder.enable();
 										declineOrder.state = "abandon";
 										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
-										declineOrder.setIcon('startIcon16.png');
+										declineOrder.setIcon('deleteIcon16.png');
 										interruptOrder.disable();
 									} else {
 										acceptOrder.disable();
@@ -175,10 +180,9 @@
 										interruptOrder.disable();
 									}
 								} else {
- 									print.disable("#{translate(moreThanOneRecordSelected)}");
-									acceptOrder.disable("#{translate(moreThanOneRecordSelected)}");
-									declineOrder.disable("#{translate(moreThanOneRecordSelected)}");
-									interruptOrder.disable("#{translate(moreThanOneRecordSelected)}");
+									acceptOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
+									declineOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
+									interruptOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
 								}
 								copyButton.enable();
 								var hasClosed = false;
@@ -261,17 +265,17 @@
 					<filterRestriction column="dateFrom" value="@{tomorrow}" />
 				</predefinedFilter>
 			</predefinedFilters>
-			<listener event="changeOrderStateToAcceptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+			<listener event="changeOrderStateToAcceptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
 				method="changeOrderStateToAcceptedForGrid" />
-			<listener event="changeOrderStateToInProgressForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+			<listener event="changeOrderStateToInProgressForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
 				method="changeOrderStateToInProgressForGrid" />
-			<listener event="changeOrderStateToCompletedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+			<listener event="changeOrderStateToCompletedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
 				method="changeOrderStateToCompletedForGrid" />
-			<listener event="changeOrderStateToDeclinedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+			<listener event="changeOrderStateToDeclinedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
 				method="changeOrderStateToDeclinedForGrid" />
-			<listener event="changeOrderStateToAbandonedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+			<listener event="changeOrderStateToAbandonedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
 				method="changeOrderStateToAbandonedForGrid" />
-			<listener event="changeOrderStateToInterruptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesViewService"
+			<listener event="changeOrderStateToInterruptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
 				method="changeOrderStateToInterruptedForGrid" />
 		</component>
 		<option type="fixedHeight" value="true" />

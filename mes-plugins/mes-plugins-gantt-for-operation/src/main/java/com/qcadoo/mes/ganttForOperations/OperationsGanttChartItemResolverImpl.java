@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -127,8 +127,8 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
     }
 
     private String getDescriptionForOperarion(final Entity operation) {
-        return operation.getBelongsToField("operation").getStringField("number") + " - "
-                + operation.getBelongsToField("operation").getStringField("name");
+        return operation.getStringField("nodeNumber") + " " + operation.getBelongsToField("operation").getStringField("number")
+                + " " + operation.getBelongsToField("operation").getStringField("name");
     }
 
 }

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -25,10 +25,9 @@ package com.qcadoo.mes.orders;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,12 +44,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.plugin.api.Plugin;
-import com.qcadoo.plugin.api.PluginAccessor;
-import com.qcadoo.plugin.api.PluginState;
-import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -63,21 +57,13 @@ public final class OrderService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private SecurityService securityService;
-
-    @Autowired
     private TranslationService translationService;
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private PluginAccessor pluginAccessor;
-
-    @Autowired
     private ExpressionService expressionService;
-
-    private final Set<BeforeChangeStateListener> beforeChangeStateListeners = new HashSet<OrderService.BeforeChangeStateListener>();
 
     public boolean clearOrderDatesOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("state", "01pending");
@@ -89,22 +75,49 @@ public final class OrderService {
         return true;
     }
 
-    public void setDefaultNameUsingProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+    public void setDefaultNameUsingTechnology(final ViewDefinitionState view, final ComponentState component,
             final String[] args) {
-        if (!(state instanceof FieldComponent)) {
+        if (!(component instanceof FieldComponent)) {
             return;
         }
-        FieldComponent product = (FieldComponent) state;
-        FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference("name");
 
-        if (!StringUtils.hasText((String) name.getFieldValue())) {
-            Entity entity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
-                    (Long) product.getFieldValue());
-            name.setFieldValue(translationService.translate("orders.order.name.default", state.getLocale(),
-                    entity.getStringField("number")));
+        FieldComponent productField = (FieldComponent) view.getComponentByReference("product");
+        FieldComponent technologyField = (FieldComponent) view.getComponentByReference("product");
+        FieldComponent name = (FieldComponent) view.getComponentByReference("name");
+        
+        if (technologyField.getFieldValue() == null || productField.getFieldValue() == null || StringUtils.hasText((String) name.getFieldValue())) {
+            return;
         }
+
+        Entity productEntity = getProductById((Long) productField.getFieldValue());
+        Entity technologyEntity = getTechnologyById((Long) technologyField.getFieldValue());
+
+        if (productEntity == null) {
+            return;
+        }
+        
+        if (technologyEntity == null) {
+            technologyEntity = getDefaultTechnology(productEntity.getId());
+        }
+
+        Calendar cal = Calendar.getInstance(view.getLocale());
+        cal.setTime(new Date());
+
+        name.setFieldValue(translationService.translate("orders.order.name.default", component.getLocale(), 
+                productEntity.getStringField("name"),
+                productEntity.getStringField("number"),
+                technologyEntity.getStringField("number"),
+                cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH)) + "." + cal.get(Calendar.DAY_OF_MONTH));
     }
 
+    private Entity getProductById(final Long id) {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(id); 
+    }
+    
+    private Entity getTechnologyById(final Long id) {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(id);
+    }
+    
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof FieldComponent)) {
             return;
@@ -138,161 +151,6 @@ public final class OrderService {
         orderState.setFieldValue("01pending");
     }
 
-    public void changeOrderStateForGrid(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        if (state.getFieldValue() != null) {
-
-            DataDefinition orderDataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
-                    OrdersConstants.MODEL_ORDER);
-
-            Entity order = orderDataDefinition.get((Long) state.getFieldValue());
-
-            if ("accept".equals(args[0])) {
-                order.setField("state", "02accepted");
-            } else if ("begin".equals(args[0])) {
-                order.setField("state", "03inProgress");
-            } else {
-                if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
-                    state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
-                            MessageType.INFO);
-                    return;
-                }
-
-                if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
-                    state.addMessage(
-                            translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
-                            MessageType.FAILURE);
-                    return;
-                }
-
-                order.setField("state", "04completed");
-            }
-
-            if (hasIntegrationWithExternalSystem() && StringUtils.hasText((String) order.getField("externalNumber"))) {
-                order.setField("externalSynchronized", false);
-            } else {
-                order.setField("externalSynchronized", true);
-            }
-
-            for (BeforeChangeStateListener listener : beforeChangeStateListeners) {
-                if (!listener.canChange(state, order, order.getStringField("state"))) {
-                    return;
-                }
-            }
-
-            orderDataDefinition.save(order);
-
-            state.performEvent(viewDefinitionState, "refresh", new String[0]);
-
-        } else {
-            state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
-                    MessageType.FAILURE);
-        }
-    }
-
-    private boolean hasIntegrationWithExternalSystem() {
-        Plugin plugin = pluginAccessor.getPlugin("mesPluginsIntegrationErp");
-        return plugin != null && plugin.getState().equals(PluginState.ENABLED);
-    }
-
-    public void changeOrderStateForForm(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        if (state.getFieldValue() != null) {
-            DataDefinition orderDataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
-                    OrdersConstants.MODEL_ORDER);
-
-            Entity order = orderDataDefinition.get((Long) state.getFieldValue());
-
-            if (!state.isHasError()) {
-
-                FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference("state");
-
-                if ("accept".equals(args[0])) {
-                    orderState.setFieldValue("02accepted");
-                } else if ("begin".equals(args[0])) {
-                    orderState.setFieldValue("03inProgress");
-                } else {
-
-                    if (checkAutogenealogyRequired() && !checkRequiredBatch(order)) {
-                        state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
-                                MessageType.FAILURE);
-                        return;
-                    }
-                    if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
-                        state.addMessage(
-                                translationService.translate("qualityControls.qualityControls.not.closed", state.getLocale()),
-                                MessageType.FAILURE);
-                        return;
-                    }
-
-                    orderState.setFieldValue("04completed");
-                }
-
-                FieldComponent externalSynchronized = (FieldComponent) viewDefinitionState
-                        .getComponentByReference("externalSynchronized");
-                FieldComponent externalNumber = (FieldComponent) viewDefinitionState.getComponentByReference("externalNumber");
-
-                if (hasIntegrationWithExternalSystem() && StringUtils.hasText((String) externalNumber.getFieldValue())) {
-                    externalSynchronized.setFieldValue("false");
-                } else {
-                    externalSynchronized.setFieldValue("true");
-                }
-
-                for (BeforeChangeStateListener listener : beforeChangeStateListeners) {
-                    if (!listener.canChange(state, order, (String) orderState.getFieldValue())) {
-                        return;
-                    }
-                }
-
-                state.performEvent(viewDefinitionState, "save", new String[0]);
-            }
-
-        } else {
-            state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
-                    MessageType.FAILURE);
-        }
-    }
-
-    private boolean checkIfAllQualityControlsAreClosed(final Entity order) {
-        if (order.getBelongsToField("technology") == null) {
-            return true;
-        }
-
-        Object controlTypeField = order.getBelongsToField("technology").getField("qualityControlType");
-
-        if (controlTypeField != null) {
-            DataDefinition qualityControlDD = null;
-
-            qualityControlDD = dataDefinitionService.get("qualityControls", "qualityControl");
-
-            if (qualityControlDD != null) {
-                SearchResult searchResult = qualityControlDD.find().belongsTo("order", order.getId()).isEq("closed", false)
-                        .list();
-                return (searchResult.getTotalNumberOfEntities() <= 0);
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    private boolean isQualityControlAutoCheckEnabled() {
-        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
-                .find().setMaxResults(1).list();
-
-        Entity parameter = null;
-        if (searchResult.getEntities().size() > 0) {
-            parameter = searchResult.getEntities().get(0);
-        }
-
-        if (parameter != null) {
-            return (Boolean) parameter.getField("checkDoneOrderForQuality");
-        } else {
-            return false;
-        }
-    }
-
     public void generateOrderNumber(final ViewDefinitionState state) {
         numberGeneratorService.generateAndInsertNumber(state, OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER,
                 "form", "number");
@@ -322,7 +180,7 @@ public final class OrderService {
         defaultTechnology.setEnabled(false);
 
         if (product.getFieldValue() == null || !hasAnyTechnologies((Long) product.getFieldValue())) {
-            technology.setEnabled(false);
+            // technology.setEnabled(false);
             technology.setRequired(false);
             plannedQuantity.setRequired(false);
         } else {
@@ -331,17 +189,20 @@ public final class OrderService {
         }
     }
 
-    public void disableFormForDoneOrder(final ViewDefinitionState state) {
-        FormComponent order = (FormComponent) state.getComponentByReference("form");
-        FieldComponent technology = (FieldComponent) state.getComponentByReference("technology");
+    public void disableFieldOrder(final ViewDefinitionState view) {
+        FormComponent order = (FormComponent) view.getComponentByReference("form");
+        FieldComponent technology = (FieldComponent) view.getComponentByReference("technology");
 
         boolean disabled = false;
 
         if (order.getEntityId() != null) {
             Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     order.getEntityId());
-
-            if (entity != null && "04completed".equals(entity.getStringField("state")) && order.isValid()) {
+            if (entity == null) {
+                return;
+            }
+            String state = entity.getStringField("state");
+            if (("04completed".equals(state) || "05declined".equals(state) || "07abandoned".equals(state)) && order.isValid()) {
                 disabled = true;
             }
         }
@@ -390,17 +251,15 @@ public final class OrderService {
         }
     }
 
-    public boolean checkIfOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField("product");
+    public boolean checkComponentOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
+        Entity order = entity.getBelongsToField("order");
 
-        if (product == null) {
+        if (order == null) {
             return true;
         }
 
-        int count = product.getHasManyField("technologies").size();
-
-        if (count == 0) {
-            entity.addError(dataDefinition.getField("product"), "orders.validate.global.error.orderMustHaveTechnology");
+        if (order.getField("technology") == null) {
+            entity.addError(dataDefinition.getField("order"), "orders.validate.global.error.orderMustHaveTechnology");
             return false;
         } else {
             return true;
@@ -582,24 +441,8 @@ public final class OrderService {
             state.getComponentByReference("dateFrom").setEnabled(false);
             state.getComponentByReference("dateTo").setEnabled(false);
             state.getComponentByReference("product").setEnabled(false);
-            state.getComponentByReference("technology").setEnabled(false);
             state.getComponentByReference("plannedQuantity").setEnabled(false);
         }
-    }
-
-    public void registerBeforeChangeStateListener(final BeforeChangeStateListener listener) {
-        beforeChangeStateListeners.add(listener);
-    }
-
-    public static interface BeforeChangeStateListener {
-
-        boolean canChange(ComponentState gridOrForm, Entity order, String state);
-
-    }
-
-    public void checkPlannedDate(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
-            final String[] args) {
-        // TODO ALBR
     }
 
     public Date getDateFromField(final Object value) {

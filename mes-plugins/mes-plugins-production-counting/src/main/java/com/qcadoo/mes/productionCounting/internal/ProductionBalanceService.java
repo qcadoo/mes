@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +41,11 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
+import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -82,7 +85,11 @@ public class ProductionBalanceService {
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType");
             return false;
         }
-        if (entity.getBelongsToField("order").getHasManyField("productionRecords").size() == 0) {
+        List<Entity> productionRecordList = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
+                .add(SearchRestrictions.belongsTo("order", entity.getBelongsToField("order"))).list().getEntities();
+        if (productionRecordList.size() == 0) {
             entity.addError(dataDefinition.getField("order"),
                     "productionCounting.productionBalance.report.error.orderWithoutProductionRecords");
             return false;
@@ -208,7 +215,7 @@ public class ProductionBalanceService {
                         MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo(
-                        "/productionCounting/productionBalance." + args[0] + "?id=" + state.getFieldValue(), false, false);
+                        "/productionCounting/productionBalance." + args[0] + "?id=" + state.getFieldValue(), true, false);
             }
         } else {
             if (state instanceof FormComponent) {

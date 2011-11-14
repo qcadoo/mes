@@ -1,3 +1,26 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo MES
+ * Version: 0.4.9
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
 package com.qcadoo.mes.orders.states;
 
 import static org.mockito.BDDMockito.given;
@@ -5,223 +28,248 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrderStates;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.plugin.api.Plugin;
+import com.qcadoo.plugin.api.PluginAccessor;
+import com.qcadoo.plugin.api.PluginState;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 
 public class OrderStatesServiceTest {
 
     private OrderStatesService orderStatesService;
 
-    private OrderStateChangingService orderStateChangingService;
+    private ViewDefinitionState view;
 
-    private OrderStateListener orderStateListener;
+    private ComponentState state;
 
-    private ChangeOrderStateError changeOrderStateError;
+    private FormComponent form;
 
-    private List<OrderStateListener> listeners = new LinkedList<OrderStateListener>();
+    private Entity order;
 
-    private Entity newOrder, oldOrder;
+    private DataDefinition dataDefinition;
 
-    private Iterator<OrderStateListener> listenersIterator;
+    private FieldComponent stateFromField, externalSynchronizedState, externalNumber;
+
+    private PluginAccessor pluginAccessor;
+
+    private Plugin plugin;
+
+    private FieldComponent field;
+
+    private Entity orderFromDB;
+
+    private Locale locale;
+
+    private TranslationService translationService;
+
+    private DataDefinitionService dataDefinitionService;
+
+    private DataDefinition dataDefinitionForBasic;
+
+    private SearchResult searchResult;
+
+    private SearchCriteriaBuilder searchCriteriaBuilder;
+
+    private GridComponent grid;
 
     @Before
     public void init() {
-
         orderStatesService = new OrderStatesService();
-        orderStateListener = mock(OrderStateListener.class);
-        listeners = mock(LinkedList.class);
-        newOrder = mock(Entity.class);
-        oldOrder = mock(Entity.class);
-        listenersIterator = mock(Iterator.class);
-        orderStateChangingService = mock(OrderStateChangingService.class);
 
-        when(listenersIterator.hasNext()).thenReturn(true, false);
-        when(listenersIterator.next()).thenReturn(orderStateListener);
-        when(listeners.iterator()).thenReturn(listenersIterator);
+        order = mock(Entity.class);
+        view = mock(ViewDefinitionState.class);
+        form = mock(FormComponent.class);
+        state = mock(ComponentState.class);
+        dataDefinition = mock(DataDefinition.class);
+        stateFromField = mock(FieldComponent.class);
+        externalSynchronizedState = mock(FieldComponent.class);
+        externalNumber = mock(FieldComponent.class);
+        pluginAccessor = mock(PluginAccessor.class);
+        dataDefinitionService = mock(DataDefinitionService.class);
+        translationService = mock(TranslationService.class);
+        plugin = mock(Plugin.class);
+        field = mock(FieldComponent.class);
+        dataDefinition = mock(DataDefinition.class);
+        dataDefinitionForBasic = mock(DataDefinition.class);
+        orderFromDB = mock(Entity.class);
+        searchResult = mock(SearchResult.class);
+        searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
+        grid = mock(GridComponent.class);
+        // Set<Long> ordersId = mock(Set.class);
+        Iterator<Long> iterator = mock(Iterator.class);
 
-        setField(orderStatesService, "orderStateChangingService", orderStateChangingService);
-        setField(orderStatesService, "listeners", listeners);
+        when(order.getDataDefinition()).thenReturn(dataDefinition);
+        when(view.getComponentByReference("form")).thenReturn(form);
+        when(view.getComponentByReference("state")).thenReturn(stateFromField);
+        when(view.getComponentByReference("externalSynchronized")).thenReturn(externalSynchronizedState);
+        when(view.getComponentByReference("externalNumber")).thenReturn(externalNumber);
+        when(externalNumber.getFieldValue()).thenReturn("1");
+        when(form.getEntity()).thenReturn(order);
+        when(pluginAccessor.getPlugin("mesPluginsIntegrationErp")).thenReturn(plugin);
+        when(plugin.getState()).thenReturn(PluginState.ENABLED);
+
+        when(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER))
+                .thenReturn(dataDefinition);
+        when(dataDefinition.get(order.getId())).thenReturn(orderFromDB);
+        when(orderFromDB.getStringField("state")).thenReturn("state");
+        when(dataDefinition.get(Mockito.anyLong())).thenReturn(orderFromDB);
+        when(orderFromDB.getDataDefinition()).thenReturn(dataDefinition);
+
+        when(view.getLocale()).thenReturn(locale);
+        when(translationService.translate("orders.order.orderStates.fieldRequired", view.getLocale())).thenReturn("translate");
+        when(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)).thenReturn(
+                dataDefinitionForBasic);
+        when(view.getComponentByReference("grid")).thenReturn(grid);
+        Set<Long> ordersId = new HashSet<Long>();
+        ordersId.add(1L);
+        when(grid.getSelectedEntitiesIds()).thenReturn(ordersId);
+
+        for (String reference : Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "defaultTechnology",
+                "technology")) {
+            when(view.getComponentByReference(reference)).thenReturn(field);
+        }
+        setField(orderStatesService, "dataDefinitionService", dataDefinitionService);
+        setField(orderStatesService, "translationService", translationService);
+        setField(orderStatesService, "pluginAccessor", pluginAccessor);
+    }
+
+    @Test
+    public void shouldChangeOrderStateToAccepted() throws Exception {
+        // when
+
+        orderStatesService.changeOrderStateToAccepted(view, state, new String[0]);
+    }
+
+    @Test
+    public void shouldChangeOrderStateToInProgressFromAccepted() throws Exception {
+        // given
+        given(order.getStringField("state")).willReturn(OrderStates.ACCEPTED.getStringValue());
+        given(view.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
+        when(view.getComponentByReference("doneQuantity")).thenReturn(field);
+        // when
+        orderStatesService.changeOrderStateToInProgress(view, state, new String[0]);
 
     }
 
     @Test
-    public void shouldAddOrderStateListener() throws Exception {
+    public void shouldChangeOrderStateToInProgressFromInterrupted() throws Exception {
         // given
-        given(listeners.add(orderStateListener)).willReturn(true);
-
+        given(order.getStringField("state")).willReturn(OrderStates.INTERRUPTED.getStringValue());
+        given(view.getComponentByReference("externalSynchronized")).willReturn(externalSynchronizedState);
+        when(view.getComponentByReference("doneQuantity")).thenReturn(field);
         // when
-        orderStatesService.addOrderStateListener(orderStateListener);
+        orderStatesService.changeOrderStateToInProgress(view, state, new String[0]);
     }
 
     @Test
-    public void shouldRemoveOrderStateListener() throws Exception {
+    public void shouldChangeOrderStateToCompleted() throws Exception {
         // given
-        given(listeners.remove(orderStateListener)).willReturn(true);
 
         // when
-        orderStatesService.removeOrderStateListener(orderStateListener);
+        when(dataDefinitionForBasic.find()).thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.setMaxResults(1)).thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.list()).thenReturn(searchResult);
+        orderStatesService.changeOrderStateToCompleted(view, state, new String[0]);
     }
 
     @Test
-    public void shouldFailChangeStateToAcceptedWhenNameFieldIsNull() throws Exception {
+    public void shouldChangeOrderStateToDeclinedFromPending() throws Exception {
         // given
-        given(newOrder.getStringField("state")).willReturn(OrderStates.ACCEPTED.getStringValue());
-        given(oldOrder.getStringField("state")).willReturn(OrderStates.PENDING.getStringValue());
-        given(newOrder.getStringField("number")).willReturn("00001");
-        given(newOrder.getStringField("name")).willReturn(null);
-
+        given(order.getStringField("state")).willReturn(OrderStates.PENDING.getStringValue());
         // when
-        ChangeOrderStateError error = orderStatesService.performChangeState(newOrder, oldOrder);
+        orderStatesService.changeOrderStateToDeclined(view, state, new String[0]);
+    }
+
+    @Test
+    public void shouldChangeOrderStateToDeclinedFromAccepted() throws Exception {
+        // given
+        given(order.getStringField("state")).willReturn(OrderStates.ACCEPTED.getStringValue());
+        // when
+        orderStatesService.changeOrderStateToDeclined(view, state, new String[0]);
+    }
+
+    @Test
+    public void shouldChangeOrderStateToAbandonedFromInProgress() throws Exception {
+        // given
+        given(order.getStringField("state")).willReturn(OrderStates.IN_PROGRESS.getStringValue());
+        // when
+        orderStatesService.changeOrderStateToAbandoned(view, state, new String[0]);
+    }
+
+    @Test
+    public void shouldChangeOrderStateToAbandonedFromInterrupted() throws Exception {
+        // given
+        given(order.getStringField("state")).willReturn(OrderStates.INTERRUPTED.getStringValue());
+        // when
+        orderStatesService.changeOrderStateToAbandoned(view, state, new String[0]);
+    }
+
+    @Test
+    public void shouldChangeOrderStateToInterrupted() throws Exception {
+        // when
+        orderStatesService.changeOrderStateToInterrupted(view, state, new String[0]);
+    }
+
+    @Test
+    public void shouldChangeOrderStateToAcceptedForGrid() throws Exception {
+        // when
+        orderStatesService.changeOrderStateToAcceptedForGrid(view, state, new String[0]);
+    }
+
+    @Test
+    public void shouldChangeOrderStateToInProgressForGrid() throws Exception {
+        // when
+        orderStatesService.changeOrderStateToInProgressForGrid(view, state, new String[0]);
         // then
     }
 
     @Test
-    public void shouldFailChangeStateToAcceptedWhenTechnologyFieldValueIsNull() throws Exception {
-        // given
-        Entity product = mock(Entity.class);
-        given(newOrder.getStringField("state")).willReturn(OrderStates.ACCEPTED.getStringValue());
-        given(oldOrder.getStringField("state")).willReturn(OrderStates.PENDING.getStringValue());
-        given(newOrder.getStringField("number")).willReturn("00001");
-        given(newOrder.getStringField("name")).willReturn("order1");
-        given(newOrder.getField("product")).willReturn(product);
-        given(newOrder.getField("plannedQuantity")).willReturn(10L);
-        given(newOrder.getField("dateTo")).willReturn(null);
-
+    public void shouldChangeOrderStateToCompletedForGrid() throws Exception {
         // when
-        ChangeOrderStateError error = orderStatesService.performChangeState(newOrder, oldOrder);
-        // then
+        when(dataDefinitionForBasic.find()).thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.setMaxResults(1)).thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.list()).thenReturn(searchResult);
+        orderStatesService.changeOrderStateToCompletedForGrid(view, state, new String[0]);
     }
 
     @Test
-    public void shouldPerformChangeStateToAccepted() throws Exception {
-        // given
-        given(newOrder.getStringField("state")).willReturn(OrderStates.ACCEPTED.getStringValue());
-        given(oldOrder.getStringField("state")).willReturn(OrderStates.PENDING.getStringValue());
-        given(newOrder.getStringField("number")).willReturn("00001");
-        given(newOrder.getStringField("name")).willReturn("Order1");
-
+    public void shouldChangeOrderStateToDeclinedForGrid() throws Exception {
         // when
-        ChangeOrderStateError error = orderStatesService.performChangeState(newOrder, oldOrder);
-        // then
-
+        orderStatesService.changeOrderStateToDeclinedForGrid(view, state, new String[0]);
     }
 
     @Test
-    public void shouldPerformChangeStateToDeclinedFromPending() throws Exception {
-        // given
-        given(newOrder.getStringField("state")).willReturn(OrderStates.DECLINED.getStringValue());
-        given(oldOrder.getStringField("state")).willReturn(OrderStates.PENDING.getStringValue());
-        given(newOrder.getStringField("number")).willReturn("00001");
-        given(newOrder.getStringField("name")).willReturn("Order1");
-
+    public void shouldChangeOrderStateToAbandonedForGrid() throws Exception {
         // when
-        ChangeOrderStateError error = orderStatesService.performChangeState(newOrder, oldOrder);
-        // then
-
+        orderStatesService.changeOrderStateToAbandonedForGrid(view, state, new String[0]);
     }
 
     @Test
-    public void shouldPerformChangeStateToInProgressFromAccepted() throws Exception {
-        // given
-        given(newOrder.getStringField("state")).willReturn(OrderStates.IN_PROGRESS.getStringValue());
-        given(oldOrder.getStringField("state")).willReturn(OrderStates.ACCEPTED.getStringValue());
-        given(newOrder.getStringField("number")).willReturn("00001");
-        given(newOrder.getStringField("name")).willReturn("Order1");
-
+    public void shouldChangeOrderStateToInterruptedForGrid() throws Exception {
         // when
-        ChangeOrderStateError error = orderStatesService.performChangeState(newOrder, oldOrder);
-        // then
-
+        orderStatesService.changeOrderStateToInterruptedForGrid(view, state, new String[0]);
     }
 
-    @Test
-    public void shouldPerformChangeStateToInProgressFromInterrupted() throws Exception {
-        // given
-        given(newOrder.getStringField("state")).willReturn(OrderStates.IN_PROGRESS.getStringValue());
-        given(oldOrder.getStringField("state")).willReturn(OrderStates.INTERRUPTED.getStringValue());
-        given(newOrder.getStringField("number")).willReturn("00001");
-        given(newOrder.getStringField("name")).willReturn("Order1");
-
-        // when
-        ChangeOrderStateError error = orderStatesService.performChangeState(newOrder, oldOrder);
-        // then
-
-    }
-
-    @Test
-    public void shouldPerformChangeStateToCompleted() throws Exception {
-        // given
-        given(newOrder.getStringField("state")).willReturn(OrderStates.COMPLETED.getStringValue());
-        given(oldOrder.getStringField("state")).willReturn(OrderStates.IN_PROGRESS.getStringValue());
-        given(newOrder.getStringField("number")).willReturn("00001");
-        given(newOrder.getStringField("name")).willReturn("Order1");
-
-        // when
-        ChangeOrderStateError error = orderStatesService.performChangeState(newOrder, oldOrder);
-        // then
-
-    }
-
-    @Test
-    public void shouldPerformChangeStateToAbandonedFromInterrupted() throws Exception {
-        // given
-        given(newOrder.getStringField("state")).willReturn(OrderStates.ABANDONED.getStringValue());
-        given(oldOrder.getStringField("state")).willReturn(OrderStates.INTERRUPTED.getStringValue());
-        given(newOrder.getStringField("number")).willReturn("00001");
-        given(newOrder.getStringField("name")).willReturn("Order1");
-
-        // when
-        ChangeOrderStateError error = orderStatesService.performChangeState(newOrder, oldOrder);
-        // then
-
-    }
-
-    @Test
-    public void shouldPerformChangeStateToAbandonedFromInProgress() throws Exception {
-        // given
-        given(newOrder.getStringField("state")).willReturn(OrderStates.ABANDONED.getStringValue());
-        given(oldOrder.getStringField("state")).willReturn(OrderStates.IN_PROGRESS.getStringValue());
-        given(newOrder.getStringField("number")).willReturn("00001");
-        given(newOrder.getStringField("name")).willReturn("Order1");
-
-        // when
-        ChangeOrderStateError error = orderStatesService.performChangeState(newOrder, oldOrder);
-        // then
-
-    }
-
-    @Test
-    public void shouldPerformChangeStateToInterruptedFromInProgress() throws Exception {
-        // given
-        given(newOrder.getStringField("state")).willReturn(OrderStates.INTERRUPTED.getStringValue());
-        given(oldOrder.getStringField("state")).willReturn(OrderStates.IN_PROGRESS.getStringValue());
-        given(newOrder.getStringField("number")).willReturn("00001");
-        given(newOrder.getStringField("name")).willReturn("Order1");
-
-        // when
-        ChangeOrderStateError error = orderStatesService.performChangeState(newOrder, oldOrder);
-        // then
-
-    }
-
-    @Test
-    public void shouldPerformChangeStateToDeclinedFromAccepted() throws Exception {
-        // given
-        given(newOrder.getStringField("state")).willReturn(OrderStates.DECLINED.getStringValue());
-        given(oldOrder.getStringField("state")).willReturn(OrderStates.ACCEPTED.getStringValue());
-        given(newOrder.getStringField("number")).willReturn("00001");
-        given(newOrder.getStringField("name")).willReturn("Order1");
-
-        // when
-        ChangeOrderStateError error = orderStatesService.performChangeState(newOrder, oldOrder);
-        // then
-
-    }
 }

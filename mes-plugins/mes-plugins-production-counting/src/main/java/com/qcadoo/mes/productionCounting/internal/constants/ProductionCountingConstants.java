@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -54,17 +54,19 @@ public interface ProductionCountingConstants {
     public static final String VIEW_RECORD_OPERATION_PRODUCT_IN_COMPONENT_DETAILS = "recordOperationProductInComponentDetails";
 
     public static final String VIEW_RECORD_OPERATION_PRODUCT_OUT_COMPONENT_DETAILS = "recordOperationProductOutComponentDetails";
-    
+
     // RECORDING PARAMETERS
     public static final String PARAM_REGISTER_OUT_PRODUCTS = "registerQuantityOutProduct";
-    
+
     public static final String PARAM_REGISTER_IN_PRODUCTS = "registerQuantityInProduct";
-    
+
     public static final String PARAM_REGISTER_TIME = "registerProductionTime";
-    
+
     public final static String PARAM_RECORDING_TYPE_NONE = "01none";
 
     public final static String PARAM_RECORDING_TYPE_CUMULATED = "02cumulated";
 
     public final static String PARAM_RECORDING_TYPE_FOREACH = "03forEach";
+
+    public final static String PARAM_RECORDING_TYPE_BASIC = "01basic";
 }

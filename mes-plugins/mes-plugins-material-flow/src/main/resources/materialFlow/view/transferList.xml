@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -31,12 +31,12 @@
 	menuAccessible="true">
  		<component type="window" name="window"> 
  			<ribbon> 
- 				<group template="gridNewCopyAndRemoveAction" /> 
+ 				<template name="standardGridTemplate" />
  			</ribbon> 
  			<component type="grid" name="grid" reference="grid"> 
  				<option type="column" name="number" fields="number" link="true" width="150" /> 
  				<option type="column" name="type" fields="type" /> 
- 				<option type="column" name="date" fields="date" />
+ 				<option type="column" name="time" fields="time" />
  				<option type="column" name="stockAreasFrom" fields="stockAreasFrom" expression="#stockAreasFrom==null?'N/A':#stockAreasFrom['name']" /> 
  				<option type="column" name="stockAreasTo" fields="stockAreasTo" expression="#stockAreasTo==null?'N/A':#stockAreasTo['name']" /> 
  				<option type="column" name="product" fields="product" 

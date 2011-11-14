@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.internal;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -33,9 +32,12 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordComparator;
+import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -110,7 +112,10 @@ public class ProductionCountingViewService {
 
     private void setProductionRecordsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
         GridComponent productionRecords = (GridComponent) viewDefinitionState.getComponentByReference("productionRecords");
-        List<Entity> productionRecordsList = new ArrayList<Entity>(order.getHasManyField("productionRecords"));
+        List<Entity> productionRecordsList = dataDefinitionService
+        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+        .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
+        .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
         Collections.sort(productionRecordsList, new EntityProductionRecordComparator());
         productionRecords.setEntities(productionRecordsList);
         productionRecords.setVisible(true);

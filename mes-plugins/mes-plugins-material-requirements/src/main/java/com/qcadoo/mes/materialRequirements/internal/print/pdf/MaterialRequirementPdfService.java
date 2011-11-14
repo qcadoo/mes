@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -93,9 +93,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     private void addTechnologySeries(final Document document, final Entity entity, final List<String> productHeader)
             throws DocumentException {
-        List<Entity> orders = entity.getHasManyField("orders");
+        List<Entity> orders = entity.getManyToManyField("orders");
         Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
-        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForMaterialRequirementProducts(
+        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(
                 orders, onlyComponents);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         PdfPTable table = PdfUtil.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth);
@@ -117,12 +117,11 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
             throws DocumentException {
-        List<Entity> orders = new ArrayList<Entity>(entity.getHasManyField("orders"));
+        List<Entity> orders = entity.getManyToManyField("orders");
         Collections.sort(orders, new EntityOrderNumberComparator());
         PdfPTable table = PdfUtil.createTableWithHeader(5, orderHeader, true, defaultMatReqHeaderColumnWidth);
 
-        for (Entity component : orders) {
-            Entity order = (Entity) component.getField("order");
+        for (Entity order : orders) {
             table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
             Entity product = (Entity) order.getField("product");

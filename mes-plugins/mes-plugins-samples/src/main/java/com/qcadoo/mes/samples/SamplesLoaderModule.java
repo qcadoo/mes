@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -52,6 +52,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -73,6 +74,8 @@ public class SamplesLoaderModule extends Module {
 
     private static final List<String> UNITS = new ArrayList<String>();
 
+    private static final String[] ACTIVE_CURRENCY_ATTRIBUTES = new String[] { "code" };
+
     private static final String[] COMPANY_ATTRIBUTES = new String[] { "companyFullName", "tax", "street", "house", "flat",
             "zipCode", "city", "state", "country", "email", "addressWww", "phone" };
 
@@ -85,14 +88,14 @@ public class SamplesLoaderModule extends Module {
 
     private static final String[] ORDER_ATTRIBUTES = new String[] { "scheduled_start_date", "scheduled_end_date",
             "quantity_completed", "started_date", "finished_date", "name", "order_nr", "quantity_scheduled", "machine_nr",
-            "bom_name", "product_nr", "effective_started_date" };
+            "tech_nr", "product_nr", "effective_started_date" };
 
     private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr",
             "algorithm", "minimal" };
 
     private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number", "tpz", "tj", "productionInOneCycle",
             "pieceworkCost", "machineHourlyCost", "laborHourlyCost", "numberOfOperations", "machineUtilization",
-            "laborUtilization" };
+            "laborUtilization", "countMachine", "countRealized", "timeNextOperation" };
 
     private static final String[] MACHINE_ATTRIBUTES = new String[] { "id", "name", "prod_line", "description" };
 
@@ -135,6 +138,7 @@ public class SamplesLoaderModule extends Module {
     @Transactional
     public void multiTenantEnable() {
         checkLocale();
+
         if (databaseHasToBePrepared()) {
             LOG.info("Database has to be prepared ...");
 
@@ -149,6 +153,7 @@ public class SamplesLoaderModule extends Module {
 
                 readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
                 if (isEnabled("basic")) {
+                    readDataFromXML("activeCurrency", ACTIVE_CURRENCY_ATTRIBUTES);
                     readDataFromXML("company", COMPANY_ATTRIBUTES);
                     readDataFromXML("machines", MACHINE_ATTRIBUTES);
                     readDataFromXML("staff", STAFF_ATTRIBUTES);
@@ -193,12 +198,12 @@ public class SamplesLoaderModule extends Module {
     }
 
     private void checkLocale() {
-        if ((locale != null) || ("".equals(locale))) {
+        if (locale.equals("default")) {
             locale = Locale.getDefault().toString().substring(0, 2);
+        }
 
-            if (!"pl".equals(locale) && !"en".equals(locale)) {
-                locale = Locale.ENGLISH.toString().substring(0, 2);
-            }
+        if (!("pl".equals(locale) || "en".equals(locale))) {
+            locale = "en";
         }
     }
 
@@ -241,7 +246,9 @@ public class SamplesLoaderModule extends Module {
             }
         }
 
-        if ("company".equals(type)) {
+        if ("activeCurrency".equals(type)) {
+            setCurrency(values);
+        } else if ("company".equals(type)) {
             addCompany(values);
         } else if ("products".equals(type)) {
             addProduct(values);
@@ -268,6 +275,21 @@ public class SamplesLoaderModule extends Module {
         } else if ("usedProducts".equals(type)) {
             addUsedProducts(values);
         }
+    }
+
+    private void setCurrency(final Map<String, String> values) {
+        DataDefinition dd = dataDefinitionService.get("basic", "currency");
+        Entity currency = dd.find().add(SearchRestrictions.eq("isActive", true)).uniqueResult();
+
+        if (currency != null) {
+            currency.setField("isActive", false);
+            dd.save(currency);
+        }
+
+        String alphabeticCode = values.get("code");
+        currency = dd.find().add(SearchRestrictions.eq("alphabeticCode", alphabeticCode)).uniqueResult();
+        currency.setField("isActive", true);
+        dd.save(currency);
     }
 
     private void addCompany(final Map<String, String> values) {
@@ -355,6 +377,9 @@ public class SamplesLoaderModule extends Module {
         operation.setField("countRealized", values.get("countRealized"));
         operation.setField("machineUtilization", values.get("machineUtilization"));
         operation.setField("laborUtilization", values.get("laborUtilization"));
+        operation.setField("countMachineOperation", values.get("countMachine"));
+        operation.setField("countRealizedOperation", "01all");
+        operation.setField("timeNextOperation", values.get("timeNextOperation"));
         operation.setField("machine", getMachine(values.get("number")));
         operation.setField("staff", getRandomStaff());
 
@@ -612,7 +637,7 @@ public class SamplesLoaderModule extends Module {
         order.setField("dateTo", new Date(endDate));
         order.setField("externalSynchronized", true);
 
-        order.setField("technology", getTechnologyByName(values.get("bom_name")));
+        order.setField("technology", getTechnologyByNumber(values.get("tech_nr")));
         order.setField("name",
                 (values.get("name").isEmpty() || values.get("name") == null) ? values.get("order_nr") : values.get("name"));
         order.setField("number", values.get("order_nr"));
@@ -640,8 +665,7 @@ public class SamplesLoaderModule extends Module {
                     + ", dateFrom=" + order.getField("dateFrom") + ", dateTo=" + order.getField("dateTo")
                     + ", effectiveDateFrom=" + order.getField("effectiveDateFrom") + ", effectiveDateTo="
                     + order.getField("effectiveDateTo") + ", doneQuantity=" + order.getField("doneQuantity")
-                    + ", plannedQuantity=" + order.getField("plannedQuantity") + ", state=" + order.getField("state")
-                    + ", startWorker=" + order.getField("startWorker") + ", endWorker=" + order.getField("endWorker") + "}");
+                    + ", plannedQuantity=" + order.getField("plannedQuantity") + ", state=" + order.getField("state") + "}");
         }
 
         order = dataDefinitionService.get("orders", "order").save(order);
@@ -833,7 +857,9 @@ public class SamplesLoaderModule extends Module {
         component.setField("machineUtilization", operation.getField("machineUtilization"));
         component.setField("laborUtilization", operation.getField("laborUtilization"));
         component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
-        component.setField("countRealized", operation.getField("countRealized"));
+        component.setField("countRealized", operation.getField("countRealizedOperation"));
+        component.setField("countMachine", operation.getField("countMachineOperation"));
+        component.setField("timeNextOperation", operation.getField("timeNextOperation"));
 
         component = dataDefinitionService.get("technologies", "technologyOperationComponent").save(component);
         if (!component.isValid()) {
@@ -910,26 +936,11 @@ public class SamplesLoaderModule extends Module {
                     + requirement.getField("onlyComponents") + ", generated=" + requirement.getField("generated") + "}");
         }
 
+        requirement.setField("orders", Lists.newArrayList(getRandomOrder(), getRandomOrder(), getRandomOrder()));
+        
         requirement = dataDefinitionService.get("materialRequirements", "materialRequirement").save(requirement);
         if (!requirement.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
-        }
-
-        for (int i = 0; i < 1; i++) {
-            Entity component = dataDefinitionService.get("materialRequirements", "materialRequirementComponent").create();
-            component.setField("materialRequirement", requirement);
-            component.setField("order", getRandomOrder());
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test material requirement component {requirement="
-                        + ((Entity) component.getField("materialRequirement")).getField("name") + ", order="
-                        + ((Entity) component.getField("order")).getField("number") + "}");
-            }
-
-            component = dataDefinitionService.get("materialRequirements", "materialRequirementComponent").save(component);
-            if (!component.isValid()) {
-                throw new IllegalStateException("Saved entity have validation errors");
-            }
         }
     }
 
@@ -988,14 +999,8 @@ public class SamplesLoaderModule extends Module {
         }
     }
 
-    private Entity getTechnologyByName(final String name) {
-        List<Entity> technologies = dataDefinitionService.get("technologies", "technology").find().isEq("name", name)
-                .setMaxResults(1).list().getEntities();
-        if (technologies.size() > 0) {
-            return technologies.get(0);
-        } else {
-            return null;
-        }
+    private Entity getTechnologyByNumber(final String number) {
+        return dataDefinitionService.get("technologies", "technology").find().add(SearchRestrictions.eq("number", number)).setMaxResults(1).uniqueResult();
     }
 
     private Entity getDefaultTechnologyForProduct(final Entity product) {

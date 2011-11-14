@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -47,5 +47,8 @@ public interface MaterialRequirementReportDataService {
      * @return map of products with it quantity
      */
     Map<Entity, BigDecimal> getQuantitiesForOrdersTechnologyProducts(final List<Entity> orders, final Boolean onlyComponents);
+
+    Map<Entity, BigDecimal> getQuantitiesForMaterialRequirementProducts(final List<Entity> materialRequirementComponents,
+            final Boolean onlyComponents);
 
 }

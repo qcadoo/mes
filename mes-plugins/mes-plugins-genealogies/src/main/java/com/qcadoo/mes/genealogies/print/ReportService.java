@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -92,7 +92,7 @@ public class ReportService {
         GridComponent batchState = (GridComponent) viewDefinitionState.getComponentByReference("batches");
         if (state instanceof FormComponent) {
             if (batchState != null && batchState.getFieldValue() != null) {
-                viewDefinitionState.redirectTo("/genealogies/genealogyForProduct.pdf?value=" + batchState.getFieldValue(), false,
+                viewDefinitionState.redirectTo("/genealogies/genealogyForProduct.pdf?value=" + batchState.getFieldValue(), true,
                         false);
             } else {
                 state.addMessage(

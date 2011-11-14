@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -37,7 +37,9 @@
 				columns="6" rows="1">
 				<layoutElement column="1" row="1" width="2">
 					<component type="input" name="pieceworkCost" reference="pieceworkCost"
-						field="#{form}.pieceworkCost" />
+						field="#{form}.pieceworkCost">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="3" row="1">
 					<component type="input" name="pieceworkCostCURRENCY"
@@ -45,7 +47,9 @@
 				</layoutElement>
 				<layoutElement column="4" row="1" width="3">
 					<component type="input" name="numberOfOperations"
-						reference="numberOfOperations" field="#{form}.numberOfOperations" />
+						reference="numberOfOperations" field="#{form}.numberOfOperations">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 			</component>
 		</component>
@@ -56,7 +60,9 @@
 				columns="6" rows="2">
 				<layoutElement column="1" row="1" width="4">
 					<component type="input" name="laborHourlyCost" reference="laborHourlyCost"
-						field="#{form}.laborHourlyCost" />
+						field="#{form}.laborHourlyCost">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="5" row="1">
 					<component type="input" name="laborHourlyCostCURRENCY"
@@ -64,7 +70,9 @@
 				</layoutElement>
 				<layoutElement column="1" row="2" width="4">
 					<component type="input" name="machineHourlyCost"
-						reference="machineHourlyCost" field="#{form}.machineHourlyCost" />
+						reference="machineHourlyCost" field="#{form}.machineHourlyCost">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="5" row="2">
 					<component type="input" name="machineHourlyCostCURRENCY"

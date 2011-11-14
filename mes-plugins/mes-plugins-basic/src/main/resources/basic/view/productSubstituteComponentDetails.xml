@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -53,7 +53,9 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="input" name="quantity" field="quantity" />
+					<component type="input" name="quantity" field="quantity">
+						<option type="alignment" value="right" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
 					<component type="input" name="unit" reference="unit"

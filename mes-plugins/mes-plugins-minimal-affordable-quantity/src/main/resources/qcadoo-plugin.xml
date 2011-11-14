@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="minimalAffordableQuantity" version="0.4.7"
+<plugin plugin="minimalAffordableQuantity" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -63,7 +63,7 @@
 		<model:model-field plugin="technologies" model="technology">
 			<model:decimal name="minimalQuantity">
 				<model:validatesRange from="0" exclusively="true" />
-				<model:validatesPrecision max="8"/>
+				<model:validatesUnscaledValue max="5"/>
 				<model:validatesScale max="3" />
 			</model:decimal>			
 		</model:model-field>

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -43,6 +43,16 @@ public class MaterialRequirementReportDataServiceImpl implements MaterialRequire
     private ReportDataService reportDataService;
 
     @Override
+    public final Map<Entity, BigDecimal> getQuantitiesForMaterialRequirementProducts(
+            final List<Entity> materialRequirementComponents, final Boolean onlyComponents) {
+        List<Entity> orders = new ArrayList<Entity>();
+        for (Entity component : materialRequirementComponents) {
+            orders.add(component.getBelongsToField("order"));
+        }
+        return getQuantitiesForOrdersTechnologyProducts(orders, onlyComponents);
+    }
+
+    @Override
     public final Map<Entity, BigDecimal> getQuantitiesForOrdersTechnologyProducts(final List<Entity> orders,
             final Boolean onlyComponents) {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
@@ -54,15 +64,6 @@ public class MaterialRequirementReportDataServiceImpl implements MaterialRequire
             }
         }
         return products;
-    }
-
-    public final Map<Entity, BigDecimal> getQuantitiesForMaterialRequirementProducts(
-            final List<Entity> materialRequirementComponents, final Boolean onlyComponents) {
-        List<Entity> orders = new ArrayList<Entity>();
-        for (Entity component : materialRequirementComponents) {
-            orders.add(component.getBelongsToField("order"));
-        }
-        return getQuantitiesForOrdersTechnologyProducts(orders, onlyComponents);
     }
 
 }

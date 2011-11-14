@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -33,10 +33,6 @@
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="generate">
-				<!--<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" 
-					state="disabled" /> -->
-				<!--<bigButton name="copy" icon="copyIcon24.png" action="#{form}.performCopy;" 
-					state="disabled"/> -->
 				<bigButton name="generate" icon="generateIcon24.png"
 					action="#{form}.fireEvent(generateMaterialRequirement);" state="enabled" />
 			</group>
@@ -135,22 +131,33 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1" width="2" height="6">
+					<component type="lookup" name="order" reference="orderLookup" field="orders" defaultVisible="false" persistent="false" >
+						<option type="column" name="name" fields="name" link="true"
+							width="200" />
+						<option type="column" name="dateFrom" fields="dateFrom"
+							link="false" width="100" />
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+						<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+						<option type="fieldCode" value="number" />
+						<option type="multiselect" value="true" />
+					</component>
 					<component type="grid" name="materialRequirementComponents"
 						reference="materialRequirementComponents" source="#{form}.orders">
-						<option type="column" name="number" fields="order"
-							expression="#order['number']" width="50" />
-						<option type="column" name="name" fields="order"
-							expression="#order['name']" />
+						<option type="column" name="number" fields="number" width="50" />
+						<option type="column" name="name" fields="name" />
 						<option type="order" column="number" direction="desc" />
-						<option type="correspondingView" value="materialRequirements/materialRequirementComponentDetails" />
-						<option type="correspondingComponent" value="form" />
-						<option type="correspondingViewInModal" value="true" />
+
 						<option type="paginable" value="false" />
 						<option type="multiselect" value="true" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="height" value="200" />
-						<option type="width" value="350" />
+						<option type="width" value="450" />
+						
+						<option type="weakRelation" value="true" />
+						<option type="correspondingLookup" value="orderLookup" />
 					</component>
 				</layoutElement>
 			</component>

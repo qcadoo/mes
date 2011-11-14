@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -43,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -102,6 +103,7 @@ public class ProductionRecordService {
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
 
         SearchCriteriaBuilder searchBuilder = dd.find();
+        searchBuilder.add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()));
         searchBuilder.add(SearchRestrictions.belongsTo("order", order));
         searchBuilder.add(SearchRestrictions.eq("lastRecord", true));
 
@@ -118,7 +120,8 @@ public class ProductionRecordService {
 
     public boolean checkIfOrderIsStarted(final DataDefinition dd, final Entity entity) {
         String orderState = entity.getBelongsToField("order").getStringField("state");
-        if (orderState == null || "01pending".equals(orderState) || "02accepted".equals(orderState)) {
+        if (orderState == null || "01pending".equals(orderState) || "02accepted".equals(orderState)
+                || "05declined".equals(orderState) || "07abandoned".equals(orderState)) {
             entity.addError(dd.getField("order"), "productionCounting.record.messages.error.orderIsNotStarted");
             return false;
         }

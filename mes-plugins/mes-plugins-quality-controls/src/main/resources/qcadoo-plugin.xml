@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -24,10 +24,11 @@
     ***************************************************************************
 
 -->
-<plugin plugin="qualityControls" version="0.4.7"
+<plugin plugin="qualityControls" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
@@ -38,7 +39,9 @@
        http://schema.qcadoo.org/modules/localization
        http://schema.qcadoo.org/modules/localization.xsd
        http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>MES - Quality Controls</name>
@@ -58,6 +61,8 @@
 
 
 	<modules>
+		<custom:custom class="com.qcadoo.mes.qualityControls.QualityControlOnStartupService" />
+	
 		<localization:translation path="locales" />
 
 		<model:model model="qualityControl" resource="model/qualityControl.xml" />
@@ -118,9 +123,6 @@
 			type="beforeRender" class="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="changeQualityControlType" />
 
-		<view:view-listener plugin="orders"
-			view="ordersList" component="grid" event="changeOrderStateForGrid"
-			class="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
 		<view:view-listener plugin="orders"
 			view="ordersList" component="grid" event="generateQualityControl"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />

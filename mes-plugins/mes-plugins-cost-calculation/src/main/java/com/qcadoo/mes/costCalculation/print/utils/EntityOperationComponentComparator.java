@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -42,8 +42,9 @@ public class EntityOperationComponentComparator implements Comparator<Entity>, S
             if (result == 0) {
                 return o1.getBelongsToField("operation").getId().toString()
                         .compareTo(o2.getBelongsToField("operation").getId().toString());
-            } else
+            } else {
                 return result;
+            }
         }
         return result;
     }

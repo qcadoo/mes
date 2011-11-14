@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -69,9 +69,9 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
-        List<Entity> orders = entity.getHasManyField("orders");
+        List<Entity> orders = entity.getManyToManyField("orders");
         Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
-        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForMaterialRequirementProducts(
+        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(
                 orders, onlyComponents);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {

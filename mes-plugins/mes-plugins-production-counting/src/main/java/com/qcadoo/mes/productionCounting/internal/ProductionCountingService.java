@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -193,7 +193,7 @@ public class ProductionCountingService {
                         MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo(
-                        "/productionCounting/productionCounting." + args[0] + "?id=" + state.getFieldValue(), false, false);
+                        "/productionCounting/productionCounting." + args[0] + "?id=" + state.getFieldValue(), true, false);
             }
         } else {
             if (state instanceof FormComponent) {

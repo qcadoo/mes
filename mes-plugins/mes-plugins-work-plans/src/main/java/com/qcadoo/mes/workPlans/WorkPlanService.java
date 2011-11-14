@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -29,6 +29,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
@@ -178,7 +179,7 @@ public final class WorkPlanService {
                                 state.getLocale()), MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo("/workPlans/workPlan" + args[1] + "." + args[0] + "?id=" + state.getFieldValue(),
-                        false, false);
+                        true, false);
             }
         } else {
             if (state instanceof FormComponent) {
@@ -232,7 +233,7 @@ public final class WorkPlanService {
         try {
             generateWorkPlanDocuments(state, workPlan);
 
-            viewDefinitionState.redirectTo("/workPlans/workPlan" + args[1] + "." + args[0] + "?id=" + workPlan.getId(), false,
+            viewDefinitionState.redirectTo("/workPlans/workPlan" + args[1] + "." + args[0] + "?id=" + workPlan.getId(), true,
                     false);
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage(), e);
@@ -241,6 +242,7 @@ public final class WorkPlanService {
         }
     }
 
+    @Transactional
     private void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException,
             DocumentException {
         Entity workPlanWithFileName = workPlanForMachinePdfService.updateFileName(workPlan, "Work_plan");

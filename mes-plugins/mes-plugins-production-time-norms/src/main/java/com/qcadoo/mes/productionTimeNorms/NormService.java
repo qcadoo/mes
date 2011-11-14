@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -24,8 +24,9 @@
 package com.qcadoo.mes.productionTimeNorms;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.productionTimeNorms.TimeNormsConstants.*;
-import static com.qcadoo.view.api.ComponentState.MessageType.*;
+import static com.qcadoo.mes.productionTimeNorms.TimeNormsConstants.FIELDS_OPERATION;
+import static com.qcadoo.mes.productionTimeNorms.TimeNormsConstants.FIELDS_TECHNOLOGY;
+import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -156,6 +157,10 @@ public class NormService {
 
         if (source.getField("productionInOneCycle") == null) {
             view.getComponentByReference("productionInOneCycle").setFieldValue("1");
+        }
+
+        if (source.getField("countMachine") == null) {
+            view.getComponentByReference("countMachine").setFieldValue("0");
         }
 
         // FIXME MAKU fix problem with double notifications after operation changed

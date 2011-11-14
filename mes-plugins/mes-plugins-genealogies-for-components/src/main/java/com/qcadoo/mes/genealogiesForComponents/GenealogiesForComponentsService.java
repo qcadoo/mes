@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.9
  *
  * This file is part of Qcadoo.
  *
@@ -168,7 +168,7 @@ public class GenealogiesForComponentsService {
             GridComponent batchState = (GridComponent) viewDefinitionState.getComponentByReference("batches");
             if (batchState != null && batchState.getFieldValue() != null) {
                 viewDefinitionState.redirectTo(
-                        "/genealogiesForComponents/genealogyForComponent.pdf?value=" + batchState.getFieldValue(), false, false);
+                        "/genealogiesForComponents/genealogyForComponent.pdf?value=" + batchState.getFieldValue(), true, false);
             } else {
                 state.addMessage(translationService.translate("genealogiesForComponents.genealogyForComponent.report.noBatch",
                         viewDefinitionState.getLocale()), MessageType.FAILURE);

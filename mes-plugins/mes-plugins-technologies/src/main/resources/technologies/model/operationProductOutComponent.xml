@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.8
+    Version: 0.4.9
 
     This file is part of Qcadoo.
 
@@ -33,7 +33,7 @@
 		<belongsTo name="product" plugin="basic" model="product" required="true" />
 		<decimal name="quantity" required="true">
 			<validatesRange from="0" exclusively="true" />
-			<validatesPrecision max="7" />
+			<validatesUnscaledValue max="5" />
 			<validatesScale max="3" />
 		</decimal>
 	</fields>
