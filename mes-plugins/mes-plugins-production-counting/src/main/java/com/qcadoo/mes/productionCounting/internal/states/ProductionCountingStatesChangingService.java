@@ -30,6 +30,7 @@ public class ProductionCountingStatesChangingService {
                 break;
             case ACCEPTED:
                 performDeclined();
+                break;
             default:
                 throw new IllegalStateException("unknown product type");
         }
