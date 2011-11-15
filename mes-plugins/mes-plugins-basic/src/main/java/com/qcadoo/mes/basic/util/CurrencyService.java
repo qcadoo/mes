@@ -47,7 +47,10 @@ public class CurrencyService {
 
     public Entity getCurrentCurrency() {
         if (getCurrencyEnabled() == null) {
-            setCurrencyEnabled(getCurrencyFromLocale());
+            if (getCurrencyFromLocale() == null)
+                setCurrencyEnabled(getCurrencyDefault());
+            else
+                setCurrencyEnabled(getCurrencyFromLocale());
         }
 
         return getCurrencyEnabled();
@@ -57,6 +60,14 @@ public class CurrencyService {
         DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
 
         Entity currency = dd.find().add(SearchRestrictions.eq("isActive", true)).uniqueResult();
+
+        return currency;
+    }
+
+    public Entity getCurrencyDefault() {
+        DataDefinition currencyDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
+
+        Entity currency = currencyDD.find().add(SearchRestrictions.eq("alphabeticCode", "USD")).uniqueResult();
 
         return currency;
     }
@@ -93,6 +104,14 @@ public class CurrencyService {
     public void changeCurrentCurrency(final DataDefinition dd, final Entity entity) {
         Entity oldCurrency = getCurrentCurrency();
         Entity newCurrency = entity.getBelongsToField("currency");
+
+        if (oldCurrency == null) {
+            oldCurrency = getCurrencyDefault();
+        }
+
+        if (newCurrency == null) {
+            newCurrency = oldCurrency;
+        }
 
         setCurrencyDisabled(oldCurrency);
         setCurrencyEnabled(newCurrency);
