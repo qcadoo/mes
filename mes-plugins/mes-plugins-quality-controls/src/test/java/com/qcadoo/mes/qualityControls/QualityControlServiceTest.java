@@ -75,6 +75,8 @@ public class QualityControlServiceTest {
 
     private QualityControlForNumberService qualityControlForNumber;
 
+    private Integer DIGITS_NUMBER = 6;
+
     @Before
     public void init() {
         securityService = mock(SecurityService.class);
@@ -397,7 +399,7 @@ public class QualityControlServiceTest {
         given(searchCriteria.list().getEntities()).willReturn(genealogies);
         given(
                 qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                        QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlForBatch")).willReturn("1");
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, "qualityControlForBatch")).willReturn("1");
         given(order.getField("plannedQuantity")).willReturn(new BigDecimal("1"));
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
@@ -446,7 +448,7 @@ public class QualityControlServiceTest {
         given(order.getField("plannedQuantity")).willReturn(new BigDecimal("5"));
         given(
                 qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                        QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlForUnit")).willReturn("1");
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, "qualityControlForUnit")).willReturn("1");
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
 

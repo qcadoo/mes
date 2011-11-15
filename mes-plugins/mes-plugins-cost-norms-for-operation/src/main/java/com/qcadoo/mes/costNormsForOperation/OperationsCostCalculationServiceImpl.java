@@ -50,6 +50,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -64,12 +65,16 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private TechnologyService technologyService;
+
     private final static Logger LOG = LoggerFactory.getLogger(OperationsCostCalculationServiceImpl.class);
 
     private final static Set<String> PATH_COST_KEYS = Sets.newHashSet(LABOR_HOURLY_COST, MACHINE_HOURLY_COST);
 
     @Override
     public void calculateOperationsCost(final Entity costCalculation) {
+        // FIXME mici, this method seems to not be used at all? let me know if I'm wrong and remove this comment
         checkArgument(costCalculation != null, "costCalculation entity is null");
         checkArgument("costCalculation".equals(costCalculation.getDataDefinition().getName()), "unsupported entity type");
 
@@ -165,8 +170,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         EntityList outProductsTree = givenTechnologyOperation.getHasManyField("operationProductOutComponents");
         String typeOfMaterial;
         for (Entity outProduct : outProductsTree) {
+            // FIXME mici, technologyService.getProductType should be used here
             typeOfMaterial = outProduct.getBelongsToField("product").getField("typeOfMaterial").toString();
-            if (!("04waste".equals(typeOfMaterial))) {
+            if (!(typeOfMaterial.equals(TechnologyService.WASTE))) {
                 return getBigDecimal(outProduct.getField("quantity"));
             }
         }

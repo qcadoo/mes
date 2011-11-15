@@ -44,6 +44,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -65,6 +66,9 @@ public class ProductionRecordViewService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     private final static String CLOSED_ORDER = "04completed";
 
@@ -295,7 +299,6 @@ public class ProductionRecordViewService {
                 }
             }
         } else {
-            typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
             for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
                     "registerProductionTime")) {
                 FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
@@ -304,6 +307,16 @@ public class ProductionRecordViewService {
                     component.requestComponentUpdateState();
                 }
             }
+            for (String componentReference : Arrays.asList("registerQuantityInProduct", "registerQuantityOutProduct",
+                    "registerProductionTime", "justOne", "allowToClose", "autoCloseOrder")) {
+                FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
+                component.setEnabled(false);
+            }
+            typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
+            typeOfProductionRecording.setEnabled(false);
+            typeOfProductionRecording.addMessage(translationService.translate(
+                    "orders.orderDetails.window.productionCounting.typeOfProductionRecording.error.saveOrderFirst",
+                    view.getLocale()), MessageType.INFO);
         }
     }
 
@@ -381,12 +394,14 @@ public class ProductionRecordViewService {
         productionCountings = dataDefinitionService.get("basicProductionCounting", "basicProductionCounting").find()
                 .add(SearchRestrictions.eq("order", order)).list().getEntities();
 
+        Entity technology = order.getBelongsToField("technology");
+
         if (productionCountings.isEmpty()) {
             return;
         }
         for (Entity counting : productionCountings) {
             Entity aProduct = (Entity) counting.getField("product");
-            if (aProduct.getField("typeOfMaterial").equals("03product")) {
+            if (technologyService.getProductType(aProduct, technology).equals(TechnologyService.PRODUCT)) {
                 doneQuantity.setFieldValue(counting.getField("producedQuantity"));
                 break;
             }
