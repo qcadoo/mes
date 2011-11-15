@@ -336,7 +336,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         List<Entity> orders = costCalculation.getBelongsToField("technology").getHasManyField("orders");
         Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(orders,
-                false);
+                true);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             materialsTable.addCell(new Phrase(product.getKey().getStringField("number"), PdfUtil.getArialRegular9Dark()));
