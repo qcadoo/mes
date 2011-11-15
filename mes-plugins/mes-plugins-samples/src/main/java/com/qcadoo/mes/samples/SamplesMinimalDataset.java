@@ -152,10 +152,13 @@ public class SamplesMinimalDataset extends Module {
 
     private void setParameters() {
         Entity params = dataDefinitionService.get("basic", "parameter").create();
+        Entity currency = dataDefinitionService.get("basic", "currency").find()
+                .add(SearchRestrictions.eq("alphabeticCode", "USD")).uniqueResult();
 
         params.setField("registerQuantityInProduct", true);
         params.setField("registerQuantityOutProduct", true);
         params.setField("registerProductionTime", true);
+        params.setField("currency", currency);
 
         params = params.getDataDefinition().save(params);
 
