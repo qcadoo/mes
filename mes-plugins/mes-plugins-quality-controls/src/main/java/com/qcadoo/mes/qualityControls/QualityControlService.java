@@ -638,7 +638,7 @@ public final class QualityControlService {
                 Entity forUnit = qualityForUnitDataDefinition.create();
                 forUnit.setField("order", order);
                 forUnit.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                        QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlsForUnit"));
+                        QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, "qualityControlsForUnit"));
                 forUnit.setField("closed", false);
                 forUnit.setField("qualityControlType", "qualityControlsForUnit");
                 forUnit.setField("takenForControlQuantity", BigDecimal.ONE);
@@ -680,7 +680,7 @@ public final class QualityControlService {
         Entity forOperation = qualityForOperationDataDefinition.create();
         forOperation.setField("order", order);
         forOperation.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlForOperation"));
+                QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, "qualityControlForOperation"));
         forOperation.setField("operation", entity.getBelongsToField("operation"));
         forOperation.setField("closed", false);
         forOperation.setField("qualityControlType", "qualityControlsForOperation");
@@ -697,7 +697,7 @@ public final class QualityControlService {
         Entity forOrder = qualityForOrderDataDefinition.create();
         forOrder.setField("order", order);
         forOrder.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlsForOrder"));
+                QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, "qualityControlsForOrder"));
         forOrder.setField("closed", false);
         forOrder.setField("qualityControlType", "qualityControlsForOrder");
 
@@ -713,7 +713,7 @@ public final class QualityControlService {
         Entity forBatch = qualityForBatchDataDefinition.create();
         forBatch.setField("order", order);
         forBatch.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                QualityControlsConstants.MODEL_QUALITY_CONTROL, 6, "qualityControlsForBatch"));
+                QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, "qualityControlsForBatch"));
         forBatch.setField("batchNr", genealogy.getField("batch"));
         forBatch.setField("closed", false);
         forBatch.setField("qualityControlType", "qualityControlsForBatch");
