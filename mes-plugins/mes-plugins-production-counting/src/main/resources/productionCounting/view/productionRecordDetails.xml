@@ -223,7 +223,7 @@
 					<layoutElement column="2" row="2">
 						<component type="time" name="laborTime" reference="laborTime"
 							field="laborTime" defaultVisible="false" >
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="completeLaborTimeField"/>
+							<listener event="onInputChange" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="completeLaborTimeField"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="3">
