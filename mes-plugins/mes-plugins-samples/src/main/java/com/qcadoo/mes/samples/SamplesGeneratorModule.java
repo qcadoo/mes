@@ -59,7 +59,7 @@ public class SamplesGeneratorModule extends Module {
 
     private static final String digitsOnly = "0123456789";
 
-    private static final String charsAndDigits = new String(charsOnly + digitsOnly);
+    private static final String charsAndDigits = charsOnly + digitsOnly;
 
     private static final String[] acceptableTypeOfProduct = { "01component", "02intermediate", "03product", "04waste" };
 
@@ -224,8 +224,9 @@ public class SamplesGeneratorModule extends Module {
 
     private void generateAndAddTechnologies() {
         List<Entity> products = dataDefinitionService.get("basic", "product").find().list().getEntities();
-        for (Entity product : products)
+        for (Entity product : products) {
             generateAndAddTechnology(product);
+        }
     }
 
     private void generateAndAddOperationProductOutComponent(Entity operationComponent, final BigDecimal quantity,

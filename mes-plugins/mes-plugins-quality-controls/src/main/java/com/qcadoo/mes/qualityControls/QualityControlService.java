@@ -70,7 +70,7 @@ public final class QualityControlService {
     @Autowired
     private QualityControlForNumberService qualityControlForNumber;
 
-    private Integer DIGITS_NUMBER = 6;
+    private static final Integer DIGITS_NUMBER = 6;
 
     public void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state) {
         FieldComponent comment = (FieldComponent) state.getComponentByReference("comment");
