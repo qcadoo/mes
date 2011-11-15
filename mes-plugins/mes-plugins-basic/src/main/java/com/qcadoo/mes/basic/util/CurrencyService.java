@@ -46,25 +46,55 @@ public class CurrencyService {
     private static final Logger LOG = LoggerFactory.getLogger(CurrencyService.class);
 
     public Entity getCurrentCurrency() {
+        if (getCurrencyEnabled() == null) {
+            setCurrencyEnabled(getCurrencyFromLocale());
+        }
+
+        return getCurrencyEnabled();
+    }
+
+    public Entity getCurrencyEnabled() {
         DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
+
         Entity currency = dd.find().add(SearchRestrictions.eq("isActive", true)).uniqueResult();
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("actual currency = " + currency);
-        }
+        return currency;
+    }
 
-        if (currency != null) {
-            return currency;
-        }
+    public Entity getCurrencyFromLocale() {
+        DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
 
         String alphabeticCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
-        currency = dd.find().add(SearchRestrictions.eq("alphabeticCode", alphabeticCode)).uniqueResult();
-        currency.setField("isActive", true);
-        return dd.save(currency);
+        Entity currency = dd.find().add(SearchRestrictions.eq("alphabeticCode", alphabeticCode)).uniqueResult();
+
+        return currency;
     }
 
     public String getCurrencyAlphabeticCode() {
         return getCurrentCurrency().getField("alphabeticCode").toString();
     }
 
+    public void setCurrencyEnabled(Entity currency) {
+        DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
+
+        currency.setField("isActive", true);
+
+        dd.save(currency);
+    }
+
+    public void setCurrencyDisabled(Entity currency) {
+        DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
+
+        currency.setField("isActive", false);
+
+        dd.save(currency);
+    }
+
+    public void changeCurrentCurrency(final DataDefinition dd, final Entity entity) {
+        Entity oldCurrency = getCurrentCurrency();
+        Entity newCurrency = entity.getBelongsToField("currency");
+
+        setCurrencyDisabled(oldCurrency);
+        setCurrencyEnabled(newCurrency);
+    }
 }

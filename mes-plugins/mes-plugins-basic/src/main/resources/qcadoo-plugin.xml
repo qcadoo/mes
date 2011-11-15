@@ -89,9 +89,7 @@
 			category="administration" url="/companyView.html"/>
 		<menu:menu-item name="contractors" category="basic"
 			view="contractorsList" />
-		<menu:menu-item name="currency"
-			category="administration" view="currencyDetails"/>
-		
+			
 		<menu:menu-item-url url="/page/qcadooDictionaries/dictionariesList.html" name="dictionariesInBasic" category="basic"/>
 
 		<view:view resource="view/contractorsList.xml" />
@@ -109,7 +107,16 @@
 		<view:view resource="view/shiftDetails.xml"/>
 		<view:view resource="view/shiftsList.xml"/>
 		<view:view resource="view/shiftTimetableExceptionDetails.xml" />
-		<view:view resource="view/currencyDetails.xml"/>
+		
+		<view:view-tab resource="view/currencyDetails.xml" />
+		
+		<view:view-hook view="parameters" type="beforeRender" plugin="basic" class="com.qcadoo.mes.basic.CurrencyViewService" method="applyCurrentCurrency"/>
+		
+		<model:model-hook model="parameter" plugin="basic">
+			<model:onSave 
+				class="com.qcadoo.mes.basic.util.CurrencyService" 
+				method="changeCurrentCurrency" />
+		</model:model-hook>
 		
 		<custom:custom class="com.qcadoo.mes.basic.CurrencyLoaderModule" />
 	</modules>
