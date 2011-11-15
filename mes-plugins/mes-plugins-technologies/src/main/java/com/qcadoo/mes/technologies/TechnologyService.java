@@ -62,7 +62,7 @@ import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
-public final class TechnologyService {
+public class TechnologyService {
 
     public static final String WASTE = "04waste";
 
