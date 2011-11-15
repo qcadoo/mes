@@ -252,18 +252,18 @@ public class OrderStatesService {
         }
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntityId());
-        if (order != null)
-            if (order.getStringField("state").equals(OrderStates.ACCEPTED.getStringValue())
-                    || order.getStringField("state").equals(OrderStates.IN_PROGRESS.getStringValue())
-                    || order.getStringField("state").equals(OrderStates.INTERRUPTED.getStringValue()))
-                for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology")) {
-                    FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-                    field.setRequired(true);
-                }
-            else if (order.getStringField("state").equals(OrderStates.COMPLETED.getStringValue()))
-                for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology", "doneQuantity")) {
-                    FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-                    field.setRequired(true);
-                }
+        if (order != null && order.getStringField("state").equals(OrderStates.ACCEPTED.getStringValue())
+                || order.getStringField("state").equals(OrderStates.IN_PROGRESS.getStringValue())
+                || order.getStringField("state").equals(OrderStates.INTERRUPTED.getStringValue())) {
+            for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology")) {
+                FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+                field.setRequired(true);
+            }
+        } else if (order.getStringField("state").equals(OrderStates.COMPLETED.getStringValue())) {
+            for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology", "doneQuantity")) {
+                FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+                field.setRequired(true);
+            }
+        }
     }
 }

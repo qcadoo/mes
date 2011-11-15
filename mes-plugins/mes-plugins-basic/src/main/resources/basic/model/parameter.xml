@@ -27,6 +27,9 @@
 <model name="parameter" deletable="false"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields />
+	<fields>
+		<belongsTo name="currency" plugin="basic" model="currency" />
+	</fields>
+	
 	<hooks />
 </model>

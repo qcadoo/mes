@@ -74,7 +74,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     @Override
     public void calculateOperationsCost(final Entity costCalculation) {
-        // FIXME mici, this method seems to not be used at all? let me know if I'm wrong and remove this comment
         checkArgument(costCalculation != null, "costCalculation entity is null");
         checkArgument("costCalculation".equals(costCalculation.getDataDefinition().getName()), "unsupported entity type");
 
@@ -168,11 +167,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         }
 
         EntityList outProductsTree = givenTechnologyOperation.getHasManyField("operationProductOutComponents");
-        String typeOfMaterial;
+        Entity technology = givenTechnologyOperation.getBelongsToField("technology");
         for (Entity outProduct : outProductsTree) {
-            // FIXME mici, technologyService.getProductType should be used here
-            typeOfMaterial = outProduct.getBelongsToField("product").getField("typeOfMaterial").toString();
-            if (!(typeOfMaterial.equals(TechnologyService.WASTE))) {
+            Entity product = outProduct.getBelongsToField("product");
+            if (!(technologyService.getProductType(product, technology).equals(TechnologyService.WASTE))) {
                 return getBigDecimal(outProduct.getField("quantity"));
             }
         }

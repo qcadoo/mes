@@ -46,11 +46,15 @@
 			<plugin>basic</plugin>
 			<version>[0.4.0</version>
 		</dependency>
+		<dependency>
+			<plugin>orders</plugin>
+			<version>[0.4.0</version>
+		</dependency>
 	</dependencies>
 
 
 	<modules>
-		<custom:custom class="com.qcadoo.mes.samples.SamplesLoaderModule" />
+		<custom:custom class="com.qcadoo.mes.samples.SamplesChooser" />
 	</modules>
 
 </plugin>
