@@ -202,7 +202,7 @@ public class ProductionRecordViewService {
         Boolean autoCloseOrder = getBooleanValue(order.getField("autoCloseOrder"));
         String orderState = order.getStringField("state");
         if (autoCloseOrder
-                && view.getComponentByReference("lastRecord").getFieldValue() == "1"
+                && "1".equals(view.getComponentByReference("lastRecord").getFieldValue())
                 && view.getComponentByReference("state").getFieldValue()
                         .equals(ProductionCountingStates.ACCEPTED.getStringValue()) && "03inProgress".equals(orderState)) {
             order.setField("state", CLOSED_ORDER);
