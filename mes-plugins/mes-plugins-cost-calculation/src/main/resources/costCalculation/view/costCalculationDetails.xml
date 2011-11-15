@@ -278,7 +278,9 @@
 								</layoutElement>
 								<layoutElement column="4" row="1">
 									<component type="input" name="productionCostMarginProc"
-										defaultEnabled="false" hasLabel="false" reference="productionCostMarginProc" />
+										defaultEnabled="false" hasLabel="false" reference="productionCostMarginProc" >
+										<option type="textRepresentationOnDisabled" value="true" />
+										</component>
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="materialCostMargin"
@@ -288,7 +290,9 @@
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="materialCostMarginProc"
-										defaultEnabled="false" hasLabel="false" reference="materialCostMarginProc" />
+										defaultEnabled="false" hasLabel="false" reference="materialCostMarginProc" >
+										<option type="textRepresentationOnDisabled" value="true" />
+										</component>
 								</layoutElement>
 								<layoutElement column="1" row="3" width="3">
 									<component type="input" name="additionalOverhead"
@@ -298,7 +302,9 @@
 								</layoutElement>
 								<layoutElement column="4" row="3">
 									<component type="input" name="additionalOverheadCurrency"
-										defaultEnabled="false" hasLabel="false" reference="additionalOverheadCurrency" />
+										defaultEnabled="false" hasLabel="false" reference="additionalOverheadCurrency" >
+										<option type="textRepresentationOnDisabled" value="true" />
+										</component>
 								</layoutElement>
 							</component>
 						</component>
@@ -322,46 +328,56 @@
 										field="#{form}.totalMaterialCosts" reference="totalMaterialCosts"
 										defaultEnabled="false">
 										<option type="alignment" value="right" />
+										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="1">
 									<component type="input" name="totalMaterialCostsCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalMaterialCostsCurrency" />
+										defaultEnabled="false" hasLabel="false" reference="totalMaterialCostsCurrency" >
+										<option type="textRepresentationOnDisabled" value="true" />
+										</component>
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="totalMachineHourlyCosts"
 										reference="totalMachineHourlyCosts" field="#{form}.totalMachineHourlyCosts"
 										defaultEnabled="false">
 										<option type="alignment" value="right" />
+										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="totalMachineHourlyCostsCurrency"
 										defaultEnabled="false" hasLabel="false"
-										reference="totalMachineHourlyCostsCurrency" />
+										reference="totalMachineHourlyCostsCurrency" ><option type="textRepresentationOnDisabled" value="true" /></component>
 								</layoutElement>
 								<layoutElement column="1" row="3" width="3">
 									<component type="input" name="totalLaborHourlyCosts"
 										field="#{form}.totalLaborHourlyCosts" reference="totalLaborHourlyCosts"
 										defaultEnabled="false">
 										<option type="alignment" value="right" />
+										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="3">
 									<component type="input" name="totalLaborHourlyCostsCurrency"
 										defaultEnabled="false" hasLabel="false"
-										reference="totalLaborHourlyCostsCurrency" />
+										reference="totalLaborHourlyCostsCurrency" >
+										<option type="textRepresentationOnDisabled" value="true" />
+										</component>
 								</layoutElement>
 								<layoutElement column="1" row="4" width="3">
 									<component type="input" name="totalPieceworkCosts"
 										field="#{form}.totalPieceworkCosts" reference="totalPieceworkCosts"
 										defaultEnabled="false">
 										<option type="alignment" value="right" />
+										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="4">
 									<component type="input" name="totalPieceworkCostsCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalPieceworkCostsCurrency" />
+										defaultEnabled="false" hasLabel="false" reference="totalPieceworkCostsCurrency" >
+										<option type="textRepresentationOnDisabled" value="true" />
+										</component>
 								</layoutElement>
 								<layoutElement column="1" row="5">
 									<component type="label" name="totalTechnicalProductionCostsLabel">
@@ -373,12 +389,15 @@
 										reference="totalTechnicalProductionCosts" field="#{form}.totalTechnicalProductionCosts"
 										defaultEnabled="false" hasLabel="false">
 										<option type="alignment" value="right" />
+										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="6">
 									<component type="input"
 										name="totalTechnicalProductionCostsCurrency" defaultEnabled="false"
-										hasLabel="false" reference="totalTechnicalProductionCostsCurrency" />
+										hasLabel="false" reference="totalTechnicalProductionCostsCurrency" >
+										<option type="textRepresentationOnDisabled" value="true" />
+										</component>
 								</layoutElement>
 							</component>
 						</component>
@@ -394,36 +413,45 @@
 										field="#{form}.productionCostMarginValue" defaultEnabled="false"
 										reference="productionCostMarginValue">
 										<option type="alignment" value="right" />
+										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="1">
 									<component type="input" name="productionCostMarginValueCurrency"
 										defaultEnabled="false" hasLabel="false"
-										reference="productionCostMarginValueCurrency" />
+										reference="productionCostMarginValueCurrency" >
+										<option type="textRepresentationOnDisabled" value="true" />
+										</component>
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="materialCostMarginValue"
 										field="#{form}.materialCostMarginValue" defaultEnabled="false"
 										reference="materialCostMarginValue">
 										<option type="alignment" value="right" />
+										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="materialCostMarginValueCurrency"
 										defaultEnabled="false" hasLabel="false"
-										reference="materialCostMarginValueCurrency" />
+										reference="materialCostMarginValueCurrency" >
+										<option type="textRepresentationOnDisabled" value="true" />
+										</component>
 								</layoutElement>
 								<layoutElement column="1" row="3" width="3">
 									<component type="input" name="additionalOverheadValue"
 										field="#{form}.additionalOverheadValue" defaultEnabled="false"
 										reference="additionalOverheadValue">
 										<option type="alignment" value="right" />
+										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="3">
 									<component type="input" name="additionalOverheadValueCurrency"
 										defaultEnabled="false" hasLabel="false"
-										reference="additionalOverheadValueCurrency" />
+										reference="additionalOverheadValueCurrency" >
+										<option type="textRepresentationOnDisabled" value="true" />
+										</component>
 								</layoutElement>
 								<layoutElement column="1" row="4">
 									<component type="label" name="totalOverheadLabel"
@@ -435,11 +463,14 @@
 									<component type="input" name="totalOverhead" field="#{form}.totalOverhead"
 										defaultEnabled="false" reference="totalOverhead" hasLabel="false">
 										<option type="alignment" value="right" />
+										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="5">
 									<component type="input" name="totalOverheadCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalOverheadCurrency" />
+										defaultEnabled="false" hasLabel="false" reference="totalOverheadCurrency" >
+										<option type="textRepresentationOnDisabled" value="true" />
+										</component>
 								</layoutElement>
 							</component>
 						</component>
@@ -460,11 +491,14 @@
 									<component type="input" name="totalCosts" field="#{form}.totalCosts"
 										defaultEnabled="false" reference="totalCosts" hasLabel="false">
 										<option type="alignment" value="right" />
+										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="totalCostsCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalCostsCurrency" />
+										defaultEnabled="false" hasLabel="false" reference="totalCostsCurrency" >
+										<option type="textRepresentationOnDisabled" value="true" />
+										</component>
 								</layoutElement>
 								<layoutElement column="1" row="3">
 									<component type="label" name="costPerUnitLabel"
@@ -476,11 +510,14 @@
 									<component type="input" name="costPerUnit" field="#{form}.costPerUnit"
 										defaultEnabled="false" reference="totalCostsPerUnit" hasLabel="false">
 										<option type="alignment" value="right" />
+										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="4">
 									<component type="input" name="totalCostsPerUnitUNIT"
-										defaultEnabled="false" hasLabel="false" reference="totalCostsPerUnitUNIT" />
+										defaultEnabled="false" hasLabel="false" reference="totalCostsPerUnitUNIT" >
+										<option type="textRepresentationOnDisabled" value="true" />
+										</component>
 								</layoutElement>
 							</component>
 						</component>

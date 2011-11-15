@@ -410,8 +410,12 @@ public class ProductionRecordViewService {
 
     public void completeLaborTimeField(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FieldComponent laborTime = (FieldComponent) view.getComponentByReference("laborTime");
-        if (laborTime.getFieldValue() != null) {
-
+        String time = (String) laborTime.getFieldValue();
+        if (time == null) {
+            return;
+        }
+        if (time.length() == 8) {
+            time = null;
         }
     }
 
