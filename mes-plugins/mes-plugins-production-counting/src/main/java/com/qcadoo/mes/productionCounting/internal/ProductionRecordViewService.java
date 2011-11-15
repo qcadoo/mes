@@ -408,6 +408,13 @@ public class ProductionRecordViewService {
         }
     }
 
+    public void completeLaborTimeField(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FieldComponent laborTime = (FieldComponent) view.getComponentByReference("laborTime");
+        if (laborTime.getFieldValue() != null) {
+
+        }
+    }
+
     public void disableFieldsIfBasicSelected(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
         FieldComponent shift = (FieldComponent) view.getComponentByReference("shift");
