@@ -161,6 +161,7 @@ public class MaterialFlowService {
 
             }
         }
+        should.requestComponentUpdateState();
     }
 
     public void fillNumberFieldValue(final ViewDefinitionState view) {
@@ -202,6 +203,7 @@ public class MaterialFlowService {
                 number.setFieldValue(numberValue);
             }
         }
+        number.requestComponentUpdateState();
     }
 
     private Entity getAreaById(final Long productId) {
@@ -357,6 +359,8 @@ public class MaterialFlowService {
             toStockArea.setEnabled(true);
             fromStockArea.setEnabled(true);
         }
+        toStockArea.requestComponentUpdateState();
+        fromStockArea.requestComponentUpdateState();
     }
 
     public void fillDefaultStockAreaToFieldInTransformations(final ViewDefinitionState state,
@@ -367,6 +371,7 @@ public class MaterialFlowService {
             FieldComponent stockAreaFrom = (FieldComponent) state.getComponentByReference("stockAreasFrom");
             stockAreaTo.setFieldValue(stockAreaFrom.getFieldValue());
         }
+        stockAreaTo.requestComponentUpdateState();
     }
 
     public boolean validateTransfer(final DataDefinition dataDefinition, final Entity entity) {
