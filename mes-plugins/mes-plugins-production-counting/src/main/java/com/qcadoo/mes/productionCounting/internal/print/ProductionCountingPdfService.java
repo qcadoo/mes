@@ -255,10 +255,13 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         panelTable.setSpacingBefore(10);
         document.add(panelTable);
 
-        if ((Boolean) productionRecord.getBelongsToField("order").getField("registerQuantityInProduct"))
+        if ((Boolean) productionRecord.getBelongsToField("order").getField("registerQuantityInProduct")) {
             addInputProducts(document, productionRecord, locale);
-        if ((Boolean) productionRecord.getBelongsToField("order").getField("registerQuantityOutProduct"))
+        }
+
+        if ((Boolean) productionRecord.getBelongsToField("order").getField("registerQuantityOutProduct")) {
             addOutputProducts(document, productionRecord, locale);
+        }
     }
 
     private void addInputProducts(Document document, final Entity productionRecord, final Locale locale) throws DocumentException {

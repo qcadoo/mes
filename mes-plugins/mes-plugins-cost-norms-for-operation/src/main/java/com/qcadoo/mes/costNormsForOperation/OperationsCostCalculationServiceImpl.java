@@ -169,7 +169,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         EntityList outProductsTree = givenTechnologyOperation.getHasManyField("operationProductOutComponents");
         Entity technology = givenTechnologyOperation.getBelongsToField("technology");
         for (Entity outProduct : outProductsTree) {
-            // FIXME mici, technologyService.getProductType should be used here
             Entity product = outProduct.getBelongsToField("product");
             if (!(technologyService.getProductType(product, technology).equals(TechnologyService.WASTE))) {
                 return getBigDecimal(outProduct.getField("quantity"));

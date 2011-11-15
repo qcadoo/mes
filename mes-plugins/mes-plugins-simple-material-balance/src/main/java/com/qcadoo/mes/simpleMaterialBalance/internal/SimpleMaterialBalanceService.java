@@ -104,8 +104,9 @@ public class SimpleMaterialBalanceService {
 
             Entity simpleMaterialBalanceEntity = dataDefinitionService.get(plugin, entityName).get(form.getEntityId());
 
-            if (simpleMaterialBalanceEntity.getField("generated") == null)
+            if (simpleMaterialBalanceEntity.getField("generated") == null) {
                 simpleMaterialBalanceEntity.setField("generated", "0");
+            }
 
             if ("1".equals(simpleMaterialBalanceEntity.getField("generated"))) {
                 generateButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");

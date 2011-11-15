@@ -128,8 +128,10 @@ public class MaterialFlowService {
             countProductIn = countProductIn.subtract(countProductOut);
         }
 
-        if (countProductIn.compareTo(BigDecimal.ZERO) == -1)
+        if (countProductIn.compareTo(BigDecimal.ZERO) == -1) {
             countProductIn = BigDecimal.ZERO;
+        }
+
         return countProductIn;
     }
 
@@ -286,9 +288,11 @@ public class MaterialFlowService {
                 .add(SearchRestrictions.eqField("sc.product.id", "id")).add(SearchRestrictions.eq("sc.stockAreas.id", id)).list()
                 .getEntities();
 
-        for (Entity product : productsFromStockCorrections)
-            if (!productsFromTransfers.contains(product))
+        for (Entity product : productsFromStockCorrections) {
+            if (!productsFromTransfers.contains(product)) {
                 productsFromTransfers.add(product);
+            }
+        }
 
         return productsFromTransfers;
     }
@@ -339,8 +343,10 @@ public class MaterialFlowService {
     }
 
     public void disableStockAreaFieldForParticularTransferType(final ViewDefinitionState state) {
-        if (state.getComponentByReference("type").getFieldValue() == null)
+        if (state.getComponentByReference("type").getFieldValue() == null) {
             return;
+        }
+
         String type = state.getComponentByReference("type").getFieldValue().toString();
         FieldComponent toStockArea = (FieldComponent) state.getComponentByReference("stockAreasTo");
         FieldComponent fromStockArea = (FieldComponent) state.getComponentByReference("stockAreasFrom");
@@ -405,13 +411,18 @@ public class MaterialFlowService {
 
     public void checkIfTransferHasTransformation(final ViewDefinitionState state) {
         String number = (String) state.getComponentByReference("number").getFieldValue();
-        if (number == null)
+
+        if (number == null) {
             return;
+        }
+
         Entity transfer = dataDefinitionService
                 .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFER)
                 .find("where number = '" + number.toString() + "'").uniqueResult();
-        if (transfer == null)
+
+        if (transfer == null) {
             return;
+        }
 
         if (transfer.getBelongsToField("transformationsConsumption") != null
                 || transfer.getBelongsToField("transformationsProduction") != null) {
