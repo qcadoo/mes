@@ -51,6 +51,7 @@
 					var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
 					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
 					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+					var generateRibbonItem = #{window}.getRibbonItem("generate.generate");
 					
 					var containsAtLeastOneOrder = false;
 					var entityExists = false;
@@ -86,16 +87,19 @@
 							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
 								xlsRibbonItem.enable();
 								pdfRibbonItem.enable();
+								generateRibbonItem.disable();
 								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 							} else {
 								xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								generateRibbonItem.enable();
 								saveRibbonItem.enable();
 							}
 						} else {
 							copyRibbonItem.disable("#{translate(recordNotCreated)}");
 							xlsRibbonItem.disable("#{translate(recordNotCreated)}");
 							pdfRibbonItem.disable("#{translate(recordNotCreated)}");
+							generateRibbonItem.disable();
 							saveRibbonItem.enable();
 						}
 					}

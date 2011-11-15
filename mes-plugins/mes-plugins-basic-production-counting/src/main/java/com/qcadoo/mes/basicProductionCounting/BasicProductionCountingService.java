@@ -64,8 +64,10 @@ public class BasicProductionCountingService {
         if (orderNumber != null) {
             Entity order = dataDefinitionService.get("orders", "order").find().add(SearchRestrictions.eq("number", orderNumber))
                     .uniqueResult();
-            if (order != null)
-                updateProductsForOrder(order, "basicProductionCounting", "basicProductionCounting", "plannedQuantity");
+            if (order != null) {
+                updateProductsForOrder(order, BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING, "plannedQuantity");
+            }
         }
     }
 
@@ -94,8 +96,9 @@ public class BasicProductionCountingService {
                 newProduct.setField("product", product.getKey());
                 newProduct.setField(fieldName, product.getValue());
                 newProduct.getDataDefinition().save(newProduct);
-                if (!newProduct.isValid())
+                if (!newProduct.isValid()) {
                     throw new IllegalStateException("new product entity is invalid  " + product.getValue() + "\n\n\n");
+                }
             } else {
                 BigDecimal plannedQuantity = (BigDecimal) foundProduct.getField(fieldName);
                 if (plannedQuantity != product.getValue()) {
@@ -115,8 +118,9 @@ public class BasicProductionCountingService {
                     break;
                 }
             }
-            if (!found)
+            if (!found) {
                 dataDefinitionService.get(pluginName, modelName).delete(producedProduct.getId());
+            }
         }
     }
 

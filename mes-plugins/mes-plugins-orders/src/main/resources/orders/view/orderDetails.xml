@@ -311,9 +311,10 @@
 					</layoutElement>
 					<layoutElement column="2" row="6">
 						<component type="input" name="doneQuantity" field="doneQuantity"
-							reference="doneQuantity">
+							reference="doneQuantity" hasDescription="true">
 							<option type="labelWidth" value="55" />
 							<option type="alignment" value="right" />
+<!-- 							<option type="hasDescription" value="true"/> -->
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="7">
