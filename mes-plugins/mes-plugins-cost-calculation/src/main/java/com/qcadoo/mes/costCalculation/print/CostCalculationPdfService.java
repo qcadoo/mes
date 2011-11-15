@@ -61,6 +61,7 @@ import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class CostCalculationPdfService extends PdfDocumentService {
@@ -79,6 +80,9 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     @Autowired
     MaterialRequirementReportDataService materialRequirementReportDataService;
+
+    @Autowired
+    TimeConverterService timeConverterService;
 
     @Override
     protected void buildPdfContent(Document document, Entity entity, Locale locale) throws DocumentException {
@@ -394,7 +398,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
                         "name"), PdfUtil.getArialRegular9Dark()));
 
-                String duration = convertTimeToString((Integer) calculationOperationComponent.getField("duration"));
+                String duration = timeConverterService.convertTimeToString((Integer) calculationOperationComponent
+                        .getField("duration"));
 
                 operationsTable.addCell(new Phrase(duration, PdfUtil.getArialRegular9Dark()));
                 operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -412,36 +417,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
             }
         }
         return operationsTable;
-    }
-
-    private String convertTimeToString(final Integer duration) {
-        // TODO ALBR
-
-        Long durationLongValue = duration.longValue();
-
-        Long hour = durationLongValue / 3600;
-        String h = null;
-        String m = null;
-        String s = null;
-        if (hour < 10) {
-            h = "0" + hour.toString();
-        } else {
-            h = hour.toString();
-        }
-        Long minute = (durationLongValue % 3600) / 60;
-        if (minute < 10) {
-            m = "0" + minute.toString();
-        } else {
-            m = minute.toString();
-        }
-        Long second = (durationLongValue % 3600) % 60;
-        if (second < 10) {
-            s = "0" + second.toString();
-        } else {
-            s = second.toString();
-        }
-
-        return h + ":" + m + ":" + s;
     }
 
     private PdfPTable addTableAboutPieceworkCost(final Entity costCalculation, final Locale locale) {

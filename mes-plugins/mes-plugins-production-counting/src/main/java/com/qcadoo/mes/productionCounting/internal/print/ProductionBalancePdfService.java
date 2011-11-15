@@ -53,6 +53,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public final class ProductionBalancePdfService extends PdfDocumentService {
@@ -65,6 +66,9 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
     @Autowired
     private ProductionBalanceReportDataService productionBalanceReportDataService;
+
+    @Autowired
+    private TimeConverterService timeConverterService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity productionBalance, final Locale locale)
@@ -359,12 +363,12 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     "nodeNumber"), PdfUtil.getArialRegular9Dark()));
             machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
                     .getBelongsToField("operation").getStringField("name"), PdfUtil.getArialRegular9Dark()));
-            machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
-                    .getField("plannedMachineTime"))), PdfUtil.getArialRegular9Dark()));
-            machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
-                    .getField("machineTime"))), PdfUtil.getArialRegular9Dark()));
-            machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
-                    .getField("machineTimeBalance"))), PdfUtil.getArialRegular9Dark()));
+            machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionRecord
+                    .getField("plannedMachineTime")), PdfUtil.getArialRegular9Dark()));
+            machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionRecord
+                    .getField("machineTime")), PdfUtil.getArialRegular9Dark()));
+            machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionRecord
+                    .getField("machineTimeBalance")), PdfUtil.getArialRegular9Dark()));
             plannedTimeSum += (Integer) productionRecord.getField("plannedMachineTime");
             registeredTimeSum += (Integer) productionRecord.getField("machineTime");
             timeBalanceSum += (Integer) productionRecord.getField("machineTimeBalance");
@@ -373,10 +377,12 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         machineTimeTable.addCell(new Phrase(getTranslationService().translate(
                 "productionCounting.productionBalance.report.total", locale), PdfUtil.getArialRegular9Dark()));
         machineTimeTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-        machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal(plannedTimeSum)), PdfUtil.getArialRegular9Dark()));
-        machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal(registeredTimeSum)), PdfUtil
+        machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(plannedTimeSum), PdfUtil
                 .getArialRegular9Dark()));
-        machineTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal(timeBalanceSum)), PdfUtil.getArialRegular9Dark()));
+        machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(registeredTimeSum), PdfUtil
+                .getArialRegular9Dark()));
+        machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(timeBalanceSum), PdfUtil
+                .getArialRegular9Dark()));
 
         document.add(machineTimeTable);
     }
@@ -416,13 +422,12 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     "nodeNumber"), PdfUtil.getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
                     .getBelongsToField("operation").getStringField("name"), PdfUtil.getArialRegular9Dark()));
-            laborTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
-                    .getField("plannedLaborTime"))), PdfUtil.getArialRegular9Dark()));
-            laborTimeTable.addCell(new Phrase(
-                    convertTimeToString(new BigDecimal((Integer) productionRecord.getField("laborTime"))), PdfUtil
-                            .getArialRegular9Dark()));
-            laborTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal((Integer) productionRecord
-                    .getField("laborTimeBalance"))), PdfUtil.getArialRegular9Dark()));
+            laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionRecord
+                    .getField("plannedLaborTime")), PdfUtil.getArialRegular9Dark()));
+            laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionRecord
+                    .getField("laborTime")), PdfUtil.getArialRegular9Dark()));
+            laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionRecord
+                    .getField("laborTimeBalance")), PdfUtil.getArialRegular9Dark()));
             plannedTimeSum += (Integer) productionRecord.getField("plannedLaborTime");
             registeredTimeSum += (Integer) productionRecord.getField("laborTime");
             timeBalanceSum += (Integer) productionRecord.getField("laborTimeBalance");
@@ -431,10 +436,12 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         laborTimeTable.addCell(new Phrase(getTranslationService().translate("productionCounting.productionBalance.report.total",
                 locale), PdfUtil.getArialRegular9Dark()));
         laborTimeTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-        laborTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal(plannedTimeSum)), PdfUtil.getArialRegular9Dark()));
-        laborTimeTable
-                .addCell(new Phrase(convertTimeToString(new BigDecimal(registeredTimeSum)), PdfUtil.getArialRegular9Dark()));
-        laborTimeTable.addCell(new Phrase(convertTimeToString(new BigDecimal(timeBalanceSum)), PdfUtil.getArialRegular9Dark()));
+        laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(plannedTimeSum), PdfUtil
+                .getArialRegular9Dark()));
+        laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(registeredTimeSum), PdfUtil
+                .getArialRegular9Dark()));
+        laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(timeBalanceSum), PdfUtil
+                .getArialRegular9Dark()));
 
         document.add(laborTimeTable);
     }
@@ -478,38 +485,38 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 timePanel,
                 getTranslationService().translate(
                         "productionCounting.productionBalanceDetails.window.productionTime.machinePlannedTime.label", locale)
-                        + ":", convertTimeToString(machinePlannedTime), null, PdfUtil.getArialRegular9Dark(),
-                PdfUtil.getArialRegular9Dark(), null);
+                        + ":", timeConverterService.convertTimeToString(machinePlannedTime.intValue()), null,
+                PdfUtil.getArialRegular9Dark(), PdfUtil.getArialRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 getTranslationService().translate(
                         "productionCounting.productionBalanceDetails.window.productionTime.machineRegisteredTime.label", locale)
-                        + ":", convertTimeToString(machineRegisteredTime), null, PdfUtil.getArialRegular9Dark(),
-                PdfUtil.getArialRegular9Dark(), null);
+                        + ":", timeConverterService.convertTimeToString(machineRegisteredTime.intValue()), null,
+                PdfUtil.getArialRegular9Dark(), PdfUtil.getArialRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 getTranslationService().translate(
                         "productionCounting.productionBalanceDetails.window.productionTime.machineTimeBalance.label", locale)
-                        + ":", convertTimeToString(machineTimeBalance), null, PdfUtil.getArialRegular9Dark(),
-                PdfUtil.getArialRegular9Dark(), null);
+                        + ":", timeConverterService.convertTimeToString(machineTimeBalance.intValue()), null,
+                PdfUtil.getArialRegular9Dark(), PdfUtil.getArialRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 getTranslationService().translate(
                         "productionCounting.productionBalanceDetails.window.productionTime.laborPlannedTime.label", locale)
-                        + ":", convertTimeToString(laborPlannedTime), null, PdfUtil.getArialRegular9Dark(),
-                PdfUtil.getArialRegular9Dark(), null);
+                        + ":", timeConverterService.convertTimeToString(laborPlannedTime.intValue()), null,
+                PdfUtil.getArialRegular9Dark(), PdfUtil.getArialRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 getTranslationService().translate(
                         "productionCounting.productionBalanceDetails.window.productionTime.laborRegisteredTime.label", locale)
-                        + ":", convertTimeToString(laborRegisteredTime), null, PdfUtil.getArialRegular9Dark(),
-                PdfUtil.getArialRegular9Dark(), null);
+                        + ":", timeConverterService.convertTimeToString(laborRegisteredTime.intValue()), null,
+                PdfUtil.getArialRegular9Dark(), PdfUtil.getArialRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 getTranslationService().translate(
                         "productionCounting.productionBalanceDetails.window.productionTime.laborTimeBalance.label", locale)
-                        + ":", convertTimeToString(laborTimeBalance), null, PdfUtil.getArialRegular9Dark(),
-                PdfUtil.getArialRegular9Dark(), null);
+                        + ":", timeConverterService.convertTimeToString(laborTimeBalance.intValue()), null,
+                PdfUtil.getArialRegular9Dark(), PdfUtil.getArialRegular9Dark(), null);
 
         timePanel.setSpacingBefore(10);
         document.add(timePanel);
@@ -523,30 +530,6 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
     @Override
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("productionCounting.productionBalance.report.title", locale);
-    }
-
-    public String convertTimeToString(final BigDecimal duration) {
-        long longValueFromDuration = duration.longValue();
-        long hours = longValueFromDuration / 3600;
-        long minutes = longValueFromDuration % 3600 / 60;
-        long seconds = longValueFromDuration % 3600 % 60;
-
-        Boolean minus = false;
-        if (hours < 0) {
-            minus = true;
-            hours = -hours;
-        }
-        if (minutes < 0) {
-            minus = true;
-            minutes = -minutes;
-        }
-        if (seconds < 0) {
-            minus = true;
-            seconds = -seconds;
-        }
-
-        return (minus ? "-" : "") + (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":"
-                + (seconds < 10 ? "0" : "") + seconds;
     }
 
 }

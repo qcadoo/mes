@@ -47,7 +47,7 @@
 						var saveBack = #{window}.getRibbonItem("actions.saveBack");
 						var saveNew = #{window}.getRibbonItem("actions.saveNew");
 						var entityExists = false;
-						
+						var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
 						this.addOnChangeListener({
 							onSetValue: function(value) {
 								if (!value || !value.content) {
@@ -71,12 +71,14 @@
 									saveBack.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
 									saveNew.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
 									copyRibbonItem.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
+									generatedRibbonItem.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
 								} else {
 									pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 									save.enable();
 									saveBack.enable();
 									saveNew.enable();
 									copyRibbonItem.enable();
+									generatedRibbonItem.enable();
 								}
 							} else {
 								copyRibbonItem.disable("#{translate(recordNotCreated)}");
@@ -85,6 +87,7 @@
 								saveBack.enable();
 								saveNew.enable();
 								copyRibbonItem.enable();
+								generatedRibbonItem.enable();
 							}
 						}
 					]]>

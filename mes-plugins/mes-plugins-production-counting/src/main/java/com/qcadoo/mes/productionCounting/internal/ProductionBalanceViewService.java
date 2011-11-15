@@ -46,6 +46,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class ProductionBalanceViewService {
@@ -61,6 +62,9 @@ public class ProductionBalanceViewService {
 
     @Autowired
     private ProductionBalanceReportDataService productionBalanceReportDataService;
+
+    @Autowired
+    private TimeConverterService timeConverterService;
 
     public void fillFieldsWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -238,30 +242,30 @@ public class ProductionBalanceViewService {
 
         FieldComponent machinePlannedTimeField = (FieldComponent) viewDefinitionState
                 .getComponentByReference("machinePlannedTime");
-        machinePlannedTimeField.setFieldValue(productionBalancePdfService.convertTimeToString(machinePlannedTime));
+        machinePlannedTimeField.setFieldValue(timeConverterService.convertTimeToString(machinePlannedTime.intValue()));
         machinePlannedTimeField.requestComponentUpdateState();
 
         FieldComponent machineRegisteredTimeField = (FieldComponent) viewDefinitionState
                 .getComponentByReference("machineRegisteredTime");
-        machineRegisteredTimeField.setFieldValue(productionBalancePdfService.convertTimeToString(machineRegisteredTime));
+        machineRegisteredTimeField.setFieldValue(timeConverterService.convertTimeToString(machineRegisteredTime.intValue()));
         machineRegisteredTimeField.requestComponentUpdateState();
 
         FieldComponent machineTimeBalanceField = (FieldComponent) viewDefinitionState
                 .getComponentByReference("machineTimeBalance");
-        machineTimeBalanceField.setFieldValue(productionBalancePdfService.convertTimeToString(machineTimeBalance));
+        machineTimeBalanceField.setFieldValue(timeConverterService.convertTimeToString(machineTimeBalance.intValue()));
         machineTimeBalanceField.requestComponentUpdateState();
 
         FieldComponent laborPlannedTimeField = (FieldComponent) viewDefinitionState.getComponentByReference("laborPlannedTime");
-        laborPlannedTimeField.setFieldValue(productionBalancePdfService.convertTimeToString(laborPlannedTime));
+        laborPlannedTimeField.setFieldValue(timeConverterService.convertTimeToString(laborPlannedTime.intValue()));
         laborPlannedTimeField.requestComponentUpdateState();
 
         FieldComponent laborRegisteredTimeField = (FieldComponent) viewDefinitionState
                 .getComponentByReference("laborRegisteredTime");
-        laborRegisteredTimeField.setFieldValue(productionBalancePdfService.convertTimeToString(laborRegisteredTime));
+        laborRegisteredTimeField.setFieldValue(timeConverterService.convertTimeToString(laborRegisteredTime.intValue()));
         laborRegisteredTimeField.requestComponentUpdateState();
 
         FieldComponent laborTimeBalanceField = (FieldComponent) viewDefinitionState.getComponentByReference("laborTimeBalance");
-        laborTimeBalanceField.setFieldValue(productionBalancePdfService.convertTimeToString(laborTimeBalance));
+        laborTimeBalanceField.setFieldValue(timeConverterService.convertTimeToString(laborTimeBalance.intValue()));
         laborTimeBalanceField.requestComponentUpdateState();
     }
 
