@@ -122,11 +122,11 @@ public class SamplesMinimalDataset extends Module {
                 readData(attributes, type, nodeLst, s);
             }
         } catch (IOException e) {
-
+            throw new IllegalStateException(e);
         } catch (ParserConfigurationException e) {
-
+            throw new IllegalStateException(e);
         } catch (SAXException e) {
-
+            throw new IllegalStateException(e);
         }
     }
 

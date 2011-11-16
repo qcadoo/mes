@@ -47,10 +47,11 @@ public class CurrencyService {
 
     public Entity getCurrentCurrency() {
         if (getCurrencyEnabled() == null) {
-            if (getCurrencyFromLocale() == null)
+            if (getCurrencyFromLocale() == null) {
                 setCurrencyEnabled(getCurrencyDefault());
-            else
+            } else {
                 setCurrencyEnabled(getCurrencyFromLocale());
+            }
         }
 
         return getCurrencyEnabled();
