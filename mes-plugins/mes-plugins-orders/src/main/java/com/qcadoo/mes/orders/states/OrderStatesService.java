@@ -259,11 +259,11 @@ public class OrderStatesService {
                     FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
                     field.setRequired(true);
                 }
-            }
-        } else if (order.getStringField("state").equals(OrderStates.COMPLETED.getStringValue())) {
-            for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology", "doneQuantity")) {
-                FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-                field.setRequired(true);
+            } else if (order.getStringField("state").equals(OrderStates.COMPLETED.getStringValue())) {
+                for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology", "doneQuantity")) {
+                    FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+                    field.setRequired(true);
+                }
             }
         }
     }
