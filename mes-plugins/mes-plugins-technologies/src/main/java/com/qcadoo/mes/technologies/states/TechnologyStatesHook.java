@@ -64,9 +64,9 @@ public class TechnologyStatesHook {
         for (MessageHolder validationMessage : validationMessages) {
             if (validationMessage.getTargetReferenceName() != null) {
                 technology.addError(technologyDD.getField(validationMessage.getTargetReferenceName()),
-                        translationService.translate(validationMessage.getMessage() + "." + validationMessage.getTargetReferenceName(), getLocale()));
+                        translationService.translate(validationMessage.getMessageKey(), validationMessage.getTargetReferenceName(), getLocale(), validationMessage.getVars()));
             } else {
-                technology.addGlobalError(translationService.translate(validationMessage.getMessage(), getLocale()));
+                technology.addGlobalError(translationService.translate(validationMessage.getMessageKey(), getLocale(), validationMessage.getVars()));
             }
         }
     }

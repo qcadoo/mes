@@ -97,7 +97,7 @@ public class OrderStateValidationService {
         List<ChangeOrderStateMessage> errors = new ArrayList<ChangeOrderStateMessage>();
         for (String reference : references) {
             if (entity.getField(reference) == null) {
-                errors.add(ChangeOrderStateMessage.error(
+                errors.add(ChangeOrderStateMessage.errorForComponent(
                         translationService.translate("orders.order.orderStates.fieldRequired", LocaleContextHolder.getLocale()),
                         reference));
             }
