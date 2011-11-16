@@ -58,11 +58,6 @@ public class OrderReportService {
 
     public Entity printForOrder(final ComponentState state, final String plugin, final String entityName,
             final Map<String, Object> entityFieldsMap, final OrderValidator orderValidator) {
-        return printForOrder(state, plugin, entityName, null, entityFieldsMap, orderValidator);
-    }
-    
-    public Entity printForOrder(final ComponentState state, final String plugin, final String entityName,
-            final String detailEntityName, final Map<String, Object> entityFieldsMap, final OrderValidator orderValidator) {
         if (!(state instanceof GridComponent)) {
             throw new IllegalStateException("method avalible only for grid");
         }
@@ -97,13 +92,13 @@ public class OrderReportService {
             }
             state.addMessage(errorMessage.toString(), MessageType.FAILURE, false);
         } else {
-            return createNewOrderPrint(ordersEntities, plugin, entityName, detailEntityName, entityFieldsMap, state.getLocale());
+            return createNewOrderPrint(ordersEntities, plugin, entityName, entityFieldsMap, state.getLocale());
         }
         return null;
     }
 
     private Entity createNewOrderPrint(final Set<Entity> orders, final String plugin, final String entityName,
-            final String detailEntityName, final Map<String, Object> entityFieldsMap, final Locale locale) {
+            final Map<String, Object> entityFieldsMap, final Locale locale) {
 
         DataDefinition data = dataDefinitionService.get(plugin, entityName);
 
@@ -113,6 +108,7 @@ public class OrderReportService {
         materialReq.setField("generated", true);
         materialReq.setField("worker", securityService.getCurrentUserName());
         materialReq.setField("date", new Date());
+        materialReq.setField("orders", orders);
         if (entityFieldsMap != null) {
             for (Map.Entry<String, Object> entityFieldsMapEntry : entityFieldsMap.entrySet()) {
                 materialReq.setField(entityFieldsMapEntry.getKey(), entityFieldsMapEntry.getValue());
@@ -120,18 +116,6 @@ public class OrderReportService {
         }
 
         Entity saved = data.save(materialReq);
-
-        if (detailEntityName == null) {
-            return saved;
-        }
-        
-        for (Entity order : orders) {
-            Entity materialReqComponent = dataDefinitionService.get(plugin, detailEntityName).create();
-            materialReqComponent.setField("order", order);
-            materialReqComponent.setField(entityName, saved);
-            dataDefinitionService.get(plugin, detailEntityName).save(materialReqComponent);
-        }
-        saved = data.get(saved.getId());
 
         return saved;
     }

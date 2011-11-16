@@ -253,6 +253,7 @@ public class SamplesLoaderModule extends Module {
         } else if ("products".equals(type)) {
             addProduct(values);
         } else if ("orders".equals(type)) {
+            prepareTechnologiesForOrder(values);
             addOrder(values);
         } else if ("technologies".equals(type)) {
             addTechnology(values);
@@ -611,6 +612,12 @@ public class SamplesLoaderModule extends Module {
         }
     }
 
+    private void prepareTechnologiesForOrder(final Map<String, String> values) {
+        Entity technology = getTechnologyByNumber(values.get("tech_nr"));
+        technology.setField("state", "accepted");
+        technology.getDataDefinition().save(technology);
+    }
+    
     private void addOrder(final Map<String, String> values) {
         long startDate = System.currentTimeMillis() + MILLIS_IN_DAY * (RANDOM.nextInt(50) - 25);
 
@@ -670,7 +677,7 @@ public class SamplesLoaderModule extends Module {
 
         order = dataDefinitionService.get("orders", "order").save(order);
         if (!order.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
+            throw new IllegalStateException("Saved entity have validation errors - " + order.getErrors().toString());
         }
     }
 
@@ -692,6 +699,7 @@ public class SamplesLoaderModule extends Module {
             technology.setField("postFeatureRequired", false);
             technology.setField("otherFeatureRequired", false);
             technology.setField("shiftFeatureRequired", false);
+            technology.setField("state", "draft");
             if (!values.get("minimal").isEmpty()) {
                 technology.setField("minimalQuantity", values.get("minimal"));
             }

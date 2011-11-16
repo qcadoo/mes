@@ -39,6 +39,8 @@ public interface TechnologiesConstants {
     public static final String MODEL_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
     
     public static final String MODEL_OPERATION_NUMBER_FIELD_NAME = "number";
+    
+    public static final String MODEL_LOGGING = "logging";
 
     // VIEW
     public static final String VIEW_OPERATION_DETAILS = "operationDetails";

@@ -24,22 +24,116 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="technologiesList"
-	modelName="technology"
-	menuAccessible="true">
-	
-	<component type="window" name="window">
+	name="technologiesList" modelName="technology" menuAccessible="true">
+
+	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardGridTemplate" />
+			<group name="status">
+				<smallButton name="acceptTechnology" icon="startIcon16.png"
+					state="disabled" action="#{grid}.changeTechnologyState(acceptTechnology)" />
+				<smallButton name="cancelTechnology" icon="deleteIcon16.png"
+					state="disabled" action="#{grid}.changeTechnologyState(cancelTechnology)" />
+			</group>
 		</ribbon>
+
 		<component type="grid" name="technologies" reference="grid">
+			<script>
+						<![CDATA[
+									this.addOnChangeListener({
+										onChange: function(selectedEntitiesArray) {
+											if (!selectedEntitiesArray) {
+												return;
+											}
+											updateRibbon(selectedEntitiesArray);
+										}
+									});
+									
+									this.changeTechnologyState = function(eventPerformer, ribbonItemName, entityId) {
+										var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
+										var newState = ribbonItem.forState;
+										if (window.confirm(ribbonItem.confirmMessage)) {
+											if (window.canClose()) {
+												#{grid}.fireEvent(eventPerformer, 'changeSelectedTechnologyState', [newState]);
+											}
+										}
+									}
+									
+									/*function toggleEditable(state) {
+										var enabled = state == "draft";
+										#{window}.setEnabled(enabled, true);
+										
+										var toggleRibbonItems = [ "actions.delete", "statuses.activate", "statuses.deactivate" ];
+										for (var i in toggleRibbonItems) {
+											var ribbonItemName = toggleRibbonItems[i];
+											QCD.info(i);
+											QCD.info(toggleRibbonItems);
+											QCD.info(ribbonItemName);
+											var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
+											
+											if (!ribbonItem) {
+												continue;
+											}
+											
+											if (enabled) {
+												ribbonItem.enable();
+											} else {
+												ribbonItem.disable("#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}");
+											}
+										}
+										if (state == "declined" || state == "outdated") {
+											#{window}.getRibbonItem("actions.delete").enable();
+										}
+									}*/
+									
+									function updateRibbon(selectedEntitiesArray) {
+										var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
+										var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
+										
+										acceptState.disable();
+										acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
+										acceptState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.acceptTechnology)}");
+										cancelState.disable();
+										
+										if (selectedEntitiesArray.length != 1) {
+											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.cancelTechnology)}");
+											return;
+										}
+										
+										var state = selectedEntitiesArray[0].fields.state
+										
+										acceptState.forState="accepted";
+										cancelState.forState="declined";
+										cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.declined)}";
+										cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.declineTechnology)}");
+											
+										if (state == "draft") {
+											acceptState.enable();
+											cancelState.enable();
+										} else if (state == "accepted") {
+											cancelState.enable();
+											cancelState.forState="outdated";
+											cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
+											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
+										} else if (state == "declined") {
+										} else if (state == "outdated") {
+											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
+										} else {
+											cancelState.enable();
+										}
+									}
+						]]>
+			</script>
+			<listener event="changeSelectedTechnologyState" class="com.qcadoo.mes.technologies.states.TechnologyStateService" method="changeSelectedTechnologyState" />
+			
 			<option type="column" name="number" fields="number" link="true"
 				width="50" />
 			<option type="column" name="name" fields="name" link="true" />
 			<option type="column" name="product" fields="product"
 				expression="#product['name']" />
+			<option type="column" name="state" fields="state" />
 			<option type="order" column="number" direction="desc" />
 			<option type="correspondingView" value="technologies/technologyDetails" />
 			<option type="correspondingComponent" value="form" />
