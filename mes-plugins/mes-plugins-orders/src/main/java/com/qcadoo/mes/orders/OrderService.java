@@ -38,6 +38,7 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -451,6 +452,18 @@ public final class OrderService {
         } catch (ParseException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
+    }
+    
+    public boolean checkChosenTechnologyState(final DataDefinition orderDD, final Entity order) {
+        Entity technology = order.getBelongsToField("technology");
+        TechnologyState technologyState = TechnologyState.valueOf(technology.getStringField("state").toUpperCase());
+        
+        if (TechnologyState.ACCEPTED != technologyState) {
+            order.addError(orderDD.getField("technology"), "orders.validate.technology.error.wrongState");
+            return false;
+        }
+        
+        return true;
     }
 
 }

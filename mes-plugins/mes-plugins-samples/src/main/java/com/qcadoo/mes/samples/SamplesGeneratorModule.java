@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
@@ -76,10 +77,6 @@ public class SamplesGeneratorModule extends Module {
     private static final String[] acceptableTechnologyComponentQuantityAlgorithm = { "01perProductOut", "02perTechnology" };
 
     private static final Random RANDOM = new Random();
-
-    private static final Calendar CALENDAR = Calendar.getInstance();
-
-    private static final SimpleDateFormat HOURFORMAT = new SimpleDateFormat("HH:mm");
 
     @Autowired
     private PluginAccessor pluginAccessor;
@@ -301,12 +298,11 @@ public class SamplesGeneratorModule extends Module {
                 stringError.append("\t").append(key).append("  -  ").append(errors.get(key).getMessage()).append("\n");
             }
             Map<String, Object> fields = entity.getFields();
-            Set<String> keyz = fields.keySet();
-            for (String s : keyz) {
-                if (fields.get(s) == null) {
+            for (Entry<String, Object> entry : fields.entrySet()) {
+                if (entry.getValue() == null) {
                     stringError.append("\t\t");
                 }
-                stringError.append(s).append(" - ").append(fields.get(s)).append("\n");
+                stringError.append(entry.getKey()).append(" - ").append(entry.getValue()).append("\n");
             }
             throw new IllegalStateException("Saved entity is invalid\n" + stringError.toString());
         }
@@ -560,22 +556,25 @@ public class SamplesGeneratorModule extends Module {
     }
 
     private String generateWorkingHours() {
-        CALENDAR.set(Calendar.HOUR_OF_DAY, 8);
-        CALENDAR.set(Calendar.MINUTE, 0);
-        CALENDAR.set(Calendar.SECOND, 0);
-        long minHours = CALENDAR.getTimeInMillis();
+        Calendar calendar = Calendar.getInstance();
 
-        CALENDAR.set(Calendar.HOUR_OF_DAY, 20);
-        CALENDAR.set(Calendar.MINUTE, 0);
-        CALENDAR.set(Calendar.SECOND, 0);
-        long maxHours = CALENDAR.getTimeInMillis();
+        calendar.set(Calendar.HOUR_OF_DAY, 8);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        long minHours = calendar.getTimeInMillis();
+
+        calendar.set(Calendar.HOUR_OF_DAY, 20);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        long maxHours = calendar.getTimeInMillis();
         long workBeginHours = (long) (RANDOM.nextDouble() * (maxHours / 2 - minHours) + minHours);
         long workEndHours = (long) (RANDOM.nextDouble() * (maxHours - workBeginHours) + workBeginHours);
 
         Date workBeginDate = new Date(workBeginHours);
         Date workEndDate = new Date(workEndHours);
         StringBuilder workingHours = new StringBuilder();
-        workingHours.append(HOURFORMAT.format(workBeginDate)).append("-").append(HOURFORMAT.format(workEndDate));
+        SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
+        workingHours.append(hourFormat.format(workBeginDate)).append("-").append(hourFormat.format(workEndDate));
         return workingHours.toString();
     }
 

@@ -107,19 +107,24 @@ public class OrderReportService {
 
         DataDefinition data = dataDefinitionService.get(plugin, entityName);
 
-        Entity materialReq = data.create();
+        Entity entity = data.create();
 
-        materialReq.setField("name", generateOrderPrintName(orders, locale));
-        materialReq.setField("generated", true);
-        materialReq.setField("worker", securityService.getCurrentUserName());
-        materialReq.setField("date", new Date());
+        entity.setField("name", generateOrderPrintName(orders, locale));
+        entity.setField("generated", true);
+        entity.setField("worker", securityService.getCurrentUserName());
+        entity.setField("date", new Date());
+        
+        if (data.getField("orders") != null) {
+            entity.setField("orders", orders);
+        }
+        
         if (entityFieldsMap != null) {
             for (Map.Entry<String, Object> entityFieldsMapEntry : entityFieldsMap.entrySet()) {
-                materialReq.setField(entityFieldsMapEntry.getKey(), entityFieldsMapEntry.getValue());
+                entity.setField(entityFieldsMapEntry.getKey(), entityFieldsMapEntry.getValue());
             }
         }
 
-        Entity saved = data.save(materialReq);
+        Entity saved = data.save(entity);
 
         if (detailEntityName == null) {
             return saved;

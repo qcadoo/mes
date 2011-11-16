@@ -45,6 +45,10 @@
 			joinField="technology" cascade="delete" copyable="true" />
 		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology"
 			default="01perProductOut" required="true" />
+			
+		<enum name="state" values="draft,accepted,declined,outdated"
+			default="draft" required="true" />
+		<hasMany name="loggings" joinField="technology" model="logging" cascade="delete" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
@@ -59,6 +63,7 @@
 			method="setFirstTechnologyAsDefault" />
 		<onUpdate class="com.qcadoo.mes.technologies.TechnologyService"
 			method="performTreeNumbering" />
+		<onSave class="com.qcadoo.mes.technologies.states.TechnologyStatesHook" method="onSave" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

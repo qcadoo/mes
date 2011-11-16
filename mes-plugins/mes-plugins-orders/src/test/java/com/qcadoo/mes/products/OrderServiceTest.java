@@ -56,6 +56,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
@@ -68,9 +69,11 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -79,6 +82,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -102,10 +106,6 @@ public class OrderServiceTest {
 
     private OrderService orderService;
 
-    private PluginAccessor pluginAccessor;
-
-    private SecurityService securityService;
-
     private DataDefinitionService dataDefinitionService;
 
     private TranslationService translationService;
@@ -114,11 +114,9 @@ public class OrderServiceTest {
 
     @Before
     public void init() {
-        securityService = mock(SecurityService.class);
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         translationService = mock(TranslationService.class);
         numberGeneratorService = mock(NumberGeneratorService.class);
-        pluginAccessor = mock(PluginAccessor.class);
         ExpressionService expressionService = mock(ExpressionService.class);
         orderService = new OrderService();
         setField(orderService, "dataDefinitionService", dataDefinitionService);
@@ -1157,7 +1155,7 @@ public class OrderServiceTest {
         // then
         assertTrue(results);
     }
-
+    
     private boolean callCheckRequiredBatch(final Entity order) throws NoSuchMethodException, IllegalAccessException,
             InvocationTargetException {
         Method method = OrderService.class.getDeclaredMethod("checkRequiredBatch", Entity.class);
