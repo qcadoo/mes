@@ -29,11 +29,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class OrderStatesChangingService {
+
+    @Autowired
+    TranslationService translationService;
 
     @Autowired
     OrderStateValidationService orderStateValidationService;
