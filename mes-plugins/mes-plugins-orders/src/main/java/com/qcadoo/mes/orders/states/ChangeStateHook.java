@@ -83,7 +83,7 @@ public class ChangeStateHook {
                                 .addError(dataDefinition.getField(error.getReferenceToField()), translationService.translate(
                                         error.getMessage() + "." + error.getReferenceToField(), getLocale()));
                     } else {
-                        newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale()));
+                        newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale(), error.getVars()));
                     }
                 }
             }
@@ -98,9 +98,9 @@ public class ChangeStateHook {
             for (ChangeOrderStateMessage error : errors) {
                 if (error.getReferenceToField() != null) {
                     newEntity.addError(dataDefinition.getField(error.getReferenceToField()),
-                            translationService.translate(error.getMessage() + "." + error.getReferenceToField(), getLocale()));
+                            translationService.translate(error.getMessage() + "." + error.getReferenceToField(), getLocale(), error.getVars()));
                 } else {
-                    newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale()));
+                    newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale(), error.getVars()));
                 }
             }
             return;
