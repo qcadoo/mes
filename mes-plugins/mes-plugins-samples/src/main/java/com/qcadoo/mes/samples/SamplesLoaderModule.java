@@ -198,7 +198,7 @@ public class SamplesLoaderModule extends Module {
     }
 
     private void checkLocale() {
-        if (locale.equals("default")) {
+        if ("default".equals(locale)) {
             locale = Locale.getDefault().toString().substring(0, 2);
         }
 
@@ -617,7 +617,7 @@ public class SamplesLoaderModule extends Module {
         technology.setField("state", "accepted");
         technology.getDataDefinition().save(technology);
     }
-    
+
     private void addOrder(final Map<String, String> values) {
         long startDate = System.currentTimeMillis() + MILLIS_IN_DAY * (RANDOM.nextInt(50) - 25);
 
@@ -945,7 +945,7 @@ public class SamplesLoaderModule extends Module {
         }
 
         requirement.setField("orders", Lists.newArrayList(getRandomOrder(), getRandomOrder(), getRandomOrder()));
-        
+
         requirement = dataDefinitionService.get("materialRequirements", "materialRequirement").save(requirement);
         if (!requirement.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
@@ -1008,7 +1008,8 @@ public class SamplesLoaderModule extends Module {
     }
 
     private Entity getTechnologyByNumber(final String number) {
-        return dataDefinitionService.get("technologies", "technology").find().add(SearchRestrictions.eq("number", number)).setMaxResults(1).uniqueResult();
+        return dataDefinitionService.get("technologies", "technology").find().add(SearchRestrictions.eq("number", number))
+                .setMaxResults(1).uniqueResult();
     }
 
     private Entity getDefaultTechnologyForProduct(final Entity product) {

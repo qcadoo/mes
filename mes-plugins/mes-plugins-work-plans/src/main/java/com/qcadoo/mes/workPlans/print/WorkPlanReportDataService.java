@@ -157,7 +157,7 @@ public class WorkPlanReportDataService {
             final Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry,
             final Locale locale, final String type) {
         Paragraph title = new Paragraph();
-        if (type.equals("machine")) {
+        if ("machine".equals(type)) {
             Entity machine = entry.getKey();
             title.add(new Phrase(translationService.translate("workPlans.workPlan.report.paragrah3", locale), PdfUtil
                     .getArialBold11Light()));
@@ -166,7 +166,7 @@ public class WorkPlanReportDataService {
                 name = machine.getField("name").toString();
             }
             title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
-        } else if (type.equals("worker")) {
+        } else if ("worker".equals(type)) {
             Entity staff = entry.getKey();
             title.add(new Phrase(translationService.translate("workPlans.workPlan.report.paragrah2", locale), PdfUtil
                     .getArialBold11Light()));
@@ -175,7 +175,7 @@ public class WorkPlanReportDataService {
                 name = staff.getField("name") + " " + staff.getField("surname");
             }
             title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
-        } else if (type.equals("product")) {
+        } else if ("product".equals(type)) {
             Entity product = entry.getKey();
             title.add(new Phrase(translationService.translate("workPlans.workPlan.report.paragrah4", locale), PdfUtil
                     .getArialBold11Light()));
@@ -227,18 +227,6 @@ public class WorkPlanReportDataService {
             table.addCell(new Phrase(D_F.format((Date) order.getField("dateTo")), PdfUtil.getArialRegular9Dark()));
         }
     }
-
-    /*
-     * @SuppressWarnings({ "unused" }) private Image generateBarcode(final String code) throws BadElementException { Code128Bean
-     * codeBean = new Code128Bean(); final int dpi = 150; codeBean.setModuleWidth(UnitConv.in2mm(1.0f / dpi));
-     * codeBean.doQuietZone(false); codeBean.setHeight(8); codeBean.setFontSize(0.0); ByteArrayOutputStream out = new
-     * ByteArrayOutputStream(); try { BitmapCanvasProvider canvas = new BitmapCanvasProvider(out, "image/x-png", dpi,
-     * BufferedImage.TYPE_BYTE_BINARY, false, 0); codeBean.generateBarcode(canvas, code); canvas.finish(); } catch (IOException e)
-     * { LOG.error(e.getMessage(), e); } finally { try { out.close(); } catch (IOException e) { LOG.error(e.getMessage(), e); } }
-     * try { Image image = Image.getInstance(out.toByteArray()); image.setAlignment(Image.RIGHT); return image; } catch
-     * (MalformedURLException e) { LOG.error(e.getMessage(), e); } catch (IOException e) { LOG.error(e.getMessage(), e); } return
-     * null; }
-     */
 
     private List<String> prepareOrderHeader(final Document document, final Entity entity, final Locale locale)
             throws DocumentException {

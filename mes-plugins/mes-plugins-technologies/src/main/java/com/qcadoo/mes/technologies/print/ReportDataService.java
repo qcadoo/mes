@@ -130,7 +130,7 @@ public class ReportDataService {
             final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations,
             final String type, final Entity order, final BigDecimal plannedQuantity, Entity technology) {
         Entity entityKey = null;
-        if (type.equals("product")) {
+        if ("product".equals(type)) {
             Entity product = (Entity) order.getField("product");
             entityKey = product;
         }
@@ -139,14 +139,14 @@ public class ReportDataService {
             if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
                 Entity operation = (Entity) operationComponent.getField("operation");
 
-                if (type.equals("machine")) {
+                if ("machine".equals(type)) {
                     Object machine = operation.getField("machine");
                     if (machine != null) {
                         entityKey = (Entity) machine;
                     } else {
                         entityKey = null;
                     }
-                } else if (type.equals("worker")) {
+                } else if ("worker".equals(type)) {
                     Object worker = operation.getField("staff");
                     if (worker != null) {
                         entityKey = (Entity) worker;
@@ -205,17 +205,17 @@ public class ReportDataService {
                 return false;
             }
 
-            if (type.equals("product")) {
+            if ("product".equals(type)) {
                 Entity product = (Entity) order.getField("product");
                 entityKey = product;
-            } else if (type.equals("machine")) {
+            } else if ("machine".equals(type)) {
                 Object machine = operation.getField("machine");
                 if (machine != null) {
                     entityKey = (Entity) machine;
                 } else {
                     entityKey = null;
                 }
-            } else if (type.equals("worker")) {
+            } else if ("worker".equals(type)) {
                 Object worker = operation.getField("staff");
                 if (worker != null) {
                     entityKey = (Entity) worker;

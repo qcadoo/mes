@@ -29,7 +29,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.Entity;
 
@@ -37,12 +36,9 @@ import com.qcadoo.model.api.Entity;
 public class OrderStatesChangingService {
 
     @Autowired
-    TranslationService translationService;
-
-    @Autowired
     OrderStateValidationService orderStateValidationService;
 
-    private List<OrderStateListener> listeners = new LinkedList<OrderStateListener>();
+    private final List<OrderStateListener> listeners = new LinkedList<OrderStateListener>();
 
     public void addOrderStateListener(OrderStateListener listener) {
         listeners.add(listener);

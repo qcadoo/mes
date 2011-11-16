@@ -27,6 +27,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Maps.newLinkedHashMap;
 import static com.qcadoo.model.api.types.TreeType.NODE_NUMBER_FIELD;
+import static java.lang.Long.valueOf;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
 
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
-        Entity technology = technologyDD.get(new Long(model.get("id").toString()));
+        Entity technology = technologyDD.get(valueOf((model.get("id").toString())));
 
         Map<String, String> panelTableValues = newLinkedHashMap();
         panelTableValues.put("name", technology.getStringField("name"));
@@ -135,9 +136,11 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                 table.addCell(new Phrase(nodeNumber, PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(operationName, PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(getTranslationService().translate(productType, locale), PdfUtil.getArialRegular9Dark()));
-                table.addCell(new Phrase(product.getBelongsToField("product").getStringField("name"), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(product.getBelongsToField("product").getStringField("name"), PdfUtil
+                        .getArialRegular9Dark()));
                 table.addCell(new Phrase(product.getField("quantity").toString(), PdfUtil.getArialRegular9Dark()));
-                table.addCell(new Phrase(product.getBelongsToField("product").getStringField("unit"), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(product.getBelongsToField("product").getStringField("unit"), PdfUtil
+                        .getArialRegular9Dark()));
             }
         }
 

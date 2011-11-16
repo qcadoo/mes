@@ -204,7 +204,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         addTableCellAsTable(
                 panelTable,
                 getTranslationService().translate("productionCounting.productionCounting.report.panel.recordType", locale),
-                (Boolean) productionRecord.getField("lastRecord") == false ? getTranslationService().translate(
+                !(Boolean) productionRecord.getField("lastRecord") ? getTranslationService().translate(
                         "productionCounting.productionCounting.report.panel.recordType.partial", locale)
                         : getTranslationService().translate(
                                 "productionCounting.productionCounting.report.panel.recordType.final", locale), null,

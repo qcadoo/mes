@@ -35,7 +35,6 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordOperationComparator;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
@@ -56,9 +55,6 @@ public class ProductionBalanceViewService {
 
     @Autowired
     private TranslationService translationService;
-
-    @Autowired
-    private ProductionBalancePdfService productionBalancePdfService;
 
     @Autowired
     private ProductionBalanceReportDataService productionBalanceReportDataService;

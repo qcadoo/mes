@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.basic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -394,7 +395,12 @@ public class ShiftsServiceImpl implements ShiftsService {
         }
     }
 
-    public static class ShiftHoursComparator implements Comparator<ShiftHour> {
+    public static class ShiftHoursComparator implements Comparator<ShiftHour>, Serializable {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -3204783429616635555L;
 
         @Override
         public int compare(final ShiftHour o1, final ShiftHour o2) {
@@ -416,23 +422,23 @@ public class ShiftsServiceImpl implements ShiftsService {
         private final Date dateFrom;
 
         public ShiftHour(final Date dateFrom, final Date dateTo) {
-            this.dateFrom = dateFrom;
+            this.dateFrom = new Date(dateFrom.getTime());
             if (dateFrom.after(dateTo)) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(dateTo);
                 cal.add(Calendar.DATE, 1);
                 this.dateTo = cal.getTime();
             } else {
-                this.dateTo = dateTo;
+                this.dateTo = new Date(dateTo.getTime());
             }
         }
 
         public Date getDateTo() {
-            return dateTo;
+            return new Date(dateTo.getTime());
         }
 
         public Date getDateFrom() {
-            return dateFrom;
+            return new Date(dateFrom.getTime());
         }
 
         @Override

@@ -418,7 +418,7 @@ public class MaterialFlowService {
 
         Entity transfer = dataDefinitionService
                 .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFER)
-                .find("where number = '" + number.toString() + "'").uniqueResult();
+                .find("where number = '" + number + "'").uniqueResult();
 
         if (transfer == null) {
             return;

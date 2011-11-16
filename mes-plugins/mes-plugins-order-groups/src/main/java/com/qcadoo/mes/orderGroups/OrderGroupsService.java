@@ -254,7 +254,7 @@ public class OrderGroupsService {
 
         String confirmText = translationService.translate("orderGroups.popup.confirm.confirmOrderTransferText",
                 viewDefinitionState.getLocale());
-        textarea.setFieldValue(confirmText.toString() + "\n\n" + confirmTextBuilder.toString());
+        textarea.setFieldValue(confirmText + "\n\n" + confirmTextBuilder.toString());
     }
 
     /* ****** VALIDATORS ****** */
