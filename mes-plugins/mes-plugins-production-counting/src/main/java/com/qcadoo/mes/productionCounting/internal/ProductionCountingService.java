@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -95,8 +95,9 @@ public class ProductionCountingService {
         } else {
             Entity productionCounting = dataDefinitionService.get(plugin, entityName).get(form.getEntityId());
 
-            if (productionCounting.getField("generated") == null)
+            if (productionCounting.getField("generated") == null) {
                 productionCounting.setField("generated", "0");
+            }
 
             if ("1".equals(productionCounting.getField("generated"))) {
                 generateButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");

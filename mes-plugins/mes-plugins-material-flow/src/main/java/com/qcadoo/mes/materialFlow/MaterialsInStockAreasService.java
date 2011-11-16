@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -110,8 +110,9 @@ public class MaterialsInStockAreasService {
             Entity materialsInStockAreasEntity = dataDefinitionService.get(plugin, entityName).get(form.getEntityId());
             List<Entity> stockAreaComponents = (List<Entity>) materialsInStockAreasEntity.getField("stockAreas");
 
-            if (materialsInStockAreasEntity.getField("generated") == null)
+            if (materialsInStockAreasEntity.getField("generated") == null) {
                 materialsInStockAreasEntity.setField("generated", "0");
+            }
 
             if (stockAreaComponents.size() == 0) {
                 generateButton.setMessage("materialFlow.ribbon.message.noStockAreas");

@@ -52,7 +52,7 @@ public class TechnologyStateChangeListener implements StateChangeListener {
         SearchCriteriaBuilder searchCriteria = getOrderDataDefinition().find();
         searchCriteria.add(SearchRestrictions.belongsTo("technology", technology));
         searchCriteria.add(SearchRestrictions.in("state",
-                Lists.newArrayList("02accepted", "03inProgress", "05declined", "06interrupted")));
+                Lists.newArrayList("02accepted", "03inProgress", "06interrupted")));
         searchCriteria.setMaxResults(1);
         return searchCriteria.uniqueResult() != null;
     }

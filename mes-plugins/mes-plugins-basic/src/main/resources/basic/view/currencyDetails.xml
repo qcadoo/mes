@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.9
+    Version: 0.4.10
 
     This file is part of Qcadoo.
 
@@ -24,34 +24,18 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="currencyDetails" 
-	modelName="currency"
-	menuAccessible="true"
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd" 
+	plugin="basic"
+	view="parameters"
 	>
 	
-	<component type="window" name="window">
-		<ribbon>
-			<group name="navigation">
-			     <bigButton name="select" icon="acceptIcon24.png" >
-			         <script>
-			             <![CDATA[
-			                 this.addOnChangeListener({
-			                     onClick: function() {
-		                             #{form}.fireEvent(this, 'activateSelectedCurrency');
-			                     }
-			                 });
-			             ]]>
-			         </script>
-			     </bigButton>
-			</group>
-		</ribbon>
-		<component type="form" name="currency" reference="form">
+	<windowTab name="currencyTab" reference="currencyTab">
+		<component type="form" name="currencyForm" reference="currencyForm">
 			<component type="gridLayout" name="gridLayout" columns="2"
 				rows="1" hasBorders="false">
 				<layoutElement column="1" row="1">
-					<component type="lookup" name="currency" reference="currency">
+					<component type="lookup" name="currency" field="#{form}.currency" reference="currency">
 						<option type="column" name="currency" fields="currency" link="true" />
 						<option type="required" value="true" />
 						<option type="searchable" value="currency,alphabeticCode" />
@@ -61,12 +45,8 @@
 					</component>
 				</layoutElement>
 			</component>
-			<listener event="activateSelectedCurrency" class="com.qcadoo.mes.basic.CurrencyViewService" method="activateSelectedCurrency" />
 		</component>
-			<option type="header" value="false" />
-		
-	</component>
-	<hooks>
-		<beforeRender class="com.qcadoo.mes.basic.CurrencyViewService" method="applyCurrentCurrency" />
-	</hooks>
-</view>
+		<option type="header" value="false" />
+	</windowTab>
+	
+</windowTabExtension>

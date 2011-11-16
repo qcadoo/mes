@@ -1,3 +1,28 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.4.10
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="basicProductionCountingList" modelName="order" modelPlugin="orders">
@@ -10,7 +35,7 @@
 			<group template="navigation" />
 		</ribbon>
 		<component type="form" name="order" reference="order"/>
-		
+		<component type="form" name="basicProductionCounting" reference="form">
 			<component type="grid" name="countingList" reference="grid"
 				source="#{order}.basicProductionCountings">
 				<option type="column" name="productNumber" fields="product"
@@ -20,8 +45,8 @@
 				<option type="column" name="plannedQuantity" fields="plannedQuantity" />
 				<option type="column" name="producedQuantity" fields="producedQuantity" />
 				<option type="column" name="usedQuantity" fields="usedQuantity" />
-				<option type="column" name="productType" expression="#product['typeOfMaterial']"/>
-				<option type="order" column="productNumber" direction="asc" />
+				<option type="column" name="productType" expression="#product['typeOfMaterial']" hidden="true"/>
+				<option type="order" column="productType" direction="desc" />
 				<option type="correspondingView"
 					value="basicProductionCounting/basicProductionCountingDetails" />
 				<option type="correspondingComponent" value="form" />
@@ -29,9 +54,14 @@
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
 			</component>
+			</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
+		
 	</component>
 	<hooks>
+	<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
+			method="setUneditableGridWhenOrderTypeRecordingIsBasic" />
 	</hooks>
 </view>

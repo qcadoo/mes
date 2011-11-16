@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -61,6 +62,9 @@ public class CostNormsForProductService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     /* ****** VIEW HOOKS ******* */
 
@@ -143,7 +147,7 @@ public class CostNormsForProductService {
             products.add(productInComponent.getBelongsToField("product"));
         }
         for (Entity product : products) {
-            if (product.getStringField("typeOfMaterial").equals("01component")
+            if (technologyService.getProductType(product, technology).equals(TechnologyService.COMPONENT)
                     && (product.getField("costForNumber") == null || product.getField("nominalCost") == null
                             || product.getField("lastPurchaseCost") == null || product.getField("averageCost") == null)) {
                 form.addMessage(translationService.translate(

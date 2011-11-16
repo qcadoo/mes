@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -43,8 +43,10 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
@@ -54,12 +56,13 @@ public class ParameterizedProductsCostCalculationServiceTest {
 
     private ProductsCostCalculationService productCostCalc;
 
+    private TechnologyService technologyService;
+
     private Entity costCalculation;
 
     private ProductsCostCalculationConstants calculationMode;
 
-    private BigDecimal averageCost, lastPurchaseCost, nominalCost, inputQuantity,
-            orderQuantity, expectedResult;
+    private BigDecimal averageCost, lastPurchaseCost, nominalCost, inputQuantity, orderQuantity, expectedResult;
 
     private BigDecimal costForNumber;
 
@@ -93,7 +96,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
 
     @Before
     public void init() {
-        productCostCalc = new ProductsCostCalculationServiceImpl();
+        technologyService = mock(TechnologyService.class);
 
         costCalculation = mock(Entity.class);
         EntityTree operationComponents = mock(EntityTree.class);
@@ -103,12 +106,17 @@ public class ParameterizedProductsCostCalculationServiceTest {
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
 
+        productCostCalc = new ProductsCostCalculationServiceImpl();
+
+        ReflectionTestUtils.setField(productCostCalc, "technologyService", technologyService);
+
+        when(technologyService.getProductType(product, technology)).thenReturn(TechnologyService.COMPONENT);
+
         when(costCalculation.getField("quantity")).thenReturn(orderQuantity);
         when(costCalculation.getBelongsToField("technology")).thenReturn(technology);
         when(technology.getTreeField("operationComponents")).thenReturn(operationComponents);
         when(costCalculation.getField("calculateMaterialCostsMode")).thenReturn(calculationMode);
 
-        
         @SuppressWarnings("unchecked")
         Iterator<Entity> operationComponentsIterator = mock(Iterator.class);
         when(operationComponentsIterator.hasNext()).thenReturn(true, false);
@@ -152,7 +160,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
     public void testShouldReturnExceptionWhenQuantityIsNull() throws Exception {
         // given
         when(costCalculation.getField("quantity")).thenReturn(null);
-        
+
         // when
         productCostCalc.calculateProductsCost(costCalculation);
     }

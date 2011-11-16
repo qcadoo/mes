@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.9
+    Version: 0.4.10
 
     This file is part of Qcadoo.
 
@@ -174,9 +174,16 @@
 			</component>
 		</windowTab>
 		<windowTab name="treeTab">
-			<component type="gridLayout" name="gridsLayout" columns="2" rows="7" hasBorders="false">
-					<layoutElement column="1" row="1" height="7">
-						<component type="tree" name="technologyTree" reference="technologyTree" field="#{form}.operationComponents">
+				<component type="gridLayout" name="gridsLayout" columns="2"
+					rows="8" hasBorders="false">
+					<layoutElement column="1" row="1" height="1">
+						<component type="label" name="description">
+							<option type="labelStyle" value="text" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2" height="7">
+						<component type="tree" name="technologyTree" reference="technologyTree"
+							field="#{form}.operationComponents">
 							<dataType name="operation">
 								<option type="nodeLabelExpression" value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
 								<option type="correspondingView" value="technologies/technologyOperationComponentDetails" />
@@ -198,10 +205,13 @@
 							<listener event="select" class="com.qcadoo.mes.technologies.TechnologyService" method="loadProductsForReferencedTechnology" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="1" height="3">
-						<component type="grid" name="outProducts" reference="outProducts" source="#{technologyTree}.operationProductOutComponents">
-							<option type="column" name="number" fields="product" expression="#product['number']" link="true" />
-							<option type="column" name="name" fields="product" expression="#product['name']" link="true" />
+					<layoutElement column="2" row="1" height="4">
+						<component type="grid" name="outProducts" reference="outProducts"
+							source="#{technologyTree}.operationProductOutComponents">
+							<option type="column" name="number" fields="product"
+								expression="#product['number']" link="true" />
+							<option type="column" name="name" fields="product"
+								expression="#product['name']" link="true" />
 							<option type="column" name="quantity" fields="quantity" />
 							<option type="column" name="unit" fields="product" expression="#product['unit']" link="false" width="70" />
 							<option type="order" column="number" direction="desc" />
@@ -215,12 +225,17 @@
 							<option type="multiselect" value="true" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="4" height="4">
-						<component type="grid" name="inProducts" reference="inProducts" source="#{technologyTree}.operationProductInComponents">
-							<option type="column" name="number" fields="product" expression="#product['number']" link="true" width="100" />
-							<option type="column" name="name" fields="product" expression="#product['name']" link="true" width="200" />
-							<option type="column" name="quantity" fields="quantity" width="100" />
-							<option type="column" name="unit" fields="product" expression="#product['unit']" link="false" width="70" />
+					<layoutElement column="2" row="5" height="4">
+						<component type="grid" name="inProducts" reference="inProducts"
+							source="#{technologyTree}.operationProductInComponents">
+							<option type="column" name="number" fields="product"
+								expression="#product['number']" link="true" width="100" />
+							<option type="column" name="name" fields="product"
+								expression="#product['name']" link="true" width="200" />
+							<option type="column" name="quantity" fields="quantity"
+								width="100" />
+							<option type="column" name="unit" fields="product"
+								expression="#product['unit']" link="false" width="70" />
 							<option type="order" column="number" direction="desc" />
 							<option type="correspondingView" value="technologies/operationProductInComponentDetails" />
 							<option type="correspondingComponent" value="form" />

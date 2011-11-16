@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -50,6 +50,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -63,6 +64,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     private final static Logger LOG = LoggerFactory.getLogger(OperationsCostCalculationServiceImpl.class);
 
@@ -163,10 +167,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         }
 
         EntityList outProductsTree = givenTechnologyOperation.getHasManyField("operationProductOutComponents");
-        String typeOfMaterial;
+        Entity technology = givenTechnologyOperation.getBelongsToField("technology");
         for (Entity outProduct : outProductsTree) {
-            typeOfMaterial = outProduct.getBelongsToField("product").getField("typeOfMaterial").toString();
-            if (!("04waste".equals(typeOfMaterial))) {
+            Entity product = outProduct.getBelongsToField("product");
+            if (!(technologyService.getProductType(product, technology).equals(TechnologyService.WASTE))) {
                 return getBigDecimal(outProduct.getField("quantity"));
             }
         }

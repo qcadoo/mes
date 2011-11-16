@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.9
+    Version: 0.4.10
 
     This file is part of Qcadoo.
 
@@ -33,6 +33,7 @@
        http://www.springframework.org/schema/context 
        http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 	
+	<context:property-placeholder location="classpath*:samples.properties" ignore-resource-not-found="true" ignore-unresolvable="true" order="-1"/>
 	<context:component-scan base-package="com.qcadoo.mes.samples" />
 
 </beans>

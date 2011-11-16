@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -53,6 +53,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class ProductionCountingPdfService extends PdfDocumentService {
@@ -62,6 +63,9 @@ public class ProductionCountingPdfService extends PdfDocumentService {
 
     @Autowired
     SecurityService securityService;
+
+    @Autowired
+    TimeConverterService timeConverterService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity productionCounting, final Locale locale)
@@ -227,7 +231,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                         panelTable,
                         getTranslationService().translate(
                                 "productionCounting.productionCounting.report.panel.machineOperationTime", locale),
-                        convertTimeToString(new BigDecimal((Integer) productionRecord.getField("machineTime"))), null,
+                        timeConverterService.convertTimeToString((Integer) productionRecord.getField("machineTime")), null,
                         PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
             } else {
                 addTableCellAsTable(
@@ -244,8 +248,8 @@ public class ProductionCountingPdfService extends PdfDocumentService {
             addTableCellAsTable(
                     panelTable,
                     getTranslationService().translate("productionCounting.productionCounting.report.panel.laborOperationTime",
-                            locale), convertTimeToString(new BigDecimal((Integer) productionRecord.getField("laborTime"))), null,
-                    PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+                            locale), timeConverterService.convertTimeToString((Integer) productionRecord.getField("laborTime")),
+                    null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
         } else {
             addTableCellAsTable(
                     panelTable,
@@ -255,10 +259,13 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         panelTable.setSpacingBefore(10);
         document.add(panelTable);
 
-        if ((Boolean) productionRecord.getBelongsToField("order").getField("registerQuantityInProduct"))
+        if ((Boolean) productionRecord.getBelongsToField("order").getField("registerQuantityInProduct")) {
             addInputProducts(document, productionRecord, locale);
-        if ((Boolean) productionRecord.getBelongsToField("order").getField("registerQuantityOutProduct"))
+        }
+
+        if ((Boolean) productionRecord.getBelongsToField("order").getField("registerQuantityOutProduct")) {
             addOutputProducts(document, productionRecord, locale);
+        }
     }
 
     private void addInputProducts(Document document, final Entity productionRecord, final Locale locale) throws DocumentException {
@@ -362,30 +369,6 @@ public class ProductionCountingPdfService extends PdfDocumentService {
     @Override
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("productionCounting.productionBalance.report.title", locale);
-    }
-
-    public String convertTimeToString(final BigDecimal duration) {
-        long longValueFromDuration = duration.longValue();
-        long hours = longValueFromDuration / 3600;
-        long minutes = longValueFromDuration % 3600 / 60;
-        long seconds = longValueFromDuration % 3600 % 60;
-
-        Boolean minus = false;
-        if (hours < 0) {
-            minus = true;
-            hours = -hours;
-        }
-        if (minutes < 0) {
-            minus = true;
-            minutes = -minutes;
-        }
-        if (seconds < 0) {
-            minus = true;
-            seconds = -seconds;
-        }
-
-        return (minus ? "-" : "") + (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":"
-                + (seconds < 10 ? "0" : "") + seconds;
     }
 
 }

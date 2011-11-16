@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -72,12 +73,15 @@ public class QuantityService {
                         viewDefinitionState.getLocale());
                 BigDecimal technologyBigDecimal = getBigDecimalFromField(technologyEntity.getField("minimalQuantity"),
                         viewDefinitionState.getLocale());
+                Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                        technologyEntity.getBelongsToField("product").getId());
+                String unit = product.getStringField("unit");
 
                 if (plannedQuantityBigDecFormat.compareTo(technologyBigDecimal) < 0) {
                     String message = translationService.translate("orders.order.report.minimalQuantity",
                             viewDefinitionState.getLocale());
 
-                    form.addMessage(message + " (" + technologyBigDecimal + ")", MessageType.INFO, false);
+                    form.addMessage(message + " (" + technologyBigDecimal + " " + unit + ")", MessageType.INFO, false);
                 }
             }
         }

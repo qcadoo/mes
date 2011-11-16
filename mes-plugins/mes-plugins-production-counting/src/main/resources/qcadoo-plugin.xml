@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.9
+    Version: 0.4.10
 
     This file is part of Qcadoo.
 
@@ -59,14 +59,15 @@
 			<plugin>materialRequirements</plugin>
 			<version>[0.4.1</version>
 		</dependency>
-				<dependency>
+		<dependency>
 			<plugin>basicProductionCounting</plugin>
 			<version>[0.4.0</version>
 		</dependency>
 	</dependencies>
 
 	<modules>
-		<custom:custom class="com.qcadoo.mes.productionCounting.internal.orderStates.ProductionCountingOnStartupService"/>
+		<custom:custom
+			class="com.qcadoo.mes.productionCounting.internal.orderStates.ProductionCountingOnStartupService" />
 		<localization:translation path="locales" />
 
 		<model:model model="productionRecord" resource="model/productionRecord.xml" />
@@ -162,7 +163,10 @@
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="checkOrderState" />
-		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordsService" method="generateUsedProducts"/>
+		<view:view-hook plugin="orders" view="orderDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+			method="changeProducedQuantityFieldState" />
 	</modules>
 
 </plugin>

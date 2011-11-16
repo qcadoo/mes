@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.4.10
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
 <plugin plugin="basicProductionCounting" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
@@ -25,37 +50,51 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 	</information>
-	
+
 	<dependencies>
 		<dependency>
 			<plugin>materialRequirements</plugin>
 			<version>[0.4.0</version>
 		</dependency>
 	</dependencies>
-	
-	
-	
-	
+
+
+
+
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model model="basicProductionCounting" resource="model/basicProductionCounting.xml" />
-		
+
 		<model:model-field model="order" plugin="orders">
-			<model:hasMany name="basicProductionCountings" plugin="basicProductionCounting" joinField="order" model="basicProductionCounting" cascade="delete"/>
+			<model:hasMany name="basicProductionCountings" plugin="basicProductionCounting"
+				joinField="order" model="basicProductionCounting" cascade="delete" />
 		</model:model-field>
-		
-		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
-		<view:view-listener plugin ="orders" view="orderDetails" component="form" event="showProductionCounting" class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService" method="showProductionCounting" />
 
-		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService" method="generateProducedProducts"/>
-		<view:view-hook view="orderDetails" type="beforeRender" plugin="orders" class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService" method="disabledButtonForAppropriateState"/>
-
+		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
+		<view:view-listener plugin="orders" view="orderDetails"
+			component="form" event="showProductionCounting"
+			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
+			method="showProductionCounting" />
+		<view:view-hook view="orderDetails" type="beforeRender"
+			plugin="orders"
+			class="com.qcadoo.mes.basicProductionCounting.ProductionRecordsService"
+			method="getProductsFromOrder" />
+		<view:view-hook view="orderDetails" type="beforeRender"
+			plugin="orders"
+			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
+			method="disabledButtonForAppropriateState" />
+		<view:view-hook view="orderDetails" type="beforeRender"
+			plugin="orders"
+			class="com.qcadoo.mes.basicProductionCounting.ProductionRecordsService"
+			method="generateUsedProducts" />
+		<view:view-hook view="orderDetails" type="beforeRender"
+			plugin="orders"
+			class="com.qcadoo.mes.basicProductionCounting.ProductionRecordsService"
+			method="setProducedQuantity" />
 		<view:view resource="view/basicProductionCountingList.xml" />
 		<view:view resource="view/basicProductionCountingDetails.xml" />
-		
-<!-- 		<view:view-hook view="basicProductionCountingList" type="beforeRender" plugin="basicProductionCounting" class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService" method="sortProductsHook"/> -->
-		
+
 		<view:resource uri="public/**/*" />
 	</modules>
 

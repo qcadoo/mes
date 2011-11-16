@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -100,21 +100,23 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
                     continue;
                 }
 
-                String operationName = getDescriptionForOperarion(operation);
+                StringBuffer operationName = new StringBuffer(getDescriptionForOperarion(operation));
 
                 int counter = 0;
 
-                if (counters.containsKey(operationName)) {
-                    counter = counters.get(operationName) + 1;
-                    operationName += " (" + counter + ")";
+                if (counters.containsKey(operationName.toString())) {
+                    counter = counters.get(operationName.toString()) + 1;
+                    operationName.append(" (");
+                    operationName.append(counter);
+                    operationName.append(")");
                 }
 
-                GanttChartItem item = scale.createGanttChartItem(operationName, operationName, operation.getId(), dateFrom,
-                        dateTo);
+                GanttChartItem item = scale.createGanttChartItem(operationName.toString(), operationName.toString(),
+                        operation.getId(), dateFrom, dateTo);
 
                 if (item != null) {
-                    items.put(operationName, Collections.singletonList(item));
-                    counters.put(operationName, counter);
+                    items.put(operationName.toString(), Collections.singletonList(item));
+                    counters.put(operationName.toString(), counter);
                 }
             }
 

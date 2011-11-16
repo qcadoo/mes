@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -50,8 +50,9 @@ public class QualityControlForNumberService {
 
         SearchCriteriaBuilder searchCriteriaBuilder = dataDefinition.find().add(SearchRestrictions.eq("number", number))
                 .add(SearchRestrictions.eq("qualityControlType", qualityControlType));
-        if (id != null)
+        if (id != null) {
             searchCriteriaBuilder = searchCriteriaBuilder.add(SearchRestrictions.idNe(id));
+        }
 
         if (searchCriteriaBuilder != null) {
             SearchResult searchResult = searchCriteriaBuilder.list();

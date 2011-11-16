@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -62,7 +62,17 @@ import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
-public final class TechnologyService {
+public class TechnologyService {
+
+    public static final String WASTE = "04waste";
+
+    public static final String PRODUCT = "03product";
+
+    public static final String COMPONENT = "01component";
+
+    public static final String INTERMEDIATE = "02intermediate";
+
+    public static final String UNRELATED = "00unrelated";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -78,6 +88,10 @@ public final class TechnologyService {
 
     @Autowired
     private TranslationService translationService;
+
+    private enum ProductDirection {
+        IN, OUT;
+    }
 
     public boolean clearMasterOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("master", false);
@@ -398,5 +412,55 @@ public final class TechnologyService {
     
     public void toggleDetailsViewEnabled(final ViewDefinitionState view) {
         view.getComponentByReference("state").performEvent(view, "toggleEnabled");
+    }
+
+    private boolean productComponentsContainProduct(List<Entity> components, Entity product) {
+        boolean contains = false;
+
+        for (Entity entity : components) {
+            if (entity.getBelongsToField("product").getId().equals(product.getId())) {
+                contains = true;
+                break;
+            }
+        }
+
+        return contains;
+    }
+
+    private SearchCriteriaBuilder createSearchCriteria(Entity product, Entity technology, ProductDirection direction) {
+        String model = direction.equals(ProductDirection.IN) ? TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT
+                : TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT;
+
+        DataDefinition dd = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, model);
+
+        SearchCriteriaBuilder search = dd.find();
+        search.add(SearchRestrictions.eq("product.id", product.getId()));
+        search.createAlias("operationComponent", "operationComponent");
+        search.add(SearchRestrictions.belongsTo("operationComponent.technology", technology));
+
+        return search;
+    }
+
+    public String getProductType(Entity product, Entity technology) {
+        SearchCriteriaBuilder searchIns = createSearchCriteria(product, technology, ProductDirection.IN);
+        SearchCriteriaBuilder searchOuts = createSearchCriteria(product, technology, ProductDirection.OUT);
+        SearchCriteriaBuilder searchOutsForRoots = createSearchCriteria(product, technology, ProductDirection.OUT);
+        searchOutsForRoots.add(SearchRestrictions.isNull("operationComponent.parent"));
+
+        boolean goesIn = productComponentsContainProduct(searchIns.list().getEntities(), product);
+        boolean goesOut = productComponentsContainProduct(searchOuts.list().getEntities(), product);
+        boolean goesOutInAroot = productComponentsContainProduct(searchOutsForRoots.list().getEntities(), product);
+
+        if (goesOutInAroot) {
+            return PRODUCT;
+        } else if (goesIn && !goesOut) {
+            return COMPONENT;
+        } else if (goesIn && goesOut) {
+            return INTERMEDIATE;
+        } else if (!goesIn && goesOut) {
+            return WASTE;
+        }
+
+        return UNRELATED;
     }
 }

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.8
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -37,9 +37,9 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.constants.OrderStates;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -64,8 +64,10 @@ public class BasicProductionCountingService {
         if (orderNumber != null) {
             Entity order = dataDefinitionService.get("orders", "order").find().add(SearchRestrictions.eq("number", orderNumber))
                     .uniqueResult();
-            if (order != null)
-                updateProductsForOrder(order, "basicProductionCounting", "basicProductionCounting", "plannedQuantity");
+            if (order != null) {
+                updateProductsForOrder(order, BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING, "plannedQuantity");
+            }
         }
     }
 
@@ -94,11 +96,11 @@ public class BasicProductionCountingService {
                 newProduct.setField("product", product.getKey());
                 newProduct.setField(fieldName, product.getValue());
                 newProduct.getDataDefinition().save(newProduct);
-                if (!newProduct.isValid())
+                if (!newProduct.isValid()) {
                     throw new IllegalStateException("new product entity is invalid  " + product.getValue() + "\n\n\n");
+                }
             } else {
                 BigDecimal plannedQuantity = (BigDecimal) foundProduct.getField(fieldName);
-                // if (plannedQuantity.compareTo(product.getValue()) != 0) {
                 if (plannedQuantity != product.getValue()) {
                     foundProduct.setField(fieldName, product.getValue());
                     foundProduct.getDataDefinition().save(foundProduct);
@@ -116,8 +118,9 @@ public class BasicProductionCountingService {
                     break;
                 }
             }
-            if (!found)
+            if (!found) {
                 dataDefinitionService.get(pluginName, modelName).delete(producedProduct.getId());
+            }
         }
     }
 
@@ -133,7 +136,7 @@ public class BasicProductionCountingService {
         try {
             json.put("order.id", orderId);
         } catch (JSONException e) {
-            e.printStackTrace(); // TODO : BAKU fix it to new IllegalStateException();
+            throw new IllegalStateException(e);
         }
 
         String url = "../page/basicProductionCounting/basicProductionCountingList.html?context=" + json.toString();
@@ -143,9 +146,14 @@ public class BasicProductionCountingService {
     public void getProductNameFromCounting(final ViewDefinitionState view) {
         FieldComponent productField = (FieldComponent) view.getComponentByReference("product");
         FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
-        Entity basicProductionCountingEntity = formComponent.getEntity();
-        basicProductionCountingEntity = basicProductionCountingEntity.getDataDefinition().get(
-                basicProductionCountingEntity.getId());
+        if (formComponent.getEntityId() == null) {
+            return;
+        }
+        Entity basicProductionCountingEntity = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).get(formComponent.getEntityId());
+        if (basicProductionCountingEntity == null) {
+            return;
+        }
         Entity product = basicProductionCountingEntity.getBelongsToField("product");
         productField.setFieldValue(product.getField("name"));
         productField.requestComponentUpdateState();
@@ -167,31 +175,21 @@ public class BasicProductionCountingService {
         }
     }
 
-    public void sortProductsHook(ViewDefinitionState viewState) {
-        GridComponent grid = (GridComponent) viewState.getComponentByReference("grid");
-        SearchCriteriaBuilder searchBuilder = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find();
-
-        List<Entity> products = searchBuilder.add(SearchRestrictions.eq("typeOfMaterial", "03product")).list().getEntities();
-        List<Entity> intermediates = searchBuilder.add(SearchRestrictions.eq("typeOfMaterial", "02intermediate")).list()
-                .getEntities();
-        List<Entity> components = searchBuilder.add(SearchRestrictions.eq("typeOfMaterial", "01component")).list().getEntities();
-        List<Entity> gridContent = grid.getEntities();
-
-        if (!gridContent.isEmpty()) {
-            gridContent.clear();
+    public void setUneditableGridWhenOrderTypeRecordingIsBasic(final ViewDefinitionState view) {
+        FormComponent order = (FormComponent) view.getComponentByReference("order");
+        if (order.getEntityId() == null) {
+            return;
         }
-        for (Entity product : products) {
-            gridContent.add(product);
+        Entity orderFromDB = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                order.getEntityId());
+        if (orderFromDB == null) {
+            return;
         }
-        for (Entity intermediate : intermediates) {
-            gridContent.add(intermediate);
+        String orderState = orderFromDB.getStringField("typeOfProductionRecording");
+        if (!("01basic".equals(orderState))) {
+            GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+            grid.setEditable(false);
         }
-        for (Entity component : components) {
-            gridContent.add(component);
-        }
-        grid.setEntities(gridContent);
-
     }
 
     public void fillFieldsCurrency(final ViewDefinitionState view) {
@@ -211,4 +209,5 @@ public class BasicProductionCountingService {
             field.requestComponentUpdateState();
         }
     }
+
 }

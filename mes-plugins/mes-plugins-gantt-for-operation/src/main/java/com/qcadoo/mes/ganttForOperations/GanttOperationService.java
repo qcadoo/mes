@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -38,6 +38,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class GanttOperationService {
@@ -136,6 +137,7 @@ public class GanttOperationService {
         for (Entity operation : operations) {
             dataDefinition.save(operation);
         }
+
     }
 
     public void checkDoneCalculate(final ViewDefinitionState viewDefinitionState) {
@@ -151,12 +153,12 @@ public class GanttOperationService {
 
     public void fillTitleLabel(final ViewDefinitionState viewDefinitionState) {
 
-        ComponentState title = (ComponentState) viewDefinitionState.getComponentByReference("title");
+        FieldComponent title = (FieldComponent) viewDefinitionState.getComponentByReference("title");
         Entity order = dataDefinitionService.get("orders", "order").get(orderId);
         String number = order.getField("number").toString();
         String name = order.getField("name").toString();
 
         title.setFieldValue(name + " - " + number);
-
+        title.requestComponentUpdateState();
     }
 }

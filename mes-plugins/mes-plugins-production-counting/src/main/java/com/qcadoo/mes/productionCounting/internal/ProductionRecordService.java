@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -130,7 +130,13 @@ public class ProductionRecordService {
 
     public void copyProductsFromOrderOperation(final DataDefinition dd, final Entity productionRecord) {
         Entity order = productionRecord.getBelongsToField("order");
+        if (order == null) {
+            return;
+        }
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
+        if (typeOfProductionRecording == null) {
+            return;
+        }
         List<Entity> operationComponents = null;
 
         Boolean registerInput = getBooleanValue(order.getField(PARAM_REGISTER_IN_PRODUCTS));

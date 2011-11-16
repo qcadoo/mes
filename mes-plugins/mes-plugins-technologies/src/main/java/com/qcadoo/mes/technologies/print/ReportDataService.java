@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -31,8 +31,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
@@ -41,27 +43,29 @@ import com.qcadoo.report.api.Pair;
 @Service
 public class ReportDataService {
 
-    private static final String MATERIAL_WASTE = "04waste";
-
     private static final String COMPONENT_QUANTITY_ALGORITHM = "02perTechnology";
 
     private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 
-    private static final String MATERIAL_COMPONENT = "01component";
+    @Autowired
+    private TechnologyService technologyService;
 
     public final void countQuantityForProductsIn(final Map<Entity, BigDecimal> products, final Entity technology,
             final BigDecimal plannedQuantity, final Boolean onlyComponents) {
         EntityTree operationComponents = technology.getTreeField("operationComponents");
         if (COMPONENT_QUANTITY_ALGORITHM.equals(technology.getField("componentQuantityAlgorithm"))) {
-            countQuntityComponentPerTechnology(products, operationComponents, onlyComponents, plannedQuantity);
+            countQuntityComponentPerTechnology(products, operationComponents, onlyComponents, plannedQuantity, technology);
         } else {
             Map<Entity, BigDecimal> orderProducts = new HashMap<Entity, BigDecimal>();
             EntityTreeNode rootNode = operationComponents.getRoot();
             if (rootNode != null) {
-                boolean success = countQuntityComponentPerOutProducts(orderProducts, rootNode, onlyComponents, plannedQuantity);
+                boolean success = countQuntityComponentPerOutProducts(orderProducts, rootNode, onlyComponents, plannedQuantity,
+                        technology);
                 if (success) {
                     for (Entry<Entity, BigDecimal> entry : orderProducts.entrySet()) {
-                        if (!onlyComponents || MATERIAL_COMPONENT.equals(entry.getKey().getField("typeOfMaterial"))) {
+                        if (!onlyComponents
+                                || technologyService.getProductType(entry.getKey(), technology).equals(
+                                        TechnologyService.COMPONENT)) {
                             if (products.containsKey(entry.getKey())) {
                                 products.put(entry.getKey(), products.get(entry.getKey()).add(entry.getValue()));
                             } else {
@@ -85,13 +89,13 @@ public class ReportDataService {
                 EntityTree operationComponents = technology.getTreeField("operationComponents");
                 if (COMPONENT_QUANTITY_ALGORITHM.equals(technology.getField("componentQuantityAlgorithm"))) {
                     aggregateTreeDataPerTechnology(operationComponents, operations, type, order,
-                            (BigDecimal) order.getField("plannedQuantity"));
+                            (BigDecimal) order.getField("plannedQuantity"), technology);
                 } else {
                     Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> orderOperations = new HashMap<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>>();
                     EntityTreeNode rootNode = operationComponents.getRoot();
                     if (rootNode != null) {
                         boolean success = aggregateTreeDataPerOutProducts(rootNode, orderOperations, type, order,
-                                (BigDecimal) order.getField("plannedQuantity"));
+                                (BigDecimal) order.getField("plannedQuantity"), technology);
                         if (success) {
                             concatenateOperationsList(operations, orderOperations);
                         }
@@ -124,7 +128,7 @@ public class ReportDataService {
 
     private void aggregateTreeDataPerTechnology(final List<Entity> operationComponents,
             final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations,
-            final String type, final Entity order, final BigDecimal plannedQuantity) {
+            final String type, final Entity order, final BigDecimal plannedQuantity, Entity technology) {
         Entity entityKey = null;
         if (type.equals("product")) {
             Entity product = (Entity) order.getField("product");
@@ -159,24 +163,25 @@ public class ReportDataService {
                 Pair<Entity, Entity> pair = Pair.of(operationComponent, order);
                 Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>> mapPair = Pair.of(
                         prepareInProductsPerTechnology(operationComponent, plannedQuantity),
-                        prepareOutProductsPerTechnology(operationComponent, plannedQuantity));
+                        prepareOutProductsPerTechnology(operationComponent, plannedQuantity, technology));
                 operationMap.put(pair, mapPair);
                 operations.put(entityKey, operationMap);
             } else {
                 aggregateTreeDataPerTechnology(
                         operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents"),
-                        operations, type, order, plannedQuantity);
+                        operations, type, order, plannedQuantity, technology);
             }
         }
     }
 
     private Map<Entity, BigDecimal> prepareOutProductsPerTechnology(final Entity operationComponent,
-            final BigDecimal plannedQuantity) {
+            final BigDecimal plannedQuantity, Entity technology) {
         List<Entity> operationProductOutComponents = operationComponent.getHasManyField("operationProductOutComponents");
         Map<Entity, BigDecimal> productsOutMap = new HashMap<Entity, BigDecimal>();
+
         for (Entity operationProductOutComponent : operationProductOutComponents) {
             Entity product = (Entity) operationProductOutComponent.getField("product");
-            if (!MATERIAL_WASTE.equals(product.getField("typeOfMaterial"))) {
+            if (!technologyService.getProductType(product, technology).equals(TechnologyService.WASTE)) {
                 BigDecimal quantity = ((BigDecimal) operationProductOutComponent.getField("quantity")).multiply(plannedQuantity,
                         MathContext.DECIMAL128);
                 productsOutMap.put(product, quantity);
@@ -187,7 +192,7 @@ public class ReportDataService {
 
     private boolean aggregateTreeDataPerOutProducts(final EntityTreeNode node,
             final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations,
-            final String type, final Entity order, final BigDecimal plannedQuantity) {
+            final String type, final Entity order, final BigDecimal plannedQuantity, Entity technology) {
         if (OPERATION_NODE_ENTITY_TYPE.equals(node.getField("entityType"))) {
             Entity entityKey = null;
             Entity operation = (Entity) node.getField("operation");
@@ -195,7 +200,7 @@ public class ReportDataService {
             if (operationProductInComponents.size() == 0) {
                 return false;
             }
-            Entity productOutComponent = checkOutProducts(node);
+            Entity productOutComponent = checkOutProducts(node, technology);
             if (productOutComponent == null) {
                 return false;
             }
@@ -224,9 +229,10 @@ public class ReportDataService {
                 BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
                         MathContext.DECIMAL128).divide((BigDecimal) productOutComponent.getField("quantity"),
                         MathContext.DECIMAL128);
-                EntityTreeNode prevOperation = findPreviousOperation(node, product);
+                EntityTreeNode prevOperation = findPreviousOperation(node, product, technology);
                 if (prevOperation != null) {
-                    boolean success = aggregateTreeDataPerOutProducts(prevOperation, operations, type, order, quantity);
+                    boolean success = aggregateTreeDataPerOutProducts(prevOperation, operations, type, order, quantity,
+                            technology);
                     if (!success) {
                         return false;
                     }
@@ -241,13 +247,13 @@ public class ReportDataService {
             }
             Pair<Entity, Entity> pair = Pair.of((Entity) node, order);
             Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>> mapPair = Pair.of(productsInMap,
-                    prepareOutProducts(node, plannedQuantity));
+                    prepareOutProducts(node, plannedQuantity, technology));
             operationMap.put(pair, mapPair);
             operations.put(entityKey, operationMap);
         } else {
             EntityTreeNode rootNode = node.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot();
             if (rootNode != null) {
-                boolean success = aggregateTreeDataPerOutProducts(rootNode, operations, type, order, plannedQuantity);
+                boolean success = aggregateTreeDataPerOutProducts(rootNode, operations, type, order, plannedQuantity, technology);
                 if (!success) {
                     return false;
                 }
@@ -269,12 +275,14 @@ public class ReportDataService {
         return productsInMap;
     }
 
-    private Map<Entity, BigDecimal> prepareOutProducts(final EntityTreeNode node, final BigDecimal plannedQuantity) {
+    private Map<Entity, BigDecimal> prepareOutProducts(final EntityTreeNode node, final BigDecimal plannedQuantity,
+            Entity technology) {
         Map<Entity, BigDecimal> productsOutMap = new HashMap<Entity, BigDecimal>();
         List<Entity> operationProductOutComponents = node.getHasManyField("operationProductOutComponents");
+
         for (Entity operationProductOutComponent : operationProductOutComponents) {
             Entity product = (Entity) operationProductOutComponent.getField("product");
-            if (!MATERIAL_WASTE.equals(product.getField("typeOfMaterial"))) {
+            if (!(technologyService.getProductType(product, technology).equals(TechnologyService.WASTE))) {
                 productsOutMap.put(product, plannedQuantity);
             }
         }
@@ -282,13 +290,15 @@ public class ReportDataService {
     }
 
     private void countQuntityComponentPerTechnology(final Map<Entity, BigDecimal> products,
-            final List<Entity> operationComponents, final boolean onlyComponents, final BigDecimal plannedQuantity) {
+            final List<Entity> operationComponents, final boolean onlyComponents, final BigDecimal plannedQuantity,
+            Entity technology) {
         for (Entity operationComponent : operationComponents) {
             if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
                 List<Entity> operationProductComponents = operationComponent.getHasManyField("operationProductInComponents");
                 for (Entity operationProductComponent : operationProductComponents) {
                     Entity product = (Entity) operationProductComponent.getField("product");
-                    if (!onlyComponents || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
+                    if (!onlyComponents
+                            || technologyService.getProductType(product, technology).equals(TechnologyService.COMPONENT)) {
                         if (products.containsKey(product)) {
                             BigDecimal quantity = products.get(product);
                             quantity = ((BigDecimal) operationProductComponent.getField("quantity")).multiply(plannedQuantity,
@@ -302,19 +312,19 @@ public class ReportDataService {
                 }
             } else {
                 countQuntityComponentPerTechnology(products, operationComponent.getBelongsToField("referenceTechnology")
-                        .getTreeField("operationComponents"), onlyComponents, plannedQuantity);
+                        .getTreeField("operationComponents"), onlyComponents, plannedQuantity, technology);
             }
         }
     }
 
     private boolean countQuntityComponentPerOutProducts(final Map<Entity, BigDecimal> products, final EntityTreeNode node,
-            final boolean onlyComponents, final BigDecimal plannedQuantity) {
+            final boolean onlyComponents, final BigDecimal plannedQuantity, Entity technology) {
         if (OPERATION_NODE_ENTITY_TYPE.equals(node.getField("entityType"))) {
             List<Entity> operationProductInComponents = node.getHasManyField("operationProductInComponents");
             if (operationProductInComponents.size() == 0) {
                 return false;
             }
-            Entity productOutComponent = checkOutProducts(node);
+            Entity productOutComponent = checkOutProducts(node, technology);
             if (productOutComponent == null) {
                 return false;
             }
@@ -323,9 +333,10 @@ public class ReportDataService {
                 BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
                         MathContext.DECIMAL128).divide((BigDecimal) productOutComponent.getField("quantity"),
                         MathContext.DECIMAL128);
-                EntityTreeNode prevOperation = findPreviousOperation(node, product);
+                EntityTreeNode prevOperation = findPreviousOperation(node, product, technology);
                 if (prevOperation != null) {
-                    boolean success = countQuntityComponentPerOutProducts(products, prevOperation, onlyComponents, quantity);
+                    boolean success = countQuntityComponentPerOutProducts(products, prevOperation, onlyComponents, quantity,
+                            technology);
                     if (!success) {
                         return false;
                     }
@@ -339,7 +350,8 @@ public class ReportDataService {
         } else {
             EntityTreeNode rootNode = node.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot();
             if (rootNode != null) {
-                boolean success = countQuntityComponentPerOutProducts(products, rootNode, onlyComponents, plannedQuantity);
+                boolean success = countQuntityComponentPerOutProducts(products, rootNode, onlyComponents, plannedQuantity,
+                        technology);
                 if (!success) {
                     return false;
                 }
@@ -348,16 +360,17 @@ public class ReportDataService {
         return true;
     }
 
-    private Entity checkOutProducts(final Entity operationComponent) {
+    private Entity checkOutProducts(final Entity operationComponent, Entity technology) {
         List<Entity> operationProductOutComponents = operationComponent.getHasManyField("operationProductOutComponents");
         Entity productOutComponent = null;
         if (operationProductOutComponents.size() == 0) {
             return null;
         } else {
             int productCount = 0;
+
             for (Entity operationProductOutComponent : operationProductOutComponents) {
                 Entity product = (Entity) operationProductOutComponent.getField("product");
-                if (!MATERIAL_WASTE.equals(product.getField("typeOfMaterial"))) {
+                if (!(technologyService.getProductType(product, technology).equals(TechnologyService.WASTE))) {
                     productOutComponent = operationProductOutComponent;
                     productCount++;
                 }
@@ -369,7 +382,7 @@ public class ReportDataService {
         return productOutComponent;
     }
 
-    private EntityTreeNode findPreviousOperation(final EntityTreeNode node, final Entity product) {
+    private EntityTreeNode findPreviousOperation(final EntityTreeNode node, final Entity product, Entity technology) {
         for (EntityTreeNode operationComponent : node.getChildren()) {
             List<Entity> operationProductOutComponents = new ArrayList<Entity>();
             if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
@@ -381,9 +394,11 @@ public class ReportDataService {
                     operationProductOutComponents = rootNode.getHasManyField("operationProductOutComponents");
                 }
             }
+
             for (Entity operationProductOutComponent : operationProductOutComponents) {
                 Entity productOut = (Entity) operationProductOutComponent.getField("product");
-                if (!MATERIAL_WASTE.equals(productOut.getField("typeOfMaterial"))
+
+                if (!(technologyService.getProductType(productOut, technology).equals(TechnologyService.WASTE))
                         && productOut.getField("number").equals(product.getField("number"))) {
                     return operationComponent;
                 }

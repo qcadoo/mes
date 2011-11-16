@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.9
+ * Version: 0.4.10
  *
  * This file is part of Qcadoo.
  *
@@ -187,19 +187,18 @@ public class CostCalculationViewService {
 
         for (String componentReference : fields) {
             FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
-            field.setEnabled(true);
             field.setFieldValue(currencyAlphabeticCode);
-            field.setEnabled(false);
             field.requestComponentUpdateState();
         }
 
         FieldComponent productionCostMarginProc = (FieldComponent) viewDefinitionState
                 .getComponentByReference("productionCostMarginProc");
         productionCostMarginProc.setFieldValue("%");
+        productionCostMarginProc.requestComponentUpdateState();
         FieldComponent materialCostMarginProc = (FieldComponent) viewDefinitionState
                 .getComponentByReference("materialCostMarginProc");
         materialCostMarginProc.setFieldValue("%");
-
+        materialCostMarginProc.requestComponentUpdateState();
         fillCostPerUnitUnitField(viewDefinitionState, null, null);
     }
 
@@ -213,9 +212,7 @@ public class CostCalculationViewService {
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
 
         FieldComponent totalCostsPerUnitUNIT = (FieldComponent) view.getComponentByReference("totalCostsPerUnitUNIT");
-        totalCostsPerUnitUNIT.setEnabled(true);
         totalCostsPerUnitUNIT.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField("unit"));
-        totalCostsPerUnitUNIT.setEnabled(false);
         totalCostsPerUnitUNIT.requestComponentUpdateState();
     }
 
@@ -235,7 +232,6 @@ public class CostCalculationViewService {
             applyValuesToFields(viewDefinitionState, technology, null);
         }
 
-        // fillCostPerUnitUnitField(viewDefinitionState);
     }
 
     public void fillFieldWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
