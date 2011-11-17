@@ -1062,10 +1062,6 @@ public class SamplesLoaderModule extends Module {
                 .setMaxResults(1).list().getEntities().get(0);
     }
 
-    // private String getRandomUnit() {
-    // return UNITS.get(RANDOM.nextInt(UNITS.size()));
-    // }
-
     private void addParameters() {
         LOG.info("Adding parameters");
         Entity parameter = dataDefinitionService.get("basic", "parameter").create();

@@ -364,14 +364,14 @@ public class SamplesGeneratorModule extends Module {
         operationComponent.setField("technology", technology);
         operationComponent.setField("parent", parent);
         operationComponent.setField("operation", operation);
-        operationComponent.setField("entityType", "operation");// acceptableTechnologyEntityType[RANDOM.nextInt(acceptableTechnologyEntityType.length)]);
+        operationComponent.setField("entityType", "operation");
         operationComponent.setField("tpz", operation.getField("tpz"));
         operationComponent.setField("tj", operation.getField("tj"));
         operationComponent.setField("machineUtilization", operation.getField("machineUtilization"));
         operationComponent.setField("laborUtilization", operation.getField("laborUtilization"));
         operationComponent.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
         operationComponent.setField("countRealized", operation.getField("countRealized"));
-        operationComponent.setField("countMachine", "0"); // operation.getField("countMachine"));
+        operationComponent.setField("countMachine", "0");
         operationComponent.setField("timeNextOperation", operation.getField("timeNextOperation"));
 
         operationComponent = operationComponent.getDataDefinition().save(operationComponent);
@@ -492,7 +492,7 @@ public class SamplesGeneratorModule extends Module {
         order.setField("name", getNameFromNumberAndPrefix("Order-", number));
         order.setField("dateFrom", new Date(dateFrom));
         order.setField("dateTo", new Date(dateTo));
-        order.setField("state", "01pending"); // acceptableOrderState[RANDOM.nextInt(acceptableOrderState.length)]);
+        order.setField("state", "01pending");
         order.setField("contractor", getRandomContractor());
         order.setField("product", product);
         order.setField("plannedQuantity", RANDOM.nextInt(100) + 100);
@@ -500,7 +500,7 @@ public class SamplesGeneratorModule extends Module {
         order.setField("technology", technology);
         order.setField("externalSynchronized", true);
 
-        order.setField("typeOfProductionRecording", "02cumulated"); // TODO: BAKU Randomize it
+        order.setField("typeOfProductionRecording", "01basic");
 
         order = dataDefinitionService.get("orders", "order").save(order);
 

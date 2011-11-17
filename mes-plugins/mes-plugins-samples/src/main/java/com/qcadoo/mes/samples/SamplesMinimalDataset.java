@@ -177,8 +177,16 @@ public class SamplesMinimalDataset extends Module {
 
     private void setParameters() {
         Entity params = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).create();
+
+        String alphabeticCode = "";
+
+        if ("pl".equals(locale))
+            alphabeticCode = "PLN";
+        else
+            alphabeticCode = "USD";
+
         Entity currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).find()
-                .add(SearchRestrictions.eq("alphabeticCode", "USD")).uniqueResult();
+                .add(SearchRestrictions.eq("alphabeticCode", alphabeticCode)).uniqueResult();
 
         params.setField("registerQuantityInProduct", true);
         params.setField("registerQuantityOutProduct", true);
