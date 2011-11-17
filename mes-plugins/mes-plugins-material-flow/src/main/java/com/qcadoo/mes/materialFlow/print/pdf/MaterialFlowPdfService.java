@@ -60,15 +60,15 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
 
     @Autowired
     private MaterialFlowService materialFlowService;
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(MaterialFlowPdfService.class);
-    
+
     @Override
-    protected void buildPdfContent(final Document document, final Entity materialsInStockAreas,
-            final Locale locale) throws DocumentException {
-    	Map<Entity, BigDecimal> reportData = materialFlowService.calculateMaterialQuantitiesInStockArea(materialsInStockAreas);
-    	
-    	String documenTitle = getTranslationService().translate("materialFlow.materialFlow.report.title", locale);
+    protected void buildPdfContent(final Document document, final Entity materialsInStockAreas, final Locale locale)
+            throws DocumentException {
+        Map<Entity, BigDecimal> reportData = materialFlowService.calculateMaterialQuantitiesInStockArea(materialsInStockAreas);
+
+        String documenTitle = getTranslationService().translate("materialFlow.materialFlow.report.title", locale);
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) materialsInStockAreas.getField("time"),
                 materialsInStockAreas.getStringField("worker"));
@@ -78,22 +78,21 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
                 getTranslationService().translate("materialFlow.materialFlow.report.panel.materialFlowForDate", locale),
                 ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString(), null, PdfUtil.getArialBold10Dark(),
                 PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(panelTable, getTranslationService()
-                .translate("materialFlow.materialFlow.report.panel.time", locale),
+        PdfUtil.addTableCellAsTable(panelTable,
+                getTranslationService().translate("materialFlow.materialFlow.report.panel.time", locale),
                 ((Date) materialsInStockAreas.getField("time")).toString(), null, PdfUtil.getArialBold10Dark(),
 
                 PdfUtil.getArialRegular10Dark());
-        
+
         List<Entity> stockAreas = materialsInStockAreas.getHasManyField("stockAreas");
         List<String> names = new ArrayList<String>();
         for (Entity component : stockAreas) {
-        	Entity stockArea = (Entity) component.getField("stockAreas");
-        	names.add(stockArea.getField("number").toString());
+            Entity stockArea = (Entity) component.getField("stockAreas");
+            names.add(stockArea.getField("number").toString());
         }
         PdfUtil.addTableCellAsTable(panelTable,
-                getTranslationService().translate("materialFlow.materialFlow.report.panel.stockAreas", locale), 
-                		names, null, PdfUtil.getArialBold10Dark(), PdfUtil
-        		       .getArialRegular10Dark());
+                getTranslationService().translate("materialFlow.materialFlow.report.panel.stockAreas", locale), names, null,
+                PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(panelTable, "", "", null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
 
         panelTable.setSpacingBefore(20);
@@ -108,19 +107,16 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
         PdfPTable table = PdfUtil.createTableWithHeader(4, tableHeader, false);
 
         for (Map.Entry<Entity, BigDecimal> data : reportData.entrySet()) {
-            table.addCell(new Phrase(data.getKey().getStringField("number"), PdfUtil
-                    .getArialRegular9Dark()));
-            table.addCell(new Phrase(data.getKey().getStringField("name"), PdfUtil
-                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(data.getKey().getStringField("number"), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(data.getKey().getStringField("name"), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             table.addCell(new Phrase(getDecimalFormat().format(data.getValue()), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            table.addCell(new Phrase(data.getKey().getStringField("unit"), PdfUtil
-                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(data.getKey().getStringField("unit"), PdfUtil.getArialRegular9Dark()));
         }
         document.add(table);
     }
-    
+
     public void generateDocument(final Entity entity, final Map<Entity, BigDecimal> reportData, final Entity company,
             final Locale locale) throws IOException, DocumentException {
         Document document = new Document(PageSize.A4);
@@ -133,11 +129,10 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
                     + PdfUtil.PDF_EXTENSION);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
             writer.setPageEvent(new PdfPageNumbering(
-                    getTranslationService().translate("qcadooReport.commons.page.label", locale),
-                    getTranslationService().translate("qcadooReport.commons.of.label", locale),
-                    getTranslationService().translate("basic.company.phone.label",locale), company,
-                    getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale),
-                    securityService.getCurrentUserName()));
+                    getTranslationService().translate("qcadooReport.commons.page.label", locale), getTranslationService()
+                            .translate("qcadooReport.commons.of.label", locale), getTranslationService().translate(
+                            "basic.company.phone.label", locale), company, getTranslationService().translate(
+                            "qcadooReport.commons.generatedBy.label", locale), securityService.getCurrentUserName()));
             document.setMargins(40, 40, 60, 60);
             buildPdfMetadata(document, locale);
             writer.createXmpMetadata();

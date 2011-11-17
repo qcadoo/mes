@@ -70,9 +70,9 @@ public class ProductionRecordViewService {
     @Autowired
     private TechnologyService technologyService;
 
-    private final static String CLOSED_ORDER = "04completed";
+    private static final String CLOSED_ORDER = "04completed";
 
-    private final static Logger LOG = LoggerFactory.getLogger(ProductionRecordViewService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProductionRecordViewService.class);
 
     public void initializeRecordDetailsView(final ViewDefinitionState view) {
         FormComponent recordForm = (FormComponent) view.getComponentByReference("form");
