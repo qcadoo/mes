@@ -42,7 +42,7 @@ public class OrderStatesChangingService {
     @Autowired
     OrderStateValidationService orderStateValidationService;
 
-    private List<OrderStateListener> listeners = new LinkedList<OrderStateListener>();
+    private final List<OrderStateListener> listeners = new LinkedList<OrderStateListener>();
 
     public void addOrderStateListener(OrderStateListener listener) {
         listeners.add(listener);

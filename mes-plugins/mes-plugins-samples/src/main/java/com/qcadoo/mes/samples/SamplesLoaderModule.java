@@ -198,7 +198,7 @@ public class SamplesLoaderModule extends Module {
     }
 
     private void checkLocale() {
-        if (locale.equals("default")) {
+        if ("default".equals(locale)) {
             locale = Locale.getDefault().toString().substring(0, 2);
         }
 

@@ -305,6 +305,6 @@ public class ProductionRecordService {
     }
 
     public static Boolean getBooleanValue(Object fieldValue) {
-        return fieldValue != null && fieldValue instanceof Boolean && (Boolean) fieldValue;
+        return fieldValue instanceof Boolean && (Boolean) fieldValue;
     }
 }

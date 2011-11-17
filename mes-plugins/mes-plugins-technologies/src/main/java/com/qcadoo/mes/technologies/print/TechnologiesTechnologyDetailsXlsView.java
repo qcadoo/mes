@@ -28,6 +28,7 @@ import static com.google.common.collect.Lists.newLinkedList;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.PLUGIN_IDENTIFIER;
 import static com.qcadoo.model.api.types.TreeType.NODE_NUMBER_FIELD;
+import static java.lang.Long.valueOf;
 
 import java.util.Collections;
 import java.util.List;
@@ -78,7 +79,7 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
 
     private void addOrderSeries(final Map<String, Object> model, final HSSFSheet sheet, final Locale locale) {
         DataDefinition technologyDD = dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY);
-        Entity technology = technologyDD.get(new Long(model.get("id").toString()));
+        Entity technology = technologyDD.get(valueOf(model.get("id").toString()));
         List<Entity> technologyOperations = newLinkedList(technology.getTreeField("operationComponents"));
         Collections.sort(technologyOperations, treeNumberingService.getTreeNodesNumberComparator());
 

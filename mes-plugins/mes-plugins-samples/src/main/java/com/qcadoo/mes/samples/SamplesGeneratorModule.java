@@ -138,7 +138,7 @@ public class SamplesGeneratorModule extends Module {
                 }
             }
             if (isEnabled("workPlans")) {
-                for (int i = 0; i < (int) (range / 40); i++) {
+                for (int i = 0; i < (range / 40); i++) {
                     generateAndAddWorkPlan();
                 }
             }
@@ -350,9 +350,9 @@ public class SamplesGeneratorModule extends Module {
     /*
      * TODO: BAKU clean this mess
      */
-    private Entity addOperationComponent(final Entity technology, final Entity parent, final Entity operation,
-            final int productsComponentsQuantity, final int recurencyLevel) {
 
+    private Entity addOperationComponent(final Entity technology, final Entity parent, Entity operation,
+            final int productsComponentsQuantity) {
         Preconditions.checkNotNull(technology, "Technology entity is null");
         Entity operationComponent = dataDefinitionService.get("technologies", "technologyOperationComponent").create();
 
@@ -408,12 +408,11 @@ public class SamplesGeneratorModule extends Module {
         List<Entity> operations = new LinkedList<Entity>();
         Entity operation = null;
         for (int i = 0; i < 4; i++) {
-            if (operations.isEmpty()) {
-                operation = addOperationComponent(technology, null, getRandomOperation(), RANDOM.nextInt(3) + 3,
-                        RANDOM.nextInt(3));
-            } else {
+            if (!operations.isEmpty()) {
                 operation = addOperationComponent(technology, operations.get(RANDOM.nextInt(operations.size())),
-                        getRandomOperation(), RANDOM.nextInt(3) + 3, RANDOM.nextInt(3));
+                        getRandomOperation(), RANDOM.nextInt(3) + 3);
+            } else {
+                operation = addOperationComponent(technology, null, getRandomOperation(), RANDOM.nextInt(3) + 3);
             }
             operations.add(operation);
         }

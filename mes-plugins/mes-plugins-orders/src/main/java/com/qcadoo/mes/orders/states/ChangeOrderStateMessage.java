@@ -32,27 +32,30 @@ public class ChangeOrderStateMessage {
     private String message;
 
     private MessageType type;
+    
+    private String[] vars;
 
-    public ChangeOrderStateMessage(String message, String referenceToField, MessageType type) {
+    public ChangeOrderStateMessage(String message, String referenceToField, MessageType type, String... vars) {
         this.referenceToField = referenceToField;
         this.message = message;
         this.type = type;
+        this.vars = vars;
     }
 
-    public static ChangeOrderStateMessage error(String message, String referenceToField) {
-        return new ChangeOrderStateMessage(message, referenceToField, MessageType.FAILURE);
+    public static ChangeOrderStateMessage errorForComponent(String message, String referenceToField, String... vars) {
+        return new ChangeOrderStateMessage(message, referenceToField, MessageType.FAILURE, vars);
     }
 
-    public static ChangeOrderStateMessage error(String message) {
-        return new ChangeOrderStateMessage(message, null, MessageType.FAILURE);
+    public static ChangeOrderStateMessage error(String message, String... vars) {
+        return new ChangeOrderStateMessage(message, null, MessageType.FAILURE, vars);
     }
 
-    public static ChangeOrderStateMessage info(String message) {
-        return new ChangeOrderStateMessage(message, null, MessageType.INFO);
+    public static ChangeOrderStateMessage info(String message, String... vars) {
+        return new ChangeOrderStateMessage(message, null, MessageType.INFO, vars);
     }
 
-    public static ChangeOrderStateMessage success(String message) {
-        return new ChangeOrderStateMessage(message, null, MessageType.INFO);
+    public static ChangeOrderStateMessage success(String message, String... vars) {
+        return new ChangeOrderStateMessage(message, null, MessageType.INFO, vars);
     }
 
     public String getMessage() {
@@ -77,6 +80,10 @@ public class ChangeOrderStateMessage {
 
     public void setType(MessageType type) {
         this.type = type;
+    }
+    
+    public String[] getVars() {
+        return vars;
     }
 
 }

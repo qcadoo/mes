@@ -211,7 +211,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         addTableCellAsTable(
                 leftPanelColumn,
                 "\t \t \t" + getTranslationService().translate("costCalculation.costCalculation.description.label", locale) + ":",
-                (reportData != null ? reportData : ""), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+                (reportData == null ? "" : reportData), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
 
         return leftPanelColumn;
     }
@@ -261,9 +261,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
         rightPanelColumn.addCell(new Phrase(getTranslationService().translate(
                 "costCalculation.costCalculationDetails.window.mainTab.form.overheads", locale)
                 + ":", PdfUtil.getArialBold10Dark()));
-        Object reportData2;
         reportData = costCalculation.getField("productionCostMargin");
-        reportData2 = costCalculation.getField("productionCostMarginValue");
+        Object reportData2 = costCalculation.getField("productionCostMarginValue");
         addTableCellAsTable(
                 rightPanelColumn,
                 "\t \t \t"

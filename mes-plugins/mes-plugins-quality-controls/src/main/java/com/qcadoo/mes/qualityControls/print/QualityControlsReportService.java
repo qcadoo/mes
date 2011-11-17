@@ -298,16 +298,16 @@ public class QualityControlsReportService {
 
         Paragraph title = new Paragraph();
 
-        if (type.equals("batch")) {
+        if ("batch".equals(type)) {
             title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah3", locale), PdfUtil
                     .getArialBold11Light()));
-        } else if (type.equals("order")) {
+        } else if ("order".equals(type)) {
             title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah4", locale), PdfUtil
                     .getArialBold11Light()));
-        } else if (type.equals("unit")) {
+        } else if ("unit".equals(type)) {
             title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah5", locale), PdfUtil
                     .getArialBold11Light()));
-        } else if (type.equals("operation")) {
+        } else if ("operation".equals(type)) {
             title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah6", locale), PdfUtil
                     .getArialBold11Light()));
         }
@@ -315,7 +315,7 @@ public class QualityControlsReportService {
         String name = "";
 
         if (product != null) {
-            if (type.equals("operation")) {
+            if ("operation".equals(type)) {
                 name = product.getBelongsToField("operation").getStringField("name");
             } else {
                 name = product.getField("name").toString();
