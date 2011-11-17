@@ -45,10 +45,10 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeService {
 
+    private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
+
     @Autowired
     private ShiftsServiceImpl shiftsService;
-
-    private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 
     @Override
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -86,13 +86,13 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Override
     public Object setDateToField(final Date date) {
-        return new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(date);
+        return new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, Locale.getDefault()).format(date);
     }
 
     @Override
     public Date getDateFromField(final Object value) {
         try {
-            return new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).parse((String) value);
+            return new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, Locale.getDefault()).parse((String) value);
         } catch (ParseException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }

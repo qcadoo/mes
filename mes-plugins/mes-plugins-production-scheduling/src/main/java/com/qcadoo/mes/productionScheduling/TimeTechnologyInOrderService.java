@@ -45,6 +45,16 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class TimeTechnologyInOrderService {
 
+    private static final String FORM_COMPONENT = "form";
+
+    private static final String QUANTITY_COMPONENT = "quantity";
+
+    private static final String START_TIME_COMPONENT = "startTime";
+
+    private static final String STOP_TIME_COMPONENT = "stopTime";
+
+    private static final String REALIZATION_TIME_COMPONENT = "realizationTime";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -60,7 +70,7 @@ public class TimeTechnologyInOrderService {
     public void setVisibleAlert(final ViewDefinitionState viewDefinitionState) {
         ComponentState alert = viewDefinitionState.getComponentByReference("alert");
 
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(FORM_COMPONENT);
 
         if (form.getEntityId() == null) {
             alert.setVisible(true);
@@ -72,11 +82,12 @@ public class TimeTechnologyInOrderService {
     @Transactional
     public void changeRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
-        FieldComponent startTime = (FieldComponent) viewDefinitionState.getComponentByReference("startTime");
-        FieldComponent stopTime = (FieldComponent) viewDefinitionState.getComponentByReference("stopTime");
-        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(FORM_COMPONENT);
+
+        FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference(QUANTITY_COMPONENT);
+        FieldComponent startTime = (FieldComponent) viewDefinitionState.getComponentByReference(START_TIME_COMPONENT);
+        FieldComponent stopTime = (FieldComponent) viewDefinitionState.getComponentByReference(STOP_TIME_COMPONENT);
+        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT);
 
         if (!StringUtils.hasText((String) plannedQuantity.getFieldValue())
                 || !StringUtils.hasText((String) startTime.getFieldValue())) {
@@ -120,22 +131,23 @@ public class TimeTechnologyInOrderService {
                 dateFrom = shiftsService.findDateFromForOrder(dateTo, maxPathTime);
             }
 
-            if (dateFrom != null) {
-                startTime.setFieldValue(orderRealizationTimeService.setDateToField(dateFrom));
-            } else {
+            if (dateFrom == null) {
                 startTime.setFieldValue(null);
+            } else {
+                startTime.setFieldValue(orderRealizationTimeService.setDateToField(dateFrom));
             }
 
-            if (dateTo != null) {
-                stopTime.setFieldValue(orderRealizationTimeService.setDateToField(dateTo));
-            } else {
+            if (dateTo == null) {
                 stopTime.setFieldValue(null);
+            } else {
+                stopTime.setFieldValue(orderRealizationTimeService.setDateToField(dateTo));
+
             }
         }
     }
 
     public void disableRealizationTime(final ViewDefinitionState viewDefinitionState) {
-        viewDefinitionState.getComponentByReference("realizationTime").setEnabled(false);
+        viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT).setEnabled(false);
     }
 
     public void clearFieldValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
