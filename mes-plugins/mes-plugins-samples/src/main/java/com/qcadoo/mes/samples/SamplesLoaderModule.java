@@ -80,7 +80,7 @@ public class SamplesLoaderModule extends Module {
             "zipCode", "city", "state", "country", "email", "addressWww", "phone" };
 
     private static final String[] PRODUCT_ATTRIBUTES = new String[] { "ean", "name", "product_nr", "batch", "costForNumber",
-            "nominalCost", "lastPurchaseCost", "averageCost", "typeOfProduct" };
+            "nominalCost", "lastPurchaseCost", "averageCost", "typeOfProduct", "unit" };
 
     private static final String[] DICTIONARY_ATTRIBUTES = new String[] { "name", "item" };
 
@@ -492,7 +492,7 @@ public class SamplesLoaderModule extends Module {
         if (!values.get("typeOfProduct").isEmpty()) {
             product.setField("typeOfMaterial", values.get("typeOfProduct"));
         }
-        product.setField("unit", getRandomUnit());
+        product.setField("unit", values.get("unit"));
 
         if (isEnabled("costNormsForProduct")) {
             product.setField("costForNumber", values.get("costForNumber"));
@@ -1060,10 +1060,6 @@ public class SamplesLoaderModule extends Module {
         Long total = (long) dataDefinitionService.get("orders", "order").find().list().getTotalNumberOfEntities();
         return dataDefinitionService.get("orders", "order").find().setFirstResult(RANDOM.nextInt(total.intValue()))
                 .setMaxResults(1).list().getEntities().get(0);
-    }
-
-    private String getRandomUnit() {
-        return UNITS.get(RANDOM.nextInt(UNITS.size()));
     }
 
     private void addParameters() {

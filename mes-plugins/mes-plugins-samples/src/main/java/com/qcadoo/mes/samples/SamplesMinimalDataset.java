@@ -52,6 +52,8 @@ import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
+
 @Component
 public class SamplesMinimalDataset extends Module {
 
@@ -86,7 +88,7 @@ public class SamplesMinimalDataset extends Module {
             if (isEnabled("productionCounting")) {
                 setParameters();
             }
-            if (isEnabled("basic")) {
+            if (isEnabled(BasicConstants.PLUGIN_IDENTIFIER)) {
                 readDataFromXML("units", UNITS_ATTRIBUTES);
                 readDataFromXML("shifts", SHIFTS_ATTRIBUTES);
                 readDataFromXML("users", USERS_ATTRIBUTES);
@@ -130,7 +132,7 @@ public class SamplesMinimalDataset extends Module {
         }
     }
 
-    private void readData(String[] attributes, String type, NodeList nodeLst, int s) {
+    private void readData(final String[] attributes, final String type, final NodeList nodeLst, final int s) {
         Map<String, String> values = new HashMap<String, String>();
         Node fstNode = nodeLst.item(s);
 
@@ -152,8 +154,8 @@ public class SamplesMinimalDataset extends Module {
         }
     }
 
-    private void addCompany(Map<String, String> values) {
-        Entity company = dataDefinitionService.get("basic", "company").create();
+    private void addCompany(final Map<String, String> values) {
+        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).create();
 
         company.setField("companyFullName", values.get("companyFullName"));
         company.setField("tax", values.get("tax"));
@@ -174,9 +176,17 @@ public class SamplesMinimalDataset extends Module {
     }
 
     private void setParameters() {
-        Entity params = dataDefinitionService.get("basic", "parameter").create();
-        Entity currency = dataDefinitionService.get("basic", "currency").find()
-                .add(SearchRestrictions.eq("alphabeticCode", "USD")).uniqueResult();
+        Entity params = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).create();
+
+        String alphabeticCode = "";
+
+        if ("pl".equals(locale))
+            alphabeticCode = "PLN";
+        else
+            alphabeticCode = "USD";
+
+        Entity currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).find()
+                .add(SearchRestrictions.eq("alphabeticCode", alphabeticCode)).uniqueResult();
 
         params.setField("registerQuantityInProduct", true);
         params.setField("registerQuantityOutProduct", true);
@@ -205,7 +215,7 @@ public class SamplesMinimalDataset extends Module {
     }
 
     private void addShift(final Map<String, String> values) {
-        Entity shift = dataDefinitionService.get("basic", "shift").create();
+        Entity shift = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).create();
 
         shift.setField("name", values.get("name"));
         shift.setField("mondayWorking", values.get("mondayWorking"));
@@ -242,7 +252,8 @@ public class SamplesMinimalDataset extends Module {
     }
 
     private boolean databaseHasToBePrepared() {
-        return dataDefinitionService.get("basic", "parameter").find().list().getTotalNumberOfEntities() == 0;
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().list()
+                .getTotalNumberOfEntities() == 0;
     }
 
     private boolean isEnabled(final String pluginIdentifier) {
