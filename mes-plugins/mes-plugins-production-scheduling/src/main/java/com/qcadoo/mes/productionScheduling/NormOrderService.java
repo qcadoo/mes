@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -44,14 +45,18 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class NormOrderService {
 
+    private static final String TECHNOLOGY_FIELD = "technology";
+
+    private static final String COUNT_REALIZED_FIELD = "countRealized";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public boolean checkIfChosenTechnologyTreeIsNotEmpty(final DataDefinition orderDataDefinition, final Entity order) {
-        Entity technology = order.getBelongsToField("technology");
+        Entity technology = order.getBelongsToField(TECHNOLOGY_FIELD);
         List<Entity> technologyTree = technology.getTreeField("operationComponents");
         if (technologyTree.isEmpty()) {
-            order.addError(orderDataDefinition.getField("technology"), "productionScheduling.order.emptyTechnologyTree");
+            order.addError(orderDataDefinition.getField(TECHNOLOGY_FIELD), "productionScheduling.order.emptyTechnologyTree");
             return false;
         }
         return true;
@@ -62,11 +67,12 @@ public class NormOrderService {
         if (!checkIfChosenTechnologyTreeIsNotEmpty(dataDefinition, entity)) {
             return;
         }
-        DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
+        DataDefinition orderOperationComponentDD = dataDefinitionService.get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
+                ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT);
 
         EntityTree orderOperationComponents = entity.getTreeField("orderOperationComponents");
 
-        Entity technology = entity.getBelongsToField("technology");
+        Entity technology = entity.getBelongsToField(TECHNOLOGY_FIELD);
 
         if (technology == null) {
             if (orderOperationComponents != null && orderOperationComponents.size() > 0) {
@@ -76,7 +82,7 @@ public class NormOrderService {
         }
 
         if (orderOperationComponents != null && orderOperationComponents.size() > 0
-                && orderOperationComponents.getRoot().getBelongsToField("technology").getId().equals(technology.getId())) {
+                && orderOperationComponents.getRoot().getBelongsToField(TECHNOLOGY_FIELD).getId().equals(technology.getId())) {
             return;
         }
 
@@ -103,7 +109,7 @@ public class NormOrderService {
                     orderOperationComponent);
         } else {
             Entity referenceTechnology = operationComponent.getBelongsToField("referenceTechnology");
-            createOrCopyOrderOperationComponent(referenceTechnology.getTreeField("operationComponents").getRoot(), order,
+            createOrCopyOrderOperationComponent(referenceTechnology.getTreeField("orderOperationComponents").getRoot(), order,
                     technology, orderOperationComponentDD, orderOperationComponent);
         }
 
@@ -119,8 +125,10 @@ public class NormOrderService {
         orderOperationComponent.setField("tpz", operationComponent.getField("tpz"));
         orderOperationComponent.setField("tj", operationComponent.getField("tj"));
         orderOperationComponent.setField("productionInOneCycle", operationComponent.getField("productionInOneCycle"));
-        orderOperationComponent.setField("countRealized",
-                operationComponent.getField("countRealized") != null ? operationComponent.getField("countRealized") : "01all");
+        orderOperationComponent.setField(
+                COUNT_REALIZED_FIELD,
+                operationComponent.getField(COUNT_REALIZED_FIELD) == null ? "01all" : operationComponent
+                        .getField(COUNT_REALIZED_FIELD));
         orderOperationComponent.setField("countMachine", operationComponent.getField("countMachine"));
         orderOperationComponent.setField("timeNextOperation", operationComponent.getField("timeNextOperation"));
         orderOperationComponent.setField("nodeNumber", operationComponent.getField("nodeNumber"));
@@ -157,7 +165,7 @@ public class NormOrderService {
         FieldComponent tj = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
         FieldComponent productionInOneCycle = (FieldComponent) viewDefinitionState
                 .getComponentByReference("productionInOneCycle");
-        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
+        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED_FIELD);
         FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
         FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference("timeNextOperation");
 

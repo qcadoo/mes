@@ -50,13 +50,7 @@ CREATE TABLE simplematerialbalance_simplematerialbalanceorderscomponent
   id bigint NOT NULL,
   simplematerialbalance_id bigint,
   order_id bigint,
-  CONSTRAINT simplematerialbalance_simplematerialbalanceorderscomponent_pkey PRIMARY KEY (id),
-  CONSTRAINT simplematerialbalance_simplematerialbalanceorderscomponent_fkey_simplematerialbalance FOREIGN KEY (simplematerialbalance_id)
-      REFERENCES simplematerialbalance_simplematerialbalance (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT simplematerialbalance_simplematerialbalanceorderscomponent_fkey_order FOREIGN KEY (order_id)
-      REFERENCES orders_order (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+  CONSTRAINT simplematerialbalance_simplematerialbalanceorderscomponent_pkey PRIMARY KEY (id)  
 )
 WITH (
   OIDS=FALSE
@@ -72,13 +66,7 @@ CREATE TABLE simplematerialbalance_simplematerialbalancestockareascomponent
   id bigint NOT NULL,
   simplematerialbalance_id bigint,
   stockareas_id bigint,
-  CONSTRAINT simplematerialbalance_simplematerialbalancestockareascompo_pkey PRIMARY KEY (id),
-  CONSTRAINT simplematerialbalance_simplematerialbalancestockareascompo_fkey_stockareas FOREIGN KEY (stockareas_id)
-      REFERENCES materialflow_stockareas (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT simplematerialbalance_simplematerialbalancestockareascompo_fkey_simplematerialbalance FOREIGN KEY (simplematerialbalance_id)
-      REFERENCES simplematerialbalance_simplematerialbalance (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+  CONSTRAINT simplematerialbalance_simplematerialbalancestockareascomponent_pkey PRIMARY KEY (id) 
 )
 WITH (
   OIDS=FALSE
