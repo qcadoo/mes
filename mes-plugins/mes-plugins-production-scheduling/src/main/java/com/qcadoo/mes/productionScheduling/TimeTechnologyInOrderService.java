@@ -58,14 +58,11 @@ public class TimeTechnologyInOrderService {
     private TranslationService translationService;
 
     public void setVisibleAlert(final ViewDefinitionState viewDefinitionState) {
-        // ieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
         ComponentState alert = viewDefinitionState.getComponentByReference("alert");
 
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
 
         if (form.getEntityId() == null) {
-            // if (realizationTime == null || realizationTime.getFieldValue() == null /* ||
-            // "0".equals(realizationTime.getFieldValue()) */) {
             alert.setVisible(true);
         } else {
             alert.setVisible(false);
