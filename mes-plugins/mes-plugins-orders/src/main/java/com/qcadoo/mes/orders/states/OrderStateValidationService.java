@@ -54,7 +54,7 @@ public class OrderStateValidationService {
     private ShiftsServiceImpl shiftsServiceImpl;
 
     @Autowired
-    public TranslationService translationService;
+    TranslationService translationService;
 
     public void saveLogging(final Entity order, final String previousState, final String currentState) {
         Entity logging = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_LOGGING).create();

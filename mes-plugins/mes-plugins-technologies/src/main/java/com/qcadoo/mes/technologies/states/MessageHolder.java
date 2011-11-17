@@ -2,17 +2,18 @@ package com.qcadoo.mes.technologies.states;
 
 import com.qcadoo.view.api.ComponentState.MessageType;
 
-public class MessageHolder {
+public final class MessageHolder {
 
-    private String targetReferenceName;
+    private final String targetReferenceName;
 
-    private String messageKey;
+    private final String messageKey;
 
-    private MessageType messageType;
-    
-    private String[] vars;
+    private final MessageType messageType;
 
-    private MessageHolder(final String messageKey, final String targetReferenceName, final MessageType messageType, String... vars) {
+    private final String[] vars;
+
+    private MessageHolder(final String messageKey, final String targetReferenceName, final MessageType messageType,
+            String... vars) {
         this.messageKey = messageKey;
         this.targetReferenceName = targetReferenceName;
         this.messageType = messageType;
@@ -46,7 +47,7 @@ public class MessageHolder {
     public MessageType getMessageType() {
         return messageType;
     }
-    
+
     public String[] getVars() {
         return vars;
     }

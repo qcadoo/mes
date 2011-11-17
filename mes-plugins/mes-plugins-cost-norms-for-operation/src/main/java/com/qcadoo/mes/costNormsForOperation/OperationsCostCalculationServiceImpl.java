@@ -68,9 +68,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     @Autowired
     private TechnologyService technologyService;
 
-    private final static Logger LOG = LoggerFactory.getLogger(OperationsCostCalculationServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OperationsCostCalculationServiceImpl.class);
 
-    private final static Set<String> PATH_COST_KEYS = Sets.newHashSet(LABOR_HOURLY_COST, MACHINE_HOURLY_COST);
+    private static final Set<String> PATH_COST_KEYS = Sets.newHashSet(LABOR_HOURLY_COST, MACHINE_HOURLY_COST);
 
     @Override
     public void calculateOperationsCost(final Entity costCalculation) {

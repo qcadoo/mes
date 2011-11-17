@@ -7,16 +7,16 @@
  * This file is part of Qcadoo.
  *
  * Qcadoo is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
+ * it under the terms of the GNU Affero General  License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Affero General Public License for more details.
+ * See the GNU Affero General  License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General  License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
@@ -33,15 +33,15 @@ import com.qcadoo.model.api.Entity;
 
 public interface ShiftsService {
 
-    public LocalTime[][] convertDayHoursToInt(final String string);
+    LocalTime[][] convertDayHoursToInt(final String string);
 
-    public List<ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo);
+    List<ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo);
 
-    public Date findDateFromForOrder(final Date dateTo, final long seconds);
+    Date findDateFromForOrder(final Date dateTo, final long seconds);
 
-    public Date findDateToForOrder(final Date dateFrom, final long seconds);
+    Date findDateToForOrder(final Date dateFrom, final long seconds);
 
-    public List<ShiftHour> getHoursForShift(final Entity shift, final Date dateFrom, final Date dateTo);
+    List<ShiftHour> getHoursForShift(final Entity shift, final Date dateFrom, final Date dateTo);
 
-    public Entity getShiftFromDate(final Date date);
+    Entity getShiftFromDate(final Date date);
 }

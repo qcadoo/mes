@@ -104,7 +104,7 @@ public class OrderStatesChangingServiceTest {
         given(newOrder.getStringField("name")).willReturn(null);
 
         // when
-        List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newOrder, oldOrder);
+        orderStatesChangingService.performChangeState(newOrder, oldOrder);
         // then
     }
 
@@ -121,7 +121,7 @@ public class OrderStatesChangingServiceTest {
         given(newOrder.getField("dateTo")).willReturn(null);
 
         // when
-        List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newOrder, oldOrder);
+        orderStatesChangingService.performChangeState(newOrder, oldOrder);
         // then
     }
 
@@ -134,7 +134,7 @@ public class OrderStatesChangingServiceTest {
         given(newOrder.getStringField("name")).willReturn("Order1");
 
         // when
-        List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newOrder, oldOrder);
+        orderStatesChangingService.performChangeState(newOrder, oldOrder);
         // then
 
     }
@@ -148,7 +148,7 @@ public class OrderStatesChangingServiceTest {
         given(newOrder.getStringField("name")).willReturn("Order1");
 
         // when
-        List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newOrder, oldOrder);
+        orderStatesChangingService.performChangeState(newOrder, oldOrder);
         // then
 
     }
@@ -162,7 +162,7 @@ public class OrderStatesChangingServiceTest {
         given(newOrder.getStringField("name")).willReturn("Order1");
 
         // when
-        List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newOrder, oldOrder);
+        orderStatesChangingService.performChangeState(newOrder, oldOrder);
         // then
 
     }
@@ -176,7 +176,7 @@ public class OrderStatesChangingServiceTest {
         given(newOrder.getStringField("name")).willReturn("Order1");
 
         // when
-        List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newOrder, oldOrder);
+        orderStatesChangingService.performChangeState(newOrder, oldOrder);
         // then
 
     }
@@ -190,7 +190,7 @@ public class OrderStatesChangingServiceTest {
         given(newOrder.getStringField("name")).willReturn("Order1");
 
         // when
-        List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newOrder, oldOrder);
+        orderStatesChangingService.performChangeState(newOrder, oldOrder);
         // then
 
     }
@@ -204,7 +204,7 @@ public class OrderStatesChangingServiceTest {
         given(newOrder.getStringField("name")).willReturn("Order1");
 
         // when
-        List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newOrder, oldOrder);
+        orderStatesChangingService.performChangeState(newOrder, oldOrder);
         // then
 
     }
@@ -218,7 +218,7 @@ public class OrderStatesChangingServiceTest {
         given(newOrder.getStringField("name")).willReturn("Order1");
 
         // when
-        List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newOrder, oldOrder);
+        orderStatesChangingService.performChangeState(newOrder, oldOrder);
         // then
 
     }
@@ -232,7 +232,7 @@ public class OrderStatesChangingServiceTest {
         given(newOrder.getStringField("name")).willReturn("Order1");
 
         // when
-        List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newOrder, oldOrder);
+        orderStatesChangingService.performChangeState(newOrder, oldOrder);
         // then
 
     }
@@ -246,7 +246,7 @@ public class OrderStatesChangingServiceTest {
         given(newOrder.getStringField("name")).willReturn("Order1");
 
         // when
-        List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newOrder, oldOrder);
+        orderStatesChangingService.performChangeState(newOrder, oldOrder);
         // then
 
     }

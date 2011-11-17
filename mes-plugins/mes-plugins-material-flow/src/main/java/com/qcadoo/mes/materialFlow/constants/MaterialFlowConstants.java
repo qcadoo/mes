@@ -25,44 +25,43 @@ package com.qcadoo.mes.materialFlow.constants;
 
 public interface MaterialFlowConstants {
 
-    public static final String PLUGIN_IDENTIFIER = "materialFlow";
-    
-    public static final String PLUGIN_IDENTIFIER_BASIC = "basic";
+    String PLUGIN_IDENTIFIER = "materialFlow";
+
+    String PLUGIN_IDENTIFIER_BASIC = "basic";
 
     // MODEL
-    public static final String MODEL_STOCK_CORRECTION = "stockCorrection";
+    String MODEL_STOCK_CORRECTION = "stockCorrection";
 
-    public static final String MODEL_MATERIAL_FLOW = "materialFlow";
+    String MODEL_MATERIAL_FLOW = "materialFlow";
 
-    public static final String MODEL_TRANSFER = "transfer";
+    String MODEL_TRANSFER = "transfer";
 
-    public static final String MODEL_STOCK_AREAS = "stockAreas";
+    String MODEL_STOCK_AREAS = "stockAreas";
 
-    public static final String MODEL_MATERIALS_IN_STOCK_AREAS = "materialsInStockAreas";
+    String MODEL_MATERIALS_IN_STOCK_AREAS = "materialsInStockAreas";
 
-    public static final String MODEL_PRODUCT = "product";
+    String MODEL_PRODUCT = "product";
 
-    public static final String MODEL_TRANSFORMATIONS = "transformations";
-
+    String MODEL_TRANSFORMATIONS = "transformations";
 
     // VIEW
-    public static final String VIEW_STOCK_CORRECTION_DETAIL = "stockCorrectionDetail";
+    String VIEW_STOCK_CORRECTION_DETAIL = "stockCorrectionDetail";
 
-    public static final String VIEW_STOCK_CORRECTION_LIST = "stockCorrectionDetail";
+    String VIEW_STOCK_CORRECTION_LIST = "stockCorrectionDetail";
 
-    public static final String VIEW_MATERIALS_IN_STOCK_AREAS_DETAILS = "materialsInStockAreasDetails";
+    String VIEW_MATERIALS_IN_STOCK_AREAS_DETAILS = "materialsInStockAreasDetails";
 
-    public static final String VIEW_MATERIALS_IN_STOCK_AREAS_LIST = "materialsInStockAreasList";
+    String VIEW_MATERIALS_IN_STOCK_AREAS_LIST = "materialsInStockAreasList";
 
-    public static final String VIEW_MATERIAL_FLOW_DETAIL = "materialFlowDetail";
+    String VIEW_MATERIAL_FLOW_DETAIL = "materialFlowDetail";
 
-    public static final String VIEW_MATERIAL_FLOW_LIST = "materialFlowList";
+    String VIEW_MATERIAL_FLOW_LIST = "materialFlowList";
 
-    public static final String VIEW_TRANSFER_DETAIL = "transferDetail";
+    String VIEW_TRANSFER_DETAIL = "transferDetail";
 
-    public static final String VIEW_TRANSFER_LIST = "transferList";
+    String VIEW_TRANSFER_LIST = "transferList";
 
-    public static final String VIEW_STOCK_AREAS_DETAIL = "stockAreasDetail";
+    String VIEW_STOCK_AREAS_DETAIL = "stockAreasDetail";
 
-    public static final String VIEW_STOCK_AREAS_LIST = "stockAreasList";
+    String VIEW_STOCK_AREAS_LIST = "stockAreasList";
 }

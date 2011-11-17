@@ -347,10 +347,6 @@ public class SamplesGeneratorModule extends Module {
                 dataDefinitionService.get("technologies", "technologyOperationComponent"), "technology", technology.getId());
     }
 
-    /*
-     * TODO: BAKU clean this mess
-     */
-
     private Entity addOperationComponent(final Entity technology, final Entity parent, Entity operation,
             final int productsComponentsQuantity) {
         Preconditions.checkNotNull(technology, "Technology entity is null");
@@ -499,7 +495,6 @@ public class SamplesGeneratorModule extends Module {
         order.setField("doneQuantity", RANDOM.nextInt(100) + 1);
         order.setField("technology", technology);
         order.setField("externalSynchronized", true);
-
         order.setField("typeOfProductionRecording", "01basic");
 
         order = dataDefinitionService.get("orders", "order").save(order);

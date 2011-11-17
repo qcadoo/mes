@@ -76,7 +76,7 @@ public class OrderGroupsService {
     @Autowired
     private TranslationService translationService;
 
-    private final static Logger LOG = LoggerFactory.getLogger(OrderGroupsService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OrderGroupsService.class);
 
     /* ****** HOOKS ******* */
 

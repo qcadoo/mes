@@ -51,11 +51,10 @@ import com.qcadoo.plugin.api.Module;
 @Component
 public class CurrencyLoaderModule extends Module {
 
-    private static final String[] CURRENCY_ATTRIBUTES = new String[] { "CURRENCY", "ALPHABETICCODE", "ISOCODE",
-            "MINORUNIT" };
+    private static final String[] CURRENCY_ATTRIBUTES = new String[] { "CURRENCY", "ALPHABETICCODE", "ISOCODE", "MINORUNIT" };
 
     private static final Logger LOG = LoggerFactory.getLogger(CurrencyLoaderModule.class);
-    
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -65,26 +64,26 @@ public class CurrencyLoaderModule extends Module {
         if (!databaseHasToBePrepared()) {
             return;
         }
-        
-        if(LOG.isDebugEnabled()) {
+
+        if (LOG.isDebugEnabled()) {
             LOG.debug("Currency table will be populated...");
         }
         readDataFromXML("currency", CURRENCY_ATTRIBUTES);
-        
+
     }
 
     private void readDataFromXML(final String type, final String[] attributes) {
         LOG.info("Loading test data from " + type + ".xml ...");
-        
+
         try {
             DocumentBuilderFactory docBuildFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuild = docBuildFactory.newDocumentBuilder();
-            
-            InputStream file = (InputStream) CurrencyLoaderModule.class.getResourceAsStream("/basic/model/data/" + type + ".xml");
-            
+
+            InputStream file = CurrencyLoaderModule.class.getResourceAsStream("/basic/model/data/" + type + ".xml");
+
             Document doc = docBuild.parse(file);
             doc.getDocumentElement().normalize();
-            
+
             NodeList nodeList = doc.getElementsByTagName("row");
             for (int s = 0; s < nodeList.getLength(); s++) {
                 readData(attributes, type, nodeList, s);
@@ -97,7 +96,7 @@ public class CurrencyLoaderModule extends Module {
             LOG.error(e.getMessage(), e);
         }
     }
-    
+
     private void readData(final String[] attributes, final String type, final NodeList nodeLst, final int s) {
         Map<String, String> values = new HashMap<String, String>();
         Node fstNode = nodeLst.item(s);
@@ -108,12 +107,12 @@ public class CurrencyLoaderModule extends Module {
                 values.put(attribute, value);
             }
         }
-        
+
         if ("currency".equals(type)) {
             addCurrency(values);
         }
     }
-    
+
     private void addCurrency(final Map<String, String> values) {
         Entity currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).create();
 
@@ -137,7 +136,7 @@ public class CurrencyLoaderModule extends Module {
             }
         }
     }
-    
+
     private boolean databaseHasToBePrepared() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).find().list()
                 .getTotalNumberOfEntities() == 0;
