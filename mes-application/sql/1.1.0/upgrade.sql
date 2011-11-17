@@ -51,10 +51,10 @@ CREATE TABLE simplematerialbalance_simplematerialbalanceorderscomponent
   simplematerialbalance_id bigint,
   order_id bigint,
   CONSTRAINT simplematerialbalance_simplematerialbalanceorderscomponent_pkey PRIMARY KEY (id),
-  CONSTRAINT fk9ee8f8914525613e FOREIGN KEY (simplematerialbalance_id)
+  CONSTRAINT simplematerialbalance_simplematerialbalanceorderscomponent_fkey_simplematerialbalance FOREIGN KEY (simplematerialbalance_id)
       REFERENCES simplematerialbalance_simplematerialbalance (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT fk9ee8f891b64bada8 FOREIGN KEY (order_id)
+  CONSTRAINT simplematerialbalance_simplematerialbalanceorderscomponent_fkey_order FOREIGN KEY (order_id)
       REFERENCES orders_order (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 )
@@ -73,10 +73,10 @@ CREATE TABLE simplematerialbalance_simplematerialbalancestockareascomponent
   simplematerialbalance_id bigint,
   stockareas_id bigint,
   CONSTRAINT simplematerialbalance_simplematerialbalancestockareascompo_pkey PRIMARY KEY (id),
-  CONSTRAINT fk71357f46308f12ec FOREIGN KEY (stockareas_id)
+  CONSTRAINT simplematerialbalance_simplematerialbalancestockareascompo_fkey_stockareas FOREIGN KEY (stockareas_id)
       REFERENCES materialflow_stockareas (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT fk71357f464525613e FOREIGN KEY (simplematerialbalance_id)
+  CONSTRAINT simplematerialbalance_simplematerialbalancestockareascompo_fkey_simplematerialbalance FOREIGN KEY (simplematerialbalance_id)
       REFERENCES simplematerialbalance_simplematerialbalance (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 )
@@ -86,7 +86,5 @@ WITH (
 ALTER TABLE simplematerialbalance_simplematerialbalancestockareascomponent OWNER TO postgres;
 
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN qualityControlRequired boolean ;
-
-
 --end
 
