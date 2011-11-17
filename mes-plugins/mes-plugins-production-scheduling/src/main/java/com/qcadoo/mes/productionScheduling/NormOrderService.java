@@ -59,7 +59,7 @@ public class NormOrderService {
 
     @Transactional
     public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity entity) {
-        if (! checkIfChosenTechnologyTreeIsNotEmpty(dataDefinition, entity)) {
+        if (!checkIfChosenTechnologyTreeIsNotEmpty(dataDefinition, entity)) {
             return;
         }
         DataDefinition orderOperationComponentDD = dataDefinitionService.get("productionScheduling", "orderOperationComponent");

@@ -409,7 +409,7 @@ public class TechnologyService {
         }
         technologyOperation.setField("parent", rootNode);
     }
-    
+
     public void toggleDetailsViewEnabled(final ViewDefinitionState view) {
         view.getComponentByReference("state").performEvent(view, "toggleEnabled");
     }

@@ -26,7 +26,6 @@ package com.qcadoo.mes.costNormsForOperation;
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.HOURLY;
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.PIECEWORK;
 import static java.math.BigDecimal.valueOf;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,15 +56,15 @@ public class ParameterizedOperationsCostCalculationServiceTest {
 
     private EntityTreeNode operationComponent;
 
-    private BigDecimal validateLaborHourlyCost, validateMachineHourlyCost, validatePieceworkCost, validateOrderQuantity,
+    private final BigDecimal validateLaborHourlyCost, validateMachineHourlyCost, validatePieceworkCost, validateOrderQuantity,
             validateExpectedMachine, validateExpectedLabor, validateNumberOfOperations, validateExpectedPieceworkCost,
             validationOutputQuantity;
 
     int realizationTime, expectedRealizationTime;
 
-    private OperationsCostCalculationConstants validateMode;
+    private final OperationsCostCalculationConstants validateMode;
 
-    private boolean validateIncludeTPZs;
+    private final boolean validateIncludeTPZs;
 
     @Parameters
     public static Collection<Object[]> data() {
@@ -104,13 +103,13 @@ public class ParameterizedOperationsCostCalculationServiceTest {
         costCalculation = mock(Entity.class);
         EntityList outputProducts = mock(EntityList.class);
         Entity outputProduct = mock(Entity.class);
-        
+
         Iterator<Entity> outputProductsIterator = mock(Iterator.class);
         EntityTree operationComponents = mock(EntityTree.class);
         operationComponent = mock(EntityTreeNode.class);
-        
+
         Iterator<Entity> operationComponentsIterator = mock(Iterator.class);
-        
+
         when(costCalculation.getDataDefinition()).thenReturn(dataDefinition);
         when(dataDefinition.getName()).thenReturn("costCalculation");
         when(costCalculation.getTreeField("calculationOperationComponents")).thenReturn(operationComponents);

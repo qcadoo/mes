@@ -82,7 +82,7 @@ public class CostCalculationViewService {
     @Autowired
     private TranslationService translationService;
 
-    private final static String EMPTY = "";
+    private static final String EMPTY = "";
 
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
