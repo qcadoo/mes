@@ -23,3 +23,70 @@ WITH (OIDS=FALSE);
 ALTER TABLE technologies_logging OWNER TO postgres;
 
 -- #407 end
+
+--  TABLE Simple material balance;
+
+CREATE TABLE simplematerialbalance_simplematerialbalance
+(
+  id bigint NOT NULL,
+  "name" character varying(255),
+  date timestamp without time zone,
+  worker character varying(255),
+  onlycomponents boolean DEFAULT true,
+  generated boolean,
+  filename character varying(255),
+  CONSTRAINT simplematerialbalance_simplematerialbalance_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE simplematerialbalance_simplematerialbalance OWNER TO postgres;
+
+-- end
+--  TABLE Simple material balance orders component
+
+CREATE TABLE simplematerialbalance_simplematerialbalanceorderscomponent
+(
+  id bigint NOT NULL,
+  simplematerialbalance_id bigint,
+  order_id bigint,
+  CONSTRAINT simplematerialbalance_simplematerialbalanceorderscomponent_pkey PRIMARY KEY (id),
+  CONSTRAINT fk9ee8f8914525613e FOREIGN KEY (simplematerialbalance_id)
+      REFERENCES simplematerialbalance_simplematerialbalance (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk9ee8f891b64bada8 FOREIGN KEY (order_id)
+      REFERENCES orders_order (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE simplematerialbalance_simplematerialbalanceorderscomponent OWNER TO postgres;
+
+-- end
+
+--  TABLE Simple material balances stock areas component
+
+CREATE TABLE simplematerialbalance_simplematerialbalancestockareascomponent
+(
+  id bigint NOT NULL,
+  simplematerialbalance_id bigint,
+  stockareas_id bigint,
+  CONSTRAINT simplematerialbalance_simplematerialbalancestockareascompo_pkey PRIMARY KEY (id),
+  CONSTRAINT fk71357f46308f12ec FOREIGN KEY (stockareas_id)
+      REFERENCES materialflow_stockareas (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk71357f464525613e FOREIGN KEY (simplematerialbalance_id)
+      REFERENCES simplematerialbalance_simplematerialbalance (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE simplematerialbalance_simplematerialbalancestockareascomponent OWNER TO postgres;
+
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN qualityControlRequired boolean ;
+
+
+--end
+
