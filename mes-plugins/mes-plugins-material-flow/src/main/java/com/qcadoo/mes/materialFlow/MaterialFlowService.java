@@ -60,7 +60,7 @@ public class MaterialFlowService {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public BigDecimal calculateShouldBeInStockArea(final String stockAreas, final String product, final String forDate) {
+    public BigDecimal calculateShouldBeInStockArea(final Long stockAreas, final String product, final String forDate) {
 
         BigDecimal countProductIn = BigDecimal.ZERO;
         BigDecimal countProductOut = BigDecimal.ZERO;
@@ -76,11 +76,10 @@ public class MaterialFlowService {
 
         DataDefinition dataDefStockAreas = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_STOCK_AREAS);
-
-        Long stockAreasId = dataDefStockAreas.find("where number = '" + stockAreas + "'").uniqueResult().getId();
+        Long stockAreasId = stockAreas;
         Long productId = Long.valueOf(product);
 
-        Entity resultDataCorrection = transferDataCorrection.find().add(SearchRestrictions.eq("stockAreas.id", stockAreasId))
+        Entity resultDataCorrection = transferDataCorrection.find().add(SearchRestrictions.eq("stockAreas.id", stockAreas))
                 .add(SearchRestrictions.eq("product.id", productId)).addOrder(SearchOrders.desc("stockCorrectionDate"))
                 .setMaxResults(1).uniqueResult();
 
@@ -149,7 +148,7 @@ public class MaterialFlowService {
         if (stockAreas != null && product != null && date != null) {
             if (stockAreas.getFieldValue() != null && product.getFieldValue() != null
                     && !date.getFieldValue().toString().equals("")) {
-                String stockAreasNumber = stockAreas.getFieldValue().toString();
+                Long stockAreasNumber = (Long) stockAreas.getFieldValue();
                 String productNumber = product.getFieldValue().toString();
                 String forDate = date.getFieldValue().toString();
 
@@ -249,9 +248,9 @@ public class MaterialFlowService {
 
         for (Entity component : stockAreas) {
             Entity stockArea = (Entity) component.getField("stockAreas");
-            String stockAreaNumber = stockArea.getField("number").toString();
+            Long stockAreaNumber = (Long) stockArea.getField("number");
 
-            List<Entity> products = getProductsSeenInStockArea(stockAreaNumber);
+            List<Entity> products = getProductsSeenInStockArea(stockAreaNumber.toString());
 
             String forDate = ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString();
             for (Entity product : products) {
