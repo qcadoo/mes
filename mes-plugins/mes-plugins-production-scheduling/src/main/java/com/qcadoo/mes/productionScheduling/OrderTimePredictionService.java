@@ -79,7 +79,7 @@ public class OrderTimePredictionService {
         dateTo.setEnabled(false);
         realizationTime.setEnabled(false);
         countTimeOfTechnology.setEnabled(false);
-        
+
         quantity.requestComponentUpdateState();
         dateFrom.requestComponentUpdateState();
         dateTo.requestComponentUpdateState();
@@ -170,8 +170,7 @@ public class OrderTimePredictionService {
     }
 
     public void disableRealizationTime(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
-        realizationTime.setEnabled(false);
+        viewDefinitionState.getComponentByReference("realizationTime").setEnabled(false);
     }
 
     public void clearFieldValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
