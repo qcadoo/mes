@@ -105,12 +105,6 @@ public class SamplesLoaderModule extends Module {
             "tuesdayHours", "wensdayWorking", "wensdayHours", "thursdayWorking", "thursdayHours", "fridayWorking", "fridayHours",
             "saturdayWorking", "saturdayHours", "sundayWorking", "sundayHours" };
 
-    private static final String[] USED_PRODUCTS_ATTRIBUTES = new String[] { "order", "product", "planned_quantity",
-            "used_quantity" };
-
-    private static final String[] PRODUCED_PRODUCTS_ATTRIBUTES = new String[] { "order", "product", "planned_quantity",
-            "produced_quantity" };
-
     private static final Random RANDOM = new Random(System.currentTimeMillis());
 
     @Value("${loadTestData}")
@@ -173,12 +167,6 @@ public class SamplesLoaderModule extends Module {
                 }
                 if (isEnabled("workPlans")) {
                     addWorkPlans();
-                }
-                if (isEnabled("usedProducts")) {
-                    readDataFromXML("usedProducts", USED_PRODUCTS_ATTRIBUTES);
-                }
-                if (isEnabled("producedProducts")) {
-                    readDataFromXML("producedProducts", PRODUCED_PRODUCTS_ATTRIBUTES);
                 }
             }
         } else {
@@ -271,10 +259,6 @@ public class SamplesLoaderModule extends Module {
             addMachine(values);
         } else if ("shifts".equals(type)) {
             addShifts(values);
-        } else if ("producedProducts".equals(type)) {
-            addProducedProducts(values);
-        } else if ("usedProducts".equals(type)) {
-            addUsedProducts(values);
         }
     }
 
@@ -431,47 +415,6 @@ public class SamplesLoaderModule extends Module {
             throw new IllegalStateException("Saved entity have validation errors" + values.get("name"));
         }
 
-    }
-
-    private void addUsedProducts(final Map<String, String> values) {
-        Entity usedProduct = dataDefinitionService.get("usedProducts", "usedProducts").create();
-
-        usedProduct.setField("id", values.get("id"));
-        usedProduct.setField("order", values.get("order"));
-        usedProduct.setField("product", values.get("product"));
-        usedProduct.setField("plannedQuantity", values.get("planned_quantity"));
-        usedProduct.setField("usedQuantity", values.get("used_quantity"));
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test used product item {used product of order=" + usedProduct.getField("order") + "}");
-        }
-
-        usedProduct = dataDefinitionService.get("usedProducts", "usedProducts").save(usedProduct);
-
-        if (!usedProduct.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
-    }
-
-    private void addProducedProducts(final Map<String, String> values) {
-
-        Entity producedProducts = dataDefinitionService.get("producedProducts", "producedProducts").create();
-
-        producedProducts.setField("id", values.get("id"));
-        producedProducts.setField("order", values.get("order"));
-        producedProducts.setField("product", values.get("product"));
-        producedProducts.setField("plannedQuantity", values.get("planned_quantity"));
-        producedProducts.setField("producedQuantity", values.get("produced_quantity"));
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test used product item {produced product of order=" + producedProducts.getField("order") + "}");
-        }
-
-        producedProducts = dataDefinitionService.get("producedProducts", "producedProducts").save(producedProducts);
-
-        if (!producedProducts.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
     }
 
     private void addProduct(final Map<String, String> values) {
