@@ -57,6 +57,8 @@
 			method="checkIfProductIsNotRemoved" />
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="checkIfUnitSampligNrIsReq" />
+		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService" 
+			method="invalidateIfBelongsToAcceptedTechnology" />
 		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
 			method="clearMasterOnCopy" />
 		<onSave class="com.qcadoo.mes.technologies.TechnologyService"

@@ -49,6 +49,9 @@ public class NormOrderService {
 
     public boolean checkIfChosenTechnologyTreeIsNotEmpty(final DataDefinition orderDataDefinition, final Entity order) {
         Entity technology = order.getBelongsToField("technology");
+        if (technology == null) {
+            return true;
+        }
         List<Entity> technologyTree = technology.getTreeField("operationComponents");
         if (technologyTree.isEmpty()) {
             order.addError(orderDataDefinition.getField("technology"), "productionScheduling.order.emptyTechnologyTree");

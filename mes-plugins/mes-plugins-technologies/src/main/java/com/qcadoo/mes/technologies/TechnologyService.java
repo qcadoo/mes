@@ -413,6 +413,43 @@ public class TechnologyService {
     public void toggleDetailsViewEnabled(final ViewDefinitionState view) {
         view.getComponentByReference("state").performEvent(view, "toggleEnabled");
     }
+    
+    public boolean invalidateIfBelongsToAcceptedTechnology(final DataDefinition dataDefinition, final Entity entity) {
+        Entity technology = null;
+        String errorMessageKey = "technologies.technology.state.error.modifyBelongsToAcceptedTechnology";
+        if ("technology".equals(dataDefinition.getName())) {
+            technology = entity;
+            errorMessageKey = "technologies.technology.state.error.modifyAcceptedTechnology";
+        } else if ("technologyOperationComponent".equals(dataDefinition.getName())) {
+            technology = entity.getBelongsToField("technology");
+        } else if ("operationProductOutComponent".equals(dataDefinition.getName())) {
+            technology = entity.getBelongsToField("operationComponent").getBelongsToField("technology");
+        } else if ("operationProductInComponent".equals(dataDefinition.getName())) {
+            
+        }
+        
+        if (technology == null || technology.getId() == null) {
+            return true;
+        }
+
+        Entity existingTechnology = technology.getDataDefinition().get(technology.getId());
+        if (isTechnologyIsAlreadyAccepted(technology, existingTechnology)) {
+            entity.addGlobalError(errorMessageKey, technology.getStringField("name"));
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean isTechnologyIsAlreadyAccepted(final Entity technology, final Entity existingTechnology) {
+        if (technology == null || existingTechnology == null) {
+            return false;
+        }
+        String technologyState = technology.getStringField("state");
+        String existingTechnologyState = existingTechnology.getStringField("state");
+        
+        return "accepted".equalsIgnoreCase(technologyState)  && technologyState.equalsIgnoreCase(existingTechnologyState);
+    }
 
     private boolean productComponentsContainProduct(List<Entity> components, Entity product) {
         boolean contains = false;

@@ -140,6 +140,7 @@
 											
 										acceptState.disable();
 										acceptState.forState="accepted";
+										acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
 
 										cancelState.disable();
 										cancelState.forState="declined";

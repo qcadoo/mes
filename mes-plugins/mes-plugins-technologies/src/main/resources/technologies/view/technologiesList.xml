@@ -42,12 +42,15 @@
 		<component type="grid" name="technologies" reference="grid">
 			<script>
 						<![CDATA[
+									var toggleRibbonItems = ["actions.delete", "statuses.activate", "statuses.deactivate"];
+						
 									this.addOnChangeListener({
 										onChange: function(selectedEntitiesArray) {
-											if (!selectedEntitiesArray) {
-												return;
+											if (selectedEntitiesArray && selectedEntitiesArray.length > 0) {
+												updateRibbon(selectedEntitiesArray);
+											} else {
+												resetRibbon();
 											}
-											updateRibbon(selectedEntitiesArray);
 										}
 									});
 									
@@ -61,48 +64,58 @@
 										}
 									}
 									
-									/*function toggleEditable(state) {
-										var enabled = state == "draft";
-										#{window}.setEnabled(enabled, true);
-										
-										var toggleRibbonItems = [ "actions.delete", "statuses.activate", "statuses.deactivate" ];
-										for (var i in toggleRibbonItems) {
-											var ribbonItemName = toggleRibbonItems[i];
-											QCD.info(i);
-											QCD.info(toggleRibbonItems);
-											QCD.info(ribbonItemName);
-											var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
-											
+									function resetRibbon() {
+										for (var elementKey in toggleRibbonItems) {
+											getRibbonItem(toggleRibbonItems[elementKey]).disable();
+										}
+										getRibbonItem("status.acceptTechnology").disable();
+										getRibbonItem("status.cancelTechnology").disable();
+									}
+									
+									function updateRibbon(selectedEntitiesArray) {
+										var locked = shouldLockStatusRibbonItems(selectedEntitiesArray);
+										var lockedMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}";
+										var differentStatesMessage = "#{translate(technologies.technologiesList.window.ribbon.status.differentStates)}";
+										var differentStates = statesAreDifferent(selectedEntitiesArray);
+
+										for (var elementKey in toggleRibbonItems) {
+											var ribbonItem = getRibbonItem(toggleRibbonItems[elementKey]);
 											if (!ribbonItem) {
 												continue;
 											}
-											
-											if (enabled) {
-												ribbonItem.enable();
+
+											if (locked && differentStates) {
+												ribbonItem.disable(differentStatesMessage);
+											} else if (locked) {
+												ribbonItem.disable(lockedMessage);
 											} else {
-												ribbonItem.disable("#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}");
+												ribbonItem.enable();
 											}
 										}
-										if (state == "declined" || state == "outdated") {
-											#{window}.getRibbonItem("actions.delete").enable();
-										}
-									}*/
-									
-									function updateRibbon(selectedEntitiesArray) {
-										var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
-										var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
+										getRibbonItem("actions.delete").disable();
 										
-										acceptState.disable();
+										if (!differentStates) {
+											var state = selectedEntitiesArray[0].fields.state;
+										}
+										
+										if (state && state != "accepted") {
+											getRibbonItem("actions.delete").enable();
+										}
+
+										var acceptState = getRibbonItem("status.acceptTechnology");
+										var cancelState = getRibbonItem("status.cancelTechnology");
+
+										acceptState.disable();										
 										acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
 										acceptState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.acceptTechnology)}");
 										cancelState.disable();
 										
-										if (selectedEntitiesArray.length != 1) {
+										if (!state) {
+											acceptState.disable(differentStatesMessage);
+											cancelState.disable(differentStatesMessage);
 											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.cancelTechnology)}");
 											return;
 										}
-										
-										var state = selectedEntitiesArray[0].fields.state
 										
 										acceptState.forState="accepted";
 										cancelState.forState="declined";
@@ -113,16 +126,39 @@
 											acceptState.enable();
 											cancelState.enable();
 										} else if (state == "accepted") {
+											acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
+											acceptState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.acceptTechnology)}");
 											cancelState.enable();
 											cancelState.forState="outdated";
 											cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
 											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
-										} else if (state == "declined") {
 										} else if (state == "outdated") {
 											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
+										} else if (state == "declined") {
 										} else {
 											cancelState.enable();
 										}
+									}
+									
+									function getRibbonItem(ribbonPath) {
+										return #{window}.getRibbonItem(ribbonPath);
+									}
+									
+									function shouldLockStatusRibbonItems(selectedEntitiesArray) {
+										return selectedEntitiesArray[0].fields.state != 'draft' ||
+												statesAreDifferent(selectedEntitiesArray);
+									}
+									
+									function statesAreDifferent(selectedEntitiesArray) {
+										if (selectedEntitiesArray.length < 2) {
+											return false;
+										}
+										for (var i = 1; i < selectedEntitiesArray.length; i++) {
+											if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
+												return true;
+											}
+										}
+										return false;
 									}
 						]]>
 			</script>
