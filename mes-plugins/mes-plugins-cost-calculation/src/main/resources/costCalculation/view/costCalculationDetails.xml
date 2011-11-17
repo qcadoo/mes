@@ -1,28 +1,15 @@
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 0.4.10
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 0.4.10 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view name="costCalculationDetails" modelName="costCalculation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
@@ -278,9 +265,9 @@
 								</layoutElement>
 								<layoutElement column="4" row="1">
 									<component type="input" name="productionCostMarginProc"
-										defaultEnabled="false" hasLabel="false" reference="productionCostMarginProc" >
+										defaultEnabled="false" hasLabel="false" reference="productionCostMarginProc">
 										<option type="textRepresentationOnDisabled" value="true" />
-										</component>
+									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="materialCostMargin"
@@ -290,9 +277,9 @@
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="materialCostMarginProc"
-										defaultEnabled="false" hasLabel="false" reference="materialCostMarginProc" >
+										defaultEnabled="false" hasLabel="false" reference="materialCostMarginProc">
 										<option type="textRepresentationOnDisabled" value="true" />
-										</component>
+									</component>
 								</layoutElement>
 								<layoutElement column="1" row="3" width="3">
 									<component type="input" name="additionalOverhead"
@@ -302,9 +289,9 @@
 								</layoutElement>
 								<layoutElement column="4" row="3">
 									<component type="input" name="additionalOverheadCurrency"
-										defaultEnabled="false" hasLabel="false" reference="additionalOverheadCurrency" >
+										defaultEnabled="false" hasLabel="false" reference="additionalOverheadCurrency">
 										<option type="textRepresentationOnDisabled" value="true" />
-										</component>
+									</component>
 								</layoutElement>
 							</component>
 						</component>
@@ -333,9 +320,9 @@
 								</layoutElement>
 								<layoutElement column="4" row="1">
 									<component type="input" name="totalMaterialCostsCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalMaterialCostsCurrency" >
+										defaultEnabled="false" hasLabel="false" reference="totalMaterialCostsCurrency">
 										<option type="textRepresentationOnDisabled" value="true" />
-										</component>
+									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="totalMachineHourlyCosts"
@@ -348,7 +335,9 @@
 								<layoutElement column="4" row="2">
 									<component type="input" name="totalMachineHourlyCostsCurrency"
 										defaultEnabled="false" hasLabel="false"
-										reference="totalMachineHourlyCostsCurrency" ><option type="textRepresentationOnDisabled" value="true" /></component>
+										reference="totalMachineHourlyCostsCurrency">
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
 								</layoutElement>
 								<layoutElement column="1" row="3" width="3">
 									<component type="input" name="totalLaborHourlyCosts"
@@ -361,9 +350,9 @@
 								<layoutElement column="4" row="3">
 									<component type="input" name="totalLaborHourlyCostsCurrency"
 										defaultEnabled="false" hasLabel="false"
-										reference="totalLaborHourlyCostsCurrency" >
+										reference="totalLaborHourlyCostsCurrency">
 										<option type="textRepresentationOnDisabled" value="true" />
-										</component>
+									</component>
 								</layoutElement>
 								<layoutElement column="1" row="4" width="3">
 									<component type="input" name="totalPieceworkCosts"
@@ -375,9 +364,9 @@
 								</layoutElement>
 								<layoutElement column="4" row="4">
 									<component type="input" name="totalPieceworkCostsCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalPieceworkCostsCurrency" >
+										defaultEnabled="false" hasLabel="false" reference="totalPieceworkCostsCurrency">
 										<option type="textRepresentationOnDisabled" value="true" />
-										</component>
+									</component>
 								</layoutElement>
 								<layoutElement column="1" row="5">
 									<component type="label" name="totalTechnicalProductionCostsLabel">
@@ -388,16 +377,16 @@
 									<component type="input" name="totalTechnicalProductionCosts"
 										reference="totalTechnicalProductionCosts" field="#{form}.totalTechnicalProductionCosts"
 										defaultEnabled="false" hasLabel="false">
-										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="alignment" value="right" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="6">
 									<component type="input"
 										name="totalTechnicalProductionCostsCurrency" defaultEnabled="false"
-										hasLabel="false" reference="totalTechnicalProductionCostsCurrency" >
+										hasLabel="false" reference="totalTechnicalProductionCostsCurrency">
 										<option type="textRepresentationOnDisabled" value="true" />
-										</component>
+									</component>
 								</layoutElement>
 							</component>
 						</component>
@@ -419,9 +408,9 @@
 								<layoutElement column="4" row="1">
 									<component type="input" name="productionCostMarginValueCurrency"
 										defaultEnabled="false" hasLabel="false"
-										reference="productionCostMarginValueCurrency" >
+										reference="productionCostMarginValueCurrency">
 										<option type="textRepresentationOnDisabled" value="true" />
-										</component>
+									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="materialCostMarginValue"
@@ -434,9 +423,9 @@
 								<layoutElement column="4" row="2">
 									<component type="input" name="materialCostMarginValueCurrency"
 										defaultEnabled="false" hasLabel="false"
-										reference="materialCostMarginValueCurrency" >
+										reference="materialCostMarginValueCurrency">
 										<option type="textRepresentationOnDisabled" value="true" />
-										</component>
+									</component>
 								</layoutElement>
 								<layoutElement column="1" row="3" width="3">
 									<component type="input" name="additionalOverheadValue"
@@ -449,9 +438,9 @@
 								<layoutElement column="4" row="3">
 									<component type="input" name="additionalOverheadValueCurrency"
 										defaultEnabled="false" hasLabel="false"
-										reference="additionalOverheadValueCurrency" >
+										reference="additionalOverheadValueCurrency">
 										<option type="textRepresentationOnDisabled" value="true" />
-										</component>
+									</component>
 								</layoutElement>
 								<layoutElement column="1" row="4">
 									<component type="label" name="totalOverheadLabel"
@@ -468,9 +457,9 @@
 								</layoutElement>
 								<layoutElement column="4" row="5">
 									<component type="input" name="totalOverheadCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalOverheadCurrency" >
+										defaultEnabled="false" hasLabel="false" reference="totalOverheadCurrency">
 										<option type="textRepresentationOnDisabled" value="true" />
-										</component>
+									</component>
 								</layoutElement>
 							</component>
 						</component>
@@ -496,9 +485,9 @@
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="totalCostsCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalCostsCurrency" >
+										defaultEnabled="false" hasLabel="false" reference="totalCostsCurrency">
 										<option type="textRepresentationOnDisabled" value="true" />
-										</component>
+									</component>
 								</layoutElement>
 								<layoutElement column="1" row="3">
 									<component type="label" name="costPerUnitLabel"
@@ -515,9 +504,9 @@
 								</layoutElement>
 								<layoutElement column="4" row="4">
 									<component type="input" name="totalCostsPerUnitUNIT"
-										defaultEnabled="false" hasLabel="false" reference="totalCostsPerUnitUNIT" >
+										defaultEnabled="false" hasLabel="false" reference="totalCostsPerUnitUNIT">
 										<option type="textRepresentationOnDisabled" value="true" />
-										</component>
+									</component>
 								</layoutElement>
 							</component>
 						</component>
@@ -530,7 +519,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 			method="fillCurrencyFields" />
-		<beforeRender class="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="setFieldEnable" />
+		<beforeRender
+			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+			method="setFieldEnable" />
 	</hooks>
 </view>
 
