@@ -43,30 +43,10 @@ public class CurrencyService {
 
     public Entity getCurrentCurrency() {
         if (getCurrencyEnabled() == null) {
-            if (getCurrencyFromLocale() == null) {
-                setCurrencyEnabled(getCurrencyDefault());
-            } else {
-                setCurrencyEnabled(getCurrencyFromLocale());
-            }
+            setCurrencyEnabled(getCurrencyFromLocale());
         }
 
         return getCurrencyEnabled();
-    }
-
-    public Entity getCurrencyEnabled() {
-        DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
-
-        Entity currency = dd.find().add(SearchRestrictions.eq("isActive", true)).uniqueResult();
-
-        return currency;
-    }
-
-    public Entity getCurrencyDefault() {
-        DataDefinition currencyDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
-
-        Entity currency = currencyDD.find().add(SearchRestrictions.eq("alphabeticCode", "USD")).uniqueResult();
-
-        return currency;
     }
 
     public Entity getCurrencyFromLocale() {
@@ -74,6 +54,14 @@ public class CurrencyService {
 
         String alphabeticCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
         Entity currency = dd.find().add(SearchRestrictions.eq("alphabeticCode", alphabeticCode)).uniqueResult();
+
+        return currency;
+    }
+
+    public Entity getCurrencyEnabled() {
+        DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
+
+        Entity currency = dd.find().add(SearchRestrictions.eq("isActive", true)).uniqueResult();
 
         return currency;
     }
@@ -101,10 +89,6 @@ public class CurrencyService {
     public void changeCurrentCurrency(final DataDefinition dd, final Entity entity) {
         Entity oldCurrency = getCurrentCurrency();
         Entity newCurrency = entity.getBelongsToField("currency");
-
-        if (oldCurrency == null) {
-            oldCurrency = getCurrencyDefault();
-        }
 
         if (newCurrency == null) {
             newCurrency = oldCurrency;
