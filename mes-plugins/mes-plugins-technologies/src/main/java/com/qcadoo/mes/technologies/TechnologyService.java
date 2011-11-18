@@ -413,7 +413,7 @@ public class TechnologyService {
     public void toggleDetailsViewEnabled(final ViewDefinitionState view) {
         view.getComponentByReference("state").performEvent(view, "toggleEnabled");
     }
-    
+
     public boolean invalidateIfBelongsToAcceptedTechnology(final DataDefinition dataDefinition, final Entity entity) {
         Entity technology = null;
         String errorMessageKey = "technologies.technology.state.error.modifyBelongsToAcceptedTechnology";
@@ -425,7 +425,7 @@ public class TechnologyService {
         } else if ("operationProductOutComponent".equals(dataDefinition.getName()) || "operationProductInComponent".equals(dataDefinition.getName())) {
             technology = entity.getBelongsToField("operationComponent").getBelongsToField("technology");
         }
-        
+
         if (technology == null || technology.getId() == null) {
             return true;
         }
@@ -435,18 +435,18 @@ public class TechnologyService {
             entity.addGlobalError(errorMessageKey, technology.getStringField("name"));
             return false;
         }
-        
+
         return true;
     }
-    
+
     private boolean isTechnologyIsAlreadyAccepted(final Entity technology, final Entity existingTechnology) {
         if (technology == null || existingTechnology == null) {
             return false;
         }
         String technologyState = technology.getStringField("state");
         String existingTechnologyState = existingTechnology.getStringField("state");
-        
-        return "accepted".equalsIgnoreCase(technologyState)  && technologyState.equalsIgnoreCase(existingTechnologyState);
+
+        return "accepted".equalsIgnoreCase(technologyState) && technologyState.equalsIgnoreCase(existingTechnologyState);
     }
 
     private boolean productComponentsContainProduct(List<Entity> components, Entity product) {
