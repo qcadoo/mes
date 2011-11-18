@@ -74,8 +74,6 @@ public class MaterialFlowService {
         DataDefinition transferFrom = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
 
-        DataDefinition dataDefStockAreas = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowConstants.MODEL_STOCK_AREAS);
         Long stockAreasId = stockAreas;
         Long productId = Long.valueOf(product);
 

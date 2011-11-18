@@ -422,10 +422,8 @@ public class TechnologyService {
             errorMessageKey = "technologies.technology.state.error.modifyAcceptedTechnology";
         } else if ("technologyOperationComponent".equals(dataDefinition.getName())) {
             technology = entity.getBelongsToField("technology");
-        } else if ("operationProductOutComponent".equals(dataDefinition.getName())) {
+        } else if ("operationProductOutComponent".equals(dataDefinition.getName()) || "operationProductInComponent".equals(dataDefinition.getName())) {
             technology = entity.getBelongsToField("operationComponent").getBelongsToField("technology");
-        } else if ("operationProductInComponent".equals(dataDefinition.getName())) {
-            
         }
         
         if (technology == null || technology.getId() == null) {
