@@ -34,6 +34,8 @@ public class TechnologyStateChangeListener implements StateChangeListener {
                     resultMessages.add(MessageHolder.error("technologies.technology.state.error.orderInProgress"));
                 }
                 break;
+            default:
+                break;
         }
         return resultMessages;
     }

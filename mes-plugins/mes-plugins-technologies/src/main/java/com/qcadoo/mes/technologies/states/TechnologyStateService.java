@@ -30,7 +30,7 @@ public class TechnologyStateService {
     @Autowired
     private TechnologyStateBeforeChangeNotifierService beforeChangeNotifier;
 
-    public void changeTechnologyState(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+    public final void changeTechnologyState(final ViewDefinitionState view, final ComponentState component, final String[] args) {
         final String targetState = getTargetStateFromArgs(args);
         final FormComponent form = (FormComponent) view.getComponentByReference("form");
         final Entity technology = form.getEntity();
@@ -38,7 +38,8 @@ public class TechnologyStateService {
         setTechnologyState(view, component, technology, targetState);
     }
 
-    public void changeSelectedTechnologyState(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+    public final void changeSelectedTechnologyState(final ViewDefinitionState view, final ComponentState component,
+            final String[] args) {
         final String targetState = getTargetStateFromArgs(args);
         final GridComponent grid = (GridComponent) component;
         final List<Entity> technologies = getTechnologiesFromGridComponent(grid);
@@ -72,11 +73,11 @@ public class TechnologyStateService {
         if (!sourceComponentIsForm) {
             technology.setField("state", newState.getStringValue());
             Entity savedTechnology = technologyDataDefinition.save(technology);
-            
+
             List<ErrorMessage> errorMessages = Lists.newArrayList();
             errorMessages.addAll(savedTechnology.getErrors().values());
             errorMessages.addAll(savedTechnology.getGlobalErrors());
-            
+
             for (ErrorMessage message : errorMessages) {
                 view.getComponentByReference("grid").addMessage(message.getMessage(), MessageType.INFO);
             }
@@ -104,7 +105,10 @@ public class TechnologyStateService {
     }
 
     private String getTargetStateFromArgs(final String[] args) {
-        return args != null && args.length > 0 && !"null".equals(args[0]) ? args[0] : "";
+        if (args != null && args.length > 0 && !"null".equals(args[0])) {
+            return args[0];
+        }
+        return "";
     }
 
 }

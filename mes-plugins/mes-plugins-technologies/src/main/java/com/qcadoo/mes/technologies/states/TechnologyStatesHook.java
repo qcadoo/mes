@@ -3,6 +3,7 @@ package com.qcadoo.mes.technologies.states;
 import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,9 @@ public class TechnologyStatesHook {
     @Autowired
     private TechnologyLoggingService technologyLoggingService;
 
-    public void onSave(final DataDefinition technologyDD, final Entity technology) {
+    private static final String STATE_FIELD = "state";
+
+    public final void onSave(final DataDefinition technologyDD, final Entity technology) {
         if (technology.getId() == null) {
             return;
         }
@@ -37,13 +40,13 @@ public class TechnologyStatesHook {
             return;
         }
 
-        TechnologyState newState = getTechnologyStateFromString(technology.getStringField("state"));
-        TechnologyState oldState = getTechnologyStateFromString(existingTechnology.getStringField("state"));
+        TechnologyState newState = getTechnologyStateFromString(technology.getStringField(STATE_FIELD));
+        TechnologyState oldState = getTechnologyStateFromString(existingTechnology.getStringField(STATE_FIELD));
 
         List<MessageHolder> validationMessages = technologyStateNotifier.onTechnologyStateChange(existingTechnology, newState);
         assignValidationMessagesToEntity(technology, validationMessages);
         if (hasErrorMessages(validationMessages)) {
-            technology.setField("state", existingTechnology.getStringField("state"));
+            technology.setField(STATE_FIELD, existingTechnology.getStringField(STATE_FIELD));
             return;
         }
 
@@ -62,15 +65,14 @@ public class TechnologyStatesHook {
     private void assignValidationMessagesToEntity(final Entity technology, final List<MessageHolder> validationMessages) {
         DataDefinition technologyDD = technology.getDataDefinition();
         for (MessageHolder validationMessage : validationMessages) {
-            if (validationMessage.getTargetReferenceName() != null) {
-                technology.addError(
-                        technologyDD.getField(validationMessage.getTargetReferenceName()),
-                        translationService.translate(validationMessage.getMessageKey(),
-                                validationMessage.getTargetReferenceName(), getLocale(), validationMessage.getVars()));
-            } else {
+            if (validationMessage.getTargetReferenceName() == null) {
                 technology.addGlobalError(translationService.translate(validationMessage.getMessageKey(), getLocale(),
                         validationMessage.getVars()));
+                continue;
             }
+            technology.addError(technologyDD.getField(validationMessage.getTargetReferenceName()), translationService.translate(
+                    validationMessage.getMessageKey(), validationMessage.getTargetReferenceName(), getLocale(),
+                    validationMessage.getVars()));
         }
     }
 
@@ -78,6 +80,6 @@ public class TechnologyStatesHook {
         if (!StringUtils.hasText(stringValue)) {
             return null;
         }
-        return TechnologyState.valueOf(stringValue.toUpperCase());
+        return TechnologyState.valueOf(stringValue.toUpperCase(Locale.getDefault()));
     }
 }
