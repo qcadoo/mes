@@ -108,12 +108,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     @Transactional
     public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
             Boolean includeTpz) {
-        if (operationComponent.getField("entityType") != null
-                && !OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
-            return estimateRealizationTimeForOperation(
-                    operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot(),
-                    plannedQuantity);
-        } else {
+        if (operationComponent.getField("entityType") == null
+                && OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
             int operationTime = 0;
             int pathTime = 0;
 
@@ -132,8 +128,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 operationTime = (roundUp.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj")))))
                         .intValue();
             } else {
-                operationTime = ((operationComponent.getField("countMachine") != null ? (BigDecimal) operationComponent
-                        .getField("countMachine") : BigDecimal.ZERO).multiply(BigDecimal
+                operationTime = ((operationComponent.getField("countMachine") == null ? BigDecimal.ZERO
+                        : (BigDecimal) operationComponent.getField("countMachine")).multiply(BigDecimal
                         .valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue();
             }
             if (includeTpz) {
@@ -147,11 +143,15 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
             pathTime += operationTime + getIntegerValue(operationComponent.getField("timeNextOperation"));
             return pathTime;
+        } else {
+            return estimateRealizationTimeForOperation(
+                    operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot(),
+                    plannedQuantity);
         }
     }
 
     private Integer getIntegerValue(final Object value) {
-        return value != null ? (Integer) value : Integer.valueOf(0);
+        return value == null ? Integer.valueOf(0) : (Integer) value;
     }
 
     @Override

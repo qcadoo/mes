@@ -47,12 +47,12 @@ public class UnitService {
         FieldComponent productState = (FieldComponent) state.getComponentByReference("product");
         FieldComponent unitState = (FieldComponent) state.getComponentByReference("unit");
         unitState.requestComponentUpdateState();
-        if (productState.getFieldValue() != null) {
+        if (productState.getFieldValue() == null) {
+            unitState.setFieldValue("");
+        } else {
             Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
                     (Long) productState.getFieldValue());
             unitState.setFieldValue(product.getStringField("unit"));
-        } else {
-            unitState.setFieldValue("");
         }
     }
 }
