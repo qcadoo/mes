@@ -108,8 +108,12 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     @Transactional
     public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
             Boolean includeTpz) {
-        if (operationComponent.getField("entityType") == null
-                && OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
+        if (operationComponent.getField("entityType") != null
+                && !OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
+            return estimateRealizationTimeForOperation(
+                    operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot(),
+                    plannedQuantity);
+        } else {
             int operationTime = 0;
             int pathTime = 0;
 
@@ -143,10 +147,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
             pathTime += operationTime + getIntegerValue(operationComponent.getField("timeNextOperation"));
             return pathTime;
-        } else {
-            return estimateRealizationTimeForOperation(
-                    operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents").getRoot(),
-                    plannedQuantity);
         }
     }
 
