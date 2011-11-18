@@ -456,6 +456,9 @@ public final class OrderService {
     
     public boolean checkChosenTechnologyState(final DataDefinition orderDD, final Entity order) {
         Entity technology = order.getBelongsToField("technology");
+        if (technology == null) {
+            return true;
+        }
         TechnologyState technologyState = TechnologyState.valueOf(technology.getStringField("state").toUpperCase());
         
         if (TechnologyState.ACCEPTED != technologyState) {

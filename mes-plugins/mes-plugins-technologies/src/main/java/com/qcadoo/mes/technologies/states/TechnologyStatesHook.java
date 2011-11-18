@@ -23,7 +23,7 @@ public class TechnologyStatesHook {
 
     @Autowired
     private TechnologyStateChangeNotifierService technologyStateNotifier;
-    
+
     @Autowired
     private TechnologyLoggingService technologyLoggingService;
 
@@ -40,13 +40,13 @@ public class TechnologyStatesHook {
         TechnologyState newState = getTechnologyStateFromString(technology.getStringField("state"));
         TechnologyState oldState = getTechnologyStateFromString(existingTechnology.getStringField("state"));
 
-        List<MessageHolder> validationMessages = technologyStateNotifier.onTechnologyStateChange(existingTechnology, newState); 
+        List<MessageHolder> validationMessages = technologyStateNotifier.onTechnologyStateChange(existingTechnology, newState);
         assignValidationMessagesToEntity(technology, validationMessages);
         if (hasErrorMessages(validationMessages)) {
             technology.setField("state", existingTechnology.getStringField("state"));
             return;
         }
-        
+
         technologyLoggingService.logStateChange(technology, oldState, newState);
     }
 
@@ -58,15 +58,18 @@ public class TechnologyStatesHook {
         }
         return false;
     }
-    
+
     private void assignValidationMessagesToEntity(final Entity technology, final List<MessageHolder> validationMessages) {
         DataDefinition technologyDD = technology.getDataDefinition();
         for (MessageHolder validationMessage : validationMessages) {
             if (validationMessage.getTargetReferenceName() != null) {
-                technology.addError(technologyDD.getField(validationMessage.getTargetReferenceName()),
-                        translationService.translate(validationMessage.getMessageKey(), validationMessage.getTargetReferenceName(), getLocale(), validationMessage.getVars()));
+                technology.addError(
+                        technologyDD.getField(validationMessage.getTargetReferenceName()),
+                        translationService.translate(validationMessage.getMessageKey(),
+                                validationMessage.getTargetReferenceName(), getLocale(), validationMessage.getVars()));
             } else {
-                technology.addGlobalError(translationService.translate(validationMessage.getMessageKey(), getLocale(), validationMessage.getVars()));
+                technology.addGlobalError(translationService.translate(validationMessage.getMessageKey(), getLocale(),
+                        validationMessage.getVars()));
             }
         }
     }

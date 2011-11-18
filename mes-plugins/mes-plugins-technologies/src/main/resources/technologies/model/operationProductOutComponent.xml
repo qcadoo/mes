@@ -37,5 +37,8 @@
 			<validatesScale max="3" />
 		</decimal>
 	</fields>
-	<hooks />
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService" 
+			method="invalidateIfBelongsToAcceptedTechnology" />
+	</hooks>
 </model>
