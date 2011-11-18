@@ -75,6 +75,9 @@ public class CostNormsForProductService {
         if (form == null || costUnit == null) {
             return;
         }
+        if (form.getEntityId() == null) {
+            return;
+        }
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
                 form.getEntityId());
 
@@ -90,6 +93,9 @@ public class CostNormsForProductService {
     public void fillCostTabCurrency(final ViewDefinitionState viewDefinitionState) {
         checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
         String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
+        if (currencyAlphabeticCode == null) {
+            return;
+        }
         for (String componentReference : Arrays.asList("nominalCostCurrency", "lastPurchaseCostCurrency", "averageCostCurrency")) {
             FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
             field.setEnabled(true);
