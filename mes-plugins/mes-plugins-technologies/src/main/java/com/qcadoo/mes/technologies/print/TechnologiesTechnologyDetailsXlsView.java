@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.technologies.print;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newLinkedList;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
@@ -78,6 +79,8 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
     }
 
     private void addOrderSeries(final Map<String, Object> model, final HSSFSheet sheet, final Locale locale) {
+        checkState(model.get("id") != null, "Unable to generate report for unsaved technology! (missing id)");
+
         DataDefinition technologyDD = dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY);
         Entity technology = technologyDD.get(valueOf(model.get("id").toString()));
         List<Entity> technologyOperations = newLinkedList(technology.getTreeField("operationComponents"));

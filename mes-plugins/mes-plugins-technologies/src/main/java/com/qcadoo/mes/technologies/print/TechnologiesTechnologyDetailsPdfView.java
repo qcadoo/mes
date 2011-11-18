@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.technologies.print;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Maps.newLinkedHashMap;
@@ -67,6 +68,8 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
     @Override
     protected final String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
+        checkState(model.get("id") != null, "Unable to generate report for unsaved technology! (missing id)");
+
         String documentTitle = getTranslationService().translate("technologies.technologiesTechnologyDetails.report.title",
                 locale);
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
@@ -74,8 +77,8 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
 
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
-        Entity technology = technologyDD.get(valueOf((model.get("id").toString())));
 
+        Entity technology = technologyDD.get(valueOf((model.get("id").toString())));
         Map<String, String> panelTableValues = newLinkedHashMap();
         panelTableValues.put("name", technology.getStringField("name"));
         panelTableValues.put("number", technology.getStringField("number"));

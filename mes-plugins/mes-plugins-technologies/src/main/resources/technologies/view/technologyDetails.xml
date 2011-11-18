@@ -44,6 +44,21 @@
 		
 		<windowTab name="mainTab">
 			<component type="form" name="technology" reference="form">
+				<script>
+					<![CDATA[
+						this.addOnChangeListener({
+							onSetValue: function(formNewValue) {
+								if (formNewValue.content && formNewValue.content.entityId) {
+									#{window}.getRibbonItem("reports.pdf").enable();
+									#{window}.getRibbonItem("reports.xls").enable();
+								} else {
+									#{window}.getRibbonItem("reports.pdf").disable();
+									#{window}.getRibbonItem("reports.xls").disable();
+								}
+							}
+						});
+					]]>
+				</script>
 				<component type="gridLayout" name="gridsLayout" columns="3" rows="5" hasBorders="false">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="master" field="master" />
