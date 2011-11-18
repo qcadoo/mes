@@ -80,7 +80,7 @@ public class SamplesLoaderModule extends Module {
             "zipCode", "city", "state", "country", "email", "addressWww", "phone" };
 
     private static final String[] PRODUCT_ATTRIBUTES = new String[] { "ean", "name", "product_nr", "batch", "costForNumber",
-            "nominalCost", "lastPurchaseCost", "averageCost", "typeOfProduct" };
+            "nominalCost", "lastPurchaseCost", "averageCost", "typeOfProduct", "unit" };
 
     private static final String[] DICTIONARY_ATTRIBUTES = new String[] { "name", "item" };
 
@@ -104,12 +104,6 @@ public class SamplesLoaderModule extends Module {
     private static final String[] SHIFT_ATTRIBUTES = new String[] { "name", "mondayWorking", "mondayHours", "tuesdayWorking",
             "tuesdayHours", "wensdayWorking", "wensdayHours", "thursdayWorking", "thursdayHours", "fridayWorking", "fridayHours",
             "saturdayWorking", "saturdayHours", "sundayWorking", "sundayHours" };
-
-    private static final String[] USED_PRODUCTS_ATTRIBUTES = new String[] { "order", "product", "planned_quantity",
-            "used_quantity" };
-
-    private static final String[] PRODUCED_PRODUCTS_ATTRIBUTES = new String[] { "order", "product", "planned_quantity",
-            "produced_quantity" };
 
     private static final Random RANDOM = new Random(System.currentTimeMillis());
 
@@ -174,12 +168,6 @@ public class SamplesLoaderModule extends Module {
                 if (isEnabled("workPlans")) {
                     addWorkPlans();
                 }
-                if (isEnabled("usedProducts")) {
-                    readDataFromXML("usedProducts", USED_PRODUCTS_ATTRIBUTES);
-                }
-                if (isEnabled("producedProducts")) {
-                    readDataFromXML("producedProducts", PRODUCED_PRODUCTS_ATTRIBUTES);
-                }
             }
         } else {
             LOG.info("Database has been already prepared, skipping");
@@ -198,7 +186,7 @@ public class SamplesLoaderModule extends Module {
     }
 
     private void checkLocale() {
-        if (locale.equals("default")) {
+        if ("default".equals(locale)) {
             locale = Locale.getDefault().toString().substring(0, 2);
         }
 
@@ -271,10 +259,6 @@ public class SamplesLoaderModule extends Module {
             addMachine(values);
         } else if ("shifts".equals(type)) {
             addShifts(values);
-        } else if ("producedProducts".equals(type)) {
-            addProducedProducts(values);
-        } else if ("usedProducts".equals(type)) {
-            addUsedProducts(values);
         }
     }
 
@@ -433,47 +417,6 @@ public class SamplesLoaderModule extends Module {
 
     }
 
-    private void addUsedProducts(final Map<String, String> values) {
-        Entity usedProduct = dataDefinitionService.get("usedProducts", "usedProducts").create();
-
-        usedProduct.setField("id", values.get("id"));
-        usedProduct.setField("order", values.get("order"));
-        usedProduct.setField("product", values.get("product"));
-        usedProduct.setField("plannedQuantity", values.get("planned_quantity"));
-        usedProduct.setField("usedQuantity", values.get("used_quantity"));
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test used product item {used product of order=" + usedProduct.getField("order") + "}");
-        }
-
-        usedProduct = dataDefinitionService.get("usedProducts", "usedProducts").save(usedProduct);
-
-        if (!usedProduct.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
-    }
-
-    private void addProducedProducts(final Map<String, String> values) {
-
-        Entity producedProducts = dataDefinitionService.get("producedProducts", "producedProducts").create();
-
-        producedProducts.setField("id", values.get("id"));
-        producedProducts.setField("order", values.get("order"));
-        producedProducts.setField("product", values.get("product"));
-        producedProducts.setField("plannedQuantity", values.get("planned_quantity"));
-        producedProducts.setField("producedQuantity", values.get("produced_quantity"));
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test used product item {produced product of order=" + producedProducts.getField("order") + "}");
-        }
-
-        producedProducts = dataDefinitionService.get("producedProducts", "producedProducts").save(producedProducts);
-
-        if (!producedProducts.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
-    }
-
     private void addProduct(final Map<String, String> values) {
         Entity product = dataDefinitionService.get("basic", "product").create();
         product.setField("category", getRandomDictionaryItem("categories"));
@@ -492,7 +435,7 @@ public class SamplesLoaderModule extends Module {
         if (!values.get("typeOfProduct").isEmpty()) {
             product.setField("typeOfMaterial", values.get("typeOfProduct"));
         }
-        product.setField("unit", getRandomUnit());
+        product.setField("unit", values.get("unit"));
 
         if (isEnabled("costNormsForProduct")) {
             product.setField("costForNumber", values.get("costForNumber"));
@@ -617,7 +560,7 @@ public class SamplesLoaderModule extends Module {
         technology.setField("state", "accepted");
         technology.getDataDefinition().save(technology);
     }
-    
+
     private void addOrder(final Map<String, String> values) {
         long startDate = System.currentTimeMillis() + MILLIS_IN_DAY * (RANDOM.nextInt(50) - 25);
 
@@ -945,7 +888,7 @@ public class SamplesLoaderModule extends Module {
         }
 
         requirement.setField("orders", Lists.newArrayList(getRandomOrder(), getRandomOrder(), getRandomOrder()));
-        
+
         requirement = dataDefinitionService.get("materialRequirements", "materialRequirement").save(requirement);
         if (!requirement.isValid()) {
             throw new IllegalStateException("Saved entity have validation errors");
@@ -1008,7 +951,8 @@ public class SamplesLoaderModule extends Module {
     }
 
     private Entity getTechnologyByNumber(final String number) {
-        return dataDefinitionService.get("technologies", "technology").find().add(SearchRestrictions.eq("number", number)).setMaxResults(1).uniqueResult();
+        return dataDefinitionService.get("technologies", "technology").find().add(SearchRestrictions.eq("number", number))
+                .setMaxResults(1).uniqueResult();
     }
 
     private Entity getDefaultTechnologyForProduct(final Entity product) {
@@ -1059,10 +1003,6 @@ public class SamplesLoaderModule extends Module {
         Long total = (long) dataDefinitionService.get("orders", "order").find().list().getTotalNumberOfEntities();
         return dataDefinitionService.get("orders", "order").find().setFirstResult(RANDOM.nextInt(total.intValue()))
                 .setMaxResults(1).list().getEntities().get(0);
-    }
-
-    private String getRandomUnit() {
-        return UNITS.get(RANDOM.nextInt(UNITS.size()));
     }
 
     private void addParameters() {

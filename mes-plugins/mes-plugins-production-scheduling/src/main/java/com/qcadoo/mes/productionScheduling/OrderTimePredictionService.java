@@ -46,6 +46,16 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 @Service
 public class OrderTimePredictionService {
 
+    private static final String TECHNOLOGY_COMPONENT = "technology";
+
+    private static final String QUANTITY_COMPONENT = "quantity";
+
+    private static final String DATE_FROM_COMPONENT = "dateFrom";
+
+    private static final String DATE_TO_COMPONENT = "dateTo";
+
+    private static final String REALIZATION_TIME_COMPONENT = "realizationTime";
+
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
 
@@ -59,12 +69,12 @@ public class OrderTimePredictionService {
     private ShiftsServiceImpl shiftsService;
 
     public void setFieldDisable(final ViewDefinitionState viewDefinitionState) {
+        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY_COMPONENT);
 
-        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
-        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom");
-        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
-        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
-        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
+        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference(QUANTITY_COMPONENT);
+        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM_COMPONENT);
+        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO_COMPONENT);
+        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT);
 
         WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference("window");
         RibbonActionItem countTimeOfTechnology = window.getRibbon().getGroupByName("timeOfTechnology")
@@ -79,7 +89,7 @@ public class OrderTimePredictionService {
         dateTo.setEnabled(false);
         realizationTime.setEnabled(false);
         countTimeOfTechnology.setEnabled(false);
-        
+
         quantity.requestComponentUpdateState();
         dateFrom.requestComponentUpdateState();
         dateTo.requestComponentUpdateState();
@@ -88,11 +98,12 @@ public class OrderTimePredictionService {
     }
 
     public void clearAllField(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
-        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom");
-        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
-        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
-        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
+        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY_COMPONENT);
+
+        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference(QUANTITY_COMPONENT);
+        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM_COMPONENT);
+        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO_COMPONENT);
+        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT);
 
         quantity.setFieldValue("");
         dateFrom.setFieldValue("");
@@ -105,12 +116,12 @@ public class OrderTimePredictionService {
     public void changeRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
 
-        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
+        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY_COMPONENT);
 
-        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom");
-        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
-        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
-        FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
+        FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference(QUANTITY_COMPONENT);
+        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM_COMPONENT);
+        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO_COMPONENT);
+        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT);
 
         if (!StringUtils.hasText((String) plannedQuantity.getFieldValue())
                 || !StringUtils.hasText((String) dateFrom.getFieldValue())) {
@@ -156,22 +167,22 @@ public class OrderTimePredictionService {
                 startTime = shiftsService.findDateFromForOrder(stopTime, maxPathTime);
             }
 
-            if (startTime != null) {
-                dateFrom.setFieldValue(orderRealizationTimeService.setDateToField(startTime));
-            } else {
+            if (startTime == null) {
                 dateFrom.setFieldValue(null);
-            }
-            if (stopTime != null) {
-                dateTo.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
             } else {
+                dateFrom.setFieldValue(orderRealizationTimeService.setDateToField(startTime));
+
+            }
+            if (stopTime == null) {
                 dateTo.setFieldValue(null);
+            } else {
+                dateTo.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
             }
         }
     }
 
     public void disableRealizationTime(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
-        realizationTime.setEnabled(false);
+        viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT).setEnabled(false);
     }
 
     public void clearFieldValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {

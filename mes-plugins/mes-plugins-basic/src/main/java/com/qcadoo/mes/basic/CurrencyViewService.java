@@ -23,13 +23,10 @@
  */
 package com.qcadoo.mes.basic;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
@@ -37,12 +34,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 public class CurrencyViewService {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
     private CurrencyService currencyService;
-
-    private static final Logger LOG = LoggerFactory.getLogger(CurrencyService.class);
 
     public void applyCurrentCurrency(final ViewDefinitionState viewDefinitionState) {
         FieldComponent lookup = (FieldComponent) viewDefinitionState.getComponentByReference("currency");

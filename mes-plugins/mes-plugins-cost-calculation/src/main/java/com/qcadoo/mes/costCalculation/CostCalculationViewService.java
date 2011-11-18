@@ -82,7 +82,7 @@ public class CostCalculationViewService {
     @Autowired
     private TranslationService translationService;
 
-    private final static String EMPTY = "";
+    private static final String EMPTY = "";
 
     public void showCostCalculateFromOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -304,15 +304,12 @@ public class CostCalculationViewService {
                 dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY));
         belongsToFieldDDs.put("product", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT));
 
-        Entity fieldEntity;
-        Object fieldValue;
-
         for (Map.Entry<String, DataDefinition> belongsToFieldDD : belongsToFieldDDs.entrySet()) {
-            fieldValue = costCalculation.getField(belongsToFieldDD.getKey());
-            if (fieldValue == null || !(fieldValue instanceof Long)) {
+            Object fieldValue = costCalculation.getField(belongsToFieldDD.getKey());
+            if (!(fieldValue instanceof Long)) {
                 continue;
             }
-            fieldEntity = belongsToFieldDD.getValue().get((Long) fieldValue);
+            Entity fieldEntity = belongsToFieldDD.getValue().get((Long) fieldValue);
             costCalculation.setField(belongsToFieldDD.getKey(), fieldEntity);
         }
     }

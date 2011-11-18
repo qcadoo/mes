@@ -143,7 +143,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
             BigDecimal available = BigDecimal.ZERO;
             for (Entity stockAreas : stockAreass) {
                 available = available.add(materialFlowService.calculateShouldBeInStockArea(
-                        stockAreas.getBelongsToField("stockAreas").getId().toString(), entry.getKey().getId().toString(),
+                        stockAreas.getBelongsToField("stockAreas").getId(), entry.getKey().getId().toString(),
                         simpleMaterialBalance.getField("date").toString()));
             }
             table.addCell(new Phrase(getDecimalFormat().format(available), PdfUtil.getArialRegular9Dark()));

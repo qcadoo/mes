@@ -52,6 +52,10 @@ import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
 
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.orderGroups.constants.OrderGroupsConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+
 @Component
 public class SamplesGeneratorModule extends Module {
 
@@ -112,17 +116,17 @@ public class SamplesGeneratorModule extends Module {
                     generateAndAddShift();
                 }
             }
-            if (isEnabled("technologies")) {
+            if (isEnabled(TechnologiesConstants.PLUGIN_IDENTIFIER)) {
                 for (int i = 0; i < range; i++) {
                     generateAndAddOperation();
                 }
                 generateAndAddTechnologies();
             }
-            if (isEnabled("orders")) {
+            if (isEnabled(OrdersConstants.PLUGIN_IDENTIFIER)) {
                 for (int i = 0; i < range; i++) {
                     generateAndAddOrder();
                 }
-                if (isEnabled("orderGroups")) {
+                if (isEnabled(OrderGroupsConstants.PLUGIN_IDENTIFIER)) {
                     for (int i = 0; i < 10; i++) {
                         generateAndAddOrderGroup();
                     }
@@ -134,7 +138,7 @@ public class SamplesGeneratorModule extends Module {
                 }
             }
             if (isEnabled("workPlans")) {
-                for (int i = 0; i < (int) (range / 40); i++) {
+                for (int i = 0; i < (range / 40); i++) {
                     generateAndAddWorkPlan();
                 }
             }
@@ -193,7 +197,8 @@ public class SamplesGeneratorModule extends Module {
     }
 
     private void generateAndAddOrderGroup() {
-        Entity orderGroup = dataDefinitionService.get("orderGroups", "orderGroup").create();
+        Entity orderGroup = dataDefinitionService.get(OrderGroupsConstants.PLUGIN_IDENTIFIER,
+                OrderGroupsConstants.MODEL_ORDERGROUP).create();
 
         String number = generateString(charsAndDigits, RANDOM.nextInt(34) + 5);
 
@@ -209,7 +214,8 @@ public class SamplesGeneratorModule extends Module {
 
     private void addOrdersToOrderGroup(final Entity orderGroup) {
         List<Entity> orders;
-        SearchCriteriaBuilder searchBuilder = dataDefinitionService.get("orders", "order").find();
+        SearchCriteriaBuilder searchBuilder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
+                OrdersConstants.MODEL_ORDER).find();
         int ordersLeft = searchBuilder.add(SearchRestrictions.isNull("orderGroup")).list().getTotalNumberOfEntities();
         if (ordersLeft >= 0) {
             orders = searchBuilder.add(SearchRestrictions.isNull("orderGroup")).setMaxResults(10).list().getEntities();
@@ -341,12 +347,8 @@ public class SamplesGeneratorModule extends Module {
                 dataDefinitionService.get("technologies", "technologyOperationComponent"), "technology", technology.getId());
     }
 
-    /*
-     * TODO: BAKU clean this mess
-     */
     private Entity addOperationComponent(final Entity technology, final Entity parent, Entity operation,
-            final int productsComponentsQuantity, final int recurencyLevel) {
-
+            final int productsComponentsQuantity) {
         Preconditions.checkNotNull(technology, "Technology entity is null");
         Entity operationComponent = dataDefinitionService.get("technologies", "technologyOperationComponent").create();
 
@@ -358,14 +360,14 @@ public class SamplesGeneratorModule extends Module {
         operationComponent.setField("technology", technology);
         operationComponent.setField("parent", parent);
         operationComponent.setField("operation", operation);
-        operationComponent.setField("entityType", "operation");// acceptableTechnologyEntityType[RANDOM.nextInt(acceptableTechnologyEntityType.length)]);
+        operationComponent.setField("entityType", "operation");
         operationComponent.setField("tpz", operation.getField("tpz"));
         operationComponent.setField("tj", operation.getField("tj"));
         operationComponent.setField("machineUtilization", operation.getField("machineUtilization"));
         operationComponent.setField("laborUtilization", operation.getField("laborUtilization"));
         operationComponent.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
         operationComponent.setField("countRealized", operation.getField("countRealized"));
-        operationComponent.setField("countMachine", "0");// operation.getField("countMachine"));
+        operationComponent.setField("countMachine", "0");
         operationComponent.setField("timeNextOperation", operation.getField("timeNextOperation"));
 
         operationComponent = operationComponent.getDataDefinition().save(operationComponent);
@@ -404,10 +406,9 @@ public class SamplesGeneratorModule extends Module {
         for (int i = 0; i < 4; i++) {
             if (!operations.isEmpty()) {
                 operation = addOperationComponent(technology, operations.get(RANDOM.nextInt(operations.size())),
-                        getRandomOperation(), RANDOM.nextInt(3) + 3, RANDOM.nextInt(3));
+                        getRandomOperation(), RANDOM.nextInt(3) + 3);
             } else {
-                operation = addOperationComponent(technology, null, getRandomOperation(), RANDOM.nextInt(3) + 3,
-                        RANDOM.nextInt(3));
+                operation = addOperationComponent(technology, null, getRandomOperation(), RANDOM.nextInt(3) + 3);
             }
             operations.add(operation);
         }
@@ -487,15 +488,14 @@ public class SamplesGeneratorModule extends Module {
         order.setField("name", getNameFromNumberAndPrefix("Order-", number));
         order.setField("dateFrom", new Date(dateFrom));
         order.setField("dateTo", new Date(dateTo));
-        order.setField("state", "01pending");// acceptableOrderState[RANDOM.nextInt(acceptableOrderState.length)]);
+        order.setField("state", "01pending");
         order.setField("contractor", getRandomContractor());
         order.setField("product", product);
         order.setField("plannedQuantity", RANDOM.nextInt(100) + 100);
         order.setField("doneQuantity", RANDOM.nextInt(100) + 1);
         order.setField("technology", technology);
         order.setField("externalSynchronized", true);
-
-        order.setField("typeOfProductionRecording", "02cumulated"); // TODO: Randomize it
+        order.setField("typeOfProductionRecording", "01basic");
 
         order = dataDefinitionService.get("orders", "order").save(order);
 

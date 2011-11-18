@@ -26,19 +26,19 @@ import com.qcadoo.view.api.components.FormComponent;
 public class TechnologyStateServiceTest {
 
     private TechnologyStateService technologiesStateService;
-    
+
     private ViewDefinitionState view;
-    
+
     private FormComponent form;
 
     private Entity technology;
 
     private FieldComponent stateFieldComponent;
-    
+
     @Before
     public void init() {
         technologiesStateService = new TechnologyStateService();
-        
+
         TechnologyLoggingService technologyLoggingService = mock(TechnologyLoggingService.class);
         PluginAccessor pluginAccessor = mock(PluginAccessor.class);
         view = mock(ViewDefinitionState.class);
@@ -46,18 +46,18 @@ public class TechnologyStateServiceTest {
         technology = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
         stateFieldComponent = mock(FieldComponent.class);
-        
+
         when(pluginAccessor.getPlugin(Mockito.anyString())).thenReturn(null);
         when(technology.getDataDefinition()).thenReturn(dataDefinition);
         when(dataDefinition.get(Mockito.anyLong())).thenReturn(technology);
         when(view.getComponentByReference("state")).thenReturn(stateFieldComponent);
         when(view.getComponentByReference("form")).thenReturn(form);
         when(form.getEntity()).thenReturn(technology);
-        
+
         setField(technologiesStateService, "pluginAccessor", pluginAccessor);
         setField(technologiesStateService, "technologyLoggingService", technologyLoggingService);
     }
-    
+
     @Test
     public void shouldChangeStateFromDraftToAccepted() throws Exception {
         // given
@@ -67,13 +67,13 @@ public class TechnologyStateServiceTest {
         // when
         technologiesStateService.changeTechnologyState(view, form, new String[] { "accepted" });
 
-        //then
+        // then
         Mockito.verify(stateFieldComponent, never()).setFieldValue("draft");
         Mockito.verify(stateFieldComponent, atLeastOnce()).setFieldValue(fieldStateArgCaptor.capture());
         Assert.assertEquals(TechnologyState.ACCEPTED.getStringValue(), fieldStateArgCaptor.getValue());
-        
+
     }
-    
+
     @Test
     public void shouldChangeStateFromDraftToDeclined() throws Exception {
         // given
@@ -83,12 +83,12 @@ public class TechnologyStateServiceTest {
         // when
         technologiesStateService.changeTechnologyState(view, form, new String[] { "declined" });
 
-        //then
+        // then
         Mockito.verify(stateFieldComponent, never()).setFieldValue("draft");
         Mockito.verify(stateFieldComponent, atLeastOnce()).setFieldValue(fieldStateArgCaptor.capture());
         Assert.assertEquals(TechnologyState.DECLINED.getStringValue(), fieldStateArgCaptor.getValue());
     }
-    
+
     @Test
     public void shouldChangeStateFromAcceptedToOutdated() throws Exception {
         // given
@@ -98,12 +98,12 @@ public class TechnologyStateServiceTest {
         // when
         technologiesStateService.changeTechnologyState(view, form, new String[] { "outdated" });
 
-        //then
+        // then
         Mockito.verify(stateFieldComponent, never()).setFieldValue("accepted");
         Mockito.verify(stateFieldComponent, atLeastOnce()).setFieldValue(fieldStateArgCaptor.capture());
         Assert.assertEquals(TechnologyState.OUTDATED.getStringValue(), fieldStateArgCaptor.getValue());
     }
-    
+
     @Test
     public void shouldNotChangeStateFromOutdatedToAccepted() throws Exception {
         // given
@@ -112,10 +112,10 @@ public class TechnologyStateServiceTest {
         // when
         technologiesStateService.changeTechnologyState(view, form, new String[] { "accepted" });
 
-        //then
+        // then
         Mockito.verify(stateFieldComponent, never()).setFieldValue(Mockito.anyString());
     }
-    
+
     @Test
     public void shouldNotChangeStateFromAcceptedToDraft() throws Exception {
         // given
@@ -124,10 +124,10 @@ public class TechnologyStateServiceTest {
         // when
         technologiesStateService.changeTechnologyState(view, form, new String[] { "draft" });
 
-        //then
+        // then
         Mockito.verify(stateFieldComponent, never()).setFieldValue(Mockito.anyString());
     }
-    
+
     @Test
     public void shouldNotChangeStateFromDeclinedToDraft() throws Exception {
         // given
@@ -136,7 +136,7 @@ public class TechnologyStateServiceTest {
         // when
         technologiesStateService.changeTechnologyState(view, form, new String[] { "draft" });
 
-        //then
+        // then
         Mockito.verify(stateFieldComponent, never()).setFieldValue(Mockito.anyString());
     }
 }
