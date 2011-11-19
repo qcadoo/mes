@@ -46,14 +46,23 @@
 			<component type="form" name="technology" reference="form">
 				<script>
 					<![CDATA[
-						this.addOnChangeListener({
-							onSetValue: function(formNewValue) {
-								if (formNewValue.content && formNewValue.content.entityId) {
-									#{window}.getRibbonItem("reports.pdf").enable();
-									#{window}.getRibbonItem("reports.xls").enable();
-								} else {
-									#{window}.getRibbonItem("reports.pdf").disable();
-									#{window}.getRibbonItem("reports.xls").disable();
+						#{form}.addOnChangeListener({
+							onSetValue: function() {
+								var itemNames = ["reports.pdf", "reports.xls", "statuses.activate", "statuses.deactivate",
+												"status.acceptTechnology", "status.cancelTechnology"];
+								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
+								
+								for (var elementKey in itemNames) {
+									var ribbonItem = #{window}.getRibbonItem(itemNames[elementKey]);
+									if (isSaved) {
+										ribbonItem.enable();
+									} else {
+										ribbonItem.disable();
+									}
+								}
+								
+								if (isSaved && #{state}.getValue().content && #{state}.getValue().content.value) {
+									#{state}.updateRibbon(#{state}.getValue().content.value);
 								}
 							}
 						});
@@ -129,7 +138,7 @@
 										#{window}.setEnabled(enabled, true);
 										
 										var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", 
-											"actions.delete", "actions.cancel", "statuses.activate", "statuses.deactivate"];
+											"actions.cancel", "statuses.activate", "statuses.deactivate"];
 										for (var elementKey in toggleRibbonItems) {
 											var ribbonItemName = toggleRibbonItems[elementKey];
 											var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
@@ -144,8 +153,10 @@
 												ribbonItem.disable("#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}");
 											}
 										}
-										if (state == "declined" || state == "outdated") {
+										if (!enabled) {
 											#{window}.getRibbonItem("actions.delete").enable();
+										} else {
+											#{window}.getRibbonItem("actions.delete").disable();
 										}
 									}
 									
@@ -161,7 +172,7 @@
 										cancelState.forState="declined";
 										cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.declined)}";
 										cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.declineTechnology)}");
-											
+										
 										if (state == "draft") {
 											acceptState.enable();
 											cancelState.enable();
@@ -177,6 +188,7 @@
 											cancelState.enable();
 										}
 									}
+									this.updateRibbon = updateRibbon;
 								]]>
 					</script>
 				</component>

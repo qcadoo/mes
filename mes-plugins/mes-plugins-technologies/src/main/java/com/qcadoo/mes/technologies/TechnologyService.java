@@ -394,11 +394,18 @@ public class TechnologyService {
         operationLookup.setEnabled(form.getEntityId() == null);
     }
 
-    public void performTreeNumbering(final DataDefinition dd, final Entity technology) {
+    public final void performTreeNumbering(final DataDefinition dd, final Entity technology) {
         DataDefinition technologyOperationDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 MODEL_TECHNOLOGY_OPERATION_COMPONENT);
         treeNumberingService.generateNumbersAndUpdateTree(technologyOperationDD, "technology", technology.getId());
 
+    }
+
+    public final void rebuildTechnologyTreeNumberingOnCreate(final DataDefinition technologyOperationDD,
+            final Entity technologyOperation) {
+        Entity technology = technologyOperation.getBelongsToField("technology");
+        EntityTree tree = technology.getTreeField("operationComponents");
+        treeNumberingService.generateNumbersIncludingAdditionalEntity(tree, technologyOperation);
     }
 
     public void setParentIfRootNodeAlreadyExists(final DataDefinition dd, final Entity technologyOperation) {
@@ -422,7 +429,8 @@ public class TechnologyService {
             errorMessageKey = "technologies.technology.state.error.modifyAcceptedTechnology";
         } else if ("technologyOperationComponent".equals(dataDefinition.getName())) {
             technology = entity.getBelongsToField("technology");
-        } else if ("operationProductOutComponent".equals(dataDefinition.getName()) || "operationProductInComponent".equals(dataDefinition.getName())) {
+        } else if ("operationProductOutComponent".equals(dataDefinition.getName())
+                || "operationProductInComponent".equals(dataDefinition.getName())) {
             technology = entity.getBelongsToField("operationComponent").getBelongsToField("technology");
         }
 
