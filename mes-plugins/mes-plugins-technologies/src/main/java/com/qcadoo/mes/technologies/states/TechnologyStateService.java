@@ -30,6 +30,8 @@ public class TechnologyStateService {
     @Autowired
     private TechnologyStateBeforeChangeNotifierService beforeChangeNotifier;
 
+    private final static String STATE_FIELD = "state";
+
     public final void changeTechnologyState(final ViewDefinitionState view, final ComponentState component, final String[] args) {
         final String targetState = getTargetStateFromArgs(args);
         final FormComponent form = (FormComponent) view.getComponentByReference("form");
@@ -61,17 +63,17 @@ public class TechnologyStateService {
 
         final boolean sourceComponentIsForm = component instanceof FormComponent;
         final DataDefinition technologyDataDefinition = technology.getDataDefinition();
-        final ComponentState stateFieldComponent = view.getComponentByReference("state");
+        final ComponentState stateFieldComponent = view.getComponentByReference(STATE_FIELD);
 
-        TechnologyState oldState = TechnologyState.valueOf(technology.getStringField("state").toUpperCase());
+        TechnologyState oldState = TechnologyState.valueOf(technology.getStringField(STATE_FIELD).toUpperCase());
         TechnologyState newState = oldState.changeState(targetState);
 
-        if (oldState == newState || !beforeChangeNotifier.fireListeners(component, technology, newState)) {
+        if (newState.equals(oldState) || !beforeChangeNotifier.fireListeners(component, technology, newState)) {
             return;
         }
 
         if (!sourceComponentIsForm) {
-            technology.setField("state", newState.getStringValue());
+            technology.setField(STATE_FIELD, newState.getStringValue());
             Entity savedTechnology = technologyDataDefinition.save(technology);
 
             List<ErrorMessage> errorMessages = Lists.newArrayList();
@@ -87,7 +89,7 @@ public class TechnologyStateService {
         stateFieldComponent.setFieldValue(newState.getStringValue());
         component.performEvent(view, "save", new String[0]);
         Entity savedTechnology = technologyDataDefinition.get(technology.getId());
-        stateFieldComponent.setFieldValue(savedTechnology.getStringField("state"));
+        stateFieldComponent.setFieldValue(savedTechnology.getStringField(STATE_FIELD));
 
     }
 
