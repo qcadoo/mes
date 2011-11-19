@@ -49,6 +49,8 @@ public class NormOrderService {
 
     private static final String COUNT_REALIZED_FIELD = "countRealized";
 
+    private static final String OPERATION = "operation";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -85,12 +87,11 @@ public class NormOrderService {
             return;
         }
 
-        if (orderOperationComponents != null && orderOperationComponents.size() > 0
-                && orderOperationComponents.getRoot().getBelongsToField(TECHNOLOGY_FIELD).getId().equals(technology.getId())) {
-            return;
-        }
-
         if (orderOperationComponents != null && orderOperationComponents.size() > 0) {
+            if (orderOperationComponents.getRoot().getBelongsToField(TECHNOLOGY_FIELD).getId().equals(technology.getId())) {
+                return;
+            }
+
             orderOperationComponentDD.delete(orderOperationComponents.getRoot().getId());
         }
 
@@ -108,7 +109,7 @@ public class NormOrderService {
         orderOperationComponent.setField("technology", technology);
         orderOperationComponent.setField("parent", parent);
 
-        if ("operation".equals(operationComponent.getField("entityType"))) {
+        if (OPERATION.equals(operationComponent.getField("entityType"))) {
             createOrCopyOrderOperationComponent(operationComponent, order, technology, orderOperationComponentDD,
                     orderOperationComponent);
         } else {
@@ -122,10 +123,10 @@ public class NormOrderService {
 
     private void createOrCopyOrderOperationComponent(final EntityTreeNode operationComponent, final Entity order,
             final Entity technology, final DataDefinition orderOperationComponentDD, final Entity orderOperationComponent) {
-        orderOperationComponent.setField("operation", operationComponent.getBelongsToField("operation"));
+        orderOperationComponent.setField(OPERATION, operationComponent.getBelongsToField(OPERATION));
         orderOperationComponent.setField("technologyOperationComponent", operationComponent);
         orderOperationComponent.setField("priority", operationComponent.getField("priority"));
-        orderOperationComponent.setField("entityType", "operation");
+        orderOperationComponent.setField("entityType", OPERATION);
         orderOperationComponent.setField("tpz", operationComponent.getField("tpz"));
         orderOperationComponent.setField("tj", operationComponent.getField("tj"));
         orderOperationComponent.setField("productionInOneCycle", operationComponent.getField("productionInOneCycle"));
