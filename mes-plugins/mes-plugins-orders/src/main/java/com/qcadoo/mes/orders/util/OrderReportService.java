@@ -34,6 +34,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -60,7 +61,7 @@ public class OrderReportService {
             final Map<String, Object> entityFieldsMap, final OrderValidator orderValidator) {
         return printForOrder(state, plugin, entityName, null, entityFieldsMap, orderValidator);
     }
-    
+
     public Entity printForOrder(final ComponentState state, final String plugin, final String entityName,
             final String detailEntityName, final Map<String, Object> entityFieldsMap, final OrderValidator orderValidator) {
         if (!(state instanceof GridComponent)) {
@@ -113,11 +114,11 @@ public class OrderReportService {
         entity.setField("generated", true);
         entity.setField("worker", securityService.getCurrentUserName());
         entity.setField("date", new Date());
-        
+
         if (data.getField("orders") != null) {
-            entity.setField("orders", orders);
+            entity.setField("orders", Lists.newArrayList(orders));
         }
-        
+
         if (entityFieldsMap != null) {
             for (Map.Entry<String, Object> entityFieldsMapEntry : entityFieldsMap.entrySet()) {
                 entity.setField(entityFieldsMapEntry.getKey(), entityFieldsMapEntry.getValue());
@@ -129,7 +130,7 @@ public class OrderReportService {
         if (detailEntityName == null) {
             return saved;
         }
-        
+
         for (Entity order : orders) {
             Entity materialReqComponent = dataDefinitionService.get(plugin, detailEntityName).create();
             materialReqComponent.setField("order", order);
