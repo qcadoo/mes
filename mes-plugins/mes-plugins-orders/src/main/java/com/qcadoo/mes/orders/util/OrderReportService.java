@@ -104,7 +104,7 @@ public class OrderReportService {
     }
 
     private Entity createNewOrderPrint(final Set<Entity> orders, final String plugin, final String entityName,
-            final String detailEntityName, final Map<String, Object> entityFieldsMap, final Locale locale) {
+            final String joinEntityName, final Map<String, Object> entityFieldsMap, final Locale locale) {
 
         DataDefinition data = dataDefinitionService.get(plugin, entityName);
 
@@ -127,15 +127,20 @@ public class OrderReportService {
 
         Entity saved = data.save(entity);
 
-        if (detailEntityName == null) {
+        if (!saved.isValid()) {
+            throw new IllegalStateException("Entity " + saved + " is not valid! - " + saved.getErrors() + " / "
+                    + saved.getGlobalErrors());
+        }
+
+        if (joinEntityName == null) {
             return saved;
         }
 
         for (Entity order : orders) {
-            Entity materialReqComponent = dataDefinitionService.get(plugin, detailEntityName).create();
-            materialReqComponent.setField("order", order);
-            materialReqComponent.setField(entityName, saved);
-            dataDefinitionService.get(plugin, detailEntityName).save(materialReqComponent);
+            Entity joinEntity = dataDefinitionService.get(plugin, joinEntityName).create();
+            joinEntity.setField("order", order);
+            joinEntity.setField(entityName, saved);
+            dataDefinitionService.get(plugin, joinEntityName).save(joinEntity);
         }
         saved = data.get(saved.getId());
 
