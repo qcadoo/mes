@@ -422,13 +422,6 @@ public class TechnologyService {
 
     }
 
-    public final void rebuildTechnologyTreeNumberingOnCreate(final DataDefinition technologyOperationDD,
-            final Entity technologyOperation) {
-        Entity technology = technologyOperation.getBelongsToField(CONST_TECHNOLOGY);
-        EntityTree tree = technology.getTreeField(CONST_OPERATION_COMPONENTS);
-        treeNumberingService.generateNumbersIncludingAdditionalEntity(tree, technologyOperation);
-    }
-
     public void setParentIfRootNodeAlreadyExists(final DataDefinition dd, final Entity technologyOperation) {
         Entity technology = technologyOperation.getBelongsToField(CONST_TECHNOLOGY);
         EntityTreeNode rootNode = technology.getTreeField(CONST_OPERATION_COMPONENTS).getRoot();
