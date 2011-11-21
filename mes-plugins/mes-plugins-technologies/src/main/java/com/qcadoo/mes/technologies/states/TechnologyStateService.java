@@ -30,7 +30,9 @@ public class TechnologyStateService {
     @Autowired
     private TechnologyStateBeforeChangeNotifierService beforeChangeNotifier;
 
-    public void changeTechnologyState(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+    private final static String STATE_FIELD = "state";
+
+    public final void changeTechnologyState(final ViewDefinitionState view, final ComponentState component, final String[] args) {
         final String targetState = getTargetStateFromArgs(args);
         final FormComponent form = (FormComponent) view.getComponentByReference("form");
         final Entity technology = form.getEntity();
@@ -38,7 +40,8 @@ public class TechnologyStateService {
         setTechnologyState(view, component, technology, targetState);
     }
 
-    public void changeSelectedTechnologyState(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+    public final void changeSelectedTechnologyState(final ViewDefinitionState view, final ComponentState component,
+            final String[] args) {
         final String targetState = getTargetStateFromArgs(args);
         final GridComponent grid = (GridComponent) component;
         final List<Entity> technologies = getTechnologiesFromGridComponent(grid);
@@ -60,23 +63,23 @@ public class TechnologyStateService {
 
         final boolean sourceComponentIsForm = component instanceof FormComponent;
         final DataDefinition technologyDataDefinition = technology.getDataDefinition();
-        final ComponentState stateFieldComponent = view.getComponentByReference("state");
+        final ComponentState stateFieldComponent = view.getComponentByReference(STATE_FIELD);
 
-        TechnologyState oldState = TechnologyState.valueOf(technology.getStringField("state").toUpperCase());
+        TechnologyState oldState = TechnologyState.valueOf(technology.getStringField(STATE_FIELD).toUpperCase());
         TechnologyState newState = oldState.changeState(targetState);
 
-        if (oldState == newState || !beforeChangeNotifier.fireListeners(component, technology, newState)) {
+        if (newState.equals(oldState) || !beforeChangeNotifier.fireListeners(component, technology, newState)) {
             return;
         }
 
         if (!sourceComponentIsForm) {
-            technology.setField("state", newState.getStringValue());
+            technology.setField(STATE_FIELD, newState.getStringValue());
             Entity savedTechnology = technologyDataDefinition.save(technology);
-            
+
             List<ErrorMessage> errorMessages = Lists.newArrayList();
             errorMessages.addAll(savedTechnology.getErrors().values());
             errorMessages.addAll(savedTechnology.getGlobalErrors());
-            
+
             for (ErrorMessage message : errorMessages) {
                 view.getComponentByReference("grid").addMessage(message.getMessage(), MessageType.INFO);
             }
@@ -86,7 +89,7 @@ public class TechnologyStateService {
         stateFieldComponent.setFieldValue(newState.getStringValue());
         component.performEvent(view, "save", new String[0]);
         Entity savedTechnology = technologyDataDefinition.get(technology.getId());
-        stateFieldComponent.setFieldValue(savedTechnology.getStringField("state"));
+        stateFieldComponent.setFieldValue(savedTechnology.getStringField(STATE_FIELD));
 
     }
 
@@ -104,7 +107,10 @@ public class TechnologyStateService {
     }
 
     private String getTargetStateFromArgs(final String[] args) {
-        return args != null && args.length > 0 && !"null".equals(args[0]) ? args[0] : "";
+        if (args != null && args.length > 0 && !"null".equals(args[0])) {
+            return args[0];
+        }
+        return "";
     }
 
 }

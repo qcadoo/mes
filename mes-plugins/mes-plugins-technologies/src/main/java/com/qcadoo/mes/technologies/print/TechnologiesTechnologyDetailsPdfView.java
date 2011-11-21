@@ -23,8 +23,8 @@
  */
 package com.qcadoo.mes.technologies.print;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Maps.newLinkedHashMap;
 import static com.qcadoo.model.api.types.TreeType.NODE_NUMBER_FIELD;
 import static java.lang.Long.valueOf;
@@ -39,6 +39,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Lists;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Phrase;
@@ -48,6 +49,7 @@ import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.report.api.pdf.ReportPdfView;
@@ -67,6 +69,8 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
     @Override
     protected final String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
+        checkState(model.get("id") != null, "Unable to generate report for unsaved technology! (missing id)");
+
         String documentTitle = getTranslationService().translate("technologies.technologiesTechnologyDetails.report.title",
                 locale);
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
@@ -74,8 +78,8 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
 
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
-        Entity technology = technologyDD.get(valueOf((model.get("id").toString())));
 
+        Entity technology = technologyDD.get(valueOf((model.get("id").toString())));
         Map<String, String> panelTableValues = newLinkedHashMap();
         panelTableValues.put("name", technology.getStringField("name"));
         panelTableValues.put("number", technology.getStringField("number"));
@@ -118,10 +122,13 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                 "technologies.technologiesTechnologyDetails.report.columnHeader.unit", locale));
         PdfPTable table = PdfUtil.createTableWithHeader(6, technologyDetailsTableHeader, false);
 
-        List<Entity> technologyOperations = newLinkedList(technology.getTreeField("operationComponents"));
-        Collections.sort(technologyOperations, treeNumberingService.getTreeNodesNumberComparator());
+        EntityTree technologyTree = technology.getTreeField("operationComponents");
+        treeNumberingService.generateTreeNumbers(technologyTree);
 
-        for (Entity technologyOperation : technologyOperations) {
+        List<Entity> technologyOperationsList = Lists.newLinkedList(technologyTree);
+        Collections.sort(technologyOperationsList, treeNumberingService.getTreeNodesNumberComparator());
+
+        for (Entity technologyOperation : technologyOperationsList) {
             String nodeNumber = technologyOperation.getStringField(NODE_NUMBER_FIELD);
             String operationName = technologyOperation.getBelongsToField("operation").getStringField("name");
             List<Entity> technologyOperationProducts = newArrayList();

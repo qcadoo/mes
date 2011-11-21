@@ -2,6 +2,10 @@
 
 ALTER TABLE technologies_technology ADD COLUMN state varchar(255) DEFAULT 'draft';
 
+BEGIN;
+UPDATE technologies_technology SET state = 'accepted' WHERE id IN (SELECT technology_id FROM orders_order) AND state = 'draft';
+COMMIT;
+
 CREATE TABLE technologies_logging (
 	id bigint NOT NULL,
   technology_id bigint,

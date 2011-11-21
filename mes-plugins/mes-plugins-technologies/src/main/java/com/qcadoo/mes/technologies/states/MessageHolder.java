@@ -13,26 +13,26 @@ public final class MessageHolder {
     private final String[] vars;
 
     private MessageHolder(final String messageKey, final String targetReferenceName, final MessageType messageType,
-            String... vars) {
+            final String... vars) {
         this.messageKey = messageKey;
         this.targetReferenceName = targetReferenceName;
         this.messageType = messageType;
         this.vars = vars;
     }
 
-    public static MessageHolder error(final String messageKey, final String targetReferenceName, String... vars) {
+    public static MessageHolder error(final String messageKey, final String targetReferenceName, final String... vars) {
         return new MessageHolder(messageKey, targetReferenceName, MessageType.FAILURE, vars);
     }
 
-    public static MessageHolder error(final String messageKey, String... vars) {
+    public static MessageHolder error(final String messageKey, final String... vars) {
         return new MessageHolder(messageKey, null, MessageType.FAILURE, vars);
     }
 
-    public static MessageHolder info(final String messageKey, String... vars) {
+    public static MessageHolder info(final String messageKey, final String... vars) {
         return new MessageHolder(messageKey, null, MessageType.INFO, vars);
     }
 
-    public static MessageHolder success(final String messageKey, String... vars) {
+    public static MessageHolder success(final String messageKey, final String... vars) {
         return new MessageHolder(messageKey, null, MessageType.SUCCESS, vars);
     }
 

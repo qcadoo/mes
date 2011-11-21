@@ -132,8 +132,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 operationTime = (roundUp.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj")))))
                         .intValue();
             } else {
-                operationTime = ((operationComponent.getField("countMachine") != null ? (BigDecimal) operationComponent
-                        .getField("countMachine") : BigDecimal.ZERO).multiply(BigDecimal
+                operationTime = ((operationComponent.getField("countMachine") == null ? BigDecimal.ZERO
+                        : (BigDecimal) operationComponent.getField("countMachine")).multiply(BigDecimal
                         .valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue();
             }
             if (includeTpz) {
@@ -151,7 +151,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private Integer getIntegerValue(final Object value) {
-        return value != null ? (Integer) value : Integer.valueOf(0);
+        return value == null ? Integer.valueOf(0) : (Integer) value;
     }
 
     @Override

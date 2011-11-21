@@ -76,8 +76,7 @@ public final class OrderService {
         return true;
     }
 
-    public void setDefaultNameUsingTechnology(final ViewDefinitionState view, final ComponentState component,
-            final String[] args) {
+    public void setDefaultNameUsingTechnology(final ViewDefinitionState view, final ComponentState component, final String[] args) {
         if (!(component instanceof FieldComponent)) {
             return;
         }
@@ -85,8 +84,9 @@ public final class OrderService {
         FieldComponent productField = (FieldComponent) view.getComponentByReference("product");
         FieldComponent technologyField = (FieldComponent) view.getComponentByReference("product");
         FieldComponent name = (FieldComponent) view.getComponentByReference("name");
-        
-        if (technologyField.getFieldValue() == null || productField.getFieldValue() == null || StringUtils.hasText((String) name.getFieldValue())) {
+
+        if (technologyField.getFieldValue() == null || productField.getFieldValue() == null
+                || StringUtils.hasText((String) name.getFieldValue())) {
             return;
         }
 
@@ -96,7 +96,7 @@ public final class OrderService {
         if (productEntity == null) {
             return;
         }
-        
+
         if (technologyEntity == null) {
             technologyEntity = getDefaultTechnology(productEntity.getId());
         }
@@ -104,21 +104,20 @@ public final class OrderService {
         Calendar cal = Calendar.getInstance(view.getLocale());
         cal.setTime(new Date());
 
-        name.setFieldValue(translationService.translate("orders.order.name.default", component.getLocale(), 
-                productEntity.getStringField("name"),
-                productEntity.getStringField("number"),
-                technologyEntity.getStringField("number"),
-                cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH)) + "." + cal.get(Calendar.DAY_OF_MONTH));
+        name.setFieldValue(translationService.translate("orders.order.name.default", component.getLocale(),
+                productEntity.getStringField("name"), productEntity.getStringField("number"),
+                technologyEntity.getStringField("number"), cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH))
+                + "." + cal.get(Calendar.DAY_OF_MONTH));
     }
 
     private Entity getProductById(final Long id) {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(id); 
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(id);
     }
-    
+
     private Entity getTechnologyById(final Long id) {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(id);
     }
-    
+
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof FieldComponent)) {
             return;
@@ -253,7 +252,12 @@ public final class OrderService {
     }
 
     public boolean checkComponentOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        Entity order = entity.getBelongsToField("order");
+        Entity order = null;
+        if ("order".equals(entity.getDataDefinition().getName())) {
+            order = entity;
+        } else {
+            order = entity.getBelongsToField("order");
+        }
 
         if (order == null) {
             return true;
@@ -453,19 +457,19 @@ public final class OrderService {
             throw new IllegalStateException(e.getMessage(), e);
         }
     }
-    
+
     public boolean checkChosenTechnologyState(final DataDefinition orderDD, final Entity order) {
         Entity technology = order.getBelongsToField("technology");
         if (technology == null) {
             return true;
         }
         TechnologyState technologyState = TechnologyState.valueOf(technology.getStringField("state").toUpperCase());
-        
+
         if (TechnologyState.ACCEPTED != technologyState) {
             order.addError(orderDD.getField("technology"), "orders.validate.technology.error.wrongState");
             return false;
         }
-        
+
         return true;
     }
 

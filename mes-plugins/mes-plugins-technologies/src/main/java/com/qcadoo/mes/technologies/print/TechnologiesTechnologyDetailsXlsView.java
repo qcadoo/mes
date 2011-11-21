@@ -23,8 +23,8 @@
  */
 package com.qcadoo.mes.technologies.print;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Lists.newLinkedList;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.PLUGIN_IDENTIFIER;
 import static com.qcadoo.model.api.types.TreeType.NODE_NUMBER_FIELD;
@@ -41,9 +41,11 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.xls.ReportXlsView;
 import com.qcadoo.report.api.xls.XlsUtil;
@@ -78,13 +80,18 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
     }
 
     private void addOrderSeries(final Map<String, Object> model, final HSSFSheet sheet, final Locale locale) {
+        checkState(model.get("id") != null, "Unable to generate report for unsaved technology! (missing id)");
+
         DataDefinition technologyDD = dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY);
         Entity technology = technologyDD.get(valueOf(model.get("id").toString()));
-        List<Entity> technologyOperations = newLinkedList(technology.getTreeField("operationComponents"));
-        Collections.sort(technologyOperations, treeNumberingService.getTreeNodesNumberComparator());
+        EntityTree technologyTree = technology.getTreeField("operationComponents");
+        treeNumberingService.generateTreeNumbers(technologyTree);
+
+        List<Entity> technologyOperationsList = Lists.newLinkedList(technologyTree);
+        Collections.sort(technologyOperationsList, treeNumberingService.getTreeNodesNumberComparator());
 
         int rowNum = 1;
-        for (Entity technologyOperation : technologyOperations) {
+        for (Entity technologyOperation : technologyOperationsList) {
             String nodeNumber = technologyOperation.getStringField(NODE_NUMBER_FIELD);
             String operationName = technologyOperation.getBelongsToField("operation").getStringField("name");
             List<Entity> technologyOperationProducts = newArrayList();

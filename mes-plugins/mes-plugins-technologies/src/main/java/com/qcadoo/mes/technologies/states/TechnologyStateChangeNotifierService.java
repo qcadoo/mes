@@ -12,27 +12,28 @@ import com.qcadoo.model.api.Entity;
 
 @Service
 public class TechnologyStateChangeNotifierService {
-    
+
     private Set<StateChangeListener> listeners = Sets.newLinkedHashSet();
-    
-    public List<MessageHolder> onTechnologyStateChange(final Entity technology, final TechnologyState newState) {
+
+    public final List<MessageHolder> onTechnologyStateChange(final Entity technology, final TechnologyState newState) {
         List<MessageHolder> validationResulsts = Lists.newArrayList();
         for (StateChangeListener listener : listeners) {
             validationResulsts.addAll(listener.onStateChange(technology, newState));
         }
         return validationResulsts;
     }
-    
+
     public interface StateChangeListener {
-        public List<MessageHolder> onStateChange(final Entity technology, final TechnologyState newState);
+
+        List<MessageHolder> onStateChange(final Entity technology, final TechnologyState newState);
     }
-    
-    public void registerListener(final StateChangeListener validationListener) {
+
+    public final void registerListener(final StateChangeListener validationListener) {
         listeners.add(validationListener);
     }
-    
-    public void unregisterListener(final StateChangeListener validationListener) {
+
+    public final void unregisterListener(final StateChangeListener validationListener) {
         listeners.remove(validationListener);
     }
-    
+
 }
