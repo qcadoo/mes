@@ -56,7 +56,5 @@
 			method="invalidateIfBelongsToAcceptedTechnology" />
 		<onCreate class="com.qcadoo.mes.technologies.TechnologyService" 
 			method="setParentIfRootNodeAlreadyExists" />
-		<onCreate class="com.qcadoo.mes.technologies.TechnologyService" 
-			method="rebuildTechnologyTreeNumberingOnCreate"/>
 	</hooks>
 </model>
