@@ -224,7 +224,11 @@ public class WorkPlanReportDataService {
             } else {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             }
-            table.addCell(new Phrase(D_F.format((Date) order.getField("dateTo")), PdfUtil.getArialRegular9Dark()));
+            String formattedDateTo = "---";
+            if (order.getField("dateTo") != null) {
+                formattedDateTo = D_F.format((Date) order.getField("dateTo"));
+            }
+            table.addCell(new Phrase(formattedDateTo, PdfUtil.getArialRegular9Dark()));
         }
     }
 
