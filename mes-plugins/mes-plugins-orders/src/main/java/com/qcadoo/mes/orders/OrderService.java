@@ -104,7 +104,7 @@ public final class OrderService {
         }
         String technologyNumber = EMPTY_NUMBER;
         if (technologyEntity != null) {
-            technologyNumber = technologyEntity.getStringField("number");
+            technologyNumber = "tech. " + technologyEntity.getStringField("number");
         }
 
         Calendar cal = Calendar.getInstance(view.getLocale());
