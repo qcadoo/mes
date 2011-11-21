@@ -24,7 +24,7 @@ CREATE TABLE technologies_logging (
       ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 WITH (OIDS=FALSE);
-ALTER TABLE technologies_logging OWNER TO postgres;
+ALTER TABLE technologies_logging;
 
 -- #407 end
 
@@ -44,7 +44,7 @@ CREATE TABLE simplematerialbalance_simplematerialbalance
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE simplematerialbalance_simplematerialbalance OWNER TO postgres;
+ALTER TABLE simplematerialbalance_simplematerialbalance;
 
 -- end
 --  TABLE Simple material balance orders component
@@ -59,7 +59,7 @@ CREATE TABLE simplematerialbalance_simplematerialbalanceorderscomponent
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE simplematerialbalance_simplematerialbalanceorderscomponent OWNER TO postgres;
+ALTER TABLE simplematerialbalance_simplematerialbalanceorderscomponent;
 
 -- end
 
@@ -75,7 +75,7 @@ CREATE TABLE simplematerialbalance_simplematerialbalancestockareascomponent
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE simplematerialbalance_simplematerialbalancestockareascomponent OWNER TO postgres;
+ALTER TABLE simplematerialbalance_simplematerialbalancestockareascomponent;
 
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN qualityControlRequired boolean ;
 --end
