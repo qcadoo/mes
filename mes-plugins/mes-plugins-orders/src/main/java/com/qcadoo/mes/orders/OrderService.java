@@ -66,6 +66,8 @@ public final class OrderService {
     @Autowired
     private ExpressionService expressionService;
 
+    private static final String EMPTY_NUMBER = "";
+
     public boolean clearOrderDatesOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("state", "01pending");
         entity.setField("effectiveDateTo", null);
@@ -100,13 +102,17 @@ public final class OrderService {
         if (technologyEntity == null) {
             technologyEntity = getDefaultTechnology(productEntity.getId());
         }
+        String technologyNumber = EMPTY_NUMBER;
+        if (technologyEntity != null) {
+            technologyNumber = technologyEntity.getStringField("number");
+        }
 
         Calendar cal = Calendar.getInstance(view.getLocale());
         cal.setTime(new Date());
 
         name.setFieldValue(translationService.translate("orders.order.name.default", component.getLocale(),
-                productEntity.getStringField("name"), productEntity.getStringField("number"),
-                technologyEntity.getStringField("number"), cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH))
+                productEntity.getStringField("name"), productEntity.getStringField("number"), technologyNumber,
+                cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH))
                 + "." + cal.get(Calendar.DAY_OF_MONTH));
     }
 
