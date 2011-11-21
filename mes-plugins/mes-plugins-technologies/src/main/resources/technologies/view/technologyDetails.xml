@@ -290,4 +290,7 @@
 			</component>
 		</windowTab>
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.technologies.TechnologyTreeNumberingHooks" method="rebuildTreeNumbering" />
+	</hooks>
 </view>
