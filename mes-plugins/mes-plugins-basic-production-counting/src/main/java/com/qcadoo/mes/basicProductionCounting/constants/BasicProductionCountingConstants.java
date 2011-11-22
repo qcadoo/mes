@@ -23,9 +23,13 @@
  */
 package com.qcadoo.mes.basicProductionCounting.constants;
 
-public class BasicProductionCountingConstants {
+public interface BasicProductionCountingConstants {
 
-    public static final String PLUGIN_IDENTIFIER = "basicProductionCounting";
+    String PLUGIN_IDENTIFIER = "basicProductionCounting";
 
-    public static final String MODEL_BASIC_PRODUCTION_COUNTING = "basicProductionCounting";
+    String MODEL_BASIC_PRODUCTION_COUNTING = "basicProductionCounting";
+
+    String VIEW_RIBBON_ACTION_ITEM_GROUP = "basicProductionCounting";
+
+    String VIEW_RIBBON_ACTION_ITEM_NAME = "productionCounting";
 }

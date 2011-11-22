@@ -180,10 +180,11 @@ public class SamplesMinimalDataset extends Module {
 
         String alphabeticCode = "";
 
-        if ("pl".equals(locale))
+        if ("pl".equals(locale)) {
             alphabeticCode = "PLN";
-        else
+        } else {
             alphabeticCode = "USD";
+        }
 
         Entity currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).find()
                 .add(SearchRestrictions.eq("alphabeticCode", alphabeticCode)).uniqueResult();

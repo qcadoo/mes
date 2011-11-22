@@ -52,6 +52,10 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 @Service
 public class BasicProductionCountingService {
 
+    private final String modelFieldProduct = "product";
+
+    private final String modelFieldOrder = "order";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -59,11 +63,11 @@ public class BasicProductionCountingService {
     private MaterialRequirementReportDataService materialRequirementReportDataService;
 
     public void generateProducedProducts(final ViewDefinitionState state) {
-        String orderNumber = (String) state.getComponentByReference("number").getFieldValue();
+        final String orderNumber = (String) state.getComponentByReference("number").getFieldValue();
 
         if (orderNumber != null) {
-            Entity order = dataDefinitionService.get("orders", "order").find().add(SearchRestrictions.eq("number", orderNumber))
-                    .uniqueResult();
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
+                    .add(SearchRestrictions.eq("number", orderNumber)).uniqueResult();
             if (order != null) {
                 updateProductsForOrder(order, BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING, "plannedQuantity");
@@ -72,28 +76,28 @@ public class BasicProductionCountingService {
     }
 
     private void updateProductsForOrder(Entity order, String pluginName, String modelName, String fieldName) {
-        List<Entity> orderList = Arrays.asList(order);
+        final List<Entity> orderList = Arrays.asList(order);
 
-        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(
+        final Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(
                 orderList, true);
 
         List<Entity> producedProducts = dataDefinitionService.get(pluginName, modelName).find()
-                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+                .add(SearchRestrictions.belongsTo(modelFieldOrder, order)).list().getEntities();
 
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             Entity foundProduct = null;
 
             for (Entity producedProduct : producedProducts) {
-                if (producedProduct.getBelongsToField("product").getId().equals(product.getKey().getId())) {
+                if (producedProduct.getBelongsToField(modelFieldProduct).getId().equals(product.getKey().getId())) {
                     foundProduct = producedProduct;
                     break;
                 }
             }
 
             if (foundProduct == null) {
-                Entity newProduct = dataDefinitionService.get(pluginName, modelName).create();
-                newProduct.setField("order", order);
-                newProduct.setField("product", product.getKey());
+                final Entity newProduct = dataDefinitionService.get(pluginName, modelName).create();
+                newProduct.setField(modelFieldOrder, order);
+                newProduct.setField(modelFieldProduct, product.getKey());
                 newProduct.setField(fieldName, product.getValue());
                 newProduct.getDataDefinition().save(newProduct);
                 if (!newProduct.isValid()) {
@@ -108,12 +112,12 @@ public class BasicProductionCountingService {
             }
         }
         producedProducts = dataDefinitionService.get(pluginName, modelName).find()
-                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+                .add(SearchRestrictions.belongsTo(modelFieldOrder, order)).list().getEntities();
 
         for (Entity producedProduct : producedProducts) {
             boolean found = false;
             for (Entry<Entity, BigDecimal> product : products.entrySet()) {
-                if (producedProduct.getBelongsToField("product").equals(product.getKey())) {
+                if (producedProduct.getBelongsToField(modelFieldProduct).equals(product.getKey())) {
                     found = true;
                     break;
                 }
@@ -124,8 +128,7 @@ public class BasicProductionCountingService {
         }
     }
 
-    public void showProductionCounting(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
-            final String[] args) {
+    public void showProductionCounting(final ViewDefinitionState viewState, final ComponentState triggerState, final String[] args) {
         Long orderId = (Long) triggerState.getFieldValue();
 
         if (orderId == null) {
@@ -140,11 +143,11 @@ public class BasicProductionCountingService {
         }
 
         String url = "../page/basicProductionCounting/basicProductionCountingList.html?context=" + json.toString();
-        viewDefinitionState.redirectTo(url, false, true);
+        viewState.redirectTo(url, false, true);
     }
 
     public void getProductNameFromCounting(final ViewDefinitionState view) {
-        FieldComponent productField = (FieldComponent) view.getComponentByReference("product");
+        FieldComponent productField = (FieldComponent) view.getComponentByReference(modelFieldProduct);
         FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
         if (formComponent.getEntityId() == null) {
             return;
@@ -154,7 +157,7 @@ public class BasicProductionCountingService {
         if (basicProductionCountingEntity == null) {
             return;
         }
-        Entity product = basicProductionCountingEntity.getBelongsToField("product");
+        Entity product = basicProductionCountingEntity.getBelongsToField(modelFieldProduct);
         productField.setFieldValue(product.getField("name"));
         productField.requestComponentUpdateState();
     }
@@ -165,8 +168,9 @@ public class BasicProductionCountingService {
             return;
         }
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        RibbonActionItem productionCounting = window.getRibbon().getGroupByName("basicProductionCounting")
-                .getItemByName("productionCounting");
+        RibbonActionItem productionCounting = window.getRibbon()
+                .getGroupByName(BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_GROUP)
+                .getItemByName(BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_NAME);
         Entity order = form.getEntity();
         String state = order.getStringField("state");
         if (OrderStates.DECLINED.getStringValue().equals(state) || OrderStates.PENDING.getStringValue().equals(state)) {
@@ -176,7 +180,7 @@ public class BasicProductionCountingService {
     }
 
     public void setUneditableGridWhenOrderTypeRecordingIsBasic(final ViewDefinitionState view) {
-        FormComponent order = (FormComponent) view.getComponentByReference("order");
+        FormComponent order = (FormComponent) view.getComponentByReference(modelFieldOrder);
         if (order.getEntityId() == null) {
             return;
         }
@@ -199,7 +203,7 @@ public class BasicProductionCountingService {
         }
         Entity basicProductionCountingEntity = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                 BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).get(form.getEntityId());
-        Entity product = basicProductionCountingEntity.getBelongsToField("product");
+        Entity product = basicProductionCountingEntity.getBelongsToField(modelFieldProduct);
         if (product == null) {
             return;
         }

@@ -240,8 +240,8 @@ public class ProductionRecordsService {
                             .get(BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING,
                                     BasicProductionCountingConstants.PLUGIN_IDENTIFIER).find().list().getEntities();
                     boolean found = false;
-                    for (Entity BPC : allBPCs) {
-                        found = isEntitiAlreadyInDatabase(product, order, BPC, (BigDecimal) productIn.getField("quantity"));
+                    for (Entity bpc : allBPCs) {
+                        found = isEntitiAlreadyInDatabase(product, order, bpc, (BigDecimal) productIn.getField("quantity"));
                         if (found) {
                             break;
                         }
@@ -267,8 +267,8 @@ public class ProductionRecordsService {
                             .get(BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING,
                                     BasicProductionCountingConstants.PLUGIN_IDENTIFIER).find().list().getEntities();
                     boolean found = false;
-                    for (Entity BPC : allBPCs) {
-                        found = isEntitiAlreadyInDatabase(product, order, BPC, (BigDecimal) productOut.getField("quantity"));
+                    for (Entity bpc : allBPCs) {
+                        found = isEntitiAlreadyInDatabase(product, order, bpc, (BigDecimal) productOut.getField("quantity"));
                         if (found) {
                             break;
                         }
