@@ -52,7 +52,6 @@ public class QuantityService {
     public void checkMinimalAffordableQuantity(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
 
-        ComponentState form = (ComponentState) viewDefinitionState.getComponentByReference("form");
         FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
         FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("plannedQuantity");
         if (plannedQuantity == null || "".equals(plannedQuantity.getFieldValue())) {
@@ -69,21 +68,23 @@ public class QuantityService {
             if (technologyEntity.getField("minimalQuantity") == null) {
                 return;
             } else {
-                BigDecimal plannedQuantityBigDecFormat = getBigDecimalFromField(plannedQuantity.getFieldValue(),
-                        viewDefinitionState.getLocale());
-                BigDecimal technologyBigDecimal = getBigDecimalFromField(technologyEntity.getField("minimalQuantity"),
-                        viewDefinitionState.getLocale());
-                Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
-                        technologyEntity.getBelongsToField("product").getId());
-                String unit = product.getStringField("unit");
-
-                if (plannedQuantityBigDecFormat.compareTo(technologyBigDecimal) < 0) {
-                    String message = translationService.translate("orders.order.report.minimalQuantity",
-                            viewDefinitionState.getLocale());
-
-                    form.addMessage(message + " (" + technologyBigDecimal + " " + unit + ")", MessageType.INFO, false);
-                }
+                checkMinimalQuantityValue(viewDefinitionState, technologyEntity);
             }
+        }
+    }
+
+    private void checkMinimalQuantityValue(final ViewDefinitionState view, final Entity technologyEntity) {
+        FieldComponent plannedQuantity = (FieldComponent) view.getComponentByReference("plannedQuantity");
+        BigDecimal plannedQuantityBigDecFormat = getBigDecimalFromField(plannedQuantity.getFieldValue(), view.getLocale());
+        BigDecimal technologyBigDecimal = getBigDecimalFromField(technologyEntity.getField("minimalQuantity"), view.getLocale());
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                technologyEntity.getBelongsToField("product").getId());
+        String unit = product.getStringField("unit");
+
+        if (plannedQuantityBigDecFormat.compareTo(technologyBigDecimal) < 0) {
+            String message = translationService.translate("orders.order.report.minimalQuantity", view.getLocale());
+            ComponentState form = (ComponentState) view.getComponentByReference("form");
+            form.addMessage(message + " (" + technologyBigDecimal + " " + unit + ")", MessageType.INFO, false);
         }
     }
 
