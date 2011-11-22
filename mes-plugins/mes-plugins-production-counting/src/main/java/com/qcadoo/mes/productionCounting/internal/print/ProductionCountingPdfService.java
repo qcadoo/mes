@@ -47,6 +47,7 @@ import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingCo
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordComparator;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -66,6 +67,9 @@ public class ProductionCountingPdfService extends PdfDocumentService {
 
     @Autowired
     TimeConverterService timeConverterService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity productionCounting, final Locale locale)
@@ -259,16 +263,19 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         panelTable.setSpacingBefore(10);
         document.add(panelTable);
 
+        Entity technology = productionRecord.getBelongsToField("order").getBelongsToField("technology");
+
         if ((Boolean) productionRecord.getBelongsToField("order").getField("registerQuantityInProduct")) {
-            addInputProducts(document, productionRecord, locale);
+            addInputProducts(document, productionRecord, technology, locale);
         }
 
         if ((Boolean) productionRecord.getBelongsToField("order").getField("registerQuantityOutProduct")) {
-            addOutputProducts(document, productionRecord, locale);
+            addOutputProducts(document, productionRecord, technology, locale);
         }
     }
 
-    private void addInputProducts(Document document, final Entity productionRecord, final Locale locale) throws DocumentException {
+    private void addInputProducts(Document document, final Entity productionRecord, final Entity technology, final Locale locale)
+            throws DocumentException {
         document.add(new Paragraph(getTranslationService().translate("productionCounting.productionCounting.report.paragraph2",
                 locale), PdfUtil.getArialBold11Dark()));
 
@@ -294,10 +301,11 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                         .getArialRegular9Dark()));
                 inputProductsTable.addCell(new Phrase(productIn.getBelongsToField("product").getStringField("name"), PdfUtil
                         .getArialRegular9Dark()));
+
+                String type = technologyService.getProductType(productIn.getBelongsToField("product"), technology);
                 inputProductsTable.addCell(new Phrase(getTranslationService().translate(
-                        "basic.product.typeOfMaterial.value."
-                                + productIn.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
-                        .getArialRegular9Dark()));
+                        "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
+
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
                 if (productIn.getField("usedQuantity") != null) {
                     inputProductsTable.addCell(new Phrase(getDecimalFormat().format(productIn.getField("usedQuantity")), PdfUtil
@@ -314,7 +322,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         document.add(inputProductsTable);
     }
 
-    private void addOutputProducts(Document document, final Entity productionRecord, final Locale locale)
+    private void addOutputProducts(Document document, final Entity productionRecord, final Entity technology, final Locale locale)
             throws DocumentException {
         document.add(new Paragraph(getTranslationService().translate("productionCounting.productionCounting.report.paragraph3",
                 locale), PdfUtil.getArialBold11Dark()));
@@ -341,10 +349,11 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                         .getArialRegular9Dark()));
                 outputProductsTable.addCell(new Phrase(productOut.getBelongsToField("product").getStringField("name"), PdfUtil
                         .getArialRegular9Dark()));
+
+                String type = technologyService.getProductType(productOut.getBelongsToField("product"), technology);
                 outputProductsTable.addCell(new Phrase(getTranslationService().translate(
-                        "basic.product.typeOfMaterial.value."
-                                + productOut.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
-                        .getArialRegular9Dark()));
+                        "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
+
                 outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
                 if (productOut.getField("usedQuantity") != null) {
                     outputProductsTable.addCell(new Phrase(getDecimalFormat().format(productOut.getField("usedQuantity")),

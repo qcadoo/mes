@@ -43,7 +43,7 @@ public interface MaterialRequirementReportDataService {
      * @param orders
      *            list of orders
      * @param onlyComponents
-     *            get only this products which have typeOfMaterial = component
+     *            get only this products which are components (related to technology they are used in)
      * @return map of products with it quantity
      */
     Map<Entity, BigDecimal> getQuantitiesForOrdersTechnologyProducts(final List<Entity> orders, final Boolean onlyComponents);
