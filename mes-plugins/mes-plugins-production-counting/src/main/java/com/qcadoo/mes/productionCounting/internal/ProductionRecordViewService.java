@@ -246,8 +246,6 @@ public class ProductionRecordViewService {
         view.getComponentByReference("number").setFieldValue(product.getField("number"));
         view.getComponentByReference("name").setFieldValue(product.getField("name"));
 
-        String typeOfMaterial = "basic.product.typeOfMaterial.value." + product.getStringField("typeOfMaterial");
-        view.getComponentByReference("type").setFieldValue(translationService.translate(typeOfMaterial, view.getLocale()));
         view.getComponentByReference("usedQuantityUNIT").setFieldValue(product.getStringField("unit"));
         view.getComponentByReference("plannedQuantityUNIT").setFieldValue(product.getStringField("unit"));
         for (String reference : Arrays.asList("number", "name", "type", "usedQuantityUNIT", "plannedQuantityUNIT")) {
