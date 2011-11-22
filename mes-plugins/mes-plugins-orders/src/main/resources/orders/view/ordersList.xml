@@ -240,10 +240,6 @@
 					<filterRestriction column="state" value="02accepted" />
 					<filterOrder column="dateFrom" direction="asc" />
 				</predefinedFilter>
-				<predefinedFilter name="accepted">
-					<filterRestriction column="state" value="02accepted" />
-					<filterOrder column="dateFrom" direction="asc" />
-				</predefinedFilter>
 				<predefinedFilter name="inProgress">
 					<filterRestriction column="state" value="03inProgress" />
 					<filterOrder column="dateTo" direction="asc" />
