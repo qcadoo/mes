@@ -127,9 +127,7 @@
 										var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
 										var newState = ribbonItem.forState;
 										if (window.confirm(ribbonItem.confirmMessage)) {
-											if (window.canClose()) {
-												#{form}.fireEvent(eventPerformer, 'changeTechnologyState', [newState]);
-											}
+											#{form}.fireEvent(eventPerformer, 'changeTechnologyState', [newState]);
 										}
 									}
 									
