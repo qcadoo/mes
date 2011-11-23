@@ -27,41 +27,8 @@
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window" reference="window">
 		<ribbon>
-<!--			<group template="navigation" />-->
-<!--			<group name="navigation">-->
-<!--				<bigButton name="back" icon="backIcon24.png" action="#{form}.fireEvent(redirectToGroupsList);" />-->
-<!--			</group>-->
+			<group template="navigation" />
             <group template="formSaveCopyAndRemoveActions" />
-            <group name="ordersActions">
-                <bigButton name="addManyOrders" icon="newIcon24.png" state="disabled" reference="addManyOrders" action="#{form}.fireEvent(showOrderGroupOrdersTable);">
-                    <script>
-                        <![CDATA[
-                            #{orderGroupOrders}.addOnChangeListener({
-                                onChange: function(value) {
-                                    if(#{orderGroupOrders}.isEnabled()) {
-                                        this.enable();
-                                    }
-                                }
-                            });
-                        ]]>
-                    </script>
-                </bigButton>
-                <bigButton name="delOrder" icon="deleteIcon24.png" state="disabled" action="#{orderGroupOrders}.fireEvent(removeOrderFromGroup);">
-                    <script>
-                        <![CDATA[
-                            #{orderGroupOrders}.addOnChangeListener({
-                                onChange: function(selectedEntitiesArray) {
-                                    if (!selectedEntitiesArray || selectedEntitiesArray.length < 1) {
-                                        this.disable();
-                                    } else {
-                                        this.enable();
-                                    }
-                                }
-                            });
-                        ]]>
-                    </script>
-                </bigButton>
-            </group>
 		</ribbon>
 			<component type="form" name="orderGroup" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="2" rows="5">
@@ -80,9 +47,23 @@
                 		<component type="calendar" name="dateTo" field="dateTo" reference="groupDateTo" />
                 	</layoutElement>
                  	<layoutElement column="2" row="1" width="1" height="5">
-					   <component type="grid" name="orderGroupOrders" source="#{form}.orders" reference="orderGroupOrders">
-					        <listener event="removeOrderFromGroup" class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="removeOrderFromGroup" />
-					
+                 		<component type="lookup" name="order" reference="orderLookup" field="orders" defaultVisible="false" persistent="false" hasLabel="false">
+							<option type="column" name="number" fields="number"/>
+					   		<option type="column" name="name" fields="name" />
+					   		<option type="column" name="orderGroup" fields="orderGroup" expression="#orderGroup != null ? #orderGroup['name'] : ''"/>
+					   		<option type="column" name="orderGroupId" fields="orderGroup" hidden="true" />
+                       		<option type="column" name="dateFromShort" fields="dateFrom" />
+                       		<option type="column" name="dateToShort" fields="dateTo" />
+                            
+                       		<option type="searchable" value="number,name,dateFrom,dateTo" />
+                       		<option type="orderable" value="number,name,dateFrom,dateTo" />
+								
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+							<option type="multiselect" value="true" />
+						</component>
+					   <component type="grid" name="orderGroupOrders" source="#{form}.orders" reference="orderGroupOrders" >
 							<option type="column" name="number" fields="number" width="50" />
 							<option type="column" name="name" fields="name" />
 							<option type="column" name="dateFrom" fields="dateFrom" width="100"/>
@@ -101,20 +82,20 @@
 							<option type="deletable" value="false" />
 							<option type="fullscreen" value="true" />
 							<option type="multiselect" value="true" />
+							
+							<option type="creatable" value="true" />
+							<option type="deletable" value="true" />
+							<option type="weakRelation" value="true" />
+							<option type="correspondingLookup" value="orderLookup" />
 						</component>
                 	</layoutElement>
 				</component>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
-				
-				<listener event="showOrderGroupOrdersTable" class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="showOrderGroupOrdersTable" />
-				<listener event="redirectToGroupsList" class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="redirectToGroupsList" />
-				
 			</component>
 		<option type="fixedHeight" value="false" />
 	</component>
 	<hooks>
-	   <beforeRender class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="toggleRibbonAddOrderButtons" />
 	   <beforeRender class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="generateNumberAndName" />	
 	</hooks>
 </view>

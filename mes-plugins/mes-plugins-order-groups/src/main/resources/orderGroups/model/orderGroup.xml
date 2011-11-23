@@ -39,7 +39,6 @@
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="validateDates" />
-		<onUpdate class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="fillOrdersGroupNameField" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
