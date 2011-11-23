@@ -75,16 +75,13 @@
             <model:belongsTo name="orderGroup" plugin="orderGroups" model="orderGroup" /> 
         </model:model-field>
         
+        <!-- I leave that field not removed for future implementation -->
         <model:model-field plugin="orders" model="order" >
             <model:string name="orderGroupName" /> 
         </model:model-field>
         
         <model:model-hook plugin="orders" model="order" >
             <model:validatesWith class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="validateOrderDate" />
-        </model:model-hook>
-		
-		<model:model-hook plugin="orders" model="order" >
-            <model:onView class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="setGroupNameWhenLoadOrder" />
         </model:model-hook>
 		
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />

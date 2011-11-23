@@ -48,7 +48,6 @@
                 	</layoutElement>
                  	<layoutElement column="2" row="1" width="1" height="5">
                  		<component type="lookup" name="order" reference="orderLookup" field="orders" defaultVisible="false" persistent="false" hasLabel="false">
-							<option type="column" name="number" fields="number"/>
 					   		<option type="column" name="name" fields="name" />
 					   		<option type="column" name="orderGroup" fields="orderGroup" expression="#orderGroup != null ? #orderGroup['name'] : ''"/>
 					   		<option type="column" name="orderGroupId" fields="orderGroup" hidden="true" />

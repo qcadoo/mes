@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.orderGroups;
 
+import static com.qcadoo.mes.orderGroups.constants.OrderGroupsConstants.DATE_RANGE_ERROR;
+import static com.qcadoo.mes.orderGroups.constants.OrderGroupsConstants.ORDER_DATES_RANGE_ERROR;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -37,8 +40,8 @@ import com.qcadoo.mes.orderGroups.constants.OrderGroupsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -50,99 +53,97 @@ public class OrderGroupsService {
     @Autowired
     private TranslationService translationService;
 
+    private static final String DATE_FROM_FIELD = "dateFrom";
+
+    private static final String DATE_TO_FIELD = "dateTo";
+
+    private static final String NUMBER_FIELD = "number";
+
+    private static final String NAME_FIELD = "name";
+
     /* ****** HOOKS ******* */
 
-    public void generateNumberAndName(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent number = (FieldComponent) viewDefinitionState.getComponentByReference("number");
-
+    public final void generateNumberAndName(final ViewDefinitionState view) {
+        ComponentState number = view.getComponentByReference(NUMBER_FIELD);
         if (StringUtils.hasText((String) number.getFieldValue())) {
             return;
         }
 
-        numberGeneratorService.generateAndInsertNumber(viewDefinitionState, OrderGroupsConstants.PLUGIN_IDENTIFIER,
-                OrderGroupsConstants.MODEL_ORDERGROUP, "form", "number");
-        FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference("name");
+        numberGeneratorService.generateAndInsertNumber(view, OrderGroupsConstants.PLUGIN_IDENTIFIER,
+                OrderGroupsConstants.MODEL_ORDERGROUP, "form", NUMBER_FIELD);
 
-        if (!StringUtils.hasText((String) name.getFieldValue())) {
-            name.setFieldValue(translationService.translate("orderGroups.orderGroup.name.default",
-                    viewDefinitionState.getLocale(), (String) number.getFieldValue()));
+        ComponentState name = view.getComponentByReference(NAME_FIELD);
+        if (StringUtils.hasText((String) name.getFieldValue())) {
+            return;
         }
+        name.setFieldValue(translationService.translate("orderGroups.orderGroup.name.default", view.getLocale(),
+                (String) number.getFieldValue()));
     }
 
     /* ****** VALIDATORS ****** */
 
-    public boolean validateDates(final DataDefinition dataDefinition, final Entity orderGroup) {
-        // Date dateFrom = (Date) orderGroup.getField("dateFrom");
-        // Date dateTo = (Date) orderGroup.getField("dateTo");
-        // if (dateFrom != null && dateTo != null && dateTo.before(dateFrom)) {
-        // orderGroup.addError(dataDefinition.getField("dateTo"), "orderGroups.validate.error.badDatesOrder");
-        // return false;
-        // }
+    public final boolean validateDates(final DataDefinition dataDefinition, final Entity orderGroup) {
+        Date dateFrom = (Date) orderGroup.getField(DATE_FROM_FIELD);
+        Date dateTo = (Date) orderGroup.getField(DATE_TO_FIELD);
+        if (dateFrom != null && dateTo != null && dateTo.before(dateFrom)) {
+            orderGroup.addError(dataDefinition.getField(DATE_TO_FIELD), "orderGroups.validate.error.badDatesOrder");
+            return false;
+        }
 
         EntityList orders = orderGroup.getHasManyField("orders");
-        // if (orders != null && orders.size() > 0) {
-        // if (!checkOrderGroupComponentDateRange(orderGroup, orders)) {
-        // orderGroup.addError(dataDefinition.getField("dateFrom"), OrderGroupsConstants.DATE_RANGE_ERROR);
-        // orderGroup.addError(dataDefinition.getField("dateTo"), OrderGroupsConstants.DATE_RANGE_ERROR);
-        // return false;
-        // }
-        // }
-        // return true;
-        return checkOrderGroupComponentDateRange(orderGroup, orders);
+        return checkOrderGroupDateBoundary(orderGroup, orders, DATE_RANGE_ERROR, orderGroup);
     }
 
-    public boolean validateOrderDate(final DataDefinition dataDefinition, final Entity order) {
+    public final boolean validateOrderDate(final DataDefinition dataDefinition, final Entity order) {
         Entity group = order.getBelongsToField("orderGroup");
-        return checkOrderGroupComponentDateRange(group, Lists.newArrayList(order));
+        return checkOrderGroupDateBoundary(group, Lists.newArrayList(order), ORDER_DATES_RANGE_ERROR, order);
     }
 
-    public boolean checkOrderGroupComponentDateRange(final Entity group, final List<Entity> orders) {
+    public final boolean checkOrderGroupDateBoundary(final Entity group, final List<Entity> orders, final String errorMessage,
+            final Entity errorsHolder) {
         if (group == null || orders.isEmpty()) {
             return true;
         }
-
-        Date groupDateTo = (Date) group.getField("dateTo");
-        Date groupDateFrom = (Date) group.getField("dateFrom");
-        Long orderDateFrom = null;
-        Long orderDateTo = null;
-
-        if (groupDateTo != null) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime((Date) group.getField("dateTo"));
-            // important! change end time to 23:59:59.999
-            cal.add(Calendar.DAY_OF_MONTH, 1);
-            cal.add(Calendar.MILLISECOND, -1);
-            groupDateTo = cal.getTime();
+        long groupDateTo = getDateFieldFromEntity(group, DATE_TO_FIELD);
+        long groupDateFrom = getDateFieldFromEntity(group, DATE_FROM_FIELD);
+        if (groupDateTo > 0) {
+            groupDateTo = getTimeOfDayEnd(groupDateTo);
         }
-
-        DataDefinition dataDefinition = group.getDataDefinition();
-
+        boolean isValid = true;
         for (Entity order : orders) {
-            orderDateFrom = ((Date) order.getField("dateFrom")).getTime();
-            orderDateTo = ((Date) order.getField("dateTo")).getTime();
-
-            if (groupDateFrom != null && groupDateFrom.getTime() > orderDateFrom) {
-                order.addError(dataDefinition.getField("dateFrom"), OrderGroupsConstants.ORDER_DATES_RANGE_ERROR);
-                return false;
+            long orderDateFrom = getDateFieldFromEntity(order, DATE_FROM_FIELD);
+            long orderDateTo = getDateFieldFromEntity(order, DATE_TO_FIELD);
+            if (groupDateFrom * orderDateFrom != 0 && groupDateFrom > orderDateFrom) {
+                errorsHolder.addError(errorsHolder.getDataDefinition().getField(DATE_FROM_FIELD), errorMessage,
+                        order.getStringField(NAME_FIELD));
+                isValid = false;
             }
-
-            if (groupDateTo != null && groupDateTo.getTime() < orderDateTo) {
-                order.addError(dataDefinition.getField("dateTo"), OrderGroupsConstants.ORDER_DATES_RANGE_ERROR);
-                return false;
+            if (groupDateTo * orderDateTo != 0 && groupDateTo < orderDateTo) {
+                errorsHolder.addError(errorsHolder.getDataDefinition().getField(DATE_TO_FIELD), errorMessage,
+                        order.getStringField(NAME_FIELD));
+                isValid = false;
+            }
+            if (!isValid) {
+                break;
             }
         }
-        return true;
+        return isValid;
     }
 
-    /* ****** MODEL HOOKS ****** */
-
-    public void setGroupNameWhenLoadOrder(final DataDefinition dataDefinition, final Entity order) {
-        Entity orderGroup = order.getBelongsToField("orderGroup");
-        if (orderGroup == null) {
-            return;
+    private long getDateFieldFromEntity(final Entity entity, final String fieldName) {
+        if (entity.getField(fieldName) == null) {
+            return 0;
         }
-        order.setField("orderGroupName", orderGroup.getField("name"));
-        order.getDataDefinition().save(order);
+        return ((Date) entity.getField(fieldName)).getTime();
+    }
+
+    private long getTimeOfDayEnd(final long timestamp) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(timestamp);
+        // important! change end time to 23:59:59.999
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        cal.add(Calendar.MILLISECOND, -1);
+        return cal.getTime().getTime();
     }
 
 }
