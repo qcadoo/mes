@@ -23,12 +23,14 @@
  */
 package com.qcadoo.mes.orders.util;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -59,7 +61,7 @@ public class RibbonReportService {
         } else {
 
             Entity materialRequirementEntity = dataDefinitionService.get(plugin, entityName).get(form.getEntityId());
-            List<Entity> orderComponents = (List<Entity>) materialRequirementEntity.getField("orders");
+            Collection<Entity> orderComponents = (Collection<Entity>) materialRequirementEntity.getField("orders");
 
             if (orderComponents.size() == 0) {
                 generateButton.setMessage("orders.ribbon.message.noOrders");
@@ -68,8 +70,13 @@ public class RibbonReportService {
                 deleteButton.setEnabled(true);
             } else {
                 boolean isAnyOrderClosed = false;
+                Entity order = null;
                 for (Entity orderComponent : orderComponents) {
-                    Entity order = orderComponent.getBelongsToField("order");
+                    if (OrdersConstants.MODEL_ORDER.equals(orderComponent.getDataDefinition().getName())) {
+                        order = orderComponent;
+                    } else {
+                        order = orderComponent.getBelongsToField("order");
+                    }
                     if (order.getField("state").equals("04completed")) {
                         isAnyOrderClosed = true;
                         break;
