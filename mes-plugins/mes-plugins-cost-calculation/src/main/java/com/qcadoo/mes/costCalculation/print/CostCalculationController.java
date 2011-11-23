@@ -67,6 +67,6 @@ public class CostCalculationController {
             final String extension, final HttpServletResponse response, final String dateFieldName) {
         Object date = entity.getField(dateFieldName);
         String translatedFileName = fileName + "_" + PdfUtil.D_T_F.format((Date) date) + "_" + suffix + extension;
-        response.setHeader("Content-disposition", "attachment; filename=" + translatedFileName);
+        response.setHeader("Content-disposition", "inline; filename=" + translatedFileName);
     }
 }
