@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.10
+    Version: 1.1.0
 
     This file is part of Qcadoo.
 
@@ -235,10 +235,10 @@
 						<component type="grid" name="outProducts" reference="outProducts"
 							source="#{technologyTree}.operationProductOutComponents">
 							<option type="column" name="number" fields="product"
-								expression="#product['number']" link="true" />
+								expression="#product['number']" link="true" width="100" />
 							<option type="column" name="name" fields="product"
-								expression="#product['name']" link="true" />
-							<option type="column" name="quantity" fields="quantity" />
+								expression="#product['name']" link="true" width="200" />
+							<option type="column" name="quantity" fields="quantity" width="100" />
 							<option type="column" name="unit" fields="product" expression="#product['unit']" link="false" width="70" />
 							<option type="order" column="number" direction="desc" />
 							<option type="correspondingView" value="technologies/operationProductOutComponentDetails" />

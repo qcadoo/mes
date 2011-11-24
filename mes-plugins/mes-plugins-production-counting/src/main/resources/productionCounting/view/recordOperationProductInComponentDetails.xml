@@ -3,7 +3,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.10
+    Version: 1.1.0
 
     This file is part of Qcadoo.
 
@@ -47,25 +47,21 @@
 						defaultEnabled="false" />
 				</layoutElement>
 				<layoutElement column="1" row="3" width="5">
-					<component type="input" name="type" reference="type"
-						defaultEnabled="false" />
-				</layoutElement>
-				<layoutElement column="1" row="4" width="5">
 					<component type="input" name="plannedQuantity" field="plannedQuantity"
 						reference="plannedQuantity" defaultEnabled="false">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
-				<layoutElement column="6" row="4" >
+				<layoutElement column="6" row="3" >
 					<component type="input" name="plannedQuantityUNIT" 
 						reference="plannedQuantityUNIT" defaultEnabled="false"  hasLabel="false"/>
 				</layoutElement>
-				<layoutElement column="1" row="5" width="5">
+				<layoutElement column="1" row="4" width="5">
 					<component type="input" name="usedQuantity" field="usedQuantity">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
-				<layoutElement column="6" row="5" >
+				<layoutElement column="6" row="4" >
 					<component type="input" name="usedQuantityUNIT" 
 						reference="usedQuantityUNIT" defaultEnabled="false"  hasLabel="false"/>
 				</layoutElement>

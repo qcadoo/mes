@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.10
+ * Version: 1.1.0
  *
  * This file is part of Qcadoo.
  *
@@ -31,6 +31,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +49,7 @@ import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingCo
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordOperationComparator;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -57,6 +60,11 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public final class ProductionBalancePdfService extends PdfDocumentService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProductionBalancePdfService.class);
+
+    @Autowired
+    private TechnologyService technologyService;
 
     @Autowired
     DataDefinitionService dataDefinitionService;
@@ -89,11 +97,13 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         panelTable.setSpacingBefore(20);
         document.add(panelTable);
 
+        Entity technology = productionBalance.getBelongsToField("order").getBelongsToField("technology");
+
         if ((Boolean) productionBalance.getBelongsToField("order").getField("registerQuantityInProduct")) {
-            addInputProductsBalance(document, productionBalance, locale);
+            addInputProductsBalance(document, productionBalance, technology, locale);
         }
         if ((Boolean) productionBalance.getBelongsToField("order").getField("registerQuantityOutProduct")) {
-            addOutputProductsBalance(document, productionBalance, locale);
+            addOutputProductsBalance(document, productionBalance, technology, locale);
         }
 
         if ((Boolean) productionBalance.getBelongsToField("order").getField("registerProductionTime")) {
@@ -205,8 +215,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         return rightPanel;
     }
 
-    private void addInputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
-            throws DocumentException {
+    private void addInputProductsBalance(final Document document, final Entity productionBalance, final Entity technology,
+            final Locale locale) throws DocumentException {
         document.add(new Paragraph(getTranslationService().translate("productionCounting.productionBalance.report.paragraph",
                 locale), PdfUtil.getArialBold11Dark()));
 
@@ -242,10 +252,11 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     .getArialRegular9Dark()));
             inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("name"), PdfUtil
                     .getArialRegular9Dark()));
+
+            String type = technologyService.getProductType(inputProduct.getBelongsToField("product"), technology);
             inputProductsTable.addCell(new Phrase(this.getTranslationService().translate(
-                    "basic.product.typeOfMaterial.value."
-                            + inputProduct.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
-                    .getArialRegular9Dark()));
+                    "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
+
             inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
             inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("plannedQuantity")), PdfUtil
                     .getArialRegular9Dark()));
@@ -266,8 +277,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         document.add(inputProductsTable);
     }
 
-    private void addOutputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
-            throws DocumentException {
+    private void addOutputProductsBalance(final Document document, final Entity productionBalance, final Entity technology,
+            final Locale locale) throws DocumentException {
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(getTranslationService().translate("productionCounting.productionBalance.report.paragraph2",
                 locale), PdfUtil.getArialBold11Dark()));
@@ -306,10 +317,11 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     .getArialRegular9Dark()));
             outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("name"), PdfUtil
                     .getArialRegular9Dark()));
+
+            String type = technologyService.getProductType(outputProduct.getBelongsToField("product"), technology);
             outputProductsTable.addCell(new Phrase(this.getTranslationService().translate(
-                    "basic.product.typeOfMaterial.value."
-                            + outputProduct.getBelongsToField("product").getStringField("typeOfMaterial"), locale), PdfUtil
-                    .getArialRegular9Dark()));
+                    "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
+
             outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
             outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("plannedQuantity")), PdfUtil
                     .getArialRegular9Dark()));

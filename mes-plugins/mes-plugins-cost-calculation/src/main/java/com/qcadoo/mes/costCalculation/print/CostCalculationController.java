@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.4.10
+ * Version: 1.1.0
  *
  * This file is part of Qcadoo.
  *
@@ -67,6 +67,6 @@ public class CostCalculationController {
             final String extension, final HttpServletResponse response, final String dateFieldName) {
         Object date = entity.getField(dateFieldName);
         String translatedFileName = fileName + "_" + PdfUtil.D_T_F.format((Date) date) + "_" + suffix + extension;
-        response.setHeader("Content-disposition", "attachment; filename=" + translatedFileName);
+        response.setHeader("Content-disposition", "inline; filename=" + translatedFileName);
     }
 }

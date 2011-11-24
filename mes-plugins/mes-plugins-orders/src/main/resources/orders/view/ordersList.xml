@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.10
+    Version: 1.1.0
 
     This file is part of Qcadoo.
 
@@ -234,10 +234,6 @@
 				</predefinedFilter>
 				<predefinedFilter name="new">
 					<filterRestriction column="state" value="01pending" />
-					<filterOrder column="dateFrom" direction="asc" />
-				</predefinedFilter>
-				<predefinedFilter name="accepted">
-					<filterRestriction column="state" value="02accepted" />
 					<filterOrder column="dateFrom" direction="asc" />
 				</predefinedFilter>
 				<predefinedFilter name="accepted">
