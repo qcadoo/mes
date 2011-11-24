@@ -246,13 +246,12 @@ public class MaterialFlowService {
 
         for (Entity component : stockAreas) {
             Entity stockArea = (Entity) component.getField("stockAreas");
-            Long stockAreaNumber = (Long) stockArea.getField("number");
 
-            List<Entity> products = getProductsSeenInStockArea(stockAreaNumber.toString());
+            List<Entity> products = getProductsSeenInStockArea(stockArea.getStringField("number"));
 
             String forDate = ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString();
             for (Entity product : products) {
-                BigDecimal quantity = calculateShouldBeInStockArea(stockAreaNumber, product.getStringField("number"), forDate);
+                BigDecimal quantity = calculateShouldBeInStockArea(stockArea.getId(), product.getStringField("number"), forDate);
 
                 if (reportData.containsKey(product)) {
                     reportData.put(product, reportData.get(product).add(quantity));

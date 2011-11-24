@@ -238,7 +238,9 @@ public class SimpleMaterialBalanceService {
                                         state.getLocale()), MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo(
-                        "/simpleMaterialBalance/simpleMaterialBalance." + args[0] + "?id=" + state.getFieldValue(), true, false);
+                        "/generateSavedReport/" + SimpleMaterialBalanceConstants.PLUGIN_IDENTIFIER + "/"
+                                + SimpleMaterialBalanceConstants.MODEL_SIMPLE_MATERIAL_BALANCE + "." + args[0] + "?id="
+                                + state.getFieldValue() + "&fieldDate=date&suffix=", true, false);
             }
         } else {
             if (state instanceof FormComponent) {

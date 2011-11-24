@@ -38,21 +38,21 @@
 			</group>
 			<group name="exportWorker">
 				<smallButton name="pdfWorker" icon="pdfIcon16.png"
-					action="#{form}.fireEvent(printWorkPlan,pdf,ForWorker);" state="disabled" />
+					action="#{form}.fireEvent(printWorkPlan,pdf,_for_worker);" state="disabled" />
 				<smallButton name="xlsWorker" icon="xlsIcon16.png"
-					action="#{form}.fireEvent(printWorkPlan,xls,ForWorker);" state="disabled" />
+					action="#{form}.fireEvent(printWorkPlan,xls,_for_worker);" state="disabled" />
 			</group>
 			<group name="exportMachine">
 				<smallButton name="pdfMachine" icon="pdfIcon16.png"
-					action="#{form}.fireEvent(printWorkPlan,pdf,ForMachine);" state="disabled" />
+					action="#{form}.fireEvent(printWorkPlan,pdf,_for_machine);" state="disabled" />
 				<smallButton name="xlsMachine" icon="xlsIcon16.png"
-					action="#{form}.fireEvent(printWorkPlan,xls,ForMachine);" state="disabled" />
+					action="#{form}.fireEvent(printWorkPlan,xls,_for_machine);" state="disabled" />
 			</group>
 			<group name="exportProduct">
 				<smallButton name="pdfProduct" icon="pdfIcon16.png"
-					action="#{form}.fireEvent(printWorkPlan,pdf,ForProduct);" state="disabled" />
+					action="#{form}.fireEvent(printWorkPlan,pdf,_for_product);" state="disabled" />
 				<smallButton name="xlsProduct" icon="xlsIcon16.png"
-					action="#{form}.fireEvent(printWorkPlan,xls,ForProduct);" state="disabled" />
+					action="#{form}.fireEvent(printWorkPlan,xls,_for_product);" state="disabled" />
 			</group>
 		</ribbon>
 		<component type="form" name="workPlan" reference="form">

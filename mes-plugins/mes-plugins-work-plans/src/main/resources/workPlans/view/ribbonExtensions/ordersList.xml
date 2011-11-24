@@ -31,13 +31,13 @@
 	
 	<group name="exportPlan">
 		<smallButtons name="pdfWorker" icon="pdfIcon16.png"
-			action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForWorker);"
+			action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,_for_worker);"
 			state="disabled">
 			<smallButton name="pdfMachine" icon="pdfIcon16.png"
-				action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForMachine);"
+				action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,_for_machine);"
 				state="disabled" />
 			<smallButton name="pdfProduct" icon="pdfIcon16.png"
-				action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForProduct);"
+				action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,_for_product);"
 				state="disabled" />
 			<script>
 				<![CDATA[
@@ -70,13 +70,13 @@
 			</script>
 		</smallButtons>
 		<smallButtons name="xlsWorker" icon="xlsIcon16.png"
-			action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);"
+			action="#{grid}.fireEvent(printWorkPlanForOrder,xls,_for_worker);"
 			state="disabled">
 			<smallButton name="xlsMachine" icon="xlsIcon16.png"
-				action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForMachine);"
+				action="#{grid}.fireEvent(printWorkPlanForOrder,xls,_for_machine);"
 				state="disabled" />
 			<smallButton name="xlsProduct" icon="xlsIcon16.png"
-				action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);"
+				action="#{grid}.fireEvent(printWorkPlanForOrder,xls,_for_product);"
 				state="disabled" />
 		</smallButtons>
 	</group>
