@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.4.10
+    Version: 1.1.0
 
     This file is part of Qcadoo.
 
@@ -68,7 +68,6 @@
 
 		<view:view resource="view/orderGroupsList.xml" />
 		<view:view resource="view/orderGroupDetails.xml" />
-		<view:view resource="view/orderGroupOrdersTable.xml" />
 		
 		<view:resource uri="public/**/*" />
 		
@@ -76,6 +75,7 @@
             <model:belongsTo name="orderGroup" plugin="orderGroups" model="orderGroup" /> 
         </model:model-field>
         
+        <!-- I leave that field not removed for future implementation -->
         <model:model-field plugin="orders" model="order" >
             <model:string name="orderGroupName" /> 
         </model:model-field>
@@ -84,13 +84,9 @@
             <model:validatesWith class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="validateOrderDate" />
         </model:model-hook>
 		
-		<model:model-hook plugin="orders" model="order" >
-            <model:onSave class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="setGroupNameWhenSaveOrder" />
-        </model:model-hook>
-		
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
         <view:view-grid-column plugin="orders" view="ordersList" component="grid">
-            <view:column name="orderGroup" fields="orderGroupName" orderable="true" searchable="true" link="false" width="60" />
+            <view:column name="orderGroup" fields="orderGroup" expression="#orderGroup != null ? #orderGroup['name'] : ''" orderable="true" searchable="true" link="false" width="60" />
         </view:view-grid-column>
         
 	</modules>
