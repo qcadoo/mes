@@ -23,45 +23,31 @@
  */
 package com.qcadoo.mes.materialFlow.print.pdf;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
-import com.lowagie.text.PageSize;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
-import com.qcadoo.report.api.pdf.PdfPageNumbering;
 import com.qcadoo.report.api.pdf.PdfUtil;
-import com.qcadoo.security.api.SecurityService;
 
 @Service
 public final class MaterialFlowPdfService extends PdfDocumentService {
 
     @Autowired
-    private SecurityService securityService;
-
-    @Autowired
     private MaterialFlowService materialFlowService;
-
-    private static final Logger LOG = LoggerFactory.getLogger(MaterialFlowPdfService.class);
 
     @Override
     protected void buildPdfContent(final Document document, final Entity materialsInStockAreas, final Locale locale)
@@ -115,37 +101,6 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
             table.addCell(new Phrase(data.getKey().getStringField("unit"), PdfUtil.getArialRegular9Dark()));
         }
         document.add(table);
-    }
-
-    public void generateDocument(final Entity entity, final Map<Entity, BigDecimal> reportData, final Entity company,
-            final Locale locale) throws IOException, DocumentException {
-        Document document = new Document(PageSize.A4);
-        try {
-            setDecimalFormat((DecimalFormat) DecimalFormat.getInstance(locale));
-            getDecimalFormat().setMaximumFractionDigits(3);
-            getDecimalFormat().setMinimumFractionDigits(3);
-            ensureReportDirectoryExist();
-            FileOutputStream fileOutputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix()
-                    + PdfUtil.PDF_EXTENSION);
-            PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
-            writer.setPageEvent(new PdfPageNumbering(
-                    getTranslationService().translate("qcadooReport.commons.page.label", locale), getTranslationService()
-                            .translate("qcadooReport.commons.of.label", locale), getTranslationService().translate(
-                            "basic.company.phone.label", locale), company, getTranslationService().translate(
-                            "qcadooReport.commons.generatedBy.label", locale), securityService.getCurrentUserName()));
-            document.setMargins(40, 40, 60, 60);
-            buildPdfMetadata(document, locale);
-            writer.createXmpMetadata();
-            document.open();
-            buildPdfContent(document, entity, locale);
-            PdfUtil.addEndOfDocument(document, writer,
-                    getTranslationService().translate("qcadooReport.commons.endOfPrint.label", locale));
-            document.close();
-        } catch (DocumentException e) {
-            LOG.error("Problem with generating document - " + e.getMessage());
-            document.close();
-            throw e;
-        }
     }
 
     @Override

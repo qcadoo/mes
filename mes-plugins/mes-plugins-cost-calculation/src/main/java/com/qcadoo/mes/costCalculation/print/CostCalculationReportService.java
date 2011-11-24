@@ -55,6 +55,7 @@ public class CostCalculationReportService {
     @Autowired
     CostCalculationPdfService costCalculationPdfService;
 
+    // TODO KRNA print generic
     public void printCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state.getFieldValue() instanceof Long) {
@@ -68,8 +69,9 @@ public class CostCalculationReportService {
                         "costCalculation.costCalculationDetails.window.costCalculation.documentsWasNotGenerated",
                         state.getLocale()), MessageType.FAILURE);
             } else {
-                viewDefinitionState.redirectTo("/costCalculation/costCalculation." + args[0] + "?id=" + state.getFieldValue(),
-                        true, false);
+                viewDefinitionState.redirectTo("/generateSavedReport/" + CostCalculateConstants.PLUGIN_IDENTIFIER + "/"
+                        + CostCalculateConstants.MODEL_COST_CALCULATION + "." + args[0] + "?id=" + state.getFieldValue()
+                        + "&fieldDate=dateOfCalculation&suffix=", true, false);
             }
         } else {
             if (state instanceof FormComponent) {

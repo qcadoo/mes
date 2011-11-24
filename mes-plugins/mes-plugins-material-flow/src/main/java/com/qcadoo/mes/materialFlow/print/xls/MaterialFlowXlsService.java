@@ -23,19 +23,13 @@
  */
 package com.qcadoo.mes.materialFlow.print.xls;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,33 +43,6 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
 
     @Autowired
     private MaterialFlowService materialFlowService;
-    
-    private static final Logger LOG = LoggerFactory.getLogger(MaterialFlowXlsService.class);
-
-    public final void generateDocument(final Entity entity, final Map<Entity, BigDecimal> reportData, final Locale locale)
-            throws IOException {
-        setDecimalFormat((DecimalFormat) DecimalFormat.getInstance(locale));
-        getDecimalFormat().setMaximumFractionDigits(3);
-        getDecimalFormat().setMinimumFractionDigits(3);
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet(getReportTitle(locale));
-        addHeader(sheet, locale);
-        addSeries(sheet, entity);
-        sheet.setZoom(4, 3);
-        FileOutputStream outputStream = null;
-        try {
-            ensureReportDirectoryExist();
-            outputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix() + XlsUtil.XLS_EXTENSION);
-            workbook.write(outputStream);
-        } catch (IOException e) {
-            LOG.error("Problem with generating document - " + e.getMessage());
-            if (outputStream != null) {
-                outputStream.close();
-            }
-            throw e;
-        }
-        outputStream.close();
-    }
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -97,7 +64,7 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity materialsInStockAreas) {
         Map<Entity, BigDecimal> reportData = materialFlowService.calculateMaterialQuantitiesInStockArea(materialsInStockAreas);
-        
+
         int rowNum = 1;
         for (Map.Entry<Entity, BigDecimal> data : reportData.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);

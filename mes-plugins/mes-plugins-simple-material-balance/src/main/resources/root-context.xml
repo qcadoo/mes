@@ -35,8 +35,6 @@
        
     <context:property-placeholder location="file:${QCADOO_CONF}/report.properties"/>
 	
-	<context:component-scan base-package="com.qcadoo.mes.simpleMaterialBalance">
-		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-	</context:component-scan>
+	<context:component-scan base-package="com.qcadoo.mes.simpleMaterialBalance"/>
 
 </beans>
