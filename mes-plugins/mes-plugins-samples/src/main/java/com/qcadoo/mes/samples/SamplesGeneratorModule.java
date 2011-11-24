@@ -41,6 +41,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Preconditions;
+import com.qcadoo.mes.orderGroups.constants.OrderGroupsConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -51,10 +54,6 @@ import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
-
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.orderGroups.constants.OrderGroupsConstants;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 
 @Component
 public class SamplesGeneratorModule extends Module {
@@ -100,54 +99,54 @@ public class SamplesGeneratorModule extends Module {
     @Override
     @Transactional
     public void multiTenantEnable() {
-        if (databaseHasToBePrepared()) {
-            addParameters();
-            generateAndAddUser();
-            int range = iterations;
-            generateAndAddDictionary();
-            if (isEnabled("basic")) {
-                for (int i = 0; i < range; i++) {
-                    generateAndAddProduct();
-                    generateAndAddMachine();
-                    generateAndAddContractor();
-                    generateAndAddStaff();
-                }
+
+        addParameters();
+        generateAndAddUser();
+        int range = iterations;
+        generateAndAddDictionary();
+        if (isEnabled("basic")) {
+            for (int i = 0; i < range; i++) {
+                generateAndAddProduct();
+                generateAndAddMachine();
+                generateAndAddContractor();
+                generateAndAddStaff();
+            }
+            for (int i = 0; i < 10; i++) {
+                generateAndAddShift();
+            }
+        }
+        if (isEnabled(TechnologiesConstants.PLUGIN_IDENTIFIER)) {
+            for (int i = 0; i < range; i++) {
+                generateAndAddOperation();
+            }
+            generateAndAddTechnologies();
+        }
+        if (isEnabled(OrdersConstants.PLUGIN_IDENTIFIER)) {
+            for (int i = 0; i < range; i++) {
+                generateAndAddOrder();
+            }
+            if (isEnabled(OrderGroupsConstants.PLUGIN_IDENTIFIER)) {
                 for (int i = 0; i < 10; i++) {
-                    generateAndAddShift();
-                }
-            }
-            if (isEnabled(TechnologiesConstants.PLUGIN_IDENTIFIER)) {
-                for (int i = 0; i < range; i++) {
-                    generateAndAddOperation();
-                }
-                generateAndAddTechnologies();
-            }
-            if (isEnabled(OrdersConstants.PLUGIN_IDENTIFIER)) {
-                for (int i = 0; i < range; i++) {
-                    generateAndAddOrder();
-                }
-                if (isEnabled(OrderGroupsConstants.PLUGIN_IDENTIFIER)) {
-                    for (int i = 0; i < 10; i++) {
-                        generateAndAddOrderGroup();
-                    }
-                }
-            }
-            if (isEnabled("usedProducts")) {
-                for (int i = 0; i < range; i++) {
-                    generateAndAddUsedProduct();
-                }
-            }
-            if (isEnabled("workPlans")) {
-                for (int i = 0; i < (range / 40); i++) {
-                    generateAndAddWorkPlan();
-                }
-            }
-            if (isEnabled("producedProducts")) {
-                for (int i = 0; i < range; i++) {
-                    generateAndAddProducedProducts();
+                    generateAndAddOrderGroup();
                 }
             }
         }
+        if (isEnabled("usedProducts")) {
+            for (int i = 0; i < range; i++) {
+                generateAndAddUsedProduct();
+            }
+        }
+        if (isEnabled("workPlans")) {
+            for (int i = 0; i < (range / 40); i++) {
+                generateAndAddWorkPlan();
+            }
+        }
+        if (isEnabled("producedProducts")) {
+            for (int i = 0; i < range; i++) {
+                generateAndAddProducedProducts();
+            }
+        }
+
     }
 
     private void generateAndAddProducedProducts() {

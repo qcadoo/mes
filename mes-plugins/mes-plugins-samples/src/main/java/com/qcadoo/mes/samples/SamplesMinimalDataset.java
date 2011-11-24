@@ -43,6 +43,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -51,8 +52,6 @@ import com.qcadoo.plugin.api.Module;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
-
-import com.qcadoo.mes.basic.constants.BasicConstants;
 
 @Component
 public class SamplesMinimalDataset extends Module {
@@ -84,17 +83,17 @@ public class SamplesMinimalDataset extends Module {
     @Transactional
     public void multiTenantEnable() {
         checkLocale();
-        if (databaseHasToBePrepared()) {
-            if (isEnabled("productionCounting")) {
-                setParameters();
-            }
-            if (isEnabled(BasicConstants.PLUGIN_IDENTIFIER)) {
-                readDataFromXML("units", UNITS_ATTRIBUTES);
-                readDataFromXML("shifts", SHIFTS_ATTRIBUTES);
-                readDataFromXML("users", USERS_ATTRIBUTES);
-                readDataFromXML("company", COMPANY_ATTRIBUTES);
-            }
+
+        if (isEnabled("productionCounting")) {
+            setParameters();
         }
+        if (isEnabled(BasicConstants.PLUGIN_IDENTIFIER)) {
+            readDataFromXML("units", UNITS_ATTRIBUTES);
+            readDataFromXML("shifts", SHIFTS_ATTRIBUTES);
+            readDataFromXML("users", USERS_ATTRIBUTES);
+            readDataFromXML("company", COMPANY_ATTRIBUTES);
+        }
+
     }
 
     private void checkLocale() {
@@ -250,11 +249,6 @@ public class SamplesMinimalDataset extends Module {
         unit = unit.getDataDefinition().save(unit);
 
         validateEntity(unit);
-    }
-
-    private boolean databaseHasToBePrepared() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().list()
-                .getTotalNumberOfEntities() == 0;
     }
 
     private boolean isEnabled(final String pluginIdentifier) {
