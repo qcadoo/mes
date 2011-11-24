@@ -107,9 +107,6 @@ public class SamplesLoaderModule extends Module {
 
     private static final Random RANDOM = new Random(System.currentTimeMillis());
 
-    @Value("${loadTestData}")
-    private boolean addTestData;
-
     @Autowired
     private PluginAccessor pluginAccessor;
 
@@ -133,44 +130,36 @@ public class SamplesLoaderModule extends Module {
     public void multiTenantEnable() {
         checkLocale();
 
-        if (databaseHasToBePrepared()) {
-            LOG.info("Database has to be prepared ...");
+        addParameters();
 
-            addParameters();
-
-            if (addTestData) {
-                if (!setAsDemoEnviroment) {
-                    readDataFromXML("users", USER_ATTRIBUTES);
-                } else {
-                    changeAdminPassword();
-                }
-
-                readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
-                if (isEnabled("basic")) {
-                    readDataFromXML("activeCurrency", ACTIVE_CURRENCY_ATTRIBUTES);
-                    readDataFromXML("company", COMPANY_ATTRIBUTES);
-                    readDataFromXML("machines", MACHINE_ATTRIBUTES);
-                    readDataFromXML("staff", STAFF_ATTRIBUTES);
-                    readDataFromXML("units", new String[] { "name" });
-                    readDataFromXML("products", PRODUCT_ATTRIBUTES);
-                    readDataFromXML("shifts", SHIFT_ATTRIBUTES);
-                }
-                if (isEnabled("technologies")) {
-                    readDataFromXML("operations", OPERATION_ATTRIBUTES);
-                    readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
-                }
-                if (isEnabled("orders")) {
-                    readDataFromXML("orders", ORDER_ATTRIBUTES);
-                }
-                if (isEnabled("materialRequirements")) {
-                    addMaterialRequirements();
-                }
-                if (isEnabled("workPlans")) {
-                    addWorkPlans();
-                }
-            }
+        if (!setAsDemoEnviroment) {
+            readDataFromXML("users", USER_ATTRIBUTES);
         } else {
-            LOG.info("Database has been already prepared, skipping");
+            changeAdminPassword();
+        }
+
+        readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
+        if (isEnabled("basic")) {
+            readDataFromXML("activeCurrency", ACTIVE_CURRENCY_ATTRIBUTES);
+            readDataFromXML("company", COMPANY_ATTRIBUTES);
+            readDataFromXML("machines", MACHINE_ATTRIBUTES);
+            readDataFromXML("staff", STAFF_ATTRIBUTES);
+            readDataFromXML("units", new String[] { "name" });
+            readDataFromXML("products", PRODUCT_ATTRIBUTES);
+            readDataFromXML("shifts", SHIFT_ATTRIBUTES);
+        }
+        if (isEnabled("technologies")) {
+            readDataFromXML("operations", OPERATION_ATTRIBUTES);
+            readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
+        }
+        if (isEnabled("orders")) {
+            readDataFromXML("orders", ORDER_ATTRIBUTES);
+        }
+        if (isEnabled("materialRequirements")) {
+            addMaterialRequirements();
+        }
+        if (isEnabled("workPlans")) {
+            addWorkPlans();
         }
     }
 

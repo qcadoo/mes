@@ -184,7 +184,9 @@ public class MaterialRequirementService {
                         state.getLocale()), MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo(
-                        "/materialRequirements/materialRequirement." + args[0] + "?id=" + state.getFieldValue(), true, false);
+                        "/generateSavedReport/" + MaterialRequirementsConstants.PLUGIN_IDENTIFIER + "/"
+                                + MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT + "." + args[0] + "?id="
+                                + state.getFieldValue() + "&fieldDate=date&suffix=", true, false);
             }
         } else {
             if (state instanceof FormComponent) {
@@ -206,7 +208,9 @@ public class MaterialRequirementService {
         try {
             generateMaterialReqDocuments(state, materialRequirement);
             viewDefinitionState.redirectTo(
-                    "/materialRequirements/materialRequirement." + args[0] + "?id=" + materialRequirement.getId(), true, false);
+                    "/generateSavedReport/" + MaterialRequirementsConstants.PLUGIN_IDENTIFIER + "/"
+                            + MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT + "." + args[0] + "?id="
+                            + materialRequirement.getId() + "&fieldDate=date&suffix=", true, false);
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage(), e);
         } catch (DocumentException e) {

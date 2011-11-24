@@ -178,8 +178,9 @@ public final class WorkPlanService {
                         translationService.translate("workPlans.workPlan.window.workPlan.documentsWasNotGenerated",
                                 state.getLocale()), MessageType.FAILURE);
             } else {
-                viewDefinitionState.redirectTo("/workPlans/workPlan" + args[1] + "." + args[0] + "?id=" + state.getFieldValue(),
-                        true, false);
+                viewDefinitionState.redirectTo("/generateSavedReport/" + WorkPlansConstants.PLUGIN_IDENTIFIER + "/"
+                        + WorkPlansConstants.MODEL_WORK_PLAN + "." + args[0] + "?id=" + state.getFieldValue()
+                        + "&fieldDate=date&suffix=" + args[1], true, false);
             }
         } else {
             if (state instanceof FormComponent) {
@@ -232,9 +233,9 @@ public final class WorkPlanService {
         }
         try {
             generateWorkPlanDocuments(state, workPlan);
-
-            viewDefinitionState.redirectTo("/workPlans/workPlan" + args[1] + "." + args[0] + "?id=" + workPlan.getId(), true,
-                    false);
+            viewDefinitionState.redirectTo("/generateSavedReport/" + WorkPlansConstants.PLUGIN_IDENTIFIER + "/"
+                    + WorkPlansConstants.MODEL_WORK_PLAN + "." + args[0] + "?id=" + workPlan.getId() + "&fieldDate=date&suffix="
+                    + args[1], true, false);
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage(), e);
         } catch (DocumentException e) {

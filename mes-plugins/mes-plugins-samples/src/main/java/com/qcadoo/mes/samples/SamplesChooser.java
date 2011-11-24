@@ -23,10 +23,14 @@
  */
 package com.qcadoo.mes.samples;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.plugin.api.Module;
 
 @Component
@@ -39,21 +43,39 @@ public class SamplesChooser extends Module {
     private SamplesLoaderModule samplesLoaderModule;
 
     @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
     private SamplesMinimalDataset samplesMinimalDataset;
 
-    @Value("${samplesBuildStrategy}")
+    @Value("${loadTestData}")
     private String samplesBuildStrategy;
+
+    private static final Logger LOG = LoggerFactory.getLogger(SamplesLoaderModule.class);
 
     @Override
     public void multiTenantEnable() {
-        if ("LOADER".equals(samplesBuildStrategy.toUpperCase())) {
-            samplesLoaderModule.multiTenantEnable();
-        } else if ("GENERATOR".equals(samplesBuildStrategy.toUpperCase())) {
-            samplesGeneratorModule.multiTenantEnable();
-        } else if ("MINIMAL".equals(samplesBuildStrategy.toUpperCase())) {
-            samplesMinimalDataset.multiTenantEnable();
+        if (databaseHasToBePrepared()) {
+            LOG.debug("Data base has to be prepared ...");
+            if ("LOADER".equals(samplesBuildStrategy.toUpperCase())) {
+                samplesLoaderModule.multiTenantEnable();
+            } else if ("GENERATOR".equals(samplesBuildStrategy.toUpperCase())) {
+                samplesGeneratorModule.multiTenantEnable();
+            } else if ("MINIMAL".equals(samplesBuildStrategy.toUpperCase())) {
+                samplesMinimalDataset.multiTenantEnable();
+            } else if ("FALSE".equals(samplesBuildStrategy.toUpperCase())) {
+
+            } else {
+                throw new IllegalStateException("samples build strategy must be declared!");
+            }
         } else {
-            throw new IllegalStateException("samples build strategy must be declared!");
+            LOG.debug("Data base won't bo changed ... ");
         }
+
+    }
+
+    private boolean databaseHasToBePrepared() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().list()
+                .getTotalNumberOfEntities() == 0;
     }
 }

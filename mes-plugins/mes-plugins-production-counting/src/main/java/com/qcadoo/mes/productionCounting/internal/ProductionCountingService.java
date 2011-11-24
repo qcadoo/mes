@@ -193,8 +193,9 @@ public class ProductionCountingService {
                         "productionCounting.productionBalance.report.error.documentsWasNotGenerated", state.getLocale()),
                         MessageType.FAILURE);
             } else {
-                viewDefinitionState.redirectTo(
-                        "/productionCounting/productionCounting." + args[0] + "?id=" + state.getFieldValue(), true, false);
+                viewDefinitionState.redirectTo("/generateSavedReport/" + ProductionCountingConstants.PLUGIN_IDENTIFIER + "/"
+                        + ProductionCountingConstants.MODEL_PRODUCTION_COUNTING + "." + args[0] + "?id=" + state.getFieldValue()
+                        + "&fieldDate=date&suffix=", true, false);
             }
         } else {
             if (state instanceof FormComponent) {

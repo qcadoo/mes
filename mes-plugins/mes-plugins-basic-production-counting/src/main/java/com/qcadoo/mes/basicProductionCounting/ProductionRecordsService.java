@@ -24,17 +24,22 @@
 package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -48,7 +53,16 @@ public class ProductionRecordsService {
     @Autowired
     private TechnologyService technologyService;
 
+    @Autowired
+    private MaterialRequirementReportDataService materialRequrements;
+
     private Entity order;
+
+    private final String modelFieldOrder = "order";
+
+    private final String modelFieldProduct = "product";
+
+    private final String modelFieldRequiredQuantity = "plannedQuantity";
 
     private void getProductionRecordsFromOrder(final Entity order) {
         SearchCriteriaBuilder criteriaBuilder = dataDefinitionService.get("productionCounting", "productionRecord").find();
@@ -57,20 +71,36 @@ public class ProductionRecordsService {
         if (productionRecords.isEmpty()) {
             return;
         }
-
+        // clean table for specified order
+        removeProductionRecordForOrder(order);
         if ("02cumulated".equals(order.getField("typeOfProductionRecording"))) {
-            getUsedProductFromRecord(productionRecords.get(0));
-            getProducedProductFromRecord(productionRecords.get(0));
+            getUsedProductFromRecord(productionRecords.get(0), false);
+            getProducedProductFromRecord(productionRecords.get(0), false);
         }
         if ("03forEach".equals(order.getField("typeOfProductionRecording"))) {
             for (Entity productionRecord : productionRecords) {
-                getUsedProductFromRecord(productionRecord);
-                getProducedProductFromRecord(productionRecord);
+                getUsedProductFromRecord(productionRecord, true);
+                getProducedProductFromRecord(productionRecord, true);
             }
         }
     }
 
-    private void getProducedProductFromRecord(final Entity productionRecord) {
+    private void removeProductionRecordForOrder(Entity order) {
+        List<Entity> countings = dataDefinitionService
+                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
+                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+        for (Entity counting : countings) {
+            counting.getDataDefinition().delete(counting.getId());
+        }
+
+    }
+
+    /*
+     * TODO: BAKU facade pattern
+     */
+
+    private void getProducedProductFromRecord(final Entity productionRecord, final boolean forEach) {
         SearchCriteriaBuilder searchBuilder = dataDefinitionService.get("productionCounting",
                 "recordOperationProductOutComponent").find();
         List<Entity> productsOut = searchBuilder.add(SearchRestrictions.belongsTo("productionRecord", productionRecord)).list()
@@ -80,14 +110,18 @@ public class ProductionRecordsService {
             return;
         }
         for (Entity productOut : productsOut) {
-            addProducedProductQuantityToCounting(productOut);
+            addProducedProductQuantityToCounting(productOut, forEach);
         }
     }
 
-    private void addProducedProductQuantityToCounting(final Entity record) {
+    private void addProducedProductQuantityToCounting(final Entity record, final boolean forEach) {
         SearchCriteriaBuilder searchBuilder = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                 BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find();
         List<Entity> productionCountings = searchBuilder.add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+
+        final Map<Entity, BigDecimal> products = materialRequrements.getQuantitiesForOrdersTechnologyProducts(
+                Arrays.asList(order), false);
+
         Entity foundCounting = null;
         for (Entity productionCounting : productionCountings) {
             if (productionCounting.getBelongsToField("product").equals(record.getBelongsToField("product"))) {
@@ -102,7 +136,21 @@ public class ProductionRecordsService {
             foundCounting.setField("product", record.getBelongsToField("product"));
             foundCounting.setField("producedQuantity", record.getField("usedQuantity"));
         } else {
-            foundCounting.setField("producedQuantity", record.getField("usedQuantity"));
+            BigDecimal producedQuantity = (BigDecimal) foundCounting.getField("producedQuantity");
+            if (forEach) {
+                BigDecimal addition = (BigDecimal) record.getField("usedQuantity");
+                if (producedQuantity == null) {
+                    producedQuantity = addition;
+                } else {
+                    producedQuantity = producedQuantity.add(addition);
+                }
+            }
+            foundCounting.setField("producedQuantity", producedQuantity);
+        }
+        for (Entry<Entity, BigDecimal> product : products.entrySet()) {
+            if (product.getKey().getId().equals(foundCounting.getBelongsToField("product").getId())) {
+                foundCounting.setField("plannedQuantity", product.getValue());
+            }
         }
         foundCounting = foundCounting.getDataDefinition().save(foundCounting);
         if (!foundCounting.isValid()) {
@@ -110,7 +158,7 @@ public class ProductionRecordsService {
         }
     }
 
-    private void getUsedProductFromRecord(final Entity productionRecord) {
+    private void getUsedProductFromRecord(final Entity productionRecord, final boolean forEach) {
         SearchCriteriaBuilder searchBuilder = dataDefinitionService
                 .get("productionCounting", "recordOperationProductInComponent").find();
         List<Entity> productsIn = searchBuilder.add(SearchRestrictions.belongsTo("productionRecord", productionRecord)).list()
@@ -121,14 +169,18 @@ public class ProductionRecordsService {
         }
 
         for (Entity productIn : productsIn) {
-            addUsedproductQuantityToCounting(productIn);
+            addUsedproductQuantityToCounting(productIn, forEach);
         }
     }
 
-    private void addUsedproductQuantityToCounting(final Entity record) {
+    private void addUsedproductQuantityToCounting(final Entity record, final boolean forEach) {
         SearchCriteriaBuilder searchBuilder = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                 BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find();
         List<Entity> productionCountings = searchBuilder.add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+
+        final Map<Entity, BigDecimal> products = materialRequrements.getQuantitiesForOrdersTechnologyProducts(
+                Arrays.asList(order), false);
+
         Entity foundCounting = null;
         for (Entity productionCounting : productionCountings) {
             if (productionCounting.getBelongsToField("product").equals(record.getBelongsToField("product"))) {
@@ -143,7 +195,21 @@ public class ProductionRecordsService {
             foundCounting.setField("product", record.getBelongsToField("product"));
             foundCounting.setField("usedQuantity", record.getField("usedQuantity"));
         } else {
-            foundCounting.setField("usedQuantity", record.getField("usedQuantity"));
+            BigDecimal usedQuantity = (BigDecimal) foundCounting.getField("usedQuantity");
+            if (forEach) {
+                BigDecimal addition = (BigDecimal) record.getField("usedQuantity");
+                if (usedQuantity == null) {
+                    usedQuantity = addition;
+                } else {
+                    usedQuantity = usedQuantity.add(addition);
+                }
+            }
+            foundCounting.setField("usedQuantity", usedQuantity);
+        }
+        for (Entry<Entity, BigDecimal> product : products.entrySet()) {
+            if (product.getKey().getId().equals(foundCounting.getBelongsToField("product").getId())) {
+                foundCounting.setField("plannedQuantity", product.getValue());
+            }
         }
         foundCounting = foundCounting.getDataDefinition().save(foundCounting);
         if (!foundCounting.isValid()) {
@@ -220,88 +286,60 @@ public class ProductionRecordsService {
             return;
         }
 
-        List<Entity> operationComponents = order.getTreeField("orderOperationComponents");
+        Map<Entity, BigDecimal> requirement = materialRequrements.getQuantitiesForOrdersTechnologyProducts(Arrays.asList(order),
+                false);
 
-        if (operationComponents == null) {
-            return;
-        }
+        List<Entity> producedProducts = dataDefinitionService
+                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
+                .add(SearchRestrictions.belongsTo(modelFieldOrder, order)).list().getEntities();
 
-        for (Entity operationComponent : operationComponents) {
-            List<Entity> productsIn = operationComponent.getBelongsToField("technologyOperationComponent").getHasManyField(
-                    "operationProductInComponents");
-            List<Entity> productsOut = operationComponent.getBelongsToField("technologyOperationComponent").getHasManyField(
-                    "operationProductOutComponents");
+        for (Entry<Entity, BigDecimal> product : requirement.entrySet()) {
+            Entity foundProduct = null;
 
-            if (productsIn != null && !productsIn.isEmpty()) {
-
-                for (Entity productIn : productsIn) {
-                    Entity product = productIn.getBelongsToField("product");
-                    List<Entity> allBPCs = dataDefinitionService
-                            .get(BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING,
-                                    BasicProductionCountingConstants.PLUGIN_IDENTIFIER).find().list().getEntities();
-                    boolean found = false;
-                    for (Entity BPC : allBPCs) {
-                        found = isEntitiAlreadyInDatabase(product, order, BPC, (BigDecimal) productIn.getField("quantity"));
-                        if (found) {
-                            break;
-                        }
-                    }
-                    if (found) {
-                        continue;
-                    }
-                    Entity producedProduct = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                            BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).create();
-                    producedProduct.setField("product", product);
-                    producedProduct.setField("plannedQuantity", productIn.getField("quantity"));
-                    producedProduct.setField("order", order);
-                    producedProduct = producedProduct.getDataDefinition().save(producedProduct);
-                    if (!producedProduct.isValid()) {
-                        throw new IllegalStateException("basicProductionCounting entity is invalid.");
-                    }
+            for (Entity producedProduct : producedProducts) {
+                if (producedProduct.getBelongsToField(modelFieldProduct).getId().equals(product.getKey().getId())) {
+                    foundProduct = producedProduct;
+                    break;
                 }
             }
-            if (productsOut != null && !productsOut.isEmpty()) {
-                for (Entity productOut : productsOut) {
-                    Entity product = productOut.getBelongsToField("product");
-                    List<Entity> allBPCs = dataDefinitionService
-                            .get(BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING,
-                                    BasicProductionCountingConstants.PLUGIN_IDENTIFIER).find().list().getEntities();
-                    boolean found = false;
-                    for (Entity BPC : allBPCs) {
-                        found = isEntitiAlreadyInDatabase(product, order, BPC, (BigDecimal) productOut.getField("quantity"));
-                        if (found) {
-                            break;
-                        }
-                    }
-                    if (found) {
-                        continue;
-                    }
-                    Entity producedProduct = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                            BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).create();
-                    producedProduct.setField("product", product);
-                    producedProduct.setField("plannedQuantity", productOut.getField("quantity"));
-                    producedProduct.setField("order", order);
-                    producedProduct = producedProduct.getDataDefinition().save(producedProduct);
-                    if (!producedProduct.isValid()) {
-                        throw new IllegalStateException("basicProductionCounting entity is invalid.");
-                    }
+
+            if (foundProduct == null) {
+                final Entity newProduct = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).create();
+                newProduct.setField(modelFieldOrder, order);
+                newProduct.setField(modelFieldProduct, product.getKey());
+                newProduct.setField(modelFieldRequiredQuantity, product.getValue());
+                newProduct.getDataDefinition().save(newProduct);
+                if (!newProduct.isValid()) {
+                    throw new IllegalStateException("new product entity is invalid  " + product.getValue() + "\n\n\n");
+                }
+            } else {
+                BigDecimal plannedQuantity = (BigDecimal) foundProduct.getField(modelFieldRequiredQuantity);
+                if (plannedQuantity != product.getValue()) {
+                    foundProduct.setField(modelFieldRequiredQuantity, product.getValue());
+                    foundProduct.getDataDefinition().save(foundProduct);
                 }
             }
         }
+        producedProducts = dataDefinitionService
+                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
+                .add(SearchRestrictions.belongsTo(modelFieldOrder, order)).list().getEntities();
 
-    }
-
-    private boolean isEntitiAlreadyInDatabase(final Entity product, final Entity order, final Entity productionCounting,
-            final BigDecimal quantity) {
-        Entity productionOrder = (Entity) productionCounting.getField("order");
-        Entity productionProduct = (Entity) productionCounting.getField("product");
-        BigDecimal productionQuantity = (BigDecimal) productionCounting.getField("plannedQuantity");
-
-        if ((productionOrder.getId().equals(order.getId())) && (productionProduct.getId().equals(product.getId()))
-                && (productionQuantity.equals(quantity))) {
-            return true;
+        for (Entity producedProduct : producedProducts) {
+            boolean found = false;
+            for (Entry<Entity, BigDecimal> product : requirement.entrySet()) {
+                if (producedProduct.getBelongsToField(modelFieldProduct).equals(product.getKey())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).delete(producedProduct.getId());
+            }
         }
 
-        return false;
     }
 }
