@@ -29,10 +29,9 @@ import com.google.common.collect.Sets;
 
 public interface CostNormsForOperationConstants {
 
-    public static final String PLUGIN_IDENTIFIER = "costNormsForOperation";
+    String PLUGIN_IDENTIFIER = "costNormsForOperation";
 
-    public static final String MODEL_CALCULATION_OPERATION_COMPONENT = "calculationOperationComponent";
+    String MODEL_CALCULATION_OPERATION_COMPONENT = "calculationOperationComponent";
 
-    public static final Set<String> FIELDS = Sets.newHashSet("pieceworkCost", "numberOfOperations", "laborHourlyCost",
-            "machineHourlyCost");
+    Set<String> FIELDS = Sets.newHashSet("pieceworkCost", "numberOfOperations", "laborHourlyCost", "machineHourlyCost");
 }

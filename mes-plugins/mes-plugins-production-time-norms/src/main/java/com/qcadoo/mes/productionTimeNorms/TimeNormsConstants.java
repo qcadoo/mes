@@ -29,9 +29,9 @@ import com.google.common.collect.Sets;
 
 public interface TimeNormsConstants {
 
-    public static final Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealized",
-            "countMachine", "timeNextOperation", "machineUtilization", "laborUtilization");
+    Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealized", "countMachine",
+            "timeNextOperation", "machineUtilization", "laborUtilization");
 
-    public static final Set<String> FIELDS_TECHNOLOGY = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealized",
-            "countMachine", "timeNextOperation", "machineUtilization", "laborUtilization");
+    Set<String> FIELDS_TECHNOLOGY = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealized", "countMachine",
+            "timeNextOperation", "machineUtilization", "laborUtilization");
 }

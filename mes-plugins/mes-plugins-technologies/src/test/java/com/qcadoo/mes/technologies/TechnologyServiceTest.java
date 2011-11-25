@@ -82,7 +82,7 @@ public class TechnologyServiceTest {
         // given
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
-        when(product.getId()).thenReturn(10l);
+        when(product.getId()).thenReturn(10L);
         List<Entity> list = new LinkedList<Entity>();
         when(result.getEntities()).thenReturn(list);
 
@@ -99,7 +99,7 @@ public class TechnologyServiceTest {
         // given
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
-        when(product.getId()).thenReturn(10l);
+        when(product.getId()).thenReturn(10L);
         List<Entity> list = new LinkedList<Entity>();
         Entity productComponent = mock(Entity.class);
         when(productComponent.getBelongsToField("product")).thenReturn(product);
