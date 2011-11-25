@@ -931,7 +931,8 @@ public class SamplesLoaderModule extends Module {
     }
 
     private Entity getMachine(final String id) {
-        List<Entity> machines = dataDefinitionService.get("basic", "machine").find().isEq("number", id).list().getEntities();
+        List<Entity> machines = dataDefinitionService.get("basic", "machine").find().add(SearchRestrictions.eq("number", id))
+                .list().getEntities();
         if (machines.size() > 0) {
             return machines.get(0);
         } else {
@@ -949,7 +950,8 @@ public class SamplesLoaderModule extends Module {
             return null;
         }
         List<Entity> technologies = dataDefinitionService.get("technologies", "technology").find()
-                .belongsTo("product", product.getId()).isEq("master", true).setMaxResults(1).list().getEntities();
+                .add(SearchRestrictions.belongsTo("product", product)).add(SearchRestrictions.eq("master", true))
+                .setMaxResults(1).list().getEntities();
         if (technologies.size() > 0) {
             return technologies.get(0);
         } else {
@@ -958,28 +960,28 @@ public class SamplesLoaderModule extends Module {
     }
 
     private Entity getProductByNumber(final String number) {
-        return dataDefinitionService.get("basic", "product").find().isEq("number", number).setMaxResults(1).list().getEntities()
-                .get(0);
+        return dataDefinitionService.get("basic", "product").find().add(SearchRestrictions.eq("number", number)).setMaxResults(1)
+                .list().getEntities().get(0);
     }
 
     private Entity getOperationByNumber(final String number) {
-        return dataDefinitionService.get("technologies", "operation").find().isEq("number", number).setMaxResults(1).list()
-                .getEntities().get(0);
+        return dataDefinitionService.get("technologies", "operation").find().add(SearchRestrictions.eq("number", number))
+                .setMaxResults(1).list().getEntities().get(0);
     }
 
     private String getRandomDictionaryItem(final String dictionaryName) {
         Entity dictionary = getDictionaryByName(dictionaryName);
         Long total = (long) dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
-                .belongsTo("dictionary", dictionary.getId()).list().getTotalNumberOfEntities();
+                .add(SearchRestrictions.belongsTo("dictionary", dictionary)).list().getTotalNumberOfEntities();
         Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
-                .belongsTo("dictionary", dictionary.getId()).setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1)
-                .list().getEntities().get(0);
+                .add(SearchRestrictions.belongsTo("dictionary", dictionary)).setFirstResult(RANDOM.nextInt(total.intValue()))
+                .setMaxResults(1).list().getEntities().get(0);
         return item.getField("name").toString();
     }
 
     private Entity getDictionaryByName(final String name) {
-        return dataDefinitionService.get("qcadooModel", "dictionary").find().isEq("name", name).setMaxResults(1).list()
-                .getEntities().get(0);
+        return dataDefinitionService.get("qcadooModel", "dictionary").find().add(SearchRestrictions.eq("name", name))
+                .setMaxResults(1).list().getEntities().get(0);
     }
 
     private Entity getRandomProduct() {
@@ -1012,9 +1014,4 @@ public class SamplesLoaderModule extends Module {
 
         dataDefinitionService.get("basic", "parameter").save(parameter);
     }
-
-    private boolean databaseHasToBePrepared() {
-        return dataDefinitionService.get("basic", "parameter").find().list().getTotalNumberOfEntities() == 0;
-    }
-
 }

@@ -58,26 +58,26 @@ import com.qcadoo.security.api.SecurityRolesService;
 @Component
 public class SamplesGeneratorModule extends Module {
 
-    private static final String charsOnly = "QWERTYUIOPLKJHGFDSAZXCVBNMmnbvcxzasdfghjklpoiuytrewq";
+    private static final String CHARSONLY = "QWERTYUIOPLKJHGFDSAZXCVBNMmnbvcxzasdfghjklpoiuytrewq";
 
-    private static final String digitsOnly = "0123456789";
+    private static final String DIGITSONLY = "0123456789";
 
-    private static final String charsAndDigits = charsOnly + digitsOnly;
+    private static final String CHARSANDDIGITS = CHARSONLY + DIGITSONLY;
 
-    private static final String[] acceptableTypeOfProduct = { "01component", "02intermediate", "03product", "04waste" };
+    private static final String[] ACCEPTABLEPRODUCTTYPE = { "01component", "02intermediate", "03product", "04waste" };
 
-    private static final String[] shiftsWorking = { "mondayWorking", "tuesdayWorking", "wensdayWorking", "thursdayWorking",
+    private static final String[] WORKSHIFT = { "mondayWorking", "tuesdayWorking", "wensdayWorking", "thursdayWorking",
             "fridayWorking", "saturdayWorking", "sundayWorking" };
 
-    private static final String[] shiftsHours = { "mondayHours", "tuesdayHours", "wensdayHours", "thursdayHours", "fridayHours",
+    private static final String[] SHIFTHOURS = { "mondayHours", "tuesdayHours", "wensdayHours", "thursdayHours", "fridayHours",
             "saturdayHours", "sundayHours", };
 
-    private static final String[] acceptableDictionaries = { "categories", "posts", "units" };
+    private static final String[] ACCEPTABLEDICTIONARIES = { "categories", "posts", "units" };
 
-    private static final String[] acceptableOrderState = { "01pending", "02accepted", "03inProgress", "04completed",
+    private static final String[] ACCEPTABLEORDERSTATE = { "01pending", "02accepted", "03inProgress", "04completed",
             "05declined", "06interrupted", "07abandoned" };
 
-    private static final String[] acceptableTechnologyComponentQuantityAlgorithm = { "01perProductOut", "02perTechnology" };
+    private static final String[] TECHNOLOGYQUANTITYALGRITHM = { "01perProductOut", "02perTechnology" };
 
     private static final Random RANDOM = new Random();
 
@@ -102,7 +102,7 @@ public class SamplesGeneratorModule extends Module {
 
         addParameters();
         generateAndAddUser();
-        int range = iterations;
+        final int range = iterations;
         generateAndAddDictionary();
         if (isEnabled("basic")) {
             for (int i = 0; i < range; i++) {
@@ -131,43 +131,20 @@ public class SamplesGeneratorModule extends Module {
                 }
             }
         }
-        if (isEnabled("usedProducts")) {
-            for (int i = 0; i < range; i++) {
-                generateAndAddUsedProduct();
-            }
-        }
         if (isEnabled("workPlans")) {
             for (int i = 0; i < (range / 40); i++) {
                 generateAndAddWorkPlan();
             }
         }
-        if (isEnabled("producedProducts")) {
-            for (int i = 0; i < range; i++) {
-                generateAndAddProducedProducts();
-            }
-        }
 
-    }
-
-    private void generateAndAddProducedProducts() {
-        Entity producedProduct = dataDefinitionService.get("producedProducts", "producedProducts").create();
-
-        producedProduct.setField("product", getRandomProduct());
-        producedProduct.setField("order", getRandomOrder());
-        producedProduct.setField("plannedQuantity", RANDOM.nextInt(20) + 20);
-        producedProduct.setField("producedQuantity", RANDOM.nextInt(20));
-
-        producedProduct = producedProduct.getDataDefinition().save(producedProduct);
-
-        validateEntity(producedProduct);
     }
 
     private void generateAndAddWorkPlan() {
         Entity workPlan = dataDefinitionService.get("workPlans", "workPlan").create();
 
-        workPlan.setField("name", getNameFromNumberAndPrefix("WorkPlan-", 5 + generateString(charsAndDigits, RANDOM.nextInt(45))));
+        workPlan.setField("name", getNameFromNumberAndPrefix("WorkPlan-", 5 + generateString(CHARSANDDIGITS, RANDOM.nextInt(45))));
         workPlan.setField("date", new Date(generateRandomDate()));
-        workPlan.setField("worker", getNameFromNumberAndPrefix("Worker-", 5 + generateString(charsAndDigits, RANDOM.nextInt(45))));
+        workPlan.setField("worker", getNameFromNumberAndPrefix("Worker-", 5 + generateString(CHARSANDDIGITS, RANDOM.nextInt(45))));
         workPlan.setField("generated", false);
 
         workPlan = workPlan.getDataDefinition().save(workPlan);
@@ -199,7 +176,7 @@ public class SamplesGeneratorModule extends Module {
         Entity orderGroup = dataDefinitionService.get(OrderGroupsConstants.PLUGIN_IDENTIFIER,
                 OrderGroupsConstants.MODEL_ORDERGROUP).create();
 
-        String number = generateString(charsAndDigits, RANDOM.nextInt(34) + 5);
+        final String number = generateString(CHARSANDDIGITS, RANDOM.nextInt(34) + 5);
 
         orderGroup.setField("number", number);
         orderGroup.setField("name", getNameFromNumberAndPrefix("OrderGroup-", number));
@@ -234,7 +211,7 @@ public class SamplesGeneratorModule extends Module {
         }
     }
 
-    private void generateAndAddOperationProductOutComponent(Entity operationComponent, final BigDecimal quantity,
+    private void generateAndAddOperationProductOutComponent(final Entity operationComponent, final BigDecimal quantity,
             final Entity product) {
 
         Preconditions.checkArgument(operationComponent != null, "operation component is null");
@@ -256,7 +233,7 @@ public class SamplesGeneratorModule extends Module {
     private void generateAndAddOperation() {
         Entity operation = dataDefinitionService.get("technologies", "operation").create();
 
-        String number = generateString(charsOnly, RANDOM.nextInt(40) + 5);
+        String number = generateString(CHARSONLY, RANDOM.nextInt(40) + 5);
 
         operation.setField("number", number);
         operation.setField("name", getNameFromNumberAndPrefix("Operation-", number));
@@ -318,7 +295,7 @@ public class SamplesGeneratorModule extends Module {
 
         Entity defaultTechnology = getDefaultTechnologyForProduct(product);
 
-        String number = generateString(digitsOnly, RANDOM.nextInt(40) + 5);
+        String number = generateString(DIGITSONLY, RANDOM.nextInt(40) + 5);
 
         technology.setField("master", defaultTechnology == null);
         technology.setField("name", getNameFromNumberAndPrefix("Technology-", number));
@@ -334,8 +311,8 @@ public class SamplesGeneratorModule extends Module {
         technology.setField("unitSamplingNr", "123");
         technology.setField("qualityControlInstruction", "asd23");
 
-        technology.setField("componentQuantityAlgorithm", acceptableTechnologyComponentQuantityAlgorithm[RANDOM
-                .nextInt(acceptableTechnologyComponentQuantityAlgorithm.length)]);
+        technology.setField("componentQuantityAlgorithm",
+                TECHNOLOGYQUANTITYALGRITHM[RANDOM.nextInt(TECHNOLOGYQUANTITYALGRITHM.length)]);
 
         technology = dataDefinitionService.get("technologies", "technology").save(technology);
         validateEntity(technology);
@@ -354,8 +331,8 @@ public class SamplesGeneratorModule extends Module {
         int productInComponentQuantity = RANDOM.nextInt(productsComponentsQuantity);
         int productOutComponentQuantity = productsComponentsQuantity - productInComponentQuantity;
 
-        operationComponent.setField("name", "operationComponent" + generateString(charsAndDigits, 15));
-        operationComponent.setField("number", generateString(charsAndDigits, 20));
+        operationComponent.setField("name", "operationComponent" + generateString(CHARSANDDIGITS, 15));
+        operationComponent.setField("number", generateString(CHARSANDDIGITS, 20));
         operationComponent.setField("technology", technology);
         operationComponent.setField("parent", parent);
         operationComponent.setField("operation", operation);
@@ -403,11 +380,11 @@ public class SamplesGeneratorModule extends Module {
         List<Entity> operations = new LinkedList<Entity>();
         Entity operation = null;
         for (int i = 0; i < 4; i++) {
-            if (!operations.isEmpty()) {
+            if (operations.isEmpty()) {
+                operation = addOperationComponent(technology, null, getRandomOperation(), RANDOM.nextInt(3) + 3);
+            } else {
                 operation = addOperationComponent(technology, operations.get(RANDOM.nextInt(operations.size())),
                         getRandomOperation(), RANDOM.nextInt(3) + 3);
-            } else {
-                operation = addOperationComponent(technology, null, getRandomOperation(), RANDOM.nextInt(3) + 3);
             }
             operations.add(operation);
         }
@@ -424,30 +401,17 @@ public class SamplesGeneratorModule extends Module {
     }
 
     private void generateAndAddDictionary() {
-        for (int i = 0; i < acceptableDictionaries.length; i++) {
-            addDictionary(acceptableDictionaries[i]);
+        for (int i = 0; i < ACCEPTABLEDICTIONARIES.length; i++) {
+            addDictionary(ACCEPTABLEDICTIONARIES[i]);
         }
-    }
-
-    private void generateAndAddUsedProduct() {
-        Entity usedProduct = dataDefinitionService.get("usedProducts", "usedProducts").create();
-
-        usedProduct.setField("order", getRandomOrder());
-        usedProduct.setField("product", getRandomProduct());
-        usedProduct.setField("plannedQuantity", RANDOM.nextInt(200) + 1);
-        usedProduct.setField("usedQuantity", RANDOM.nextInt(200) + 1);
-
-        usedProduct = dataDefinitionService.get("usedProducts", "usedProducts").save(usedProduct);
-
-        validateEntity(usedProduct);
     }
 
     private void generateAndAddContractor() {
         Entity contractor = dataDefinitionService.get("basic", "contractor").create();
 
-        String number = generateString(digitsOnly, RANDOM.nextInt(40) + 5);
+        String number = generateString(DIGITSONLY, RANDOM.nextInt(40) + 5);
 
-        contractor.setField("externalNumber", generateString(charsAndDigits, 10));
+        contractor.setField("externalNumber", generateString(CHARSANDDIGITS, 10));
         contractor.setField("number", number);
         contractor.setField("name", getNameFromNumberAndPrefix("Contractor-", number));
 
@@ -463,11 +427,10 @@ public class SamplesGeneratorModule extends Module {
         List<Entity> technologies = dataDefinitionService.get("technologies", "technology").find()
                 .add(SearchRestrictions.belongsTo("product", product)).add(SearchRestrictions.eq("master", true))
                 .setMaxResults(1).list().getEntities();
-        if (technologies.size() > 0) {
-            return technologies.get(0);
-        } else {
+        if (technologies.isEmpty()) {
             return null;
         }
+        return technologies.get(0);
     }
 
     private void generateAndAddOrder() {
@@ -482,7 +445,7 @@ public class SamplesGeneratorModule extends Module {
         Entity technology = (getDefaultTechnologyForProduct(product) == null) ? getRandomProduct()
                 : getDefaultTechnologyForProduct(product);
 
-        String number = generateString(charsAndDigits, RANDOM.nextInt(34) + 5);
+        String number = generateString(CHARSANDDIGITS, RANDOM.nextInt(34) + 5);
         order.setField("number", number);
         order.setField("name", getNameFromNumberAndPrefix("Order-", number));
         order.setField("dateFrom", new Date(dateFrom));
@@ -515,19 +478,15 @@ public class SamplesGeneratorModule extends Module {
         return ((date > 0) ? date : -date);
     }
 
-    private Entity getRandomOrder() {
-        return getRandomEntity("orders", "order");
-    }
-
     private void generateAndAddStaff() {
         Entity staff = dataDefinitionService.get("basic", "staff").create();
 
-        String number = generateString(digitsOnly, RANDOM.nextInt(40) + 5);
+        String number = generateString(DIGITSONLY, RANDOM.nextInt(40) + 5);
 
         staff.setField("number", number);
         staff.setField("name", getNameFromNumberAndPrefix("Staff-", number));
-        staff.setField("surname", generateString(charsOnly, RANDOM.nextInt(12)));
-        staff.setField("post", generateString(charsOnly, RANDOM.nextInt(5)));
+        staff.setField("surname", generateString(CHARSONLY, RANDOM.nextInt(12)));
+        staff.setField("post", generateString(CHARSONLY, RANDOM.nextInt(5)));
 
         staff = dataDefinitionService.get("basic", "staff").save(staff);
         validateEntity(staff);
@@ -544,11 +503,11 @@ public class SamplesGeneratorModule extends Module {
     private void generateAndAddMachine() {
         Entity machine = dataDefinitionService.get("basic", "machine").create();
 
-        String number = generateString(charsAndDigits, RANDOM.nextInt(40) + 5);
+        String number = generateString(CHARSANDDIGITS, RANDOM.nextInt(40) + 5);
 
         machine.setField("name", getNameFromNumberAndPrefix("Machine-", number));
         machine.setField("number", number);
-        machine.setField("description", generateString(charsOnly, RANDOM.nextInt(100)));
+        machine.setField("description", generateString(CHARSONLY, RANDOM.nextInt(100)));
 
         machine = dataDefinitionService.get("basic", "machine").save(machine);
         validateEntity(machine);
@@ -580,11 +539,11 @@ public class SamplesGeneratorModule extends Module {
     private void generateAndAddShift() {
         Entity shift = dataDefinitionService.get("basic", "shift").create();
 
-        shift.setField("name", getNameFromNumberAndPrefix("Shift-", generateString(charsOnly, RANDOM.nextInt(40) + 5)));
+        shift.setField("name", getNameFromNumberAndPrefix("Shift-", generateString(CHARSONLY, RANDOM.nextInt(40) + 5)));
 
-        for (int i = 0; i < shiftsHours.length; i++) {
-            shift.setField(shiftsWorking[i], RANDOM.nextBoolean());
-            shift.setField(shiftsHours[i], generateWorkingHours());
+        for (int i = 0; i < SHIFTHOURS.length; i++) {
+            shift.setField(WORKSHIFT[i], RANDOM.nextBoolean());
+            shift.setField(SHIFTHOURS[i], generateWorkingHours());
         }
 
         shift = dataDefinitionService.get("basic", "shift").save(shift);
@@ -595,10 +554,10 @@ public class SamplesGeneratorModule extends Module {
     private void generateAndAddProduct() {
         Entity product = dataDefinitionService.get("basic", "product").create();
 
-        String number = generateString(digitsOnly, RANDOM.nextInt(34) + 5);
+        String number = generateString(DIGITSONLY, RANDOM.nextInt(34) + 5);
 
         product.setField("category", getRandomDictionaryItem("categories"));
-        product.setField("ean", generateString(digitsOnly, 13));
+        product.setField("ean", generateString(DIGITSONLY, 13));
         product.setField("name", getNameFromNumberAndPrefix("Product-", number));
         product.setField("unit", getRandomDictionaryItem("units"));
         product.setField("typeOfMaterial", generateTypeOfProduct());
@@ -614,7 +573,7 @@ public class SamplesGeneratorModule extends Module {
     private void addSubstituteToProduct(final Entity product) {
         Entity substitute = dataDefinitionService.get("basic", "substitute").create();
 
-        String number = generateString(digitsOnly, RANDOM.nextInt(34) + 5);
+        String number = generateString(DIGITSONLY, RANDOM.nextInt(34) + 5);
 
         substitute.setField("number", number);
         substitute.setField("name", getNameFromNumberAndPrefix("ProductSubstitute-", number));
@@ -661,10 +620,10 @@ public class SamplesGeneratorModule extends Module {
     private void generateAndAddUser() {
         Entity user = dataDefinitionService.get("qcadooSecurity", "user").create();
 
-        user.setField("userName", generateString(charsOnly, RANDOM.nextInt(4) + 3));
+        user.setField("userName", generateString(CHARSONLY, RANDOM.nextInt(4) + 3));
         user.setField("email", generateRandomEmail());
-        user.setField("firstname", generateString(charsOnly, RANDOM.nextInt(4) + 3));
-        user.setField("lastname", generateString(charsOnly, RANDOM.nextInt(4) + 3));
+        user.setField("firstname", generateString(CHARSONLY, RANDOM.nextInt(4) + 3));
+        user.setField("lastname", generateString(CHARSONLY, RANDOM.nextInt(4) + 3));
         SecurityRole role = securityRolesService.getRoleByIdentifier("ROLE_USER");
         user.setField("role", role.getName());
         user.setField("password", "123");
@@ -680,8 +639,8 @@ public class SamplesGeneratorModule extends Module {
         String email;
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(generateString(charsAndDigits, RANDOM.nextInt(3) + 3));
-        stringBuilder.append("@").append(generateString(charsAndDigits, 4)).append(".");
+        stringBuilder.append(generateString(CHARSANDDIGITS, RANDOM.nextInt(3) + 3));
+        stringBuilder.append("@").append(generateString(CHARSANDDIGITS, 4)).append(".");
         stringBuilder.append("org");
         email = stringBuilder.toString();
         return email;
@@ -692,7 +651,7 @@ public class SamplesGeneratorModule extends Module {
 
         Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
         item.setField("dictionary", dictionary);
-        item.setField("name", generateString(charsOnly, 8));
+        item.setField("name", generateString(CHARSONLY, 8));
 
         item = dataDefinitionService.get("qcadooModel", "dictionaryItem").save(item);
 
@@ -700,15 +659,11 @@ public class SamplesGeneratorModule extends Module {
     }
 
     private String generateTypeOfProduct() {
-        return acceptableTypeOfProduct[RANDOM.nextInt(acceptableTypeOfProduct.length)];
+        return ACCEPTABLEPRODUCTTYPE[RANDOM.nextInt(ACCEPTABLEPRODUCTTYPE.length)];
     }
 
     private boolean isEnabled(final String pluginIdentifier) {
         return pluginAccessor.getPlugin(pluginIdentifier) != null;
-    }
-
-    private boolean databaseHasToBePrepared() {
-        return dataDefinitionService.get("basic", "parameter").find().list().getTotalNumberOfEntities() == 0;
     }
 
     private void addParameters() {
