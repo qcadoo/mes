@@ -32,6 +32,6 @@ import com.qcadoo.view.api.components.ganttChart.GanttChartScale;
 
 public interface ShiftsGanttChartItemResolver extends GanttChartItemResolver {
 
-    public List<GanttChartItem> getItemsForShift(final Entity shift, final GanttChartScale scale);
+    List<GanttChartItem> getItemsForShift(final Entity shift, final GanttChartScale scale);
 
 }

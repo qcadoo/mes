@@ -53,7 +53,7 @@ public class TechnologyStateService {
     @Autowired
     private TechnologyStateBeforeChangeNotifierService beforeChangeNotifier;
 
-    private final static String STATE_FIELD = "state";
+    private static final String STATE_FIELD = "state";
 
     public final void changeTechnologyState(final ViewDefinitionState view, final ComponentState component, final String[] args) {
         final String targetState = getTargetStateFromArgs(args);

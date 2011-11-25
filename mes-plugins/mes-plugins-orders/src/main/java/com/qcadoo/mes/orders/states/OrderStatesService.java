@@ -239,7 +239,7 @@ public class OrderStatesService {
         beforeChangeStateListeners.add(listener);
     }
 
-    public static interface BeforeChangeStateListener {
+    public interface BeforeChangeStateListener {
 
         boolean canChange(ComponentState gridOrForm, Entity order, String state);
     }

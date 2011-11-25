@@ -27,6 +27,6 @@ import com.qcadoo.model.api.Entity;
 
 public interface ProductsCostCalculationService {
 
-    public void calculateProductsCost(final Entity costCalculation);
-    
+    void calculateProductsCost(final Entity costCalculation);
+
 }
