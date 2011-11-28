@@ -56,17 +56,19 @@ public class SamplesChooser extends Module {
     @Override
     public void multiTenantEnable() {
         if (databaseHasToBePrepared()) {
-            LOG.debug("Data base has to be prepared ...");
             if ("LOADER".equals(samplesBuildStrategy.toUpperCase())) {
+                LOG.debug("Data base has to be prepared ...");
                 samplesLoaderModule.multiTenantEnable();
             } else if ("GENERATOR".equals(samplesBuildStrategy.toUpperCase())) {
+                LOG.debug("Data base has to be prepared ...");
                 samplesGeneratorModule.multiTenantEnable();
             } else if ("MINIMAL".equals(samplesBuildStrategy.toUpperCase())) {
+                LOG.debug("Data base has to be prepared ...");
                 samplesMinimalDataset.multiTenantEnable();
             } else if ("FALSE".equals(samplesBuildStrategy.toUpperCase())) {
-
+                LOG.debug("Data base won't be changed ...");
             } else {
-                throw new IllegalStateException("samples build strategy must be declared!");
+                throw new IllegalStateException("Invaid loadTestData property!");
             }
         } else {
             LOG.debug("Data base won't bo changed ... ");

@@ -91,7 +91,7 @@ public class MaterialFlowServiceTest {
     @Test
     public void shouldCalculateShouldBeForOnlyTransfers() {
         Long stockAreasId = Long.valueOf(stockAreas);
-        given(dataDefStockAreas.find("where number = '" + stockAreas + "'").uniqueResult().getId()).willReturn(
+        given(dataDefStockAreas.find().add(SearchRestrictions.eq("number", stockAreas)).uniqueResult().getId()).willReturn(
                 Long.valueOf(stockAreasId));
 
         Long productId = Long.valueOf(product);
@@ -100,13 +100,13 @@ public class MaterialFlowServiceTest {
                         .add(SearchRestrictions.eq("product.id", productId)).addOrder(SearchOrders.desc("stockCorrectionDate"))
                         .setMaxResults(1).uniqueResult()).willReturn(null);
         given(
-                transfer.find(
-                        "where stockAreasTo = '" + stockAreas + "' and product = '" + product + "' and time <= '" + forDate + "'")
-                        .list()).willReturn(resultTo);
+                transfer.find().add(SearchRestrictions.eq("stockAreasTo", stockAreas))
+                        .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate)).list())
+                .willReturn(resultTo);
         given(
-                transfer.find(
-                        "where stockAreasFrom = '" + stockAreas + "' and product = '" + product + "' and time <= '" + forDate
-                                + "'").list()).willReturn(resultFrom);
+                transfer.find().add(SearchRestrictions.eq("stockAreasFrom", stockAreas))
+                        .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate)).list())
+                .willReturn(resultFrom);
 
         List<Entity> list = new ArrayList<Entity>();
         Entity entity = new DefaultEntity(transfer);
@@ -128,7 +128,7 @@ public class MaterialFlowServiceTest {
         entity.setField("found", new BigDecimal(1000));
 
         Long stockAreasId = Long.valueOf(stockAreas);
-        given(dataDefStockAreas.find("where number = '" + stockAreas + "'").uniqueResult().getId()).willReturn(
+        given(dataDefStockAreas.find().add(SearchRestrictions.eq("number", stockAreas)).uniqueResult().getId()).willReturn(
                 Long.valueOf(stockAreasId));
         Long productId = Long.valueOf(product);
         given(
@@ -146,20 +146,20 @@ public class MaterialFlowServiceTest {
         Date date = new Date(100);
         String lastCorrectionDate = date.toString();
         given(
-                transfer.find(
-                        "where stockAreasTo = '" + stockAreas + "' and product = '" + product + "' and time <= '" + forDate
-                                + "' and time > '" + lastCorrectionDate + "'").list()).willReturn(resultTo);
+                transfer.find().add(SearchRestrictions.eq("stockAreasTo", stockAreas))
+                        .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate))
+                        .add(SearchRestrictions.gt("time", lastCorrectionDate)).list()).willReturn(resultTo);
         given(
-                transfer.find(
-                        "where stockAreasFrom = '" + stockAreas + "' and product = '" + product + "' and time <= '" + forDate
-                                + "' and time > '" + lastCorrectionDate + "'").list()).willReturn(resultFrom);
+                transfer.find().add(SearchRestrictions.eq("stockAreasFrom", stockAreas))
+                        .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate))
+                        .add(SearchRestrictions.gt("time", lastCorrectionDate)).list()).willReturn(resultFrom);
 
         Entity entity = new DefaultEntity(transferDataCorrection);
         entity.setField("stockCorrectionDate", new Date(100));
         entity.setField("found", new BigDecimal(1000));
 
         Long stockAreasId = Long.valueOf(stockAreas);
-        given(dataDefStockAreas.find("where number = '" + stockAreas + "'").uniqueResult().getId()).willReturn(
+        given(dataDefStockAreas.find().add(SearchRestrictions.eq("number", stockAreas)).uniqueResult().getId()).willReturn(
                 Long.valueOf(stockAreasId));
         Long productId = Long.valueOf(product);
         given(

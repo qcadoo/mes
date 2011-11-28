@@ -90,22 +90,20 @@ public class MaterialFlowService {
         SearchResult resultFrom = null;
 
         if (lastCorrectionDate == null) {
-            resultTo = transferTo.find(
-                    "where stockAreasTo = '" + stockAreasId + "' and product = '" + product + "' and time <= '" + forDate + "'")
-                    .list();
+            resultTo = transferTo.find().add(SearchRestrictions.eq("stockAreasTo", stockAreasId))
+                    .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate)).list();
 
-            resultFrom = transferFrom
-                    .find("where stockAreasFrom = '" + stockAreasId + "' and product = '" + product + "' and time <= '" + forDate
-                            + "'").list();
+            resultFrom = transferFrom.find().add(SearchRestrictions.eq("stockAreasFrom", stockAreasId))
+                    .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate)).list();
 
         } else {
-            resultTo = transferTo.find(
-                    "where stockAreasTo = '" + stockAreasId + "' and product = '" + product + "' and time <= '" + forDate
-                            + "' and time > '" + lastCorrectionDate + "'").list();
+            resultTo = transferTo.find().add(SearchRestrictions.eq("stockAreasTo", stockAreasId))
+                    .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate))
+                    .add(SearchRestrictions.gt("time", lastCorrectionDate)).list();
 
-            resultFrom = transferFrom.find(
-                    "where stockAreasFrom = '" + stockAreasId + "' and product = '" + product + "' and time <= '" + forDate
-                            + "' and time > '" + lastCorrectionDate + "'").list();
+            resultFrom = transferFrom.find().add(SearchRestrictions.eq("stockAreasFrom", stockAreasId))
+                    .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate))
+                    .add(SearchRestrictions.gt("time", lastCorrectionDate)).list();
         }
 
         for (Entity e : resultTo.getEntities()) {
@@ -267,7 +265,7 @@ public class MaterialFlowService {
         DataDefinition dataDefStockAreas = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_STOCK_AREAS);
 
-        Long id = dataDefStockAreas.find("where number = '" + stockAreaNumber + "'").uniqueResult().getId();
+        Long id = dataDefStockAreas.find().add(SearchRestrictions.eq("number", stockAreaNumber)).uniqueResult().getId();
 
         DataDefinition dataDefProduct = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER_BASIC,
                 MaterialFlowConstants.MODEL_PRODUCT);
@@ -300,7 +298,7 @@ public class MaterialFlowService {
 
         DataDefinition transferDataDefinition = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
-        Long id = transferDataDefinition.find("where number = '" + number + "'").uniqueResult().getId();
+        Long id = transferDataDefinition.find().add(SearchRestrictions.eq("number", number)).uniqueResult().getId();
 
         Entity transferCopy = transferDataDefinition.get(id);
 
@@ -320,7 +318,7 @@ public class MaterialFlowService {
 
         DataDefinition transferDataDefinition = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
-        Long id = transferDataDefinition.find("where number = '" + number + "'").uniqueResult().getId();
+        Long id = transferDataDefinition.find().add(SearchRestrictions.eq("number", number)).uniqueResult().getId();
 
         Entity transferCopy = transferDataDefinition.get(id);
 
@@ -413,8 +411,8 @@ public class MaterialFlowService {
         }
 
         Entity transfer = dataDefinitionService
-                .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFER)
-                .find("where number = '" + number + "'").uniqueResult();
+                .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFER).find()
+                .add(SearchRestrictions.eq("number", number)).uniqueResult();
 
         if (transfer == null) {
             return;

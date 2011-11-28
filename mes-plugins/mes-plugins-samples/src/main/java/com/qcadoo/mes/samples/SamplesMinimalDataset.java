@@ -112,12 +112,12 @@ public class SamplesMinimalDataset extends Module {
 
     private void readDataFromXML(final String type, final String[] attributes) {
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(getXmlFile(type));
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
+            final Document doc = documentBuilder.parse(getXmlFile(type));
             doc.getDocumentElement().normalize();
 
-            NodeList nodeLst = doc.getElementsByTagName("row");
+            final NodeList nodeLst = doc.getElementsByTagName("row");
 
             for (int s = 0; s < nodeLst.getLength(); s++) {
                 readData(attributes, type, nodeLst, s);

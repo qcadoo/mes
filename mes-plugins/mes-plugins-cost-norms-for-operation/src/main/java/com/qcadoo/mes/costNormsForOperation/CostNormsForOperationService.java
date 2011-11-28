@@ -25,7 +25,7 @@ package com.qcadoo.mes.costNormsForOperation;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.FIELDS;
-import static com.qcadoo.view.api.ComponentState.MessageType.*;
+import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

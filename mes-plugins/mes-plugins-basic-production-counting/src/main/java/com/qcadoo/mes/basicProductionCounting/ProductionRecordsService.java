@@ -39,7 +39,6 @@ import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -96,11 +95,8 @@ public class ProductionRecordsService {
 
     }
 
-    /*
-     * TODO: BAKU facade pattern
-     */
-
     private void getProducedProductFromRecord(final Entity productionRecord, final boolean forEach) {
+        // TODO BAKU facade pattern
         SearchCriteriaBuilder searchBuilder = dataDefinitionService.get("productionCounting",
                 "recordOperationProductOutComponent").find();
         List<Entity> productsOut = searchBuilder.add(SearchRestrictions.belongsTo("productionRecord", productionRecord)).list()

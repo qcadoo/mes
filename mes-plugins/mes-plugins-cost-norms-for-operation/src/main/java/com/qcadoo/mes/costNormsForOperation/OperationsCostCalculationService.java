@@ -30,5 +30,5 @@ import com.qcadoo.model.api.Entity;
 @Service
 public interface OperationsCostCalculationService {
 
-    public void calculateOperationsCost(final Entity costCalculation);
+    void calculateOperationsCost(final Entity costCalculation);
 }

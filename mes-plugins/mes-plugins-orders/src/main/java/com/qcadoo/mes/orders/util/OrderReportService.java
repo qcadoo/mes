@@ -170,7 +170,7 @@ public class OrderReportService {
         return materialReqName.toString();
     }
 
-    public static interface OrderValidator {
+    public interface OrderValidator {
 
         String validateOrder(Entity order);
     }
