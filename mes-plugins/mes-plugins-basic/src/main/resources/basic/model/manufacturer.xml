@@ -64,6 +64,7 @@
 		<string name="phone" required="false" >
 			<validatesLength max="25" />
 		</string>
+		<boolean name="owner" default="false" />
 	</fields>
 	<hooks />
 	<identifier expression="#companyFullName" />

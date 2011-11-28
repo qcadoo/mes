@@ -17,6 +17,7 @@ CREATE TABLE basic_manufacturer
   email character varying(30),
   addresswww character varying(30),
   phone character varying(25),
+  owner boolean DEFAULT false,
   active boolean DEFAULT true,
   CONSTRAINT basic_manufacturer_pkey PRIMARY KEY (id )
 )

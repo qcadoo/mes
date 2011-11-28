@@ -26,7 +26,11 @@ package com.qcadoo.mes.basic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public final class ManufacturerService {
@@ -34,4 +38,24 @@ public final class ManufacturerService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    public void disableManufacturerFormForOwner(final ViewDefinitionState state) {
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
+
+        if (form.getEntityId() == null) {
+            return;
+        }
+
+        Entity entity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_MANUFACTURER).get(
+                form.getEntityId());
+
+        if (entity == null) {
+            return;
+        }
+
+        Object owner = entity.getField("owner");
+
+        if (owner != null) {
+            form.setFormEnabled(false);
+        }
+    }
 }

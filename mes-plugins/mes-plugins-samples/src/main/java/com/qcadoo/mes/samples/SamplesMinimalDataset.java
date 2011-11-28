@@ -80,6 +80,8 @@ public class SamplesMinimalDataset extends Module {
 
     private static final String BASIC_PLUGIN_IDENTIFIER = "basic";
 
+    private static final String BASIC_MODEL_MANUFACTURER = "manufacturer";
+
     private static final String BASIC_MODEL_COMPANY = "company";
 
     private static final String BASIC_MODEL_PARAMETER = "parameter";
@@ -159,6 +161,7 @@ public class SamplesMinimalDataset extends Module {
             addUser(values);
         } else if ("company".equals(type)) {
             addCompany(values);
+            addManufacturer(values);
         }
     }
 
@@ -177,6 +180,28 @@ public class SamplesMinimalDataset extends Module {
         company.setField("email", values.get("email"));
         company.setField("addressWww", values.get("addressWww"));
         company.setField("phone", values.get("phone"));
+
+        company = company.getDataDefinition().save(company);
+
+        validateEntity(company);
+    }
+
+    private void addManufacturer(final Map<String, String> values) {
+        Entity company = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_MANUFACTURER).create();
+
+        company.setField("companyFullName", values.get("companyFullName"));
+        company.setField("tax", values.get("tax"));
+        company.setField("street", values.get("street"));
+        company.setField("house", values.get("house"));
+        company.setField("flat", values.get("flat"));
+        company.setField("zipCode", values.get("zipCode"));
+        company.setField("city", values.get("city"));
+        company.setField("state", values.get("state"));
+        company.setField("country", values.get("country"));
+        company.setField("email", values.get("email"));
+        company.setField("addressWww", values.get("addressWww"));
+        company.setField("phone", values.get("phone"));
+        company.setField("owner", true);
 
         company = company.getDataDefinition().save(company);
 

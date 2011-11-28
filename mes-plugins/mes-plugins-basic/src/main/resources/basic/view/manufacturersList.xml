@@ -35,7 +35,38 @@
 			<template name="standardGridTemplate" />
 		</ribbon>
 		<component type="grid" name="manufacturers" reference="grid">
+			<script>
+				<![CDATA[
+					var copyButton = #{window}.getRibbonItem("actions.copy");
+					var deleteButton = #{window}.getRibbonItem("actions.delete");
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								copyButton.disable();
+								deleteButton.disable();
+							} else {
+								var owner = false;
+								for (var i in selectedEntitiesArray) {
+									if (selectedEntitiesArray[i].fields.owner != '' && selectedEntitiesArray[i].fields.owner != undefined) {
+										owner = true;
+										break;	
+									}
+								}
+								if (owner) {
+									copyButton.disable("#{translate(basic.manufacturers.ribbon.message.someManufacturerIsOwner)}");
+									deleteButton.disable("#{translate(basic.manufacturers.ribbon.message.someManufacturerIsOwner)}");
+								} else {
+									copyButton.enable();
+									deleteButton.enable();
+								}
+							}
+						}
+					}
+					this.addOnChangeListener(listener);
+				]]>
+			</script>
 			<option type="column" name="companyFullName" fields="companyFullName" link="true" />
+			<option type="column" name="owner" fields="owner" hidden="true" />
 			<option type="order" column="companyFullName" direction="asc" />
 			<option type="searchable" value="companyFullName" />
 			<option type="orderable" value="companyFullName" />

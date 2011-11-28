@@ -34,6 +34,29 @@
 			<template name="standardFormTemplate" />
 		</ribbon>
 		<component type="form" name="manufacturer" reference="form">
+			<script>
+				<![CDATA[
+					var save = #{window}.getRibbonItem("actions.save");
+					var saveBack = #{window}.getRibbonItem("actions.saveBack");
+					var saveNew = #{window}.getRibbonItem("actions.saveNew");
+					var cancel = #{window}.getRibbonItem("actions.cancel");
+					var copy = #{window}.getRibbonItem("actions.copy");
+					var delete = #{window}.getRibbonItem("actions.delete");
+					
+					var owner = #{owner}.getValue().content.value;
+							
+							if(owner != '' && owner != undefined) {
+								save.disable("#{translate(basic.manufacturers.ribbon.message.someManufacturerIsOwner)}");
+								saveBack.disable("#{translate(basic.manufacturers.ribbon.message.someManufacturerIsOwner)}");
+								saveNew.disable("#{translate(basic.manufacturers.ribbon.message.someManufacturerIsOwner)}");
+								cancel.disable("#{translate(basic.manufacturers.ribbon.message.someManufacturerIsOwner)}");
+								copy.disable("#{translate(basic.manufacturers.ribbon.message.someManufacturerIsOwner)}");
+								delete.disable("#{translate(basic.manufacturers.ribbon.message.someManufacturerIsOwner)}");
+							}
+							
+					
+				]]>
+			</script>
 			<component type="gridLayout" name="gridLayout" columns="3" rows="13">
 				<layoutElement column="1" row="1">
 					<component type="input" name="companyFullName" field="companyFullName"  />
@@ -77,6 +100,6 @@
 		</component>
 	</component>
 	<hooks>
-		
+		<beforeRender class="com.qcadoo.mes.basic.ManufacturerService" method="disableManufacturerFormForOwner" />
 	</hooks>
 </view>
