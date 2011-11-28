@@ -115,7 +115,11 @@
 									
 									var onSetValueListener = {
 										onSetValue: function(value) {
-											toggleEditable(#{state}.getValue().content.value);
+											if (#{form}.getValue().content && #{form}.getValue().content.entityId) {
+												toggleEditable(#{state}.getValue().content.value);
+											} else {
+												this.setEnabled(false, true);
+											}
 										}
 									};
 									
