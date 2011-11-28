@@ -34,6 +34,8 @@ public interface BasicConstants {
 
     String MODEL_PRODUCT = "product";
 
+    String MODEL_MANUFACTURER = "manufacturer";
+
     String MODEL_CONTRACTOR = "contractor";
 
     String MODEL_STAFF = "staff";
