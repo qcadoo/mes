@@ -146,4 +146,19 @@ public class OrderGroupsService {
         return cal.getTime().getTime();
     }
 
+    public final void updateBelongingOrdersOrderGroupName(final DataDefinition groupDataDefinition, final Entity orderGroup) {
+        for (Entity order : orderGroup.getHasManyField("orders")) {
+            // fire updateOrderGroupName
+            order.getDataDefinition().save(order);
+        }
+    }
+
+    public final void updateOrderGroupName(final DataDefinition orderDataDefinition, final Entity order) {
+        Entity orderGroup = order.getBelongsToField("orderGroup");
+        if (orderGroup == null) {
+            order.setField("orderGroupName", null);
+            return;
+        }
+        order.setField("orderGroupName", orderGroup.getStringField("name"));
+    }
 }
