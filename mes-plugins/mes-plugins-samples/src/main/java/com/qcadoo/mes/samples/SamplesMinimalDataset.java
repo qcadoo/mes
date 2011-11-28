@@ -43,7 +43,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -79,6 +78,16 @@ public class SamplesMinimalDataset extends Module {
     @Value("${loadTestDataLocale}")
     private String locale;
 
+    private static final String BASIC_PLUGIN_IDENTIFIER = "basic";
+
+    private static final String BASIC_MODEL_COMPANY = "company";
+
+    private static final String BASIC_MODEL_PARAMETER = "parameter";
+
+    private static final String BASIC_MODEL_CURRENCY = "currency";
+
+    private static final String BASIC_MODEL_SHIFT = "shift";
+
     @Override
     @Transactional
     public void multiTenantEnable() {
@@ -87,7 +96,7 @@ public class SamplesMinimalDataset extends Module {
         if (isEnabled("productionCounting")) {
             setParameters();
         }
-        if (isEnabled(BasicConstants.PLUGIN_IDENTIFIER)) {
+        if (isEnabled(BASIC_PLUGIN_IDENTIFIER)) {
             readDataFromXML("units", UNITS_ATTRIBUTES);
             readDataFromXML("shifts", SHIFTS_ATTRIBUTES);
             readDataFromXML("users", USERS_ATTRIBUTES);
@@ -154,7 +163,7 @@ public class SamplesMinimalDataset extends Module {
     }
 
     private void addCompany(final Map<String, String> values) {
-        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).create();
+        Entity company = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_COMPANY).create();
 
         company.setField("companyFullName", values.get("companyFullName"));
         company.setField("tax", values.get("tax"));
@@ -175,7 +184,7 @@ public class SamplesMinimalDataset extends Module {
     }
 
     private void setParameters() {
-        Entity params = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).create();
+        Entity params = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PARAMETER).create();
 
         String alphabeticCode = "";
 
@@ -185,7 +194,7 @@ public class SamplesMinimalDataset extends Module {
             alphabeticCode = "USD";
         }
 
-        Entity currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).find()
+        Entity currency = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_CURRENCY).find()
                 .add(SearchRestrictions.eq("alphabeticCode", alphabeticCode)).uniqueResult();
 
         params.setField("registerQuantityInProduct", true);
@@ -215,7 +224,7 @@ public class SamplesMinimalDataset extends Module {
     }
 
     private void addShift(final Map<String, String> values) {
-        Entity shift = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).create();
+        Entity shift = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_SHIFT).create();
 
         shift.setField("name", values.get("name"));
         shift.setField("mondayWorking", values.get("mondayWorking"));

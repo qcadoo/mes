@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.plugin.api.Module;
 
@@ -52,6 +51,10 @@ public class SamplesChooser extends Module {
     private String samplesBuildStrategy;
 
     private static final Logger LOG = LoggerFactory.getLogger(SamplesLoaderModule.class);
+
+    private static final String BASIC_PLUGIN_NAME = "basic";
+
+    private static final String BASIC_MODEL_PARAMETER = "parameter";
 
     @Override
     public void multiTenantEnable() {
@@ -77,7 +80,6 @@ public class SamplesChooser extends Module {
     }
 
     private boolean databaseHasToBePrepared() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().list()
-                .getTotalNumberOfEntities() == 0;
+        return dataDefinitionService.get(BASIC_PLUGIN_NAME, BASIC_MODEL_PARAMETER).find().list().getTotalNumberOfEntities() == 0;
     }
 }
