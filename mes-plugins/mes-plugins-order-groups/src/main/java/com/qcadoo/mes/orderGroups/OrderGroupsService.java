@@ -29,12 +29,16 @@ import static com.qcadoo.mes.orderGroups.constants.OrderGroupsConstants.ORDER_DA
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orderGroups.constants.OrderGroupsConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -42,6 +46,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -160,5 +165,30 @@ public class OrderGroupsService {
             return;
         }
         order.setField("orderGroupName", orderGroup.getStringField("name"));
+    }
+
+    public final void showInOrdersList(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FormComponent form = (FormComponent) componentState;
+        Entity orderGroup = form.getEntity();
+        if (orderGroup == null) {
+            return;
+        }
+        String orderGroupName = orderGroup.getStringField("name");
+        if (orderGroupName == null) {
+            return;
+        }
+
+        JSONObject context = new JSONObject();
+        JSONObject gridOptions = new JSONObject();
+        Map<String, String> filters = Maps.newHashMap();
+        filters.put("orderGroup", orderGroupName);
+        try {
+            gridOptions.put("filters", filters);
+            gridOptions.put("filtersEnabled", true);
+            context.put("grid.options", gridOptions);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        view.redirectTo("/page/orders/ordersList.html?context=" + context.toString(), false, true);
     }
 }
