@@ -140,16 +140,16 @@ public class ProductionRecordsService {
             foundCounting.setField(MODEL_FIELD_PRODUCT, record.getBelongsToField(MODEL_FIELD_PRODUCT));
             foundCounting.setField(quantityType, record.getField("usedQuantity"));
         } else {
-            BigDecimal producedQuantity = (BigDecimal) foundCounting.getField(quantityType);
+            BigDecimal quantity = (BigDecimal) record.getField("usedQuantity");
             if (forEach) {
-                final BigDecimal addition = (BigDecimal) record.getField("usedQuantity");
-                if (producedQuantity == null) {
-                    producedQuantity = addition;
-                } else {
-                    producedQuantity = producedQuantity.add(addition);
+                final BigDecimal addition = (BigDecimal) foundCounting.getField(quantityType);
+                if (quantity == null) {
+                    quantity = addition;
+                } else if (addition != null) {
+                    quantity = quantity.add(addition);
                 }
             }
-            foundCounting.setField(quantityType, producedQuantity);
+            foundCounting.setField(quantityType, quantity);
         }
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             if (product.getKey().getId().equals(foundCounting.getBelongsToField(MODEL_FIELD_PRODUCT).getId())) {

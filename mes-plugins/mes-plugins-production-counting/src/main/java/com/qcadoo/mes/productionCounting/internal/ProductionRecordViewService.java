@@ -408,39 +408,37 @@ public class ProductionRecordViewService {
 
     public void disableFieldsIfBasicSelected(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FieldComponent shift = (FieldComponent) view.getComponentByReference("shift");
-        FieldComponent laborTime = (FieldComponent) view.getComponentByReference("laborTime");
-        FieldComponent machineTime = (FieldComponent) view.getComponentByReference("machineTime");
         FieldComponent orderComponent = (FieldComponent) view.getComponentByReference("order");
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-
-        RibbonActionItem save = window.getRibbon().getGroupByName("actions").getItemByName("save");
-        RibbonActionItem saveBack = window.getRibbon().getGroupByName("actions").getItemByName("saveBack");
-        RibbonActionItem saveNew = window.getRibbon().getGroupByName("actions").getItemByName("saveNew");
-
         Entity order = getOrderFromLookup(view);
 
         if (order == null) {
             return;
         }
 
-        if ("01basic".equals(order.getField("typeOfProductionRecording"))) {
-            shift.setEnabled(false);
-            laborTime.setEnabled(false);
-            machineTime.setEnabled(false);
-            save.setEnabled(false);
-            saveNew.setEnabled(false);
-            saveBack.setEnabled(false);
-            orderComponent.addMessage(translationService.translate(
-                    "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting", view.getLocale()),
-                    ComponentState.MessageType.INFO);
-        } else {
-            shift.setEnabled(true);
-            laborTime.setEnabled(true);
-            machineTime.setEnabled(true);
-            save.setEnabled(true);
-            saveNew.setEnabled(true);
-            saveBack.setEnabled(true);
+        List<String> components = Arrays.asList("shift", "laborTime", "machineTime", "lastRecord");
+        for (String componentName : components) {
+            FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
+            if ("01basic".equals(order.getField("typeOfProductionRecording"))) {
+                component.setEnabled(false);
+            } else {
+                component.setEnabled(true);
+            }
         }
+
+        orderComponent.addMessage(translationService.translate(
+                "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting", view.getLocale()),
+                ComponentState.MessageType.INFO);
+
+        List<String> ribbonItems = Arrays.asList("save", "saveBack", "saveNew");
+        for (String ribbonItemName : ribbonItems) {
+            RibbonActionItem ribbonItem = window.getRibbon().getGroupByName("actions").getItemByName(ribbonItemName);
+            if ("01basic".equals(order.getField("typeOfProductionRecording"))) {
+                ribbonItem.setEnabled(false);
+            } else {
+                ribbonItem.setEnabled(true);
+            }
+        }
+        window.requestRibbonRender();
     }
 }

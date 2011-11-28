@@ -809,7 +809,7 @@ public class SamplesLoaderModule extends Module {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test operation component {technology="
                     + ((Entity) component.getField("technology")).getField("number") + ", parent="
-                    + (parent != null ? parent.getId() : 0) + ", operation="
+                    + (parent == null ? 0 : parent.getId()) + ", operation="
                     + ((Entity) component.getField("operation")).getField("number") + "}");
         }
         return component;
@@ -933,11 +933,10 @@ public class SamplesLoaderModule extends Module {
     private Entity getMachine(final String id) {
         List<Entity> machines = dataDefinitionService.get("basic", "machine").find().add(SearchRestrictions.eq("number", id))
                 .list().getEntities();
-        if (machines.size() > 0) {
-            return machines.get(0);
-        } else {
+        if (machines.isEmpty()) {
             return null;
         }
+        return machines.get(0);
     }
 
     private Entity getTechnologyByNumber(final String number) {
