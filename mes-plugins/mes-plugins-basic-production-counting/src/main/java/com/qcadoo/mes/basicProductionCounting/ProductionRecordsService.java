@@ -95,11 +95,8 @@ public class ProductionRecordsService {
 
     }
 
-    /*
-     * TODO: BAKU facade pattern
-     */
-
     private void getProducedProductFromRecord(final Entity productionRecord, final boolean forEach) {
+        // TODO BAKU facade pattern
         SearchCriteriaBuilder searchBuilder = dataDefinitionService.get("productionCounting",
                 "recordOperationProductOutComponent").find();
         List<Entity> productsOut = searchBuilder.add(SearchRestrictions.belongsTo("productionRecord", productionRecord)).list()

@@ -130,7 +130,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="3" row="4" width="2" height="6">
-					<component type="grid" name="simpleMaterialBalancestockAreasComponent"
+					<component type="grid" name="simpleMaterialBalanceStockAreasComponent"
 						reference="simpleMaterialBalancestockAreasComponent" source="#{form}.stockAreas">
 						<option type="column" name="number" fields="stockAreas"
 							expression="#stockAreas['number']" width="50" />
