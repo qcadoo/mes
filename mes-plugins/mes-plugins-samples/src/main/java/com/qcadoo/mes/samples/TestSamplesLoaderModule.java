@@ -29,7 +29,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -61,46 +60,13 @@ import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
 
 @Component
-public class SamplesLoaderModule extends Module {
+public class TestSamplesLoaderModule extends Module {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SamplesLoaderModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestSamplesLoaderModule.class);
 
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     private static final long MILLIS_IN_DAY = 86400000;
-
-    private static final List<String> UNITS = new ArrayList<String>();
-
-    private static final String[] ACTIVE_CURRENCY_ATTRIBUTES = new String[] { "code" };
-
-    private static final String[] COMPANY_ATTRIBUTES = new String[] { "companyFullName", "tax", "street", "house", "flat",
-            "zipCode", "city", "state", "country", "email", "addressWww", "phone", "owner" };
-
-    private static final String[] PRODUCT_ATTRIBUTES = new String[] { "ean", "name", "product_nr", "batch", "costForNumber",
-            "nominalCost", "lastPurchaseCost", "averageCost", "typeOfProduct", "unit" };
-
-    private static final String[] DICTIONARY_ATTRIBUTES = new String[] { "name", "item" };
-
-    private static final String[] USER_ATTRIBUTES = new String[] { "login", "email", "firstname", "lastname", "role" };
-
-    private static final String[] ORDER_ATTRIBUTES = new String[] { "scheduled_start_date", "scheduled_end_date",
-            "quantity_completed", "started_date", "finished_date", "name", "order_nr", "quantity_scheduled", "machine_nr",
-            "tech_nr", "product_nr", "effective_started_date" };
-
-    private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr",
-            "algorithm", "minimal" };
-
-    private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number", "tpz", "tj", "productionInOneCycle",
-            "pieceworkCost", "machineHourlyCost", "laborHourlyCost", "numberOfOperations", "machineUtilization",
-            "laborUtilization", "countMachine", "countRealized", "timeNextOperation" };
-
-    private static final String[] MACHINE_ATTRIBUTES = new String[] { "id", "name", "prod_line", "description" };
-
-    private static final String[] STAFF_ATTRIBUTES = new String[] { "id", "name", "surname", "post" };
-
-    private static final String[] SHIFT_ATTRIBUTES = new String[] { "name", "mondayWorking", "mondayHours", "tuesdayWorking",
-            "tuesdayHours", "wensdayWorking", "wensdayHours", "thursdayWorking", "thursdayHours", "fridayWorking", "fridayHours",
-            "saturdayWorking", "saturdayHours", "sundayWorking", "sundayHours" };
 
     private static final Random RANDOM = new Random(System.currentTimeMillis());
 
@@ -116,7 +82,7 @@ public class SamplesLoaderModule extends Module {
     @Autowired
     private TreeNumberingService treeNumberingService;
 
-    @Value("${loadTestDataLocale}")
+    @Value("${samplesDatasetLocale}")
     private String locale;
 
     @Value("${setAsDemoEnviroment}")
@@ -130,27 +96,26 @@ public class SamplesLoaderModule extends Module {
         addParameters();
 
         if (!setAsDemoEnviroment) {
-            readDataFromXML("users", USER_ATTRIBUTES);
+            readDataFromXML("users");
         } else {
             changeAdminPassword();
         }
 
-        readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
+        readDataFromXML("dictionaries");
         if (isEnabled("basic")) {
-            readDataFromXML("activeCurrency", ACTIVE_CURRENCY_ATTRIBUTES);
-            readDataFromXML("company", COMPANY_ATTRIBUTES);
-            readDataFromXML("machines", MACHINE_ATTRIBUTES);
-            readDataFromXML("staff", STAFF_ATTRIBUTES);
-            readDataFromXML("units", new String[] { "name" });
-            readDataFromXML("products", PRODUCT_ATTRIBUTES);
-            readDataFromXML("shifts", SHIFT_ATTRIBUTES);
+            readDataFromXML("activeCurrency");
+            readDataFromXML("company");
+            readDataFromXML("machines");
+            readDataFromXML("staff");
+            readDataFromXML("products");
+            readDataFromXML("shifts");
         }
         if (isEnabled("technologies")) {
-            readDataFromXML("operations", OPERATION_ATTRIBUTES);
-            readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
+            readDataFromXML("operations");
+            readDataFromXML("technologies");
         }
         if (isEnabled("orders")) {
-            readDataFromXML("orders", ORDER_ATTRIBUTES);
+            readDataFromXML("orders");
         }
         if (isEnabled("materialRequirements")) {
             addMaterialRequirements();
@@ -182,10 +147,10 @@ public class SamplesLoaderModule extends Module {
     }
 
     private InputStream getXmlFile(final String type) throws IOException {
-        return SamplesLoaderModule.class.getResourceAsStream("/com/qcadoo/mes/samples/" + type + "_" + locale + ".xml");
+        return TestSamplesLoaderModule.class.getResourceAsStream("/com/qcadoo/mes/samples/" + type + "_" + locale + ".xml");
     }
 
-    private void readDataFromXML(final String type, final String[] attributes) {
+    private void readDataFromXML(final String type) {
 
         LOG.info("Loading test data from " + type + "_" + locale + ".xml ...");
 
@@ -231,8 +196,6 @@ public class SamplesLoaderModule extends Module {
             addDictionary(values);
         } else if ("users".equals(type)) {
             addUser(values);
-        } else if ("units".equals(type)) {
-            UNITS.add(values.get("name"));
         } else if ("operations".equals(type)) {
             addOperations(values);
         } else if ("staff".equals(type)) {
@@ -262,17 +225,17 @@ public class SamplesLoaderModule extends Module {
     private void addCompany(final Map<String, String> values) {
         Entity company = dataDefinitionService.get("basic", "company").create();
 
-        LOG.debug("id: " + values.get("id") + " companyFullName " + values.get("companyFullName") + " tax " + values.get("tax")
+        LOG.debug("id: " + values.get("id") + " companyFullName " + values.get("companyfullname") + " tax " + values.get("tax")
                 + " street " + values.get("street") + " house " + values.get("house") + " flat " + values.get("flat")
-                + " zipCode " + values.get("zipCode") + " city " + values.get("city") + " state " + values.get("state")
+                + " zipCode " + values.get("zipcode") + " city " + values.get("city") + " state " + values.get("state")
                 + " country " + values.get("country") + " email " + values.get("email") + " addressWww "
                 + values.get("addressWww") + " phone " + values.get("phone") + " owner " + values.get("owner"));
-        company.setField("companyFullName", values.get("companyFullName"));
+        company.setField("companyFullName", values.get("companyfullname"));
         company.setField("tax", values.get("tax"));
         company.setField("street", values.get("street"));
         company.setField("house", values.get("house"));
         company.setField("flat", values.get("flat"));
-        company.setField("zipCode", values.get("zipCode"));
+        company.setField("zipCode", values.get("zipcode"));
         company.setField("city", values.get("city"));
         company.setField("state", values.get("state"));
         company.setField("country", values.get("country"));
@@ -786,12 +749,12 @@ public class SamplesLoaderModule extends Module {
         component.setField("entityType", "operation");
         component.setField("tpz", operation.getField("tpz"));
         component.setField("tj", operation.getField("tj"));
-        component.setField("machineUtilization", operation.getField("machineutilization"));
-        component.setField("laborUtilization", operation.getField("laborutilization"));
-        component.setField("productionInOneCycle", operation.getField("productioninonecycle"));
-        component.setField("countRealized", operation.getField("countrealizedoperation"));
-        component.setField("countMachine", operation.getField("countmachineoperation"));
-        component.setField("timeNextOperation", operation.getField("timenextoperation"));
+        component.setField("machineUtilization", operation.getField("machineUtilization"));
+        component.setField("laborUtilization", operation.getField("laborUtilization"));
+        component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
+        component.setField("countRealized", operation.getField("countRealizedOperation"));
+        component.setField("countMachine", operation.getField("countMachineOperation"));
+        component.setField("timeNextOperation", operation.getField("timeNextOperation"));
 
         component = dataDefinitionService.get("technologies", "technologyOperationComponent").save(component);
         if (!component.isValid()) {

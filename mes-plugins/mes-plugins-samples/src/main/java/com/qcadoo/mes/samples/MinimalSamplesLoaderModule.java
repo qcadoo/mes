@@ -26,22 +26,22 @@ package com.qcadoo.mes.samples;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.jdom.Attribute;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -53,18 +53,9 @@ import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
 
 @Component
-public class SamplesMinimalDataset extends Module {
+public class MinimalSamplesLoaderModule extends Module {
 
-    private static final String[] UNITS_ATTRIBUTES = new String[] { "name", "description" };
-
-    private static final String[] SHIFTS_ATTRIBUTES = new String[] { "name", "mondayWorking", "mondayHours", "tuesdayWorking",
-            "tuesdayHours", "wensdayWorking", "wensdayHours", "thursdayWorking", "thursdayHours", "fridayWorking", "fridayHours",
-            "saturdayWorking", "saturdayHours", "sundayWorking", "sundayHours" };
-
-    private static final String[] USERS_ATTRIBUTES = new String[] { "login", "email", "firstname", "lastname", "role" };
-
-    private static final String[] COMPANY_ATTRIBUTES = new String[] { "companyFullName", "tax", "street", "house", "flat",
-            "zipCode", "city", "state", "country", "email", "addressWww", "phone", "owner" };
+    private static final Logger LOG = LoggerFactory.getLogger(MinimalSamplesLoaderModule.class);
 
     @Autowired
     private SecurityRolesService securityRolesService;
@@ -75,7 +66,7 @@ public class SamplesMinimalDataset extends Module {
     @Autowired
     private PluginAccessor pluginAccessor;
 
-    @Value("${loadTestDataLocale}")
+    @Value("${samplesDatasetLocale}")
     private String locale;
 
     private static final String BASIC_PLUGIN_IDENTIFIER = "basic";
@@ -97,10 +88,10 @@ public class SamplesMinimalDataset extends Module {
             setParameters();
         }
         if (isEnabled(BASIC_PLUGIN_IDENTIFIER)) {
-            readDataFromXML("units", UNITS_ATTRIBUTES);
-            readDataFromXML("shifts", SHIFTS_ATTRIBUTES);
-            readDataFromXML("users", USERS_ATTRIBUTES);
-            readDataFromXML("company", COMPANY_ATTRIBUTES);
+            readDataFromXML("units");
+            readDataFromXML("shifts");
+            readDataFromXML("users");
+            readDataFromXML("company");
         }
 
     }
@@ -116,39 +107,39 @@ public class SamplesMinimalDataset extends Module {
     }
 
     private InputStream getXmlFile(final String type) throws IOException {
-        return SamplesLoaderModule.class.getResourceAsStream("/com/qcadoo/mes/samples/minimal/" + type + "_" + locale + ".xml");
+        return TestSamplesLoaderModule.class.getResourceAsStream("/com/qcadoo/mes/samples/minimal/" + type + "_" + locale
+                + ".xml");
     }
 
-    private void readDataFromXML(final String type, final String[] attributes) {
+    private void readDataFromXML(final String type) {
+
+        LOG.info("Loading test data from " + type + "_" + locale + ".xml ...");
+
         try {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
-            final Document doc = documentBuilder.parse(getXmlFile(type));
-            doc.getDocumentElement().normalize();
+            SAXBuilder builder = new SAXBuilder();
+            Document document = builder.build(getXmlFile(type));
+            Element rootNode = document.getRootElement();
+            List<Element> list = rootNode.getChildren("row");
 
-            final NodeList nodeLst = doc.getElementsByTagName("row");
+            for (int i = 0; i < list.size(); i++) {
 
-            for (int s = 0; s < nodeLst.getLength(); s++) {
-                readData(attributes, type, nodeLst, s);
+                Element node = list.get(i);
+                List<Attribute> listOfAtribute = node.getAttributes();
+                readData(listOfAtribute, type, node);
             }
         } catch (IOException e) {
-            throw new IllegalStateException(e);
-        } catch (ParserConfigurationException e) {
-            throw new IllegalStateException(e);
-        } catch (SAXException e) {
-            throw new IllegalStateException(e);
+            LOG.error(e.getMessage(), e);
+        } catch (JDOMException e) {
+            LOG.error(e.getMessage(), e);
         }
+
     }
 
-    private void readData(final String[] attributes, final String type, final NodeList nodeLst, final int s) {
+    private void readData(final List<Attribute> attributes, final String type, final Element node) {
         Map<String, String> values = new HashMap<String, String>();
-        Node fstNode = nodeLst.item(s);
 
-        for (String attribute : attributes) {
-            if (fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)) != null) {
-                String value = fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)).getNodeValue();
-                values.put(attribute, value);
-            }
+        for (int i = 0; i < attributes.size(); i++) {
+            values.put(attributes.get(i).getName().toLowerCase(), attributes.get(i).getValue());
         }
 
         if ("units".equals(type)) {
@@ -165,17 +156,17 @@ public class SamplesMinimalDataset extends Module {
     private void addCompany(final Map<String, String> values) {
         Entity company = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_COMPANY).create();
 
-        company.setField("companyFullName", values.get("companyFullName"));
+        company.setField("companyFullName", values.get("companyfullname"));
         company.setField("tax", values.get("tax"));
         company.setField("street", values.get("street"));
         company.setField("house", values.get("house"));
         company.setField("flat", values.get("flat"));
-        company.setField("zipCode", values.get("zipCode"));
+        company.setField("zipCode", values.get("zipcode"));
         company.setField("city", values.get("city"));
         company.setField("state", values.get("state"));
         company.setField("country", values.get("country"));
         company.setField("email", values.get("email"));
-        company.setField("addressWww", values.get("addressWww"));
+        company.setField("addressWww", values.get("addresswww"));
         company.setField("phone", values.get("phone"));
         company.setField("owner", values.get("owner"));
         if ("true".equals(values.get("owner")))

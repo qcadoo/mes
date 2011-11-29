@@ -36,21 +36,21 @@ import com.qcadoo.plugin.api.Module;
 public class SamplesChooser extends Module {
 
     @Autowired
-    private SamplesGeneratorModule samplesGeneratorModule;
+    private GeneratedSamplesLoaderModule generatedSamplesLoaderModule;
 
     @Autowired
-    private SamplesLoaderModule samplesLoaderModule;
+    private TestSamplesLoaderModule testSamplesLoaderModule;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private SamplesMinimalDataset samplesMinimalDataset;
+    private MinimalSamplesLoaderModule minimalSamplesLoaderModule;
 
-    @Value("${loadTestData}")
-    private String samplesBuildStrategy;
+    @Value("${samplesDataset}")
+    private String samplesDataset;
 
-    private static final Logger LOG = LoggerFactory.getLogger(SamplesLoaderModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestSamplesLoaderModule.class);
 
     private static final String BASIC_PLUGIN_NAME = "basic";
 
@@ -59,16 +59,16 @@ public class SamplesChooser extends Module {
     @Override
     public void multiTenantEnable() {
         if (databaseHasToBePrepared()) {
-            if ("LOADER".equals(samplesBuildStrategy.toUpperCase())) {
+            if ("TEST".equals(samplesDataset.toUpperCase())) {
                 LOG.debug("Data base has to be prepared ...");
-                samplesLoaderModule.multiTenantEnable();
-            } else if ("GENERATOR".equals(samplesBuildStrategy.toUpperCase())) {
+                testSamplesLoaderModule.multiTenantEnable();
+            } else if ("GENERATED".equals(samplesDataset.toUpperCase())) {
                 LOG.debug("Data base has to be prepared ...");
-                samplesGeneratorModule.multiTenantEnable();
-            } else if ("MINIMAL".equals(samplesBuildStrategy.toUpperCase())) {
+                generatedSamplesLoaderModule.multiTenantEnable();
+            } else if ("MINIMAL".equals(samplesDataset.toUpperCase())) {
                 LOG.debug("Data base has to be prepared ...");
-                samplesMinimalDataset.multiTenantEnable();
-            } else if ("FALSE".equals(samplesBuildStrategy.toUpperCase())) {
+                minimalSamplesLoaderModule.multiTenantEnable();
+            } else if ("NONE".equals(samplesDataset.toUpperCase())) {
                 LOG.debug("Data base won't be changed ...");
             } else {
                 throw new IllegalStateException("Invaid loadTestData property!");

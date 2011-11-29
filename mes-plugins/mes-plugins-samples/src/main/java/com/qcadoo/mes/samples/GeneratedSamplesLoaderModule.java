@@ -53,7 +53,7 @@ import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
 
 @Component
-public class SamplesGeneratorModule extends Module {
+public class GeneratedSamplesLoaderModule extends Module {
 
     private static final String CHARS_ONLY = "QWERTYUIOPLKJHGFDSAZXCVBNMmnbvcxzasdfghjklpoiuytrewq";
 
