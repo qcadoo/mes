@@ -32,27 +32,49 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class CompanyService {
-	 @Autowired
-	    private DataDefinitionService dataDefinitionService;
 
-	    @Transactional
-	    public Long getParameterId() {
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
-	        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-	                BasicConstants.MODEL_COMPANY);
-	        SearchResult searchResult = dataDefinition.find().setMaxResults(1).list();
+    @Transactional
+    public Long getParameterId() {
 
-	        if (searchResult.getEntities().size() > 0) {
-	            return searchResult.getEntities().get(0).getId();
-	        } else {
-	        	Entity newCompany = dataDefinition.create();
-	            Entity savedCompany = dataDefinition.save(newCompany);
-	            return savedCompany.getId();
-	        }
+        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY);
+        SearchResult searchResult = dataDefinition.find().setMaxResults(1).list();
 
-	    }
+        if (searchResult.getEntities().size() > 0) {
+            return searchResult.getEntities().get(0).getId();
+        } else {
+            Entity newCompany = dataDefinition.create();
+            Entity savedCompany = dataDefinition.save(newCompany);
+            return savedCompany.getId();
+        }
 
+    }
+
+    public void disableCompanyFormForOwner(final ViewDefinitionState state) {
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
+
+        if (form.getEntityId() == null) {
+            return;
+        }
+
+        Entity entity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).get(
+                form.getEntityId());
+
+        if (entity == null) {
+            return;
+        }
+
+        Object owner = entity.getField("owner");
+
+        if (owner != null && owner.equals(true)) {
+            form.setFormEnabled(false);
+        }
+    }
 }

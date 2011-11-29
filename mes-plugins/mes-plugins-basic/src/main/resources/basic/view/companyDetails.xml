@@ -79,6 +79,6 @@
 		</component>
 	</component>
 	<hooks>
-		
+		<beforeRender class="com.qcadoo.mes.basic.CompanyService" method="disableCompanyFormForOwner" />
 	</hooks>
 </view>

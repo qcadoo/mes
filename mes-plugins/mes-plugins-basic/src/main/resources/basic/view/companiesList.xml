@@ -26,15 +26,15 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="manufacturersList" 
-	modelName="manufacturer" 
+	name="companiesList" 
+	modelName="company" 
 	menuAccessible="true">
 	
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardGridTemplate" />
 		</ribbon>
-		<component type="grid" name="manufacturers" reference="grid">
+		<component type="grid" name="companies" reference="grid">
 			<script>
 				<![CDATA[
 					var copyButton = #{window}.getRibbonItem("actions.copy");
@@ -53,8 +53,8 @@
 									}
 								}
 								if (owner) {
-									copyButton.disable("#{translate(basic.manufacturers.ribbon.message.someManufacturerIsOwner)}");
-									deleteButton.disable("#{translate(basic.manufacturers.ribbon.message.someManufacturerIsOwner)}");
+									copyButton.disable("#{translate(basic.companies.ribbon.message.someManufacturerIsOwner)}");
+									deleteButton.disable("#{translate(basic.companies.ribbon.message.someManufacturerIsOwner)}");
 								} else {
 									copyButton.enable();
 									deleteButton.enable();
@@ -70,7 +70,7 @@
 			<option type="order" column="companyFullName" direction="asc" />
 			<option type="searchable" value="companyFullName" />
 			<option type="orderable" value="companyFullName" />
-			<option type="correspondingView" value="basic/manufacturerDetails" />
+			<option type="correspondingView" value="basic/companyDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="deletable" value="false" />
 			<option type="creatable" value="false" />
