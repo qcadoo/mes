@@ -35,7 +35,7 @@
 		<string name="name" required="true" />
 		<date name="dateFrom" />
 		<date name="dateTo" />
-        <hasMany name="orders" model="order" plugin="orders" joinField="orderGroup" cascade="delete" />
+        <hasMany name="orders" model="order" plugin="orders" joinField="orderGroup" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="validateDates" />

@@ -66,6 +66,12 @@ public class OrderGroupsService {
 
     private static final String NAME_FIELD = "name";
 
+    private static final String ORDERS_FIELD = "orders";
+
+    private static final String ORDER_GROUP_FIELD = "orderGroup";
+
+    private static final String ORDER_GROUP_NAME_FIELD = "orderGroupName";
+
     /* ****** HOOKS ******* */
 
     public final void generateNumberAndName(final ViewDefinitionState view) {
@@ -95,18 +101,18 @@ public class OrderGroupsService {
             return false;
         }
 
-        EntityList orders = orderGroup.getHasManyField("orders");
+        EntityList orders = orderGroup.getHasManyField(ORDERS_FIELD);
         return checkOrderGroupDateBoundary(orderGroup, orders, DATE_RANGE_ERROR, orderGroup);
     }
 
     public final boolean validateOrderDate(final DataDefinition dataDefinition, final Entity order) {
-        Entity group = order.getBelongsToField("orderGroup");
+        Entity group = order.getBelongsToField(ORDER_GROUP_FIELD);
         return checkOrderGroupDateBoundary(group, Lists.newArrayList(order), ORDER_DATES_RANGE_ERROR, order);
     }
 
     public final boolean checkOrderGroupDateBoundary(final Entity group, final List<Entity> orders, final String errorMessage,
             final Entity errorsHolder) {
-        if (group == null || orders.isEmpty()) {
+        if (group == null || orders == null || orders.isEmpty()) {
             return true;
         }
         long groupDateTo = getDateFieldFromEntity(group, DATE_TO_FIELD);
@@ -152,19 +158,22 @@ public class OrderGroupsService {
     }
 
     public final void updateBelongingOrdersOrderGroupName(final DataDefinition groupDataDefinition, final Entity orderGroup) {
-        for (Entity order : orderGroup.getHasManyField("orders")) {
-            // fire updateOrderGroupName
+        List<Entity> orders = orderGroup.getHasManyField(ORDERS_FIELD);
+        if (orders == null) {
+            return;
+        }
+        for (Entity order : orders) {
             order.getDataDefinition().save(order);
         }
     }
 
     public final void updateOrderGroupName(final DataDefinition orderDataDefinition, final Entity order) {
-        Entity orderGroup = order.getBelongsToField("orderGroup");
+        Entity orderGroup = order.getBelongsToField(ORDER_GROUP_FIELD);
         if (orderGroup == null) {
-            order.setField("orderGroupName", null);
+            order.setField(ORDER_GROUP_NAME_FIELD, null);
             return;
         }
-        order.setField("orderGroupName", orderGroup.getStringField("name"));
+        order.setField(ORDER_GROUP_NAME_FIELD, orderGroup.getStringField(NAME_FIELD));
     }
 
     public final void showInOrdersList(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
@@ -173,7 +182,7 @@ public class OrderGroupsService {
         if (orderGroup == null) {
             return;
         }
-        String orderGroupName = orderGroup.getStringField("name");
+        String orderGroupName = orderGroup.getStringField(NAME_FIELD);
         if (orderGroupName == null) {
             return;
         }
@@ -181,13 +190,13 @@ public class OrderGroupsService {
         JSONObject context = new JSONObject();
         JSONObject gridOptions = new JSONObject();
         Map<String, String> filters = Maps.newHashMap();
-        filters.put("orderGroup", orderGroupName);
+        filters.put(ORDER_GROUP_FIELD, orderGroupName);
         try {
             gridOptions.put("filters", filters);
             gridOptions.put("filtersEnabled", true);
             context.put("grid.options", gridOptions);
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e.getMessage(), e);
         }
         view.redirectTo("/page/orders/ordersList.html?context=" + context.toString(), false, true);
     }

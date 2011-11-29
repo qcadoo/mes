@@ -23,6 +23,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 public class OrderGroupsServiceTest {
@@ -267,6 +268,15 @@ public class OrderGroupsServiceTest {
         assertTrue(result);
     }
 
+    @Test
+    public final void shouldReturnTrueIfOrdersIsNull() throws Exception {
+        // when
+        boolean result = orderGroupsService.checkOrderGroupDateBoundary(orderGroup, null, "", orderGroup);
+
+        // then
+        Assert.assertTrue(result);
+    }
+
     private void mockEntityDateRange(final Entity entity, final int daysFrom, final int daysTo) {
         when(entity.getField("dateFrom")).thenReturn(getDateWithTimeInterval(daysFrom));
         when(entity.getField("dateTo")).thenReturn(getDateWithTimeInterval(daysTo));
@@ -372,6 +382,53 @@ public class OrderGroupsServiceTest {
 
         // then
         Mockito.verify(dataDefinition, Mockito.times(ordersList.size())).save(order);
+    }
 
+    @Test
+    public final void shouldRedirectToOrdersList() throws Exception {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FormComponent form = mock(FormComponent.class);
+
+        when(view.getComponentByReference("form")).thenReturn(form);
+        when(form.getEntity()).thenReturn(orderGroup);
+        when(orderGroup.getStringField("name")).thenReturn("Some group name");
+
+        // when
+        orderGroupsService.showInOrdersList(view, form, null);
+
+        // then
+        Mockito.verify(view).redirectTo(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyBoolean());
+    }
+
+    @Test
+    public final void shouldNotRedirectToOrdersListIfFormEntityIsNull() throws Exception {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FormComponent form = mock(FormComponent.class);
+
+        when(view.getComponentByReference("form")).thenReturn(form);
+
+        // when
+        orderGroupsService.showInOrdersList(view, form, null);
+
+        // then
+        Mockito.verify(view, Mockito.never()).redirectTo(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyBoolean());
+    }
+
+    @Test
+    public final void shouldNotRedirectToOrdersListIfGroupNameIsNull() throws Exception {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FormComponent form = mock(FormComponent.class);
+
+        when(view.getComponentByReference("form")).thenReturn(form);
+        when(form.getEntity()).thenReturn(orderGroup);
+
+        // when
+        orderGroupsService.showInOrdersList(view, form, null);
+
+        // then
+        Mockito.verify(view, Mockito.never()).redirectTo(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyBoolean());
     }
 }
