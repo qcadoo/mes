@@ -77,7 +77,7 @@ public class SamplesLoaderModule extends Module {
     private static final String[] ACTIVE_CURRENCY_ATTRIBUTES = new String[] { "code" };
 
     private static final String[] COMPANY_ATTRIBUTES = new String[] { "companyFullName", "tax", "street", "house", "flat",
-            "zipCode", "city", "state", "country", "email", "addressWww", "phone" };
+            "zipCode", "city", "state", "country", "email", "addressWww", "phone", "owner" };
 
     private static final String[] PRODUCT_ATTRIBUTES = new String[] { "ean", "name", "product_nr", "batch", "costForNumber",
             "nominalCost", "lastPurchaseCost", "averageCost", "typeOfProduct", "unit" };
@@ -227,7 +227,6 @@ public class SamplesLoaderModule extends Module {
             setCurrency(values);
         } else if ("company".equals(type)) {
             addCompany(values);
-            addManufacturer(values);
         } else if ("products".equals(type)) {
             addProduct(values);
         } else if ("orders".equals(type)) {
@@ -274,7 +273,7 @@ public class SamplesLoaderModule extends Module {
                 + " street " + values.get("street") + " house " + values.get("house") + " flat " + values.get("flat")
                 + " zipCode " + values.get("zipCode") + " city " + values.get("city") + " state " + values.get("state")
                 + " country " + values.get("country") + " email " + values.get("email") + " addressWww "
-                + values.get("addressWww") + " phone " + values.get("phone"));
+                + values.get("addressWww") + " phone " + values.get("phone") + " owner " + values.get("owner"));
         company.setField("companyFullName", values.get("companyFullName"));
         company.setField("tax", values.get("tax"));
         company.setField("street", values.get("street"));
@@ -287,6 +286,7 @@ public class SamplesLoaderModule extends Module {
         company.setField("email", values.get("email"));
         company.setField("addressWww", values.get("addressWww"));
         company.setField("phone", values.get("phone"));
+        company.setField("owner", values.get("owner"));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test company item {company=" + company.getField("companyFullName") + "}");
@@ -297,39 +297,7 @@ public class SamplesLoaderModule extends Module {
         if (!company.isValid()) {
             throw new IllegalStateException("Saved entity has validation errors");
         }
-    }
 
-    private void addManufacturer(final Map<String, String> values) {
-        Entity company = dataDefinitionService.get("basic", "manufacturer").create();
-
-        LOG.debug("id: " + values.get("id") + " companyFullName " + values.get("companyFullName") + " tax " + values.get("tax")
-                + " street " + values.get("street") + " house " + values.get("house") + " flat " + values.get("flat")
-                + " zipCode " + values.get("zipCode") + " city " + values.get("city") + " state " + values.get("state")
-                + " country " + values.get("country") + " email " + values.get("email") + " addressWww "
-                + values.get("addressWww") + " phone " + values.get("phone") + " owner true");
-        company.setField("companyFullName", values.get("companyFullName"));
-        company.setField("tax", values.get("tax"));
-        company.setField("street", values.get("street"));
-        company.setField("house", values.get("house"));
-        company.setField("flat", values.get("flat"));
-        company.setField("zipCode", values.get("zipCode"));
-        company.setField("city", values.get("city"));
-        company.setField("state", values.get("state"));
-        company.setField("country", values.get("country"));
-        company.setField("email", values.get("email"));
-        company.setField("addressWww", values.get("addressWww"));
-        company.setField("phone", values.get("phone"));
-        company.setField("owner", true);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test company item {company=" + company.getField("companyFullName") + "}");
-        }
-
-        company = dataDefinitionService.get("basic", "manufacturer").save(company);
-
-        if (!company.isValid()) {
-            throw new IllegalStateException("Saved entity has validation errors");
-        }
     }
 
     private void addMachine(final Map<String, String> values) {

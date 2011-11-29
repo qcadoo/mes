@@ -56,7 +56,7 @@
 
 		<localization:translation path="locales" basename="basic"/>
 
-		<model:model model="manufacturer" resource="model/manufacturer.xml" />
+		<model:model model="company" resource ="model/company.xml"/>
 		<model:model model="contractor" resource="model/contractor.xml" />
 		<model:model model="staff" resource="model/staff.xml" />
 		<model:model model="shift" resource ="model/shift.xml"/>
@@ -67,7 +67,6 @@
 		<model:model model="machine" resource="model/machine.xml" />
 		
 		<model:model model="parameter" resource="model/parameter.xml" />
-		<model:model model="company" resource ="model/company.xml"/>
 		
 		<model:model model="currency" resource ="model/currency.xml"/>
 		
@@ -85,7 +84,7 @@
 		
 		<menu:menu-item-url name="home" category="home" url="/dashboard.html" />
 		
-		<menu:menu-item name="manufacturers" category="basic" view="manufacturersList" />
+		<menu:menu-item name="companies" category="basic" view="companiesList" />
 		<menu:menu-item name="contractors" category="basic" view="contractorsList" />
 		<menu:menu-item name="staff" category="basic" view="staffsList" />
 		<menu:menu-item name="shifts" category="basic" view="shiftsList"/>
@@ -97,11 +96,11 @@
 		
 		<menu:menu-item-url name="systemParameters"
 			category="administration" url="/parameters.html" />
-		<menu:menu-item-url name="companyDetails"
-			category="administration" url="/companyView.html"/>
+<!-- 		<menu:menu-item-url name="companyDetails" -->
+<!-- 			category="administration" url="/companyView.html"/> -->
 
-		<view:view resource="view/manufacturersList.xml" />
-		<view:view resource="view/manufacturerDetails.xml" />
+		<view:view resource="view/companiesList.xml" />
+		<view:view resource="view/companyDetails.xml" />
 		<view:view resource="view/contractorsList.xml" />
 		<view:view resource="view/contractorDetails.xml" />
 		<view:view resource="view/staffsList.xml" />

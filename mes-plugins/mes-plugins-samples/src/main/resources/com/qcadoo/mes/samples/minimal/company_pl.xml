@@ -25,5 +25,5 @@
 
 -->
 <company>
-	<row COMPANYFULLNAME="Qcadoo Limited Sp. z o.o." TAX="676-241-35-25" STREET="Basztowa" HOUSE="4" FLAT="4" ZIPCODE="31-134" CITY="Kraków" STATE="małopolskie" COUNTRY="Polska" EMAIL="welcome@qcadoo.com" ADDRESSWWW="http://www.qcadoo.com/" PHONE="+48 12 633 02 03" />
+	<row COMPANYFULLNAME="Qcadoo Limited Sp. z o.o." TAX="676-241-35-25" STREET="Basztowa" HOUSE="4" FLAT="4" ZIPCODE="31-134" CITY="Kraków" STATE="małopolskie" COUNTRY="Polska" EMAIL="welcome@qcadoo.com" ADDRESSWWW="http://www.qcadoo.com/" PHONE="+48 12 633 02 03" OWNER="true" />
 </company>
