@@ -223,20 +223,20 @@ public class MinimalSamplesLoaderModule extends Module {
         Entity shift = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_SHIFT).create();
 
         shift.setField("name", values.get("name"));
-        shift.setField("mondayWorking", values.get("mondayWorking"));
-        shift.setField("mondayHours", values.get("mondayHours"));
-        shift.setField("tuesdayWorking", values.get("tuesdayWorking"));
-        shift.setField("tuesdayHours", values.get("tuesdayHours"));
-        shift.setField("wensdayWorking", values.get("wensdayWorking"));
-        shift.setField("wensdayHours", values.get("wensdayHours"));
-        shift.setField("thursdayWorking", values.get("thursdayWorking"));
-        shift.setField("thursdayHours", values.get("thursdayHours"));
-        shift.setField("fridayWorking", values.get("fridayWorking"));
-        shift.setField("fridayHours", values.get("fridayHours"));
-        shift.setField("saturdayWorking", values.get("saturdayWorking"));
-        shift.setField("saturdayHours", values.get("saturdayHours"));
-        shift.setField("sundayWorking", values.get("sundayWorking"));
-        shift.setField("sundayHours", values.get("sundayHours"));
+        shift.setField("mondayWorking", values.get("mondayworking"));
+        shift.setField("mondayHours", values.get("mondayhours"));
+        shift.setField("tuesdayWorking", values.get("tuesdayworking"));
+        shift.setField("tuesdayHours", values.get("tuesdayhours"));
+        shift.setField("wensdayWorking", values.get("wensdayworking"));
+        shift.setField("wensdayHours", values.get("wensdayhours"));
+        shift.setField("thursdayWorking", values.get("thursdayworking"));
+        shift.setField("thursdayHours", values.get("thursdayhours"));
+        shift.setField("fridayWorking", values.get("fridayworking"));
+        shift.setField("fridayHours", values.get("fridayhours"));
+        shift.setField("saturdayWorking", values.get("saturdayworking"));
+        shift.setField("saturdayHours", values.get("saturdayhours"));
+        shift.setField("sundayWorking", values.get("sundayworking"));
+        shift.setField("sundayHours", values.get("sundayhours"));
 
         shift = shift.getDataDefinition().save(shift);
 
