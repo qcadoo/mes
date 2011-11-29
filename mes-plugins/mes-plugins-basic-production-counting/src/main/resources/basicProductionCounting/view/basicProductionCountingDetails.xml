@@ -84,9 +84,9 @@
  	</component>
 
 	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
-			method="getProductNameFromCounting" />
+<!-- 		<beforeRender -->
+<!-- 			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService" -->
+<!-- 			method="getProductNameFromCounting" /> -->
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
 			method="fillFieldsCurrency" />

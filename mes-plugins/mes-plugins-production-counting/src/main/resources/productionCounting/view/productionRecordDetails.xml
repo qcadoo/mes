@@ -1,58 +1,53 @@
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.1.0
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.1.0 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view name="productionRecordDetails" modelName="productionRecord"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
+			<!-- <group name="status"> -->
+			<!-- <bigButton name="accept" icon="startIcon24.png" state="disabled"> -->
+			<!-- <script> -->
+			<!-- <![CDATA[ -->
+			<!-- this.addOnChangeListener({ -->
+			<!-- onClick: function() { -->
+			<!-- if (this.state == "accept") { -->
+			<!-- if (window.confirm("#{translate(productionCounting.productionRecord.window.ribbon.status.accept.confirm)}")) 
+				{ -->
+			<!-- if(window.canClose()) { -->
+			<!-- #{form}.performEvent('changeRecordStateToAccepted', []); -->
+			<!-- } -->
+			<!-- }; -->
+			<!-- } else if (this.state == "declined") { -->
+			<!-- if (window.confirm("#{translate(productionCounting.productionRecord.window.ribbon.status.declined.confirm)}")) 
+				{ -->
+			<!-- if(window.canClose()) { -->
+			<!-- #{form}.performEvent('changeRecordStateToDeclined', []); -->
+			<!-- } -->
+			<!-- }; -->
+			<!-- } -->
+			<!-- } -->
+			<!-- }); -->
+			<!-- ]]> -->
+			<!-- </script> -->
+			<!-- </bigButton> -->
+			<!-- </group> -->
 			<group name="status">
-				<bigButton name="accept" icon="startIcon24.png" state="disabled">
-					<script>
-						<![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-									if (this.state == "accept") {
-										if (window.confirm("#{translate(productionCounting.productionRecord.window.ribbon.status.accept.confirm)}")) {
-											if(window.canClose()) {
-												#{form}.performEvent('changeRecordStateToAccepted', []);
-											}
-										};
-									} else if (this.state == "declined") {
-										if (window.confirm("#{translate(productionCounting.productionRecord.window.ribbon.status.declined.confirm)}")) {
-											if(window.canClose()) {
-												#{form}.performEvent('changeRecordStateToDeclined', []);
-											}
-										};
-									}
-									}
-									});
-							]]>
-					</script>
-				</bigButton>
+				<smallButton name="acceptRecord" icon="startIcon16.png" state="disabled"
+					action="#{state}.changeRecordState(acceptRecord)" />
+				<smallButton name="cancelRecord" icon="deleteIcon16.png"
+					state="disabled" action="#{state}.changeRecordState(cancelRecord)" />
 			</group>
 		</ribbon>
 		<windowTab name="mainTab">
@@ -60,51 +55,68 @@
 				reference="form">
 				<script>
 					<![CDATA[
-						var save = #{window}.getRibbonItem("actions.save");
-						var saveBack = #{window}.getRibbonItem("actions.saveBack");
-						var saveNew = #{window}.getRibbonItem("actions.saveNew");
-						var cancel = #{window}.getRibbonItem("actions.cancel");
-						var del = #{window}.getRibbonItem("actions.delete");
-						var accept = #{window}.getRibbonItem("status.accept");
+<!-- 						var save = #{window}.getRibbonItem("actions.save"); -->
+<!-- 						var saveBack = #{window}.getRibbonItem("actions.saveBack"); -->
+<!-- 						var saveNew = #{window}.getRibbonItem("actions.saveNew"); -->
+<!-- 						var cancel = #{window}.getRibbonItem("actions.cancel"); -->
+<!-- 						var del = #{window}.getRibbonItem("actions.delete"); -->
+<!-- 						var accept = #{window}.getRibbonItem("status.accept"); -->
 						
 						this.addOnChangeListener({
-							onSetValue: function(value) {
-								if (! value || ! value.content) {
-									return;
+<!-- 							onSetValue: function(value) { -->
+<!-- 								if (! value || ! value.content) { -->
+<!-- 									return; -->
+<!-- 								} -->
+<!-- 								save.enable(); -->
+<!-- 								saveBack.enable(); -->
+<!-- 								saveNew.enable(); -->
+<!-- 								if (! value.content.entityId) { -->
+<!-- 									cancel.disable(); -->
+<!-- 									del.disable(); -->
+<!-- 									accept.disable(); -->
+<!-- 									return; -->
+<!-- 								} -->
+<!-- 								cancel.enable(); -->
+<!-- 								del.enable(); -->
+<!-- 								var state = #{state}.getValue().content.value;  -->
+<!-- 								if (!state) { -->
+<!-- 									return; -->
+<!-- 								} -->
+<!-- 								QCD.info(state); -->
+<!-- 								if (state == "01draft") { -->
+<!-- 									accept.enable(); -->
+<!-- 									accept.state = "accept"; -->
+<!-- 									accept.setLabel("#{translate(productionCounting.productionRecord.ribbon.status.accept)}"); -->
+<!-- 									accept.setIcon('startIcon24.png'); -->
+<!-- 								} else if (state == "02accepted") {  -->
+<!-- 									accept.enable(); -->
+<!-- 									accept.state = "declined"; -->
+<!-- 									accept.setLabel("#{translate(productionCounting.productionRecord.ribbon.status.declined)}"); -->
+<!-- 									accept.setIcon('deleteIcon24.png'); -->
+<!-- 								}else if (state == "03declined") { -->
+<!-- 									save.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}"); -->
+<!-- 									saveBack.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}"); -->
+<!-- 									saveNew.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}"); -->
+<!-- 									cancel.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}"); -->
+<!-- 									del.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}"); -->
+<!-- 									accept.disable(); -->
+<!-- 								} -->
+<!-- 							} -->
+							onSetValue: function() {
+								var itemNames = ["status.acceptRecord", "status.cancelRecord"];
+								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
+								
+								for (var elementKey in itemNames) {
+									var ribbonItem = #{window}.getRibbonItem(itemNames[elementKey]);
+									if (isSaved) {
+										ribbonItem.enable();
+									} else {
+										ribbonItem.disable();
+									}
 								}
-								save.enable();
-								saveBack.enable();
-								saveNew.enable();
-								if (! value.content.entityId) {
-									cancel.disable();
-									del.disable();
-									accept.disable();
-									return;
-								}
-								cancel.enable();
-								del.enable();
-								var state = #{state}.getValue().content.value; 
-								if (!state) {
-									return;
-								}
-								QCD.info(state);
-								if (state == "01draft") {
-									accept.enable();
-									accept.state = "accept";
-									accept.setLabel("#{translate(productionCounting.productionRecord.ribbon.status.accept)}");
-									accept.setIcon('startIcon24.png');
-								} else if (state == "02accepted") { 
-									accept.enable();
-									accept.state = "declined";
-									accept.setLabel("#{translate(productionCounting.productionRecord.ribbon.status.declined)}");
-									accept.setIcon('deleteIcon24.png');
-								}else if (state == "03declined") {
-									save.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}");
-									saveBack.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}");
-									saveNew.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}");
-									cancel.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}");
-									del.disable("#{translate(productionCounting.productionRecord.ribbon.message.stateIsDeclined)}");
-									accept.disable();
+								
+								if (isSaved && #{state}.getValue().content && #{state}.getValue().content.value) {
+									#{state}.updateRibbon(#{state}.getValue().content.value);
 								}
 							}
 						});
@@ -115,10 +127,99 @@
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="lastRecord" field="lastRecord"
 							reference="lastRecord" />
-							</layoutElement>
+					</layoutElement>
 					<layoutElement column="2" row="5">
+						<!-- <component type="select" name="state" field="state" -->
+						<!-- reference="state" defaultVisible="false" /> -->
 						<component type="select" name="state" field="state"
-							 reference="state" defaultVisible="false"/>
+							reference="state" hasLabel="false" defaultVisible="false">
+							<script>
+								<![CDATA[
+									this.addOnChangeListener({
+										onSetValue: function(newValue) {
+											if (!newValue || !newValue.content) {
+												return;
+											}
+											updateRibbon(newValue.content.value);
+											toggleEditable(newValue.content.value);
+										}
+									});
+									
+									var onSetValueListener = {
+										onSetValue: function(value) {
+											toggleEditable(#{state}.getValue().content.value);
+										}
+									};
+									
+									
+									this.changeRecordState = function(eventPerformer, ribbonItemName) {
+										var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
+										var newState = ribbonItem.forState;
+										if (window.confirm(ribbonItem.confirmMessage)) {
+											#{form}.fireEvent(eventPerformer, 'changeRecordState', [newState]);
+										}
+									}
+									
+									function toggleEditable(state) {
+										var enabled = state == "01draft";
+										#{window}.setEnabled(enabled, true);
+																				
+										var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", 
+											"actions.cancel"];
+										for (var elementKey in toggleRibbonItems) {
+											var ribbonItemName = toggleRibbonItems[elementKey];
+											var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
+											
+											if (!ribbonItem) {
+												continue;
+											}
+											
+											if (enabled) {
+												ribbonItem.enable();
+											} else {
+												ribbonItem.disable();
+<!-- 												ribbonItem.disable("#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}"); -->
+											}
+										}
+										if (!enabled) {
+											#{window}.getRibbonItem("actions.delete").enable();
+										} else {
+											#{window}.getRibbonItem("actions.delete").disable();
+										}
+									}
+									
+									function updateRibbon(state) {
+										var acceptState = #{window}.getRibbonItem("status.acceptRecord");
+										var cancelState = #{window}.getRibbonItem("status.cancelRecord");
+											
+										acceptState.disable();
+										acceptState.forState="02accepted";
+<!-- 										acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}"; -->
+
+										cancelState.disable();
+										cancelState.forState="03declined";
+<!-- 										cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.declined)}"; -->
+<!-- 										cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.declineTechnology)}"); -->
+										
+										if (state == "01draft") {
+											acceptState.enable();
+											cancelState.enable();
+										} else if (state == "02accepted") {
+											cancelState.enable();
+											cancelState.forState="04outdated";
+<!-- 											cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}"; -->
+<!-- 											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}"); -->
+										} else if (state == "03declined") {
+										} else if (state == "04outdated") {
+<!-- 											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}"); -->
+										} else {
+											cancelState.enable();
+										}
+									}
+									this.updateRibbon = updateRibbon;
+								]]>
+							</script>
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="number" field="number"
@@ -137,7 +238,9 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService" method="disableFieldsIfBasicSelected"/>
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+								method="disableFieldsIfBasicSelected" />
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 								method="clearFields" />
@@ -264,10 +367,13 @@
 				<listener event="save"
 					class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 					method="closeOrder" />
-				<listener event="changeRecordStateToAccepted"
-					class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService" method="changeRecordStateToAccepted" />
-				<listener event="changeRecordStateToDeclined"
-					class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService" method="changeRecordStateToDeclined" />
+<!-- 				<listener event="changeRecordStateToAccepted" -->
+<!-- 					class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService" -->
+<!-- 					method="changeRecordStateToAccepted" /> -->
+<!-- 				<listener event="changeRecordStateToDeclined" -->
+<!-- 					class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService" -->
+<!-- 					method="changeRecordStateToDeclined" /> -->
+<listener event="changeRecordState" class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService" method="changeRecordState"/>
 			</component>
 		</windowTab>
 	</component>

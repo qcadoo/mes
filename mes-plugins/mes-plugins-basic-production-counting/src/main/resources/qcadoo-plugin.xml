@@ -29,6 +29,7 @@
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report"
+	xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
@@ -41,7 +42,9 @@
        http://schema.qcadoo.org/modules/report
        http://schema.qcadoo.org/modules/report.xsd
        http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>MES - Basic Production Counting</name>
@@ -76,26 +79,27 @@
 			component="form" event="showProductionCounting"
 			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
 			method="showProductionCounting" />
-		<view:view-hook view="orderDetails" type="beforeRender"
-			plugin="orders"
-			class="com.qcadoo.mes.basicProductionCounting.ProductionRecordsService"
-			method="getProductsFromOrder" />
+<!-- 		<view:view-hook view="orderDetails" type="beforeRender" -->
+<!-- 			plugin="orders" -->
+<!-- 			class="com.qcadoo.mes.basicProductionCounting.ProductionRecordsService" -->
+<!-- 			method="getProductsFromOrder" /> -->
 		<view:view-hook view="orderDetails" type="beforeRender"
 			plugin="orders"
 			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
 			method="disabledButtonForAppropriateState" />
-		<view:view-hook view="orderDetails" type="beforeRender"
-			plugin="orders"
-			class="com.qcadoo.mes.basicProductionCounting.ProductionRecordsService"
-			method="generateUsedProducts" />
-		<view:view-hook view="orderDetails" type="beforeRender"
-			plugin="orders"
-			class="com.qcadoo.mes.basicProductionCounting.ProductionRecordsService"
-			method="setProducedQuantity" />
+<!-- 		<view:view-hook view="orderDetails" type="beforeRender" -->
+<!-- 			plugin="orders" -->
+<!-- 			class="com.qcadoo.mes.basicProductionCounting.ProductionRecordsService" -->
+<!-- 			method="generateUsedProducts" /> -->
+<!-- 		<view:view-hook view="orderDetails" type="beforeRender" -->
+<!-- 			plugin="orders" -->
+<!-- 			class="com.qcadoo.mes.basicProductionCounting.ProductionRecordsService" -->
+<!-- 			method="setProducedQuantity" /> -->
 		<view:view resource="view/basicProductionCountingList.xml" />
 		<view:view resource="view/basicProductionCountingDetails.xml" />
 
 		<view:resource uri="public/**/*" />
+		<custom:custom class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingOnStartupService"/>
 	</modules>
 
 </plugin>

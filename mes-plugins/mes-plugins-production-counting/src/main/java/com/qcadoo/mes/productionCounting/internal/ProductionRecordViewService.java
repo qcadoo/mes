@@ -76,9 +76,16 @@ public class ProductionRecordViewService {
 
     public void initializeRecordDetailsView(final ViewDefinitionState view) {
         FormComponent recordForm = (FormComponent) view.getComponentByReference("form");
+
+        FieldComponent status = (FieldComponent) view.getComponentByReference("state");
         if (recordForm.getEntityId() == null) {
+            status.setFieldValue("01draft");
+            status.requestComponentUpdateState();
             return;
         }
+        Entity record = recordForm.getEntity().getDataDefinition().get(recordForm.getEntityId());
+        status.setFieldValue(record.getField("state"));
+        status.requestComponentUpdateState();
 
         Entity order = getOrderFromLookup(view);
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
