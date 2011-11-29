@@ -37,20 +37,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.jdom.Attribute;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.model.api.DataDefinition;
@@ -77,7 +74,7 @@ public class SamplesLoaderModule extends Module {
     private static final String[] ACTIVE_CURRENCY_ATTRIBUTES = new String[] { "code" };
 
     private static final String[] COMPANY_ATTRIBUTES = new String[] { "companyFullName", "tax", "street", "house", "flat",
-            "zipCode", "city", "state", "country", "email", "addressWww", "phone" };
+            "zipCode", "city", "state", "country", "email", "addressWww", "phone", "owner" };
 
     private static final String[] PRODUCT_ATTRIBUTES = new String[] { "ean", "name", "product_nr", "batch", "costForNumber",
             "nominalCost", "lastPurchaseCost", "averageCost", "typeOfProduct", "unit" };
@@ -193,41 +190,36 @@ public class SamplesLoaderModule extends Module {
         LOG.info("Loading test data from " + type + "_" + locale + ".xml ...");
 
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(getXmlFile(type));
-            doc.getDocumentElement().normalize();
+            SAXBuilder builder = new SAXBuilder();
+            Document document = builder.build(getXmlFile(type));
+            Element rootNode = document.getRootElement();
+            List<Element> list = rootNode.getChildren("row");
 
-            NodeList nodeLst = doc.getElementsByTagName("row");
+            for (int i = 0; i < list.size(); i++) {
 
-            for (int s = 0; s < nodeLst.getLength(); s++) {
-                readData(attributes, type, nodeLst, s);
+                Element node = list.get(i);
+                List<Attribute> listOfAtribute = node.getAttributes();
+                readData(listOfAtribute, type, node);
             }
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
-        } catch (ParserConfigurationException e) {
-            LOG.error(e.getMessage(), e);
-        } catch (SAXException e) {
+        } catch (JDOMException e) {
             LOG.error(e.getMessage(), e);
         }
+
     }
 
-    private void readData(final String[] attributes, final String type, final NodeList nodeLst, final int s) {
+    private void readData(final List<Attribute> attributes, final String type, final Element node) {
         Map<String, String> values = new HashMap<String, String>();
-        Node fstNode = nodeLst.item(s);
 
-        for (String attribute : attributes) {
-            if (fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)) != null) {
-                String value = fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)).getNodeValue();
-                values.put(attribute, value);
-            }
+        for (int i = 0; i < attributes.size(); i++) {
+            values.put(attributes.get(i).getName().toLowerCase(), attributes.get(i).getValue());
         }
 
         if ("activeCurrency".equals(type)) {
             setCurrency(values);
         } else if ("company".equals(type)) {
             addCompany(values);
-            addManufacturer(values);
         } else if ("products".equals(type)) {
             addProduct(values);
         } else if ("orders".equals(type)) {
@@ -274,7 +266,7 @@ public class SamplesLoaderModule extends Module {
                 + " street " + values.get("street") + " house " + values.get("house") + " flat " + values.get("flat")
                 + " zipCode " + values.get("zipCode") + " city " + values.get("city") + " state " + values.get("state")
                 + " country " + values.get("country") + " email " + values.get("email") + " addressWww "
-                + values.get("addressWww") + " phone " + values.get("phone"));
+                + values.get("addressWww") + " phone " + values.get("phone") + " owner " + values.get("owner"));
         company.setField("companyFullName", values.get("companyFullName"));
         company.setField("tax", values.get("tax"));
         company.setField("street", values.get("street"));
@@ -285,8 +277,9 @@ public class SamplesLoaderModule extends Module {
         company.setField("state", values.get("state"));
         company.setField("country", values.get("country"));
         company.setField("email", values.get("email"));
-        company.setField("addressWww", values.get("addressWww"));
+        company.setField("addressWww", values.get("addresswww"));
         company.setField("phone", values.get("phone"));
+        company.setField("owner", values.get("owner"));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test company item {company=" + company.getField("companyFullName") + "}");
@@ -297,39 +290,7 @@ public class SamplesLoaderModule extends Module {
         if (!company.isValid()) {
             throw new IllegalStateException("Saved entity has validation errors");
         }
-    }
 
-    private void addManufacturer(final Map<String, String> values) {
-        Entity company = dataDefinitionService.get("basic", "manufacturer").create();
-
-        LOG.debug("id: " + values.get("id") + " companyFullName " + values.get("companyFullName") + " tax " + values.get("tax")
-                + " street " + values.get("street") + " house " + values.get("house") + " flat " + values.get("flat")
-                + " zipCode " + values.get("zipCode") + " city " + values.get("city") + " state " + values.get("state")
-                + " country " + values.get("country") + " email " + values.get("email") + " addressWww "
-                + values.get("addressWww") + " phone " + values.get("phone") + " owner true");
-        company.setField("companyFullName", values.get("companyFullName"));
-        company.setField("tax", values.get("tax"));
-        company.setField("street", values.get("street"));
-        company.setField("house", values.get("house"));
-        company.setField("flat", values.get("flat"));
-        company.setField("zipCode", values.get("zipCode"));
-        company.setField("city", values.get("city"));
-        company.setField("state", values.get("state"));
-        company.setField("country", values.get("country"));
-        company.setField("email", values.get("email"));
-        company.setField("addressWww", values.get("addressWww"));
-        company.setField("phone", values.get("phone"));
-        company.setField("owner", true);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test company item {company=" + company.getField("companyFullName") + "}");
-        }
-
-        company = dataDefinitionService.get("basic", "manufacturer").save(company);
-
-        if (!company.isValid()) {
-            throw new IllegalStateException("Saved entity has validation errors");
-        }
     }
 
     private void addMachine(final Map<String, String> values) {
@@ -381,21 +342,21 @@ public class SamplesLoaderModule extends Module {
         operation.setField("number", values.get("number"));
         operation.setField("tpz", values.get("tpz"));
         operation.setField("tj", values.get("tj"));
-        operation.setField("productionInOneCycle", values.get("productionInOneCycle"));
+        operation.setField("productionInOneCycle", values.get("productioninonecycle"));
         operation.setField("countRealized", values.get("countRealized"));
-        operation.setField("machineUtilization", values.get("machineUtilization"));
-        operation.setField("laborUtilization", values.get("laborUtilization"));
-        operation.setField("countMachineOperation", values.get("countMachine"));
+        operation.setField("machineUtilization", values.get("machineutilization"));
+        operation.setField("laborUtilization", values.get("laborutilization"));
+        operation.setField("countMachineOperation", values.get("countmachine"));
         operation.setField("countRealizedOperation", "01all");
-        operation.setField("timeNextOperation", values.get("timeNextOperation"));
+        operation.setField("timeNextOperation", values.get("timenextoperation"));
         operation.setField("machine", getMachine(values.get("number")));
         operation.setField("staff", getRandomStaff());
 
         if (isEnabled("costNormsForOperation")) {
-            operation.setField("pieceworkCost", values.get("pieceworkCost"));
-            operation.setField("machineHourlyCost", values.get("machineHourlyCost"));
-            operation.setField("laborHourlyCost", values.get("laborHourlyCost"));
-            operation.setField("numberOfOperations", values.get("numberOfOperations"));
+            operation.setField("pieceworkCost", values.get("pieceworkcost"));
+            operation.setField("machineHourlyCost", values.get("machinehourlycost"));
+            operation.setField("laborHourlyCost", values.get("laborhourlycost"));
+            operation.setField("numberOfOperations", values.get("numberofoperations"));
         }
 
         if (LOG.isDebugEnabled()) {
@@ -413,20 +374,20 @@ public class SamplesLoaderModule extends Module {
         Entity shift = dataDefinitionService.get("basic", "shift").create();
 
         shift.setField("name", values.get("name"));
-        shift.setField("mondayWorking", values.get("mondayWorking"));
-        shift.setField("mondayHours", values.get("mondayHours"));
-        shift.setField("tuesdayWorking", values.get("tuesdayWorking"));
-        shift.setField("tuesdayHours", values.get("tuesdayHours"));
-        shift.setField("wensdayWorking", values.get("wensdayWorking"));
-        shift.setField("wensdayHours", values.get("wensdayHours"));
-        shift.setField("thursdayWorking", values.get("thursdayWorking"));
-        shift.setField("thursdayHours", values.get("thursdayHours"));
-        shift.setField("fridayWorking", values.get("fridayWorking"));
-        shift.setField("fridayHours", values.get("fridayHours"));
-        shift.setField("saturdayWorking", values.get("saturdayWorking"));
-        shift.setField("saturdayHours", values.get("saturdayHours"));
-        shift.setField("sundayWorking", values.get("sundayWorking"));
-        shift.setField("sundayHours", values.get("sundayHours"));
+        shift.setField("mondayWorking", values.get("mondayworking"));
+        shift.setField("mondayHours", values.get("mondayhours"));
+        shift.setField("tuesdayWorking", values.get("tuesdayworking"));
+        shift.setField("tuesdayHours", values.get("tuesdayhours"));
+        shift.setField("wensdayWorking", values.get("wensdayworking"));
+        shift.setField("wensdayHours", values.get("wensdayhours"));
+        shift.setField("thursdayWorking", values.get("thursdayworking"));
+        shift.setField("thursdayHours", values.get("thursdayhours"));
+        shift.setField("fridayWorking", values.get("fridayworking"));
+        shift.setField("fridayHours", values.get("fridayhours"));
+        shift.setField("saturdayWorking", values.get("saturdayworking"));
+        shift.setField("saturdayHours", values.get("saturdayhours"));
+        shift.setField("sundayWorking", values.get("sundayworking"));
+        shift.setField("sundayHours", values.get("sundayhours"));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test shift item {shift=" + shift.getField("name") + "}");
@@ -455,16 +416,16 @@ public class SamplesLoaderModule extends Module {
         if (!values.get("product_nr").isEmpty()) {
             product.setField("number", values.get("product_nr"));
         }
-        if (!values.get("typeOfProduct").isEmpty()) {
-            product.setField("typeOfMaterial", values.get("typeOfProduct"));
+        if (!values.get("typeofproduct").isEmpty()) {
+            product.setField("typeOfMaterial", values.get("typeofproduct"));
         }
         product.setField("unit", values.get("unit"));
 
         if (isEnabled("costNormsForProduct")) {
-            product.setField("costForNumber", values.get("costForNumber"));
-            product.setField("nominalCost", values.get("nominalCost"));
-            product.setField("lastPurchaseCost", values.get("lastPurchaseCost"));
-            product.setField("averageCost", values.get("averageCost"));
+            product.setField("costForNumber", values.get("costfornumber"));
+            product.setField("nominalCost", values.get("nominalcost"));
+            product.setField("lastPurchaseCost", values.get("lastpurchasecost"));
+            product.setField("averageCost", values.get("averagecost"));
         }
 
         product = dataDefinitionService.get("basic", "product").save(product);
@@ -614,11 +575,8 @@ public class SamplesLoaderModule extends Module {
         order.setField("name",
                 (values.get("name").isEmpty() || values.get("name") == null) ? values.get("order_nr") : values.get("name"));
         order.setField("number", values.get("order_nr"));
-        order.setField("plannedQuantity", values.get("quantity_scheduled").isEmpty() ? new BigDecimal(100 * RANDOM.nextDouble())
-                : new BigDecimal(values.get("quantity_scheduled")));
-        if (Integer.parseInt(order.getField("plannedQuantity").toString()) == 0) {
-            order.setField("plannedQuantity", null);
-        }
+        order.setField("plannedQuantity", values.get("quantity_scheduled").isEmpty() ? new BigDecimal(
+                100 * RANDOM.nextDouble() + 1) : new BigDecimal(values.get("quantity_scheduled")));
 
         order.setField("state", "01pending");
 
@@ -828,12 +786,12 @@ public class SamplesLoaderModule extends Module {
         component.setField("entityType", "operation");
         component.setField("tpz", operation.getField("tpz"));
         component.setField("tj", operation.getField("tj"));
-        component.setField("machineUtilization", operation.getField("machineUtilization"));
-        component.setField("laborUtilization", operation.getField("laborUtilization"));
-        component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
-        component.setField("countRealized", operation.getField("countRealizedOperation"));
-        component.setField("countMachine", operation.getField("countMachineOperation"));
-        component.setField("timeNextOperation", operation.getField("timeNextOperation"));
+        component.setField("machineUtilization", operation.getField("machineutilization"));
+        component.setField("laborUtilization", operation.getField("laborutilization"));
+        component.setField("productionInOneCycle", operation.getField("productioninonecycle"));
+        component.setField("countRealized", operation.getField("countrealizedoperation"));
+        component.setField("countMachine", operation.getField("countmachineoperation"));
+        component.setField("timeNextOperation", operation.getField("timenextoperation"));
 
         component = dataDefinitionService.get("technologies", "technologyOperationComponent").save(component);
         if (!component.isValid()) {
