@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -114,11 +115,8 @@
 			<artifactId>mes-plugins-cost-norms-for-product</artifactId>
 			<version>1.1.1-SNAPSHOT</version>
 		</dependency>
-		<!-- dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-commercial-plugins-integration-erp</artifactId>
-			<version>0.4.4-SNAPSHOT</version>
-		</dependency -->
+		<!-- dependency> <groupId>com.qcadoo.mes</groupId> <artifactId>mes-commercial-plugins-integration-erp</artifactId> 
+			<version>0.4.4-SNAPSHOT</version> </dependency -->
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-cost-norms-for-operation</artifactId>
@@ -151,6 +149,11 @@
 		</dependency>
 
 		<!-- TODO develop purpose only -->
+		<dependency> 
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-commercial-plugins-advanced-genealogy</artifactId>
+			<version>1.1.1-SNAPSHOT</version>
+		</dependency>
 		<!--<dependency> <groupId>com.qcadoo.mes</groupId> <artifactId>mes-commercial-plugins-integration-commons</artifactId> 
 			<version>1.0.0</version> </dependency> <dependency> <groupId>com.qcadoo.mes</groupId> 
 			<artifactId>mes-commercial-plugins-integration-enova</artifactId> <version>1.0.0</version> 
@@ -283,7 +286,8 @@
 						<configuration>
 							<tasks>
 								<mkdir dir="${basedir}/target/classes" />
-								<exec command="git rev-list --max-count=1 --all" outputproperty="build.revision" />
+								<exec command="git rev-list --max-count=1 --all"
+									outputproperty="build.revision" />
 								<tstamp>
 									<format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" />
 								</tstamp>
@@ -292,9 +296,11 @@
 									buildApplicationName = Qcadoo MES
 									buildApplicationVersion = ${project.version}
 									buildFrameworkVersion = ${qcadoo.version}
-									buildTime = ${build.time}
+									buildTime =
+									${build.time}
 									buildNumber = ${build.number}
-									buildRevision = ${build.revision}
+									buildRevision =
+									${build.revision}
 								</echo>
 							</tasks>
 						</configuration>
@@ -377,7 +383,8 @@
 								<phase>deploy</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/Users/tomcat/deploy/${profile.name}.zip" />
+										<copy file="${basedir}/target/${project.artifactId}.zip"
+											tofile="/Users/tomcat/deploy/${profile.name}.zip" />
 									</target>
 								</configuration>
 								<goals>
