@@ -32,6 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Controller
 public class TechnologyController {
@@ -45,7 +46,7 @@ public class TechnologyController {
         mav.setViewName("technologiesTechnologyDetailsPdfView");
         mav.addObject("id", id);
         mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .uniqueResult());
+                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
         return mav;
     }
 

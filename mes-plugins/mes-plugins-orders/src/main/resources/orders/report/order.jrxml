@@ -10,44 +10,54 @@
 	</parameter>
 	<parameter name="EntityIds" class="java.util.List"/>
 	<queryString language="hql">
-		<![CDATA[select
-			 company.companyFullName as companyFullName,
-			 company.street as street,
-			 company.house as house,
-			 company.flat as flat,
-			 company.zipCode as zipCode,
-			 company.city as city,
-			 company.country as country,
-			 company.email as email,
-			 company.phone as phone,
-			 orders.number as orders_order_number,
-		     orders.name as orders_order_name,
-		     orders.dateFrom as orders_order_datefrom,
-		     orders.dateTo as orders_order_dateto,
-		     orders.state as orders_order_state,
-		     orders.plannedQuantity as orders_order_plannedquantity,
-		     orders.doneQuantity as orders_order_donequantity,
-		     orders.effectiveDateFrom as orders_order_effectivedatefrom,
-		     orders.effectiveDateTo as orders_order_effectivedateto,
-		     technology.name as technologies_technology_name,
-			product.name as basic_product_name,
+		<![CDATA[
+			SELECT
+			company.companyFullName AS companyFullName,
+			company.street AS street,
+			company.house AS house,
+			company.flat AS flat,
+			company.zipCode AS zipCode,
+			company.city AS city,
+			company.country AS country,
+			company.email AS email,
+			company.phone AS phone,
+			orders.number AS orders_order_number,
+			orders.name AS orders_order_name,
+			orders.dateFrom AS orders_order_datefrom,
+			orders.dateTo AS orders_order_dateto,
+			orders.state AS orders_order_state,
+			orders.plannedQuantity AS orders_order_plannedquantity,
+			orders.doneQuantity AS orders_order_donequantity,
+			orders.effectiveDateFrom AS orders_order_effectivedatefrom,
+			orders.effectiveDateTo AS orders_order_effectivedateto,
+			technology.name AS technologies_technology_name,
+			product.name AS basic_product_name,
 			(
-				select 
-					logging.worker as startWorker 
-				from 
-					orders.loggings as logging
-				where
-					logging.previousState = '02accepted' and logging.currentState = '03inProgress'
-			) as orders_order_startworker,
+				SELECT 
+					logging.worker AS startWorker 
+				FROM 
+					orders.loggings AS logging
+				WHERE
+					logging.previousState = '02accepted' AND logging.currentState = '03inProgress'
+			) AS orders_order_startworker,
 			(
-				select 
-					logging.worker as endWorker 
-				from 
-					orders.loggings as logging
-				where
+				SELECT 
+					logging.worker AS endWorker 
+				FROM 
+					orders.loggings AS logging
+				WHERE
 					logging.currentState = '04completed'
-			) as orders_order_endworker
-			from com.qcadoo.model.beans.basic.BasicCompany as company, com.qcadoo.model.beans.orders.OrdersOrder as orders left outer join orders.technology as technology left outer join orders.product as product where orders.id in ($P{EntityIds})]]>
+			) AS orders_order_endworker
+			FROM 
+			com.qcadoo.model.beans.basic.BasicCompany AS company, 
+			com.qcadoo.model.beans.orders.OrdersOrder AS orders 
+			LEFT OUTER JOIN
+			orders.technology AS technology 
+			LEFT OUTER JOIN
+			orders.product AS product 
+			WHERE 
+			orders.id IN ($P{EntityIds}) AND company.owner = true
+			]]>
 	</queryString>
 	<field name="companyFullName" class="java.lang.String"/>
 	<field name="street" class="java.lang.String"/>

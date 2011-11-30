@@ -96,17 +96,18 @@
 		
 		<menu:menu-item-url name="systemParameters"
 			category="administration" url="/parameters.html" />
-<!-- 		<menu:menu-item-url name="companyDetails" -->
-<!-- 			category="administration" url="/companyView.html"/> -->
-
+			
+		<menu:menu-item-url name="company"
+			category="administration" url="/companyView.html" />
+			
 		<view:view resource="view/companiesList.xml" />
 		<view:view resource="view/companyDetails.xml" />
 		<view:view resource="view/contractorsList.xml" />
 		<view:view resource="view/contractorDetails.xml" />
 		<view:view resource="view/staffsList.xml" />
 		<view:view resource="view/staffDetails.xml" />
-		<view:view resource="view/shiftDetails.xml"/>
 		<view:view resource="view/shiftsList.xml"/>
+		<view:view resource="view/shiftDetails.xml"/>
 		<view:view resource="view/shiftTimetableExceptionDetails.xml" />
 		<view:view resource="view/productsList.xml" />
 		<view:view resource="view/productDetails.xml" />
@@ -114,10 +115,11 @@
 		<view:view resource="view/productSubstituteComponentDetails.xml" />
 		<view:view resource="view/machinesList.xml" />
 		<view:view resource="view/machineDetails.xml" />
-
+		
 		<view:view resource="view/parameters.xml" />
-		<view:view resource="view/companyDetails.xml"/>
-
+		
+		<view:view resource="view/companyDetailsInAdministration.xml" />
+				
 		<view:view-tab resource="view/currencyDetails.xml" />
 		
 		<view:view-hook view="parameters" type="beforeRender" plugin="basic" class="com.qcadoo.mes.basic.CurrencyViewService" method="applyCurrentCurrency"/>

@@ -43,6 +43,7 @@ import com.qcadoo.mes.productionCounting.internal.print.ProductionCountingPdfSer
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -212,7 +213,7 @@ public class ProductionCountingService {
             throws IOException, DocumentException {
         Entity productionCountingWithFileName = productionCountingPdfService.updateFileName(productionCounting);
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .uniqueResult();
+                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         productionCountingPdfService.generateDocument(productionCountingWithFileName, company, state.getLocale());
     }
 
