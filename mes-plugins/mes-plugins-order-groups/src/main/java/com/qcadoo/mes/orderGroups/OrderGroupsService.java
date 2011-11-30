@@ -31,8 +31,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -187,17 +185,15 @@ public class OrderGroupsService {
             return;
         }
 
-        JSONObject context = new JSONObject();
-        JSONObject gridOptions = new JSONObject();
         Map<String, String> filters = Maps.newHashMap();
         filters.put(ORDER_GROUP_FIELD, orderGroupName);
-        try {
-            gridOptions.put("filters", filters);
-            gridOptions.put("filtersEnabled", true);
-            context.put("grid.options", gridOptions);
-        } catch (JSONException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-        view.redirectTo("/page/orders/ordersList.html?context=" + context.toString(), false, true);
+
+        Map<String, Object> gridOptions = Maps.newHashMap();
+        gridOptions.put("filters", filters);
+
+        Map<String, Object> componentsOptions = Maps.newHashMap();
+        componentsOptions.put("grid.options", gridOptions);
+
+        view.redirectTo("/page/orders/ordersList.html", false, true, componentsOptions);
     }
 }
