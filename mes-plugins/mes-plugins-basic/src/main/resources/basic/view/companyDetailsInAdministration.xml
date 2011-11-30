@@ -26,53 +26,16 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="companyDetails"
+	name="companyDetailsInAdministration"
 	modelName="company">
 	
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<template name="standardFormTemplate" />
+			<group name="actions">
+				<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
+			</group>
 		</ribbon>
 		<component type="form" name="company" reference="form">
-			<script>
-				<![CDATA[
-					var saveButton = #{window}.getRibbonItem("actions.save");
-					var saveBackButton = #{window}.getRibbonItem("actions.saveBack");
-					var saveNewButton = #{window}.getRibbonItem("actions.saveNew");
-					var cancelButton = #{window}.getRibbonItem("actions.cancel");
-					var deleteButton = #{window}.getRibbonItem("actions.delete");
-					var copyButton = #{window}.getRibbonItem("actions.copy");
-					var buttons = new Array(saveButton, saveBackButton, saveNewButton, cancelButton, deleteButton, copyButton);
-
-					var listener = {
-						onSetValue: function() {
-							var owner = #{owner}.getValue().content.value;
-							
-							if (owner == true) {	
-								disableButtons(buttons, "#{translate(basic.company.ribbon.message.companyIsOwner)}");
- 							} else {
- 								enableButtons(buttons);
- 							}
-						}
-					};
-					
-					function disableButtons(buttons, message) { 
-						for ( var i = 0; i < buttons.length; i++ ) 
-						{ 
-							buttons[i].disable(message);
-						} 
-					} 
-					
-					function enableButtons(buttons) { 
-						for ( var i = 0; i < buttons.length; i++ ) 
-						{ 
-							buttons[i].enable();
-						} 
-					} 
-
-					#{form}.addOnChangeListener(listener);
-				]]>
-			</script>
 			<component type="gridLayout" name="gridLayout" columns="3" rows="15">
 				<layoutElement column="1" row="1">
 					<component type="input" name="number" field="number"  />
@@ -121,7 +84,4 @@
 			<option type="expression" value="' '" />
 		</component>
 	</component>
-	<hooks>
-		<beforeRender class="com.qcadoo.mes.basic.CompanyService" method="disableCompanyFormForOwner" />
-	</hooks>
 </view>

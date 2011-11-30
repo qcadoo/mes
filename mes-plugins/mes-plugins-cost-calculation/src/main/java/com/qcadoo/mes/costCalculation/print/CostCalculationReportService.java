@@ -38,6 +38,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -134,7 +135,7 @@ public class CostCalculationReportService {
         Entity costCalculationWithFileName = costCalculationPdfService.updateFileName(costCalculation, "dateOfCalculation",
                 "Cost_calculation");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .uniqueResult();
+                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         costCalculationPdfService.generateDocument(costCalculationWithFileName, company, state.getLocale());
     }
 

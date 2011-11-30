@@ -159,11 +159,13 @@ public class TestSamplesLoader extends SamplesLoader {
     private void addCompany(final Map<String, String> values) {
         Entity company = dataDefinitionService.get("basic", "company").create();
 
-        LOG.debug("id: " + values.get("id") + " companyFullName " + values.get("companyfullname") + " tax " + values.get("tax")
-                + " street " + values.get("street") + " house " + values.get("house") + " flat " + values.get("flat")
-                + " zipCode " + values.get("zipcode") + " city " + values.get("city") + " state " + values.get("state")
-                + " country " + values.get("country") + " email " + values.get("email") + " addressWww "
-                + values.get("addressWww") + " phone " + values.get("phone") + " owner " + values.get("owner"));
+        LOG.debug("id: " + values.get("id") + "number: " + values.get("number") + " companyFullName "
+                + values.get("companyfullname") + " tax " + values.get("tax") + " street " + values.get("street") + " house "
+                + values.get("house") + " flat " + values.get("flat") + " zipCode " + values.get("zipcode") + " city "
+                + values.get("city") + " state " + values.get("state") + " country " + values.get("country") + " email "
+                + values.get("email") + " addressWww " + values.get("addressWww") + " phone " + values.get("phone") + " owner "
+                + values.get("owner"));
+        company.setField("number", values.get("number"));
         company.setField("companyFullName", values.get("companyfullname"));
         company.setField("tax", values.get("tax"));
         company.setField("street", values.get("street"));

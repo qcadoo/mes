@@ -78,6 +78,7 @@ public class MinimalSamplesLoader extends SamplesLoader {
         Entity company = dataDefinitionService
                 .get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COMPANY).create();
 
+        company.setField("number", values.get("number"));
         company.setField("companyFullName", values.get("companyfullname"));
         company.setField("tax", values.get("tax"));
         company.setField("street", values.get("street"));
@@ -91,10 +92,6 @@ public class MinimalSamplesLoader extends SamplesLoader {
         company.setField("addressWww", values.get("addresswww"));
         company.setField("phone", values.get("phone"));
         company.setField("owner", values.get("owner"));
-        if ("true".equals(values.get("owner")))
-            company.setField("owner", true);
-        else
-            company.setField("owner", false);
 
         company = company.getDataDefinition().save(company);
 
