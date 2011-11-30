@@ -31,7 +31,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 
@@ -45,14 +45,16 @@ public class CompanyService {
     public Long getParameterId() {
 
         DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY);
-        SearchResult searchResult = dataDefinition.find().setMaxResults(1).list();
+        Entity company = dataDefinition.find().add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
 
-        if (searchResult.getEntities().size() > 0) {
-            return searchResult.getEntities().get(0).getId();
-        } else {
+        if (company == null) {
             Entity newCompany = dataDefinition.create();
+            newCompany.setField("owner", true);
             Entity savedCompany = dataDefinition.save(newCompany);
             return savedCompany.getId();
+
+        } else {
+            return company.getId();
         }
 
     }

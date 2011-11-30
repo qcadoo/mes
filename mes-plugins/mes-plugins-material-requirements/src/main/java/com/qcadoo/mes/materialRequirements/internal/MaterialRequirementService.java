@@ -46,6 +46,7 @@ import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -223,7 +224,7 @@ public class MaterialRequirementService {
         Entity materialRequirementWithFileName = materialRequirementPdfService.updateFileName(materialRequirement,
                 "Material_requirement");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .uniqueResult();
+                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         materialRequirementPdfService.generateDocument(materialRequirementWithFileName, company, state.getLocale());
         materialRequirementXlsService.generateDocument(materialRequirementWithFileName, company, state.getLocale());
     }

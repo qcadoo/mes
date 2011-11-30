@@ -48,6 +48,7 @@ import com.qcadoo.mes.materialFlow.print.xls.MaterialFlowXlsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -275,7 +276,8 @@ public class MaterialsInStockAreasService {
         Entity materialFlowWithFileName = updateFileName(materialsInStockAreas,
                 getFullFileName((Date) materialsInStockAreas.getField("time"), materialsInStockAreas.getStringField("name")),
                 MaterialFlowConstants.MODEL_MATERIALS_IN_STOCK_AREAS);
-        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_COMPANY).find().uniqueResult();
+        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_COMPANY).find()
+                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         materialFlowPdfService.generateDocument(materialFlowWithFileName, company, state.getLocale());
         materialFlowXlsService.generateDocument(materialFlowWithFileName, company, state.getLocale());
     }

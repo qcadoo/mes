@@ -28,6 +28,7 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
+		<string name="number" required="true" unique="true" />
 		<string name="companyFullName" required="true" default='Company'>
 			<validatesLength max="255" />
 		</string>
@@ -67,5 +68,5 @@
 		<boolean name="owner" required="false" default="false" />
 	</fields>
 	<hooks />
-	<identifier expression="#number + ' - ' + #name" />
+	<identifier expression="#number + ' - ' + #companyFullName" />
 </model>

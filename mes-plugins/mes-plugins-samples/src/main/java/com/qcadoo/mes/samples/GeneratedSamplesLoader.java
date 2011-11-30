@@ -30,30 +30,24 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Preconditions;
+import com.qcadoo.mes.samples.constants.SamplesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
-import com.qcadoo.model.api.validators.ErrorMessage;
-import com.qcadoo.plugin.api.Module;
-import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
 
 @Component
-public class GeneratedSamplesLoaderModule extends Module {
+public class GeneratedSamplesLoader extends SamplesLoader {
 
     private static final String CHARS_ONLY = "QWERTYUIOPLKJHGFDSAZXCVBNMmnbvcxzasdfghjklpoiuytrewq";
 
@@ -71,9 +65,6 @@ public class GeneratedSamplesLoaderModule extends Module {
 
     private static final String[] ACCEPTABLE_DICTIONARIES = { "categories", "posts", "units" };
 
-    private static final String[] ACCEPTABLE_ORDER_STATE = { "01pending", "02accepted", "03inProgress", "04completed",
-            "05declined", "06interrupted", "07abandoned" };
-
     private static final String[] TECHNOLOGY_QUANTITY_ALGRITHM = { "01perProductOut", "02perTechnology" };
 
     private static final Random RANDOM = new Random();
@@ -89,9 +80,6 @@ public class GeneratedSamplesLoaderModule extends Module {
     private static final String ORDERS_MODEL_ORDER = "order";
 
     @Autowired
-    private PluginAccessor pluginAccessor;
-
-    @Autowired
     private SecurityRolesService securityRolesService;
 
     @Autowired
@@ -101,18 +89,16 @@ public class GeneratedSamplesLoaderModule extends Module {
     private TreeNumberingService treeNumberingService;
 
     @Value("${generatorIterations}")
-    int iterations;
+    private int iterations;
 
     @Override
-    @Transactional
-    public void multiTenantEnable() {
+    void loadData(final String dataset, final String locale) {
 
         addParameters();
         generateAndAddUser();
-        final int range = iterations;
         generateAndAddDictionary();
-        if (isEnabled("basic")) {
-            for (int i = 0; i < range; i++) {
+        if (isEnabled(SamplesConstants.BASIC_PLUGIN_IDENTIFIER)) {
+            for (int i = 0; i < iterations; i++) {
                 generateAndAddProduct();
                 generateAndAddMachine();
                 generateAndAddContractor();
@@ -123,13 +109,13 @@ public class GeneratedSamplesLoaderModule extends Module {
             }
         }
         if (isEnabled(TECHNOLOGY_PLUGIN_NAME)) {
-            for (int i = 0; i < range; i++) {
+            for (int i = 0; i < iterations; i++) {
                 generateAndAddOperation();
             }
             generateAndAddTechnologies();
         }
         if (isEnabled(ORDERS_PLUGIN_NAME)) {
-            for (int i = 0; i < range; i++) {
+            for (int i = 0; i < iterations; i++) {
                 generateAndAddOrder();
             }
             if (isEnabled(ORDER_GROUPS_PLUGIN_NAME)) {
@@ -139,7 +125,7 @@ public class GeneratedSamplesLoaderModule extends Module {
             }
         }
         if (isEnabled("workPlans")) {
-            for (int i = 0; i < (range / 40); i++) {
+            for (int i = 0; i < (iterations / 40); i++) {
                 generateAndAddWorkPlan();
             }
         }
@@ -278,25 +264,6 @@ public class GeneratedSamplesLoaderModule extends Module {
         return getRandomEntity("basic", "staff");
     }
 
-    private void validateEntity(final Entity entity) {
-        if (!entity.isValid()) {
-            Map<String, ErrorMessage> errors = entity.getErrors();
-            Set<String> keys = errors.keySet();
-            StringBuilder stringError = new StringBuilder();
-            for (String key : keys) {
-                stringError.append("\t").append(key).append("  -  ").append(errors.get(key).getMessage()).append("\n");
-            }
-            Map<String, Object> fields = entity.getFields();
-            for (Entry<String, Object> entry : fields.entrySet()) {
-                if (entry.getValue() == null) {
-                    stringError.append("\t\t");
-                }
-                stringError.append(entry.getKey()).append(" - ").append(entry.getValue()).append("\n");
-            }
-            throw new IllegalStateException("Saved entity is invalid\n" + stringError.toString());
-        }
-    }
-
     private void generateAndAddTechnology(final Entity product) {
         Entity technology = dataDefinitionService.get("technologies", "technology").create();
 
@@ -308,6 +275,7 @@ public class GeneratedSamplesLoaderModule extends Module {
         technology.setField("name", getNameFromNumberAndPrefix("Technology-", number));
         technology.setField("number", number);
         technology.setField("product", product);
+        technology.setField("state", "draft");
         technology.setField("batchRequired", true);
         technology.setField("postFeatureRequired", false);
         technology.setField("otherFeatureRequired", false);
@@ -328,6 +296,10 @@ public class GeneratedSamplesLoaderModule extends Module {
 
         treeNumberingService.generateNumbersAndUpdateTree(
                 dataDefinitionService.get("technologies", "technologyOperationComponent"), "technology", technology.getId());
+
+        technology.setField("state", "accepted");
+        technology = dataDefinitionService.get("technologies", "technology").save(technology);
+        validateEntity(technology);
     }
 
     private Entity addOperationComponent(final Entity technology, final Entity parent, Entity operation,
@@ -667,10 +639,6 @@ public class GeneratedSamplesLoaderModule extends Module {
 
     private String generateTypeOfProduct() {
         return ACCEPTABLE_PRODUCT_TYPE[RANDOM.nextInt(ACCEPTABLE_PRODUCT_TYPE.length)];
-    }
-
-    private boolean isEnabled(final String pluginIdentifier) {
-        return pluginAccessor.getPlugin(pluginIdentifier) != null;
     }
 
     private void addParameters() {
