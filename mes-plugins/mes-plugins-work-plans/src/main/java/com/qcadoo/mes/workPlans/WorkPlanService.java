@@ -49,6 +49,7 @@ import com.qcadoo.mes.workPlans.print.xls.WorkPlanForWorkerXlsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -248,7 +249,7 @@ public final class WorkPlanService {
             DocumentException {
         Entity workPlanWithFileName = workPlanForMachinePdfService.updateFileName(workPlan, "Work_plan");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .uniqueResult();
+                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         workPlanForMachinePdfService.generateDocument(workPlanWithFileName, company, state.getLocale());
         workPlanForMachineXlsService.generateDocument(workPlanWithFileName, company, state.getLocale());
         workPlanForWorkerPdfService.generateDocument(workPlanWithFileName, company, state.getLocale());

@@ -31,20 +31,18 @@
 	>
 	
 	<windowTab name="currencyTab" reference="currencyTab">
-		<component type="form" name="currencyForm" reference="currencyForm">
-			<component type="gridLayout" name="gridLayout" columns="2"
-				rows="1" hasBorders="false">
-				<layoutElement column="1" row="1">
-					<component type="lookup" name="currency" field="#{form}.currency" reference="currency">
-						<option type="column" name="currency" fields="currency" link="true" />
-						<option type="required" value="true" />
-						<option type="searchable" value="currency,alphabeticCode" />
-						<option type="orderable" value="currency,alphabeticCode" />
-						<option type="expression" value="#alphabeticCode + ' - ' + #currency" />
-						<option type="fieldCode" value="alphabeticCode" />
-					</component>
-				</layoutElement>
-			</component>
+		<component type="gridLayout" name="gridLayout" columns="2"
+			rows="1" hasBorders="false">
+			<layoutElement column="1" row="1">
+				<component type="lookup" name="currency" field="#{form}.currency" reference="currency">
+					<option type="column" name="currency" fields="currency" link="true" />
+					<option type="required" value="true" />
+					<option type="searchable" value="currency,alphabeticCode" />
+					<option type="orderable" value="currency,alphabeticCode" />
+					<option type="expression" value="#alphabeticCode + ' - ' + #currency" />
+					<option type="fieldCode" value="alphabeticCode" />
+				</component>
+			</layoutElement>
 		</component>
 		<option type="header" value="false" />
 	</windowTab>

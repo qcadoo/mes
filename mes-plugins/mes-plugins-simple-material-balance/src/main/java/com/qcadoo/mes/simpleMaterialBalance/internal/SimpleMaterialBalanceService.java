@@ -43,6 +43,7 @@ import com.qcadoo.mes.simpleMaterialBalance.internal.print.SimpleMaterialBalance
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -257,7 +258,7 @@ public class SimpleMaterialBalanceService {
             throws IOException, DocumentException {
         Entity simpleMaterialBalanceWithFileName = simpleMaterialBalancePdfService.updateFileName(simpleMaterialBalance);
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .uniqueResult();
+                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         simpleMaterialBalancePdfService.generateDocument(simpleMaterialBalanceWithFileName, company, state.getLocale());
         simpleMaterialBalanceXlsService.generateDocument(simpleMaterialBalanceWithFileName, company, state.getLocale());
     }

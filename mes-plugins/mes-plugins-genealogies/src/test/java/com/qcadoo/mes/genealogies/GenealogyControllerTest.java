@@ -41,6 +41,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.view.api.crud.CrudService;
 
 public class GenealogyControllerTest {
@@ -79,6 +80,8 @@ public class GenealogyControllerTest {
         Entity companyEntity = mock(Entity.class);
         Mockito.when(searchCriteriaBuilder.uniqueResult()).thenReturn(companyEntity);
         Mockito.when(dataDefinition.find()).thenReturn(searchCriteriaBuilder);
+        Mockito.when(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).thenReturn(searchCriteriaBuilder);
+        Mockito.when(searchCriteriaBuilder.setMaxResults(1)).thenReturn(searchCriteriaBuilder);
         Mockito.when(dataDefinitionService.get(Mockito.anyString(), Mockito.anyString())).thenReturn(dataDefinition);
         setField(genealogyController, "dataDefinitionService", dataDefinitionService);
 
@@ -101,6 +104,8 @@ public class GenealogyControllerTest {
         Entity companyEntity = mock(Entity.class);
         Mockito.when(searchCriteriaBuilder.uniqueResult()).thenReturn(companyEntity);
         Mockito.when(dataDefinition.find()).thenReturn(searchCriteriaBuilder);
+        Mockito.when(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).thenReturn(searchCriteriaBuilder);
+        Mockito.when(searchCriteriaBuilder.setMaxResults(1)).thenReturn(searchCriteriaBuilder);
         Mockito.when(dataDefinitionService.get(Mockito.anyString(), Mockito.anyString())).thenReturn(dataDefinition);
         setField(genealogyController, "dataDefinitionService", dataDefinitionService);
 
