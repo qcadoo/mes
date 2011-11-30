@@ -23,63 +23,72 @@
  */
 package com.qcadoo.mes.samples;
 
+import java.util.Locale;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.mes.samples.constants.SamplesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.plugin.api.Module;
 
 @Component
-public class SamplesChooser extends Module {
+public class SamplesChooserModule extends Module {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SamplesChooserModule.class);
 
     @Autowired
-    private GeneratedSamplesLoaderModule generatedSamplesLoaderModule;
+    private GeneratedSamplesLoader generatedSamplesLoaderModule;
 
     @Autowired
-    private TestSamplesLoaderModule testSamplesLoaderModule;
+    private TestSamplesLoader testSamplesLoaderModule;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private MinimalSamplesLoaderModule minimalSamplesLoaderModule;
+    private MinimalSamplesLoader minimalSamplesLoaderModule;
 
     @Value("${samplesDataset}")
     private String samplesDataset;
 
-    private static final Logger LOG = LoggerFactory.getLogger(TestSamplesLoaderModule.class);
-
-    private static final String BASIC_PLUGIN_NAME = "basic";
-
-    private static final String BASIC_MODEL_PARAMETER = "parameter";
+    @Value("${samplesDatasetLocale}")
+    private String locale;
 
     @Override
+    @Transactional
     public void multiTenantEnable() {
-        if (databaseHasToBePrepared()) {
+        if (databaseHasToBePrepared() && !"NONE".equals(samplesDataset.toUpperCase())) {
+            LOG.debug("Database has to be prepared ...");
+            setLocale();
             if ("TEST".equals(samplesDataset.toUpperCase())) {
-                LOG.debug("Data base has to be prepared ...");
-                testSamplesLoaderModule.multiTenantEnable();
+                testSamplesLoaderModule.loadData("test", locale);
             } else if ("GENERATED".equals(samplesDataset.toUpperCase())) {
-                LOG.debug("Data base has to be prepared ...");
-                generatedSamplesLoaderModule.multiTenantEnable();
+                generatedSamplesLoaderModule.loadData("generated", locale);
             } else if ("MINIMAL".equals(samplesDataset.toUpperCase())) {
-                LOG.debug("Data base has to be prepared ...");
-                minimalSamplesLoaderModule.multiTenantEnable();
-            } else if ("NONE".equals(samplesDataset.toUpperCase())) {
-                LOG.debug("Data base won't be changed ...");
-            } else {
-                throw new IllegalStateException("Invaid loadTestData property!");
+                minimalSamplesLoaderModule.loadData("minimal", locale);
             }
         } else {
-            LOG.debug("Data base won't bo changed ... ");
+            LOG.debug("Database won't bo changed ... ");
+        }
+    }
+
+    private void setLocale() {
+        if ("default".equals(locale)) {
+            locale = Locale.getDefault().toString().substring(0, 2);
         }
 
+        if (!("pl".equals(locale) || "en".equals(locale))) {
+            locale = "en";
+        }
     }
 
     private boolean databaseHasToBePrepared() {
-        return dataDefinitionService.get(BASIC_PLUGIN_NAME, BASIC_MODEL_PARAMETER).find().list().getTotalNumberOfEntities() == 0;
+        return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_PARAMETER).find()
+                .list().getTotalNumberOfEntities() == 0;
     }
 }
