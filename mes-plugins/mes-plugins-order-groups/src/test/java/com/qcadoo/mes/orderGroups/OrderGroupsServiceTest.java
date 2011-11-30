@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -398,7 +399,8 @@ public class OrderGroupsServiceTest {
         orderGroupsService.showInOrdersList(view, form, null);
 
         // then
-        Mockito.verify(view).redirectTo(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyBoolean());
+        Mockito.verify(view).redirectTo(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyBoolean(),
+                (Map) Mockito.anyObject());
     }
 
     @Test
@@ -413,7 +415,8 @@ public class OrderGroupsServiceTest {
         orderGroupsService.showInOrdersList(view, form, null);
 
         // then
-        Mockito.verify(view, Mockito.never()).redirectTo(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyBoolean());
+        Mockito.verify(view, Mockito.never()).redirectTo(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyBoolean(),
+                (Map) Mockito.anyObject());
     }
 
     @Test
@@ -429,6 +432,7 @@ public class OrderGroupsServiceTest {
         orderGroupsService.showInOrdersList(view, form, null);
 
         // then
-        Mockito.verify(view, Mockito.never()).redirectTo(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyBoolean());
+        Mockito.verify(view, Mockito.never()).redirectTo(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyBoolean(),
+                (Map) Mockito.anyObject());
     }
 }
