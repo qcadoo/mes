@@ -71,9 +71,6 @@ public class GeneratedSamplesLoaderModule extends Module {
 
     private static final String[] ACCEPTABLE_DICTIONARIES = { "categories", "posts", "units" };
 
-    private static final String[] ACCEPTABLE_ORDER_STATE = { "01pending", "02accepted", "03inProgress", "04completed",
-            "05declined", "06interrupted", "07abandoned" };
-
     private static final String[] TECHNOLOGY_QUANTITY_ALGRITHM = { "01perProductOut", "02perTechnology" };
 
     private static final Random RANDOM = new Random();
@@ -308,6 +305,7 @@ public class GeneratedSamplesLoaderModule extends Module {
         technology.setField("name", getNameFromNumberAndPrefix("Technology-", number));
         technology.setField("number", number);
         technology.setField("product", product);
+        technology.setField("state", "draft");
         technology.setField("batchRequired", true);
         technology.setField("postFeatureRequired", false);
         technology.setField("otherFeatureRequired", false);
@@ -328,6 +326,10 @@ public class GeneratedSamplesLoaderModule extends Module {
 
         treeNumberingService.generateNumbersAndUpdateTree(
                 dataDefinitionService.get("technologies", "technologyOperationComponent"), "technology", technology.getId());
+
+        technology.setField("state", "accepted");
+        technology = dataDefinitionService.get("technologies", "technology").save(technology);
+        validateEntity(technology);
     }
 
     private Entity addOperationComponent(final Entity technology, final Entity parent, Entity operation,
