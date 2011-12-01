@@ -24,8 +24,6 @@
 package com.qcadoo.mes.orders.states;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,8 +56,6 @@ public class OrderStatesService {
 
     @Autowired
     private PluginAccessor pluginAccessor;
-
-    private final Set<BeforeChangeStateListener> beforeChangeStateListeners = new HashSet<OrderStatesService.BeforeChangeStateListener>();
 
     private void changeOrderStateTo(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final OrderStates oldState, final OrderStates newState) {
@@ -145,11 +141,6 @@ public class OrderStatesService {
         } else {
             order.setField("externalSynchronized", true);
         }
-        for (BeforeChangeStateListener listener : beforeChangeStateListeners) {
-            if (!listener.canChange(state, order, (String) order.getStringField("state"))) {
-                return;
-            }
-        }
 
         order.getDataDefinition().save(order);
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
@@ -233,15 +224,6 @@ public class OrderStatesService {
     private boolean hasIntegrationWithExternalSystem() {
         Plugin plugin = pluginAccessor.getPlugin("mesPluginsIntegrationErp");
         return plugin != null && plugin.getState().equals(PluginState.ENABLED);
-    }
-
-    public void registerBeforeChangeStateListener(final BeforeChangeStateListener listener) {
-        beforeChangeStateListeners.add(listener);
-    }
-
-    public interface BeforeChangeStateListener {
-
-        boolean canChange(ComponentState gridOrForm, Entity order, String state);
     }
 
     public void setFieldsRequired(final ViewDefinitionState view) {
