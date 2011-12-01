@@ -262,33 +262,35 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
 				<executions>
 					<execution>
 						<phase>generate-resources</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
 						<configuration>
-							<tasks>
+							<target>
 								<mkdir dir="${basedir}/target/classes" />
-								<exec command="git rev-list --max-count=1 --all"
-									outputproperty="build.revision" />
+								<exec executable="git" outputproperty="build.revision" >
+								  	<arg value="rev-list"/>
+    								<arg value="--max-count=1"/>
+    								<arg value="--all"/>
+								</exec>
 								<tstamp>
 									<format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" />
 								</tstamp>
 								<property name="build.number" value="-" />
 								<echo file="${basedir}/target/classes/build.properties">
-									buildApplicationName = Qcadoo MES
-									buildApplicationVersion = ${project.version}
-									buildFrameworkVersion = ${qcadoo.version}
-									buildTime =
-									${build.time}
-									buildNumber = ${build.number}
-									buildRevision =
-									${build.revision}
+buildApplicationName = Qcadoo MES
+buildApplicationVersion = ${project.version}
+buildFrameworkVersion = ${qcadoo.version}
+buildTime = ${build.time}
+buildNumber = ${build.number}
+buildRevision = ${build.revision}
 								</echo>
-							</tasks>
+							</target>
 						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>

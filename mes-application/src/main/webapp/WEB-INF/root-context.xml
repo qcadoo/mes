@@ -49,7 +49,7 @@
 		properties-ref="defaultConfiguration" />
 
 		<util:properties id="defaultConfiguration">
-			<prop key="loadTestDataLocale">default</prop>
+			<prop key="samplesDatasetLocale">default</prop>
 		</util:properties>
 
 	<bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

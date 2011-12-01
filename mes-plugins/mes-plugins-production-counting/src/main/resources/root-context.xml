@@ -33,7 +33,6 @@
        http://www.springframework.org/schema/context 
        http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 	
-    <context:property-placeholder location="file:${QCADOO_CONF}/report.properties"/>
 	
 	<context:component-scan base-package="com.qcadoo.mes.productionCounting"/>
 
