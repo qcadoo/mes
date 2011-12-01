@@ -115,8 +115,6 @@
 			<artifactId>mes-plugins-cost-norms-for-product</artifactId>
 			<version>1.1.1-SNAPSHOT</version>
 		</dependency>
-		<!-- dependency> <groupId>com.qcadoo.mes</groupId> <artifactId>mes-commercial-plugins-integration-erp</artifactId> 
-			<version>0.4.4-SNAPSHOT</version> </dependency -->
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-cost-norms-for-operation</artifactId>
@@ -147,16 +145,7 @@
 			<artifactId>mes-plugins-basic-production-counting</artifactId>
 			<version>1.1.1-SNAPSHOT</version>
 		</dependency>
-
-		<!-- TODO develop purpose only -->
 		
-		<!--<dependency> <groupId>com.qcadoo.mes</groupId> <artifactId>mes-commercial-plugins-integration-commons</artifactId> 
-			<version>1.0.0</version> </dependency> <dependency> <groupId>com.qcadoo.mes</groupId> 
-			<artifactId>mes-commercial-plugins-integration-enova</artifactId> <version>1.0.0</version> 
-			</dependency> <dependency> <groupId>com.qcadoo.mes</groupId> <artifactId>mes-commercial-plugins-integration-subiekt</artifactId> 
-			<version>1.0.0</version> </dependency> -->
-		<!-- TODO end -->
-
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
@@ -336,6 +325,41 @@
 					<groupId>com.qcadoo.saas</groupId>
 					<artifactId>qcadoo-saas-plugins-plugin-management</artifactId>
 					<version>${qcadoo.saas.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>commercial</id>
+			<dependencies>
+				<dependency> 
+					<groupId>com.qcadoo.mes</groupId> 
+					<artifactId>mes-commercial-plugins-integration-commons</artifactId> 
+					<version>1.1.1-SNAPSHOT</version> 
+				</dependency> 
+				<dependency> 
+					<groupId>com.qcadoo.mes</groupId> 
+					<artifactId>mes-commercial-plugins-integration-enova</artifactId> 
+					<version>1.1.1-SNAPSHOT</version> 
+				</dependency> 
+				<dependency> 
+					<groupId>com.qcadoo.mes</groupId> 
+					<artifactId>mes-commercial-plugins-integration-subiekt</artifactId> 
+					<version>1.1.1-SNAPSHOT</version> 
+				</dependency>
+				<dependency> 
+					<groupId>com.qcadoo.mes</groupId> 
+					<artifactId>mes-commercial-plugins-integration-erp</artifactId> 
+					<version>1.1.1-SNAPSHOT</version> 
+				</dependency>
+				<dependency> 
+					<groupId>com.qcadoo.mes</groupId> 
+					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-base</artifactId> 
+					<version>1.1.1-SNAPSHOT</version> 
+				</dependency>
+				<dependency> 
+					<groupId>com.qcadoo.mes</groupId> 
+					<artifactId>mes-commercial-plugins-advanced-genealogy</artifactId> 
+					<version>1.1.1-SNAPSHOT</version> 
 				</dependency>
 			</dependencies>
 		</profile>
