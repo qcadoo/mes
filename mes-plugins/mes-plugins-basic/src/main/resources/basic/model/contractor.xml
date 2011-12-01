@@ -32,7 +32,6 @@
 		<string name="name" unique="true" />
 		<string name="externalNumber" />
 	</fields>
-	<hooks>
-	</hooks>
+	<hooks />
 	<identifier expression="#number + ' - ' + #name" />
 </model>

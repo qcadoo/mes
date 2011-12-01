@@ -82,15 +82,14 @@
 					#{grid}.addOnChangeListener(listener);
 				]]>
 			</script>
-			<option type="column" name="companyFullName" fields="companyFullName" link="true" />
+			<option type="column" name="number" fields="number" link="true" width="50" />
+			<option type="column" name="companyFullName" fields="companyFullName" link="true" width="100" />
 			<option type="column" name="owner" fields="owner" hidden="true" />
-			<option type="order" column="companyFullName" direction="asc" />
-			<option type="searchable" value="companyFullName" />
-			<option type="orderable" value="companyFullName" />
+			<option type="searchable" value="number,companyFullName" />
+			<option type="orderable" value="number,companyFullName" />
+			<option type="order" column="number" direction="asc" />
 			<option type="correspondingView" value="basic/companyDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="deletable" value="false" />
-			<option type="creatable" value="false" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>

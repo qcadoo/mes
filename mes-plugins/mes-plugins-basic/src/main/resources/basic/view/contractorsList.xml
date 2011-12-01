@@ -61,20 +61,16 @@
 					this.addOnChangeListener(listener);
 				]]>
 			</script>
-			<option type="column" name="number" fields="number" link="true"
-				width="50" />
-			<option type="column" name="name" fields="name" link="true"
-				width="100" />
+			<option type="column" name="number" fields="number" link="true" width="50" />
+			<option type="column" name="name" fields="name" link="true" width="100" />
 			<option type="column" name="externalNumber" fields="externalNumber" hidden="true" />
 			<option type="order" column="number" direction="desc" />
 			<option type="searchable" value="name,number" />
 			<option type="orderable" value="name,number" />
 			<option type="correspondingView" value="basic/contractorDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="deletable" value="false" />
-			<option type="creatable" value="false" />
 			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="false" />
+			<option type="multiselect" value="true" />
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
