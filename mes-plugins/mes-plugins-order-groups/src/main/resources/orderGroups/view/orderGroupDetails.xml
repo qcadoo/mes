@@ -29,9 +29,32 @@
 		<ribbon>
 			<group template="navigation" />
             <group template="formSaveCopyAndRemoveActions" />
+            <group name="jumpTo">
+            	<bigButton name="showInOrdersList" icon="genealogyIcon24.png" action="#{form}.fireEvent(showInOrdersList);">
+            		<script>
+            			<![CDATA[
+            				#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (isEntitySaved(value)) {
+										this.enable();
+									} else {
+										this.disable();
+									}
+								}
+							});
+							
+							function isEntitySaved(value) {
+								return (value && value.content && value.content.entityId) 
+									|| (#{form}.getValue() && #{form}.getValue().content && #{form}.getValue().content.entityId)
+							}
+            			]]>
+            		</script>
+            	</bigButton>
+            </group>
 		</ribbon>
 			<component type="form" name="orderGroup" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="2" rows="5">
+				<listener event="showInOrdersList" class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="showInOrdersList" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number" reference="number">
 							<option type="alignment" value="right" />
@@ -46,7 +69,7 @@
                 	<layoutElement column="1" row="5">
                 		<component type="calendar" name="dateTo" field="dateTo" reference="groupDateTo" />
                 	</layoutElement>
-                 	<layoutElement column="2" row="1" width="1" height="5">
+                 	<layoutElement column="2" row="1" width="2" height="5">
                  		<component type="lookup" name="order" reference="orderLookup" field="orders" defaultVisible="false" persistent="false" hasLabel="false">
 					   		<option type="column" name="name" fields="name" />
 					   		<option type="column" name="orderGroup" fields="orderGroup" expression="#orderGroup != null ? #orderGroup['name'] : ''"/>

@@ -39,6 +39,7 @@ import com.qcadoo.mes.qualityControls.constants.QualityControlsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Controller
 public class QualityControlsController {
@@ -54,7 +55,7 @@ public class QualityControlsController {
         mav.addObject("dateFrom", dateFrom);
         mav.addObject("dateTo", dateTo);
         mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .uniqueResult());
+                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
         return mav;
     }
 
@@ -75,7 +76,7 @@ public class QualityControlsController {
         mav.setViewName("qualityControlFor" + StringUtils.capitalize(type) + "PdfView");
         mav.addObject("entities", getQualityControlEntities(entities));
         mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .uniqueResult());
+                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
         return mav;
     }
 

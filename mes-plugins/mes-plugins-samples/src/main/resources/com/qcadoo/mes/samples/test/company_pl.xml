@@ -24,15 +24,6 @@
     ***************************************************************************
 
 -->
-<categories>
-	<row  NAME="categories" ITEM="kategoria 1" />
-	<row  NAME="categories" ITEM="kategoria 2" />
-	<row  NAME="categories" ITEM="kategoria 3" />
-	<row  NAME="categories" ITEM="kategoria 4" />
-	<row  NAME="posts" ITEM="stanowisko 1" />
-	<row  NAME="posts" ITEM="stanowisko 2" />
-	<row  NAME="units" ITEM="kg" />
-	<row  NAME="units" ITEM="szt" />
-	<row  NAME="units" ITEM="m2" />
-</categories>
-
+<company>
+	<row NUMBER="OWNER" COMPANYFULLNAME="Qcadoo Limited Sp. z o.o." TAX="676-241-35-25" STREET="Basztowa" HOUSE="4" FLAT="4" ZIPCODE="31-134" CITY="Kraków" STATE="małopolskie" COUNTRY="Polska" EMAIL="welcome@qcadoo.com" ADDRESSWWW="http://www.qcadoo.com/" PHONE="+48 12 633 02 03" OWNER="true" />
+</company>

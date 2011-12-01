@@ -23,34 +23,21 @@
  */
 package com.qcadoo.mes.samples;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.jdom.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.model.api.DataDefinition;
@@ -58,57 +45,19 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
-import com.qcadoo.plugin.api.Module;
-import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
 
 @Component
-public class SamplesLoaderModule extends Module {
+public class TestSamplesLoader extends SamplesLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SamplesLoaderModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestSamplesLoader.class);
 
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     private static final long MILLIS_IN_DAY = 86400000;
 
-    private static final List<String> UNITS = new ArrayList<String>();
-
-    private static final String[] ACTIVE_CURRENCY_ATTRIBUTES = new String[] { "code" };
-
-    private static final String[] COMPANY_ATTRIBUTES = new String[] { "companyFullName", "tax", "street", "house", "flat",
-            "zipCode", "city", "state", "country", "email", "addressWww", "phone" };
-
-    private static final String[] PRODUCT_ATTRIBUTES = new String[] { "ean", "name", "product_nr", "batch", "costForNumber",
-            "nominalCost", "lastPurchaseCost", "averageCost", "typeOfProduct", "unit" };
-
-    private static final String[] DICTIONARY_ATTRIBUTES = new String[] { "name", "item" };
-
-    private static final String[] USER_ATTRIBUTES = new String[] { "login", "email", "firstname", "lastname", "role" };
-
-    private static final String[] ORDER_ATTRIBUTES = new String[] { "scheduled_start_date", "scheduled_end_date",
-            "quantity_completed", "started_date", "finished_date", "name", "order_nr", "quantity_scheduled", "machine_nr",
-            "tech_nr", "product_nr", "effective_started_date" };
-
-    private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr",
-            "algorithm", "minimal" };
-
-    private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number", "tpz", "tj", "productionInOneCycle",
-            "pieceworkCost", "machineHourlyCost", "laborHourlyCost", "numberOfOperations", "machineUtilization",
-            "laborUtilization", "countMachine", "countRealized", "timeNextOperation" };
-
-    private static final String[] MACHINE_ATTRIBUTES = new String[] { "id", "name", "prod_line", "description" };
-
-    private static final String[] STAFF_ATTRIBUTES = new String[] { "id", "name", "surname", "post" };
-
-    private static final String[] SHIFT_ATTRIBUTES = new String[] { "name", "mondayWorking", "mondayHours", "tuesdayWorking",
-            "tuesdayHours", "wensdayWorking", "wensdayHours", "thursdayWorking", "thursdayHours", "fridayWorking", "fridayHours",
-            "saturdayWorking", "saturdayHours", "sundayWorking", "sundayHours" };
-
     private static final Random RANDOM = new Random(System.currentTimeMillis());
-
-    @Autowired
-    private PluginAccessor pluginAccessor;
 
     @Autowired
     private SecurityRolesService securityRolesService;
@@ -119,41 +68,35 @@ public class SamplesLoaderModule extends Module {
     @Autowired
     private TreeNumberingService treeNumberingService;
 
-    @Value("${loadTestDataLocale}")
-    private String locale;
-
     @Value("${setAsDemoEnviroment}")
     private boolean setAsDemoEnviroment;
 
     @Override
-    @Transactional
-    public void multiTenantEnable() {
-        checkLocale();
+    void loadData(final String dataset, final String locale) {
 
         addParameters();
 
         if (!setAsDemoEnviroment) {
-            readDataFromXML("users", USER_ATTRIBUTES);
+            readDataFromXML(dataset, "users", locale);
         } else {
             changeAdminPassword();
         }
 
-        readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
+        readDataFromXML(dataset, "dictionaries", locale);
         if (isEnabled("basic")) {
-            readDataFromXML("activeCurrency", ACTIVE_CURRENCY_ATTRIBUTES);
-            readDataFromXML("company", COMPANY_ATTRIBUTES);
-            readDataFromXML("machines", MACHINE_ATTRIBUTES);
-            readDataFromXML("staff", STAFF_ATTRIBUTES);
-            readDataFromXML("units", new String[] { "name" });
-            readDataFromXML("products", PRODUCT_ATTRIBUTES);
-            readDataFromXML("shifts", SHIFT_ATTRIBUTES);
+            readDataFromXML(dataset, "activeCurrency", locale);
+            readDataFromXML(dataset, "company", locale);
+            readDataFromXML(dataset, "machines", locale);
+            readDataFromXML(dataset, "staff", locale);
+            readDataFromXML(dataset, "products", locale);
+            readDataFromXML(dataset, "shifts", locale);
         }
         if (isEnabled("technologies")) {
-            readDataFromXML("operations", OPERATION_ATTRIBUTES);
-            readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
+            readDataFromXML(dataset, "operations", locale);
+            readDataFromXML(dataset, "technologies", locale);
         }
         if (isEnabled("orders")) {
-            readDataFromXML("orders", ORDER_ATTRIBUTES);
+            readDataFromXML(dataset, "orders", locale);
         }
         if (isEnabled("materialRequirements")) {
             addMaterialRequirements();
@@ -170,59 +113,8 @@ public class SamplesLoaderModule extends Module {
         userDD.save(user);
     }
 
-    private boolean isEnabled(final String pluginIdentifier) {
-        return pluginAccessor.getPlugin(pluginIdentifier) != null;
-    }
-
-    private void checkLocale() {
-        if ("default".equals(locale)) {
-            locale = Locale.getDefault().toString().substring(0, 2);
-        }
-
-        if (!("pl".equals(locale) || "en".equals(locale))) {
-            locale = "en";
-        }
-    }
-
-    private InputStream getXmlFile(final String type) throws IOException {
-        return SamplesLoaderModule.class.getResourceAsStream("/com/qcadoo/mes/samples/" + type + "_" + locale + ".xml");
-    }
-
-    private void readDataFromXML(final String type, final String[] attributes) {
-
-        LOG.info("Loading test data from " + type + "_" + locale + ".xml ...");
-
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(getXmlFile(type));
-            doc.getDocumentElement().normalize();
-
-            NodeList nodeLst = doc.getElementsByTagName("row");
-
-            for (int s = 0; s < nodeLst.getLength(); s++) {
-                readData(attributes, type, nodeLst, s);
-            }
-        } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
-        } catch (ParserConfigurationException e) {
-            LOG.error(e.getMessage(), e);
-        } catch (SAXException e) {
-            LOG.error(e.getMessage(), e);
-        }
-    }
-
-    private void readData(final String[] attributes, final String type, final NodeList nodeLst, final int s) {
-        Map<String, String> values = new HashMap<String, String>();
-        Node fstNode = nodeLst.item(s);
-
-        for (String attribute : attributes) {
-            if (fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)) != null) {
-                String value = fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)).getNodeValue();
-                values.put(attribute, value);
-            }
-        }
-
+    @Override
+    void readData(final Map<String, String> values, final String type, final Element node) {
         if ("activeCurrency".equals(type)) {
             setCurrency(values);
         } else if ("company".equals(type)) {
@@ -238,8 +130,6 @@ public class SamplesLoaderModule extends Module {
             addDictionary(values);
         } else if ("users".equals(type)) {
             addUser(values);
-        } else if ("units".equals(type)) {
-            UNITS.add(values.get("name"));
         } else if ("operations".equals(type)) {
             addOperations(values);
         } else if ("staff".equals(type)) {
@@ -269,23 +159,26 @@ public class SamplesLoaderModule extends Module {
     private void addCompany(final Map<String, String> values) {
         Entity company = dataDefinitionService.get("basic", "company").create();
 
-        LOG.debug("id: " + values.get("id") + " companyFullName " + values.get("companyFullName") + " tax " + values.get("tax")
-                + " street " + values.get("street") + " house " + values.get("house") + " flat " + values.get("flat")
-                + " zipCode " + values.get("zipCode") + " city " + values.get("city") + " state " + values.get("state")
-                + " country " + values.get("country") + " email " + values.get("email") + " addressWww "
-                + values.get("addressWww") + " phone " + values.get("phone"));
-        company.setField("companyFullName", values.get("companyFullName"));
+        LOG.debug("id: " + values.get("id") + "number: " + values.get("number") + " companyFullName "
+                + values.get("companyfullname") + " tax " + values.get("tax") + " street " + values.get("street") + " house "
+                + values.get("house") + " flat " + values.get("flat") + " zipCode " + values.get("zipcode") + " city "
+                + values.get("city") + " state " + values.get("state") + " country " + values.get("country") + " email "
+                + values.get("email") + " addressWww " + values.get("addressWww") + " phone " + values.get("phone") + " owner "
+                + values.get("owner"));
+        company.setField("number", values.get("number"));
+        company.setField("companyFullName", values.get("companyfullname"));
         company.setField("tax", values.get("tax"));
         company.setField("street", values.get("street"));
         company.setField("house", values.get("house"));
         company.setField("flat", values.get("flat"));
-        company.setField("zipCode", values.get("zipCode"));
+        company.setField("zipCode", values.get("zipcode"));
         company.setField("city", values.get("city"));
         company.setField("state", values.get("state"));
         company.setField("country", values.get("country"));
         company.setField("email", values.get("email"));
-        company.setField("addressWww", values.get("addressWww"));
+        company.setField("addressWww", values.get("addresswww"));
         company.setField("phone", values.get("phone"));
+        company.setField("owner", values.get("owner"));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test company item {company=" + company.getField("companyFullName") + "}");
@@ -293,9 +186,8 @@ public class SamplesLoaderModule extends Module {
 
         company = dataDefinitionService.get("basic", "company").save(company);
 
-        if (!company.isValid()) {
-            throw new IllegalStateException("Saved entity has validation errors");
-        }
+        validateEntity(company);
+
     }
 
     private void addMachine(final Map<String, String> values) {
@@ -314,9 +206,7 @@ public class SamplesLoaderModule extends Module {
 
         machine = dataDefinitionService.get("basic", "machine").save(machine);
 
-        if (!machine.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
+        validateEntity(machine);
     }
 
     private void addStaff(final Map<String, String> values) {
@@ -334,10 +224,7 @@ public class SamplesLoaderModule extends Module {
         }
 
         staff = dataDefinitionService.get("basic", "staff").save(staff);
-        if (!staff.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
-
+        validateEntity(staff);
     }
 
     private void addOperations(final Map<String, String> values) {
@@ -347,21 +234,21 @@ public class SamplesLoaderModule extends Module {
         operation.setField("number", values.get("number"));
         operation.setField("tpz", values.get("tpz"));
         operation.setField("tj", values.get("tj"));
-        operation.setField("productionInOneCycle", values.get("productionInOneCycle"));
+        operation.setField("productionInOneCycle", values.get("productioninonecycle"));
         operation.setField("countRealized", values.get("countRealized"));
-        operation.setField("machineUtilization", values.get("machineUtilization"));
-        operation.setField("laborUtilization", values.get("laborUtilization"));
-        operation.setField("countMachineOperation", values.get("countMachine"));
+        operation.setField("machineUtilization", values.get("machineutilization"));
+        operation.setField("laborUtilization", values.get("laborutilization"));
+        operation.setField("countMachineOperation", values.get("countmachine"));
         operation.setField("countRealizedOperation", "01all");
-        operation.setField("timeNextOperation", values.get("timeNextOperation"));
+        operation.setField("timeNextOperation", values.get("timenextoperation"));
         operation.setField("machine", getMachine(values.get("number")));
         operation.setField("staff", getRandomStaff());
 
         if (isEnabled("costNormsForOperation")) {
-            operation.setField("pieceworkCost", values.get("pieceworkCost"));
-            operation.setField("machineHourlyCost", values.get("machineHourlyCost"));
-            operation.setField("laborHourlyCost", values.get("laborHourlyCost"));
-            operation.setField("numberOfOperations", values.get("numberOfOperations"));
+            operation.setField("pieceworkCost", values.get("pieceworkcost"));
+            operation.setField("machineHourlyCost", values.get("machinehourlycost"));
+            operation.setField("laborHourlyCost", values.get("laborhourlycost"));
+            operation.setField("numberOfOperations", values.get("numberofoperations"));
         }
 
         if (LOG.isDebugEnabled()) {
@@ -370,29 +257,27 @@ public class SamplesLoaderModule extends Module {
         }
 
         operation = dataDefinitionService.get("technologies", "operation").save(operation);
-        if (!operation.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
+        validateEntity(operation);
     }
 
     private void addShifts(final Map<String, String> values) {
         Entity shift = dataDefinitionService.get("basic", "shift").create();
 
         shift.setField("name", values.get("name"));
-        shift.setField("mondayWorking", values.get("mondayWorking"));
-        shift.setField("mondayHours", values.get("mondayHours"));
-        shift.setField("tuesdayWorking", values.get("tuesdayWorking"));
-        shift.setField("tuesdayHours", values.get("tuesdayHours"));
-        shift.setField("wensdayWorking", values.get("wensdayWorking"));
-        shift.setField("wensdayHours", values.get("wensdayHours"));
-        shift.setField("thursdayWorking", values.get("thursdayWorking"));
-        shift.setField("thursdayHours", values.get("thursdayHours"));
-        shift.setField("fridayWorking", values.get("fridayWorking"));
-        shift.setField("fridayHours", values.get("fridayHours"));
-        shift.setField("saturdayWorking", values.get("saturdayWorking"));
-        shift.setField("saturdayHours", values.get("saturdayHours"));
-        shift.setField("sundayWorking", values.get("sundayWorking"));
-        shift.setField("sundayHours", values.get("sundayHours"));
+        shift.setField("mondayWorking", values.get("mondayworking"));
+        shift.setField("mondayHours", values.get("mondayhours"));
+        shift.setField("tuesdayWorking", values.get("tuesdayworking"));
+        shift.setField("tuesdayHours", values.get("tuesdayhours"));
+        shift.setField("wensdayWorking", values.get("wensdayworking"));
+        shift.setField("wensdayHours", values.get("wensdayhours"));
+        shift.setField("thursdayWorking", values.get("thursdayworking"));
+        shift.setField("thursdayHours", values.get("thursdayhours"));
+        shift.setField("fridayWorking", values.get("fridayworking"));
+        shift.setField("fridayHours", values.get("fridayhours"));
+        shift.setField("saturdayWorking", values.get("saturdayworking"));
+        shift.setField("saturdayHours", values.get("saturdayhours"));
+        shift.setField("sundayWorking", values.get("sundayworking"));
+        shift.setField("sundayHours", values.get("sundayhours"));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test shift item {shift=" + shift.getField("name") + "}");
@@ -400,10 +285,7 @@ public class SamplesLoaderModule extends Module {
 
         shift = dataDefinitionService.get("basic", "shift").save(shift);
 
-        if (!shift.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors" + values.get("name"));
-        }
-
+        validateEntity(shift);
     }
 
     private void addProduct(final Map<String, String> values) {
@@ -421,16 +303,16 @@ public class SamplesLoaderModule extends Module {
         if (!values.get("product_nr").isEmpty()) {
             product.setField("number", values.get("product_nr"));
         }
-        if (!values.get("typeOfProduct").isEmpty()) {
-            product.setField("typeOfMaterial", values.get("typeOfProduct"));
+        if (!values.get("typeofproduct").isEmpty()) {
+            product.setField("typeOfMaterial", values.get("typeofproduct"));
         }
         product.setField("unit", values.get("unit"));
 
         if (isEnabled("costNormsForProduct")) {
-            product.setField("costForNumber", values.get("costForNumber"));
-            product.setField("nominalCost", values.get("nominalCost"));
-            product.setField("lastPurchaseCost", values.get("lastPurchaseCost"));
-            product.setField("averageCost", values.get("averageCost"));
+            product.setField("costForNumber", values.get("costfornumber"));
+            product.setField("nominalCost", values.get("nominalcost"));
+            product.setField("lastPurchaseCost", values.get("lastpurchasecost"));
+            product.setField("averageCost", values.get("averagecost"));
         }
 
         product = dataDefinitionService.get("basic", "product").save(product);
@@ -465,9 +347,7 @@ public class SamplesLoaderModule extends Module {
         }
 
         substitute = dataDefinitionService.get("basic", "substitute").save(substitute);
-        if (!substitute.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
+        validateEntity(substitute);
 
         for (int i = 0; i < 1; i++) {
             addSubstituteComponent(substitute, getRandomProduct(), 100 * RANDOM.nextDouble());
@@ -488,9 +368,7 @@ public class SamplesLoaderModule extends Module {
         }
 
         substituteComponent = dataDefinitionService.get("basic", "substituteComponent").save(substituteComponent);
-        if (!substituteComponent.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
+        validateEntity(substituteComponent);
     }
 
     private void addDictionary(final Map<String, String> values) {
@@ -506,10 +384,7 @@ public class SamplesLoaderModule extends Module {
         }
 
         item = dataDefinitionService.get("qcadooModel", "dictionaryItem").save(item);
-
-        if (!item.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
+        validateEntity(item);
     }
 
     private void addUser(final Map<String, String> values) {
@@ -539,9 +414,7 @@ public class SamplesLoaderModule extends Module {
         }
 
         user = dataDefinitionService.get("qcadooSecurity", "user").save(user);
-        if (!user.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
+        validateEntity(user);
     }
 
     private void prepareTechnologiesForOrder(final Map<String, String> values) {
@@ -580,11 +453,8 @@ public class SamplesLoaderModule extends Module {
         order.setField("name",
                 (values.get("name").isEmpty() || values.get("name") == null) ? values.get("order_nr") : values.get("name"));
         order.setField("number", values.get("order_nr"));
-        order.setField("plannedQuantity", values.get("quantity_scheduled").isEmpty() ? new BigDecimal(100 * RANDOM.nextDouble())
-                : new BigDecimal(values.get("quantity_scheduled")));
-        if (Integer.parseInt(order.getField("plannedQuantity").toString()) == 0) {
-            order.setField("plannedQuantity", null);
-        }
+        order.setField("plannedQuantity", values.get("quantity_scheduled").isEmpty() ? new BigDecimal(
+                100 * RANDOM.nextDouble() + 1) : new BigDecimal(values.get("quantity_scheduled")));
 
         order.setField("state", "01pending");
 
@@ -608,9 +478,7 @@ public class SamplesLoaderModule extends Module {
         }
 
         order = dataDefinitionService.get("orders", "order").save(order);
-        if (!order.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors - " + order.getErrors().toString());
-        }
+        validateEntity(order);
     }
 
     private void addTechnology(final Map<String, String> values) {
@@ -647,9 +515,7 @@ public class SamplesLoaderModule extends Module {
             }
 
             technology = dataDefinitionService.get("technologies", "technology").save(technology);
-            if (!technology.isValid()) {
-                throw new IllegalStateException("Saved entity have validation errors");
-            }
+            validateEntity(technology);
 
             if ("000010".equals(values.get("product_nr"))) {
                 if ("9".equals(values.get("bom_id"))) {
@@ -802,14 +668,11 @@ public class SamplesLoaderModule extends Module {
         component.setField("timeNextOperation", operation.getField("timeNextOperation"));
 
         component = dataDefinitionService.get("technologies", "technologyOperationComponent").save(component);
-        if (!component.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
-
+        validateEntity(component);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test operation component {technology="
                     + ((Entity) component.getField("technology")).getField("number") + ", parent="
-                    + (parent != null ? parent.getId() : 0) + ", operation="
+                    + (parent == null ? 0 : parent.getId()) + ", operation="
                     + ((Entity) component.getField("operation")).getField("number") + "}");
         }
         return component;
@@ -823,9 +686,7 @@ public class SamplesLoaderModule extends Module {
         productComponent.setField("batchRequired", true);
 
         productComponent = dataDefinitionService.get("technologies", "operationProductInComponent").save(productComponent);
-        if (!productComponent.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
+        validateEntity(productComponent);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test product component {product="
@@ -843,10 +704,7 @@ public class SamplesLoaderModule extends Module {
         productComponent.setField("product", product);
 
         productComponent = dataDefinitionService.get("technologies", "operationProductOutComponent").save(productComponent);
-        if (!productComponent.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
-
+        validateEntity(productComponent);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test product component {product="
                     + ((Entity) productComponent.getField("product")).getField("number")
@@ -879,9 +737,7 @@ public class SamplesLoaderModule extends Module {
         requirement.setField("orders", Lists.newArrayList(getRandomOrder(), getRandomOrder(), getRandomOrder()));
 
         requirement = dataDefinitionService.get("materialRequirements", "materialRequirement").save(requirement);
-        if (!requirement.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
+        validateEntity(requirement);
     }
 
     private void addWorkPlans() {
@@ -903,9 +759,7 @@ public class SamplesLoaderModule extends Module {
         }
 
         workPlan = dataDefinitionService.get("workPlans", "workPlan").save(workPlan);
-        if (!workPlan.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
+        validateEntity(workPlan);
 
         for (int i = 0; i < 1; i++) {
             Entity component = dataDefinitionService.get("workPlans", "workPlanComponent").create();
@@ -918,9 +772,7 @@ public class SamplesLoaderModule extends Module {
             }
 
             component = dataDefinitionService.get("workPlans", "workPlanComponent").save(component);
-            if (!component.isValid()) {
-                throw new IllegalStateException("Saved entity have validation errors");
-            }
+            validateEntity(component);
         }
     }
 
@@ -933,11 +785,10 @@ public class SamplesLoaderModule extends Module {
     private Entity getMachine(final String id) {
         List<Entity> machines = dataDefinitionService.get("basic", "machine").find().add(SearchRestrictions.eq("number", id))
                 .list().getEntities();
-        if (machines.size() > 0) {
-            return machines.get(0);
-        } else {
+        if (machines.isEmpty()) {
             return null;
         }
+        return machines.get(0);
     }
 
     private Entity getTechnologyByNumber(final String number) {

@@ -26,4 +26,14 @@ package com.qcadoo.mes.samples.constants;
 public interface SamplesConstants {
 
     String PLUGIN_IDENTIFIER = "samples";
+
+    String BASIC_PLUGIN_IDENTIFIER = "basic";
+
+    String BASIC_MODEL_PARAMETER = "parameter";
+
+    String BASIC_MODEL_COMPANY = "company";
+
+    String BASIC_MODEL_CURRENCY = "currency";
+
+    String BASIC_MODEL_SHIFT = "shift";
 }

@@ -38,6 +38,7 @@ import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.crud.CrudService;
 
 @Controller
@@ -68,7 +69,7 @@ public class GenealogyController {
         mav.setViewName("genealogyForComponentView");
         mav.addObject("value", value);
         mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .uniqueResult());
+                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
         return mav;
     }
 
@@ -78,7 +79,7 @@ public class GenealogyController {
         mav.setViewName("genealogyForProductView");
         mav.addObject("value", value);
         mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .uniqueResult());
+                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
         return mav;
     }
 }

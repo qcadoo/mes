@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.1.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="companiesList" 
+	modelName="company" 
+	menuAccessible="true">
+	
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<template name="standardGridTemplate" />
+		</ribbon>
+		<component type="grid" name="companies" reference="grid">
+			<script>
+				<![CDATA[
+					var copyButton = #{window}.getRibbonItem("actions.copy");
+					var deleteButton = #{window}.getRibbonItem("actions.delete");
+					
+					var buttons = new Array(copyButton, deleteButton);
+					
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								disableButtons(buttons);
+							} else {
+								var owner = false;
+								
+								for (var i in selectedEntitiesArray) {
+									if (selectedEntitiesArray[i].fields.owner == true) {
+										owner = true;
+										break;	
+									}
+								}
+								
+								if (owner) {
+									disableButtons(buttons, "#{translate(basic.companies.ribbon.message.someCompanyIsOwner)}");
+								} else {
+									enableButtons(buttons);
+								}
+							}
+						}
+					}
+					
+					function disableButtons(buttons, message) { 
+						for ( var i = 0; i < buttons.length; i++ ) 
+						{ 
+							buttons[i].disable(message);
+						} 
+					} 
+					
+					function enableButtons(buttons) { 
+						for ( var i = 0; i < buttons.length; i++ ) 
+						{ 
+							buttons[i].enable();
+						} 
+					} 
+					
+					#{grid}.addOnChangeListener(listener);
+				]]>
+			</script>
+			<option type="column" name="companyFullName" fields="companyFullName" link="true" />
+			<option type="column" name="owner" fields="owner" hidden="true" />
+			<option type="order" column="companyFullName" direction="asc" />
+			<option type="searchable" value="companyFullName" />
+			<option type="orderable" value="companyFullName" />
+			<option type="correspondingView" value="basic/companyDetails" />
+			<option type="correspondingComponent" value="form" />
+			<option type="deletable" value="false" />
+			<option type="creatable" value="false" />
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+		</component>
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+</view>

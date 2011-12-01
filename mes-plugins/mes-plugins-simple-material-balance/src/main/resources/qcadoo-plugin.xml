@@ -49,12 +49,6 @@
 	</information>
 
 	<dependencies>
-        <dependency>
-            <plugin>basic</plugin>
-        </dependency>
-		<dependency>
-			<plugin>orders</plugin>
-		</dependency>
 		<dependency>
 			<plugin>materialFlow</plugin>
 		</dependency>

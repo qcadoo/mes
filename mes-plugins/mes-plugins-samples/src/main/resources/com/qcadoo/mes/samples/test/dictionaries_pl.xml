@@ -25,13 +25,14 @@
 
 -->
 <categories>
-	<row NAME="categories" ITEM="category 1" />
-	<row  NAME="categories" ITEM="category 2" />
-	<row  NAME="categories" ITEM="category 3" />
-	<row  NAME="categories" ITEM="category 4" />
-	<row  NAME="posts" ITEM="post 1" />
-	<row  NAME="posts" ITEM="post 2" />
-	<row  NAME="units" ITEM="kg" />
-	<row  NAME="units" ITEM="units" />
-	<row  NAME="units" ITEM="m2" />
+	<row NAME="categories" ITEM="kategoria 1" />
+	<row NAME="categories" ITEM="kategoria 2" />
+	<row NAME="categories" ITEM="kategoria 3" />
+	<row NAME="categories" ITEM="kategoria 4" />
+	<row NAME="posts" ITEM="stanowisko 1" />
+	<row NAME="posts" ITEM="stanowisko 2" />
+	<row NAME="units" ITEM="kg" />
+	<row NAME="units" ITEM="szt" />
+	<row NAME="units" ITEM="m2" />
 </categories>
+

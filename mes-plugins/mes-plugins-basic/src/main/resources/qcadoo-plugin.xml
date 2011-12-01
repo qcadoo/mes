@@ -56,21 +56,26 @@
 
 		<localization:translation path="locales" basename="basic"/>
 
+		<model:model model="company" resource ="model/company.xml"/>
 		<model:model model="contractor" resource="model/contractor.xml" />
-		<model:model model="machine" resource="model/machine.xml" />
 		<model:model model="staff" resource="model/staff.xml" />
-		<model:model model="parameter" resource="model/parameter.xml" />
-
+		<model:model model="shift" resource ="model/shift.xml"/>
+		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml" />
 		<model:model model="product" resource="model/product.xml" />
 		<model:model model="substitute" resource="model/substitute.xml" />
 		<model:model model="substituteComponent" resource="model/substituteComponent.xml" />
-		<model:model model="company" resource ="model/company.xml"/>
+		<model:model model="machine" resource="model/machine.xml" />
 		
-		<model:model model="shift" resource ="model/shift.xml"/>
-		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml" />
-
+		<model:model model="parameter" resource="model/parameter.xml" />
+		
 		<model:model model="currency" resource ="model/currency.xml"/>
-
+		
+		<model:model-hook model="parameter" plugin="basic">
+			<model:onSave 
+				class="com.qcadoo.mes.basic.util.CurrencyService" 
+				method="changeCurrentCurrency" />
+		</model:model-hook>
+		
 		<model:dictionary name="categories" />
 		<model:dictionary name="posts" />
 		<model:dictionary name="units" />
@@ -79,44 +84,45 @@
 		
 		<menu:menu-item-url name="home" category="home" url="/dashboard.html" />
 		
-		<menu:menu-item name="machines" category="basic" view="machinesList" />
+		<menu:menu-item name="companies" category="basic" view="companiesList" />
+		<menu:menu-item name="contractors" category="basic" view="contractorsList" />
 		<menu:menu-item name="staff" category="basic" view="staffsList" />
-		<menu:menu-item name="products" category="basic" view="productsList" />
 		<menu:menu-item name="shifts" category="basic" view="shiftsList"/>
+		<menu:menu-item name="products" category="basic" view="productsList" />
+		<menu:menu-item name="machines" category="basic" view="machinesList" />
+		
+		<menu:menu-item-url name="dictionariesInBasic" 
+			category="basic" url="/page/qcadooDictionaries/dictionariesList.html"/>
+		
 		<menu:menu-item-url name="systemParameters"
 			category="administration" url="/parameters.html" />
-		<menu:menu-item-url name="companyDetails"
-			category="administration" url="/companyView.html"/>
-		<menu:menu-item name="contractors" category="basic"
-			view="contractorsList" />
 			
-		<menu:menu-item-url url="/page/qcadooDictionaries/dictionariesList.html" name="dictionariesInBasic" category="basic"/>
-
+		<menu:menu-item-url name="company"
+			category="administration" url="/companyView.html" />
+			
+		<view:view resource="view/companiesList.xml" />
+		<view:view resource="view/companyDetails.xml" />
 		<view:view resource="view/contractorsList.xml" />
 		<view:view resource="view/contractorDetails.xml" />
-		<view:view resource="view/machinesList.xml" />
-		<view:view resource="view/machineDetails.xml" />
 		<view:view resource="view/staffsList.xml" />
 		<view:view resource="view/staffDetails.xml" />
+		<view:view resource="view/shiftsList.xml"/>
+		<view:view resource="view/shiftDetails.xml"/>
+		<view:view resource="view/shiftTimetableExceptionDetails.xml" />
 		<view:view resource="view/productsList.xml" />
 		<view:view resource="view/productDetails.xml" />
 		<view:view resource="view/productSubstituteDetails.xml" />
 		<view:view resource="view/productSubstituteComponentDetails.xml" />
-		<view:view resource="view/parameters.xml" />
-		<view:view resource="view/companyDetails.xml"/>
-		<view:view resource="view/shiftDetails.xml"/>
-		<view:view resource="view/shiftsList.xml"/>
-		<view:view resource="view/shiftTimetableExceptionDetails.xml" />
+		<view:view resource="view/machinesList.xml" />
+		<view:view resource="view/machineDetails.xml" />
 		
+		<view:view resource="view/parameters.xml" />
+		
+		<view:view resource="view/companyDetailsInAdministration.xml" />
+				
 		<view:view-tab resource="view/currencyDetails.xml" />
 		
 		<view:view-hook view="parameters" type="beforeRender" plugin="basic" class="com.qcadoo.mes.basic.CurrencyViewService" method="applyCurrentCurrency"/>
-		
-		<model:model-hook model="parameter" plugin="basic">
-			<model:onSave 
-				class="com.qcadoo.mes.basic.util.CurrencyService" 
-				method="changeCurrentCurrency" />
-		</model:model-hook>
 		
 		<custom:custom class="com.qcadoo.mes.basic.CurrencyLoaderModule" />
 	</modules>
