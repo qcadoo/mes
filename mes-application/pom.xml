@@ -145,7 +145,6 @@
 			<artifactId>mes-plugins-basic-production-counting</artifactId>
 			<version>1.1.1-SNAPSHOT</version>
 		</dependency>
-		
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
