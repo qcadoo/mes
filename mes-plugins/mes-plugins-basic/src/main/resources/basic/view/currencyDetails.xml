@@ -31,8 +31,7 @@
 	>
 	
 	<windowTab name="currencyTab" reference="currencyTab">
-		<component type="gridLayout" name="gridLayout" columns="2"
-			rows="1" hasBorders="false">
+		<component type="gridLayout" name="gridLayout" columns="2" rows="1" hasBorders="false">
 			<layoutElement column="1" row="1">
 				<component type="lookup" name="currency" field="#{form}.currency" reference="currency">
 					<option type="column" name="currency" fields="currency" link="true" />
