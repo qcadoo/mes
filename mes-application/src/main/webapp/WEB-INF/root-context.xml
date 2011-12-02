@@ -43,13 +43,13 @@
        http://www.springframework.org/schema/aop 
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<context:property-placeholder location="file:${QCADOO_CONF}/db.properties,file:${QCADOO_CONF}/report.properties,file:${QCADOO_CONF}/mes.properties,classpath*:hibernate.properties,classpath*:build.properties"
+	<context:property-placeholder location="file:${QCADOO_CONF}/db.properties,file:${QCADOO_CONF}/report.properties,file:${QCADOO_CONF}/mes.properties,classpath*:hibernate.properties"
 		ignore-resource-not-found="true"
 		ignore-unresolvable="true"
 		properties-ref="defaultConfiguration" />
 
 		<util:properties id="defaultConfiguration">
-			<prop key="loadTestDataLocale">default</prop>
+			<prop key="samplesDatasetLocale">default</prop>
 		</util:properties>
 
 	<bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

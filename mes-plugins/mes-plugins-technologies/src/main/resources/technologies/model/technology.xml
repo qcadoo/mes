@@ -46,8 +46,8 @@
 		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology"
 			default="01perProductOut" required="true" />
 			
-		<enum name="state" values="draft,accepted,declined,outdated"
-			default="draft" required="true" />
+		<enum name="state" values="01draft,02accepted,03declined,04outdated"
+			default="01draft" required="true" />
 		<hasMany name="loggings" joinField="technology" model="logging" cascade="delete" />
 	</fields>
 	<hooks>

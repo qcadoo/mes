@@ -194,6 +194,8 @@ public class OrderGroupsService {
         Map<String, Object> componentsOptions = Maps.newHashMap();
         componentsOptions.put("grid.options", gridOptions);
 
+        componentsOptions.put("window.activeMenu", "orders.productionOrders");
+
         view.redirectTo("/page/orders/ordersList.html", false, true, componentsOptions);
     }
 }

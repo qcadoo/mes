@@ -98,7 +98,7 @@
 											var state = selectedEntitiesArray[0].fields.state;
 										}
 										
-										if (state && state != "accepted") {
+										if (state && state != "02accepted") {
 											getRibbonItem("actions.delete").enable();
 										}
 
@@ -117,24 +117,24 @@
 											return;
 										}
 										
-										acceptState.forState="accepted";
-										cancelState.forState="declined";
+										acceptState.forState="02accepted";
+										cancelState.forState="03declined";
 										cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.declined)}";
 										cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.declineTechnology)}");
 											
-										if (state == "draft") {
+										if (state == "01draft") {
 											acceptState.enable();
 											cancelState.enable();
-										} else if (state == "accepted") {
+										} else if (state == "02accepted") {
 											acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
 											acceptState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.acceptTechnology)}");
 											cancelState.enable();
-											cancelState.forState="outdated";
+											cancelState.forState="04outdated";
 											cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
 											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
-										} else if (state == "outdated") {
+										} else if (state == "04outdated") {
 											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
-										} else if (state == "declined") {
+										} else if (state == "03declined") {
 										} else {
 											cancelState.enable();
 										}

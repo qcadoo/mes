@@ -24,36 +24,36 @@
 package com.qcadoo.mes.technologies.constants;
 
 public enum TechnologyState {
-    
-    DRAFT("draft") {
+
+    DRAFT("01draft") {
 
         @Override
         public TechnologyState changeState(final String targetState) {
-            if (targetState != null && "accepted".equalsIgnoreCase(targetState.trim())) {
+            if (targetState != null && "02accepted".equalsIgnoreCase(targetState.trim())) {
                 return ACCEPTED;
             } else {
                 return DECLINED;
             }
         }
     },
-    ACCEPTED("accepted") {
+    ACCEPTED("02accepted") {
 
         @Override
         public TechnologyState changeState(final String targetState) {
-            if (targetState.trim().isEmpty() || "outdated".equalsIgnoreCase(targetState.trim())) {
+            if (targetState.trim().isEmpty() || "04outdated".equalsIgnoreCase(targetState.trim())) {
                 return OUTDATED;
             }
             return this;
         }
     },
-    DECLINED("declined") {
+    DECLINED("03declined") {
 
         @Override
         public TechnologyState changeState(final String targetState) {
             return this;
         }
     },
-    OUTDATED("outdated") {
+    OUTDATED("04outdated") {
 
         @Override
         public TechnologyState changeState(final String targetState) {

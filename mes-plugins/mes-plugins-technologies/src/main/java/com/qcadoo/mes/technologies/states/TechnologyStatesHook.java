@@ -26,11 +26,9 @@ package com.qcadoo.mes.technologies.states;
 import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
 
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
@@ -63,8 +61,8 @@ public class TechnologyStatesHook {
             return;
         }
 
-        TechnologyState newState = getTechnologyStateFromString(technology.getStringField(STATE_FIELD));
-        TechnologyState oldState = getTechnologyStateFromString(existingTechnology.getStringField(STATE_FIELD));
+        TechnologyState newState = TechnologyStateUtils.getStateFromField(technology.getStringField(STATE_FIELD));
+        TechnologyState oldState = TechnologyStateUtils.getStateFromField(existingTechnology.getStringField(STATE_FIELD));
 
         List<MessageHolder> validationMessages = technologyStateNotifier.onTechnologyStateChange(existingTechnology, newState);
         assignValidationMessagesToEntity(technology, validationMessages);
@@ -99,10 +97,4 @@ public class TechnologyStatesHook {
         }
     }
 
-    private TechnologyState getTechnologyStateFromString(final String stringValue) {
-        if (!StringUtils.hasText(stringValue)) {
-            return null;
-        }
-        return TechnologyState.valueOf(stringValue.toUpperCase(Locale.getDefault()));
-    }
 }
