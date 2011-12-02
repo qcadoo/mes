@@ -55,19 +55,19 @@ public class ProductionRecordStateService {
     }
 
     private void changeRecordState(final ViewDefinitionState view, final String state) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        Entity productionCounting = form.getEntity();
+        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        final Entity productionCounting = form.getEntity();
         productionCounting.setField("state", state);
-        FieldComponent stateField = (FieldComponent) view.getComponentByReference("state");
+        final FieldComponent stateField = (FieldComponent) view.getComponentByReference("state");
         stateField.setFieldValue(state);
     }
 
     public void disabledFieldWhenStateNotDraft(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        final FormComponent form = (FormComponent) view.getComponentByReference("form");
         if (form.getEntity() == null) {
             return;
         }
-        Entity productionRecord = form.getEntity();
+        final Entity productionRecord = form.getEntity();
         String states = productionRecord.getStringField("state");
         if (!states.equals(ProductionCountingStates.DRAFT.getStringValue())) {
             for (String reference : Arrays.asList("lastRecord", "number", "order", "orderOperationComponent", "shift",
@@ -130,9 +130,10 @@ public class ProductionRecordStateService {
     }
 
     private String getTargetStateFromArgs(final String[] args) {
+        String retval = "";
         if (args != null && args.length > 0 && !"null".equals(args[0])) {
-            return args[0];
+            retval = args[0];
         }
-        return "";
+        return retval;
     }
 }

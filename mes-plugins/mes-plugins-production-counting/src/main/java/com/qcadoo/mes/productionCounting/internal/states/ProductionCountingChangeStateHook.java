@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting.internal.states;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
@@ -31,18 +32,17 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ProductionCountingChangeStateHook {
 
+    @Autowired
+    private ProductionCountingStatesChangingService changingService;
+
     public void changedState(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity == null) {
-            return;
-        }
-        if (entity.getId() == null) {
-            return;
-        }
-        Entity oldEntity = dataDefinition.get(entity.getId());
 
-        if (oldEntity == null) {
-            return;
-        }
+        if (entity != null && entity.getId() != null) {
 
+            final Entity oldEntity = dataDefinition.get(entity.getId());
+            if (oldEntity != null) {
+                changingService.performChangeState(entity, oldEntity);
+            }
+        }
     }
 }

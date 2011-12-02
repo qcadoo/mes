@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.1.0
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.1.0 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <model name="productionRecord" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
@@ -35,7 +22,8 @@
 			plugin="productionScheduling" />
 		<belongsTo name="shift" model="shift" plugin="basic"
 			required="true" />
-		<enum name="state" values="01draft,02accepted,03declined,04outdated" default="01draft" required="true"/>
+		<enum name="state" values="01draft,02accepted,03declined"
+			default="01draft" required="true" />
 		<hasMany name="recordOperationProductInComponents" joinField="productionRecord"
 			model="recordOperationProductInComponent" />
 		<hasMany name="recordOperationProductOutComponents" joinField="productionRecord"
@@ -49,25 +37,38 @@
 		<integer name="machineTimeBalance" />
 		<integer name="laborTime" />
 		<integer name="laborTimeBalance" />
-		<integer name="plannedTime"  />
-		<integer name="plannedMachineTime"  />
-		<integer name="plannedLaborTime"  />
+		<integer name="plannedTime" />
+		<integer name="plannedMachineTime" />
+		<integer name="plannedLaborTime" />
 	</fields>
 	<hooks>
+		<onSave
+			class="com.qcadoo.mes.productionCounting.internal.states.ProductionCountingChangeStateHook"
+			method="changedState" />
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="generateData" />
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="copyProductsFromOrderOperation" />
-		<onSave class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+		<onSave
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="countPlannedTimeAndBalance" />
-		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+		<validatesWith
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="checkTypeOfProductionRecording" />
-		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="checkIfPartialIsAllowed"/>
-		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="checkIfOrderIsStarted"/>
-		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="checkIfExistsFinalRecord"/>
-		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" method="checkIfOperationIsSet" />
+		<validatesWith
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+			method="checkIfPartialIsAllowed" />
+		<validatesWith
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+			method="checkIfOrderIsStarted" />
+		<validatesWith
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+			method="checkIfExistsFinalRecord" />
+		<validatesWith
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+			method="checkIfOperationIsSet" />
 	</hooks>
 	<identifier expression="#number" />
 </model>

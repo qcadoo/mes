@@ -55,8 +55,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class ProductionRecordViewService {
@@ -108,6 +106,8 @@ public class ProductionRecordViewService {
                 getBooleanValue(order.getField("registerQuantityOutProduct")));
         view.getComponentByReference("recordOperationProductInComponent").setVisible(
                 getBooleanValue(order.getField("registerQuantityInProduct")));
+
+        view.getComponentByReference("isDisabled").setFieldValue(false);
     }
 
     public void setParametersDefaultValue(final ViewDefinitionState viewDefinitionState) {
@@ -237,12 +237,6 @@ public class ProductionRecordViewService {
                         MessageType.INFO, false);
             }
         }
-        if ("01basic".equals(order.getField("typeOfProductionRecording"))) {
-            form.addMessage(translationService.translate(
-                    "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting", view.getLocale()),
-                    ComponentState.MessageType.FAILURE);
-        }
-
     }
 
     public void fillFieldFromProduct(final ViewDefinitionState view) {
@@ -319,9 +313,9 @@ public class ProductionRecordViewService {
             }
             typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
             typeOfProductionRecording.setEnabled(false);
-            typeOfProductionRecording.addMessage(translationService.translate(
-                    "orders.orderDetails.window.productionCounting.typeOfProductionRecording.error.saveOrderFirst",
-                    view.getLocale()), MessageType.INFO);
+            // typeOfProductionRecording.addMessage(translationService.translate(
+            // "orders.orderDetails.window.productionCounting.typeOfProductionRecording.error.saveOrderFirst",
+            // view.getLocale()), MessageType.SUCCESS);
         }
     }
 
@@ -416,14 +410,13 @@ public class ProductionRecordViewService {
     public void disableFieldsIfBasicSelected(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
         FieldComponent orderComponent = (FieldComponent) view.getComponentByReference("order");
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         Entity order = getOrderFromLookup(view);
 
         if (order == null) {
             return;
         }
 
-        List<String> components = Arrays.asList("shift", "laborTime", "machineTime", "lastRecord");
+        List<String> components = Arrays.asList("shift", "machineTime", "laborTime", "lastRecord");
         for (String componentName : components) {
             FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
             if ("01basic".equals(order.getField("typeOfProductionRecording"))) {
@@ -431,21 +424,30 @@ public class ProductionRecordViewService {
             } else {
                 component.setEnabled(true);
             }
+            component.requestComponentUpdateState();
         }
 
-        orderComponent.addMessage(translationService.translate(
-                "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting", view.getLocale()),
-                ComponentState.MessageType.INFO);
-
-        List<String> ribbonItems = Arrays.asList("save", "saveBack", "saveNew");
-        for (String ribbonItemName : ribbonItems) {
-            RibbonActionItem ribbonItem = window.getRibbon().getGroupByName("actions").getItemByName(ribbonItemName);
+        List<String> times = Arrays.asList("laborTime", "machineTime");
+        for (String componentName : times) {
+            FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
             if ("01basic".equals(order.getField("typeOfProductionRecording"))) {
-                ribbonItem.setEnabled(false);
+                component.setVisible(false);
             } else {
-                ribbonItem.setEnabled(true);
+                component.setVisible(true);
             }
+            component.requestComponentUpdateState();
         }
-        window.requestRibbonRender();
+
+        FieldComponent isDisabled = (FieldComponent) view.getComponentByReference("isDisabled");
+
+        if ("01basic".equals(order.getField("typeOfProductionRecording"))) {
+            orderComponent.addMessage(translationService.translate(
+                    "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting", view.getLocale()),
+                    ComponentState.MessageType.INFO);
+            isDisabled.setFieldValue(true);
+        } else {
+            isDisabled.setFieldValue(false);
+        }
+        isDisabled.requestComponentUpdateState();
     }
 }

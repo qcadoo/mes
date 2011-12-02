@@ -40,7 +40,8 @@
        http://schema.qcadoo.org/modules/localization.xsd
        http://schema.qcadoo.org/modules/menu
        http://schema.qcadoo.org/modules/menu.xsd
-       http://schema.qcadoo.org/modules/custom http://schema.qcadoo.org/modules/custom.xsd">
+       http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>Qcadoo MES :: Plugins :: Production Counting and Balance</name>
@@ -168,5 +169,4 @@
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="changeProducedQuantityFieldState" />
 	</modules>
-
 </plugin>

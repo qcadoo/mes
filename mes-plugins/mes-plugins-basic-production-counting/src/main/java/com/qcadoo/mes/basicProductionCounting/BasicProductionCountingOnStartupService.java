@@ -22,7 +22,7 @@ public class BasicProductionCountingOnStartupService extends Module {
 
     @Override
     public void disableOnStartup() {
-        orderChangingService.addOrderStateListener(orderStatesListener);
+        orderChangingService.removeOrderStateListener(orderStatesListener);
     }
 
 }

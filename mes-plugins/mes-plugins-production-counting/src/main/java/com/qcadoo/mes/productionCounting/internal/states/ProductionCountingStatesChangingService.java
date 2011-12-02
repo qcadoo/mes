@@ -25,7 +25,11 @@ package com.qcadoo.mes.productionCounting.internal.states;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.ACCEPTED;
+import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.DECLINED;
 import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.DRAFT;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -34,36 +38,65 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ProductionCountingStatesChangingService {
 
+    private final List<RecordStateListener> stateListeners = new LinkedList<RecordStateListener>();
+
+    private static final String FIELD_STATE = "state";
+
+    public void addRecordStateListener(final RecordStateListener listener) {
+        stateListeners.add(listener);
+    }
+
+    public void removeRecordStateListener(final RecordStateListener listener) {
+        stateListeners.remove(listener);
+    }
+
     void performChangeState(final Entity newEntity, final Entity oldEntity) {
         checkArgument(newEntity != null, "New entity is null");
         checkArgument(oldEntity != null, "Old entity is null");
 
-        ProductionCountingStates state = ProductionCountingStates.valueOf(newEntity.getStringField("state"));
+        final ProductionCountingStates state;
+
+        if (ACCEPTED.getStringValue().equals(newEntity.getStringField(FIELD_STATE))) {
+            state = ProductionCountingStates.ACCEPTED;
+        } else if (DRAFT.getStringValue().equals(newEntity.getStringField(FIELD_STATE))) {
+            state = ProductionCountingStates.DRAFT;
+        } else if (DECLINED.getStringValue().equals(newEntity.getStringField(FIELD_STATE))) {
+            state = ProductionCountingStates.DECLINED;
+        } else {
+            throw new IllegalStateException("State value is illegal");
+        }
 
         if (oldEntity == null && !state.equals(DRAFT)) {
             throw new IllegalStateException();
         }
-        if (oldEntity != null && state.equals(ACCEPTED)
-                && !ProductionCountingStates.valueOf(oldEntity.getStringField("state")).equals(DRAFT)) {
+        if (oldEntity != null && state.equals(ACCEPTED) && !DRAFT.getStringValue().equals(oldEntity.getStringField(FIELD_STATE))) {
             throw new IllegalStateException();
         }
         switch (state) {
-            case DRAFT:
-                performAccepted();
-                break;
             case ACCEPTED:
-                performDeclined();
+                performAccepted(newEntity, oldEntity);
+                break;
+            case DECLINED:
+                performDeclined(newEntity, oldEntity);
+                break;
+            case DRAFT:
                 break;
             default:
-                throw new IllegalStateException("unknown product type");
+                throw new IllegalStateException("Record entity has invalid state value");
         }
 
     }
 
-    public void performAccepted() {
-
+    private void performDeclined(final Entity productionRecord, final Entity prevState) {
+        for (RecordStateListener listener : stateListeners) {
+            listener.onDeclined(productionRecord, prevState);
+        }
     }
 
-    public void performDeclined() {
+    private void performAccepted(final Entity productionRecord, final Entity prevState) {
+        for (RecordStateListener listener : stateListeners) {
+            listener.onAccepted(productionRecord, prevState);
+        }
     }
+
 }

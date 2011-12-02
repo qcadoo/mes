@@ -58,5 +58,4 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
 
         return super.onAccepted(order);
     }
-
 }
