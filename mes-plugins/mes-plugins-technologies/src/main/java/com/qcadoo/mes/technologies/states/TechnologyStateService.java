@@ -88,7 +88,7 @@ public class TechnologyStateService {
         final DataDefinition technologyDataDefinition = technology.getDataDefinition();
         final ComponentState stateFieldComponent = view.getComponentByReference(STATE_FIELD);
 
-        TechnologyState oldState = TechnologyState.valueOf(technology.getStringField(STATE_FIELD).toUpperCase());
+        TechnologyState oldState = TechnologyStateUtils.getStateFromField(technology.getStringField(STATE_FIELD));
         TechnologyState newState = oldState.changeState(targetState);
 
         if (newState.equals(oldState) || !beforeChangeNotifier.fireListeners(component, technology, newState)) {

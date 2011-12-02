@@ -275,7 +275,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         technology.setField("name", getNameFromNumberAndPrefix("Technology-", number));
         technology.setField("number", number);
         technology.setField("product", product);
-        technology.setField("state", "draft");
+        technology.setField("state", "01draft");
         technology.setField("batchRequired", true);
         technology.setField("postFeatureRequired", false);
         technology.setField("otherFeatureRequired", false);

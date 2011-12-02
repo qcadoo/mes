@@ -40,6 +40,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
+import com.qcadoo.mes.technologies.states.TechnologyStateUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -470,7 +471,7 @@ public final class OrderService {
         if (technology == null) {
             return true;
         }
-        TechnologyState technologyState = TechnologyState.valueOf(technology.getStringField("state").toUpperCase());
+        TechnologyState technologyState = TechnologyStateUtils.getStateFromField(technology.getStringField("state"));
 
         if (TechnologyState.ACCEPTED != technologyState) {
             order.addError(orderDD.getField("technology"),

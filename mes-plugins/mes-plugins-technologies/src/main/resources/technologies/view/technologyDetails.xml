@@ -136,7 +136,7 @@
 									}
 									
 									function toggleEditable(state) {
-										var enabled = state == "draft";
+										var enabled = state == "01draft";
 										#{window}.setEnabled(enabled, true);
 										
 										var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", 
@@ -167,24 +167,24 @@
 										var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
 											
 										acceptState.disable();
-										acceptState.forState="accepted";
+										acceptState.forState="02accepted";
 										acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
 
 										cancelState.disable();
-										cancelState.forState="declined";
+										cancelState.forState="03declined";
 										cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.declined)}";
 										cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.declineTechnology)}");
 										
-										if (state == "draft") {
+										if (state == "01draft") {
 											acceptState.enable();
 											cancelState.enable();
-										} else if (state == "accepted") {
+										} else if (state == "02accepted") {
 											cancelState.enable();
-											cancelState.forState="outdated";
+											cancelState.forState="04outdated";
 											cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
 											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
-										} else if (state == "declined") {
-										} else if (state == "outdated") {
+										} else if (state == "03declined") {
+										} else if (state == "04outdated") {
 											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
 										} else {
 											cancelState.enable();

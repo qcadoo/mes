@@ -43,7 +43,9 @@ import org.springframework.util.StringUtils;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyState;
 import com.qcadoo.mes.technologies.print.ReportDataService;
+import com.qcadoo.mes.technologies.states.TechnologyStateUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -93,6 +95,8 @@ public class TechnologyService {
     private static final String CONST_OPERATION_COMP_PRODUCT_OUT = "operationProductOutComponents";
 
     private static final String CONST_REFERENCE_MODE = "referenceMode";
+
+    private static final String CONST_STATE = "state";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -465,10 +469,11 @@ public class TechnologyService {
         if (technology == null || existingTechnology == null) {
             return false;
         }
-        String technologyState = technology.getStringField("state");
-        String existingTechnologyState = existingTechnology.getStringField("state");
+        TechnologyState technologyState = TechnologyStateUtils.getStateFromField(technology.getStringField(CONST_STATE));
+        TechnologyState existingTechnologyState = TechnologyStateUtils.getStateFromField(existingTechnology
+                .getStringField(CONST_STATE));
 
-        return "accepted".equalsIgnoreCase(technologyState) && technologyState.equalsIgnoreCase(existingTechnologyState);
+        return TechnologyState.ACCEPTED == technologyState && technologyState == existingTechnologyState;
     }
 
     private boolean productComponentsContainProduct(List<Entity> components, Entity product) {

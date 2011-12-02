@@ -499,7 +499,7 @@ public class TestSamplesLoader extends SamplesLoader {
             technology.setField("postFeatureRequired", false);
             technology.setField("otherFeatureRequired", false);
             technology.setField("shiftFeatureRequired", false);
-            technology.setField("state", "draft");
+            technology.setField("state", "01draft");
             if (!values.get("minimal").isEmpty()) {
                 technology.setField("minimalQuantity", values.get("minimal"));
             }
