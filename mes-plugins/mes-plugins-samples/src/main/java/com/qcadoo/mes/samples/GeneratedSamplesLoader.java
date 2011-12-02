@@ -297,7 +297,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         treeNumberingService.generateNumbersAndUpdateTree(
                 dataDefinitionService.get("technologies", "technologyOperationComponent"), "technology", technology.getId());
 
-        technology.setField("state", "accepted");
+        technology.setField("state", "02accepted");
         technology = dataDefinitionService.get("technologies", "technology").save(technology);
         validateEntity(technology);
     }

@@ -419,7 +419,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
     private void prepareTechnologiesForOrder(final Map<String, String> values) {
         Entity technology = getTechnologyByNumber(values.get("tech_nr"));
-        technology.setField("state", "accepted");
+        technology.setField("state", "02accepted");
         technology.getDataDefinition().save(technology);
     }
 
