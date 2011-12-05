@@ -11,7 +11,7 @@ ALTER TABLE basic_company
 -- Table: technologies_technology
 
 ALTER TABLE technologies_technology 
-	ALTER COLUMN state SET DEFAULT '01draft'::character varying
+	ALTER COLUMN state SET DEFAULT '01draft'::character varying;
 
 BEGIN;
 	UPDATE technologies_technology SET state = '01draft' WHERE state = 'draft';
