@@ -59,18 +59,14 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
     private class Addition implements Operation {
 
         @Override
-        public BigDecimal perform(final BigDecimal orginalValue, final BigDecimal addition) {
-            BigDecimal result;
-            if (orginalValue == null && addition == null) {
-                result = BigDecimal.ZERO;
-            } else if (orginalValue == null && addition != null) {
-                result = addition;
-            } else if (addition == null && orginalValue != null) {
-                result = orginalValue;
-            } else {
-                result = orginalValue.add(addition);
+        public BigDecimal perform(BigDecimal orginalValue, BigDecimal addition) {
+            if (orginalValue == null) {
+                orginalValue = BigDecimal.ZERO;
             }
-            return result;
+            if (addition == null) {
+                addition = BigDecimal.ZERO;
+            }
+            return orginalValue.add(addition);
         }
 
     }
@@ -78,18 +74,16 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
     private class Substraction implements Operation {
 
         @Override
-        public BigDecimal perform(final BigDecimal orginalValue, final BigDecimal substrahend) {
-            BigDecimal result;
-            if (orginalValue == null && substrahend != null) {
-                result = substrahend.negate();
-            } else if (substrahend == null && orginalValue != null) {
-                result = orginalValue;
-            } else if (substrahend == null && orginalValue == null) {
-                result = BigDecimal.ZERO;
-            } else {
-                result = orginalValue.subtract(substrahend);
+        public BigDecimal perform(BigDecimal orginalValue, BigDecimal substrahend) {
+            if (orginalValue == null) {
+                orginalValue = BigDecimal.ZERO;
             }
-            return result;
+
+            if (substrahend == null) {
+                substrahend = BigDecimal.ZERO;
+            }
+            return orginalValue.subtract(substrahend);
+
         }
 
     }
@@ -107,8 +101,8 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
 
         for (Entity productIn : productsIn) {
             Entity productionCounting = getProductCount(productIn, productionCountings);
-            final BigDecimal usedQuantity = (BigDecimal) productionCounting.getField(FIELD_USED_QUANTITY);
-            final BigDecimal productQuantity = (BigDecimal) productIn.getField(FIELD_USED_QUANTITY);
+            BigDecimal usedQuantity = (BigDecimal) productionCounting.getField(FIELD_USED_QUANTITY);
+            BigDecimal productQuantity = (BigDecimal) productIn.getField(FIELD_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
             productionCounting.setField(FIELD_USED_QUANTITY, result);
             productionCounting = productionCounting.getDataDefinition().save(productionCounting);
@@ -119,8 +113,8 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
 
         for (Entity productOut : productsOut) {
             Entity productionCounting = getProductCount(productOut, productionCountings);
-            final BigDecimal usedQuantity = (BigDecimal) productionCounting.getField("producedQuantity");
-            final BigDecimal productQuantity = (BigDecimal) productOut.getField(FIELD_USED_QUANTITY);
+            BigDecimal usedQuantity = (BigDecimal) productionCounting.getField("producedQuantity");
+            BigDecimal productQuantity = (BigDecimal) productOut.getField(FIELD_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
             productionCounting.setField("producedQuantity", result);
             productionCounting = productionCounting.getDataDefinition().save(productionCounting);

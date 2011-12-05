@@ -127,6 +127,7 @@
 									function updateRibbon(state) {
 										var acceptState = #{window}.getRibbonItem("status.acceptRecord");
 										var cancelState = #{window}.getRibbonItem("status.cancelRecord");
+										var actionDelete = #{window}.getRibbonItem("actions.delete");
 											
 										acceptState.disable();
 										acceptState.forState="02accepted";
@@ -141,10 +142,11 @@
 											acceptState.enable();
 											cancelState.enable();
 										} else if (state == "02accepted") {
-											
+											actionDelete.disable();
 											cancelState.enable();
 											cancelState.forState="03declined";
 										} else if ((state == "03declined")) {
+											actionDelete.enable();
 										} else{
 											cancelState.enable();
 										}

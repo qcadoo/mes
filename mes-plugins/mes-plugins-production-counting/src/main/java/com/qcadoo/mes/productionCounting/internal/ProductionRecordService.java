@@ -91,7 +91,7 @@ public class ProductionRecordService {
             entity.addError(dd.getField(FIELD_ORDER), "productionCounting.validate.global.error.productionRecord.orderError");
             return false;
         }
-        if (typeOfProductionRecording == null || PARAM_RECORDING_TYPE_BASIC.equals(typeOfProductionRecording)) {
+        if (PARAM_RECORDING_TYPE_BASIC.equals(typeOfProductionRecording)) {
             entity.addError(dd.getField(FIELD_ORDER),
                     "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting");
             return false;
