@@ -129,6 +129,7 @@
 										var cancelState = #{window}.getRibbonItem("status.cancelRecord");
 										var actionDelete = #{window}.getRibbonItem("actions.delete");
 											
+										var itemsToDisable = ["actions.save","actions.saveNew","actions.saveBack", "actions.copy"];
 										acceptState.disable();
 										acceptState.forState="02accepted";
 										acceptState.confirmMessage = "#{translate(productionCounting.productionRecordDetails.window.ribbon.status.acceptRecord.confirm)}";
@@ -142,10 +143,18 @@
 											acceptState.enable();
 											cancelState.enable();
 										} else if (state == "02accepted") {
+											for(var elementKey in itemsToDisable){  
+   												var ribbonItem = #{window}.getRibbonItem(itemsToDisable[elementKey]);    
+   												ribbonItem.disable(); 
+   											}
 											actionDelete.disable();
 											cancelState.enable();
 											cancelState.forState="03declined";
 										} else if ((state == "03declined")) {
+											for(var elementKey in itemsToDisable){  
+   												var ribbonItem = #{window}.getRibbonItem(itemsToDisable[elementKey]);    
+   												ribbonItem.disable(); 
+   											}
 											actionDelete.enable();
 										} else{
 											cancelState.enable();

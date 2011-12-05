@@ -1,37 +1,55 @@
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.1.0
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.1.0 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view name="productionRecordsList" modelName="productionRecord"
 	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
-	<component type="window" name="window">
+	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardGridTemplate" />
 		</ribbon>
 		<component type="grid" name="productionRecordsList"
 			reference="grid">
+			<script>
+			<![CDATA[ 
+					var deleteButton = #{window}.getRibbonItem("actions.delete");
+					
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							var deleteable = true;
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								deleteButton.disable();
+								console.log(deleteButton);
+							}else{
+								for (var i in selectedEntitiesArray) {
+									console.log(selectedEntitiesArray[i].fields);
+									if(selectedEntitiesArray[i].fields.state == "02accepted"){
+										deleteable = false;
+										break;
+									}
+								}
+								if(deleteable == false){
+									console.log("Wylaczam delete");
+									deleteButton.disable("#{translate(productionCounting.productionRecordsList.window.mainTab.productionRecordsList.grid.error.delete)}");
+								}else{
+									console.log("Wlaczam delete");
+									deleteButton.enable();
+								}
+							}
+						}
+					}
+					this.addOnChangeListener(listener);
+				]]>
+				</script>
 			<option type="column" name="number" fields="number" link="true"
 				width="150" />
 			<option type="column" name="order" fields="order" link="true"
@@ -39,14 +57,15 @@
 			<option type="column" name="orderOperationComponent" fields="orderOperationComponent"
 				link="true" width="300"
 				expression="#orderOperationComponent != null ? #orderOperationComponent['nodeNumber'] + ' ' + #orderOperationComponent['operation']['name'] : 'N/A'" />
-			<option type="column" name="lastRecord" fields="lastRecord" 
-					expression="#lastRecord" />
+			<option type="column" name="lastRecord" fields="lastRecord"
+				expression="#lastRecord" />
 			<option type="column" name="shift" fields="shift" link="true"
 				width="300" expression="#shift!=null ? #shift['name'] : 'N/A'" />
 			<option type="column" name="creationTime" fields="creationTime"
 				link="true" width="300" />
 			<option type="column" name="worker" fields="worker" link="true"
 				width="300" />
+			<option type="column" name="state" fields="state" reference="state" hidden="true"/>
 			<option type="order" column="number" direction="asc" />
 			<option type="correspondingView" value="productionCounting/productionRecordDetails" />
 			<option type="correspondingComponent" value="form" />
