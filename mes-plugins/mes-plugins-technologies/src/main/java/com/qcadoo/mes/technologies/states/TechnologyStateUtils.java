@@ -1,7 +1,5 @@
 package com.qcadoo.mes.technologies.states;
 
-import org.springframework.util.StringUtils;
-
 import com.qcadoo.mes.technologies.constants.TechnologyState;
 
 public final class TechnologyStateUtils {
@@ -10,10 +8,6 @@ public final class TechnologyStateUtils {
     }
 
     public static TechnologyState getStateFromField(final String fieldValue) {
-        if (!StringUtils.hasText(fieldValue)) {
-            return null;
-        }
-
         if ("01draft".equals(fieldValue)) {
             return TechnologyState.DRAFT;
         }
@@ -27,6 +21,6 @@ public final class TechnologyStateUtils {
             return TechnologyState.OUTDATED;
         }
 
-        return TechnologyState.DRAFT;
+        throw new IllegalArgumentException("Unsupported or unspecified technology state " + fieldValue);
     }
 }

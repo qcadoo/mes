@@ -531,4 +531,8 @@ public class TechnologyService {
 
         return UNRELATED;
     }
+
+    public void switchStateToDraftOnCopy(final DataDefinition technologyDataDefinition, final Entity technology) {
+        technology.setField(CONST_STATE, TechnologyState.DRAFT.getStringValue());
+    }
 }

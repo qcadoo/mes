@@ -136,8 +136,12 @@
 									}
 									
 									function toggleEditable(state) {
-										var enabled = state == "01draft";
-										#{window}.setEnabled(enabled, true);
+										var isDraft = state == "01draft";
+										var isAccepted = state == "02accepted";
+										var isDeclined = state == "03declined";
+										var isOutdated = state == "04outdated";
+										
+										#{window}.setEnabled(isDraft, true);
 										
 										var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", 
 											"actions.cancel", "statuses.activate", "statuses.deactivate"];
@@ -149,13 +153,13 @@
 												continue;
 											}
 											
-											if (enabled) {
+											if (isDraft) {
 												ribbonItem.enable();
 											} else {
 												ribbonItem.disable("#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}");
 											}
 										}
-										if (!enabled) {
+										if (!isAccepted) {
 											#{window}.getRibbonItem("actions.delete").enable();
 										} else {
 											#{window}.getRibbonItem("actions.delete").disable();

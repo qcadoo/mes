@@ -66,6 +66,8 @@
 		<onUpdate class="com.qcadoo.mes.technologies.TechnologyService"
 			method="performTreeNumbering" />
 		<onSave class="com.qcadoo.mes.technologies.states.TechnologyStatesHook" method="onSave" />
+		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
+			method="switchStateToDraftOnCopy" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
