@@ -70,12 +70,6 @@
 		
 		<model:model model="currency" resource ="model/currency.xml"/>
 		
-		<model:model-hook model="parameter" plugin="basic">
-			<model:onSave 
-				class="com.qcadoo.mes.basic.util.CurrencyService" 
-				method="changeCurrentCurrency" />
-		</model:model-hook>
-		
 		<model:dictionary name="categories" />
 		<model:dictionary name="posts" />
 		<model:dictionary name="units" />

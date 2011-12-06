@@ -24,13 +24,6 @@
     ***************************************************************************
 
 -->
-<units>
-	<row NAME="kg" DESCRIPTION="Kilogram"/>
-	<row NAME="m" DESCRIPTION="Meter"/>
-	<row NAME="m2" DESCRIPTION="Square meter"/>
-	<row NAME="m3" DESCRIPTION="Cubic meter"/>
-	<row NAME="l" DESCRIPTION="Liter"/>
-	<row NAME="pc" DESCRIPTION="Piece"/>
-	<row NAME="pair" DESCRIPTION="Pair"/>
-	<row NAME="set" DESCRIPTION="Set"/>
-</units>
+<activeCurrency>
+	<row CODE="USD" />
+</activeCurrency>

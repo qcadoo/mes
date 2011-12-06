@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ***************************************************************************
@@ -25,12 +25,12 @@
 
 -->
 <units>
-	<row NAME="kg" DESCRIPTION="Kilogram"/>
-	<row NAME="m" DESCRIPTION="Metr"/>
-	<row NAME="m2" DESCRIPTION="Meter kwadratowy"/>
-	<row NAME="m3" DESCRIPTION="Metr sześcienny"/>
-	<row NAME="l" DESCRIPTION="Litr"/>
-	<row NAME="pc" DESCRIPTION="Sztuka"/>
-	<row NAME="pair" DESCRIPTION="Para"/>
-	<row NAME="set" DESCRIPTION="Komplet"/>
+	<row NAME="units" ITEM="kg" DESCRIPTION="Kilogram"/>
+	<row NAME="units" ITEM="m" DESCRIPTION="Meter"/>
+	<row NAME="units" ITEM="m2" DESCRIPTION="Square meter"/>
+	<row NAME="units" ITEM="m3" DESCRIPTION="Cubic meter"/>
+	<row NAME="units" ITEM="l" DESCRIPTION="Liter"/>
+	<row NAME="units" ITEM="pc" DESCRIPTION="Piece"/>
+	<row NAME="units" ITEM="pair" DESCRIPTION="Pair"/>
+	<row NAME="units" ITEM="set" DESCRIPTION="Set"/>
 </units>

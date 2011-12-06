@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.samples;
 
+import static java.util.Collections.singletonMap;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -30,7 +32,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,8 +68,6 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
     private static final String[] TECHNOLOGY_QUANTITY_ALGRITHM = { "01perProductOut", "02perTechnology" };
 
-    private static final Random RANDOM = new Random();
-
     private static final String ORDERS_PLUGIN_NAME = "orders";
 
     private static final String TECHNOLOGY_PLUGIN_NAME = "technologies";
@@ -94,10 +93,10 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     @Override
     void loadData(final String dataset, final String locale) {
 
-        addParameters();
         generateAndAddUser();
         generateAndAddDictionary();
         if (isEnabled(SamplesConstants.BASIC_PLUGIN_IDENTIFIER)) {
+            addParameters(singletonMap("code", "PLN"));
             for (int i = 0; i < iterations; i++) {
                 generateAndAddProduct();
                 generateAndAddMachine();
@@ -381,7 +380,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
     private void generateAndAddDictionary() {
         for (int i = 0; i < ACCEPTABLE_DICTIONARIES.length; i++) {
-            addDictionary(ACCEPTABLE_DICTIONARIES[i]);
+            generateDictionaryItem(ACCEPTABLE_DICTIONARIES[i]);
         }
     }
 
@@ -583,19 +582,6 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         validateEntity(substituteComponent);
     }
 
-    private String getRandomDictionaryItem(final String dictionaryName) {
-        Entity dictionary = getDictionaryByName(dictionaryName);
-        SearchCriteriaBuilder searchBuilder = dataDefinitionService.get("qcadooModel", "dictionaryItem").find();
-        searchBuilder.add(SearchRestrictions.belongsTo("dictionary", dictionary));
-        int total = searchBuilder.list().getTotalNumberOfEntities();
-        return searchBuilder.setMaxResults(1).setFirstResult(RANDOM.nextInt(total)).uniqueResult().getField("name").toString();
-    }
-
-    private Entity getDictionaryByName(final String dictionaryName) {
-        return dataDefinitionService.get("qcadooModel", "dictionary").find().add(SearchRestrictions.eq("name", dictionaryName))
-                .setMaxResults(1).uniqueResult();
-    }
-
     private void generateAndAddUser() {
         Entity user = dataDefinitionService.get("qcadooSecurity", "user").create();
 
@@ -625,7 +611,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         return email;
     }
 
-    private void addDictionary(final String name) {
+    private void generateDictionaryItem(final String name) {
         Entity dictionary = getDictionaryByName(name);
 
         Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
@@ -641,27 +627,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         return ACCEPTABLE_PRODUCT_TYPE[RANDOM.nextInt(ACCEPTABLE_PRODUCT_TYPE.length)];
     }
 
-    private void addParameters() {
-        Entity parameter = dataDefinitionService.get("basic", "parameter").create();
-        parameter.setField("checkDoneOrderForQuality", false);
-        parameter.setField("autoGenerateQualityControl", false);
-        parameter.setField("batchForDoneOrder", "01none");
-
-        if (isEnabled("productionCounting")) {
-            parameter.setField("registerQuantityInProduct", true);
-            parameter.setField("registerQuantityOutProduct", true);
-            parameter.setField("registerProductionTime", true);
-            parameter.setField("justOne", false);
-            parameter.setField("allowToClose", false);
-            parameter.setField("autoCloseOrder", false);
-        }
-
-        dataDefinitionService.get("basic", "parameter").save(parameter);
-
-        validateEntity(parameter);
-    }
-
-    private static String generateString(final String allowedChars, final int stringLength) {
+    private String generateString(final String allowedChars, final int stringLength) {
         int stringLen = stringLength;
         String generatedString;
         if (stringLen <= 0) {

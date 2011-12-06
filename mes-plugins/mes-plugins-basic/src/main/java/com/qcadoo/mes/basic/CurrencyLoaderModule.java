@@ -120,7 +120,6 @@ public class CurrencyLoaderModule extends Module {
         currency.setField("alphabeticCode", values.get("ALPHABETICCODE").toString());
         currency.setField("isoCode", Integer.valueOf(values.get("ISOCODE")));
         currency.setField("minorUnit", Integer.valueOf(values.get("MINORUNIT")));
-        currency.setField("isActive", false);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test currency item {currency=" + currency.getStringField("currency") + "}");
