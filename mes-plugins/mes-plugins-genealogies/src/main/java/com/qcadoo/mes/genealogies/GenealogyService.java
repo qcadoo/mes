@@ -78,34 +78,35 @@ public final class GenealogyService {
                 Long.valueOf(form.getEntity().getField("order").toString()));
         Entity technology = order.getBelongsToField("technology");
 
-        if (technology != null) {
+        if (technology == null) {
+            featuresLayout.setVisible(false);
+        } else {
             boolean shiftFeatureRequired = (Boolean) technology.getField("shiftFeatureRequired");
             boolean postFeatureRequired = (Boolean) technology.getField("postFeatureRequired");
             boolean otherFeatureRequired = (Boolean) technology.getField("otherFeatureRequired");
 
-            if (!shiftFeatureRequired) {
-                shiftList.setVisible(false);
-            } else {
+            if (shiftFeatureRequired) {
                 shiftFeaturesList.setRequired(true);
+            } else {
+                shiftList.setVisible(false);
+
             }
 
-            if (!postFeatureRequired) {
-                postList.setVisible(false);
-            } else {
+            if (postFeatureRequired) {
                 postFeaturesList.setRequired(true);
+            } else {
+                postList.setVisible(false);
             }
 
-            if (!otherFeatureRequired) {
-                otherList.setVisible(false);
-            } else {
+            if (otherFeatureRequired) {
                 otherFeaturesList.setRequired(true);
+            } else {
+                otherList.setVisible(false);
             }
 
             if (!(otherFeatureRequired || shiftFeatureRequired || postFeatureRequired)) {
                 featuresLayout.setVisible(false);
             }
-        } else {
-            featuresLayout.setVisible(false);
         }
     }
 
