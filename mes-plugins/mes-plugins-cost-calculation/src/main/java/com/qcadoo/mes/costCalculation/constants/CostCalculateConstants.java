@@ -28,4 +28,16 @@ public interface CostCalculateConstants {
     String PLUGIN_IDENTIFIER = "costCalculation";
 
     String MODEL_COST_CALCULATION = "costCalculation";
+
+    final static String ORDER = "order";
+
+    final static String TECHNOLOGY = "technology";
+
+    final static String DEFAULT_TECHNOLOGY = "defaultTechnology";
+
+    final static String PRODUCT = "product";
+
+    final static String QUANTITY = "quantity";
+
+    final static String FORM = "form";
 }

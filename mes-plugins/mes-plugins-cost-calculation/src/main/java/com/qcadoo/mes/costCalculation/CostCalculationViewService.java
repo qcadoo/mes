@@ -25,6 +25,12 @@ package com.qcadoo.mes.costCalculation;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculateConstants.DEFAULT_TECHNOLOGY;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculateConstants.FORM;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculateConstants.ORDER;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculateConstants.PRODUCT;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculateConstants.QUANTITY;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculateConstants.TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
 import static com.qcadoo.view.api.ComponentState.MessageType.FAILURE;
@@ -112,8 +118,8 @@ public class CostCalculationViewService {
         }
         String sourceType = args[0];
         Long sourceId = Long.valueOf(args[1]);
-        Boolean cameFromOrder = "order".equals(sourceType);
-        Boolean cameFromTechnology = "technology".equals(sourceType);
+        Boolean cameFromOrder = ORDER.equals(sourceType);
+        Boolean cameFromTechnology = TECHNOLOGY.equals(sourceType);
         Entity technology;
         Entity order;
 
@@ -122,7 +128,7 @@ public class CostCalculationViewService {
         }
         if (cameFromOrder) {
             order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(sourceId);
-            technology = order.getBelongsToField("technology");
+            technology = order.getBelongsToField(TECHNOLOGY);
         } else {
             order = null;
             technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
@@ -135,8 +141,7 @@ public class CostCalculationViewService {
     private void applyValuesToFields(final ViewDefinitionState viewDefinitionState, final Entity technology, final Entity order) {
         Boolean cameFromOrder = false;
         Boolean cameFromTechnology = false;
-        Set<String> referenceNames = new HashSet<String>(Arrays.asList("defaultTechnology", "product", "order", "quantity",
-                "technology"));
+        Set<String> referenceNames = new HashSet<String>(Arrays.asList(DEFAULT_TECHNOLOGY, PRODUCT, ORDER, QUANTITY, TECHNOLOGY));
         Map<String, FieldComponent> componentsMap = new HashMap<String, FieldComponent>();
         for (String referenceName : referenceNames) {
             FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(referenceName);
@@ -150,27 +155,27 @@ public class CostCalculationViewService {
         }
 
         if (cameFromOrder) {
-            componentsMap.get("order").setFieldValue(order.getId());
-            componentsMap.get("defaultTechnology").setEnabled(false);
-            componentsMap.get("quantity").setFieldValue(order.getField("plannedQuantity"));
+            componentsMap.get(ORDER).setFieldValue(order.getId());
+            componentsMap.get(DEFAULT_TECHNOLOGY).setEnabled(false);
+            componentsMap.get(QUANTITY).setFieldValue(order.getField("plannedQuantity"));
         } else {
-            componentsMap.get("order").setFieldValue(EMPTY);
-            componentsMap.get("defaultTechnology").setEnabled(false);
-            componentsMap.get("quantity").setFieldValue(technology.getField("minimalQuantity"));
+            componentsMap.get(ORDER).setFieldValue(EMPTY);
+            componentsMap.get(DEFAULT_TECHNOLOGY).setEnabled(false);
+            componentsMap.get(QUANTITY).setFieldValue(technology.getField("minimalQuantity"));
         }
-        componentsMap.get("order").setEnabled(cameFromOrder);
-        componentsMap.get("technology").setFieldValue(technology.getId());
-        componentsMap.get("technology").setEnabled(cameFromTechnology);
-        componentsMap.get("defaultTechnology").setFieldValue(technology.getId());
+        componentsMap.get(ORDER).setEnabled(cameFromOrder);
+        componentsMap.get(TECHNOLOGY).setFieldValue(technology.getId());
+        componentsMap.get(TECHNOLOGY).setEnabled(cameFromTechnology);
+        componentsMap.get(DEFAULT_TECHNOLOGY).setFieldValue(technology.getId());
 
-        componentsMap.get("quantity").setEnabled(!cameFromOrder);
-        componentsMap.get("product").setFieldValue(technology.getBelongsToField("product").getId());
-        componentsMap.get("product").setEnabled(false);
+        componentsMap.get(QUANTITY).setEnabled(!cameFromOrder);
+        componentsMap.get(PRODUCT).setFieldValue(technology.getBelongsToField(PRODUCT).getId());
+        componentsMap.get(PRODUCT).setEnabled(false);
     }
 
     private void generateNumber(final ViewDefinitionState viewDefinitionState) {
         numberGeneratorService.generateAndInsertNumber(viewDefinitionState, CostCalculateConstants.PLUGIN_IDENTIFIER,
-                CostCalculateConstants.MODEL_COST_CALCULATION, "form", "number");
+                CostCalculateConstants.MODEL_COST_CALCULATION, FORM, "number");
     }
 
     public void generateDateOfCalculation(final DataDefinition dataDefinition, final Entity entity) {
@@ -204,11 +209,11 @@ public class CostCalculationViewService {
 
     public void fillCostPerUnitUnitField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
-        if (view.getComponentByReference("product").getFieldValue() == null) {
+        if (view.getComponentByReference(PRODUCT).getFieldValue() == null) {
             return;
         }
 
-        Long productId = (Long) view.getComponentByReference("product").getFieldValue();
+        Long productId = (Long) view.getComponentByReference(PRODUCT).getFieldValue();
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
 
         FieldComponent totalCostsPerUnitUNIT = (FieldComponent) view.getComponentByReference("totalCostsPerUnitUNIT");
@@ -221,7 +226,7 @@ public class CostCalculationViewService {
         if (!(state instanceof FieldComponent)) {
             return;
         }
-        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
+        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY);
         if (technologyLookup.getFieldValue() == null) {
             return;
         }
@@ -239,7 +244,7 @@ public class CostCalculationViewService {
         if (!(state instanceof FieldComponent)) {
             return;
         }
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ORDER);
         if (orderLookup.getFieldValue() == null) {
             return;
         }
@@ -249,16 +254,16 @@ public class CostCalculationViewService {
         if (order == null) {
             return;
         }
-        Entity technology = order.getBelongsToField("technology");
+        Entity technology = order.getBelongsToField(TECHNOLOGY);
         applyValuesToFields(viewDefinitionState, technology, order);
     }
 
     public void setFieldEnable(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
+        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY);
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ORDER);
 
-        FieldComponent product = (FieldComponent) viewDefinitionState.getComponentByReference("product");
-        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference("quantity");
+        FieldComponent product = (FieldComponent) viewDefinitionState.getComponentByReference(PRODUCT);
+        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference(QUANTITY);
 
         if (technologyLookup.getFieldValue() == null) {
             product.setEnabled(true);
@@ -281,7 +286,7 @@ public class CostCalculationViewService {
     public void generateCostCalculation(ViewDefinitionState view, ComponentState componentState, String[] args) {
         Entity costCalculation = getEntityFromForm(view);
         if (costCalculation.getId() == null) {
-            view.getComponentByReference("form")
+            view.getComponentByReference(FORM)
                     .addMessage(
                             translationService.translate("costCalculation.messages.failure.calculationOnUnsavedEntity",
                                     view.getLocale()), FAILURE);
@@ -292,17 +297,17 @@ public class CostCalculationViewService {
         costCalculation = costCalculationService.calculateTotalCost(costCalculation);
         fillFields(view, costCalculation);
         costCalculationReportService.generateCostCalculationReport(view, componentState, args);
-        view.getComponentByReference("form").addMessage(
+        view.getComponentByReference(FORM).addMessage(
                 translationService.translate("costCalculation.messages.success.calculationComplete", view.getLocale()), SUCCESS);
     }
 
     private void attachBelongsToFields(final Entity costCalculation) {
         final Map<String, DataDefinition> belongsToFieldDDs = Maps.newHashMap();
-        belongsToFieldDDs.put("order", dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER));
+        belongsToFieldDDs.put(ORDER, dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER));
         belongsToFieldDDs.put("technology", dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY));
-        belongsToFieldDDs.put("defaultTechnology",
+        belongsToFieldDDs.put(DEFAULT_TECHNOLOGY,
                 dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY));
-        belongsToFieldDDs.put("product", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT));
+        belongsToFieldDDs.put(PRODUCT, dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT));
 
         for (Map.Entry<String, DataDefinition> belongsToFieldDD : belongsToFieldDDs.entrySet()) {
             Object fieldValue = costCalculation.getField(belongsToFieldDD.getKey());
@@ -316,7 +321,7 @@ public class CostCalculationViewService {
 
     // get values from form fields
     private Entity getEntityFromForm(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(FORM);
         checkArgument(form != null, "form is null");
         checkArgument(form.isValid(), "invalid form");
         return form.getEntity();
@@ -360,10 +365,10 @@ public class CostCalculationViewService {
             return;
         }
         FieldComponent product = (FieldComponent) state;
-        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
-        FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
+        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY);
+        FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference(DEFAULT_TECHNOLOGY);
 
-        if (viewDefinitionState.getComponentByReference("product").getFieldValue() != null) {
+        if (viewDefinitionState.getComponentByReference(PRODUCT).getFieldValue() != null) {
             fillCostPerUnitUnitField(viewDefinitionState, state, args);
         }
         defaultTechnology.setFieldValue("");
@@ -383,7 +388,7 @@ public class CostCalculationViewService {
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY);
 
         SearchCriteriaBuilder searchCriteria = technologyDD.find().add(SearchRestrictions.eq("master", true))
-                .add(SearchRestrictions.belongsTo("product", BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT, selectedProductId));
+                .add(SearchRestrictions.belongsTo(PRODUCT, BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT, selectedProductId));
 
         return searchCriteria.uniqueResult();
     }

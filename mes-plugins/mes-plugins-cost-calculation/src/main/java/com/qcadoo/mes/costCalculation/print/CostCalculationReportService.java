@@ -65,14 +65,14 @@ public class CostCalculationReportService {
             if (costCalculation == null) {
                 state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
-            } else if (!StringUtils.hasText(costCalculation.getStringField("fileName"))) {
-                state.addMessage(translationService.translate(
-                        "costCalculation.costCalculationDetails.window.costCalculation.documentsWasNotGenerated",
-                        state.getLocale()), MessageType.FAILURE);
-            } else {
+            } else if (StringUtils.hasText(costCalculation.getStringField("fileName"))) {
                 viewDefinitionState.redirectTo("/generateSavedReport/" + CostCalculateConstants.PLUGIN_IDENTIFIER + "/"
                         + CostCalculateConstants.MODEL_COST_CALCULATION + "." + args[0] + "?id=" + state.getFieldValue()
                         + "&fieldDate=dateOfCalculation&suffix=", true, false);
+            } else {
+                state.addMessage(translationService.translate(
+                        "costCalculation.costCalculationDetails.window.costCalculation.documentsWasNotGenerated",
+                        state.getLocale()), MessageType.FAILURE);
             }
         } else {
             if (state instanceof FormComponent) {
@@ -106,7 +106,8 @@ public class CostCalculationReportService {
             }
 
             if ("0".equals(generated.getFieldValue())) {
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
+                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, viewDefinitionState.getLocale())
+                        .format(new Date()));
                 generated.setFieldValue("1");
             }
 
