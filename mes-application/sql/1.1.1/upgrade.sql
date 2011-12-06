@@ -1,6 +1,6 @@
 -- Table: basic_company
 
--- changed 30.11.2011
+-- changed 06.12.2011
 
 ALTER TABLE basic_company
 		ADD COLUMN number character varying(255),
@@ -21,3 +21,5 @@ BEGIN;
 COMMIT;
 
 -- end
+
+ALTER TABLE basic_currency DROP COLUMN isactive;

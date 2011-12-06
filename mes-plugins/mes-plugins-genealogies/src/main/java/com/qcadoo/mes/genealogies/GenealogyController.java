@@ -44,6 +44,8 @@ import com.qcadoo.view.api.crud.CrudService;
 @Controller
 public class GenealogyController {
 
+    private static final String REQUEST_PARAM_VALUE = "value";
+
     @Autowired
     private CrudService crudController;
 
@@ -64,20 +66,20 @@ public class GenealogyController {
     }
 
     @RequestMapping(value = "genealogiesForComponents/genealogyForComponent.pdf", method = RequestMethod.GET)
-    public ModelAndView genealogyForComponentPdf(@RequestParam("value") final String value) {
+    public ModelAndView genealogyForComponentPdf(@RequestParam(REQUEST_PARAM_VALUE) final String value) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("genealogyForComponentView");
-        mav.addObject("value", value);
+        mav.addObject(REQUEST_PARAM_VALUE, value);
         mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
         return mav;
     }
 
     @RequestMapping(value = "genealogies/genealogyForProduct.pdf", method = RequestMethod.GET)
-    public ModelAndView genealogyForProductPdf(@RequestParam("value") final String value) {
+    public ModelAndView genealogyForProductPdf(@RequestParam(REQUEST_PARAM_VALUE) final String value) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("genealogyForProductView");
-        mav.addObject("value", value);
+        mav.addObject(REQUEST_PARAM_VALUE, value);
         mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
         return mav;

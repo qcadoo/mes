@@ -30,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.jdom.Element;
 import org.slf4j.Logger;
@@ -40,13 +39,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.samples.constants.SamplesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
-import com.qcadoo.security.api.SecurityRole;
-import com.qcadoo.security.api.SecurityRolesService;
 
 @Component
 public class TestSamplesLoader extends SamplesLoader {
@@ -56,11 +54,6 @@ public class TestSamplesLoader extends SamplesLoader {
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     private static final long MILLIS_IN_DAY = 86400000;
-
-    private static final Random RANDOM = new Random(System.currentTimeMillis());
-
-    @Autowired
-    private SecurityRolesService securityRolesService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -74,8 +67,6 @@ public class TestSamplesLoader extends SamplesLoader {
     @Override
     void loadData(final String dataset, final String locale) {
 
-        addParameters();
-
         if (!setAsDemoEnviroment) {
             readDataFromXML(dataset, "users", locale);
         } else {
@@ -83,7 +74,7 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         readDataFromXML(dataset, "dictionaries", locale);
-        if (isEnabled("basic")) {
+        if (isEnabled(SamplesConstants.BASIC_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, "activeCurrency", locale);
             readDataFromXML(dataset, "company", locale);
             readDataFromXML(dataset, "machines", locale);
@@ -116,7 +107,7 @@ public class TestSamplesLoader extends SamplesLoader {
     @Override
     void readData(final Map<String, String> values, final String type, final Element node) {
         if ("activeCurrency".equals(type)) {
-            setCurrency(values);
+            addParameters(values);
         } else if ("company".equals(type)) {
             addCompany(values);
         } else if ("products".equals(type)) {
@@ -127,7 +118,7 @@ public class TestSamplesLoader extends SamplesLoader {
         } else if ("technologies".equals(type)) {
             addTechnology(values);
         } else if ("dictionaries".equals(type)) {
-            addDictionary(values);
+            addDictionaryItems(values);
         } else if ("users".equals(type)) {
             addUser(values);
         } else if ("operations".equals(type)) {
@@ -139,55 +130,6 @@ public class TestSamplesLoader extends SamplesLoader {
         } else if ("shifts".equals(type)) {
             addShifts(values);
         }
-    }
-
-    private void setCurrency(final Map<String, String> values) {
-        DataDefinition dd = dataDefinitionService.get("basic", "currency");
-        Entity currency = dd.find().add(SearchRestrictions.eq("isActive", true)).uniqueResult();
-
-        if (currency != null) {
-            currency.setField("isActive", false);
-            dd.save(currency);
-        }
-
-        String alphabeticCode = values.get("code");
-        currency = dd.find().add(SearchRestrictions.eq("alphabeticCode", alphabeticCode)).uniqueResult();
-        currency.setField("isActive", true);
-        dd.save(currency);
-    }
-
-    private void addCompany(final Map<String, String> values) {
-        Entity company = dataDefinitionService.get("basic", "company").create();
-
-        LOG.debug("id: " + values.get("id") + "number: " + values.get("number") + " companyFullName "
-                + values.get("companyfullname") + " tax " + values.get("tax") + " street " + values.get("street") + " house "
-                + values.get("house") + " flat " + values.get("flat") + " zipCode " + values.get("zipcode") + " city "
-                + values.get("city") + " state " + values.get("state") + " country " + values.get("country") + " email "
-                + values.get("email") + " addressWww " + values.get("addressWww") + " phone " + values.get("phone") + " owner "
-                + values.get("owner"));
-        company.setField("number", values.get("number"));
-        company.setField("companyFullName", values.get("companyfullname"));
-        company.setField("tax", values.get("tax"));
-        company.setField("street", values.get("street"));
-        company.setField("house", values.get("house"));
-        company.setField("flat", values.get("flat"));
-        company.setField("zipCode", values.get("zipcode"));
-        company.setField("city", values.get("city"));
-        company.setField("state", values.get("state"));
-        company.setField("country", values.get("country"));
-        company.setField("email", values.get("email"));
-        company.setField("addressWww", values.get("addresswww"));
-        company.setField("phone", values.get("phone"));
-        company.setField("owner", values.get("owner"));
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test company item {company=" + company.getField("companyFullName") + "}");
-        }
-
-        company = dataDefinitionService.get("basic", "company").save(company);
-
-        validateEntity(company);
-
     }
 
     private void addMachine(final Map<String, String> values) {
@@ -258,34 +200,6 @@ public class TestSamplesLoader extends SamplesLoader {
 
         operation = dataDefinitionService.get("technologies", "operation").save(operation);
         validateEntity(operation);
-    }
-
-    private void addShifts(final Map<String, String> values) {
-        Entity shift = dataDefinitionService.get("basic", "shift").create();
-
-        shift.setField("name", values.get("name"));
-        shift.setField("mondayWorking", values.get("mondayworking"));
-        shift.setField("mondayHours", values.get("mondayhours"));
-        shift.setField("tuesdayWorking", values.get("tuesdayworking"));
-        shift.setField("tuesdayHours", values.get("tuesdayhours"));
-        shift.setField("wensdayWorking", values.get("wensdayworking"));
-        shift.setField("wensdayHours", values.get("wensdayhours"));
-        shift.setField("thursdayWorking", values.get("thursdayworking"));
-        shift.setField("thursdayHours", values.get("thursdayhours"));
-        shift.setField("fridayWorking", values.get("fridayworking"));
-        shift.setField("fridayHours", values.get("fridayhours"));
-        shift.setField("saturdayWorking", values.get("saturdayworking"));
-        shift.setField("saturdayHours", values.get("saturdayhours"));
-        shift.setField("sundayWorking", values.get("sundayworking"));
-        shift.setField("sundayHours", values.get("sundayhours"));
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test shift item {shift=" + shift.getField("name") + "}");
-        }
-
-        shift = dataDefinitionService.get("basic", "shift").save(shift);
-
-        validateEntity(shift);
     }
 
     private void addProduct(final Map<String, String> values) {
@@ -369,52 +283,6 @@ public class TestSamplesLoader extends SamplesLoader {
 
         substituteComponent = dataDefinitionService.get("basic", "substituteComponent").save(substituteComponent);
         validateEntity(substituteComponent);
-    }
-
-    private void addDictionary(final Map<String, String> values) {
-        Entity dictionary = getDictionaryByName(values.get("name"));
-
-        Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
-        item.setField("dictionary", dictionary);
-        item.setField("name", values.get("item"));
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField("name") + ", item=" + item.getField("name")
-                    + "}");
-        }
-
-        item = dataDefinitionService.get("qcadooModel", "dictionaryItem").save(item);
-        validateEntity(item);
-    }
-
-    private void addUser(final Map<String, String> values) {
-        Entity user = dataDefinitionService.get("qcadooSecurity", "user").create();
-        if (!values.get("login").isEmpty()) {
-            user.setField("userName", values.get("login"));
-        }
-        if (!values.get("email").isEmpty()) {
-            user.setField("email", values.get("email"));
-        }
-        if (!values.get("firstname").isEmpty()) {
-            user.setField("firstName", values.get("firstname"));
-        }
-        if (!values.get("lastname").isEmpty()) {
-            user.setField("lastName", values.get("lastname"));
-        }
-        SecurityRole role = securityRolesService.getRoleByIdentifier(values.get("role"));
-        user.setField("role", role.getName());
-        user.setField("password", "123");
-        user.setField("passwordConfirmation", "123");
-        user.setField("enabled", true);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test user {login=" + user.getField("userName") + ", email=" + user.getField("email") + ", firstName="
-                    + user.getField("firstName") + ", lastName=" + user.getField("lastName") + ", role=" + user.getField("role")
-                    + "}");
-        }
-
-        user = dataDefinitionService.get("qcadooSecurity", "user").save(user);
-        validateEntity(user);
     }
 
     private void prepareTechnologiesForOrder(final Map<String, String> values) {
@@ -820,21 +688,6 @@ public class TestSamplesLoader extends SamplesLoader {
                 .setMaxResults(1).list().getEntities().get(0);
     }
 
-    private String getRandomDictionaryItem(final String dictionaryName) {
-        Entity dictionary = getDictionaryByName(dictionaryName);
-        Long total = (long) dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
-                .add(SearchRestrictions.belongsTo("dictionary", dictionary)).list().getTotalNumberOfEntities();
-        Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
-                .add(SearchRestrictions.belongsTo("dictionary", dictionary)).setFirstResult(RANDOM.nextInt(total.intValue()))
-                .setMaxResults(1).list().getEntities().get(0);
-        return item.getField("name").toString();
-    }
-
-    private Entity getDictionaryByName(final String name) {
-        return dataDefinitionService.get("qcadooModel", "dictionary").find().add(SearchRestrictions.eq("name", name))
-                .setMaxResults(1).list().getEntities().get(0);
-    }
-
     private Entity getRandomProduct() {
         Long total = (long) dataDefinitionService.get("basic", "product").find().list().getTotalNumberOfEntities();
         return dataDefinitionService.get("basic", "product").find().setFirstResult(RANDOM.nextInt(total.intValue()))
@@ -847,22 +700,4 @@ public class TestSamplesLoader extends SamplesLoader {
                 .setMaxResults(1).list().getEntities().get(0);
     }
 
-    private void addParameters() {
-        LOG.info("Adding parameters");
-        Entity parameter = dataDefinitionService.get("basic", "parameter").create();
-        parameter.setField("checkDoneOrderForQuality", false);
-        parameter.setField("autoGenerateQualityControl", false);
-        parameter.setField("batchForDoneOrder", "01none");
-
-        if (isEnabled("productionCounting")) {
-            parameter.setField("registerQuantityInProduct", true);
-            parameter.setField("registerQuantityOutProduct", true);
-            parameter.setField("registerProductionTime", true);
-            parameter.setField("justOne", false);
-            parameter.setField("allowToClose", false);
-            parameter.setField("autoCloseOrder", false);
-        }
-
-        dataDefinitionService.get("basic", "parameter").save(parameter);
-    }
 }

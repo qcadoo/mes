@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
     ***************************************************************************
@@ -24,5 +24,13 @@
     ***************************************************************************
 
 -->
-<users>
-</users>
+<units>
+	<row NAME="units" ITEM="kg" DESCRIPTION="Kilogram"/>
+	<row NAME="units" ITEM="m" DESCRIPTION="Metr"/>
+	<row NAME="units" ITEM="m2" DESCRIPTION="Meter kwadratowy"/>
+	<row NAME="units" ITEM="m3" DESCRIPTION="Metr sześcienny"/>
+	<row NAME="units" ITEM="l" DESCRIPTION="Litr"/>
+	<row NAME="units" ITEM="pc" DESCRIPTION="Sztuka"/>
+	<row NAME="units" ITEM="pair" DESCRIPTION="Para"/>
+	<row NAME="units" ITEM="set" DESCRIPTION="Komplet"/>
+</units>

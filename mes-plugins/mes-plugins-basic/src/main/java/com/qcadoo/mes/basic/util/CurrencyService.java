@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.basic.util;
 
-import java.util.Currency;
-import java.util.Locale;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +30,6 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class CurrencyService {
@@ -42,59 +38,13 @@ public class CurrencyService {
     DataDefinitionService dataDefinitionService;
 
     public Entity getCurrentCurrency() {
-        if (getCurrencyEnabled() == null) {
-            setCurrencyEnabled(getCurrencyFromLocale());
-        }
+        DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER);
 
-        return getCurrencyEnabled();
-    }
-
-    public Entity getCurrencyFromLocale() {
-        DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
-
-        String alphabeticCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
-        Entity currency = dd.find().add(SearchRestrictions.eq("alphabeticCode", alphabeticCode)).uniqueResult();
-
-        return currency;
-    }
-
-    public Entity getCurrencyEnabled() {
-        DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
-
-        Entity currency = dd.find().add(SearchRestrictions.eq("isActive", true)).uniqueResult();
-
-        return currency;
+        return dd.find().uniqueResult().getBelongsToField("currency");
     }
 
     public String getCurrencyAlphabeticCode() {
         return getCurrentCurrency().getField("alphabeticCode").toString();
     }
 
-    public void setCurrencyEnabled(Entity currency) {
-        DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
-
-        currency.setField("isActive", true);
-
-        dd.save(currency);
-    }
-
-    public void setCurrencyDisabled(Entity currency) {
-        DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
-
-        currency.setField("isActive", false);
-
-        dd.save(currency);
-    }
-
-    public void changeCurrentCurrency(final DataDefinition dd, final Entity entity) {
-        Entity oldCurrency = getCurrentCurrency();
-        Entity newCurrency = entity.getBelongsToField("currency");
-
-        if (newCurrency == null) {
-            newCurrency = oldCurrency;
-        }
-
-        setCurrencyDisabled(oldCurrency);
-        setCurrencyEnabled(newCurrency);
-    }
 }

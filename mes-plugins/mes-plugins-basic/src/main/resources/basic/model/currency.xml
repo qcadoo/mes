@@ -34,7 +34,6 @@
 		</string>
 		<integer name="isoCode" unique="true" />
 		<integer name="minorUnit" required ="true" />
-		<boolean name="isActive" />
 	</fields>
 	<hooks />
 	<identifier expression="#alphabeticCode + 
