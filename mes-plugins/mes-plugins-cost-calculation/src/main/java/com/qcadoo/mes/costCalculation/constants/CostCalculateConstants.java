@@ -29,15 +29,15 @@ public interface CostCalculateConstants {
 
     String MODEL_COST_CALCULATION = "costCalculation";
 
-    final static String ORDER = "order";
+    String ORDER = "order";
 
-    final static String TECHNOLOGY = "technology";
+    String TECHNOLOGY = "technology";
 
-    final static String DEFAULT_TECHNOLOGY = "defaultTechnology";
+    String DEFAULT_TECHNOLOGY = "defaultTechnology";
 
-    final static String PRODUCT = "product";
+    String PRODUCT = "product";
 
-    final static String QUANTITY = "quantity";
+    String QUANTITY = "quantity";
 
-    final static String FORM = "form";
+    String FORM = "form";
 }

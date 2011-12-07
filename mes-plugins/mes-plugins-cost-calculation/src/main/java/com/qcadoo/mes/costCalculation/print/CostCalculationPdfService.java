@@ -86,7 +86,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     private String tabInText = "\t \t \t";
 
-    private final static String NAME = "name";
+    private static final String NAME = "name";
 
     @Override
     protected void buildPdfContent(Document document, Entity entity, Locale locale) throws DocumentException {

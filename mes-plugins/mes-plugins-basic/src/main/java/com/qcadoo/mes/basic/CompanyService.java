@@ -66,14 +66,14 @@ public class CompanyService {
             return;
         }
 
-        Entity entity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).get(
+        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).get(
                 form.getEntityId());
 
-        if (entity == null) {
+        if (company == null) {
             return;
         }
 
-        Object owner = entity.getField("owner");
+        Object owner = company.getField("owner");
 
         if (owner != null && owner.equals(true)) {
             form.setFormEnabled(false);
