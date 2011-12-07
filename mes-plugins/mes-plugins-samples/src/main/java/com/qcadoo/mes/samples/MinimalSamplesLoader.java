@@ -25,21 +25,15 @@ package com.qcadoo.mes.samples;
 
 import org.springframework.stereotype.Component;
 
-import com.qcadoo.mes.samples.constants.SamplesConstants;
-
 @Component
 public class MinimalSamplesLoader extends SamplesLoader {
 
     @Override
     void loadData(final String dataset, final String locale) {
-
-        if (isEnabled(SamplesConstants.BASIC_PLUGIN_IDENTIFIER)) {
-            readDataFromXML(dataset, "activeCurrency", locale);
-            readDataFromXML(dataset, "dictionaries", locale);
-            readDataFromXML(dataset, "shifts", locale);
-            readDataFromXML(dataset, "company", locale);
-        }
-
+        readDataFromXML(dataset, "activeCurrency", locale);
+        readDataFromXML(dataset, "dictionaries", locale);
+        readDataFromXML(dataset, "shifts", locale);
+        readDataFromXML(dataset, "company", locale);
     }
 
 }

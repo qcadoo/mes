@@ -39,7 +39,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.samples.constants.SamplesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -74,14 +73,12 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         readDataFromXML(dataset, "dictionaries", locale);
-        if (isEnabled(SamplesConstants.BASIC_PLUGIN_IDENTIFIER)) {
-            readDataFromXML(dataset, "activeCurrency", locale);
-            readDataFromXML(dataset, "company", locale);
-            readDataFromXML(dataset, "machines", locale);
-            readDataFromXML(dataset, "staff", locale);
-            readDataFromXML(dataset, "products", locale);
-            readDataFromXML(dataset, "shifts", locale);
-        }
+        readDataFromXML(dataset, "activeCurrency", locale);
+        readDataFromXML(dataset, "company", locale);
+        readDataFromXML(dataset, "machines", locale);
+        readDataFromXML(dataset, "staff", locale);
+        readDataFromXML(dataset, "products", locale);
+        readDataFromXML(dataset, "shifts", locale);
         if (isEnabled("technologies")) {
             readDataFromXML(dataset, "operations", locale);
             readDataFromXML(dataset, "technologies", locale);

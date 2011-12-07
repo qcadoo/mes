@@ -38,7 +38,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Preconditions;
-import com.qcadoo.mes.samples.constants.SamplesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -92,20 +91,18 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
     @Override
     void loadData(final String dataset, final String locale) {
-
+        // TODO BAKU add company
         generateAndAddUser();
         generateAndAddDictionary();
-        if (isEnabled(SamplesConstants.BASIC_PLUGIN_IDENTIFIER)) {
-            addParameters(singletonMap("code", "PLN"));
-            for (int i = 0; i < iterations; i++) {
-                generateAndAddProduct();
-                generateAndAddMachine();
-                generateAndAddContractor();
-                generateAndAddStaff();
-            }
-            for (int i = 0; i < 10; i++) {
-                generateAndAddShift();
-            }
+        addParameters(singletonMap("code", "PLN"));
+        for (int i = 0; i < iterations; i++) {
+            generateAndAddProduct();
+            generateAndAddMachine();
+            generateAndAddContractor();
+            generateAndAddStaff();
+        }
+        for (int i = 0; i < 10; i++) {
+            generateAndAddShift();
         }
         if (isEnabled(TECHNOLOGY_PLUGIN_NAME)) {
             for (int i = 0; i < iterations; i++) {
