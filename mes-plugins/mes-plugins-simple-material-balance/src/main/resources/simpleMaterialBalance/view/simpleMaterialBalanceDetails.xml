@@ -137,7 +137,7 @@
 						<option type="column" name="name" fields="stockAreas"
 							expression="#stockAreas['name']" width="50" />
 						<option type="order" column="number" direction="desc" />
-						<option type="correspondingView" value="simpleMaterialBalance/simpleMaterialBalancestockAreasComponentDetails" />
+						<option type="correspondingView" value="simpleMaterialBalance/simpleMaterialBalanceStockAreasComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 						<option type="paginable" value="false" />
