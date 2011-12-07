@@ -42,7 +42,7 @@ public class EntityOperationProductInOutComponentComparator implements Comparato
             return result;
         }
 
-        result = o1.getDataDefinition().getName().toString().compareTo(o2.getDataDefinition().getName().toString());
+        result = o1.getDataDefinition().getName().compareTo(o2.getDataDefinition().getName());
         if (result != 0) {
             return result;
         }

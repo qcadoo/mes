@@ -101,7 +101,7 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
             for (Entity product : technologyOperationProducts) {
                 HSSFRow row = sheet.createRow(rowNum++);
                 String productType = "technologies.technologiesTechnologyDetails.report.direction.out";
-                if (product.getDataDefinition().getName().toString().equals("operationProductInComponent")) {
+                if (product.getDataDefinition().getName().equals("operationProductInComponent")) {
                     productType = "technologies.technologiesTechnologyDetails.report.direction.in";
                 }
                 row.createCell(0).setCellValue(nodeNumber);

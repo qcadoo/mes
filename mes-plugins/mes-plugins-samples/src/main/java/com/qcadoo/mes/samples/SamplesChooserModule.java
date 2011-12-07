@@ -62,14 +62,14 @@ public class SamplesChooserModule extends Module {
     @Override
     @Transactional
     public void multiTenantEnable() {
-        if (databaseHasToBePrepared() && !"NONE".equals(samplesDataset.toUpperCase())) {
+        if (databaseHasToBePrepared() && !"NONE".equals(samplesDataset.toUpperCase(Locale.ENGLISH))) {
             LOG.debug("Database has to be prepared ...");
             setLocale();
-            if ("TEST".equals(samplesDataset.toUpperCase())) {
+            if ("TEST".equals(samplesDataset.toUpperCase(Locale.ENGLISH))) {
                 testSamplesLoaderModule.loadData("test", locale);
-            } else if ("GENERATED".equals(samplesDataset.toUpperCase())) {
+            } else if ("GENERATED".equals(samplesDataset.toUpperCase(Locale.ENGLISH))) {
                 generatedSamplesLoaderModule.loadData("generated", locale);
-            } else if ("MINIMAL".equals(samplesDataset.toUpperCase())) {
+            } else if ("MINIMAL".equals(samplesDataset.toUpperCase(Locale.ENGLISH))) {
                 minimalSamplesLoaderModule.loadData("minimal", locale);
             }
         } else {

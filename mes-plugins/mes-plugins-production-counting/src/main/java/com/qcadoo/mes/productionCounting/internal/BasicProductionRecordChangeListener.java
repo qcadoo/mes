@@ -21,9 +21,6 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Autowired
-    ProductionRecordService recordService;
-
     @Override
     public List<ChangeRecordStateMessage> onAccepted(final Entity productionRecord, final Entity prevState) {
         updateBasicProductionCounting(productionRecord, new Addition());
