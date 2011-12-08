@@ -73,7 +73,6 @@ public class OrderStatesChangingServiceTest {
 
         setField(orderStatesChangingService, "orderStateValidationService", orderStateValidationService);
         setField(orderStatesChangingService, "listeners", listeners);
-        setField(orderStatesChangingService, "translationService", translationService);
 
     }
 
