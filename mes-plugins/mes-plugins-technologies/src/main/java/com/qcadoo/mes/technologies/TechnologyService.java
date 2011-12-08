@@ -514,7 +514,11 @@ public class TechnologyService {
         boolean goesOutInAroot = productComponentsContainProduct(searchOutsForRoots.list().getEntities(), product);
 
         if (goesOutInAroot) {
-            return PRODUCT;
+            if (technology.getBelongsToField("product").getId().equals(product.getId())) {
+                return PRODUCT;
+            } else {
+                return WASTE;
+            }
         }
 
         if (goesIn && !goesOut) {

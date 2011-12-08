@@ -90,7 +90,7 @@ public class ProductionCountingOrderStatesListener extends OrderStateListener {
         Boolean allowToClose = (Boolean) order.getField("allowToClose");
         ChangeOrderStateMessage message = null;
         List<Entity> operations = order.getTreeField("orderOperationComponents");
-        Integer numberOfRecord = Integer.valueOf(0);
+        Integer numberOfRecord = 0;
         for (Entity operation : operations) {
             List<Entity> productionRecordings = dataDefinitionService
                     .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()

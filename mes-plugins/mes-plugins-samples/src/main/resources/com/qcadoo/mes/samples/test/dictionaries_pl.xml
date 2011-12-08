@@ -32,7 +32,7 @@
 	<row NAME="posts" ITEM="stanowisko 1" DESCRIPTION="" />
 	<row NAME="posts" ITEM="stanowisko 2" DESCRIPTION="" />
 	<row NAME="units" ITEM="kg" DESCRIPTION="Kilogram" />
-	<row NAME="units" ITEM="pc" DESCRIPTION="Sztuka" />
+	<row NAME="units" ITEM="szt" DESCRIPTION="Sztuka" />
 	<row NAME="units" ITEM="m2" DESCRIPTION="Meter kwadratowy" />
 </categories>
 
