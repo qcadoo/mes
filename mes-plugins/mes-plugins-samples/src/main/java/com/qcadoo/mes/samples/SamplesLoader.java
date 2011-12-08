@@ -127,8 +127,17 @@ public abstract class SamplesLoader {
             params.setField("checkDoneOrderForQuality", false);
             params.setField("autoGenerateQualityControl", false);
         }
+
         if (isEnabled("genealogies")) {
             params.setField("batchForDoneOrder", "01none");
+        }
+
+        if (isEnabled("advancedGenealogy")) {
+            params.setField("batchNumberUniqueness", "01globally");
+        }
+
+        if (isEnabled("advancedGenealogyForOrders")) {
+            params.setField("trackingRecordForOrderTreatment", "01duringProduction");
         }
 
         params = params.getDataDefinition().save(params);

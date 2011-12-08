@@ -360,11 +360,13 @@ public class TestSamplesLoader extends SamplesLoader {
             technology.setField("name", values.get("name"));
             technology.setField("number", values.get("bom_nr"));
             technology.setField("product", product);
+            technology.setField("state", "01draft");
             technology.setField("batchRequired", true);
             technology.setField("postFeatureRequired", false);
             technology.setField("otherFeatureRequired", false);
             technology.setField("shiftFeatureRequired", false);
-            technology.setField("state", "01draft");
+            technology.setField("technologyBatchRequired", false);
+
             if (!values.get("minimal").isEmpty()) {
                 technology.setField("minimalQuantity", values.get("minimal"));
             }

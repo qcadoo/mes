@@ -277,6 +277,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         technology.setField("otherFeatureRequired", false);
         technology.setField("shiftFeatureRequired", false);
         technology.setField("minimalQuantity", RANDOM.nextInt(40) + 10);
+        technology.setField("technologyBatchRequired", false);
 
         technology.setField("qualityControlType", "02forUnit");
         technology.setField("unitSamplingNr", "123");
