@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -101,6 +102,12 @@ public final class OrderService {
             return;
         }
 
+        Locale locale = component.getLocale();
+        name.setFieldValue(makeDefaultName(productEntity, technologyEntity, locale));
+    }
+
+    public String makeDefaultName(final Entity productEntity, Entity technologyEntity, final Locale locale) {
+
         if (technologyEntity == null) {
             technologyEntity = getDefaultTechnology(productEntity.getId());
         }
@@ -109,13 +116,12 @@ public final class OrderService {
             technologyNumber = "tech. " + technologyEntity.getStringField("number");
         }
 
-        Calendar cal = Calendar.getInstance(view.getLocale());
+        Calendar cal = Calendar.getInstance(locale);
         cal.setTime(new Date());
 
-        name.setFieldValue(translationService.translate("orders.order.name.default", component.getLocale(),
-                productEntity.getStringField("name"), productEntity.getStringField("number"), technologyNumber,
-                cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH))
-                + "." + cal.get(Calendar.DAY_OF_MONTH));
+        return translationService.translate("orders.order.name.default", locale, productEntity.getStringField("name"),
+                productEntity.getStringField("number"), technologyNumber, cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH))
+                + "." + cal.get(Calendar.DAY_OF_MONTH);
     }
 
     private Entity getProductById(final Long id) {
