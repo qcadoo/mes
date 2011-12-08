@@ -473,7 +473,7 @@ public class TechnologyService {
         TechnologyState existingTechnologyState = TechnologyStateUtils.getStateFromField(existingTechnology
                 .getStringField(CONST_STATE));
 
-        return TechnologyState.ACCEPTED == technologyState && technologyState == existingTechnologyState;
+        return TechnologyState.ACCEPTED.equals(technologyState) && technologyState.equals(existingTechnologyState);
     }
 
     private boolean productComponentsContainProduct(List<Entity> components, Entity product) {

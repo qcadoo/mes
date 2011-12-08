@@ -46,6 +46,14 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class ProductionCountingViewService {
 
+    private static final String FIELD_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
+
+    private static final String FIELD_PRODUCTION_RECORDS = "productionRecords";
+
+    private static final String FIELD_PRODUCT = "product";
+
+    private static final String FIELD_ORDER = "order";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -57,24 +65,24 @@ public class ProductionCountingViewService {
         if (!(state instanceof FieldComponent)) {
             return;
         }
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER);
         if (orderLookup.getFieldValue() == null) {
-            viewDefinitionState.getComponentByReference("product").setFieldValue(null);
-            viewDefinitionState.getComponentByReference("productionRecords").setVisible(false);
+            viewDefinitionState.getComponentByReference(FIELD_PRODUCT).setFieldValue(null);
+            viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
             return;
         }
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 (Long) orderLookup.getFieldValue());
         if (order == null) {
-            viewDefinitionState.getComponentByReference("product").setFieldValue(null);
-            viewDefinitionState.getComponentByReference("productionRecords").setVisible(false);
+            viewDefinitionState.getComponentByReference(FIELD_PRODUCT).setFieldValue(null);
+            viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
             return;
         }
-        if (order.getStringField("typeOfProductionRecording") == null
-                || order.getStringField("typeOfProductionRecording").equals("01none")) {
-            viewDefinitionState.getComponentByReference("product").setFieldValue(null);
-            viewDefinitionState.getComponentByReference("productionRecords").setVisible(false);
-            ((FieldComponent) viewDefinitionState.getComponentByReference("order")).addMessage(translationService.translate(
+        if (order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING) == null
+                || order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING).equals("01none")) {
+            viewDefinitionState.getComponentByReference(FIELD_PRODUCT).setFieldValue(null);
+            viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
+            ((FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER)).addMessage(translationService.translate(
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType",
                     viewDefinitionState.getLocale()), ComponentState.MessageType.FAILURE);
             return;
@@ -85,20 +93,20 @@ public class ProductionCountingViewService {
     }
 
     public void fillProductionRecordsGrid(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference("order");
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER);
         if (orderLookup.getFieldValue() == null) {
-            viewDefinitionState.getComponentByReference("productionRecords").setVisible(false);
+            viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
             return;
         }
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 (Long) orderLookup.getFieldValue());
         if (order == null) {
-            viewDefinitionState.getComponentByReference("productionRecords").setVisible(false);
+            viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
             return;
         }
-        if (order.getStringField("typeOfProductionRecording") == null
-                || order.getStringField("typeOfProductionRecording").equals("01none")) {
-            viewDefinitionState.getComponentByReference("productionRecords").setVisible(false);
+        if (order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING) == null
+                || order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING).equals("01none")) {
+            viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
             return;
         }
 
@@ -106,16 +114,16 @@ public class ProductionCountingViewService {
     }
 
     private void setProductFieldValue(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference("product");
-        productField.setFieldValue(order.getBelongsToField("product").getId());
+        FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference(FIELD_PRODUCT);
+        productField.setFieldValue(order.getBelongsToField(FIELD_PRODUCT).getId());
     }
 
     private void setProductionRecordsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        GridComponent productionRecords = (GridComponent) viewDefinitionState.getComponentByReference("productionRecords");
+        GridComponent productionRecords = (GridComponent) viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS);
         List<Entity> productionRecordsList = dataDefinitionService
-        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-        .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
-        .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
+                .add(SearchRestrictions.belongsTo(FIELD_ORDER, order)).list().getEntities();
         Collections.sort(productionRecordsList, new EntityProductionRecordComparator());
         productionRecords.setEntities(productionRecordsList);
         productionRecords.setVisible(true);
@@ -127,7 +135,7 @@ public class ProductionCountingViewService {
         if (generated == null || generated.getFieldValue() == null || "0".equals(generated.getFieldValue())) {
             enabled = true;
         }
-        for (String reference : Arrays.asList("order", "name", "description")) {
+        for (String reference : Arrays.asList(FIELD_ORDER, "name", "description")) {
             FieldComponent component = (FieldComponent) view.getComponentByReference(reference);
             component.setEnabled(enabled);
         }

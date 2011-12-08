@@ -116,8 +116,8 @@ public class CurrencyLoaderModule extends Module {
     private void addCurrency(final Map<String, String> values) {
         Entity currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).create();
 
-        currency.setField("currency", values.get("CURRENCY").toString());
-        currency.setField("alphabeticCode", values.get("ALPHABETICCODE").toString());
+        currency.setField("currency", values.get("CURRENCY"));
+        currency.setField("alphabeticCode", values.get("ALPHABETICCODE"));
         currency.setField("isoCode", Integer.valueOf(values.get("ISOCODE")));
         currency.setField("minorUnit", Integer.valueOf(values.get("MINORUNIT")));
 

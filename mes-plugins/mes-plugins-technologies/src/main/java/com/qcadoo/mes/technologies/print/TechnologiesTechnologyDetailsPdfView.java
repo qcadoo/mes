@@ -137,7 +137,7 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
 
             for (Entity product : technologyOperationProducts) {
                 String productType = "technologies.technologiesTechnologyDetails.report.direction.out";
-                if (product.getDataDefinition().getName().toString().equals("operationProductInComponent")) {
+                if (product.getDataDefinition().getName().equals("operationProductInComponent")) {
                     productType = "technologies.technologiesTechnologyDetails.report.direction.in";
                 }
                 table.addCell(new Phrase(nodeNumber, PdfUtil.getArialRegular9Dark()));

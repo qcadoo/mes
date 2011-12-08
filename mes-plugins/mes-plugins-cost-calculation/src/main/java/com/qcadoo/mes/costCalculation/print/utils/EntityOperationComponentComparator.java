@@ -32,18 +32,18 @@ public class EntityOperationComponentComparator implements Comparator<Entity>, S
 
     private static final long serialVersionUID = 2360961924344935922L;
 
-    private static final String operation = "operation";
+    private static final String OPERATION = "operation";
 
     @Override
     public final int compare(final Entity o1, final Entity o2) {
-        int result = o1.getBelongsToField(operation).getStringField("number")
-                .compareTo(o2.getBelongsToField(operation).getStringField("number"));
+        int result = o1.getBelongsToField(OPERATION).getStringField("number")
+                .compareTo(o2.getBelongsToField(OPERATION).getStringField("number"));
         if (result == 0) {
-            result = o1.getBelongsToField(operation).getStringField("name")
-                    .compareTo(o2.getBelongsToField(operation).getStringField("name"));
+            result = o1.getBelongsToField(OPERATION).getStringField("name")
+                    .compareTo(o2.getBelongsToField(OPERATION).getStringField("name"));
             if (result == 0) {
-                return o1.getBelongsToField(operation).getId().toString()
-                        .compareTo(o2.getBelongsToField(operation).getId().toString());
+                return o1.getBelongsToField(OPERATION).getId().toString()
+                        .compareTo(o2.getBelongsToField(OPERATION).getId().toString());
             } else {
                 return result;
             }

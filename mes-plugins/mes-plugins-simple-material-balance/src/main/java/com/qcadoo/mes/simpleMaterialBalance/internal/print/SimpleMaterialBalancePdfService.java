@@ -133,7 +133,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField("onlyComponents");
         Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForMaterialRequirementProducts(
                 orders, onlyComponents);
-        List<Entity> stockAreass = simpleMaterialBalance.getHasManyField("stockAreass");
+        List<Entity> stockAreass = simpleMaterialBalance.getHasManyField("stockAreas");
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
