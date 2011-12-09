@@ -1,35 +1,3 @@
--- Table: basic_company
-
--- changed 06.12.2011
-
-ALTER TABLE basic_company
-		ADD COLUMN number character varying(255),
-        ADD COLUMN owner boolean DEFAULT false;
-
--- end
-        
--- Table: technologies_technology
-
-ALTER TABLE technologies_technology 
-	ALTER COLUMN state SET DEFAULT '01draft'::character varying;
-
-BEGIN;
-	UPDATE technologies_technology SET state = '01draft' WHERE state = 'draft';
-	UPDATE technologies_technology SET state = '02accepted' WHERE state = 'accepted';
-	UPDATE technologies_technology SET state = '03declined' WHERE state = 'declined';
-	UPDATE technologies_technology SET state = '04outdated' WHERE state = 'outdated';
-COMMIT;
-
--- end
-
-ALTER TABLE basic_currency DROP COLUMN isactive;
-
-UPDATE basic_company SET owner = true;
-
-UPDATE qcadooview_view SET name='company' WHERE name='companyDetails';
-
-UPDATE qcadooview_item SET name='company' WHERE name='companyDetails';
-
 CREATE OR REPLACE FUNCTION update_view() RETURNS INTEGER AS 
 '
 	DECLARE
@@ -51,8 +19,8 @@ CREATE OR REPLACE FUNCTION update_view() RETURNS INTEGER AS
 				''basic'', 
 				''companies'', 
 				true,  
-				(SELECT id FROM qcadooview_category WHERE tenantid = tenant."id" AND name=''basic''), 
-				(SELECT id FROM qcadooview_view WHERE tenantid = tenant."id" AND name=''companiesList''), 
+				(SELECT id FROM qcadooview_category WHERE tenantid = tenant."id" AND name=''basic'' LIMIT 1), 
+				(SELECT id FROM qcadooview_view WHERE tenantid = tenant."id" AND name=''companiesList'' LIMIT 1), 
 				(SELECT COUNT(*) FROM qcadooview_item WHERE tenantid = tenant."id" AND category_id = (SELECT id FROM qcadooview_category WHERE tenantid = tenant."id" AND name=''basic'')) + 1,
 				tenant."id"
 			); 
