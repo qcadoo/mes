@@ -1,3 +1,35 @@
+-- Table: basic_company
+
+-- changed 06.12.2011
+
+ALTER TABLE basic_company
+		ADD COLUMN number character varying(255),
+        ADD COLUMN owner boolean DEFAULT false;
+
+-- end
+        
+-- Table: technologies_technology
+
+ALTER TABLE technologies_technology 
+	ALTER COLUMN state SET DEFAULT '01draft'::character varying;
+
+BEGIN;
+	UPDATE technologies_technology SET state = '01draft' WHERE state = 'draft';
+	UPDATE technologies_technology SET state = '02accepted' WHERE state = 'accepted';
+	UPDATE technologies_technology SET state = '03declined' WHERE state = 'declined';
+	UPDATE technologies_technology SET state = '04outdated' WHERE state = 'outdated';
+COMMIT;
+
+-- end
+
+ALTER TABLE basic_currency DROP COLUMN isactive;
+
+UPDATE basic_company SET owner = true;
+
+UPDATE qcadooview_view SET name='company' WHERE name='companyDetails';
+
+UPDATE qcadooview_item SET name='company' WHERE name='companyDetails';
+
 CREATE OR REPLACE FUNCTION update_view() RETURNS INTEGER AS 
 '
 	DECLARE
