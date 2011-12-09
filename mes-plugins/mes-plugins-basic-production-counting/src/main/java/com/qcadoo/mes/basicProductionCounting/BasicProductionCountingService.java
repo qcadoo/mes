@@ -52,9 +52,9 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 @Service
 public class BasicProductionCountingService {
 
-    private final String modelFieldProduct = "product";
+    private static final String modelFieldProduct = "product";
 
-    private final String modelFieldOrder = "order";
+    private static final String modelFieldOrder = "order";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;

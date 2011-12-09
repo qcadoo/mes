@@ -47,9 +47,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.plugin.api.Plugin;
-import com.qcadoo.plugin.api.PluginAccessor;
-import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -71,10 +68,6 @@ public class OrderStatesServiceTest {
     private DataDefinition dataDefinition;
 
     private FieldComponent stateFromField, externalSynchronizedState, externalNumber;
-
-    private PluginAccessor pluginAccessor;
-
-    private Plugin plugin;
 
     private FieldComponent field;
 
@@ -106,10 +99,8 @@ public class OrderStatesServiceTest {
         stateFromField = mock(FieldComponent.class);
         externalSynchronizedState = mock(FieldComponent.class);
         externalNumber = mock(FieldComponent.class);
-        pluginAccessor = mock(PluginAccessor.class);
         dataDefinitionService = mock(DataDefinitionService.class);
         translationService = mock(TranslationService.class);
-        plugin = mock(Plugin.class);
         field = mock(FieldComponent.class);
         dataDefinition = mock(DataDefinition.class);
         dataDefinitionForBasic = mock(DataDefinition.class);
@@ -127,8 +118,6 @@ public class OrderStatesServiceTest {
         when(view.getComponentByReference("externalNumber")).thenReturn(externalNumber);
         when(externalNumber.getFieldValue()).thenReturn("1");
         when(form.getEntity()).thenReturn(order);
-        when(pluginAccessor.getPlugin("mesPluginsIntegrationErp")).thenReturn(plugin);
-        when(plugin.getState()).thenReturn(PluginState.ENABLED);
 
         when(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER))
                 .thenReturn(dataDefinition);
@@ -152,7 +141,6 @@ public class OrderStatesServiceTest {
         }
         setField(orderStatesService, "dataDefinitionService", dataDefinitionService);
         setField(orderStatesService, "translationService", translationService);
-        setField(orderStatesService, "pluginAccessor", pluginAccessor);
     }
 
     @Test

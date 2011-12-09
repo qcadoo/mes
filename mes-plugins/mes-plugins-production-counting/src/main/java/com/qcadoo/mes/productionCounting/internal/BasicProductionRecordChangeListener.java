@@ -21,11 +21,8 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Autowired
-    ProductionRecordService recordService;
-
     @Override
-    public List<ChangeRecordStateMessage> onAccepted(Entity productionRecord, Entity prevState) {
+    public List<ChangeRecordStateMessage> onAccepted(final Entity productionRecord, final Entity prevState) {
         updateBasicProductionCounting(productionRecord, new Addition());
         return super.onAccepted(productionRecord, prevState);
     }
@@ -59,14 +56,21 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
     private class Addition implements Operation {
 
         @Override
-        public BigDecimal perform(BigDecimal orginalValue, BigDecimal addition) {
+        public BigDecimal perform(final BigDecimal orginalValue, final BigDecimal addition) {
+            BigDecimal value;
+            BigDecimal add;
             if (orginalValue == null) {
-                orginalValue = BigDecimal.ZERO;
+                value = BigDecimal.ZERO;
+            } else {
+                value = orginalValue;
             }
             if (addition == null) {
-                addition = BigDecimal.ZERO;
+                add = BigDecimal.ZERO;
+            } else {
+                add = addition;
             }
-            return orginalValue.add(addition);
+
+            return value.add(add);
         }
 
     }
@@ -74,21 +78,27 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
     private class Substraction implements Operation {
 
         @Override
-        public BigDecimal perform(BigDecimal orginalValue, BigDecimal substrahend) {
+        public BigDecimal perform(final BigDecimal orginalValue, final BigDecimal substrahend) {
+            BigDecimal value;
+            BigDecimal sub;
             if (orginalValue == null) {
-                orginalValue = BigDecimal.ZERO;
+                value = BigDecimal.ZERO;
+            } else {
+                value = orginalValue;
             }
 
             if (substrahend == null) {
-                substrahend = BigDecimal.ZERO;
+                sub = BigDecimal.ZERO;
+            } else {
+                sub = substrahend;
             }
-            return orginalValue.subtract(substrahend);
+            return value.subtract(sub);
 
         }
 
     }
 
-    private void updateBasicProductionCounting(Entity productionRecord, Operation operation) {
+    private void updateBasicProductionCounting(final Entity productionRecord, final Operation operation) {
         final Entity order = productionRecord.getBelongsToField("order");
 
         final List<Entity> productionCountings = dataDefinitionService
@@ -101,8 +111,8 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
 
         for (Entity productIn : productsIn) {
             Entity productionCounting = getProductCount(productIn, productionCountings);
-            BigDecimal usedQuantity = (BigDecimal) productionCounting.getField(FIELD_USED_QUANTITY);
-            BigDecimal productQuantity = (BigDecimal) productIn.getField(FIELD_USED_QUANTITY);
+            final BigDecimal usedQuantity = (BigDecimal) productionCounting.getField(FIELD_USED_QUANTITY);
+            final BigDecimal productQuantity = (BigDecimal) productIn.getField(FIELD_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
             productionCounting.setField(FIELD_USED_QUANTITY, result);
             productionCounting = productionCounting.getDataDefinition().save(productionCounting);
@@ -113,8 +123,8 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
 
         for (Entity productOut : productsOut) {
             Entity productionCounting = getProductCount(productOut, productionCountings);
-            BigDecimal usedQuantity = (BigDecimal) productionCounting.getField("producedQuantity");
-            BigDecimal productQuantity = (BigDecimal) productOut.getField(FIELD_USED_QUANTITY);
+            final BigDecimal usedQuantity = (BigDecimal) productionCounting.getField("producedQuantity");
+            final BigDecimal productQuantity = (BigDecimal) productOut.getField(FIELD_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
             productionCounting.setField("producedQuantity", result);
             productionCounting = productionCounting.getDataDefinition().save(productionCounting);

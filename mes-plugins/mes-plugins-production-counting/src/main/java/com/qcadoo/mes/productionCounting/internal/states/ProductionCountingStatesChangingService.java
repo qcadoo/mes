@@ -63,7 +63,7 @@ public class ProductionCountingStatesChangingService {
         } else if (DECLINED.getStringValue().equals(newEntity.getStringField(FIELD_STATE))) {
             state = ProductionCountingStates.DECLINED;
         } else {
-            throw new IllegalStateException("State value is illegal");
+            return;
         }
 
         if (oldEntity == null && !state.equals(DRAFT)) {

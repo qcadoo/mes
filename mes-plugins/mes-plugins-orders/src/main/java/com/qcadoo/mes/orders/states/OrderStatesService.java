@@ -27,7 +27,6 @@ import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrderStates;
@@ -35,9 +34,6 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
-import com.qcadoo.plugin.api.Plugin;
-import com.qcadoo.plugin.api.PluginAccessor;
-import com.qcadoo.plugin.api.PluginState;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -54,21 +50,8 @@ public class OrderStatesService {
     @Autowired
     private TranslationService translationService;
 
-    @Autowired
-    private PluginAccessor pluginAccessor;
-
     private void changeOrderStateTo(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final OrderStates oldState, final OrderStates newState) {
-
-        FieldComponent externalSynchronized = (FieldComponent) viewDefinitionState
-                .getComponentByReference("externalSynchronized");
-        FieldComponent externalNumber = (FieldComponent) viewDefinitionState.getComponentByReference("externalNumber");
-
-        if (hasIntegrationWithExternalSystem() && StringUtils.hasText((String) externalNumber.getFieldValue())) {
-            externalSynchronized.setFieldValue("false");
-        } else {
-            externalSynchronized.setFieldValue("true");
-        }
 
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         Entity order = form.getEntity();
@@ -81,7 +64,6 @@ public class OrderStatesService {
         if (!orderFromDB.getStringField("state").equals(newState.getStringValue())) {
             orderState.setFieldValue(oldState.getStringValue());
         }
-
     }
 
     public void changeOrderStateToAccepted(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -135,12 +117,6 @@ public class OrderStatesService {
     private void changeOrderStateToForGrid(final ComponentState state, final Long id, final OrderStates newState) {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
         order.setField("state", newState.getStringValue());
-
-        if (hasIntegrationWithExternalSystem() && StringUtils.hasText(order.getStringField("externalNumber"))) {
-            order.setField("externalSynchronized", false);
-        } else {
-            order.setField("externalSynchronized", true);
-        }
 
         order.getDataDefinition().save(order);
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
@@ -219,11 +195,6 @@ public class OrderStatesService {
         for (Long id : grid.getSelectedEntitiesIds()) {
             changeOrderStateToForGrid(state, id, OrderStates.INTERRUPTED);
         }
-    }
-
-    private boolean hasIntegrationWithExternalSystem() {
-        Plugin plugin = pluginAccessor.getPlugin("mesPluginsIntegrationErp");
-        return plugin != null && plugin.getState().equals(PluginState.ENABLED);
     }
 
     public void setFieldsRequired(final ViewDefinitionState view) {

@@ -56,6 +56,8 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 @Service
 public class ProductionCountingService {
 
+    private static final String FIELD_GENERATED = "generated";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -70,7 +72,7 @@ public class ProductionCountingService {
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("date", null);
-        entity.setField("generated", false);
+        entity.setField(FIELD_GENERATED, false);
         entity.setField("fileName", null);
         entity.setField("worker", null);
         return true;
@@ -96,11 +98,11 @@ public class ProductionCountingService {
         } else {
             Entity productionCounting = dataDefinitionService.get(plugin, entityName).get(form.getEntityId());
 
-            if (productionCounting.getField("generated") == null) {
-                productionCounting.setField("generated", "0");
+            if (productionCounting.getField(FIELD_GENERATED) == null) {
+                productionCounting.setField(FIELD_GENERATED, "0");
             }
 
-            if ("1".equals(productionCounting.getField("generated"))) {
+            if ("1".equals(productionCounting.getField(FIELD_GENERATED))) {
                 generateButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");
                 generateButton.setEnabled(false);
                 deleteButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");
@@ -121,7 +123,7 @@ public class ProductionCountingService {
     public void generateProductionCounting(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
-            ComponentState generated = viewDefinitionState.getComponentByReference("generated");
+            ComponentState generated = viewDefinitionState.getComponentByReference(FIELD_GENERATED);
             ComponentState date = viewDefinitionState.getComponentByReference("date");
             ComponentState worker = viewDefinitionState.getComponentByReference("worker");
             FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference("name");

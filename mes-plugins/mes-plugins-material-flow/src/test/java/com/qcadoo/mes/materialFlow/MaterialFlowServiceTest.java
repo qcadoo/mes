@@ -63,11 +63,11 @@ public class MaterialFlowServiceTest {
 
     private SearchResult resultFrom;
 
-    private static final String stockAreas = "1";
+    private static final String STOCKAREAS = "1";
 
-    private static final String product = "1";
+    private static final String PRODUCT = "1";
 
-    private static final String forDate = "date";
+    private static final String FORDATE = "date";
 
     @Before
     public void init() {
@@ -90,22 +90,22 @@ public class MaterialFlowServiceTest {
 
     @Test
     public void shouldCalculateShouldBeForOnlyTransfers() {
-        Long stockAreasId = Long.valueOf(stockAreas);
-        given(dataDefStockAreas.find().add(SearchRestrictions.eq("number", stockAreas)).uniqueResult().getId()).willReturn(
+        Long stockAreasId = Long.valueOf(STOCKAREAS);
+        given(dataDefStockAreas.find().add(SearchRestrictions.eq("number", STOCKAREAS)).uniqueResult().getId()).willReturn(
                 Long.valueOf(stockAreasId));
 
-        Long productId = Long.valueOf(product);
+        Long productId = Long.valueOf(PRODUCT);
         given(
                 transferDataCorrection.find().add(SearchRestrictions.eq("stockAreas.id", stockAreasId))
                         .add(SearchRestrictions.eq("product.id", productId)).addOrder(SearchOrders.desc("stockCorrectionDate"))
                         .setMaxResults(1).uniqueResult()).willReturn(null);
         given(
-                transfer.find().add(SearchRestrictions.eq("stockAreasTo", stockAreas))
-                        .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate)).list())
+                transfer.find().add(SearchRestrictions.eq("stockAreasTo", STOCKAREAS))
+                        .add(SearchRestrictions.eq("product", PRODUCT)).add(SearchRestrictions.le("time", FORDATE)).list())
                 .willReturn(resultTo);
         given(
-                transfer.find().add(SearchRestrictions.eq("stockAreasFrom", stockAreas))
-                        .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate)).list())
+                transfer.find().add(SearchRestrictions.eq("stockAreasFrom", STOCKAREAS))
+                        .add(SearchRestrictions.eq("product", PRODUCT)).add(SearchRestrictions.le("time", FORDATE)).list())
                 .willReturn(resultFrom);
 
         List<Entity> list = new ArrayList<Entity>();
@@ -118,7 +118,7 @@ public class MaterialFlowServiceTest {
 
         given(resultTo.getEntities()).willReturn(list);
 
-        assertEquals(new BigDecimal(1500), materialFlowService.calculateShouldBeInStockArea(stockAreasId, product, forDate));
+        assertEquals(new BigDecimal(1500), materialFlowService.calculateShouldBeInStockArea(stockAreasId, PRODUCT, FORDATE));
     }
 
     @Test
@@ -127,10 +127,10 @@ public class MaterialFlowServiceTest {
         entity.setField("stockCorrectionDate", new Date(0));
         entity.setField("found", new BigDecimal(1000));
 
-        Long stockAreasId = Long.valueOf(stockAreas);
-        given(dataDefStockAreas.find().add(SearchRestrictions.eq("number", stockAreas)).uniqueResult().getId()).willReturn(
+        Long stockAreasId = Long.valueOf(STOCKAREAS);
+        given(dataDefStockAreas.find().add(SearchRestrictions.eq("number", STOCKAREAS)).uniqueResult().getId()).willReturn(
                 Long.valueOf(stockAreasId));
-        Long productId = Long.valueOf(product);
+        Long productId = Long.valueOf(PRODUCT);
         given(
                 transferDataCorrection.find().add(SearchRestrictions.eq("stockAreas.id", stockAreasId))
                         .add(SearchRestrictions.eq("product.id", productId)).addOrder(SearchOrders.desc("stockCorrectionDate"))
@@ -138,7 +138,7 @@ public class MaterialFlowServiceTest {
 
         given(transfer.find(Mockito.anyString()).list()).willReturn(resultTo);
 
-        assertEquals(new BigDecimal(1000), materialFlowService.calculateShouldBeInStockArea(stockAreasId, product, forDate));
+        assertEquals(new BigDecimal(1000), materialFlowService.calculateShouldBeInStockArea(stockAreasId, PRODUCT, FORDATE));
     }
 
     @Test
@@ -146,22 +146,22 @@ public class MaterialFlowServiceTest {
         Date date = new Date(100);
         String lastCorrectionDate = date.toString();
         given(
-                transfer.find().add(SearchRestrictions.eq("stockAreasTo", stockAreas))
-                        .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate))
+                transfer.find().add(SearchRestrictions.eq("stockAreasTo", STOCKAREAS))
+                        .add(SearchRestrictions.eq("product", PRODUCT)).add(SearchRestrictions.le("time", FORDATE))
                         .add(SearchRestrictions.gt("time", lastCorrectionDate)).list()).willReturn(resultTo);
         given(
-                transfer.find().add(SearchRestrictions.eq("stockAreasFrom", stockAreas))
-                        .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate))
+                transfer.find().add(SearchRestrictions.eq("stockAreasFrom", STOCKAREAS))
+                        .add(SearchRestrictions.eq("product", PRODUCT)).add(SearchRestrictions.le("time", FORDATE))
                         .add(SearchRestrictions.gt("time", lastCorrectionDate)).list()).willReturn(resultFrom);
 
         Entity entity = new DefaultEntity(transferDataCorrection);
         entity.setField("stockCorrectionDate", new Date(100));
         entity.setField("found", new BigDecimal(1000));
 
-        Long stockAreasId = Long.valueOf(stockAreas);
-        given(dataDefStockAreas.find().add(SearchRestrictions.eq("number", stockAreas)).uniqueResult().getId()).willReturn(
+        Long stockAreasId = Long.valueOf(STOCKAREAS);
+        given(dataDefStockAreas.find().add(SearchRestrictions.eq("number", STOCKAREAS)).uniqueResult().getId()).willReturn(
                 Long.valueOf(stockAreasId));
-        Long productId = Long.valueOf(product);
+        Long productId = Long.valueOf(PRODUCT);
         given(
                 transferDataCorrection.find().add(SearchRestrictions.eq("stockAreas.id", stockAreasId))
                         .add(SearchRestrictions.eq("product.id", productId)).addOrder(SearchOrders.desc("stockCorrectionDate"))
@@ -177,6 +177,6 @@ public class MaterialFlowServiceTest {
 
         given(resultTo.getEntities()).willReturn(transferList);
 
-        assertEquals(new BigDecimal(2500), materialFlowService.calculateShouldBeInStockArea(stockAreasId, product, forDate));
+        assertEquals(new BigDecimal(2500), materialFlowService.calculateShouldBeInStockArea(stockAreasId, PRODUCT, FORDATE));
     }
 }

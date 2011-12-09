@@ -473,7 +473,7 @@ public class TechnologyService {
         TechnologyState existingTechnologyState = TechnologyStateUtils.getStateFromField(existingTechnology
                 .getStringField(CONST_STATE));
 
-        return TechnologyState.ACCEPTED == technologyState && technologyState == existingTechnologyState;
+        return TechnologyState.ACCEPTED.equals(technologyState) && technologyState.equals(existingTechnologyState);
     }
 
     private boolean productComponentsContainProduct(List<Entity> components, Entity product) {
@@ -514,7 +514,11 @@ public class TechnologyService {
         boolean goesOutInAroot = productComponentsContainProduct(searchOutsForRoots.list().getEntities(), product);
 
         if (goesOutInAroot) {
-            return PRODUCT;
+            if (technology.getBelongsToField("product").getId().equals(product.getId())) {
+                return PRODUCT;
+            } else {
+                return WASTE;
+            }
         }
 
         if (goesIn && !goesOut) {

@@ -71,7 +71,7 @@ public class ProductionRecordService {
     @Autowired
     private SecurityService securityService;
 
-    public void generateData(final DataDefinition dd, final Entity entity) {
+    public void generateData(final DataDefinition dataDefinition, final Entity entity) {
         if (entity.getField("number") == null) {
             entity.setField("number", numberGeneratorService.generateNumber(ProductionCountingConstants.PLUGIN_IDENTIFIER, entity
                     .getDataDefinition().getName()));
@@ -80,23 +80,24 @@ public class ProductionRecordService {
         entity.setField("worker", securityService.getCurrentUserName());
     }
 
-    public boolean checkTypeOfProductionRecording(final DataDefinition dd, final Entity entity) {
+    public boolean checkTypeOfProductionRecording(final DataDefinition dataDefinition, final Entity entity) {
         final Entity order = entity.getBelongsToField(FIELD_ORDER);
         final String typeOfProductionRecording = order.getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
-        return isValidTypeOfProductionRecording(entity, typeOfProductionRecording, dd);
+        return isValidTypeOfProductionRecording(entity, typeOfProductionRecording, dataDefinition);
     }
 
     public boolean isValidTypeOfProductionRecording(Entity entity, String typeOfProductionRecording, DataDefinition dd) {
+        boolean validTypeOfRecording = true;
         if (typeOfProductionRecording == null || PARAM_RECORDING_TYPE_NONE.equals(typeOfProductionRecording)) {
             entity.addError(dd.getField(FIELD_ORDER), "productionCounting.validate.global.error.productionRecord.orderError");
-            return false;
+            validTypeOfRecording = false;
         }
         if (PARAM_RECORDING_TYPE_BASIC.equals(typeOfProductionRecording)) {
             entity.addError(dd.getField(FIELD_ORDER),
                     "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting");
-            return false;
+            validTypeOfRecording = false;
         }
-        return true;
+        return validTypeOfRecording;
     }
 
     // checkIfJustOneChoosen
