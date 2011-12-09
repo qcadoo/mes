@@ -256,7 +256,8 @@ public class SimpleMaterialBalanceService {
 
     private void generateSimpleMaterialBalanceDocuments(final ComponentState state, final Entity simpleMaterialBalance)
             throws IOException, DocumentException {
-        Entity simpleMaterialBalanceWithFileName = simpleMaterialBalancePdfService.updateFileName(simpleMaterialBalance);
+        Entity simpleMaterialBalanceWithFileName = simpleMaterialBalancePdfService.updateFileName(simpleMaterialBalance,
+                "Simple_material_balance");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         simpleMaterialBalancePdfService.generateDocument(simpleMaterialBalanceWithFileName, company, state.getLocale());
