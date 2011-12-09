@@ -213,7 +213,8 @@ public class ProductionCountingService {
 
     private void generateProductionCountingDocuments(final ComponentState state, final Entity productionCounting)
             throws IOException, DocumentException {
-        Entity productionCountingWithFileName = productionCountingPdfService.updateFileName(productionCounting);
+        Entity productionCountingWithFileName = productionCountingPdfService.updateFileName(productionCounting,
+                "Production_counting");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         productionCountingPdfService.generateDocument(productionCountingWithFileName, company, state.getLocale());

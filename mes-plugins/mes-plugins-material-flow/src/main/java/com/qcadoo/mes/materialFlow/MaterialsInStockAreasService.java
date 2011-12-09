@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -77,9 +76,6 @@ public class MaterialsInStockAreasService {
 
     @Autowired
     private MaterialFlowXlsService materialFlowXlsService;
-
-    @Value("${reportPath}")
-    private String path;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
@@ -273,22 +269,12 @@ public class MaterialsInStockAreasService {
 
     private void generatePdfAndXlsDocumentsForMaterialsInStockAreas(final ComponentState state, final Entity materialsInStockAreas)
             throws IOException, DocumentException {
-        Entity materialFlowWithFileName = updateFileName(materialsInStockAreas,
-                getFullFileName((Date) materialsInStockAreas.getField("time"), materialsInStockAreas.getStringField("name")),
-                MaterialFlowConstants.MODEL_MATERIALS_IN_STOCK_AREAS);
+        Entity materialFlowWithFileName = materialFlowPdfService.updateFileName(materialsInStockAreas, "time",
+                "Material_in_stock_areas");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         materialFlowPdfService.generateDocument(materialFlowWithFileName, company, state.getLocale());
         materialFlowXlsService.generateDocument(materialFlowWithFileName, company, state.getLocale());
-    }
-
-    private String getFullFileName(final Date date, final String fileName) {
-        return path + fileName + "_" + new SimpleDateFormat(DateUtils.REPORT_DATE_TIME_FORMAT).format(date);
-    }
-
-    private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
-        entity.setField("fileName", fileName);
-        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, entityName).save(entity);
     }
 
     public void printMaterialsInStockAreasDocuments(final ViewDefinitionState viewDefinitionState, final ComponentState state,

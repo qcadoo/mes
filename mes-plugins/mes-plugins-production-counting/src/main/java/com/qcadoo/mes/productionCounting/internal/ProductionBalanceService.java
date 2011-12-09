@@ -232,7 +232,8 @@ public class ProductionBalanceService {
 
     private void generateProductionBalanceDocuments(final ComponentState state, final Entity productionBalance)
             throws IOException, DocumentException {
-        Entity productionBalanceWithFileName = productionBalancePdfService.updateFileName(productionBalance);
+        Entity productionBalanceWithFileName = productionBalancePdfService
+                .updateFileName(productionBalance, "Production_balance");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         productionBalancePdfService.generateDocument(productionBalanceWithFileName, company, state.getLocale());
