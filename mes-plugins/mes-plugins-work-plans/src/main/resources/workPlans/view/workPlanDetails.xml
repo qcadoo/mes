@@ -66,6 +66,9 @@
 					var xlsMachine = #{window}.getRibbonItem("exportMachine.xlsMachine");
 					var pdfProduct = #{window}.getRibbonItem("exportProduct.pdfProduct");
 					var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
+					var generate = #{window}.getRibbonItem("generate.generate");
+					var saveBack = #{window}.getRibbonItem("actions.saveBack");
+					var saveNew = #{window}.getRibbonItem("actions.saveNew");
 					
 					var containsAtLeastOneOrder = false;
 					var entityExists = false;
@@ -94,11 +97,25 @@
 						}
 					});
 					
+					function enableGeneration(generated) {
+						if (generated) {
+							generate.enable();
+							saveBack.enable();
+							saveNew.enable();
+						} else {
+							generate.disable();
+							saveBack.disable();
+							saveNew.disable();
+						}
+					}
+					
 					function updateRibbon() {
 						if (entityExists) {
 							var isGeneratedCheckboxValue = #{generated}.getValue();
 							copyRibbonItem.enable();
 							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+								enableGeneration(false);
+								
 								pdfWorker.enable();
 								xlsWorker.enable();
 								pdfMachine.enable();
@@ -107,6 +124,8 @@
 								xlsProduct.enable();
 								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 							} else {
+								enableGeneration(true);
+								
 								pdfWorker.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								xlsWorker.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								pdfMachine.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
@@ -116,6 +135,8 @@
 								saveRibbonItem.enable();
 							}
 						} else {
+							enableGeneration(true);
+							
 							copyRibbonItem.disable("#{translate(recordNotCreated)}");
 							pdfWorker.disable("#{translate(recordNotCreated)}");
 							xlsWorker.disable("#{translate(recordNotCreated)}");
@@ -183,7 +204,5 @@
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.workPlans.WorkPlanService"
 			method="disableFormForExistingWorkPlan" />
-		<beforeRender class="com.qcadoo.mes.workPlans.WorkPlanService"
-			method="setGenerateButtonState" />
 	</hooks>
 </view>
