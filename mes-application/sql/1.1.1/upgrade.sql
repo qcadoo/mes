@@ -1,24 +1,12 @@
 -- Table: basic_company
-
--- changed 12.12.2011
+-- changed 06.12.2011
 
 ALTER TABLE basic_company
-        RENAME COLUMN companyfullname TO name;
-ALTER TABLE basic_company      
-        RENAME COLUMN adresswww TO website;
-        
-ALTER TABLE basic_company
-        ALTER COLUMN tax TYPE character varying(255),
-        ALTER COLUMN zipcode TYPE character varying(6),
-        ALTER COLUMN state TYPE character varying(255),
-        ALTER COLUMN country TYPE character varying(255),
-        ALTER COLUMN email TYPE character varying(255),
-        ALTER COLUMN phone TYPE character varying(255);
 		ADD COLUMN number character varying(255),
-		ADD COLUMN owner boolean DEFAULT false;
-
+        ADD COLUMN owner boolean DEFAULT false;
 
 -- end
+        
         
 -- Table: technologies_technology
 
@@ -34,13 +22,40 @@ COMMIT;
 
 -- end
 
+
+-- Table: basic_currency
+
 ALTER TABLE basic_currency DROP COLUMN isactive;
+
+
+-- Table: company
+-- changed 09.12.2011
 
 UPDATE basic_company SET owner = true;
 
+-- end
+
+
+-- Table: qcadooview_view
+-- changed 09.12.2011
+
 UPDATE qcadooview_view SET name='company' WHERE name='companyDetails';
 
+-- end
+
+
+-- Table: qcadooview_item
+-- changed 09.12.2011
+
 UPDATE qcadooview_item SET name='company' WHERE name='companyDetails';
+
+-- end
+
+
+-- Table: qcadoo_view, qcadoo_item
+-- changed 12.12.2011
+
+CREATE LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_view() RETURNS INTEGER AS 
 '
@@ -76,3 +91,26 @@ CREATE OR REPLACE FUNCTION update_view() RETURNS INTEGER AS
 ' 
 LANGUAGE 'plpgsql';
 SELECT * FROM update_view();
+
+-- end
+
+
+-- Table: basic_company
+-- changed 12.12.2011
+
+ALTER TABLE basic_company
+        RENAME COLUMN companyfullname TO name;
+ALTER TABLE basic_company      
+        RENAME COLUMN adresswww TO website;
+        
+ALTER TABLE basic_company
+        ALTER COLUMN tax TYPE character varying(255),
+        ALTER COLUMN zipcode TYPE character varying(6),
+        ALTER COLUMN state TYPE character varying(255),
+        ALTER COLUMN country TYPE character varying(255),
+        ALTER COLUMN email TYPE character varying(255),
+        ALTER COLUMN phone TYPE character varying(255);
+		ADD COLUMN number character varying(255),
+		ADD COLUMN owner boolean DEFAULT false;
+
+-- end
