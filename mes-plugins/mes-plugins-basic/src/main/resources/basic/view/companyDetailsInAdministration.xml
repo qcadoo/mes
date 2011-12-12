@@ -43,7 +43,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="input" name="companyFullName" field="companyFullName"  />
+					<component type="input" name="name" field="name"  />
 				</layoutElement>
 				<layoutElement column="1" row="3">
 					<component type="input" name="tax" field="tax" />
@@ -73,7 +73,7 @@
 					<component type="input" name="email" field="email" />
 				</layoutElement>
 				<layoutElement column="1" row="12">
-					<component type="input" name="addressWww" field="addressWww" />
+					<component type="input" name="website" field="website" />
 				</layoutElement>
 				<layoutElement column="1" row="13">
 					<component type="input" name="phone" field="phone" />
