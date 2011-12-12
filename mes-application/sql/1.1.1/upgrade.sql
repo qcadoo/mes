@@ -100,8 +100,8 @@ SELECT * FROM update_view();
 
 ALTER TABLE basic_company
         RENAME COLUMN companyfullname TO name;
-ALTER TABLE basic_company      
-        RENAME COLUMN adresswww TO website;
+ALTER TABLE basic_company
+        RENAME COLUMN addresswww TO website;
         
 ALTER TABLE basic_company
         ALTER COLUMN tax TYPE character varying(255),
