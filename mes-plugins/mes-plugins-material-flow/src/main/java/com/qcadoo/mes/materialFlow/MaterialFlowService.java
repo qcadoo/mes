@@ -26,10 +26,14 @@ package com.qcadoo.mes.materialFlow;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,15 +70,21 @@ public class MaterialFlowService {
         BigDecimal countProductOut = BigDecimal.ZERO;
         BigDecimal countProduct = BigDecimal.ZERO;
         Date lastCorrectionDate = null;
-
         DataDefinition transferDataCorrection = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_STOCK_CORRECTION);
         DataDefinition transferTo = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
         DataDefinition transferFrom = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
+        Date date;
+        DateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
 
-        Long stockAreasId = stockAreas;
+        try {
+            date = format.parse(forDate);
+        } catch (ParseException pe) {
+            throw new IllegalStateException(pe);
+        }
+
         Long productId = Long.valueOf(product);
 
         Entity resultDataCorrection = transferDataCorrection.find().add(SearchRestrictions.eq("stockAreas.id", stockAreas))
@@ -90,19 +100,20 @@ public class MaterialFlowService {
         SearchResult resultFrom = null;
 
         if (lastCorrectionDate == null) {
-            resultTo = transferTo.find().add(SearchRestrictions.eq("stockAreasTo", stockAreasId))
-                    .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate)).list();
 
-            resultFrom = transferFrom.find().add(SearchRestrictions.eq("stockAreasFrom", stockAreasId))
-                    .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate)).list();
+            resultTo = transferTo.find().add(SearchRestrictions.eq("stockAreasTo.id", stockAreas))
+                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", date)).list();
+
+            resultFrom = transferFrom.find().add(SearchRestrictions.eq("stockAreasFrom.id", stockAreas))
+                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", date)).list();
 
         } else {
-            resultTo = transferTo.find().add(SearchRestrictions.eq("stockAreasTo", stockAreasId))
-                    .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate))
+            resultTo = transferTo.find().add(SearchRestrictions.eq("stockAreasTo.id", stockAreas))
+                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", date))
                     .add(SearchRestrictions.gt("time", lastCorrectionDate)).list();
 
-            resultFrom = transferFrom.find().add(SearchRestrictions.eq("stockAreasFrom", stockAreasId))
-                    .add(SearchRestrictions.eq("product", product)).add(SearchRestrictions.le("time", forDate))
+            resultFrom = transferFrom.find().add(SearchRestrictions.eq("stockAreasFrom.id", stockAreas))
+                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", date))
                     .add(SearchRestrictions.gt("time", lastCorrectionDate)).list();
         }
 

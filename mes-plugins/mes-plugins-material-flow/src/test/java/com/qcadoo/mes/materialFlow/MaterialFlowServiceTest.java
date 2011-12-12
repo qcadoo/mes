@@ -67,7 +67,7 @@ public class MaterialFlowServiceTest {
 
     private static final String PRODUCT = "1";
 
-    private static final String FORDATE = "date";
+    private static final String FORDATE = "Mon Dec 12 14:00:37 CET 2011";
 
     @Before
     public void init() {
@@ -100,12 +100,12 @@ public class MaterialFlowServiceTest {
                         .add(SearchRestrictions.eq("product.id", productId)).addOrder(SearchOrders.desc("stockCorrectionDate"))
                         .setMaxResults(1).uniqueResult()).willReturn(null);
         given(
-                transfer.find().add(SearchRestrictions.eq("stockAreasTo", STOCKAREAS))
-                        .add(SearchRestrictions.eq("product", PRODUCT)).add(SearchRestrictions.le("time", FORDATE)).list())
+                transfer.find().add(SearchRestrictions.eq("stockAreasTo.id", stockAreasId))
+                        .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", FORDATE)).list())
                 .willReturn(resultTo);
         given(
-                transfer.find().add(SearchRestrictions.eq("stockAreasFrom", STOCKAREAS))
-                        .add(SearchRestrictions.eq("product", PRODUCT)).add(SearchRestrictions.le("time", FORDATE)).list())
+                transfer.find().add(SearchRestrictions.eq("stockAreasFrom.id", stockAreasId))
+                        .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", FORDATE)).list())
                 .willReturn(resultFrom);
 
         List<Entity> list = new ArrayList<Entity>();
@@ -146,13 +146,15 @@ public class MaterialFlowServiceTest {
         Date date = new Date(100);
         String lastCorrectionDate = date.toString();
         given(
-                transfer.find().add(SearchRestrictions.eq("stockAreasTo", STOCKAREAS))
-                        .add(SearchRestrictions.eq("product", PRODUCT)).add(SearchRestrictions.le("time", FORDATE))
-                        .add(SearchRestrictions.gt("time", lastCorrectionDate)).list()).willReturn(resultTo);
+                transfer.find().add(SearchRestrictions.eq("stockAreasTo.id", Long.valueOf(STOCKAREAS)))
+                        .add(SearchRestrictions.eq("product.id", Long.valueOf(PRODUCT)))
+                        .add(SearchRestrictions.le("time", FORDATE)).add(SearchRestrictions.gt("time", lastCorrectionDate))
+                        .list()).willReturn(resultTo);
         given(
-                transfer.find().add(SearchRestrictions.eq("stockAreasFrom", STOCKAREAS))
-                        .add(SearchRestrictions.eq("product", PRODUCT)).add(SearchRestrictions.le("time", FORDATE))
-                        .add(SearchRestrictions.gt("time", lastCorrectionDate)).list()).willReturn(resultFrom);
+                transfer.find().add(SearchRestrictions.eq("stockAreasFrom.id", Long.valueOf(STOCKAREAS)))
+                        .add(SearchRestrictions.eq("product.id", Long.valueOf(PRODUCT)))
+                        .add(SearchRestrictions.le("time", FORDATE)).add(SearchRestrictions.gt("time", lastCorrectionDate))
+                        .list()).willReturn(resultFrom);
 
         Entity entity = new DefaultEntity(transferDataCorrection);
         entity.setField("stockCorrectionDate", new Date(100));
