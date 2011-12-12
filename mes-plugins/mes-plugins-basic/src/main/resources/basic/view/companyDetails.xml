@@ -36,13 +36,7 @@
 		<component type="form" name="company" reference="form">
 			<script>
 				<![CDATA[
-					var saveButton = #{window}.getRibbonItem("actions.save");
-					var saveBackButton = #{window}.getRibbonItem("actions.saveBack");
-					var saveNewButton = #{window}.getRibbonItem("actions.saveNew");
-					var cancelButton = #{window}.getRibbonItem("actions.cancel");
-					var deleteButton = #{window}.getRibbonItem("actions.delete");
-					var copyButton = #{window}.getRibbonItem("actions.copy");
-					var buttons = new Array(saveButton, saveBackButton, saveNewButton, cancelButton, deleteButton, copyButton);
+					var buttons = new Array("actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel", "actions.delete", "actions.copy");
 
 					var listener = {
 						onSetValue: function() {
@@ -59,14 +53,16 @@
 					function disableButtons(buttons, message) { 
 						for ( var i = 0; i < buttons.length; i++ ) 
 						{ 
-							buttons[i].disable(message);
+							var button = #{window}.getRibbonItem(buttons[i]);
+							button.disable(message);
 						} 
 					} 
 					
 					function enableButtons(buttons) { 
 						for ( var i = 0; i < buttons.length; i++ ) 
-						{ 
-							buttons[i].enable();
+						{ 	
+							var button = #{window}.getRibbonItem(buttons[i]);
+							button.enable();
 						} 
 					} 
 
@@ -80,7 +76,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="input" name="companyFullName" field="companyFullName"  />
+					<component type="input" name="name" field="name"  />
 				</layoutElement>
 				<layoutElement column="1" row="3">
 					<component type="input" name="tax" field="tax" />
@@ -110,7 +106,7 @@
 					<component type="input" name="email" field="email" />
 				</layoutElement>
 				<layoutElement column="1" row="12">
-					<component type="input" name="addressWww" field="addressWww" />
+					<component type="input" name="website" field="website" />
 				</layoutElement>
 				<layoutElement column="1" row="13">
 					<component type="input" name="phone" field="phone" />

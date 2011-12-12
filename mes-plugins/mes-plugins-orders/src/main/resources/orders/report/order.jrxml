@@ -12,7 +12,7 @@
 	<queryString language="hql">
 		<![CDATA[
 			SELECT
-			company.companyFullName AS companyFullName,
+			company.name AS company_name,
 			company.street AS street,
 			company.house AS house,
 			company.flat AS flat,
@@ -59,7 +59,7 @@
 			orders.id IN ($P{EntityIds}) AND company.owner = true
 			]]>
 	</queryString>
-	<field name="companyFullName" class="java.lang.String"/>
+	<field name="company_name" class="java.lang.String"/>
 	<field name="street" class="java.lang.String"/>
 	<field name="house" class="java.lang.String"/>
 	<field name="flat" class="java.lang.String"/>
@@ -264,7 +264,7 @@
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="3" width="380" height="13"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{companyFullName}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{company_name}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="18" width="380" height="13"/>
@@ -306,7 +306,7 @@
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="3" width="380" height="13"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{companyFullName}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{company_name}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="18" width="380" height="13"/>

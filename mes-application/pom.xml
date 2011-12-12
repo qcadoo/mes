@@ -332,7 +332,7 @@
 		<profile>
 			<id>commercial</id>
 			<dependencies>
-				<dependency> 
+				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-commercial-plugins-integration-commons</artifactId>
 					<version>1.1.1-SNAPSHOT</version>
