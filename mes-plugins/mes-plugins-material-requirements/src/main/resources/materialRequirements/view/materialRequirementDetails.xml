@@ -184,7 +184,5 @@
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementService"
 			method="disableFormForExistingMaterialRequirement" />
-		<beforeRender class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementService"
-			method="setGenerateButtonState" />
 	</hooks>
 </view>
