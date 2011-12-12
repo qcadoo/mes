@@ -1,10 +1,22 @@
 -- Table: basic_company
 
--- changed 06.12.2011
+-- changed 12.12.2011
 
 ALTER TABLE basic_company
+        RENAME COLUMN companyfullname TO name;
+ALTER TABLE basic_company      
+        RENAME COLUMN adresswww TO website;
+        
+ALTER TABLE basic_company
+        ALTER COLUMN tax TYPE character varying(255),
+        ALTER COLUMN zipcode TYPE character varying(6),
+        ALTER COLUMN state TYPE character varying(255),
+        ALTER COLUMN country TYPE character varying(255),
+        ALTER COLUMN email TYPE character varying(255),
+        ALTER COLUMN phone TYPE character varying(255);
 		ADD COLUMN number character varying(255),
-        ADD COLUMN owner boolean DEFAULT false;
+		ADD COLUMN owner boolean DEFAULT false;
+
 
 -- end
         
@@ -34,6 +46,7 @@ CREATE OR REPLACE FUNCTION update_view() RETURNS INTEGER AS
 '
 	DECLARE
 		tenant RECORD;  
+
 	BEGIN  
 		FOR tenant IN SELECT * FROM qcadootenant_tenant LOOP  
 			INSERT INTO qcadooview_view (id, pluginidentifier, name, view, tenantid) 
