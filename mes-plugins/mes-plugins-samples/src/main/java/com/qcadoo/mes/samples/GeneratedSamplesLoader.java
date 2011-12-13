@@ -49,6 +49,16 @@ import com.qcadoo.security.api.SecurityRolesService;
 @Component
 public class GeneratedSamplesLoader extends SamplesLoader {
 
+    private static final String CONTRACTOR_MODEL = "contractor";
+
+    private static final String TECHNOLOGY_MODEL = "technology";
+
+    private static final String MACHINE = "machine";
+
+    private static final String STAFF = "staff";
+
+    private static final String OPERATION_MODEl = "operation";
+
     private static final String CHARS_ONLY = "QWERTYUIOPLKJHGFDSAZXCVBNMmnbvcxzasdfghjklpoiuytrewq";
 
     private static final String DIGITS_ONLY = "0123456789";
@@ -140,7 +150,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
         workPlan = workPlan.getDataDefinition().save(workPlan);
 
-        List<Entity> allOrders = dataDefinitionService.get("orders", "order").find().list().getEntities();
+        List<Entity> allOrders = dataDefinitionService.get("orders", ORDERS_MODEL_ORDER).find().list().getEntities();
 
         int iters = RANDOM.nextInt(allOrders.size() / 30 + 1);
         for (int i = 0; i < iters; i++) {
@@ -220,14 +230,14 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     }
 
     private void generateAndAddOperation() {
-        Entity operation = dataDefinitionService.get("technologies", "operation").create();
+        Entity operation = dataDefinitionService.get("technologies", OPERATION_MODEl).create();
 
         String number = generateString(CHARS_ONLY, RANDOM.nextInt(40) + 5);
 
         operation.setField("number", number);
         operation.setField("name", getNameFromNumberAndPrefix("Operation-", number));
-        operation.setField("staff", getRandomStaff());
-        operation.setField("machine", getRandomMachine());
+        operation.setField(STAFF, getRandomStaff());
+        operation.setField(MACHINE, getRandomMachine());
 
         operation.setField("tpz", RANDOM.nextInt(1000));
         operation.setField("tj", RANDOM.nextInt(1000));
@@ -246,22 +256,22 @@ public class GeneratedSamplesLoader extends SamplesLoader {
             operation.setField("laborHourlyCost", RANDOM.nextInt(100));
             operation.setField("numberOfOperations", RANDOM.nextInt(10) + 1);
         }
-        operation = dataDefinitionService.get("technologies", "operation").save(operation);
+        operation = dataDefinitionService.get("technologies", OPERATION_MODEl).save(operation);
 
         validateEntity(operation);
 
     }
 
     private Entity getRandomMachine() {
-        return getRandomEntity("basic", "machine");
+        return getRandomEntity("basic", MACHINE);
     }
 
     private Object getRandomStaff() {
-        return getRandomEntity("basic", "staff");
+        return getRandomEntity("basic", STAFF);
     }
 
     private void generateAndAddTechnology(final Entity product) {
-        Entity technology = dataDefinitionService.get("technologies", "technology").create();
+        Entity technology = dataDefinitionService.get("technologies", TECHNOLOGY_MODEL).create();
 
         Entity defaultTechnology = getDefaultTechnologyForProduct(product);
 
@@ -286,16 +296,16 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         technology.setField("componentQuantityAlgorithm",
                 TECHNOLOGY_QUANTITY_ALGRITHM[RANDOM.nextInt(TECHNOLOGY_QUANTITY_ALGRITHM.length)]);
 
-        technology = dataDefinitionService.get("technologies", "technology").save(technology);
+        technology = dataDefinitionService.get("technologies", TECHNOLOGY_MODEL).save(technology);
         validateEntity(technology);
 
         generateAndAddTechnologyOperationComponent(technology);
 
         treeNumberingService.generateNumbersAndUpdateTree(
-                dataDefinitionService.get("technologies", "technologyOperationComponent"), "technology", technology.getId());
+                dataDefinitionService.get("technologies", "technologyOperationComponent"), TECHNOLOGY_MODEL, technology.getId());
 
         technology.setField("state", "02accepted");
-        technology = dataDefinitionService.get("technologies", "technology").save(technology);
+        technology = dataDefinitionService.get("technologies", TECHNOLOGY_MODEL).save(technology);
         validateEntity(technology);
     }
 
@@ -309,10 +319,10 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
         operationComponent.setField("name", "operationComponent" + generateString(CHARS_AND_DIGITS, 15));
         operationComponent.setField("number", generateString(CHARS_AND_DIGITS, 20));
-        operationComponent.setField("technology", technology);
+        operationComponent.setField(TECHNOLOGY_MODEL, technology);
         operationComponent.setField("parent", parent);
-        operationComponent.setField("operation", operation);
-        operationComponent.setField("entityType", "operation");
+        operationComponent.setField(OPERATION_MODEl, operation);
+        operationComponent.setField("entityType", OPERATION_MODEl);
         operationComponent.setField("tpz", operation.getField("tpz"));
         operationComponent.setField("tj", operation.getField("tj"));
         operationComponent.setField("machineUtilization", operation.getField("machineUtilization"));
@@ -373,7 +383,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     }
 
     private Entity getRandomOperation() {
-        return getRandomEntity("technologies", "operation");
+        return getRandomEntity("technologies", OPERATION_MODEl);
     }
 
     private void generateAndAddDictionary() {
@@ -383,7 +393,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     }
 
     private void generateAndAddContractor() {
-        Entity contractor = dataDefinitionService.get("basic", "contractor").create();
+        Entity contractor = dataDefinitionService.get("basic", CONTRACTOR_MODEL).create();
 
         String number = generateString(DIGITS_ONLY, RANDOM.nextInt(40) + 5);
 
@@ -391,7 +401,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         contractor.setField("number", number);
         contractor.setField("name", getNameFromNumberAndPrefix("Contractor-", number));
 
-        contractor = dataDefinitionService.get("basic", "contractor").save(contractor);
+        contractor = dataDefinitionService.get("basic", CONTRACTOR_MODEL).save(contractor);
 
         validateEntity(contractor);
     }
@@ -400,7 +410,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         if (product == null) {
             return null;
         }
-        List<Entity> technologies = dataDefinitionService.get("technologies", "technology").find()
+        List<Entity> technologies = dataDefinitionService.get("technologies", TECHNOLOGY_MODEL).find()
                 .add(SearchRestrictions.belongsTo("product", product)).add(SearchRestrictions.eq("master", true))
                 .setMaxResults(1).list().getEntities();
         if (technologies.isEmpty()) {
@@ -427,11 +437,11 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         order.setField("dateFrom", new Date(dateFrom));
         order.setField("dateTo", new Date(dateTo));
         order.setField("state", "01pending");
-        order.setField("contractor", getRandomContractor());
+        order.setField(CONTRACTOR_MODEL, getRandomContractor());
         order.setField("product", product);
         order.setField("plannedQuantity", RANDOM.nextInt(100) + 100);
         order.setField("doneQuantity", RANDOM.nextInt(100) + 1);
-        order.setField("technology", technology);
+        order.setField(TECHNOLOGY_MODEL, technology);
         order.setField("externalSynchronized", true);
         order.setField("typeOfProductionRecording", "01basic");
 
@@ -441,7 +451,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     }
 
     private Entity getRandomContractor() {
-        return getRandomEntity("basic", "contractor");
+        return getRandomEntity("basic", CONTRACTOR_MODEL);
     }
 
     private Long generateRandomDate(final Long dateFrom) {
@@ -455,7 +465,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     }
 
     private void generateAndAddStaff() {
-        Entity staff = dataDefinitionService.get("basic", "staff").create();
+        Entity staff = dataDefinitionService.get("basic", STAFF).create();
 
         String number = generateString(DIGITS_ONLY, RANDOM.nextInt(40) + 5);
 
@@ -464,7 +474,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         staff.setField("surname", generateString(CHARS_ONLY, RANDOM.nextInt(12)));
         staff.setField("post", generateString(CHARS_ONLY, RANDOM.nextInt(5)));
 
-        staff = dataDefinitionService.get("basic", "staff").save(staff);
+        staff = dataDefinitionService.get("basic", STAFF).save(staff);
         validateEntity(staff);
     }
 
@@ -477,7 +487,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     }
 
     private void generateAndAddMachine() {
-        Entity machine = dataDefinitionService.get("basic", "machine").create();
+        Entity machine = dataDefinitionService.get("basic", MACHINE).create();
 
         String number = generateString(CHARS_AND_DIGITS, RANDOM.nextInt(40) + 5);
 
@@ -485,7 +495,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         machine.setField("number", number);
         machine.setField("description", generateString(CHARS_ONLY, RANDOM.nextInt(100)));
 
-        machine = dataDefinitionService.get("basic", "machine").save(machine);
+        machine = dataDefinitionService.get("basic", MACHINE).save(machine);
         validateEntity(machine);
     }
 

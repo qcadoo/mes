@@ -30,6 +30,8 @@ import com.qcadoo.security.api.SecurityRolesService;
 
 public abstract class SamplesLoader {
 
+    private static final String EMAIL = "email";
+
     private static final Logger LOG = LoggerFactory.getLogger(SamplesLoader.class);
 
     final Random RANDOM = new Random(System.currentTimeMillis());
@@ -153,7 +155,7 @@ public abstract class SamplesLoader {
                 + values.get("companyfullname") + " tax " + values.get("tax") + " street " + values.get("street") + " house "
                 + values.get("house") + " flat " + values.get("flat") + " zipCode " + values.get("zipcode") + " city "
                 + values.get("city") + " state " + values.get("state") + " country " + values.get("country") + " email "
-                + values.get("email") + " addressWww " + values.get("addressWww") + " phone " + values.get("phone") + " owner "
+                + values.get(EMAIL) + " addressWww " + values.get("addressWww") + " phone " + values.get("phone") + " owner "
                 + values.get("owner"));
 
         company.setField("number", values.get("number"));
@@ -166,7 +168,7 @@ public abstract class SamplesLoader {
         company.setField("city", values.get("city"));
         company.setField("state", values.get("state"));
         company.setField("country", values.get("country"));
-        company.setField("email", values.get("email"));
+        company.setField(EMAIL, values.get(EMAIL));
         company.setField("addressWww", values.get("addresswww"));
         company.setField("phone", values.get("phone"));
         company.setField("owner", values.get("owner"));
@@ -182,7 +184,7 @@ public abstract class SamplesLoader {
     void addUser(final Map<String, String> values) {
         Entity user = dataDefinitionService.get("qcadooSecurity", "user").create();
         user.setField("userName", values.get("login"));
-        user.setField("email", values.get("email"));
+        user.setField(EMAIL, values.get(EMAIL));
         user.setField("firstName", values.get("firstname"));
         user.setField("lastName", values.get("lastname"));
         user.setField("password", "123");
@@ -193,7 +195,7 @@ public abstract class SamplesLoader {
         user.setField("role", role.getName());
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test user {login=" + user.getField("userName") + ", email=" + user.getField("email") + ", firstName="
+            LOG.debug("Add test user {login=" + user.getField("userName") + ", email=" + user.getField(EMAIL) + ", firstName="
                     + user.getField("firstName") + ", lastName=" + user.getField("lastName") + ", role=" + user.getField("role")
                     + "}");
         }

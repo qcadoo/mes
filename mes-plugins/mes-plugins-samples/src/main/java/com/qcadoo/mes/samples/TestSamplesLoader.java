@@ -26,12 +26,19 @@ package com.qcadoo.mes.samples;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_MACHINE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_PRODUCT;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAFF;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_SUBSTITUTE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BOM_ID;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_DATE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_EAN;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_GENERATED;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_NAME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_NUMBER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_OPERATION_COMPONENT;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_QUANTITY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_SURNAME;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_TPZ;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_WORKER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_MODEL_ORDER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDER_STATE;
@@ -184,7 +191,7 @@ public class TestSamplesLoader extends SamplesLoader {
         machine.setField("description", values.get("description"));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test machine item {machine=" + machine.getField(FIELD_NAME) + ", number="
+            LOG.debug("Add test machine item {machine=" + machine.getField(FIELD_NAME) + ", " + FIELD_NUMBER + "="
                     + machine.getField(FIELD_NUMBER) + "}");
         }
 
@@ -196,15 +203,16 @@ public class TestSamplesLoader extends SamplesLoader {
     private void addStaff(final Map<String, String> values) {
         Entity staff = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_STAFF).create();
 
-        LOG.debug("id: " + values.get("id") + " name " + values.get(FIELD_NAME) + " surname " + values.get("surname") + " post "
-                + values.get("post"));
+        LOG.debug("id: " + values.get("id") + " name " + values.get(FIELD_NAME) + " " + FIELD_SURNAME + " "
+                + values.get(FIELD_SURNAME) + " post " + values.get("post"));
         staff.setField(FIELD_NUMBER, values.get("id"));
         staff.setField(FIELD_NAME, values.get(FIELD_NAME));
-        staff.setField("surname", values.get("surname"));
+        staff.setField(FIELD_SURNAME, values.get(FIELD_SURNAME));
         staff.setField("post", values.get("post"));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test staff item {staff=" + staff.getField(FIELD_NAME) + ", surName=" + staff.getField("surname") + "}");
+            LOG.debug("Add test staff item {staff=" + staff.getField(FIELD_NAME) + ", " + FIELD_SURNAME + "= "
+                    + staff.getField(FIELD_SURNAME) + "}");
         }
 
         staff = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_STAFF).save(staff);
@@ -216,7 +224,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
         operation.setField(FIELD_NAME, values.get(FIELD_NAME));
         operation.setField(FIELD_NUMBER, values.get(FIELD_NUMBER));
-        operation.setField("tpz", values.get("tpz"));
+        operation.setField(FIELD_TPZ, values.get(FIELD_TPZ));
         operation.setField("tj", values.get("tj"));
         operation.setField("productionInOneCycle", values.get("productioninonecycle"));
         operation.setField("countRealized", values.get("countRealized"));
@@ -236,7 +244,7 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test operation item {name=" + operation.getField(FIELD_NAME) + ", number="
+            LOG.debug("Add test operation item {name=" + operation.getField(FIELD_NAME) + ", " + FIELD_NUMBER + "="
                     + operation.getField(FIELD_NUMBER) + "}");
         }
 
@@ -275,7 +283,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test product {id=" + product.getId() + ", category=" + product.getField("category") + ", ean="
-                    + product.getField(FIELD_EAN) + ", name=" + product.getField(FIELD_NAME) + ", number="
+                    + product.getField(FIELD_EAN) + ", name=" + product.getField(FIELD_NAME) + ", " + FIELD_NUMBER + "="
                     + product.getField(FIELD_NUMBER) + ", typeOfMaterial=" + product.getField("typeOfMaterial") + ", unit="
                     + product.getField("unit") + "}");
         }
@@ -291,19 +299,19 @@ public class TestSamplesLoader extends SamplesLoader {
     }
 
     private void addSubstitute(final String name, final String number, final Entity product, final int priority) {
-        Entity substitute = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "substitute").create();
+        Entity substitute = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_SUBSTITUTE).create();
         substitute.setField(FIELD_NAME, name);
         substitute.setField(FIELD_NUMBER, number);
         substitute.setField("priority", priority);
         substitute.setField(BASIC_MODEL_PRODUCT, product);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test substitute {name=" + substitute.getField(FIELD_NAME) + ", number="
+            LOG.debug("Add test substitute {name=" + substitute.getField(FIELD_NAME) + ", " + FIELD_NUMBER + "="
                     + substitute.getField(FIELD_NUMBER) + ", priority=" + substitute.getField("priority") + ", product="
                     + ((Entity) substitute.getField(BASIC_MODEL_PRODUCT)).getField(FIELD_NUMBER) + "}");
         }
 
-        substitute = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "substitute").save(substitute);
+        substitute = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_SUBSTITUTE).save(substitute);
         validateEntity(substitute);
 
         for (int i = 0; i < 1; i++) {
@@ -315,11 +323,11 @@ public class TestSamplesLoader extends SamplesLoader {
         Entity substituteComponent = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "substituteComponent").create();
         substituteComponent.setField(BASIC_MODEL_PRODUCT, product);
         substituteComponent.setField(FIELD_QUANTITY, new BigDecimal(quantity).setScale(3, RoundingMode.HALF_EVEN));
-        substituteComponent.setField("substitute", substitute);
+        substituteComponent.setField(BASIC_MODEL_SUBSTITUTE, substitute);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test substitute component {substitute="
-                    + ((Entity) substituteComponent.getField("substitute")).getField(FIELD_NUMBER) + ", product="
+                    + ((Entity) substituteComponent.getField(BASIC_MODEL_SUBSTITUTE)).getField(FIELD_NUMBER) + ", product="
                     + ((Entity) substituteComponent.getField(BASIC_MODEL_PRODUCT)).getField(FIELD_NUMBER) + ", quantity="
                     + substituteComponent.getField(FIELD_QUANTITY) + "}");
         }
@@ -381,14 +389,16 @@ public class TestSamplesLoader extends SamplesLoader {
                     + order.getId()
                     + ", name="
                     + order.getField(FIELD_NAME)
-                    + ", number="
+                    + ", "
+                    + FIELD_NUMBER
+                    + "="
                     + order.getField(FIELD_NUMBER)
                     + ", product="
                     + (order.getField(BASIC_MODEL_PRODUCT) == null ? null : ((Entity) order.getField(BASIC_MODEL_PRODUCT))
                             .getField(FIELD_NUMBER))
                     + ", technology="
-                    + (order.getField(TECHNOLOGY_MODEL_TECHNOLOGY) != null ? ((Entity) order
-                            .getField(TECHNOLOGY_MODEL_TECHNOLOGY)).getField(FIELD_NUMBER) : null) + ", dateFrom="
+                    + (order.getField(TECHNOLOGY_MODEL_TECHNOLOGY) == null ? null : ((Entity) order
+                            .getField(TECHNOLOGY_MODEL_TECHNOLOGY)).getField(FIELD_NUMBER)) + ", dateFrom="
                     + order.getField("dateFrom") + ", dateTo=" + order.getField("dateTo") + ", effectiveDateFrom="
                     + order.getField("effectiveDateFrom") + ", effectiveDateTo=" + order.getField("effectiveDateTo")
                     + ", doneQuantity=" + order.getField("doneQuantity") + ", plannedQuantity="
@@ -428,8 +438,8 @@ public class TestSamplesLoader extends SamplesLoader {
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getField(FIELD_NAME)
-                        + ", number=" + technology.getField(FIELD_NUMBER) + ", product="
+                LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getField(FIELD_NAME) + ", "
+                        + FIELD_NUMBER + "=" + technology.getField(FIELD_NUMBER) + ", product="
                         + ((Entity) technology.getField(BASIC_MODEL_PRODUCT)).getField(FIELD_NUMBER) + ", description="
                         + technology.getField("description") + ", master=" + technology.getField("master") + "}");
             }
@@ -438,21 +448,21 @@ public class TestSamplesLoader extends SamplesLoader {
             validateEntity(technology);
 
             if (PROD_NR_10.equals(values.get(PRODUCT_NUMBER))) {
-                if ("9".equals(values.get("bom_id"))) {
+                if ("9".equals(values.get(BOM_ID))) {
                     addTechnologyOperationComponentsForTable(technology);
-                } else if ("10".equals(values.get("bom_id"))) {
+                } else if ("10".equals(values.get(BOM_ID))) {
                     addTechnologyOperationComponentsForTableAdvanced(technology);
                 }
             } else if (PROD_NR_17.equals(values.get(PRODUCT_NUMBER))) {
-                if ("11".equals(values.get("bom_id"))) {
+                if ("11".equals(values.get(BOM_ID))) {
                     addTechnologyOperationComponentsForTabouret(technology);
-                } else if ("12".equals(values.get("bom_id"))) {
+                } else if ("12".equals(values.get(BOM_ID))) {
                     addTechnologyOperationComponentsForTabouretAdvanced(technology);
                 }
             } else if (PROD_NR_25.equals(values.get(PRODUCT_NUMBER))) {
-                if ("13".equals(values.get("bom_id"))) {
+                if ("13".equals(values.get(BOM_ID))) {
                     addTechnologyOperationComponentsForStool(technology);
-                } else if ("14".equals(values.get("bom_id"))) {
+                } else if ("14".equals(values.get(BOM_ID))) {
                     addTechnologyOperationComponentsForStoolAdvanced(technology);
                 }
             }
@@ -579,7 +589,7 @@ public class TestSamplesLoader extends SamplesLoader {
         component.setField("parent", parent);
         component.setField(TECHNOLOGY_MODEL_OPERATION, operation);
         component.setField("entityType", TECHNOLOGY_MODEL_OPERATION);
-        component.setField("tpz", operation.getField("tpz"));
+        component.setField(FIELD_TPZ, operation.getField(FIELD_TPZ));
         component.setField("tj", operation.getField("tj"));
         component.setField("machineUtilization", operation.getField("machineUtilization"));
         component.setField("laborUtilization", operation.getField("laborUtilization"));
@@ -650,15 +660,15 @@ public class TestSamplesLoader extends SamplesLoader {
     private void addMaterialRequirement() {
         Entity requirement = dataDefinitionService.get("materialRequirements", "materialRequirement").create();
         requirement.setField(FIELD_NAME, getRandomProduct().getField(FIELD_NAME));
-        requirement.setField("generated", false);
-        requirement.setField("date", null);
+        requirement.setField(FIELD_GENERATED, false);
+        requirement.setField(FIELD_DATE, null);
         requirement.setField("onlyComponents", RANDOM.nextBoolean());
-        requirement.setField("worker", null);
+        requirement.setField(FIELD_WORKER, null);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test material requirement {name=" + requirement.getField(FIELD_NAME) + ", date="
-                    + requirement.getField("date") + ", worker=" + requirement.getField("worker") + ", onlyComponents="
-                    + requirement.getField("onlyComponents") + ", generated=" + requirement.getField("generated") + "}");
+                    + requirement.getField(FIELD_DATE) + ", worker=" + requirement.getField(FIELD_WORKER) + ", onlyComponents="
+                    + requirement.getField("onlyComponents") + ", generated=" + requirement.getField(FIELD_GENERATED) + "}");
         }
 
         requirement.setField(ORDERS_PLUGIN_IDENTIFIER, Lists.newArrayList(getRandomOrder(), getRandomOrder(), getRandomOrder()));
@@ -676,14 +686,14 @@ public class TestSamplesLoader extends SamplesLoader {
     private void addWorkPlan() {
         Entity workPlan = dataDefinitionService.get(WORK_PLANS_PLUGIN_IDENTIFIER, WORK_PLANS_MODEL_WORK_PLAN).create();
         workPlan.setField(FIELD_NAME, getRandomProduct().getField(FIELD_NAME));
-        workPlan.setField("generated", false);
-        workPlan.setField("date", null);
-        workPlan.setField("worker", null);
+        workPlan.setField(FIELD_GENERATED, false);
+        workPlan.setField(FIELD_DATE, null);
+        workPlan.setField(FIELD_WORKER, null);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test material requirement {name=" + workPlan.getField(FIELD_NAME) + ", date="
-                    + workPlan.getField("date") + ", worker=" + workPlan.getField("worker") + ", generated="
-                    + workPlan.getField("generated") + "}");
+                    + workPlan.getField(FIELD_DATE) + ", worker=" + workPlan.getField(FIELD_WORKER) + ", generated="
+                    + workPlan.getField(FIELD_GENERATED) + "}");
         }
 
         workPlan = dataDefinitionService.get(WORK_PLANS_PLUGIN_IDENTIFIER, WORK_PLANS_MODEL_WORK_PLAN).save(workPlan);
