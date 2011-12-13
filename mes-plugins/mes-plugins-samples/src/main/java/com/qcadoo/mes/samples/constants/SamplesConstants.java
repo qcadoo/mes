@@ -45,6 +45,8 @@ public interface SamplesConstants {
 
     String BASIC_MODEL_SUBSTITUTE = "substitute";
 
+    String BASIC_MODEL_CONTRACTOR = "contractor";
+
     String PRODUCTS_PLUGIN_IDENTIFIER = "products";
 
     String WORK_PLANS_PLUGIN_IDENTIFIER = "workPlans";

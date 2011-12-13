@@ -37,10 +37,7 @@
 		<component type="grid" name="companies" reference="grid">
 			<script>
 				<![CDATA[
-					var copyButton = #{window}.getRibbonItem("actions.copy");
-					var deleteButton = #{window}.getRibbonItem("actions.delete");
-					
-					var buttons = new Array(copyButton, deleteButton);
+					var buttons = new Array("actions.copy", "actions.delete");
 					
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
@@ -68,14 +65,16 @@
 					function disableButtons(buttons, message) { 
 						for ( var i = 0; i < buttons.length; i++ ) 
 						{ 
-							buttons[i].disable(message);
+							var button = #{window}.getRibbonItem(buttons[i]);
+							buttons.disable(message);
 						} 
 					} 
 					
 					function enableButtons(buttons) { 
 						for ( var i = 0; i < buttons.length; i++ ) 
 						{ 
-							buttons[i].enable();
+							var button = #{window}.getRibbonItem(buttons[i]);
+							button.enable();
 						} 
 					} 
 					
@@ -83,10 +82,10 @@
 				]]>
 			</script>
 			<option type="column" name="number" fields="number" link="true" width="50" />
-			<option type="column" name="companyFullName" fields="companyFullName" link="true" width="100" />
+			<option type="column" name="name" fields="name" link="true" width="100" />
 			<option type="column" name="owner" fields="owner" hidden="true" />
-			<option type="searchable" value="number,companyFullName" />
-			<option type="orderable" value="number,companyFullName" />
+			<option type="searchable" value="number,name" />
+			<option type="orderable" value="number,name" />
 			<option type="order" column="number" direction="asc" />
 			<option type="correspondingView" value="basic/companyDetails" />
 			<option type="correspondingComponent" value="form" />

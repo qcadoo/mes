@@ -29,15 +29,11 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true" />
-		<string name="companyFullName" required="true" default='Company'>
+		<string name="name" required="true" default='Company'>
 			<validatesLength max="255" />
 		</string>
-		<string name="tax" required="false" >
-			<validatesLength max="30" />
-		</string>
-		<string name="street" required="false" >
-			<validatesLength max="255" />
-		</string>
+		<string name="tax" required="false" />
+		<string name="street" required="false" />
 		<string name="house" required="false" >
 			<validatesLength max="30" />
 		</string>
@@ -45,28 +41,16 @@
 			<validatesLength max="30" />
 		</string>
 		<string name="zipCode" required="false" >
-			<validatesLength max="30" />
+			<validatesLength max="6" />
 		</string>
-		<string name="city" required="false" >
-			<validatesLength max="255" />
-		</string>
-		<string name="state" required="false" >
-			<validatesLength max="30" />
-		</string>
-		<string name="country" required="false" >
-			<validatesLength max="30" />
-		</string>
-		<string name="email" required="false" >
-			<validatesLength max="30" />
-		</string>
-		<string name="addressWww" required="false" >
-			<validatesLength max="30" />
-		</string>
-		<string name="phone" required="false" >
-			<validatesLength max="25" />
-		</string>
+		<string name="city" required="false" />
+		<string name="state" required="false" />
+		<string name="country" required="false" />
+		<string name="email" required="false" />
+		<string name="website" required="false" />
+		<string name="phone" required="false" />
 		<boolean name="owner" required="false" default="false" />
 	</fields>
 	<hooks />
-	<identifier expression="#number + ' - ' + #companyFullName" />
+	<identifier expression="#number + ' - ' + #name" />
 </model>

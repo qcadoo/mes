@@ -332,7 +332,7 @@
 		<profile>
 			<id>commercial</id>
 			<dependencies>
-				<dependency> 
+				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-commercial-plugins-integration-commons</artifactId>
 					<version>1.1.1-SNAPSHOT</version>
@@ -347,11 +347,11 @@
 					<artifactId>mes-commercial-plugins-integration-subiekt</artifactId>
 					<version>1.1.1-SNAPSHOT</version>
 				</dependency>
-				<!-- <dependency> -->
-				<!-- <groupId>com.qcadoo.mes</groupId> -->
-				<!-- <artifactId>mes-commercial-plugins-integration-erp</artifactId> -->
-				<!-- <version>1.1.1-SNAPSHOT</version> -->
-				<!-- </dependency> 
+				<!-- <dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-erp</artifactId>
+					<version>1.1.1-SNAPSHOT</version>
+				</dependency> 
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-base</artifactId>
@@ -367,10 +367,11 @@
 					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-orders</artifactId>
 					<version>1.1.1-SNAPSHOT</version>
 				</dependency> -->
-				<!-- <dependency> <groupId>com.qcadoo.mes</groupId> <artifactId>mes-commercial-plugins-advanced-genealogy</artifactId> 
+				<dependency> <groupId>com.qcadoo.mes</groupId> <artifactId>mes-commercial-plugins-advanced-genealogy</artifactId> 
 					<version>1.1.1-SNAPSHOT</version> </dependency> <dependency> <groupId>com.qcadoo.mes</groupId> 
 					<artifactId>mes-commercial-plugins-advanced-genealogy-for-orders</artifactId> 
-					<version>1.1.1-SNAPSHOT</version> </dependency> -->
+					<version>1.1.1-SNAPSHOT</version>
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>

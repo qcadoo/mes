@@ -155,11 +155,11 @@ public abstract class SamplesLoader {
                 + values.get("companyfullname") + " tax " + values.get("tax") + " street " + values.get("street") + " house "
                 + values.get("house") + " flat " + values.get("flat") + " zipCode " + values.get("zipcode") + " city "
                 + values.get("city") + " state " + values.get("state") + " country " + values.get("country") + " email "
-                + values.get(EMAIL) + " addressWww " + values.get("addressWww") + " phone " + values.get("phone") + " owner "
+                + values.get(EMAIL) + " website " + values.get("website") + " phone " + values.get("phone") + " owner "
                 + values.get("owner"));
 
         company.setField("number", values.get("number"));
-        company.setField("companyFullName", values.get("companyfullname"));
+        company.setField("name", values.get("name"));
         company.setField("tax", values.get("tax"));
         company.setField("street", values.get("street"));
         company.setField("house", values.get("house"));
@@ -169,12 +169,12 @@ public abstract class SamplesLoader {
         company.setField("state", values.get("state"));
         company.setField("country", values.get("country"));
         company.setField(EMAIL, values.get(EMAIL));
-        company.setField("addressWww", values.get("addresswww"));
+        company.setField("website", values.get("website"));
         company.setField("phone", values.get("phone"));
         company.setField("owner", values.get("owner"));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test company item {company=" + company.getField("companyFullName") + "}");
+            LOG.debug("Add test company item {company=" + company.getField("name") + "}");
         }
 
         company = company.getDataDefinition().save(company);
