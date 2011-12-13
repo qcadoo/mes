@@ -575,7 +575,7 @@ public class QualityControlServiceTest {
 
         given(dataDefinitionService.get("orders", "order")).willReturn(orderDD);
 
-        given(orderDD.find().setMaxResults(1).isIdEq(Mockito.anyLong())).willReturn(searchCriteria);
+        given(orderDD.find().setMaxResults(1).add(SearchRestrictions.eq("id", Mockito.anyLong()))).willReturn(searchCriteria);
 
         given(searchCriteria.list().getEntities()).willReturn(orders);
 
