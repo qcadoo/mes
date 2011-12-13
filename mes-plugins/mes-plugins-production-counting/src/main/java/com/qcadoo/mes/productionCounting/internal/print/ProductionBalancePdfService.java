@@ -213,8 +213,6 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
     private void addInputProductsBalance(final Document document, final Entity productionBalance, final Entity technology,
             final Locale locale) throws DocumentException {
-        document.add(new Paragraph(getTranslationService().translate("productionCounting.productionBalance.report.paragraph",
-                locale), PdfUtil.getArialBold11Dark()));
 
         List<String> inputProductsTableHeader = new ArrayList<String>();
         inputProductsTableHeader.add(getTranslationService().translate(
@@ -231,8 +229,6 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 "productionCounting.productionBalance.report.columnHeader.balance", locale));
         inputProductsTableHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
 
-        PdfPTable inputProductsTable = PdfUtil.createTableWithHeader(7, inputProductsTableHeader, false);
-
         List<Entity> inputProductsList = new ArrayList<Entity>();
         List<Entity> productionRecords = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
@@ -241,43 +237,48 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         for (Entity productionRecord : productionRecords) {
             inputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductInComponents"));
         }
-        Collections.sort(inputProductsList, new EntityProductInOutComparator());
 
-        for (Entity inputProduct : productionBalanceReportDataService.groupProductInOutComponentsByProduct(inputProductsList)) {
-            inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("number"), PdfUtil
-                    .getArialRegular9Dark()));
-            inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("name"), PdfUtil
-                    .getArialRegular9Dark()));
+        if (!inputProductsList.isEmpty()) {
+            document.add(new Paragraph(getTranslationService().translate("productionCounting.productionBalance.report.paragraph",
+                    locale), PdfUtil.getArialBold11Dark()));
 
-            String type = technologyService.getProductType(inputProduct.getBelongsToField("product"), technology);
-            inputProductsTable.addCell(new Phrase(this.getTranslationService().translate(
-                    "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
+            Collections.sort(inputProductsList, new EntityProductInOutComparator());
 
-            inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-            inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("plannedQuantity")), PdfUtil
-                    .getArialRegular9Dark()));
-            if (inputProduct.getField("usedQuantity") != null) {
-                inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("usedQuantity")), PdfUtil
+            PdfPTable inputProductsTable = PdfUtil.createTableWithHeader(7, inputProductsTableHeader, false);
+
+            for (Entity inputProduct : productionBalanceReportDataService.groupProductInOutComponentsByProduct(inputProductsList)) {
+                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("number"), PdfUtil
                         .getArialRegular9Dark()));
-                inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("balance")), PdfUtil
+                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("name"), PdfUtil
                         .getArialRegular9Dark()));
-            } else {
-                inputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
-                inputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
+
+                String type = technologyService.getProductType(inputProduct.getBelongsToField("product"), technology);
+                inputProductsTable.addCell(new Phrase(this.getTranslationService().translate(
+                        "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
+
+                inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
+                inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("plannedQuantity")),
+                        PdfUtil.getArialRegular9Dark()));
+                if (inputProduct.getField("usedQuantity") != null) {
+                    inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("usedQuantity")),
+                            PdfUtil.getArialRegular9Dark()));
+                    inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("balance")), PdfUtil
+                            .getArialRegular9Dark()));
+                } else {
+                    inputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
+                    inputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
+                }
+                inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
+                        .getArialRegular9Dark()));
             }
-            inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-            inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
-                    .getArialRegular9Dark()));
-        }
 
-        document.add(inputProductsTable);
+            document.add(inputProductsTable);
+        }
     }
 
     private void addOutputProductsBalance(final Document document, final Entity productionBalance, final Entity technology,
             final Locale locale) throws DocumentException {
-        document.add(Chunk.NEWLINE);
-        document.add(new Paragraph(getTranslationService().translate("productionCounting.productionBalance.report.paragraph2",
-                locale), PdfUtil.getArialBold11Dark()));
 
         List<String> outputProductsTableHeader = new ArrayList<String>();
         outputProductsTableHeader.add(getTranslationService().translate(
@@ -294,8 +295,6 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 "productionCounting.productionBalance.report.columnHeader.balance", locale));
         outputProductsTableHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
 
-        PdfPTable outputProductsTable = PdfUtil.createTableWithHeader(7, outputProductsTableHeader, false);
-
         List<Entity> outputProductsList = new ArrayList<Entity>();
         List<Entity> productionRecords = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
@@ -306,36 +305,46 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 outputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductOutComponents"));
             }
         }
-        Collections.sort(outputProductsList, new EntityProductInOutComparator());
 
-        for (Entity outputProduct : productionBalanceReportDataService.groupProductInOutComponentsByProduct(outputProductsList)) {
-            outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("number"), PdfUtil
-                    .getArialRegular9Dark()));
-            outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("name"), PdfUtil
-                    .getArialRegular9Dark()));
+        if (!outputProductsList.isEmpty()) {
+            document.add(Chunk.NEWLINE);
+            document.add(new Paragraph(getTranslationService().translate(
+                    "productionCounting.productionBalance.report.paragraph2", locale), PdfUtil.getArialBold11Dark()));
 
-            String type = technologyService.getProductType(outputProduct.getBelongsToField("product"), technology);
-            outputProductsTable.addCell(new Phrase(this.getTranslationService().translate(
-                    "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
+            Collections.sort(outputProductsList, new EntityProductInOutComparator());
 
-            outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-            outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("plannedQuantity")), PdfUtil
-                    .getArialRegular9Dark()));
-            if (outputProduct.getField("usedQuantity") != null) {
-                outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("usedQuantity")), PdfUtil
+            PdfPTable outputProductsTable = PdfUtil.createTableWithHeader(7, outputProductsTableHeader, false);
+
+            for (Entity outputProduct : productionBalanceReportDataService
+                    .groupProductInOutComponentsByProduct(outputProductsList)) {
+                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("number"),
+                        PdfUtil.getArialRegular9Dark()));
+                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("name"), PdfUtil
                         .getArialRegular9Dark()));
-                outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("balance")), PdfUtil
+
+                String type = technologyService.getProductType(outputProduct.getBelongsToField("product"), technology);
+                outputProductsTable.addCell(new Phrase(this.getTranslationService().translate(
+                        "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
+
+                outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
+                outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("plannedQuantity")),
+                        PdfUtil.getArialRegular9Dark()));
+                if (outputProduct.getField("usedQuantity") != null) {
+                    outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("usedQuantity")),
+                            PdfUtil.getArialRegular9Dark()));
+                    outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("balance")), PdfUtil
+                            .getArialRegular9Dark()));
+                } else {
+                    outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
+                    outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
+                }
+                outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
                         .getArialRegular9Dark()));
-            } else {
-                outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
-                outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
             }
-            outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-            outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
-                    .getArialRegular9Dark()));
-        }
 
-        document.add(outputProductsTable);
+            document.add(outputProductsTable);
+        }
     }
 
     private void addMachineTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
