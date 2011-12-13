@@ -58,6 +58,72 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public final class QualityControlService {
 
+    private static final String CONTROL_INSTRUCTION_LITERAL = "controlInstruction";
+
+    private static final String DATE_TO_LITERAL = "dateTo";
+
+    private static final String DATE_FROM_LITERAL = "dateFrom";
+
+    private static final String GRID_LITERAL = "grid";
+
+    private static final String FORM_LITERAL = "form";
+
+    private static final String QUALITY_CONTROLS_FOR_OPERATION_LITERAL = "qualityControlsForOperation";
+
+    private static final String QUALITY_CONTROLS_FOR_ORDER_LITERAL = "qualityControlsForOrder";
+
+    private static final String QUALITY_CONTROLS_FOR_BATCH_LITERAL = "qualityControlsForBatch";
+
+    private static final String OPERATION_COMPONENTS_LITERAL = "operationComponents";
+
+    private static final String TYPE_03FOR_ORDER = "03forOrder";
+
+    private static final String QUALITY_CONTROLS_FOR_UNIT_LITERAL = "qualityControlsForUnit";
+
+    private static final String PLANNED_QUANTITY_LITERAL = "plannedQuantity";
+
+    private static final String DONE_QUANTITY_LITERAL = "doneQuantity";
+
+    private static final String UNIT_SAMPLING_NR_LITERAL = "unitSamplingNr";
+
+    private static final String TYPE_02FOR_UNIT = "02forUnit";
+
+    private static final String TYPE_01FOR_BATCH = "01forBatch";
+
+    private static final String NUMBER_LITERAL = "number";
+
+    private static final String ORDER_LITERAL = "order";
+
+    private static final String CONTROLLED_QUANTITY_LITERAL = "controlledQuantity";
+
+    private static final String OPERATION_LITERAL = "operation";
+
+    private static final String REJECTED_QUANTITY_LITERAL = "rejectedQuantity";
+
+    private static final String TAKEN_FOR_CONTROL_QUANTITY_LITERAL = "takenForControlQuantity";
+
+    private static final String DATE_LITERAL = "date";
+
+    private static final String STAFF_LITERAL = "staff";
+
+    private static final String CLOSED_LITERAL = "closed";
+
+    private static final String ACCEPTED_DEFECTS_QUANTITY_LITERAL = "acceptedDefectsQuantity";
+
+    private static final String TYPE_04FOR_OPERATION = "04forOperation";
+
+    private static final Integer DIGITS_NUMBER = 6;
+
+    private static final String FIELD_COMMENT = "comment";
+
+    private static final String FIELD_CONTROL_RESULT = "controlResult";
+
+    private static final String FIELD_QUALITY_CONTROL_REQUIRED = "qualityControlRequired";
+
+    private static final String TECHNOLOGY_LITERAL = "technology";
+
+    private static final String QUALITY_CONTROL_TYPE_LITERAL = "qualityControlType";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -69,18 +135,6 @@ public final class QualityControlService {
 
     @Autowired
     private QualityControlForNumberService qualityControlForNumber;
-
-    private static final Integer DIGITS_NUMBER = 6;
-
-    private static final String FIELD_COMMENT = "comment";
-
-    private static final String FIELD_CONTROL_RESULT = "controlResult";
-
-    private static final String FIELD_QUALITY_CONTROL_REQUIRED = "qualityControlRequired";
-
-    private static final String FIELD_TECHNOLOGY = "technology";
-
-    private static final String FIELD_QUALITY_CONTROL_TYPE = "qualityControlType";
 
     public void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state) {
         FieldComponent comment = (FieldComponent) state.getComponentByReference(FIELD_COMMENT);
@@ -98,13 +152,13 @@ public final class QualityControlService {
 
     public void setQualityControlTypeForTechnology(final DataDefinition dataDefinition, final Entity entity) {
         if (entity.getField(FIELD_QUALITY_CONTROL_REQUIRED) != null && (Boolean) entity.getField(FIELD_QUALITY_CONTROL_REQUIRED)) {
-            Entity technology = entity.getBelongsToField(FIELD_TECHNOLOGY);
+            Entity technology = entity.getBelongsToField(TECHNOLOGY_LITERAL);
             DataDefinition technologyInDef = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY);
             Entity technologyEntity = technologyInDef.get(technology.getId());
-            if (technologyEntity.getField(FIELD_QUALITY_CONTROL_TYPE) == null
-                    || !technologyEntity.getField(FIELD_QUALITY_CONTROL_TYPE).equals("04forOperation")) {
-                technologyEntity.setField(FIELD_QUALITY_CONTROL_TYPE, "04forOperation");
+            if (technologyEntity.getField(QUALITY_CONTROL_TYPE_LITERAL) == null
+                    || !technologyEntity.getField(QUALITY_CONTROL_TYPE_LITERAL).equals(TYPE_04FOR_OPERATION)) {
+                technologyEntity.setField(QUALITY_CONTROL_TYPE_LITERAL, TYPE_04FOR_OPERATION);
                 technologyInDef.save(technologyEntity);
             }
         }
@@ -113,7 +167,8 @@ public final class QualityControlService {
     public void checkIfCommentIsRequiredBasedOnDefects(final ViewDefinitionState state) {
         FieldComponent comment = (FieldComponent) state.getComponentByReference(FIELD_COMMENT);
 
-        FieldComponent acceptedDefectsQuantity = (FieldComponent) state.getComponentByReference("acceptedDefectsQuantity");
+        FieldComponent acceptedDefectsQuantity = (FieldComponent) state
+                .getComponentByReference(ACCEPTED_DEFECTS_QUANTITY_LITERAL);
 
         if (acceptedDefectsQuantity.getFieldValue() != null
                 && !acceptedDefectsQuantity.getFieldValue().toString().isEmpty()
@@ -128,7 +183,7 @@ public final class QualityControlService {
     }
 
     public boolean checkIfCommentForResultOrQuantityIsReq(final DataDefinition dataDefinition, final Entity entity) {
-        String qualityControlType = (String) entity.getField(FIELD_QUALITY_CONTROL_TYPE);
+        String qualityControlType = (String) entity.getField(QUALITY_CONTROL_TYPE_LITERAL);
 
         if (hasControlResult(qualityControlType)) {
             return checkIfCommentForResultIsReq(dataDefinition, entity);
@@ -156,7 +211,7 @@ public final class QualityControlService {
     }
 
     public boolean checkIfCommentForQuantityIsReq(final DataDefinition dataDefinition, final Entity entity) {
-        BigDecimal acceptedDefectsQuantity = (BigDecimal) entity.getField("acceptedDefectsQuantity");
+        BigDecimal acceptedDefectsQuantity = (BigDecimal) entity.getField(ACCEPTED_DEFECTS_QUANTITY_LITERAL);
 
         if (acceptedDefectsQuantity != null) {
             String comment = (String) entity.getField(FIELD_COMMENT);
@@ -195,7 +250,7 @@ public final class QualityControlService {
                 FieldComponent controlResult = (FieldComponent) viewDefinitionState.getComponentByReference(FIELD_CONTROL_RESULT);
 
                 String qualityControlType = ((FieldComponent) viewDefinitionState
-                        .getComponentByReference(FIELD_QUALITY_CONTROL_TYPE)).getFieldValue().toString();
+                        .getComponentByReference(QUALITY_CONTROL_TYPE_LITERAL)).getFieldValue().toString();
 
                 if (hasControlResult(qualityControlType) && controlResult != null
                         && (controlResult.getFieldValue() == null || ((String) controlResult.getFieldValue()).isEmpty())) {
@@ -210,9 +265,9 @@ public final class QualityControlService {
                         || (controlResult != null && ((controlResult.getFieldValue() != null) || !((String) controlResult
                                 .getFieldValue()).isEmpty()))) {
 
-                    FieldComponent closed = (FieldComponent) viewDefinitionState.getComponentByReference("closed");
-                    FieldComponent staff = (FieldComponent) viewDefinitionState.getComponentByReference("staff");
-                    FieldComponent date = (FieldComponent) viewDefinitionState.getComponentByReference("date");
+                    FieldComponent closed = (FieldComponent) viewDefinitionState.getComponentByReference(CLOSED_LITERAL);
+                    FieldComponent staff = (FieldComponent) viewDefinitionState.getComponentByReference(STAFF_LITERAL);
+                    FieldComponent date = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_LITERAL);
 
                     staff.setFieldValue(securityService.getCurrentUserName());
                     date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_FORMAT).format(new Date()));
@@ -230,7 +285,7 @@ public final class QualityControlService {
                 FieldDefinition controlResultField = qualityControlDD.getField(FIELD_CONTROL_RESULT);
 
                 Object controlResult = qualityControl.getField(FIELD_CONTROL_RESULT);
-                String qualityControlType = (String) qualityControl.getField(FIELD_QUALITY_CONTROL_TYPE);
+                String qualityControlType = (String) qualityControl.getField(QUALITY_CONTROL_TYPE_LITERAL);
 
                 if (hasControlResult(qualityControlType) && controlResultField != null
                         && (controlResult == null || controlResult.toString().isEmpty())) {
@@ -241,9 +296,9 @@ public final class QualityControlService {
                 } else if (!hasControlResult(qualityControlType)
                         || (controlResultField == null || (controlResult != null && !controlResult.toString().isEmpty()))) {
 
-                    qualityControl.setField("staff", securityService.getCurrentUserName());
-                    qualityControl.setField("date", new Date());
-                    qualityControl.setField("closed", true);
+                    qualityControl.setField(STAFF_LITERAL, securityService.getCurrentUserName());
+                    qualityControl.setField(DATE_LITERAL, new Date());
+                    qualityControl.setField(CLOSED_LITERAL, true);
                     qualityControlDD.save(qualityControl);
 
                     state.performEvent(viewDefinitionState, "refresh", new String[0]);
@@ -271,39 +326,53 @@ public final class QualityControlService {
     }
 
     public void generateOnSaveQualityControl(final DataDefinition dataDefinition, final Entity entity) {
-        Entity order = entity.getBelongsToField("order");
-        Entity technology = order.getBelongsToField(FIELD_TECHNOLOGY);
-        if (technology != null) {
-            Object qualityControl = technology.getField(FIELD_QUALITY_CONTROL_TYPE);
+        Entity order = entity.getBelongsToField(ORDER_LITERAL);
+        Entity technology = order.getBelongsToField(TECHNOLOGY_LITERAL);
+        if (technology == null) {
+            return;
+        } else {
+            Object qualityControl = technology.getField(QUALITY_CONTROL_TYPE_LITERAL);
 
-            if (qualityControl != null) {
-                boolean qualityControlType = "01forBatch".equals(technology.getField(FIELD_QUALITY_CONTROL_TYPE).toString());
+            if (qualityControl == null) {
+                return;
+            } else {
+                boolean qualityControlType = TYPE_01FOR_BATCH
+                        .equals(technology.getField(QUALITY_CONTROL_TYPE_LITERAL).toString());
 
                 if (isQualityControlAutoGenEnabled() || qualityControlType) {
                     createAndSaveControlForSingleBatch(order, entity);
                 }
             }
-
         }
     }
 
     public void generateQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (state.getFieldValue() != null) {
-
+        if (state.getFieldValue() == null) {
+            if (state instanceof FormComponent) {
+                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
+                        MessageType.FAILURE);
+            }
+        } else {
             DataDefinition orderDataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
                     OrdersConstants.MODEL_ORDER);
             Entity order = orderDataDefinition.get((Long) state.getFieldValue());
 
-            Entity technology = (Entity) order.getField(FIELD_TECHNOLOGY);
+            Entity technology = (Entity) order.getField(TECHNOLOGY_LITERAL);
 
             if (technology == null) {
                 return;
             }
 
-            if (technology.getField(FIELD_QUALITY_CONTROL_TYPE) != null) {
-
-                String qualityControlType = technology.getField(FIELD_QUALITY_CONTROL_TYPE).toString();
+            if (technology.getField(QUALITY_CONTROL_TYPE_LITERAL) == null) {
+                state.addMessage(
+                        translationService.translate("qualityControls.qualityControls.qualityType.missing", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                String qualityControlType = technology.getField(QUALITY_CONTROL_TYPE_LITERAL).toString();
 
                 if (isQualityControlForOrderExists(order)) {
                     state.addMessage(
@@ -318,19 +387,6 @@ public final class QualityControlService {
                 }
 
                 state.performEvent(viewDefinitionState, "refresh", new String[0]);
-            } else {
-                state.addMessage(
-                        translationService.translate("qualityControls.qualityControls.qualityType.missing", state.getLocale()),
-                        MessageType.FAILURE);
-            }
-
-        } else {
-            if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
-                        MessageType.FAILURE);
             }
         }
 
@@ -339,7 +395,7 @@ public final class QualityControlService {
     private boolean isQualityControlForOrderExists(final Entity order) {
         DataDefinition dataDefinition = dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
                 QualityControlsConstants.MODEL_QUALITY_CONTROL);
-        return dataDefinition.find().add(SearchRestrictions.belongsTo("order", order)).list().getTotalNumberOfEntities() != 0;
+        return dataDefinition.find().add(SearchRestrictions.belongsTo(ORDER_LITERAL, order)).list().getTotalNumberOfEntities() != 0;
     }
 
     public void checkAcceptedDefectsQuantity(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -369,7 +425,8 @@ public final class QualityControlService {
         }
 
         FieldComponent order = (FieldComponent) state;
-        FieldComponent controlInstruction = (FieldComponent) viewDefinitionState.getComponentByReference("controlInstruction");
+        FieldComponent controlInstruction = (FieldComponent) viewDefinitionState
+                .getComponentByReference(CONTROL_INSTRUCTION_LITERAL);
 
         if (controlInstruction != null) {
             controlInstruction.setFieldValue("");
@@ -386,17 +443,19 @@ public final class QualityControlService {
     }
 
     public void enableCalendarsOnRender(final ViewDefinitionState state) {
-        FieldComponent dateFrom = (FieldComponent) state.getComponentByReference("dateFrom");
-        FieldComponent dateTo = (FieldComponent) state.getComponentByReference("dateTo");
+        FieldComponent dateFrom = (FieldComponent) state.getComponentByReference(DATE_FROM_LITERAL);
+        FieldComponent dateTo = (FieldComponent) state.getComponentByReference(DATE_TO_LITERAL);
 
         dateFrom.setEnabled(true);
         dateTo.setEnabled(true);
     }
 
     public void setQuantitiesToDefaulIfEmpty(final ViewDefinitionState state) {
-        FieldComponent takenForControlQuantity = (FieldComponent) state.getComponentByReference("takenForControlQuantity");
-        FieldComponent rejectedQuantity = (FieldComponent) state.getComponentByReference("rejectedQuantity");
-        FieldComponent acceptedDefectsQuantity = (FieldComponent) state.getComponentByReference("acceptedDefectsQuantity");
+        FieldComponent takenForControlQuantity = (FieldComponent) state
+                .getComponentByReference(TAKEN_FOR_CONTROL_QUANTITY_LITERAL);
+        FieldComponent rejectedQuantity = (FieldComponent) state.getComponentByReference(REJECTED_QUANTITY_LITERAL);
+        FieldComponent acceptedDefectsQuantity = (FieldComponent) state
+                .getComponentByReference(ACCEPTED_DEFECTS_QUANTITY_LITERAL);
 
         if (takenForControlQuantity.getFieldValue() == null || takenForControlQuantity.getFieldValue().toString().isEmpty()) {
             takenForControlQuantity.setFieldValue(BigDecimal.ONE);
@@ -413,42 +472,42 @@ public final class QualityControlService {
     }
 
     public void addRestrictionToQualityControlGrid(final ViewDefinitionState viewDefinitionState) {
-        final GridComponent qualityControlsGrid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
+        final GridComponent qualityControlsGrid = (GridComponent) viewDefinitionState.getComponentByReference(GRID_LITERAL);
         final String qualityControlType = qualityControlsGrid.getName();
 
         qualityControlsGrid.setCustomRestriction(new CustomRestriction() {
 
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
-                searchCriteriaBuilder.isEq(FIELD_QUALITY_CONTROL_TYPE, qualityControlType);
+                searchCriteriaBuilder.add(SearchRestrictions.eq(QUALITY_CONTROL_TYPE_LITERAL, qualityControlType));
             }
 
         });
     }
 
     public void setQualityControlTypeHiddenField(final ViewDefinitionState viewDefinitionState) {
-        FormComponent qualityControlsForm = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FormComponent qualityControlsForm = (FormComponent) viewDefinitionState.getComponentByReference(FORM_LITERAL);
         String qualityControlTypeString = qualityControlsForm.getName().replace("Control", "Controls");
         FieldComponent qualityControlType = (FieldComponent) viewDefinitionState
-                .getComponentByReference(FIELD_QUALITY_CONTROL_TYPE);
+                .getComponentByReference(QUALITY_CONTROL_TYPE_LITERAL);
 
         qualityControlType.setFieldValue(qualityControlTypeString);
     }
 
     public void setOperationAsRequired(final ViewDefinitionState state) {
-        FieldComponent operation = (FieldComponent) state.getComponentByReference("operation");
+        FieldComponent operation = (FieldComponent) state.getComponentByReference(OPERATION_LITERAL);
         operation.setRequired(true);
     }
 
     public boolean checkIfOperationIsRequired(final DataDefinition dataDefinition, final Entity entity) {
-        String qualityControlType = (String) entity.getField(FIELD_QUALITY_CONTROL_TYPE);
+        String qualityControlType = (String) entity.getField(QUALITY_CONTROL_TYPE_LITERAL);
 
-        if ("qualityControlsForOperation".equals(qualityControlType)) {
-            Object operation = entity.getField("operation");
+        if (QUALITY_CONTROLS_FOR_OPERATION_LITERAL.equals(qualityControlType)) {
+            Object operation = entity.getField(OPERATION_LITERAL);
 
             if (operation == null) {
                 entity.addGlobalError("qcadooView.validate.global.error.custom");
-                entity.addError(dataDefinition.getField("operation"),
+                entity.addError(dataDefinition.getField(OPERATION_LITERAL),
                         "qualityControls.quality.control.validate.global.error.operation");
                 return false;
             }
@@ -458,13 +517,13 @@ public final class QualityControlService {
     }
 
     public boolean checkIfQuantitiesAreCorrect(final DataDefinition dataDefinition, final Entity entity) {
-        String qualityControlType = (String) entity.getField(FIELD_QUALITY_CONTROL_TYPE);
+        String qualityControlType = (String) entity.getField(QUALITY_CONTROL_TYPE_LITERAL);
 
         if (hasQuantitiesToBeChecked(qualityControlType)) {
-            BigDecimal controlledQuantity = (BigDecimal) entity.getField("controlledQuantity");
-            BigDecimal takenForControlQuantity = (BigDecimal) entity.getField("takenForControlQuantity");
-            BigDecimal rejectedQuantity = (BigDecimal) entity.getField("rejectedQuantity");
-            BigDecimal acceptedDefectsQuantity = (BigDecimal) entity.getField("acceptedDefectsQuantity");
+            BigDecimal controlledQuantity = (BigDecimal) entity.getField(CONTROLLED_QUANTITY_LITERAL);
+            BigDecimal takenForControlQuantity = (BigDecimal) entity.getField(TAKEN_FOR_CONTROL_QUANTITY_LITERAL);
+            BigDecimal rejectedQuantity = (BigDecimal) entity.getField(REJECTED_QUANTITY_LITERAL);
+            BigDecimal acceptedDefectsQuantity = (BigDecimal) entity.getField(ACCEPTED_DEFECTS_QUANTITY_LITERAL);
 
             if (controlledQuantity == null) {
                 controlledQuantity = BigDecimal.ZERO;
@@ -481,79 +540,80 @@ public final class QualityControlService {
 
             if (rejectedQuantity.compareTo(takenForControlQuantity) > 0) {
                 entity.addGlobalError("qcadooView.validate.global.error.custom");
-                entity.addError(dataDefinition.getField("rejectedQuantity"),
+                entity.addError(dataDefinition.getField(REJECTED_QUANTITY_LITERAL),
                         "qualityControls.quality.control.validate.global.error.rejectedQuantity.tooLarge");
                 return false;
             }
 
             if (acceptedDefectsQuantity.compareTo(takenForControlQuantity.subtract(rejectedQuantity)) > 0) {
                 entity.addGlobalError("qcadooView.validate.global.error.custom");
-                entity.addError(dataDefinition.getField("acceptedDefectsQuantity"),
+                entity.addError(dataDefinition.getField(ACCEPTED_DEFECTS_QUANTITY_LITERAL),
                         "qualityControls.quality.control.validate.global.error.acceptedDefectsQuantity.tooLarge");
                 return false;
             }
 
-            entity.setField("controlledQuantity", controlledQuantity);
-            entity.setField("takenForControlQuantity", takenForControlQuantity);
-            entity.setField("rejectedQuantity", rejectedQuantity);
-            entity.setField("acceptedDefectsQuantity", acceptedDefectsQuantity);
+            entity.setField(CONTROLLED_QUANTITY_LITERAL, controlledQuantity);
+            entity.setField(TAKEN_FOR_CONTROL_QUANTITY_LITERAL, takenForControlQuantity);
+            entity.setField(REJECTED_QUANTITY_LITERAL, rejectedQuantity);
+            entity.setField(ACCEPTED_DEFECTS_QUANTITY_LITERAL, acceptedDefectsQuantity);
         }
 
         return true;
     }
 
     public void disableFormForClosedControl(final ViewDefinitionState state) {
-        FormComponent qualityControl = (FormComponent) state.getComponentByReference("form");
+        FormComponent qualityControl = (FormComponent) state.getComponentByReference(FORM_LITERAL);
         boolean disabled = false;
 
         if (qualityControl.getEntityId() != null) {
-            Entity entity = dataDefinitionService.get("qualityControls", "qualityControl").get(qualityControl.getEntityId());
+            Entity entity = dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                    QualityControlsConstants.MODEL_QUALITY_CONTROL).get(qualityControl.getEntityId());
 
-            if (entity != null && (Boolean) entity.getField("closed") && qualityControl.isValid()) {
+            if (entity != null && (Boolean) entity.getField(CLOSED_LITERAL) && qualityControl.isValid()) {
                 disabled = true;
             }
         }
 
         qualityControl.setFormEnabled(!disabled);
-        state.getComponentByReference("closed").setEnabled(false);
-        state.getComponentByReference("staff").setEnabled(false);
-        state.getComponentByReference("date").setEnabled(false);
+        state.getComponentByReference(CLOSED_LITERAL).setEnabled(false);
+        state.getComponentByReference(STAFF_LITERAL).setEnabled(false);
+        state.getComponentByReference(DATE_LITERAL).setEnabled(false);
 
     }
 
     public boolean clearQualityControlOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("closed", "0");
+        entity.setField(CLOSED_LITERAL, "0");
         entity.setField(FIELD_CONTROL_RESULT, null);
-        entity.setField("number", qualityControlForNumber.generateNumber(dataDefinition.getPluginIdentifier(),
-                dataDefinition.getName(), DIGITS_NUMBER, entity.getStringField(FIELD_QUALITY_CONTROL_TYPE)));
+        entity.setField(NUMBER_LITERAL, qualityControlForNumber.generateNumber(dataDefinition.getPluginIdentifier(),
+                dataDefinition.getName(), DIGITS_NUMBER, entity.getStringField(QUALITY_CONTROL_TYPE_LITERAL)));
         return true;
     }
 
     public boolean setStaffAndDateIfClosed(final DataDefinition dataDefinition, final Entity entity) {
-        if ((Boolean) entity.getField("closed")) {
-            entity.setField("date", new Date());
-            entity.setField("staff", securityService.getCurrentUserName());
+        if ((Boolean) entity.getField(CLOSED_LITERAL)) {
+            entity.setField(DATE_LITERAL, new Date());
+            entity.setField(STAFF_LITERAL, securityService.getCurrentUserName());
         }
         return true;
     }
 
     public void changeQualityControlType(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference("form");
-        FieldComponent qualityControlType = (FieldComponent) state.getComponentByReference(FIELD_QUALITY_CONTROL_TYPE);
+        FormComponent form = (FormComponent) state.getComponentByReference(FORM_LITERAL);
+        FieldComponent qualityControlType = (FieldComponent) state.getComponentByReference(QUALITY_CONTROL_TYPE_LITERAL);
         if (form.getFieldValue() != null) {
             if (checkOperationQualityControlRequired((Long) form.getFieldValue())) {
-                qualityControlType.setFieldValue("04forOperation");
+                qualityControlType.setFieldValue(TYPE_04FOR_OPERATION);
                 qualityControlType.setEnabled(false);
                 qualityControlType.requestComponentUpdateState();
             } else {
                 qualityControlType.setEnabled(true);
             }
         }
-        FieldComponent unitSamplingNr = (FieldComponent) state.getComponentByReference("unitSamplingNr");
-        if (qualityControlType.getFieldValue() == null || !qualityControlType.getFieldValue().equals("02forUnit")) {
+        FieldComponent unitSamplingNr = (FieldComponent) state.getComponentByReference(UNIT_SAMPLING_NR_LITERAL);
+        if (qualityControlType.getFieldValue() == null || !qualityControlType.getFieldValue().equals(TYPE_02FOR_UNIT)) {
             unitSamplingNr.setRequired(false);
             unitSamplingNr.setVisible(false);
-        } else if (qualityControlType.getFieldValue().equals("02forUnit")) {
+        } else if (qualityControlType.getFieldValue().equals(TYPE_02FOR_UNIT)) {
             unitSamplingNr.setRequired(true);
             unitSamplingNr.setVisible(true);
         }
@@ -567,14 +627,16 @@ public final class QualityControlService {
 
         SearchResult searchResult = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
-                .belongsTo(FIELD_TECHNOLOGY, entityId).isEq(FIELD_QUALITY_CONTROL_REQUIRED, true).setMaxResults(1).list();
+                .belongsTo(TECHNOLOGY_LITERAL, entityId).add(SearchRestrictions.eq(FIELD_QUALITY_CONTROL_REQUIRED, true))
+                .setMaxResults(1).list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
 
     }
 
     private boolean hasQuantitiesToBeChecked(final String qualityControlType) {
-        if ("qualityControlsForUnit".equals(qualityControlType) || "qualityControlsForBatch".equals(qualityControlType)) {
+        if (QUALITY_CONTROLS_FOR_UNIT_LITERAL.equals(qualityControlType)
+                || QUALITY_CONTROLS_FOR_BATCH_LITERAL.equals(qualityControlType)) {
             return true;
         }
 
@@ -582,7 +644,8 @@ public final class QualityControlService {
     }
 
     private boolean hasControlResult(final String qualityControlType) {
-        if ("qualityControlsForOrder".equals(qualityControlType) || "qualityControlsForOperation".equals(qualityControlType)) {
+        if (QUALITY_CONTROLS_FOR_ORDER_LITERAL.equals(qualityControlType)
+                || QUALITY_CONTROLS_FOR_OPERATION_LITERAL.equals(qualityControlType)) {
             return true;
         }
 
@@ -592,9 +655,9 @@ public final class QualityControlService {
     private String getInstructionForOrder(final Long fieldValue) {
         DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
 
-        SearchCriteriaBuilder searchCriteria = orderDD.find().setMaxResults(1).isIdEq(fieldValue);
+        SearchCriteriaBuilder searchCriteria = orderDD.find().setMaxResults(1).add(SearchRestrictions.eq("id", fieldValue));
 
-        return (String) searchCriteria.list().getEntities().get(0).getBelongsToField(FIELD_TECHNOLOGY)
+        return (String) searchCriteria.list().getEntities().get(0).getBelongsToField(TECHNOLOGY_LITERAL)
                 .getField("qualityControlInstruction");
     }
 
@@ -617,51 +680,52 @@ public final class QualityControlService {
             parameter = searchResult.getEntities().get(0);
         }
 
-        if (parameter != null) {
+        if (parameter == null) {
+            return false;
+        } else {
             return parameter.getField("autoGenerateQualityControl") == null ? false : (Boolean) parameter
                     .getField("autoGenerateQualityControl");
-        } else {
-            return false;
         }
     }
 
     private void generateQualityControlForGivenType(final String qualityControlType, final Entity technology, final Entity order) {
 
-        if ("01forBatch".equals(qualityControlType)) {
+        if (TYPE_01FOR_BATCH.equals(qualityControlType)) {
             List<Entity> genealogies = getGenealogiesForOrder(order.getId());
 
             for (Entity genealogy : genealogies) {
                 createAndSaveControlForSingleBatch(order, genealogy);
             }
 
-        } else if ("02forUnit".equals(qualityControlType)) {
-            BigDecimal sampling = (BigDecimal) technology.getField("unitSamplingNr");
+        } else if (TYPE_02FOR_UNIT.equals(qualityControlType)) {
+            BigDecimal sampling = (BigDecimal) technology.getField(UNIT_SAMPLING_NR_LITERAL);
 
-            BigDecimal doneQuantity = (BigDecimal) order.getField("doneQuantity");
-            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-            BigDecimal numberOfControls = doneQuantity != null ? doneQuantity.divide(sampling, RoundingMode.HALF_UP)
-                    : plannedQuantity.divide(sampling, RoundingMode.HALF_UP);
+            BigDecimal doneQuantity = (BigDecimal) order.getField(DONE_QUANTITY_LITERAL);
+            BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_LITERAL);
+            BigDecimal numberOfControls = doneQuantity == null ? plannedQuantity.divide(sampling, RoundingMode.HALF_UP)
+                    : doneQuantity.divide(sampling, RoundingMode.HALF_UP);
 
             for (int i = 0; i <= numberOfControls.intValue(); i++) {
                 DataDefinition qualityForUnitDataDefinition = dataDefinitionService.get(
                         QualityControlsConstants.PLUGIN_IDENTIFIER, QualityControlsConstants.MODEL_QUALITY_CONTROL);
 
                 Entity forUnit = qualityForUnitDataDefinition.create();
-                forUnit.setField("order", order);
-                forUnit.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                        QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, "qualityControlsForUnit"));
-                forUnit.setField("closed", false);
-                forUnit.setField(FIELD_QUALITY_CONTROL_TYPE, "qualityControlsForUnit");
-                forUnit.setField("takenForControlQuantity", BigDecimal.ONE);
-                forUnit.setField("rejectedQuantity", BigDecimal.ZERO);
-                forUnit.setField("acceptedDefectsQuantity", BigDecimal.ZERO);
+                forUnit.setField(ORDER_LITERAL, order);
+                forUnit.setField(NUMBER_LITERAL, qualityControlForNumber.generateNumber(
+                        QualityControlsConstants.PLUGIN_IDENTIFIER, QualityControlsConstants.MODEL_QUALITY_CONTROL,
+                        DIGITS_NUMBER, QUALITY_CONTROLS_FOR_UNIT_LITERAL));
+                forUnit.setField(CLOSED_LITERAL, false);
+                forUnit.setField(QUALITY_CONTROL_TYPE_LITERAL, QUALITY_CONTROLS_FOR_UNIT_LITERAL);
+                forUnit.setField(TAKEN_FOR_CONTROL_QUANTITY_LITERAL, BigDecimal.ONE);
+                forUnit.setField(REJECTED_QUANTITY_LITERAL, BigDecimal.ZERO);
+                forUnit.setField(ACCEPTED_DEFECTS_QUANTITY_LITERAL, BigDecimal.ZERO);
 
                 if (i < numberOfControls.intValue()) {
-                    forUnit.setField("controlledQuantity", sampling);
+                    forUnit.setField(CONTROLLED_QUANTITY_LITERAL, sampling);
                 } else {
-                    BigDecimal numberOfRemainders = doneQuantity != null ? doneQuantity.divideAndRemainder(sampling)[1]
-                            : plannedQuantity.divideAndRemainder(sampling)[1];
-                    forUnit.setField("controlledQuantity", numberOfRemainders);
+                    BigDecimal numberOfRemainders = doneQuantity == null ? plannedQuantity.divideAndRemainder(sampling)[1]
+                            : doneQuantity.divideAndRemainder(sampling)[1];
+                    forUnit.setField(CONTROLLED_QUANTITY_LITERAL, numberOfRemainders);
 
                     if (numberOfRemainders.compareTo(BigDecimal.ZERO) < 1) {
                         return;
@@ -670,10 +734,10 @@ public final class QualityControlService {
                 setControlInstruction(order, forUnit);
                 qualityForUnitDataDefinition.save(forUnit);
             }
-        } else if ("03forOrder".equals(qualityControlType)) {
+        } else if (TYPE_03FOR_ORDER.equals(qualityControlType)) {
             createAndSaveControlForSingleOrder(order);
-        } else if ("04forOperation".equals(qualityControlType)) {
-            EntityTree tree = technology.getTreeField("operationComponents");
+        } else if (TYPE_04FOR_OPERATION.equals(qualityControlType)) {
+            EntityTree tree = technology.getTreeField(OPERATION_COMPONENTS_LITERAL);
             for (Entity entity : tree) {
                 if (entity.getField(FIELD_QUALITY_CONTROL_REQUIRED) != null
                         && (Boolean) entity.getField(FIELD_QUALITY_CONTROL_REQUIRED)) {
@@ -690,12 +754,12 @@ public final class QualityControlService {
                 QualityControlsConstants.MODEL_QUALITY_CONTROL);
 
         Entity forOperation = qualityForOperationDataDefinition.create();
-        forOperation.setField("order", order);
-        forOperation.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+        forOperation.setField(ORDER_LITERAL, order);
+        forOperation.setField(NUMBER_LITERAL, qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
                 QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, "qualityControlForOperation"));
-        forOperation.setField("operation", entity.getBelongsToField("operation"));
-        forOperation.setField("closed", false);
-        forOperation.setField(FIELD_QUALITY_CONTROL_TYPE, "qualityControlsForOperation");
+        forOperation.setField(OPERATION_LITERAL, entity.getBelongsToField(OPERATION_LITERAL));
+        forOperation.setField(CLOSED_LITERAL, false);
+        forOperation.setField(QUALITY_CONTROL_TYPE_LITERAL, QUALITY_CONTROLS_FOR_OPERATION_LITERAL);
 
         setControlInstruction(order, forOperation);
 
@@ -707,11 +771,11 @@ public final class QualityControlService {
                 QualityControlsConstants.MODEL_QUALITY_CONTROL);
 
         Entity forOrder = qualityForOrderDataDefinition.create();
-        forOrder.setField("order", order);
-        forOrder.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, "qualityControlsForOrder"));
-        forOrder.setField("closed", false);
-        forOrder.setField(FIELD_QUALITY_CONTROL_TYPE, "qualityControlsForOrder");
+        forOrder.setField(ORDER_LITERAL, order);
+        forOrder.setField(NUMBER_LITERAL, qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, QUALITY_CONTROLS_FOR_ORDER_LITERAL));
+        forOrder.setField(CLOSED_LITERAL, false);
+        forOrder.setField(QUALITY_CONTROL_TYPE_LITERAL, QUALITY_CONTROLS_FOR_ORDER_LITERAL);
 
         setControlInstruction(order, forOrder);
 
@@ -723,29 +787,29 @@ public final class QualityControlService {
                 QualityControlsConstants.MODEL_QUALITY_CONTROL);
 
         Entity forBatch = qualityForBatchDataDefinition.create();
-        forBatch.setField("order", order);
-        forBatch.setField("number", qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
-                QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, "qualityControlsForBatch"));
+        forBatch.setField(ORDER_LITERAL, order);
+        forBatch.setField(NUMBER_LITERAL, qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
+                QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, QUALITY_CONTROLS_FOR_BATCH_LITERAL));
         forBatch.setField("batchNr", genealogy.getField("batch"));
-        forBatch.setField("closed", false);
-        forBatch.setField(FIELD_QUALITY_CONTROL_TYPE, "qualityControlsForBatch");
+        forBatch.setField(CLOSED_LITERAL, false);
+        forBatch.setField(QUALITY_CONTROL_TYPE_LITERAL, QUALITY_CONTROLS_FOR_BATCH_LITERAL);
 
         if (getGenealogiesForOrder(order.getId()).size() == 1) {
-            BigDecimal doneQuantity = (BigDecimal) order.getField("doneQuantity");
-            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
+            BigDecimal doneQuantity = (BigDecimal) order.getField(DONE_QUANTITY_LITERAL);
+            BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_LITERAL);
 
             if (doneQuantity != null) {
-                forBatch.setField("controlledQuantity", doneQuantity);
+                forBatch.setField(CONTROLLED_QUANTITY_LITERAL, doneQuantity);
             } else if (plannedQuantity != null) {
-                forBatch.setField("controlledQuantity", plannedQuantity);
+                forBatch.setField(CONTROLLED_QUANTITY_LITERAL, plannedQuantity);
             }
         } else {
-            forBatch.setField("controlledQuantity", BigDecimal.ZERO);
+            forBatch.setField(CONTROLLED_QUANTITY_LITERAL, BigDecimal.ZERO);
         }
 
-        forBatch.setField("takenForControlQuantity", BigDecimal.ONE);
-        forBatch.setField("rejectedQuantity", BigDecimal.ZERO);
-        forBatch.setField("acceptedDefectsQuantity", BigDecimal.ZERO);
+        forBatch.setField(TAKEN_FOR_CONTROL_QUANTITY_LITERAL, BigDecimal.ONE);
+        forBatch.setField(REJECTED_QUANTITY_LITERAL, BigDecimal.ZERO);
+        forBatch.setField(ACCEPTED_DEFECTS_QUANTITY_LITERAL, BigDecimal.ZERO);
 
         setControlInstruction(order, forBatch);
 
@@ -753,18 +817,18 @@ public final class QualityControlService {
     }
 
     private void setControlInstruction(final Entity order, final Entity qualityControl) {
-        String qualityControlInstruction = (String) order.getBelongsToField(FIELD_TECHNOLOGY).getField(
+        String qualityControlInstruction = (String) order.getBelongsToField(TECHNOLOGY_LITERAL).getField(
                 "qualityControlInstruction");
 
         if (qualityControlInstruction != null) {
-            qualityControl.setField("controlInstruction", qualityControlInstruction);
+            qualityControl.setField(CONTROL_INSTRUCTION_LITERAL, qualityControlInstruction);
         }
     }
 
     private List<Entity> getGenealogiesForOrder(final Long id) {
         DataDefinition genealogyDD = dataDefinitionService.get("genealogies", "genealogy");
 
-        SearchCriteriaBuilder searchCriteria = genealogyDD.find().belongsTo("order", id);
+        SearchCriteriaBuilder searchCriteria = genealogyDD.find().belongsTo(ORDER_LITERAL, id);
 
         return searchCriteria.list().getEntities();
     }

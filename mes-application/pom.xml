@@ -281,9 +281,11 @@
 									buildApplicationName = Qcadoo MES
 									buildApplicationVersion = ${project.version}
 									buildFrameworkVersion = ${qcadoo.version}
-									buildTime = ${build.time}
+									buildTime =
+									${build.time}
 									buildNumber = ${build.number}
-									buildRevision = ${build.revision}
+									buildRevision =
+									${build.revision}
 								</echo>
 							</target>
 						</configuration>
@@ -347,29 +349,34 @@
 					<artifactId>mes-commercial-plugins-integration-subiekt</artifactId>
 					<version>1.1.1-SNAPSHOT</version>
 				</dependency>
-				<!-- <dependency>
-					<groupId>com.qcadoo.mes</groupId>
-					<artifactId>mes-commercial-plugins-integration-erp</artifactId>
-					<version>1.1.1-SNAPSHOT</version>
-				</dependency> 
+				<!-- <dependency> -->
+				<!-- <groupId>com.qcadoo.mes</groupId> -->
+				<!-- <artifactId>mes-commercial-plugins-integration-erp</artifactId> -->
+				<!-- <version>1.1.1-SNAPSHOT</version> -->
+				<!-- </dependency> -->
+				<!-- <dependency> -->
+				<!-- <groupId>com.qcadoo.mes</groupId> -->
+				<!-- <artifactId>mes-commercial-plugins-integration-universal-rest-connector-base</artifactId> -->
+				<!-- <version>1.1.1-SNAPSHOT</version> -->
+				<!-- </dependency> -->
+				<!-- <dependency> -->
+				<!-- <groupId>com.qcadoo.mes</groupId> -->
+				<!-- <artifactId>mes-commercial-plugins-integration-universal-rest-connector-basic</artifactId> -->
+				<!-- <version>1.1.1-SNAPSHOT</version> -->
+				<!-- </dependency> -->
+				<!-- <dependency> -->
+				<!-- <groupId>com.qcadoo.mes</groupId> -->
+				<!-- <artifactId>mes-commercial-plugins-integration-universal-rest-connector-orders</artifactId> -->
+				<!-- <version>1.1.1-SNAPSHOT</version> -->
+				<!-- </dependency> -->
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
-					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-base</artifactId>
+					<artifactId>mes-commercial-plugins-advanced-genealogy</artifactId>
 					<version>1.1.1-SNAPSHOT</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
-					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-basic</artifactId>
-					<version>1.1.1-SNAPSHOT</version>
-				</dependency>
-				<dependency>
-					<groupId>com.qcadoo.mes</groupId>
-					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-orders</artifactId>
-					<version>1.1.1-SNAPSHOT</version>
-				</dependency> -->
-				<dependency> <groupId>com.qcadoo.mes</groupId> <artifactId>mes-commercial-plugins-advanced-genealogy</artifactId> 
-					<version>1.1.1-SNAPSHOT</version> </dependency> <dependency> <groupId>com.qcadoo.mes</groupId> 
-					<artifactId>mes-commercial-plugins-advanced-genealogy-for-orders</artifactId> 
+					<artifactId>mes-commercial-plugins-advanced-genealogy-for-orders</artifactId>
 					<version>1.1.1-SNAPSHOT</version>
 				</dependency>
 			</dependencies>
