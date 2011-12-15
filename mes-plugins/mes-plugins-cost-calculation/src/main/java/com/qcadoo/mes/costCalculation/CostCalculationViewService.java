@@ -263,7 +263,7 @@ public class CostCalculationViewService {
 
     public void setFieldEnable(final ViewDefinitionState viewDefinitionState) {
         Set<String> referenceNames = new HashSet<String>(Arrays.asList(DEFAULT_TECHNOLOGY, PRODUCT, ORDER, QUANTITY, TECHNOLOGY,
-                GENERATED, "number", "description", "includeTPZ", "calculateMaterialCostsMode", "calculateOperationCostsMode",
+                "number", "description", "includeTPZ", "calculateMaterialCostsMode", "calculateOperationCostsMode",
                 "productionCostMargin", "productionCostMarginProc", "materialCostMargin", "materialCostMarginProc",
                 "additionalOverhead", "additionalOverheadCurrency"));
         Map<String, FieldComponent> componentsMap = new HashMap<String, FieldComponent>();
@@ -272,13 +272,19 @@ public class CostCalculationViewService {
             componentsMap.put(referenceName, fieldComponent);
         }
 
-        Boolean isGenerated = "1".equals(componentsMap.get(GENERATED).getFieldValue());
+        Boolean isGenerated = "1".equals(viewDefinitionState.getComponentByReference(GENERATED).getFieldValue());
 
         if (isGenerated) {
             for (Entry<String, FieldComponent> entry : componentsMap.entrySet()) {
                 entry.getValue().setEnabled(false);
             }
-        } else if (componentsMap.get(TECHNOLOGY).getFieldValue() == null) {
+        } else {
+            for (Entry<String, FieldComponent> entry : componentsMap.entrySet()) {
+                entry.getValue().setEnabled(true);
+            }
+        }
+
+        if (componentsMap.get(TECHNOLOGY).getFieldValue() == null) {
             componentsMap.get(PRODUCT).setEnabled(true);
             componentsMap.get(QUANTITY).setEnabled(true);
             componentsMap.get(ORDER).setEnabled(true);

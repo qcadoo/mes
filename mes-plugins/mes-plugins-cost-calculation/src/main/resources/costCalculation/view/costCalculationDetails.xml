@@ -525,10 +525,10 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-			method="fillCurrencyFields" />
+			method="setFieldEnable" />
 		<beforeRender
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-			method="setFieldEnable" />
+			method="fillCurrencyFields" />
 	</hooks>
 </view>
 

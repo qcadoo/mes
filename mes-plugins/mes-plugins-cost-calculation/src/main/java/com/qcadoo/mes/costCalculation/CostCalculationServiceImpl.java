@@ -36,6 +36,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
 import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
@@ -46,6 +47,13 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
     @Autowired
     private ProductsCostCalculationService productsCostCalculationService;
+
+    public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+        entity.setField("fileName", null);
+        entity.setField("generated", false);
+        entity.setField("dateOfCalculation", null);
+        return true;
+    }
 
     @Override
     public Entity calculateTotalCost(Entity costCalculation) {
@@ -62,11 +70,11 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         for (String fieldName : Sets.newHashSet("totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts")) {
             costCalculation.setField(fieldName, BigDecimal.ZERO.setScale(3));
         }
-        
+
         costCalculation.setField("dateOfCalculation", new Date());
         operationsCostCalculationService.calculateOperationsCost(costCalculation);
         productsCostCalculationService.calculateProductsCost(costCalculation);
-        
+
         if (operationMode == HOURLY) {
             BigDecimal totalMachine = getBigDecimal(costCalculation.getField("totalMachineHourlyCosts"));
             BigDecimal totalLabor = getBigDecimal(costCalculation.getField("totalLaborHourlyCosts"));
