@@ -91,9 +91,8 @@ public class TechnologyStatesHook {
                         validationMessage.getVars()));
                 continue;
             }
-            technology.addError(technologyDD.getField(validationMessage.getTargetReferenceName()), translationService.translate(
-                    validationMessage.getMessageKey(), validationMessage.getTargetReferenceName(), getLocale(),
-                    validationMessage.getVars()));
+            technology.addError(technologyDD.getField(validationMessage.getTargetReferenceName()),
+                    validationMessage.getMessageKey());
         }
     }
 
