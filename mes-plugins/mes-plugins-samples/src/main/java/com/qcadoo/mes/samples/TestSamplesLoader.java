@@ -375,6 +375,7 @@ public class TestSamplesLoader extends SamplesLoader {
         order.setField("plannedQuantity", values.get("quantity_scheduled").isEmpty() ? new BigDecimal(
                 100 * RANDOM.nextDouble() + 1) : new BigDecimal(values.get("quantity_scheduled")));
 
+        order.setField("trackingRecordTreatment", "01duringProduction");
         order.setField(ORDER_STATE, "01pending");
 
         Entity product = getProductByNumber(values.get(PRODUCT_NUMBER));
@@ -402,7 +403,8 @@ public class TestSamplesLoader extends SamplesLoader {
                     + order.getField("dateFrom") + ", dateTo=" + order.getField("dateTo") + ", effectiveDateFrom="
                     + order.getField("effectiveDateFrom") + ", effectiveDateTo=" + order.getField("effectiveDateTo")
                     + ", doneQuantity=" + order.getField("doneQuantity") + ", plannedQuantity="
-                    + order.getField("plannedQuantity") + ", state=" + order.getField(ORDER_STATE) + "}");
+                    + order.getField("plannedQuantity") + ", trackingRecordTreatment="
+                    + order.getField("trackingRecordTreatment") + ", state=" + order.getField(ORDER_STATE) + "}");
         }
 
         order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
@@ -616,6 +618,7 @@ public class TestSamplesLoader extends SamplesLoader {
         productComponent.setField(FIELD_QUANTITY, quantity);
         productComponent.setField(BASIC_MODEL_PRODUCT, product);
         productComponent.setField("batchRequired", true);
+        productComponent.setField("productBatchRequired", true);
 
         productComponent = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent").save(
                 productComponent);

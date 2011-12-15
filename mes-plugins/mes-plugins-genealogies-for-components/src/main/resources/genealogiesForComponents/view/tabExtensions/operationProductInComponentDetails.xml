@@ -33,7 +33,8 @@
 		<component type="gridLayout" name="genealogyLayout" columns="1" rows="1">
 			<layoutElement column="1" row="1">
 				<component type="checkbox" name="batchRequired" reference="batchRequired" field="#{form}.batchRequired" >
-					<option type="labelWidth" value="35" />
+					<option type="labelWidth" value="80" />
+					<option type="align" value="right" />
 				</component>
 			</layoutElement>
 		</component>
