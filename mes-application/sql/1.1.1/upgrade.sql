@@ -71,3 +71,17 @@ ALTER TABLE basic_company
 UPDATE basic_company SET number = '1';
 
 -- end
+
+-- Table: basic_product
+-- changed 14.12.2011
+
+ALTER TABLE basic_product DROP COLUMN productbatchrequired;
+
+-- end
+
+-- Table: technologies_operationproductincomponent
+-- changed 14.12.2011
+
+ALTER TABLE technologies_operationproductincomponent ADD COLUMN productbatchrequired boolean;
+
+-- end

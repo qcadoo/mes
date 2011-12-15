@@ -37,7 +37,7 @@
 		<component type="grid" name="companies" reference="grid">
 			<script>
 				<![CDATA[
-					var buttons = new Array("actions.copy", "actions.delete");
+					var buttonsStandard = ["actions.copy", "actions.delete"];
 					
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
@@ -54,27 +54,31 @@
 								}
 								
 								if (owner) {
-									disableButtons(buttons, "#{translate(basic.companies.ribbon.message.someCompanyIsOwner)}");
+									disableButtons(buttonsStandard, "#{translate(basic.companies.ribbon.message.someCompanyIsOwner)}");
 								} else {
-									enableButtons(buttons);
+									enableButtons(buttonsStandard);
 								}
 							}
 						}
 					}
 					
-					function disableButtons(buttons, message) { 
-						for ( var i = 0; i < buttons.length; i++ ) 
-						{ 
-							var button = #{window}.getRibbonItem(buttons[i]);
-							buttons.disable(message);
+					function disableButtons(buttonNames, message) { 
+						for (var buttonName in buttonNames) { 
+							if ( message == '') {
+								#{window}.getRibbonItem(buttonNames[buttonName]).disable();
+							} else {
+								#{window}.getRibbonItem(buttonNames[buttonName]).disable(message);
+							}
 						} 
 					} 
 					
-					function enableButtons(buttons) { 
-						for ( var i = 0; i < buttons.length; i++ ) 
-						{ 
-							var button = #{window}.getRibbonItem(buttons[i]);
-							button.enable();
+					function enableButtons(buttonNames, message) { 
+						for (var buttonName in buttonNames) { 	
+							if ( message == '') {
+								#{window}.getRibbonItem(buttonNames[buttonName]).enable();
+							} else {
+								#{window}.getRibbonItem(buttonNames[buttonName]).enable(message);
+							}
 						} 
 					} 
 					

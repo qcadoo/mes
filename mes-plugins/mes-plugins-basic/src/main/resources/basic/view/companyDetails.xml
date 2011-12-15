@@ -36,33 +36,37 @@
 		<component type="form" name="company" reference="form">
 			<script>
 				<![CDATA[
-					var buttons = new Array("actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel", "actions.delete", "actions.copy");
+					var buttonsStandard = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel", "actions.delete", "actions.copy"];
 
 					var listener = {
 						onSetValue: function() {
 							var owner = #{owner}.getValue().content.value;
 							
 							if (owner == true) {	
-								disableButtons(buttons, "#{translate(basic.company.ribbon.message.companyIsOwner)}");
+								disableButtons(buttonsStandard, "#{translate(basic.company.ribbon.message.companyIsOwner)}");
  							} else {
- 								enableButtons(buttons);
+ 								enableButtons(buttonsStandard);
  							}
 						}
 					};
 					
-					function disableButtons(buttons, message) { 
-						for ( var i = 0; i < buttons.length; i++ ) 
-						{ 
-							var button = #{window}.getRibbonItem(buttons[i]);
-							button.disable(message);
+					function disableButtons(buttonNames, message) { 
+						for (var buttonName in buttonNames) { 
+							if ( message == '') {
+								#{window}.getRibbonItem(buttonNames[buttonName]).disable();
+							} else {
+								#{window}.getRibbonItem(buttonNames[buttonName]).disable(message);
+							}
 						} 
 					} 
 					
-					function enableButtons(buttons) { 
-						for ( var i = 0; i < buttons.length; i++ ) 
-						{ 	
-							var button = #{window}.getRibbonItem(buttons[i]);
-							button.enable();
+					function enableButtons(buttonNames, message) { 
+						for (var buttonName in buttonNames) { 	
+							if ( message == '') {
+								#{window}.getRibbonItem(buttonNames[buttonName]).enable();
+							} else {
+								#{window}.getRibbonItem(buttonNames[buttonName]).enable(message);
+							}
 						} 
 					} 
 
