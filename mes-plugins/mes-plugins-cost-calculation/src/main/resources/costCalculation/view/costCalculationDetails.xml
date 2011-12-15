@@ -153,7 +153,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4" height="3">
-						<component type="textarea" name="description" field="description"
+						<component type="textarea" name="description" field="description" reference="description"
 							height="3" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
@@ -246,7 +246,6 @@
 						<component type="borderLayout" name="borderLayoutParameters"
 							reference="borderLayoutParameters">
 							<option type="label" value="parameters" />
-
 							<component type="gridLayout" name="parameters"
 								reference="parameters" columns="1" rows="3">
 								<layoutElement column="1" row="1">

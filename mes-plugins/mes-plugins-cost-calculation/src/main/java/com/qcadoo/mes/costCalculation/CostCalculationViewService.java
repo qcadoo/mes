@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,8 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class CostCalculationViewService {
+
+    private static final String GENERATED = "generated";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -259,24 +262,31 @@ public class CostCalculationViewService {
     }
 
     public void setFieldEnable(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY);
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ORDER);
+        Set<String> referenceNames = new HashSet<String>(Arrays.asList(DEFAULT_TECHNOLOGY, PRODUCT, ORDER, QUANTITY, TECHNOLOGY,
+                GENERATED, "number", "description", "includeTPZ", "calculateMaterialCostsMode", "calculateOperationCostsMode",
+                "productionCostMargin", "productionCostMarginProc", "materialCostMargin", "materialCostMarginProc",
+                "additionalOverhead", "additionalOverheadCurrency"));
+        Map<String, FieldComponent> componentsMap = new HashMap<String, FieldComponent>();
+        for (String referenceName : referenceNames) {
+            FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(referenceName);
+            componentsMap.put(referenceName, fieldComponent);
+        }
 
-        FieldComponent product = (FieldComponent) viewDefinitionState.getComponentByReference(PRODUCT);
-        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference(QUANTITY);
+        Boolean isGenerated = "1".equals(componentsMap.get(GENERATED).getFieldValue());
 
-        if (technologyLookup.getFieldValue() == null) {
-            product.setEnabled(true);
-            quantity.setEnabled(true);
-            orderLookup.setEnabled(true);
-            technologyLookup.setEnabled(true);
-        } else {
-            if (orderLookup.getFieldValue() == null) {
-                technologyLookup.setEnabled(true);
-                product.setEnabled(true);
-                quantity.setEnabled(true);
-
+        if (isGenerated) {
+            for (Entry<String, FieldComponent> entry : componentsMap.entrySet()) {
+                entry.getValue().setEnabled(false);
             }
+        } else if (componentsMap.get(TECHNOLOGY).getFieldValue() == null) {
+            componentsMap.get(PRODUCT).setEnabled(true);
+            componentsMap.get(QUANTITY).setEnabled(true);
+            componentsMap.get(ORDER).setEnabled(true);
+            componentsMap.get(TECHNOLOGY).setEnabled(true);
+        } else if (componentsMap.get(TECHNOLOGY).getFieldValue() == null) {
+            componentsMap.get(PRODUCT).setEnabled(true);
+            componentsMap.get(QUANTITY).setEnabled(true);
+            componentsMap.get(TECHNOLOGY).setEnabled(true);
         }
     }
 
