@@ -82,10 +82,10 @@
 					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
 					var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
 					var saveNewRibbonItem = #{window}.getRibbonItem("actions.saveNew");
+					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
 					
 					var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
 					
-					var containsAtLeastOneOrder = false;
 					var entityExists = false;
 					
 					this.addOnChangeListener({
@@ -103,11 +103,6 @@
 					});
 					#{form}.addOnChangeListener({
 						onSetValue: function(value) {
-							if (value.content.totalEntities > 0) {
-								containsAtLeastOneOrder = true;
-							} else {
-								containsAtLeastOneOrder = false;
-							}
 							updateRibbon();
 						}
 					});
