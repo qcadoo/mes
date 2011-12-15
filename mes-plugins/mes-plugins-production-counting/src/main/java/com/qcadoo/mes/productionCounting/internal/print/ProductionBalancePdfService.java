@@ -59,6 +59,28 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Service
 public final class ProductionBalancePdfService extends PdfDocumentService {
 
+    private static final String PCPBRCHB_LITERAL = "productionCounting.productionBalance.report.columnHeader.balance";
+
+    private static final String ORDER_OPERATION_COMPONENT_LITERAL = "orderOperationComponent";
+
+    private static final String N_A_LITERAL = "N/A";
+
+    private static final String USED_QUANTITY_LITERAL = "usedQuantity";
+
+    private static final String STATE_LITERAL = "state";
+
+    private static final String QCADOO_VIEW_TRUE_LITERAL = "qcadooView.true";
+
+    private static final String QCADOO_VIEW_FALSE_LITERAL = "qcadooView.false";
+
+    private static final String TABS_LITERAL = "\t \t \t";
+
+    private static final String PRODUCT_LITERAL = "product";
+
+    private static final String NAME_LITERAL = "name";
+
+    private static final String ORDER_LITERAL = "order";
+
     @Autowired
     private TechnologyService technologyService;
 
@@ -93,17 +115,17 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         panelTable.setSpacingBefore(20);
         document.add(panelTable);
 
-        Entity technology = productionBalance.getBelongsToField("order").getBelongsToField("technology");
+        Entity technology = productionBalance.getBelongsToField(ORDER_LITERAL).getBelongsToField("technology");
 
-        if ((Boolean) productionBalance.getBelongsToField("order").getField("registerQuantityInProduct")) {
+        if ((Boolean) productionBalance.getBelongsToField(ORDER_LITERAL).getField("registerQuantityInProduct")) {
             addInputProductsBalance(document, productionBalance, technology, locale);
         }
-        if ((Boolean) productionBalance.getBelongsToField("order").getField("registerQuantityOutProduct")) {
+        if ((Boolean) productionBalance.getBelongsToField(ORDER_LITERAL).getField("registerQuantityOutProduct")) {
             addOutputProductsBalance(document, productionBalance, technology, locale);
         }
 
-        if ((Boolean) productionBalance.getBelongsToField("order").getField("registerProductionTime")) {
-            if (productionBalance.getBelongsToField("order").getStringField("typeOfProductionRecording").equals("03forEach")) {
+        if ((Boolean) productionBalance.getBelongsToField(ORDER_LITERAL).getField("registerProductionTime")) {
+            if (productionBalance.getBelongsToField(ORDER_LITERAL).getStringField("typeOfProductionRecording").equals("03forEach")) {
                 addMachineTimeBalance(document, productionBalance, locale);
                 addLaborTimeBalance(document, productionBalance, locale);
             } else {
@@ -138,11 +160,11 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 productionBalance.getId().toString(), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 getTranslationService().translate("productionCounting.productionBalance.report.panel.order", locale),
-                productionBalance.getBelongsToField("order").getStringField("name"), null, PdfUtil.getArialBold9Dark(),
+                productionBalance.getBelongsToField(ORDER_LITERAL).getStringField(NAME_LITERAL), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 getTranslationService().translate("productionCounting.productionBalance.report.panel.product", locale),
-                productionBalance.getBelongsToField("product").getStringField("name"), null, PdfUtil.getArialBold9Dark(),
+                productionBalance.getBelongsToField(PRODUCT_LITERAL).getStringField(NAME_LITERAL), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 getTranslationService().translate("productionCounting.productionBalance.report.panel.numberOfRecords", locale),
@@ -164,48 +186,48 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 + ":", PdfUtil.getArialBold10Dark()));
         rightPanel
                 .addCell(new Phrase(
-                        "\t \t \t"
+                        TABS_LITERAL
                                 + getTranslationService().translate(
                                         "productionCounting.productionBalance.report.panel.registerQuantityOutProduct", locale)
                                 + " "
-                                + ((Boolean) productionBalance.getBelongsToField("order").getField("registerQuantityInProduct") ? getTranslationService()
-                                        .translate("qcadooView.true", locale) : getTranslationService().translate(
-                                        "qcadooView.false", locale)), PdfUtil.getArialBold9Dark()));
+                                + ((Boolean) productionBalance.getBelongsToField(ORDER_LITERAL).getField("registerQuantityInProduct") ? getTranslationService()
+                                        .translate(QCADOO_VIEW_TRUE_LITERAL, locale) : getTranslationService().translate(
+                                        QCADOO_VIEW_FALSE_LITERAL, locale)), PdfUtil.getArialBold9Dark()));
         rightPanel
                 .addCell(new Phrase(
-                        "\t \t \t"
+                        TABS_LITERAL
                                 + getTranslationService().translate(
                                         "productionCounting.productionBalance.report.panel.registerQuantityInProduct", locale)
                                 + " "
-                                + ((Boolean) productionBalance.getBelongsToField("order").getField("registerQuantityOutProduct") ? getTranslationService()
-                                        .translate("qcadooView.true", locale) : getTranslationService().translate(
-                                        "qcadooView.false", locale)), PdfUtil.getArialBold9Dark()));
+                                + ((Boolean) productionBalance.getBelongsToField(ORDER_LITERAL).getField("registerQuantityOutProduct") ? getTranslationService()
+                                        .translate(QCADOO_VIEW_TRUE_LITERAL, locale) : getTranslationService().translate(
+                                        QCADOO_VIEW_FALSE_LITERAL, locale)), PdfUtil.getArialBold9Dark()));
         rightPanel
                 .addCell(new Phrase(
-                        "\t \t \t"
+                        TABS_LITERAL
                                 + getTranslationService().translate(
                                         "productionCounting.productionBalance.report.panel.registerProductionTime", locale)
                                 + " "
-                                + ((Boolean) productionBalance.getBelongsToField("order").getField("registerProductionTime") ? getTranslationService()
-                                        .translate("qcadooView.true", locale) : getTranslationService().translate(
-                                        "qcadooView.false", locale)), PdfUtil.getArialBold9Dark()));
-        rightPanel.addCell(new Phrase("\t \t \t"
+                                + ((Boolean) productionBalance.getBelongsToField(ORDER_LITERAL).getField("registerProductionTime") ? getTranslationService()
+                                        .translate(QCADOO_VIEW_TRUE_LITERAL, locale) : getTranslationService().translate(
+                                        QCADOO_VIEW_FALSE_LITERAL, locale)), PdfUtil.getArialBold9Dark()));
+        rightPanel.addCell(new Phrase(TABS_LITERAL
                 + getTranslationService().translate("productionCounting.productionBalance.report.panel.justOne", locale)
                 + " "
-                + ((Boolean) productionBalance.getBelongsToField("order").getField("justOne") ? getTranslationService()
-                        .translate("qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale)),
+                + ((Boolean) productionBalance.getBelongsToField(ORDER_LITERAL).getField("justOne") ? getTranslationService()
+                        .translate(QCADOO_VIEW_TRUE_LITERAL, locale) : getTranslationService().translate(QCADOO_VIEW_FALSE_LITERAL, locale)),
                 PdfUtil.getArialBold9Dark()));
-        rightPanel.addCell(new Phrase("\t \t \t"
+        rightPanel.addCell(new Phrase(TABS_LITERAL
                 + getTranslationService().translate("productionCounting.productionBalance.report.panel.allowToClose", locale)
                 + " "
-                + ((Boolean) productionBalance.getBelongsToField("order").getField("allowToClose") ? getTranslationService()
-                        .translate("qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale)),
+                + ((Boolean) productionBalance.getBelongsToField(ORDER_LITERAL).getField("allowToClose") ? getTranslationService()
+                        .translate(QCADOO_VIEW_TRUE_LITERAL, locale) : getTranslationService().translate(QCADOO_VIEW_FALSE_LITERAL, locale)),
                 PdfUtil.getArialBold9Dark()));
-        rightPanel.addCell(new Phrase("\t \t \t"
+        rightPanel.addCell(new Phrase(TABS_LITERAL
                 + getTranslationService().translate("productionCounting.productionBalance.report.panel.autoCloseOrder", locale)
                 + " "
-                + ((Boolean) productionBalance.getBelongsToField("order").getField("autoCloseOrder") ? getTranslationService()
-                        .translate("qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale)),
+                + ((Boolean) productionBalance.getBelongsToField(ORDER_LITERAL).getField("autoCloseOrder") ? getTranslationService()
+                        .translate(QCADOO_VIEW_TRUE_LITERAL, locale) : getTranslationService().translate(QCADOO_VIEW_FALSE_LITERAL, locale)),
                 PdfUtil.getArialBold9Dark()));
 
         return rightPanel;
@@ -226,14 +248,14 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         inputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.usedQuantity", locale));
         inputProductsTableHeader.add(getTranslationService().translate(
-                "productionCounting.productionBalance.report.columnHeader.balance", locale));
+                PCPBRCHB_LITERAL, locale));
         inputProductsTableHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
 
         List<Entity> inputProductsList = new ArrayList<Entity>();
         List<Entity> productionRecords = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.belongsTo("order", productionBalance.getBelongsToField("order")))
-                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue())).list().getEntities();
+                .add(SearchRestrictions.belongsTo(ORDER_LITERAL, productionBalance.getBelongsToField(ORDER_LITERAL)))
+                .add(SearchRestrictions.eq(STATE_LITERAL, ProductionCountingStates.ACCEPTED.getStringValue())).list().getEntities();
         for (Entity productionRecord : productionRecords) {
             inputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductInComponents"));
         }
@@ -247,29 +269,29 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
             PdfPTable inputProductsTable = PdfUtil.createTableWithHeader(7, inputProductsTableHeader, false);
 
             for (Entity inputProduct : productionBalanceReportDataService.groupProductInOutComponentsByProduct(inputProductsList)) {
-                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("number"), PdfUtil
+                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(PRODUCT_LITERAL).getStringField("number"), PdfUtil
                         .getArialRegular9Dark()));
-                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("name"), PdfUtil
+                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(PRODUCT_LITERAL).getStringField(NAME_LITERAL), PdfUtil
                         .getArialRegular9Dark()));
 
-                String type = technologyService.getProductType(inputProduct.getBelongsToField("product"), technology);
+                String type = technologyService.getProductType(inputProduct.getBelongsToField(PRODUCT_LITERAL), technology);
                 inputProductsTable.addCell(new Phrase(this.getTranslationService().translate(
                         "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
 
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
                 inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("plannedQuantity")),
                         PdfUtil.getArialRegular9Dark()));
-                if (inputProduct.getField("usedQuantity") != null) {
-                    inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("usedQuantity")),
+                if (inputProduct.getField(USED_QUANTITY_LITERAL) != null) {
+                    inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField(USED_QUANTITY_LITERAL)),
                             PdfUtil.getArialRegular9Dark()));
                     inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("balance")), PdfUtil
                             .getArialRegular9Dark()));
                 } else {
-                    inputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
-                    inputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
+                    inputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
+                    inputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
                 }
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
+                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(PRODUCT_LITERAL).getStringField("unit"), PdfUtil
                         .getArialRegular9Dark()));
             }
 
@@ -292,16 +314,16 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         outputProductsTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.producedQuantity", locale));
         outputProductsTableHeader.add(getTranslationService().translate(
-                "productionCounting.productionBalance.report.columnHeader.balance", locale));
+                PCPBRCHB_LITERAL, locale));
         outputProductsTableHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
 
         List<Entity> outputProductsList = new ArrayList<Entity>();
         List<Entity> productionRecords = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.belongsTo("order", productionBalance.getBelongsToField("order")))
-                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue())).list().getEntities();
+                .add(SearchRestrictions.belongsTo(ORDER_LITERAL, productionBalance.getBelongsToField(ORDER_LITERAL)))
+                .add(SearchRestrictions.eq(STATE_LITERAL, ProductionCountingStates.ACCEPTED.getStringValue())).list().getEntities();
         for (Entity productionRecord : productionRecords) {
-            if (productionRecord.getStringField("state").equals(ProductionCountingStates.ACCEPTED.getStringValue())) {
+            if (productionRecord.getStringField(STATE_LITERAL).equals(ProductionCountingStates.ACCEPTED.getStringValue())) {
                 outputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductOutComponents"));
             }
         }
@@ -317,29 +339,29 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
             for (Entity outputProduct : productionBalanceReportDataService
                     .groupProductInOutComponentsByProduct(outputProductsList)) {
-                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("number"),
+                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(PRODUCT_LITERAL).getStringField("number"),
                         PdfUtil.getArialRegular9Dark()));
-                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("name"), PdfUtil
+                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(PRODUCT_LITERAL).getStringField(NAME_LITERAL), PdfUtil
                         .getArialRegular9Dark()));
 
-                String type = technologyService.getProductType(outputProduct.getBelongsToField("product"), technology);
+                String type = technologyService.getProductType(outputProduct.getBelongsToField(PRODUCT_LITERAL), technology);
                 outputProductsTable.addCell(new Phrase(this.getTranslationService().translate(
                         "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
 
                 outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
                 outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("plannedQuantity")),
                         PdfUtil.getArialRegular9Dark()));
-                if (outputProduct.getField("usedQuantity") != null) {
-                    outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("usedQuantity")),
+                if (outputProduct.getField(USED_QUANTITY_LITERAL) != null) {
+                    outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField(USED_QUANTITY_LITERAL)),
                             PdfUtil.getArialRegular9Dark()));
                     outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("balance")), PdfUtil
                             .getArialRegular9Dark()));
                 } else {
-                    outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
-                    outputProductsTable.addCell(new Phrase("N/A", PdfUtil.getArialRegular9Dark()));
+                    outputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
+                    outputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
                 }
                 outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField("product").getStringField("unit"), PdfUtil
+                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(PRODUCT_LITERAL).getStringField("unit"), PdfUtil
                         .getArialRegular9Dark()));
             }
 
@@ -363,7 +385,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         operationsTimeTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.registeredTime", locale));
         operationsTimeTableHeader.add(getTranslationService().translate(
-                "productionCounting.productionBalance.report.columnHeader.balance", locale));
+                PCPBRCHB_LITERAL, locale));
 
         PdfPTable machineTimeTable = PdfUtil.createTableWithHeader(5, operationsTimeTableHeader, false);
 
@@ -371,15 +393,15 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         Integer registeredTimeSum = 0;
         Integer timeBalanceSum = 0;
 
-        List<Entity> productionRecords = new ArrayList<Entity>(productionBalance.getBelongsToField("order").getHasManyField(
+        List<Entity> productionRecords = new ArrayList<Entity>(productionBalance.getBelongsToField(ORDER_LITERAL).getHasManyField(
                 "productionRecords"));
         Collections.sort(productionRecords, new EntityProductionRecordOperationComparator());
 
         for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecords)) {
-            machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent").getStringField(
+            machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField(ORDER_OPERATION_COMPONENT_LITERAL).getStringField(
                     "nodeNumber"), PdfUtil.getArialRegular9Dark()));
-            machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
-                    .getBelongsToField("operation").getStringField("name"), PdfUtil.getArialRegular9Dark()));
+            machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField(ORDER_OPERATION_COMPONENT_LITERAL)
+                    .getBelongsToField("operation").getStringField(NAME_LITERAL), PdfUtil.getArialRegular9Dark()));
             machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionRecord
                     .getField("plannedMachineTime")), PdfUtil.getArialRegular9Dark()));
             machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionRecord
@@ -420,7 +442,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         operationsTimeTableHeader.add(getTranslationService().translate(
                 "productionCounting.productionBalance.report.columnHeader.registeredTime", locale));
         operationsTimeTableHeader.add(getTranslationService().translate(
-                "productionCounting.productionBalance.report.columnHeader.balance", locale));
+                PCPBRCHB_LITERAL, locale));
 
         PdfPTable laborTimeTable = PdfUtil.createTableWithHeader(5, operationsTimeTableHeader, false);
 
@@ -431,14 +453,14 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         // "productionRecords"));
         List<Entity> productionRecords = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.belongsTo("order", productionBalance.getBelongsToField("order")))
-                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue())).list().getEntities();
+                .add(SearchRestrictions.belongsTo(ORDER_LITERAL, productionBalance.getBelongsToField(ORDER_LITERAL)))
+                .add(SearchRestrictions.eq(STATE_LITERAL, ProductionCountingStates.ACCEPTED.getStringValue())).list().getEntities();
         Collections.sort(productionRecords, new EntityProductionRecordOperationComparator());
         for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecords)) {
-            laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent").getStringField(
+            laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField(ORDER_OPERATION_COMPONENT_LITERAL).getStringField(
                     "nodeNumber"), PdfUtil.getArialRegular9Dark()));
-            laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField("orderOperationComponent")
-                    .getBelongsToField("operation").getStringField("name"), PdfUtil.getArialRegular9Dark()));
+            laborTimeTable.addCell(new Phrase(productionRecord.getBelongsToField(ORDER_OPERATION_COMPONENT_LITERAL)
+                    .getBelongsToField("operation").getStringField(NAME_LITERAL), PdfUtil.getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionRecord
                     .getField("plannedLaborTime")), PdfUtil.getArialRegular9Dark()));
             laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionRecord
@@ -474,7 +496,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         BigDecimal machinePlannedTime = BigDecimal.ZERO;
         BigDecimal laborPlannedTime = BigDecimal.ZERO;
 
-        List<Entity> orderOperationComponents = productionBalance.getBelongsToField("order").getTreeField(
+        List<Entity> orderOperationComponents = productionBalance.getBelongsToField(ORDER_LITERAL).getTreeField(
                 "orderOperationComponents");
         for (Entity orderOperationComponent : orderOperationComponents) {
             plannedTime = ((BigDecimal) orderOperationComponent.getField("productionInOneCycle")).multiply(
@@ -488,7 +510,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
         BigDecimal machineRegisteredTime = BigDecimal.ZERO;
         BigDecimal laborRegisteredTime = BigDecimal.ZERO;
-        for (Entity productionRecord : productionBalance.getBelongsToField("order").getHasManyField("productionRecords")) {
+        for (Entity productionRecord : productionBalance.getBelongsToField(ORDER_LITERAL).getHasManyField("productionRecords")) {
             machineRegisteredTime = machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")));
             laborRegisteredTime = laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")));
         }
