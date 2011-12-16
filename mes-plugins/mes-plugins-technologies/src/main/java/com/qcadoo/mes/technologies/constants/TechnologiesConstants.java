@@ -42,6 +42,12 @@ public interface TechnologiesConstants {
 
     String MODEL_LOGGING = "logging";
 
+    String OPERATION_COMPONENTS = "operationComponents";
+
+    String FIELD_ENTITY_TYPE = "entityType";
+
+    String FIELD_NAME = "name";
+
     // VIEW
     String VIEW_OPERATION_DETAILS = "operationDetails";
 
@@ -59,4 +65,13 @@ public interface TechnologiesConstants {
 
     String VIEW_TECHNOLOGY_REFERENCE_TECHNOLOGY_COMPONENT_DETAILS = "technologyReferenceTechnologyComponentDetails";
 
+    String MODEL_BASIC_PRODUCT = "product";
+
+    String MODEL_BASIC_MACHINE = "machine";
+
+    String REFERENCE_TECHNOLOGY = "referenceTechnology";
+
+    String OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
+
+    String OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
 }

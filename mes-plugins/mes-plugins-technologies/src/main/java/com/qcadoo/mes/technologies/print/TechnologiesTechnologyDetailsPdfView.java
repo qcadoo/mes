@@ -26,6 +26,8 @@ package com.qcadoo.mes.technologies.print;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newLinkedHashMap;
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.FIELD_NAME;
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_BASIC_PRODUCT;
 import static com.qcadoo.model.api.types.TreeType.NODE_NUMBER_FIELD;
 import static java.lang.Long.valueOf;
 
@@ -81,9 +83,9 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
 
         Entity technology = technologyDD.get(valueOf((model.get("id").toString())));
         Map<String, String> panelTableValues = newLinkedHashMap();
-        panelTableValues.put("name", technology.getStringField("name"));
+        panelTableValues.put(FIELD_NAME, technology.getStringField(FIELD_NAME));
         panelTableValues.put("number", technology.getStringField("number"));
-        panelTableValues.put("product", technology.getBelongsToField("product").getStringField("name"));
+        panelTableValues.put(MODEL_BASIC_PRODUCT, technology.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField(FIELD_NAME));
         panelTableValues.put("default",
                 (Boolean) technology.getField("master") ? getTranslationService().translate("qcadooView.true", locale)
                         : getTranslationService().translate("qcadooView.false", locale));
@@ -130,7 +132,7 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
 
         for (Entity technologyOperation : technologyOperationsList) {
             String nodeNumber = technologyOperation.getStringField(NODE_NUMBER_FIELD);
-            String operationName = technologyOperation.getBelongsToField("operation").getStringField("name");
+            String operationName = technologyOperation.getBelongsToField("operation").getStringField(FIELD_NAME);
             List<Entity> technologyOperationProducts = newArrayList();
             technologyOperationProducts.addAll(technologyOperation.getHasManyField("operationProductInComponents"));
             technologyOperationProducts.addAll(technologyOperation.getHasManyField("operationProductOutComponents"));
@@ -143,10 +145,10 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                 table.addCell(new Phrase(nodeNumber, PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(operationName, PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(getTranslationService().translate(productType, locale), PdfUtil.getArialRegular9Dark()));
-                table.addCell(new Phrase(product.getBelongsToField("product").getStringField("name"), PdfUtil
+                table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField(FIELD_NAME), PdfUtil
                         .getArialRegular9Dark()));
                 table.addCell(new Phrase(product.getField("quantity").toString(), PdfUtil.getArialRegular9Dark()));
-                table.addCell(new Phrase(product.getBelongsToField("product").getStringField("unit"), PdfUtil
+                table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField("unit"), PdfUtil
                         .getArialRegular9Dark()));
             }
         }
