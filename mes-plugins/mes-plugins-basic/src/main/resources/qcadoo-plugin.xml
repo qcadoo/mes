@@ -112,7 +112,7 @@
 		
 		<view:view resource="view/parameters.xml" />
 		
-		<view:view resource="view/companyDetailsInAdministration.xml" />
+		<view:view resource="view/companyInAdministrationDetails.xml" />
 				
 		<view:view-tab resource="view/currencyDetails.xml" />
 		
