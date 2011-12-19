@@ -129,8 +129,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 resultsMap.put(key, unitOperationCost);
             }
         }
-
-        BigDecimal numOfCycles = numOfProducts.divide(prodInOneCycle).setScale(0, ROUND_UP);
+        BigDecimal quantityOfComponents = numOfProducts.multiply(plannedQuantity);
+        BigDecimal numOfCycles = quantityOfComponents.divide(prodInOneCycle).setScale(0, ROUND_UP);
         BigDecimal tj = getBigDecimal(operationComponent.getField("tj"));
         BigDecimal machineUtilization = getBigDecimal(operationComponent.getField("machineUtilization"));
         BigDecimal laborUtilization = getBigDecimal(operationComponent.getField("laborUtilization"));
