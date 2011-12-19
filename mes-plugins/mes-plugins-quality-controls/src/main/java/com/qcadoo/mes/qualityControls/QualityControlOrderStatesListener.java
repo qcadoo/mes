@@ -72,10 +72,10 @@ public class QualityControlOrderStatesListener extends OrderStateListener {
             parameter = searchResult.getEntities().get(0);
         }
 
-        if (parameter != null) {
-            return (Boolean) parameter.getField("checkDoneOrderForQuality");
-        } else {
+        if (parameter == null) {
             return false;
+        } else {
+            return (Boolean) parameter.getField("checkDoneOrderForQuality");
         }
     }
 
@@ -86,7 +86,10 @@ public class QualityControlOrderStatesListener extends OrderStateListener {
 
         Object controlTypeField = order.getBelongsToField("technology").getField("qualityControlType");
 
-        if (controlTypeField != null) {
+        if (controlTypeField == null) {
+            return false;
+        } else {
+
             DataDefinition qualityControlDD = null;
 
             qualityControlDD = dataDefinitionService.get("qualityControls", "qualityControl");
@@ -94,14 +97,10 @@ public class QualityControlOrderStatesListener extends OrderStateListener {
             if (qualityControlDD != null) {
                 SearchResult searchResult = qualityControlDD.find().belongsTo("order", order.getId()).isEq("closed", false)
                         .list();
-                // qualityControlDD.find().add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("closed",
-                // false));
                 return (searchResult.getTotalNumberOfEntities() <= 0);
             } else {
                 return false;
             }
-        } else {
-            return false;
         }
     }
 }

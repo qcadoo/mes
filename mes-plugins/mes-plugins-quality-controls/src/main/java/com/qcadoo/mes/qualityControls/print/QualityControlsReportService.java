@@ -70,19 +70,17 @@ public class QualityControlsReportService {
             FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom");
             FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
 
-            if (dateFrom != null && dateTo != null && dateFrom.getFieldValue() != null && dateTo.getFieldValue() != null) {
-                if (!(dateFrom.getFieldValue().toString().compareTo(dateTo.getFieldValue().toString()) > 0)) {
-
-                    viewDefinitionState.redirectTo("/qualityControl/qualityControlByDates." + args[0] + "?type=" + args[1]
-                            + "&dateFrom=" + dateFrom.getFieldValue() + "&dateTo=" + dateTo.getFieldValue(), true, false);
-                } else {
-                    state.addMessage(translationService.translate("qualityControl.report.invalidDates.fromBiggerThanTo",
-                            state.getLocale()), MessageType.FAILURE);
-                }
-            } else {
-
+            if (dateFrom == null && dateTo == null && dateFrom.getFieldValue() == null && dateTo.getFieldValue() == null) {
                 state.addMessage(translationService.translate("qualityControl.report.invalidDates", state.getLocale()),
                         MessageType.FAILURE);
+            } else {
+                if (dateFrom.getFieldValue().toString().compareTo(dateTo.getFieldValue().toString()) > 0) {
+                    state.addMessage(translationService.translate("qualityControl.report.invalidDates.fromBiggerThanTo",
+                            state.getLocale()), MessageType.FAILURE);
+                } else {
+                    viewDefinitionState.redirectTo("/qualityControl/qualityControlByDates." + args[0] + "?type=" + args[1]
+                            + "&dateFrom=" + dateFrom.getFieldValue() + "&dateTo=" + dateTo.getFieldValue(), true, false);
+                }
             }
         } else {
             state.addMessage(translationService.translate("qualityControl.report.invalidDates", state.getLocale()),

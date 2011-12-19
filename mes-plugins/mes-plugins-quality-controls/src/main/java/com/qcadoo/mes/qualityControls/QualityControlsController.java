@@ -44,36 +44,40 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Controller
 public class QualityControlsController {
 
+    private static final String QUALITY_CONTROL_FOR = "qualityControlFor";
+    private static final String DATE_TO = "dateTo";
+    private static final String DATE_FROM = "dateFrom";
+    private static final String TYPE = "type";
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @RequestMapping(value = "qualityControl/qualityControlByDates.pdf", method = RequestMethod.GET)
-    public final ModelAndView qualityControlByDatesPdf(@RequestParam("type") final String type,
-            @RequestParam("dateFrom") final Object dateFrom, @RequestParam("dateTo") final Object dateTo) {
+    public final ModelAndView qualityControlByDatesPdf(@RequestParam(TYPE) final String type,
+            @RequestParam(DATE_FROM) final Object dateFrom, @RequestParam(DATE_TO) final Object dateTo) {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("qualityControlFor" + StringUtils.capitalize(type) + "PdfView");
-        mav.addObject("dateFrom", dateFrom);
-        mav.addObject("dateTo", dateTo);
+        mav.setViewName(QUALITY_CONTROL_FOR + StringUtils.capitalize(type) + "PdfView");
+        mav.addObject(DATE_FROM, dateFrom);
+        mav.addObject(DATE_TO, dateTo);
         mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
         return mav;
     }
 
     @RequestMapping(value = "qualityControl/qualityControlByDates.xls", method = RequestMethod.GET)
-    public final ModelAndView qualityControlByDatesXls(@RequestParam("type") final String type,
-            @RequestParam("dateFrom") final Object dateFrom, @RequestParam("dateTo") final Object dateTo) {
+    public final ModelAndView qualityControlByDatesXls(@RequestParam(TYPE) final String type,
+            @RequestParam(DATE_FROM) final Object dateFrom, @RequestParam(DATE_TO) final Object dateTo) {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("qualityControlFor" + StringUtils.capitalize(type) + "XlsView");
-        mav.addObject("dateFrom", dateFrom);
-        mav.addObject("dateTo", dateTo);
+        mav.setViewName(QUALITY_CONTROL_FOR + StringUtils.capitalize(type) + "XlsView");
+        mav.addObject(DATE_FROM, dateFrom);
+        mav.addObject(DATE_TO, dateTo);
         return mav;
     }
 
     @RequestMapping(value = "qualityControl/qualityControlReport.pdf", method = RequestMethod.GET)
-    public final ModelAndView qualityControlReportPdf(@RequestParam("type") final String type,
+    public final ModelAndView qualityControlReportPdf(@RequestParam(TYPE) final String type,
             @RequestParam("id") final Long[] entities) {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("qualityControlFor" + StringUtils.capitalize(type) + "PdfView");
+        mav.setViewName(QUALITY_CONTROL_FOR + StringUtils.capitalize(type) + "PdfView");
         mav.addObject("entities", getQualityControlEntities(entities));
         mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
@@ -81,10 +85,10 @@ public class QualityControlsController {
     }
 
     @RequestMapping(value = "qualityControl/qualityControlReport.xls", method = RequestMethod.GET)
-    public final ModelAndView qualityControlReportXls(@RequestParam("type") final String type,
+    public final ModelAndView qualityControlReportXls(@RequestParam(TYPE) final String type,
             @RequestParam("id") final Long[] entities) {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("qualityControlFor" + StringUtils.capitalize(type) + "XlsView");
+        mav.setViewName(QUALITY_CONTROL_FOR + StringUtils.capitalize(type) + "XlsView");
         mav.addObject("entities", getQualityControlEntities(entities));
         return mav;
     }
