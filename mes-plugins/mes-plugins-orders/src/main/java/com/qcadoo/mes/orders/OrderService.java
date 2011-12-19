@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -480,8 +479,7 @@ public final class OrderService {
         TechnologyState technologyState = TechnologyStateUtils.getStateFromField(technology.getStringField("state"));
 
         if (TechnologyState.ACCEPTED != technologyState) {
-            order.addError(orderDD.getField("technology"),
-                    translationService.translate("orders.validate.technology.error.wrongState", LocaleContextHolder.getLocale()));
+            order.addError(orderDD.getField("technology"), "orders.validate.technology.error.wrongState");
             return false;
         }
 

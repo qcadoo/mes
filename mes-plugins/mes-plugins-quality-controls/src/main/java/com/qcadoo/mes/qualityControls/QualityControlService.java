@@ -58,6 +58,8 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public final class QualityControlService {
 
+    private static final String QCADOO_VIEW_VALIDATE_GLOBAL_ERROR_CUSTOM = "qcadooView.validate.global.error.custom";
+
     private static final String CONTROL_INSTRUCTION_LITERAL = "controlInstruction";
 
     private static final String DATE_TO_LITERAL = "dateTo";
@@ -200,7 +202,7 @@ public final class QualityControlService {
 
             String comment = (String) entity.getField(FIELD_COMMENT);
             if (comment == null || comment.isEmpty()) {
-                entity.addGlobalError("qcadooView.validate.global.error.custom");
+                entity.addGlobalError(QCADOO_VIEW_VALIDATE_GLOBAL_ERROR_CUSTOM);
                 entity.addError(dataDefinition.getField(FIELD_COMMENT),
                         "qualityControls.quality.control.validate.global.error.comment");
                 return false;
@@ -217,7 +219,7 @@ public final class QualityControlService {
             String comment = (String) entity.getField(FIELD_COMMENT);
 
             if ((comment == null || comment.isEmpty()) && acceptedDefectsQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                entity.addGlobalError("qcadooView.validate.global.error.custom");
+                entity.addGlobalError(QCADOO_VIEW_VALIDATE_GLOBAL_ERROR_CUSTOM);
                 entity.addError(dataDefinition.getField(FIELD_COMMENT),
                         "qualityControls.quality.control.validate.global.error.comment");
                 return false;
@@ -234,7 +236,6 @@ public final class QualityControlService {
         }
 
         FieldComponent resultType = (FieldComponent) state;
-
         FieldComponent comment = (FieldComponent) viewDefinitionState.getComponentByReference(FIELD_COMMENT);
 
         if (resultType.getFieldValue() != null && "03objection".equals(resultType.getFieldValue())) {
@@ -428,10 +429,10 @@ public final class QualityControlService {
         FieldComponent controlInstruction = (FieldComponent) viewDefinitionState
                 .getComponentByReference(CONTROL_INSTRUCTION_LITERAL);
 
-        if (controlInstruction != null) {
-            controlInstruction.setFieldValue("");
-        } else {
+        if (controlInstruction == null) {
             return;
+        } else {
+            controlInstruction.setFieldValue("");
         }
 
         if (order.getFieldValue() != null) {
@@ -506,7 +507,7 @@ public final class QualityControlService {
             Object operation = entity.getField(OPERATION_LITERAL);
 
             if (operation == null) {
-                entity.addGlobalError("qcadooView.validate.global.error.custom");
+                entity.addGlobalError(QCADOO_VIEW_VALIDATE_GLOBAL_ERROR_CUSTOM);
                 entity.addError(dataDefinition.getField(OPERATION_LITERAL),
                         "qualityControls.quality.control.validate.global.error.operation");
                 return false;
@@ -539,14 +540,14 @@ public final class QualityControlService {
             }
 
             if (rejectedQuantity.compareTo(takenForControlQuantity) > 0) {
-                entity.addGlobalError("qcadooView.validate.global.error.custom");
+                entity.addGlobalError(QCADOO_VIEW_VALIDATE_GLOBAL_ERROR_CUSTOM);
                 entity.addError(dataDefinition.getField(REJECTED_QUANTITY_LITERAL),
                         "qualityControls.quality.control.validate.global.error.rejectedQuantity.tooLarge");
                 return false;
             }
 
             if (acceptedDefectsQuantity.compareTo(takenForControlQuantity.subtract(rejectedQuantity)) > 0) {
-                entity.addGlobalError("qcadooView.validate.global.error.custom");
+                entity.addGlobalError(QCADOO_VIEW_VALIDATE_GLOBAL_ERROR_CUSTOM);
                 entity.addError(dataDefinition.getField(ACCEPTED_DEFECTS_QUANTITY_LITERAL),
                         "qualityControls.quality.control.validate.global.error.acceptedDefectsQuantity.tooLarge");
                 return false;

@@ -102,7 +102,7 @@ public class QualityControlForOrderPdfView extends ReportPdfView {
         PdfPTable table = PdfUtil.createTableWithHeader(6, qualityHeader, false);
 
         for (Entry<Entity, List<BigDecimal>> entry : quantities.entrySet()) {
-            table.addCell(new Phrase(entry.getKey() != null ? entry.getKey().getField("number").toString() : "", PdfUtil
+            table.addCell(new Phrase(entry.getKey() == null ? "" : entry.getKey().getField("number").toString(), PdfUtil
                     .getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             table.addCell(new Phrase(getDecimalFormat().format(entry.getValue().get(0)), PdfUtil.getArialRegular9Dark()));

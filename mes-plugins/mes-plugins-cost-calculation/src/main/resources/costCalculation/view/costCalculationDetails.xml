@@ -82,10 +82,10 @@
 					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
 					var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
 					var saveNewRibbonItem = #{window}.getRibbonItem("actions.saveNew");
+					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
 					
 					var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
 					
-					var containsAtLeastOneOrder = false;
 					var entityExists = false;
 					
 					this.addOnChangeListener({
@@ -103,11 +103,6 @@
 					});
 					#{form}.addOnChangeListener({
 						onSetValue: function(value) {
-							if (value.content.totalEntities > 0) {
-								containsAtLeastOneOrder = true;
-							} else {
-								containsAtLeastOneOrder = false;
-							}
 							updateRibbon();
 						}
 					});
@@ -153,7 +148,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4" height="3">
-						<component type="textarea" name="description" field="description"
+						<component type="textarea" name="description" field="description" reference="description"
 							height="3" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
@@ -246,7 +241,6 @@
 						<component type="borderLayout" name="borderLayoutParameters"
 							reference="borderLayoutParameters">
 							<option type="label" value="parameters" />
-
 							<component type="gridLayout" name="parameters"
 								reference="parameters" columns="1" rows="3">
 								<layoutElement column="1" row="1">
@@ -531,10 +525,10 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-			method="fillCurrencyFields" />
+			method="setFieldEnable" />
 		<beforeRender
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-			method="setFieldEnable" />
+			method="fillCurrencyFields" />
 	</hooks>
 </view>
 

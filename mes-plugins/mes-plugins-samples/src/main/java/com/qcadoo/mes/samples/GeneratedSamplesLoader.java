@@ -359,6 +359,8 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         productComponent.setField("operationComponent", operationComponent);
         productComponent.setField(BASIC_MODEL_PRODUCT, product);
         productComponent.setField("quantity", quantity);
+        productComponent.setField("batchRequired", true);
+        productComponent.setField("productBatchRequired", true);
 
         productComponent = productComponent.getDataDefinition().save(productComponent);
 
@@ -449,6 +451,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         order.setField(TECHNOLOGY_MODEL_TECHNOLOGY, technology);
         order.setField("externalSynchronized", true);
         order.setField("typeOfProductionRecording", "01basic");
+        order.setField("trackingRecordTreatment", "01duringProduction");
 
         order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
 

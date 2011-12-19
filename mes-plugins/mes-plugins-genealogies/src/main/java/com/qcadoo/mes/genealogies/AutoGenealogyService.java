@@ -45,6 +45,7 @@ import com.qcadoo.mes.orders.states.OrderStateListener;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.plugin.api.PluginAccessor;
@@ -56,6 +57,68 @@ import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class AutoGenealogyService extends OrderStateListener {
+
+    private static final String BATCH_MODEL = "batch";
+
+    private static final String ORDER_MODEL = "order";
+
+    private static final String PRODUCT_MODEL = "product";
+
+    private static final String PRODUCT_IN_BATCH_MODEL = "productInBatch";
+
+    private static final String GENEALOGY_PRODUCT_IN_COMPONENT_MODEL = "genealogyProductInComponent";
+
+    private static final String NUMBER_FIELD = "number";
+
+    private static final String NAME_FIELD = "name";
+
+    private static final String BATCH_REQUIRED_FIELD = "batchRequired";
+
+    private static final String OPERATION_PRODUCT_IN_COMPONENTS_FIELD = "operationProductInComponents";
+
+    private static final String OPERATION_COMPONENTS_FIELD = "operationComponents";
+
+    private static final String PRODUCT_IN_COMPONENTS_FIELD = "productInComponents";
+
+    private static final String POST_FEATURES_FIELD = "postFeatures";
+
+    private static final String POST_FIELD = "post";
+
+    private static final String POST_FEATURE_REQUIRED_FIELD = "postFeatureRequired";
+
+    private static final String OTHER_FEATURES_FIELD = "otherFeatures";
+
+    private static final String OTHER_FIELD = "other";
+
+    private static final String OTHER_FEATURE_REQUIRED_FIELD = "otherFeatureRequired";
+
+    private static final String GENEALOGY_FIELD = "genealogy";
+
+    private static final String SHIFT_FEATURES_FIELD = "shiftFeatures";
+
+    private static final String SHIFT_FIELD = "shift";
+
+    private static final String SHIFT_FEATURE_REQUIRED_FIELD = "shiftFeatureRequired";
+
+    private static final String GENEALOGIES_FOR_COMPONENTS_PLUGIN = "genealogiesForComponents";
+
+    private static final String DATE_FIELD = "date";
+
+    private static final String WORKER_FIELD = "worker";
+
+    private static final String TECHNOLOGY_FIELD = "technology";
+
+    private static final String LAST_USED_OTHER_FIELD = "lastUsedOther";
+
+    private static final String LAST_USED_POST_FIELD = "lastUsedPost";
+
+    private static final String VALUE_FIELD = "value";
+
+    private static final String LAST_USED_SHIFT_FIELD = "lastUsedShift";
+
+    private static final String LAST_USED_BATCH_FIELD = "lastUsedBatch";
+
+    private static final String PRODUCT_IN_COMPONENT_FIELD = "productInComponent";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -74,22 +137,24 @@ public class AutoGenealogyService extends OrderStateListener {
 
     public void fillLastUsedBatchForProduct(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
-        Entity product = entity.getBelongsToField("productInComponent").getBelongsToField("productInComponent")
-                .getBelongsToField("product");
+        Entity product = entity.getBelongsToField(PRODUCT_IN_COMPONENT_FIELD).getBelongsToField(PRODUCT_IN_COMPONENT_FIELD)
+                .getBelongsToField(PRODUCT_MODEL);
         DataDefinition productInDef = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
         Entity productEntity = productInDef.get(product.getId());
-        productEntity.setField("lastUsedBatch", entity.getField("batch"));
+        productEntity.setField(LAST_USED_BATCH_FIELD, entity.getField(BATCH_MODEL));
         productInDef.save(productEntity);
     }
 
     public void fillLastUsedBatchForGenealogy(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
-        Entity product = entity.getBelongsToField("order").getBelongsToField("product");
-        if (product != null) {
+        Entity product = entity.getBelongsToField(ORDER_MODEL).getBelongsToField(PRODUCT_MODEL);
+        if (product == null) {
+            return;
+        } else {
             DataDefinition productInDef = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                     BasicConstants.MODEL_PRODUCT);
             Entity productEntity = productInDef.get(product.getId());
-            productEntity.setField("lastUsedBatch", entity.getField("batch"));
+            productEntity.setField(LAST_USED_BATCH_FIELD, entity.getField(BATCH_MODEL));
             productInDef.save(productEntity);
         }
     }
@@ -130,7 +195,7 @@ public class AutoGenealogyService extends OrderStateListener {
         SearchResult searchResult = featureDef.find().setMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
             Entity currentAttribute = searchResult.getEntities().get(0);
-            currentAttribute.setField("lastUsedShift", entity.getField("value"));
+            currentAttribute.setField(LAST_USED_SHIFT_FIELD, entity.getField(VALUE_FIELD));
             featureDef.save(currentAttribute);
         }
     }
@@ -142,7 +207,7 @@ public class AutoGenealogyService extends OrderStateListener {
         SearchResult searchResult = featureDef.find().setMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
             Entity currentAttribute = searchResult.getEntities().get(0);
-            currentAttribute.setField("lastUsedPost", entity.getField("value"));
+            currentAttribute.setField(LAST_USED_POST_FIELD, entity.getField(VALUE_FIELD));
             featureDef.save(currentAttribute);
         }
     }
@@ -154,23 +219,23 @@ public class AutoGenealogyService extends OrderStateListener {
         SearchResult searchResult = featureDef.find().setMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
             Entity currentAttribute = searchResult.getEntities().get(0);
-            currentAttribute.setField("lastUsedOther", entity.getField("value"));
+            currentAttribute.setField(LAST_USED_OTHER_FIELD, entity.getField(VALUE_FIELD));
             featureDef.save(currentAttribute);
         }
     }
 
     private void fillUserAndDate(final Entity entity) {
-        if (entity.getField("date") == null) {
-            entity.setField("date", new Date());
+        if (entity.getField(DATE_FIELD) == null) {
+            entity.setField(DATE_FIELD, new Date());
         }
-        if (entity.getField("worker") == null) {
-            entity.setField("worker", securityService.getCurrentUserName());
+        if (entity.getField(WORKER_FIELD) == null) {
+            entity.setField(WORKER_FIELD, securityService.getCurrentUserName());
         }
     }
 
     List<ChangeOrderStateMessage> createGenealogy(final Entity order, final boolean lastUsedMode) {
-        Entity mainProduct = order.getBelongsToField("product");
-        Entity technology = order.getBelongsToField("technology");
+        Entity mainProduct = order.getBelongsToField(PRODUCT_MODEL);
+        Entity technology = order.getBelongsToField(TECHNOLOGY_FIELD);
         List<ChangeOrderStateMessage> listOfMessage = new ArrayList<ChangeOrderStateMessage>();
         if (mainProduct == null || technology == null) {
             listOfMessage.add(ChangeOrderStateMessage.info(translationService.translate(
@@ -179,9 +244,9 @@ public class AutoGenealogyService extends OrderStateListener {
         }
         Object mainBatch = null;
         if (lastUsedMode) {
-            mainBatch = mainProduct.getField("lastUsedBatch");
+            mainBatch = mainProduct.getField(LAST_USED_BATCH_FIELD);
         } else {
-            mainBatch = mainProduct.getField("batch");
+            mainBatch = mainProduct.getField(BATCH_MODEL);
         }
         if (mainBatch == null) {
             listOfMessage.add(ChangeOrderStateMessage.info(translationService.translate(
@@ -196,19 +261,23 @@ public class AutoGenealogyService extends OrderStateListener {
         DataDefinition genealogyDef = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
                 GenealogiesConstants.MODEL_GENEALOGY);
         Entity genealogy = genealogyDef.create();
-        genealogy.setField("order", order);
-        genealogy.setField("batch", mainBatch);
+        genealogy.setField(ORDER_MODEL, order);
+        genealogy.setField(BATCH_MODEL, mainBatch);
         completeAttributesForGenealogy(technology, genealogy, lastUsedMode);
-        if (pluginAccessor.getEnabledPlugin("genealogiesForComponents") != null) {
+        if (pluginAccessor.getEnabledPlugin(GENEALOGIES_FOR_COMPONENTS_PLUGIN) != null) {
             completeBatchForComponents(technology, genealogy, lastUsedMode);
         }
 
         if (genealogy.isValid()) {
             genealogy = genealogyDef.save(genealogy);
-        }
 
-        if (!genealogy.isValid()) {
-            if (!genealogy.getGlobalErrors().isEmpty()) {
+            listOfMessage.add(ChangeOrderStateMessage.success(translationService.translate(
+                    "genealogies.message.autoGenealogy.success", getLocale())));
+        } else {
+            if (genealogy.getGlobalErrors().isEmpty()) {
+                listOfMessage.add(ChangeOrderStateMessage.info(translationService.translate(
+                        "genealogies.message.autoGenealogy.failure", getLocale())));
+            } else {
                 for (ErrorMessage error : genealogy.getGlobalErrors()) {
                     StringBuilder message = new StringBuilder(error.getMessage());
                     for (String var : error.getVars()) {
@@ -217,14 +286,8 @@ public class AutoGenealogyService extends OrderStateListener {
                     listOfMessage
                             .add(ChangeOrderStateMessage.error(translationService.translate(message.toString(), getLocale())));
                 }
-            } else {
-                listOfMessage.add(ChangeOrderStateMessage.info(translationService.translate(
-                        "genealogies.message.autoGenealogy.failure", getLocale())));
             }
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        } else {
-            listOfMessage.add(ChangeOrderStateMessage.success(translationService.translate(
-                    "genealogies.message.autoGenealogy.success", getLocale())));
         }
 
         return listOfMessage;
@@ -232,8 +295,9 @@ public class AutoGenealogyService extends OrderStateListener {
 
     private boolean checkIfExistGenealogyWithBatch(final Entity order, final String batch) {
         SearchResult searchResult = dataDefinitionService
-                .get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find().isEq("batch", batch)
-                .belongsTo("order", order.getId()).setMaxResults(1).list();
+                .get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find()
+                .add(SearchRestrictions.eq(BATCH_MODEL, batch)).add(SearchRestrictions.belongsTo(ORDER_MODEL, order))
+                .setMaxResults(1).list();
 
         if (searchResult.getEntities().size() > 0) {
             return true;
@@ -249,96 +313,97 @@ public class AutoGenealogyService extends OrderStateListener {
         if (searchResult.getEntities().size() > 0) {
             currentAttribute = searchResult.getEntities().get(0);
         }
-        if ((Boolean) technology.getField("shiftFeatureRequired")) {
+        if ((Boolean) technology.getField(SHIFT_FEATURE_REQUIRED_FIELD)) {
             Entity shift = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
                     GenealogiesConstants.MODEL_SHIFT_FEATURE).create();
-            shift.setField("genealogy", genealogy);
+            shift.setField(GENEALOGY_FIELD, genealogy);
             if (currentAttribute == null) {
-                shift.setField("value", null);
+                shift.setField(VALUE_FIELD, null);
             } else if (lastUsedMode) {
-                shift.setField("value", currentAttribute.getField("lastUsedShift"));
+                shift.setField(VALUE_FIELD, currentAttribute.getField(LAST_USED_SHIFT_FIELD));
             } else {
-                shift.setField("value", currentAttribute.getField("shift"));
+                shift.setField(VALUE_FIELD, currentAttribute.getField(SHIFT_FIELD));
             }
-            if (shift.getField("value") != null) {
-                genealogy.setField("shiftFeatures", Collections.singletonList(shift));
-            } else {
+            if (shift.getField(VALUE_FIELD) == null) {
                 genealogy.addGlobalError(translationService.translate("genealogies.message.autoGenealogy.missingShift",
                         getLocale()));
+            } else {
+                genealogy.setField(SHIFT_FEATURES_FIELD, Collections.singletonList(shift));
             }
         }
-        if ((Boolean) technology.getField("otherFeatureRequired")) {
+        if ((Boolean) technology.getField(OTHER_FEATURE_REQUIRED_FIELD)) {
             Entity other = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
                     GenealogiesConstants.MODEL_OTHER_FEATURE).create();
-            other.setField("genealogy", genealogy);
+            other.setField(GENEALOGY_FIELD, genealogy);
             if (currentAttribute == null) {
-                other.setField("value", null);
+                other.setField(VALUE_FIELD, null);
             } else if (lastUsedMode) {
-                other.setField("value", currentAttribute.getField("lastUsedOther"));
+                other.setField(VALUE_FIELD, currentAttribute.getField(LAST_USED_OTHER_FIELD));
             } else {
-                other.setField("value", currentAttribute.getField("other"));
+                other.setField(VALUE_FIELD, currentAttribute.getField(OTHER_FIELD));
             }
-            if (other.getField("value") != null) {
-                genealogy.setField("otherFeatures", Collections.singletonList(other));
-            } else {
+            if (other.getField(VALUE_FIELD) == null) {
                 genealogy.addGlobalError(translationService.translate("genealogies.message.autoGenealogy.missingOther",
                         getLocale()));
+            } else {
+                genealogy.setField(OTHER_FEATURES_FIELD, Collections.singletonList(other));
             }
         }
-        if ((Boolean) technology.getField("postFeatureRequired")) {
+        if ((Boolean) technology.getField(POST_FEATURE_REQUIRED_FIELD)) {
             Entity post = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
                     GenealogiesConstants.MODEL_POST_FEATURE).create();
-            post.setField("genealogy", genealogy);
+            post.setField(GENEALOGY_FIELD, genealogy);
             if (currentAttribute == null) {
-                post.setField("value", null);
+                post.setField(VALUE_FIELD, null);
             } else if (lastUsedMode) {
-                post.setField("value", currentAttribute.getField("lastUsedPost"));
+                post.setField(VALUE_FIELD, currentAttribute.getField(LAST_USED_POST_FIELD));
             } else {
-                post.setField("value", currentAttribute.getField("post"));
+                post.setField(VALUE_FIELD, currentAttribute.getField(POST_FIELD));
             }
-            if (post.getField("value") != null) {
-                genealogy.setField("postFeatures", Collections.singletonList(post));
-            } else {
+            if (post.getField(VALUE_FIELD) == null) {
                 genealogy.addGlobalError(translationService.translate("genealogies.message.autoGenealogy.missingPost",
                         getLocale()));
+            } else {
+                genealogy.setField(POST_FEATURES_FIELD, Collections.singletonList(post));
             }
         }
     }
 
     @SuppressWarnings("unchecked")
     private void completeBatchForComponents(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
-        genealogy.setField("productInComponents", new ArrayList<Entity>());
+        genealogy.setField(PRODUCT_IN_COMPONENTS_FIELD, new ArrayList<Entity>());
         List<String> componentsWithoutBatch = new ArrayList<String>();
         List<Entity> operationComponents = new ArrayList<Entity>();
-        genealogyService.addOperationsFromSubtechnologiesToList(technology.getTreeField("operationComponents"),
+        genealogyService.addOperationsFromSubtechnologiesToList(technology.getTreeField(OPERATION_COMPONENTS_FIELD),
                 operationComponents);
         for (Entity operationComponent : operationComponents) {
-            for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                if (operationProductComponent.getField("batchRequired") != null
-                        && (Boolean) operationProductComponent.getField("batchRequired")) {
-                    Entity productIn = dataDefinitionService.get("genealogiesForComponents", "genealogyProductInComponent")
-                            .create();
-                    productIn.setField("genealogy", genealogy);
-                    productIn.setField("productInComponent", operationProductComponent);
-                    Entity product = (Entity) operationProductComponent.getField("product");
+            for (Entity operationProductComponent : operationComponent.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS_FIELD)) {
+                if (operationProductComponent.getField(BATCH_REQUIRED_FIELD) != null
+                        && (Boolean) operationProductComponent.getField(BATCH_REQUIRED_FIELD)) {
+                    Entity productIn = dataDefinitionService.get(GENEALOGIES_FOR_COMPONENTS_PLUGIN,
+                            GENEALOGY_PRODUCT_IN_COMPONENT_MODEL).create();
+                    productIn.setField(GENEALOGY_FIELD, genealogy);
+                    productIn.setField(PRODUCT_IN_COMPONENT_FIELD, operationProductComponent);
+                    Entity product = (Entity) operationProductComponent.getField(PRODUCT_MODEL);
                     Object batch = null;
                     if (lastUsedMode) {
-                        batch = product.getField("lastUsedBatch");
+                        batch = product.getField(LAST_USED_BATCH_FIELD);
                     } else {
-                        batch = product.getField("batch");
+                        batch = product.getField(BATCH_MODEL);
                     }
-                    if (batch != null) {
-                        Entity productBatch = dataDefinitionService.get("genealogiesForComponents", "productInBatch").create();
-                        productBatch.setField("batch", batch);
-                        productBatch.setField("productInComponent", productIn);
-                        productIn.setField("batch", Collections.singletonList(productBatch));
-                    } else {
-                        String value = product.getField("number") + "-" + product.getField("name") + "; ";
+                    if (batch == null) {
+                        String value = product.getField(NUMBER_FIELD) + "-" + product.getField(NAME_FIELD) + "; ";
                         if (!componentsWithoutBatch.contains(value)) {
                             componentsWithoutBatch.add(value);
                         }
+                    } else {
+                        Entity productBatch = dataDefinitionService
+                                .get(GENEALOGIES_FOR_COMPONENTS_PLUGIN, PRODUCT_IN_BATCH_MODEL).create();
+                        productBatch.setField(BATCH_MODEL, batch);
+                        productBatch.setField(PRODUCT_IN_COMPONENT_FIELD, productIn);
+                        productIn.setField(BATCH_MODEL, Collections.singletonList(productBatch));
                     }
-                    ((List<Entity>) genealogy.getField("productInComponents")).add(productIn);
+                    ((List<Entity>) genealogy.getField(PRODUCT_IN_COMPONENTS_FIELD)).add(productIn);
                 }
             }
         }

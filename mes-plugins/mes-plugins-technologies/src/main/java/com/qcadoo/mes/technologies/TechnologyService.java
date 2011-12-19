@@ -25,6 +25,7 @@ package com.qcadoo.mes.technologies;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.REFERENCE_TECHNOLOGY;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -65,6 +66,8 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class TechnologyService {
+
+    private static final String NUMBER = "number";
 
     public static final String WASTE = "04waste";
 
@@ -169,13 +172,13 @@ public class TechnologyService {
         GridComponent outProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("outProducts");
         GridComponent inProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("inProducts");
 
-        if (!"referenceTechnology".equals(operationComponent.getStringField(CONST_ENTITY_TYPE))) {
+        if (!REFERENCE_TECHNOLOGY.equals(operationComponent.getStringField(CONST_ENTITY_TYPE))) {
             inProductsGrid.setEditable(true);
             outProductsGrid.setEditable(true);
             return;
         }
 
-        Entity technology = operationComponent.getBelongsToField("referenceTechnology");
+        Entity technology = operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY);
         EntityTree operations = technology.getTreeField(CONST_OPERATION_COMPONENTS);
         Entity rootOperation = operations.getRoot();
 
@@ -229,10 +232,10 @@ public class TechnologyService {
         if (!(componentState instanceof FieldComponent)) {
             throw new IllegalStateException("component is not FieldComponentState");
         }
-        FieldComponent number = (FieldComponent) state.getComponentByReference("number");
+        FieldComponent number = (FieldComponent) state.getComponentByReference(NUMBER);
         FieldComponent productState = (FieldComponent) componentState;
 
-        if (!numberGeneratorService.checkIfShouldInsertNumber(state, "form", "number") || productState.getFieldValue() == null) {
+        if (!numberGeneratorService.checkIfShouldInsertNumber(state, "form", NUMBER) || productState.getFieldValue() == null) {
             return;
         }
 
@@ -242,7 +245,7 @@ public class TechnologyService {
             return;
         }
 
-        String numberValue = product.getField("number") + "-"
+        String numberValue = product.getField(NUMBER) + "-"
                 + numberGeneratorService.generateNumber("technologies", CONST_TECHNOLOGY, 3);
         number.setFieldValue(numberValue);
     }
@@ -268,7 +271,7 @@ public class TechnologyService {
         cal.setTime(new Date());
 
         name.setFieldValue(translationService.translate("technologies.operation.name.default", state.getLocale(),
-                product.getStringField("name"), product.getStringField("number"),
+                product.getStringField("name"), product.getStringField(NUMBER),
                 cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH)));
     }
 
@@ -286,14 +289,14 @@ public class TechnologyService {
     }
 
     public boolean copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if (!"referenceTechnology".equals(entity.getField(CONST_ENTITY_TYPE)) && entity.getField("referenceTechnology") == null) {
+        if (!REFERENCE_TECHNOLOGY.equals(entity.getField(CONST_ENTITY_TYPE)) && entity.getField(REFERENCE_TECHNOLOGY) == null) {
             return true;
         }
 
         boolean copy = "02copy".equals(entity.getField(CONST_REFERENCE_MODE));
 
         Entity technology = entity.getBelongsToField(CONST_TECHNOLOGY);
-        Entity referencedTechnology = entity.getBelongsToField("referenceTechnology");
+        Entity referencedTechnology = entity.getBelongsToField(REFERENCE_TECHNOLOGY);
 
         Set<Long> technologies = new HashSet<Long>();
         technologies.add(technology.getId());
@@ -301,7 +304,7 @@ public class TechnologyService {
         boolean cyclic = checkForCyclicReferences(technologies, referencedTechnology, copy);
 
         if (cyclic) {
-            entity.addError(dataDefinition.getField("referenceTechnology"),
+            entity.addError(dataDefinition.getField(REFERENCE_TECHNOLOGY),
                     "technologies.technologyReferenceTechnologyComponent.error.cyclicDependency");
             return false;
         }
@@ -312,7 +315,7 @@ public class TechnologyService {
             Entity copiedRoot = copyReferencedTechnologyOperations(root, entity.getBelongsToField(CONST_TECHNOLOGY));
 
             entity.setField(CONST_ENTITY_TYPE, CONST_OPERATION);
-            entity.setField("referenceTechnology", null);
+            entity.setField(REFERENCE_TECHNOLOGY, null);
             entity.setField("qualityControlRequired", copiedRoot.getField("qualityControlRequired"));
             entity.setField(CONST_OPERATION, copiedRoot.getField(CONST_OPERATION));
             entity.setField("children", copiedRoot.getField("children"));
@@ -331,9 +334,9 @@ public class TechnologyService {
         technologies.add(referencedTechnology.getId());
 
         for (Entity operationComponent : referencedTechnology.getTreeField(CONST_OPERATION_COMPONENTS)) {
-            if ("referenceTechnology".equals(operationComponent.getField(CONST_ENTITY_TYPE))) {
+            if (REFERENCE_TECHNOLOGY.equals(operationComponent.getField(CONST_ENTITY_TYPE))) {
                 boolean cyclic = checkForCyclicReferences(technologies,
-                        operationComponent.getBelongsToField("referenceTechnology"), false);
+                        operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY), false);
 
                 if (cyclic) {
                     return true;
@@ -383,9 +386,9 @@ public class TechnologyService {
                 entity.addError(dataDefinition.getField(CONST_OPERATION), "qcadooView.validate.field.error.missing");
                 isValid = false;
             }
-        } else if ("referenceTechnology".equals(entity.getStringField(CONST_ENTITY_TYPE))) {
-            if (entity.getField("referenceTechnology") == null) {
-                entity.addError(dataDefinition.getField("referenceTechnology"), "qcadooView.validate.field.error.missing");
+        } else if (REFERENCE_TECHNOLOGY.equals(entity.getStringField(CONST_ENTITY_TYPE))) {
+            if (entity.getField(REFERENCE_TECHNOLOGY) == null) {
+                entity.addError(dataDefinition.getField(REFERENCE_TECHNOLOGY), "qcadooView.validate.field.error.missing");
                 isValid = false;
             }
             if (entity.getField(CONST_REFERENCE_MODE) == null) {

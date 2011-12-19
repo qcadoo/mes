@@ -44,6 +44,7 @@ import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.transaction.TransactionStatus;
@@ -56,6 +57,9 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.plugin.api.Plugin;
@@ -67,7 +71,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ GenealogyService.class, TransactionAspectSupport.class })
+@PrepareForTest({ GenealogyService.class, TransactionAspectSupport.class, SearchRestrictions.class })
 public class AutoGenealogyServiceTest {
 
     private AutoGenealogyService autoGenealogyService;
@@ -228,7 +232,7 @@ public class AutoGenealogyServiceTest {
     }
 
     @Test
-    public void shouldFailAutoCreateGenealogyIfExistingGenealogyWithBatch() {
+    public void shouldFailAutoCreateGenealogyIfExistingGenealogyWithBatch() throws Exception {
         // given
         ComponentState state = mock(ComponentState.class);
         given(state.getFieldValue()).willReturn(13L);
@@ -247,10 +251,26 @@ public class AutoGenealogyServiceTest {
 
         List<Entity> list = new ArrayList<Entity>();
         list.add(mock(Entity.class));
+
+        SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
+        SearchCriterion eq = mock(SearchCriterion.class);
+        SearchCriterion belongsTo = mock(SearchCriterion.class);
+        SearchResult searchResult = mock(SearchResult.class);
+
+        mockStatic(SearchRestrictions.class);
+
+        when(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find())
+                .thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.setMaxResults(1)).thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.list()).thenReturn(searchResult);
+        when(searchResult.getEntities()).thenReturn(list);
+        when(SearchRestrictions.eq("batch", "test")).thenReturn(eq);
+        when(SearchRestrictions.belongsTo("order", order)).thenReturn(belongsTo);
+
         given(
                 dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find()
-                        .isEq("batch", "test").belongsTo("order", order.getId()).setMaxResults(1).list().getEntities())
-                .willReturn(list);
+                        .add(eq).add(belongsTo).setMaxResults(1).list().getEntities()).willReturn(list);
 
         given(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.genealogyExist");
@@ -266,9 +286,8 @@ public class AutoGenealogyServiceTest {
         given(state.getFieldValue()).willReturn(13L);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+
         Entity order = mock(Entity.class);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
-                order);
         Entity product = mock(Entity.class);
         Entity technology = mock(Entity.class);
         given(order.getBelongsToField("product")).willReturn(product);
@@ -277,6 +296,32 @@ public class AutoGenealogyServiceTest {
         given(technology.getField("shiftFeatureRequired")).willReturn(false);
         given(technology.getField("postFeatureRequired")).willReturn(false);
         given(technology.getField("otherFeatureRequired")).willReturn(false);
+
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
+                order);
+
+        List<Entity> list = new ArrayList<Entity>();
+        list.add(mock(Entity.class));
+
+        SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
+        SearchCriterion eq = mock(SearchCriterion.class);
+        SearchCriterion belongsTo = mock(SearchCriterion.class);
+        SearchResult searchResult = mock(SearchResult.class);
+
+        mockStatic(SearchRestrictions.class);
+
+        when(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find())
+                .thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.setMaxResults(1)).thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.list()).thenReturn(searchResult);
+        when(searchResult.getEntities()).thenReturn(list);
+        when(SearchRestrictions.eq("batch", "test")).thenReturn(eq);
+        when(SearchRestrictions.belongsTo("order", order)).thenReturn(belongsTo);
+
+        given(
+                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find()
+                        .add(eq).add(belongsTo).setMaxResults(1).list().getEntities()).willReturn(list);
 
         given(translationService.translate("genealogies.message.autoGenealogy.failure", Locale.ENGLISH)).willReturn(
                 "genealogies.message.autoGenealogy.failure");

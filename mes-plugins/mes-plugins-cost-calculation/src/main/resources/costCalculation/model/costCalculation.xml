@@ -101,6 +101,10 @@
 		<boolean name="generated" />
 		<string name="fileName" />
 	</fields>
-	<hooks />
+	<hooks>
+		<onCopy
+			class="com.qcadoo.mes.costCalculation.CostCalculationServiceImpl"
+			method="clearGeneratedOnCopy" />
+	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

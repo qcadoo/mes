@@ -67,6 +67,6 @@ public interface BasicConstants {
 
     String VIEW_STAFFS_LIST = "staffsList";
 
-    String VIEW_COMPANY_DETAILS = "companyDetailsInAdministration";
+    String VIEW_COMPANY_DETAILS = "companyInAdministrationDetails";
 
 }
