@@ -270,7 +270,9 @@ public class AutoGenealogyService extends OrderStateListener {
 
         if (genealogy.isValid()) {
             genealogy = genealogyDef.save(genealogy);
+        }
 
+        if (genealogy.isValid()) {
             listOfMessage.add(ChangeOrderStateMessage.success(translationService.translate(
                     "genealogies.message.autoGenealogy.success", getLocale())));
         } else {

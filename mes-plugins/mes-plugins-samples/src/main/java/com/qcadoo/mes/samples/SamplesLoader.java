@@ -34,7 +34,7 @@ public abstract class SamplesLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(SamplesLoader.class);
 
-    final Random RANDOM = new Random(System.currentTimeMillis());
+    public static final Random RANDOM = new Random(System.currentTimeMillis());
 
     @Autowired
     private PluginAccessor pluginAccessor;

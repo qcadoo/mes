@@ -472,15 +472,17 @@ public final class OrderService {
     }
 
     public boolean checkChosenTechnologyState(final DataDefinition orderDD, final Entity order) {
-        Entity technology = order.getBelongsToField("technology");
-        if (technology == null) {
-            return true;
-        }
-        TechnologyState technologyState = TechnologyStateUtils.getStateFromField(technology.getStringField("state"));
+        if (order.isActive()) {
+            Entity technology = order.getBelongsToField("technology");
+            if (technology == null) {
+                return true;
+            }
+            TechnologyState technologyState = TechnologyStateUtils.getStateFromField(technology.getStringField("state"));
 
-        if (TechnologyState.ACCEPTED != technologyState) {
-            order.addError(orderDD.getField("technology"), "orders.validate.technology.error.wrongState");
-            return false;
+            if (TechnologyState.ACCEPTED != technologyState) {
+                order.addError(orderDD.getField("technology"), "orders.validate.technology.error.wrongState");
+                return false;
+            }
         }
 
         return true;

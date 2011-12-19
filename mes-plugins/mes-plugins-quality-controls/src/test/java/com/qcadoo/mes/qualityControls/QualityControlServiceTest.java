@@ -75,7 +75,7 @@ public class QualityControlServiceTest {
 
     private QualityControlForNumberService qualityControlForNumber;
 
-    private Integer DIGITS_NUMBER = 6;
+    private static final Integer DIGITS_NUMBER = 6;
 
     @Before
     public void init() {
