@@ -484,8 +484,8 @@ public class TestSamplesLoader extends SamplesLoader {
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_11));
         addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_10));
         parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_11));
-        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_15));
+        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_15));
+        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_11));
         parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
         addProductInComponent(parent, new BigDecimal("0.25"), getProductByNumber(PROD_NR_16));
         addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_15));
