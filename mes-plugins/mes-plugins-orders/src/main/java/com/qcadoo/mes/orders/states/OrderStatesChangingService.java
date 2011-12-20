@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.orders.states;
 
+import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_STATE;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,15 +51,15 @@ public class OrderStatesChangingService {
     }
 
     List<ChangeOrderStateMessage> performChangeState(final Entity newEntity, final Entity oldEntity) {
-        if (oldEntity == null && !newEntity.getStringField("state").equals(OrderStates.PENDING.getStringValue())) {
+        if (oldEntity == null && !newEntity.getStringField(FIELD_STATE).equals(OrderStates.PENDING.getStringValue())) {
             throw new IllegalStateException();
         }
-        if (oldEntity != null && newEntity.getStringField("state").equals(OrderStates.ACCEPTED.getStringValue())
-                && !oldEntity.getStringField("state").equals(OrderStates.PENDING.getStringValue())) {
+        if (oldEntity != null && newEntity.getStringField(FIELD_STATE).equals(OrderStates.ACCEPTED.getStringValue())
+                && !oldEntity.getStringField(FIELD_STATE).equals(OrderStates.PENDING.getStringValue())) {
             throw new IllegalStateException();
         }
 
-        String newState = newEntity.getStringField("state");
+        String newState = newEntity.getStringField(FIELD_STATE);
         if (newState.equals(OrderStates.ACCEPTED.getStringValue())) {
             return performAccepted(newEntity, oldEntity);
         } else if (newState.equals(OrderStates.IN_PROGRESS.getStringValue())) {
