@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.0
+ * Version: 1.1.1
  *
  * This file is part of Qcadoo.
  *
@@ -36,4 +36,20 @@ public interface OrdersConstants {
     String VIEW_ORDERS_LIST = "ordersList";
 
     String MODEL_LOGGING = "logging";
+
+    String BASIC_MODEL_PRODUCT = "product";
+
+    String TECHNOLOGIES_MODEL_TECHNOLOGY = "technology";
+
+    String FIELD_STATE = "state";
+
+    String FIELD_NUMBER = "number";
+
+    String FIELD_FORM = "form";
+
+    String FIELD_GRID = "grid";
+
+    String FIELD_PLANNED_QUANTITY = "plannedQuantity";
+
+    String FIELD_BATCH_REQUIRED = "batchRequired";
 }

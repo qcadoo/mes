@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.0
+ * Version: 1.1.1
  *
  * This file is part of Qcadoo.
  *
@@ -44,6 +44,8 @@ import com.qcadoo.security.api.SecurityService;
 @Service
 public class OrderStateValidationService {
 
+    private static final String ENTITY_IS_NULL = "entity is null";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -64,10 +66,10 @@ public class OrderStateValidationService {
         logging.setField("currentState", currentState);
         Date dateTime = new Date();
         Entity shift = shiftsServiceImpl.getShiftFromDate(dateTime);
-        if (shift != null) {
-            logging.setField("shift", shift);
-        } else {
+        if (shift == null) {
             logging.setField("shift", null);
+        } else {
+            logging.setField("shift", shift);
         }
         logging.setField("worker", securityService.getCurrentUserName());
         logging.setField("dateAndTime", dateTime);
@@ -76,24 +78,24 @@ public class OrderStateValidationService {
     }
 
     public List<ChangeOrderStateMessage> validationAccepted(final Entity entity) {
-        checkArgument(entity != null, "entity is null");
+        checkArgument(entity != null, ENTITY_IS_NULL);
         List<String> references = Arrays.asList("dateTo", "dateFrom", "technology");
         return checkValidation(references, entity);
     }
 
     public List<ChangeOrderStateMessage> validationInProgress(final Entity entity) {
-        checkArgument(entity != null, "entity is null");
+        checkArgument(entity != null, ENTITY_IS_NULL);
         return validationAccepted(entity);
     }
 
     public List<ChangeOrderStateMessage> validationCompleted(final Entity entity) {
-        checkArgument(entity != null, "entity is null");
+        checkArgument(entity != null, ENTITY_IS_NULL);
         List<String> references = Arrays.asList("dateTo", "dateFrom", "technology", "doneQuantity");
         return checkValidation(references, entity);
     }
 
     private List<ChangeOrderStateMessage> checkValidation(final List<String> references, final Entity entity) {
-        checkArgument(entity != null, "entity is null");
+        checkArgument(entity != null, ENTITY_IS_NULL);
         List<ChangeOrderStateMessage> errors = new ArrayList<ChangeOrderStateMessage>();
         for (String reference : references) {
             if (entity.getField(reference) == null) {

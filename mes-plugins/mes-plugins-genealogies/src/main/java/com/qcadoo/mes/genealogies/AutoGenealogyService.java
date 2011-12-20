@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.0
+ * Version: 1.1.1
  *
  * This file is part of Qcadoo.
  *
@@ -270,7 +270,9 @@ public class AutoGenealogyService extends OrderStateListener {
 
         if (genealogy.isValid()) {
             genealogy = genealogyDef.save(genealogy);
+        }
 
+        if (genealogy.isValid()) {
             listOfMessage.add(ChangeOrderStateMessage.success(translationService.translate(
                     "genealogies.message.autoGenealogy.success", getLocale())));
         } else {

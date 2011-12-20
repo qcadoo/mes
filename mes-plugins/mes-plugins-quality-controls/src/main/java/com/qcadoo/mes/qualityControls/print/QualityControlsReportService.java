@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.0
+ * Version: 1.1.1
  *
  * This file is part of Qcadoo.
  *
@@ -70,7 +70,7 @@ public class QualityControlsReportService {
             FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom");
             FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
 
-            if (dateFrom == null && dateTo == null && dateFrom.getFieldValue() == null && dateTo.getFieldValue() == null) {
+            if (dateFrom == null || dateTo == null || dateFrom.getFieldValue() == null || dateTo.getFieldValue() == null) {
                 state.addMessage(translationService.translate("qualityControl.report.invalidDates", state.getLocale()),
                         MessageType.FAILURE);
             } else {

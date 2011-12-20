@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.0
+ * Version: 1.1.1
  *
  * This file is part of Qcadoo.
  *
@@ -89,7 +89,9 @@ public class OrderReportService {
                 errors.add(validateMessage);
             }
         }
-        if (errors.size() != 0) {
+        if (errors.size() == 0) {
+            return createNewOrderPrint(ordersEntities, plugin, entityName, detailEntityName, entityFieldsMap, state.getLocale());
+        } else {
             StringBuilder errorMessage = new StringBuilder();
             for (String error : errors) {
                 errorMessage.append(" - ");
@@ -97,8 +99,6 @@ public class OrderReportService {
                 errorMessage.append("\n");
             }
             state.addMessage(errorMessage.toString(), MessageType.FAILURE, false);
-        } else {
-            return createNewOrderPrint(ordersEntities, plugin, entityName, detailEntityName, entityFieldsMap, state.getLocale());
         }
         return null;
     }
