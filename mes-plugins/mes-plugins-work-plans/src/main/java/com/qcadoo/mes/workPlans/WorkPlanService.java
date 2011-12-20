@@ -36,16 +36,9 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.orders.util.OrderReportService;
-import com.qcadoo.mes.orders.util.OrderReportService.OrderValidator;
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
-import com.qcadoo.mes.workPlans.print.pdf.WorkPlanForMachinePdfService;
-import com.qcadoo.mes.workPlans.print.pdf.WorkPlanForProductPdfService;
-import com.qcadoo.mes.workPlans.print.pdf.WorkPlanForWorkerPdfService;
-import com.qcadoo.mes.workPlans.print.xls.WorkPlanForMachineXlsService;
-import com.qcadoo.mes.workPlans.print.xls.WorkPlanForProductXlsService;
-import com.qcadoo.mes.workPlans.print.xls.WorkPlanForWorkerXlsService;
+import com.qcadoo.mes.workPlans.print.WorkPlanPdfService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -68,31 +61,13 @@ public final class WorkPlanService {
     private SecurityService securityService;
 
     @Autowired
-    private WorkPlanForWorkerPdfService workPlanForWorkerPdfService;
-
-    @Autowired
-    private WorkPlanForMachinePdfService workPlanForMachinePdfService;
-
-    @Autowired
-    private WorkPlanForProductPdfService workPlanForProductPdfService;
-
-    @Autowired
-    private WorkPlanForWorkerXlsService workPlanForWorkerXlsService;
-
-    @Autowired
-    private WorkPlanForMachineXlsService workPlanForMachineXlsService;
-
-    @Autowired
-    private WorkPlanForProductXlsService workPlanForProductXlsService;
+    private WorkPlanPdfService workPlanPdfService;
 
     @Autowired
     private TranslationService translationService;
 
     @Autowired
     private RibbonReportService ribbonReportService;
-
-    @Autowired
-    private OrderReportService orderReportService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
@@ -226,60 +201,12 @@ public final class WorkPlanService {
         }
     }
 
-    public void printWorkPlanForOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        Entity workPlan = printWorkPlanForOrder(state);
-        if (workPlan == null) {
-            return;
-        }
-        try {
-            generateWorkPlanDocuments(state, workPlan);
-            viewDefinitionState.redirectTo("/generateSavedReport/" + WorkPlansConstants.PLUGIN_IDENTIFIER + "/"
-                    + WorkPlansConstants.MODEL_WORK_PLAN + "." + args[0] + "?id=" + workPlan.getId() + "&fieldDate=date&suffix="
-                    + args[1], true, false);
-        } catch (IOException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        } catch (DocumentException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-    }
-
     @Transactional
     private void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException,
             DocumentException {
-        Entity workPlanWithFileName = workPlanForMachinePdfService.updateFileName(workPlan, "Work_plan");
+        Entity workPlanWithFileName = workPlanPdfService.updateFileName(workPlan, "Work_plan");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
-        workPlanForMachinePdfService.generateDocument(workPlanWithFileName, company, state.getLocale());
-        workPlanForMachineXlsService.generateDocument(workPlanWithFileName, company, state.getLocale());
-        workPlanForWorkerPdfService.generateDocument(workPlanWithFileName, company, state.getLocale());
-        workPlanForWorkerXlsService.generateDocument(workPlanWithFileName, company, state.getLocale());
-        workPlanForProductPdfService.generateDocument(workPlanWithFileName, company, state.getLocale());
-        workPlanForProductXlsService.generateDocument(workPlanWithFileName, company, state.getLocale());
+        workPlanPdfService.generateDocument(workPlanWithFileName, company, state.getLocale());
     }
-
-    public Entity printWorkPlanForOrder(final ComponentState state) {
-
-        OrderValidator orderValidator = new OrderValidator() {
-
-            @Override
-            public String validateOrder(final Entity order) {
-                if (order.getField("technology") == null) {
-                    return order.getField("number")
-                            + ": "
-                            + translationService.translate("orders.validate.global.error.orderMustHaveTechnology",
-                                    state.getLocale());
-                } else if (order.getBelongsToField("technology").getTreeField("operationComponents").isEmpty()) {
-                    return order.getField("number")
-                            + ": "
-                            + translationService.translate("orders.validate.global.error.orderTechnologyMustHaveOperation",
-                                    state.getLocale());
-                }
-                return null;
-            }
-        };
-
-        return orderReportService.printForOrder(state, "workPlans", "workPlan", "workPlanComponent", null, orderValidator);
-    }
-
 }

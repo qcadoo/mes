@@ -392,11 +392,6 @@ public class ProductionCountingPdfService extends PdfDocumentService {
     }
 
     @Override
-    protected String getSuffix() {
-        return "";
-    }
-
-    @Override
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("productionCounting.productionBalance.report.title", locale);
     }

@@ -71,8 +71,8 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
         int rowNum = 1;
         List<Entity> orders = entity.getManyToManyField("orders");
         Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
-        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(
-                orders, onlyComponents);
+        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(orders,
+                onlyComponents);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
@@ -95,10 +95,5 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     @Override
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("materialRequirements.materialRequirement.report.title", locale);
-    }
-
-    @Override
-    protected String getSuffix() {
-        return "";
     }
 }

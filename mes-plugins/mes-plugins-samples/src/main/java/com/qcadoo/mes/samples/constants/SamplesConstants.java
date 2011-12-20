@@ -37,7 +37,7 @@ public interface SamplesConstants {
 
     String BASIC_MODEL_SHIFT = "shift";
 
-    String BASIC_MODEL_MACHINE = "machine";
+    String BASIC_MODEL_WORKSTATION_TYPE = "workstationType";
 
     String BASIC_MODEL_STAFF = "staff";
 

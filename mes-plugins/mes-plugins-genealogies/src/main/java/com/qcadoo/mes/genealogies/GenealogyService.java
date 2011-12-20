@@ -23,15 +23,12 @@
  */
 package com.qcadoo.mes.genealogies;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -39,8 +36,6 @@ import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public final class GenealogyService {
-
-    private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -109,17 +104,4 @@ public final class GenealogyService {
             }
         }
     }
-
-    public void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {
-        for (Entity operationComponent : entityTree) {
-            if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
-                operationComponents.add(operationComponent);
-            } else {
-                addOperationsFromSubtechnologiesToList(
-                        operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents"),
-                        operationComponents);
-            }
-        }
-    }
-
 }

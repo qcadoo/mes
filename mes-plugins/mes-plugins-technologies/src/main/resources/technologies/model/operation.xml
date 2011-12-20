@@ -37,8 +37,7 @@
 		<string name="comment">
 			<validatesLength max="2048" />
 		</string>
-		<belongsTo name="staff" plugin="basic" model="staff" lazy="false" />
-		<belongsTo name="machine" plugin="basic" model="machine"
+		<belongsTo name="workstationType" plugin="basic" model="workstationType"
 			lazy="false" />
 		<hasMany name="operationComponents" model="technologyOperationComponent"
 			joinField="operation" cascade="nullify" />

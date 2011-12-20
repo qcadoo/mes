@@ -83,10 +83,4 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("materialFlow.materialFlow.report.title", locale);
     }
-
-    @Override
-    protected String getSuffix() {
-        return "";
-    }
-
 }

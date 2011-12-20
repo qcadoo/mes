@@ -149,8 +149,7 @@ public class ReportDataServiceTest {
         worker2.setId(new Long(2));
 
         Entity operation1 = new DefaultEntity(dataDefinition);
-        operation1.setField("machine", machine1);
-        operation1.setField("staff", null);
+        operation1.setField("workstationType", machine1);
         Entity operationComponentRoot = new DefaultEntity(dataDefinition);
         operationComponentRoot.setField("entityType", "operation");
         operationComponentRoot.setField("parent", null);
@@ -160,8 +159,7 @@ public class ReportDataServiceTest {
         operationComponentRoot.setField("operationProductOutComponents", componentsOutList1);
 
         Entity operation2 = new DefaultEntity(dataDefinition);
-        operation2.setField("machine", machine2);
-        operation2.setField("staff", worker2);
+        operation2.setField("workstationType", machine2);
         Entity operationComponent2 = new DefaultEntity(dataDefinition);
         operationComponent2.setField("entityType", "operation");
         operationComponent2.setField("parent", operationComponentRoot);
@@ -171,8 +169,7 @@ public class ReportDataServiceTest {
         operationComponent2.setField("operationProductOutComponents", componentsOutList2);
 
         Entity operation3 = new DefaultEntity(dataDefinition);
-        operation3.setField("machine", null);
-        operation3.setField("staff", worker1);
+        operation3.setField("workstationType", null);
         Entity operationComponent3 = new DefaultEntity(dataDefinition);
         operationComponent3.setField("entityType", "operation");
         operationComponent3.setField("parent", operationComponentRoot);

@@ -197,11 +197,6 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
     }
 
     @Override
-    protected String getSuffix() {
-        return "";
-    }
-
-    @Override
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("simpleMaterialBalance.simpleMaterialBalance.report.title", locale);
     }

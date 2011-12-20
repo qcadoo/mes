@@ -105,3 +105,35 @@ ALTER TABLE orders_order
         ADD COLUMN trackingrecordtreatment character varying(255) DEFAULT '01duringProduction'::character varying;
 
 -- end
+
+
+----- WORKPLANS ----
+
+-- Table: basic_division
+
+CREATE TABLE basic_division
+(
+  id bigint NOT NULL,
+  "number" character varying(40),
+  "name" character varying(255),
+  supervisor_id bigint,
+  CONSTRAINT basic_division_pkey PRIMARY KEY (id),
+  CONSTRAINT fkf0b0619e64280dc0 FOREIGN KEY (supervisor_id)
+      REFERENCES basic_staff (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+ALTER TABLE basic_machines RENAME TO basic_workstationType;
+
+ALTER TABLE basic_workstationType ADD COLUMN division_id bigint;
+
+ALTER TABLE basic_workstationType ADD CONSTRAINT basic_workstationType_fkey_divisions  FOREIGN KEY (divisions_id)
+	REFERENCES basic_division (id) MATCH SIMPLE 
+	ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE technologies_operation DROP COLUMN staff_id;
+
+ALTER TABLE workplans_workplan ADD COLUMN type character varying(255) DEFAULT '01allOperations'::character varying;

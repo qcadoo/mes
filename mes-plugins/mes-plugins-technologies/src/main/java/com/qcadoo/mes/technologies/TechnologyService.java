@@ -101,6 +101,8 @@ public class TechnologyService {
 
     private static final String CONST_STATE = "state";
 
+    private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -541,5 +543,17 @@ public class TechnologyService {
 
     public void switchStateToDraftOnCopy(final DataDefinition technologyDataDefinition, final Entity technology) {
         technology.setField(CONST_STATE, TechnologyState.DRAFT.getStringValue());
+    }
+
+    public void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {
+        for (Entity operationComponent : entityTree) {
+            if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
+                operationComponents.add(operationComponent);
+            } else {
+                addOperationsFromSubtechnologiesToList(
+                        operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents"),
+                        operationComponents);
+            }
+        }
     }
 }

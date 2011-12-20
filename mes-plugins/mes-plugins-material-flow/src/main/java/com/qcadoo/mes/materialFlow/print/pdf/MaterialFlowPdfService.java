@@ -107,10 +107,4 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("materialFlow.materialFlow.report.title", locale);
     }
-
-    @Override
-    protected String getSuffix() {
-        return "";
-    }
-
 }

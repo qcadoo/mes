@@ -35,7 +35,7 @@
 		</ribbon>
 		<component type="form" name="operation" reference="form">
 			<component type="gridLayout" name="gridsLayout" columns="3"
-				rows="8">
+				rows="7">
 				<layoutElement column="1" row="1">
 					<component type="input" name="number" field="number">
 						<option type="alignment" value="right" />
@@ -48,22 +48,7 @@
 					<component type="textarea" name="comment" field="comment" />
 				</layoutElement>
 				<layoutElement column="1" row="6">
-					<component type="lookup" name="staff" field="staff">
-						<option type="column" name="name" fields="name" link="true"
-							width="200" />
-						<option type="column" name="surname" fields="surname"
-							link="true" width="200" />
-						<option type="column" name="post" fields="post" link="false"
-							width="200" />
-						<option type="searchable" value="name,number,surname,post" />
-						<option type="orderable" value="name,number,surname,post" />
-						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="7">
-					<component type="lookup" name="machine" field="machine">
+					<component type="lookup" name="workstationType" field="workstationType">
 						<option type="column" name="name" fields="name" link="true"
 							width="200" />
 						<option type="searchable" value="name,number" />
@@ -73,7 +58,7 @@
 						<option type="fieldCode" value="number" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="8">
+				<layoutElement column="1" row="7">
 					<component type="file" name="attachment" field="attachment" />
 				</layoutElement>
 			</component>

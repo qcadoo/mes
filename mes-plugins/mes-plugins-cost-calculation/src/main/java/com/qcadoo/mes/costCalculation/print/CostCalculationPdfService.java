@@ -126,11 +126,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
     }
 
     @Override
-    protected String getSuffix() {
-        return "";
-    }
-
-    @Override
     protected String getReportTitle(Locale locale) {
         return getTranslationService().translate("costCalculation.costCalculationDetails.report.fileName", locale);
     }

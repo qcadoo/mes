@@ -31,11 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.genealogies.GenealogyService;
 import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.mes.genealogies.print.ReportService;
 import com.qcadoo.mes.genealogiesForComponents.constants.GenealogiesForComponentsConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -57,7 +57,7 @@ public class GenealogiesForComponentsService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private GenealogyService genealogyService;
+    private TechnologyService technologyService;
 
     @Autowired
     private TranslationService translationService;
@@ -89,7 +89,7 @@ public class GenealogiesForComponentsService {
                 List<Entity> targetProductInComponents = new ArrayList<Entity>();
 
                 List<Entity> operationComponents = new ArrayList<Entity>();
-                genealogyService.addOperationsFromSubtechnologiesToList(technology.getTreeField("operationComponents"),
+                technologyService.addOperationsFromSubtechnologiesToList(technology.getTreeField("operationComponents"),
                         operationComponents);
 
                 for (Entity operationComponent : operationComponents) {

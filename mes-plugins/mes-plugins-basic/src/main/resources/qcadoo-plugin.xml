@@ -64,7 +64,8 @@
 		<model:model model="product" resource="model/product.xml" />
 		<model:model model="substitute" resource="model/substitute.xml" />
 		<model:model model="substituteComponent" resource="model/substituteComponent.xml" />
-		<model:model model="machine" resource="model/machine.xml" />
+		<model:model model="workstationType" resource="model/workstationType.xml" />
+		<model:model model="division" resource="model/division.xml" />
 		
 		<model:model model="parameter" resource="model/parameter.xml" />
 		
@@ -83,7 +84,8 @@
 		<menu:menu-item name="staff" category="basic" view="staffsList" />
 		<menu:menu-item name="shifts" category="basic" view="shiftsList"/>
 		<menu:menu-item name="products" category="basic" view="productsList" />
-		<menu:menu-item name="machines" category="basic" view="machinesList" />
+		<menu:menu-item name="workstationTypes" category="basic" view="workstationTypesList" />
+		<menu:menu-item name="divisions" category="basic" view="divisionsList" />
 		
 		<menu:menu-item-url name="dictionariesInBasic" 
 			category="basic" url="/page/qcadooDictionaries/dictionariesList.html"/>
@@ -107,8 +109,12 @@
 		<view:view resource="view/productDetails.xml" />
 		<view:view resource="view/productSubstituteDetails.xml" />
 		<view:view resource="view/productSubstituteComponentDetails.xml" />
-		<view:view resource="view/machinesList.xml" />
-		<view:view resource="view/machineDetails.xml" />
+		
+		<view:view resource="view/workstationTypesList.xml" />
+		<view:view resource="view/workstationTypeDetails.xml" />
+
+		<view:view resource="view/divisionsList.xml" />
+		<view:view resource="view/divisionDetails.xml" />
 		
 		<view:view resource="view/parameters.xml" />
 		

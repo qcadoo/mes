@@ -42,6 +42,7 @@ import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
 import com.qcadoo.mes.orders.states.OrderStateListener;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -130,7 +131,7 @@ public class AutoGenealogyService extends OrderStateListener {
     private SecurityService securityService;
 
     @Autowired
-    private GenealogyService genealogyService;
+    private TechnologyService technologyService;
 
     @Autowired
     private PluginAccessor pluginAccessor;
@@ -374,7 +375,7 @@ public class AutoGenealogyService extends OrderStateListener {
         genealogy.setField(PRODUCT_IN_COMPONENTS_FIELD, new ArrayList<Entity>());
         List<String> componentsWithoutBatch = new ArrayList<String>();
         List<Entity> operationComponents = new ArrayList<Entity>();
-        genealogyService.addOperationsFromSubtechnologiesToList(technology.getTreeField(OPERATION_COMPONENTS_FIELD),
+        technologyService.addOperationsFromSubtechnologiesToList(technology.getTreeField(OPERATION_COMPONENTS_FIELD),
                 operationComponents);
         for (Entity operationComponent : operationComponents) {
             for (Entity operationProductComponent : operationComponent.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS_FIELD)) {

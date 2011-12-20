@@ -24,9 +24,9 @@
 package com.qcadoo.mes.samples;
 
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_CONTRACTOR;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_MACHINE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_PRODUCT;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAFF;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_NAME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_NUMBER;
@@ -107,7 +107,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         addParameters(singletonMap("code", "PLN"));
         for (int i = 0; i < iterations; i++) {
             generateAndAddProduct();
-            generateAndAddMachine();
+            generateAndAddWorkstationType();
             generateAndAddContractor();
             generateAndAddStaff();
         }
@@ -239,7 +239,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         operation.setField("number", number);
         operation.setField("name", getNameFromNumberAndPrefix("Operation-", number));
         operation.setField(BASIC_MODEL_STAFF, getRandomStaff());
-        operation.setField(BASIC_MODEL_MACHINE, getRandomMachine());
+        operation.setField(BASIC_MODEL_WORKSTATION_TYPE, getRandomMachine());
 
         operation.setField("tpz", RANDOM.nextInt(1000));
         operation.setField("tj", RANDOM.nextInt(1000));
@@ -265,7 +265,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     }
 
     private Entity getRandomMachine() {
-        return getRandomEntity("basic", BASIC_MODEL_MACHINE);
+        return getRandomEntity("basic", BASIC_MODEL_WORKSTATION_TYPE);
     }
 
     private Object getRandomStaff() {
@@ -494,16 +494,16 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         return nameBuilder.toString();
     }
 
-    private void generateAndAddMachine() {
-        Entity machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_MACHINE).create();
+    private void generateAndAddWorkstationType() {
+        Entity machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).create();
 
         String number = generateString(CHARS_AND_DIGITS, RANDOM.nextInt(40) + 5);
 
-        machine.setField(FIELD_NAME, getNameFromNumberAndPrefix("Machine-", number));
+        machine.setField(FIELD_NAME, getNameFromNumberAndPrefix("Workstation type-", number));
         machine.setField(FIELD_NUMBER, number);
         machine.setField("description", generateString(CHARS_ONLY, RANDOM.nextInt(100)));
 
-        machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_MACHINE).save(machine);
+        machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).save(machine);
         validateEntity(machine);
     }
 

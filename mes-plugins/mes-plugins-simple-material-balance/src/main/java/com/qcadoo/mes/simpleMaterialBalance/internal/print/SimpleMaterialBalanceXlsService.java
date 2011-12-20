@@ -113,11 +113,6 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected String getSuffix() {
-        return "";
-    }
-
-    @Override
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("simpleMaterialBalance.simpleMaterialBalance.report.title", locale);
     }

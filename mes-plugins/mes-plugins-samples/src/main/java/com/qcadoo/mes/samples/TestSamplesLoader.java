@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.samples;
 
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_MACHINE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_PRODUCT;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAFF;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_SUBSTITUTE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BOM_ID;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_DATE;
@@ -127,7 +127,7 @@ public class TestSamplesLoader extends SamplesLoader {
         readDataFromXML(dataset, "dictionaries", locale);
         readDataFromXML(dataset, "activeCurrency", locale);
         readDataFromXML(dataset, "company", locale);
-        readDataFromXML(dataset, "machines", locale);
+        readDataFromXML(dataset, "workstationTypes", locale);
         readDataFromXML(dataset, BASIC_MODEL_STAFF, locale);
         readDataFromXML(dataset, PRODUCTS_PLUGIN_IDENTIFIER, locale);
         readDataFromXML(dataset, "shifts", locale);
@@ -174,15 +174,16 @@ public class TestSamplesLoader extends SamplesLoader {
             addOperations(values);
         } else if (BASIC_MODEL_STAFF.equals(type)) {
             addStaff(values);
-        } else if ("machines".equals(type)) {
-            addMachine(values);
+        } else if ("workstationTypes".equals(type)) {
+            addWorkstationType(values);
         } else if ("shifts".equals(type)) {
             addShifts(values);
         }
     }
 
-    private void addMachine(final Map<String, String> values) {
-        Entity machine = dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_MACHINE).create();
+    private void addWorkstationType(final Map<String, String> values) {
+        Entity machine = dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE)
+                .create();
 
         LOG.debug("id: " + values.get("id") + " name " + values.get(FIELD_NAME) + " prod_line " + values.get("prod_line")
                 + " description " + values.get("description"));
@@ -195,7 +196,7 @@ public class TestSamplesLoader extends SamplesLoader {
                     + machine.getField(FIELD_NUMBER) + "}");
         }
 
-        machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_MACHINE).save(machine);
+        machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).save(machine);
 
         validateEntity(machine);
     }
@@ -233,7 +234,7 @@ public class TestSamplesLoader extends SamplesLoader {
         operation.setField("countMachineOperation", values.get("countmachine"));
         operation.setField("countRealizedOperation", "01all");
         operation.setField("timeNextOperation", values.get("timenextoperation"));
-        operation.setField(BASIC_MODEL_MACHINE, getMachine(values.get(FIELD_NUMBER)));
+        operation.setField(BASIC_MODEL_WORKSTATION_TYPE, getMachine(values.get(FIELD_NUMBER)));
         operation.setField(BASIC_MODEL_STAFF, getRandomStaff());
 
         if (isEnabled("costNormsForOperation")) {
@@ -726,7 +727,7 @@ public class TestSamplesLoader extends SamplesLoader {
     }
 
     private Entity getMachine(final String id) {
-        List<Entity> machines = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_MACHINE).find()
+        List<Entity> machines = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).find()
                 .add(SearchRestrictions.eq(FIELD_NUMBER, id)).list().getEntities();
         if (machines.isEmpty()) {
             return null;
