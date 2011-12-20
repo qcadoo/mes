@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.0
+ * Version: 1.1.1
  *
  * This file is part of Qcadoo.
  *
@@ -700,23 +700,10 @@ public class TestSamplesLoader extends SamplesLoader {
                     + workPlan.getField(FIELD_GENERATED) + "}");
         }
 
-        workPlan = dataDefinitionService.get(WORK_PLANS_PLUGIN_IDENTIFIER, WORK_PLANS_MODEL_WORK_PLAN).save(workPlan);
+        workPlan.setField("orders", Lists.newArrayList(getRandomOrder()));
+
+        workPlan = workPlan.getDataDefinition().save(workPlan);
         validateEntity(workPlan);
-
-        for (int i = 0; i < 1; i++) {
-            Entity component = dataDefinitionService.get(WORK_PLANS_PLUGIN_IDENTIFIER, "workPlanComponent").create();
-            component.setField(WORK_PLANS_MODEL_WORK_PLAN, workPlan);
-            component.setField(ORDERS_MODEL_ORDER, getRandomOrder());
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test work plan component {workPlan="
-                        + ((Entity) component.getField(WORK_PLANS_MODEL_WORK_PLAN)).getField(FIELD_NAME) + ", order="
-                        + ((Entity) component.getField(ORDERS_MODEL_ORDER)).getField(FIELD_NUMBER) + "}");
-            }
-
-            component = dataDefinitionService.get(WORK_PLANS_PLUGIN_IDENTIFIER, "workPlanComponent").save(component);
-            validateEntity(component);
-        }
     }
 
     private Entity getRandomStaff() {

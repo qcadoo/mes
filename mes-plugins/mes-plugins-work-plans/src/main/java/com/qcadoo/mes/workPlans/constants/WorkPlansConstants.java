@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.0
+ * Version: 1.1.1
  *
  * This file is part of Qcadoo.
  *
@@ -30,11 +30,7 @@ public interface WorkPlansConstants {
     // MODEL
     String MODEL_WORK_PLAN = "workPlan";
 
-    String MODEL_WORK_PLAN_COMPONENT = "workPlanComponent";
-
     // VIEW
-    String VIEW_WORK_PLAN_COMPONENT_DETAILS = "workPlanComponentDetails";
-
     String VIEW_WORK_PLAN_DETAILS = "workPlanDetails";
 
     String VIEW_WORK_PLANS_LIST = "workPlansList";

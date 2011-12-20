@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.1.0
+    Version: 1.1.1
 
     This file is part of Qcadoo.
 
@@ -36,23 +36,9 @@
 				<bigButton name="generate" icon="generateIcon24.png"
 					action="#{form}.fireEvent(generateWorkPlan);" state="disabled" />
 			</group>
-			<group name="exportWorker">
-				<smallButton name="pdfWorker" icon="pdfIcon16.png"
-					action="#{form}.fireEvent(printWorkPlan,pdf,_for_worker);" state="disabled" />
-				<smallButton name="xlsWorker" icon="xlsIcon16.png"
-					action="#{form}.fireEvent(printWorkPlan,xls,_for_worker);" state="disabled" />
-			</group>
-			<group name="exportMachine">
-				<smallButton name="pdfMachine" icon="pdfIcon16.png"
-					action="#{form}.fireEvent(printWorkPlan,pdf,_for_machine);" state="disabled" />
-				<smallButton name="xlsMachine" icon="xlsIcon16.png"
-					action="#{form}.fireEvent(printWorkPlan,xls,_for_machine);" state="disabled" />
-			</group>
-			<group name="exportProduct">
-				<smallButton name="pdfProduct" icon="pdfIcon16.png"
-					action="#{form}.fireEvent(printWorkPlan,pdf,_for_product);" state="disabled" />
-				<smallButton name="xlsProduct" icon="xlsIcon16.png"
-					action="#{form}.fireEvent(printWorkPlan,xls,_for_product);" state="disabled" />
+			<group name="exportWorkPlan">
+				<bigButton name="printWorkPlan" icon="pdfIcon24.png"
+					action="#{form}.fireEvent(printWorkPlan);" state="disabled" />
 			</group>
 		</ribbon>
 		<component type="form" name="workPlan" reference="form">
@@ -60,12 +46,7 @@
 				<![CDATA[
 					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
 					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
-					var pdfWorker = #{window}.getRibbonItem("exportWorker.pdfWorker");
-					var xlsWorker = #{window}.getRibbonItem("exportWorker.xlsWorker");
-					var pdfMachine = #{window}.getRibbonItem("exportMachine.pdfMachine");
-					var xlsMachine = #{window}.getRibbonItem("exportMachine.xlsMachine");
-					var pdfProduct = #{window}.getRibbonItem("exportProduct.pdfProduct");
-					var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
+					var printWorkPlan = #{window}.getRibbonItem("exportWorkPlan.printWorkPlan");
 					var generate = #{window}.getRibbonItem("generate.generate");
 					var saveBack = #{window}.getRibbonItem("actions.saveBack");
 					var saveNew = #{window}.getRibbonItem("actions.saveNew");
@@ -115,35 +96,17 @@
 							copyRibbonItem.enable();
 							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
 								enableGeneration(false);
-								
-								pdfWorker.enable();
-								xlsWorker.enable();
-								pdfMachine.enable();
-								xlsMachine.enable();
-								pdfProduct.enable();
-								xlsProduct.enable();
+								printWorkPlan.enable();
 								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 							} else {
 								enableGeneration(true);
-								
-								pdfWorker.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-								xlsWorker.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-								pdfMachine.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-								xlsMachine.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-								pdfProduct.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-								xlsProduct.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								saveRibbonItem.enable();
 							}
 						} else {
 							enableGeneration(true);
-							
 							copyRibbonItem.disable("#{translate(recordNotCreated)}");
-							pdfWorker.disable("#{translate(recordNotCreated)}");
-							xlsWorker.disable("#{translate(recordNotCreated)}");
-							pdfMachine.disable("#{translate(recordNotCreated)}");
-							xlsMachine.disable("#{translate(recordNotCreated)}");
-							pdfProduct.disable("#{translate(recordNotCreated)}");
-							xlsProduct.disable("#{translate(recordNotCreated)}");
+							printWorkPlan.disable("#{translate(recordNotCreated)}");
 							saveRibbonItem.enable();
 						}
 					}
@@ -174,35 +137,42 @@
 						field="name" />
 				</layoutElement>
 				<layoutElement column="2" row="1" height="5" width="2">
+					<component type="lookup" name="order" reference="orderLookup" field="orders" defaultVisible="false" persistent="false" hasLabel="false">
+						<option type="column" name="name" fields="name" link="true"
+							width="200" />
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+						<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+						<option type="fieldCode" value="number" />
+						<option type="multiselect" value="true" />
+					</component>
 					<component type="grid" name="workPlanComponents"
 						reference="workPlanComponents" source="#{form}.orders">
-						<option type="column" name="number" fields="order"
-							expression="#order['number']" width="50" />
-						<option type="column" name="name" fields="order"
-							expression="#order['name']" />
+						<option type="column" name="number" fields="number" width="50" />
+						<option type="column" name="name" fields="name" />
+
 						<option type="order" column="number" direction="desc" />
-						<option type="correspondingView" value="workPlans/workPlanComponentDetails" />
-						<option type="correspondingComponent" value="form" />
-						<option type="correspondingViewInModal" value="true" />
 						<option type="paginable" value="false" />
 						<option type="multiselect" value="true" />
-						<option type="height" value="200" />
-						<option type="width" value="350" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
+						
+						<option type="weakRelation" value="true" />
+						<option type="correspondingLookup" value="orderLookup" />
 					</component>
 				</layoutElement>
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
-			<listener event="printWorkPlan" class="com.qcadoo.mes.workPlans.WorkPlanService"
+			<listener event="printWorkPlan" class="com.qcadoo.mes.workPlans.WorkPlanViewHooks"
 				method="printWorkPlan" />
-			<listener event="generateWorkPlan" class="com.qcadoo.mes.workPlans.WorkPlanService"
+			<listener event="generateWorkPlan" class="com.qcadoo.mes.workPlans.WorkPlanViewHooks"
 				method="generateWorkPlan" />
 		</component>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.workPlans.WorkPlanService"
-			method="disableFormForExistingWorkPlan" />
+		<beforeRender class="com.qcadoo.mes.workPlans.WorkPlanViewHooks"
+			method="disableFormForGeneratedWorkPlan" />
 	</hooks>
 </view>

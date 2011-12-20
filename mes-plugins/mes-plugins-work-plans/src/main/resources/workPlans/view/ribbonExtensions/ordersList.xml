@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.1.0
+    Version: 1.1.1
 
     This file is part of Qcadoo.
 
@@ -29,55 +29,24 @@
 	plugin="orders"
 	view="ordersList">
 	
-	<group name="exportPlan">
-		<smallButtons name="pdfWorker" icon="pdfIcon16.png"
-			action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,_for_worker);"
-			state="disabled">
-			<smallButton name="pdfMachine" icon="pdfIcon16.png"
-				action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,_for_machine);"
-				state="disabled" />
-			<smallButton name="pdfProduct" icon="pdfIcon16.png"
-				action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,_for_product);"
-				state="disabled" />
+	<group name="workPlan">
+		<bigButton name="addToWorkPlan" icon="pdfIcon24.png"
+			action="#{grid}.fireEvent(addSelectedOrdersToWorkPlan);">
 			<script>
 				<![CDATA[
-					var pdfWorker = #{window}.getRibbonItem("exportPlan.pdfWorker");
-					var xlsWorker = #{window}.getRibbonItem("exportPlan.xlsWorker");
-					var pdfMachine = #{window}.getRibbonItem("exportPlan.pdfWorker.pdfMachine");
-					var xlsMachine = #{window}.getRibbonItem("exportPlan.xlsWorker.xlsMachine");
-					var pdfProduct = #{window}.getRibbonItem("exportPlan.pdfWorker.pdfProduct");
-					var xlsProduct = #{window}.getRibbonItem("exportPlan.xlsWorker.xlsProduct");
+					var addToWorkPlan = #{window}.getRibbonItem("workPlan.addToWorkPlan");
 					#{grid}.addOnChangeListener({
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								pdfWorker.disable();
-								xlsWorker.disable();
-								pdfMachine.disable();
-								xlsMachine.disable();
-								pdfProduct.disable();
-								xlsProduct.disable();
+								addToWorkPlan.disable();
 							} else {
-								pdfWorker.enable();
-								xlsWorker.enable();
-								pdfMachine.enable();
-								xlsMachine.enable();
-								pdfProduct.enable();
-								xlsProduct.enable();
+								addToWorkPlan.enable();
 							}
 						}
 					});
-				]]>
+				]]>	
 			</script>
-		</smallButtons>
-		<smallButtons name="xlsWorker" icon="xlsIcon16.png"
-			action="#{grid}.fireEvent(printWorkPlanForOrder,xls,_for_worker);"
-			state="disabled">
-			<smallButton name="xlsMachine" icon="xlsIcon16.png"
-				action="#{grid}.fireEvent(printWorkPlanForOrder,xls,_for_machine);"
-				state="disabled" />
-			<smallButton name="xlsProduct" icon="xlsIcon16.png"
-				action="#{grid}.fireEvent(printWorkPlanForOrder,xls,_for_product);"
-				state="disabled" />
-		</smallButtons>
+		</bigButton>
 	</group>
+	
 </ribbonExtension>

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.0
+ * Version: 1.1.1
  *
  * This file is part of Qcadoo.
  *
@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.orders;
 
+import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_BATCH_REQUIRED;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_PLANNED_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_STATE;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.TECHNOLOGIES_MODEL_TECHNOLOGY;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -37,6 +46,7 @@ import org.springframework.util.StringUtils;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
@@ -71,7 +81,7 @@ public final class OrderService {
     private static final String EMPTY_NUMBER = "";
 
     public boolean clearOrderDatesOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("state", "01pending");
+        entity.setField(FIELD_STATE, OrderStates.PENDING.getStringValue());
         entity.setField("effectiveDateTo", null);
         entity.setField("effectiveDateFrom", null);
         entity.setField("doneQuantity", null);
@@ -85,8 +95,8 @@ public final class OrderService {
             return;
         }
 
-        FieldComponent productField = (FieldComponent) view.getComponentByReference("product");
-        FieldComponent technologyField = (FieldComponent) view.getComponentByReference("product");
+        FieldComponent productField = (FieldComponent) view.getComponentByReference(BASIC_MODEL_PRODUCT);
+        FieldComponent technologyField = (FieldComponent) view.getComponentByReference(BASIC_MODEL_PRODUCT);
         FieldComponent name = (FieldComponent) view.getComponentByReference("name");
 
         if (technologyField.getFieldValue() == null || productField.getFieldValue() == null
@@ -112,14 +122,15 @@ public final class OrderService {
         }
         String technologyNumber = EMPTY_NUMBER;
         if (technologyEntity != null) {
-            technologyNumber = "tech. " + technologyEntity.getStringField("number");
+            technologyNumber = "tech. " + technologyEntity.getStringField(FIELD_NUMBER);
         }
 
         Calendar cal = Calendar.getInstance(locale);
         cal.setTime(new Date());
 
         return translationService.translate("orders.order.name.default", locale, productEntity.getStringField("name"),
-                productEntity.getStringField("number"), technologyNumber, cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH))
+                productEntity.getStringField(FIELD_NUMBER), technologyNumber,
+                cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH))
                 + "." + cal.get(Calendar.DAY_OF_MONTH);
     }
 
@@ -136,7 +147,7 @@ public final class OrderService {
             return;
         }
         FieldComponent product = (FieldComponent) state;
-        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
+        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGIES_MODEL_TECHNOLOGY);
         FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
 
         defaultTechnology.setFieldValue("");
@@ -152,8 +163,8 @@ public final class OrderService {
     }
 
     public void setAndDisableState(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference("form");
-        FieldComponent orderState = (FieldComponent) state.getComponentByReference("state");
+        FormComponent form = (FormComponent) state.getComponentByReference(FIELD_FORM);
+        FieldComponent orderState = (FieldComponent) state.getComponentByReference(FIELD_STATE);
 
         orderState.setEnabled(false);
 
@@ -166,11 +177,11 @@ public final class OrderService {
 
     public void generateOrderNumber(final ViewDefinitionState state) {
         numberGeneratorService.generateAndInsertNumber(state, OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER,
-                "form", "number");
+                FIELD_FORM, FIELD_NUMBER);
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState state) {
-        FieldComponent product = (FieldComponent) state.getComponentByReference("product");
+        FieldComponent product = (FieldComponent) state.getComponentByReference(BASIC_MODEL_PRODUCT);
         FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference("defaultTechnology");
 
         if (product.getFieldValue() != null) {
@@ -185,10 +196,10 @@ public final class OrderService {
     }
 
     public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState state) {
-        FieldComponent product = (FieldComponent) state.getComponentByReference("product");
-        FieldComponent technology = (FieldComponent) state.getComponentByReference("technology");
+        FieldComponent product = (FieldComponent) state.getComponentByReference(BASIC_MODEL_PRODUCT);
+        FieldComponent technology = (FieldComponent) state.getComponentByReference(TECHNOLOGIES_MODEL_TECHNOLOGY);
         FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference("defaultTechnology");
-        FieldComponent plannedQuantity = (FieldComponent) state.getComponentByReference("plannedQuantity");
+        FieldComponent plannedQuantity = (FieldComponent) state.getComponentByReference(FIELD_PLANNED_QUANTITY);
 
         defaultTechnology.setEnabled(false);
 
@@ -203,8 +214,8 @@ public final class OrderService {
     }
 
     public void disableFieldOrder(final ViewDefinitionState view) {
-        FormComponent order = (FormComponent) view.getComponentByReference("form");
-        FieldComponent technology = (FieldComponent) view.getComponentByReference("technology");
+        FormComponent order = (FormComponent) view.getComponentByReference(FIELD_FORM);
+        FieldComponent technology = (FieldComponent) view.getComponentByReference(TECHNOLOGIES_MODEL_TECHNOLOGY);
 
         boolean disabled = false;
 
@@ -214,7 +225,7 @@ public final class OrderService {
             if (entity == null) {
                 return;
             }
-            String state = entity.getStringField("state");
+            String state = entity.getStringField(FIELD_STATE);
             if (("04completed".equals(state) || "05declined".equals(state) || "07abandoned".equals(state)) && order.isValid()) {
                 disabled = true;
             }
@@ -229,13 +240,13 @@ public final class OrderService {
     }
 
     public boolean checkOrderPlannedQuantity(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField("product");
+        Entity product = entity.getBelongsToField(BASIC_MODEL_PRODUCT);
         if (product == null) {
             return true;
         }
-        Object o = entity.getField("plannedQuantity");
+        Object o = entity.getField(FIELD_PLANNED_QUANTITY);
         if (o == null) {
-            entity.addError(dataDefinition.getField("plannedQuantity"), "orders.validate.global.error.plannedQuantityError");
+            entity.addError(dataDefinition.getField(FIELD_PLANNED_QUANTITY), "orders.validate.global.error.plannedQuantityError");
             return false;
         } else {
             return true;
@@ -243,41 +254,42 @@ public final class OrderService {
     }
 
     public boolean checkOrderTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField("product");
+        Entity product = entity.getBelongsToField(BASIC_MODEL_PRODUCT);
         if (product == null) {
             return true;
         }
-        if (entity.getField("technology") == null && hasAnyTechnologies(product.getId())) {
-            entity.addError(dataDefinition.getField("technology"), "orders.validate.global.error.technologyError");
+        if (entity.getField(TECHNOLOGIES_MODEL_TECHNOLOGY) == null && hasAnyTechnologies(product.getId())) {
+            entity.addError(dataDefinition.getField(TECHNOLOGIES_MODEL_TECHNOLOGY),
+                    "orders.validate.global.error.technologyError");
             return false;
         }
         return true;
     }
 
     public void fillOrderDates(final DataDefinition dataDefinition, final Entity entity) {
-        if (("03inProgress".equals(entity.getField("state")) || "04completed".equals(entity.getField("state")))
+        if (("03inProgress".equals(entity.getField(FIELD_STATE)) || "04completed".equals(entity.getField(FIELD_STATE)))
                 && entity.getField("effectiveDateFrom") == null) {
             entity.setField("effectiveDateFrom", new Date());
         }
-        if ("04completed".equals(entity.getField("state")) && entity.getField("effectiveDateTo") == null) {
+        if ("04completed".equals(entity.getField(FIELD_STATE)) && entity.getField("effectiveDateTo") == null) {
             entity.setField("effectiveDateTo", new Date());
         }
     }
 
     public boolean checkComponentOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
         Entity order = null;
-        if ("order".equals(entity.getDataDefinition().getName())) {
+        if (MODEL_ORDER.equals(entity.getDataDefinition().getName())) {
             order = entity;
         } else {
-            order = entity.getBelongsToField("order");
+            order = entity.getBelongsToField(MODEL_ORDER);
         }
 
         if (order == null) {
             return true;
         }
 
-        if (order.getField("technology") == null) {
-            entity.addError(dataDefinition.getField("order"), "orders.validate.global.error.orderMustHaveTechnology");
+        if (order.getField(TECHNOLOGIES_MODEL_TECHNOLOGY) == null) {
+            entity.addError(dataDefinition.getField(MODEL_ORDER), "orders.validate.global.error.orderMustHaveTechnology");
             return false;
         } else {
             return true;
@@ -285,14 +297,14 @@ public final class OrderService {
     }
 
     public boolean checkIfOrderTechnologyHasOperations(final DataDefinition dataDefinition, final Entity entity) {
-        Entity order = entity.getBelongsToField("order");
+        Entity order = entity.getBelongsToField(MODEL_ORDER);
 
-        if (order == null || order.getField("technology") == null) {
+        if (order == null || order.getField(TECHNOLOGIES_MODEL_TECHNOLOGY) == null) {
             return true;
         }
 
-        if (order.getBelongsToField("technology").getTreeField("operationComponents").isEmpty()) {
-            entity.addError(dataDefinition.getField("order"), "orders.validate.global.error.orderTechnologyMustHaveOperation");
+        if (order.getBelongsToField(TECHNOLOGIES_MODEL_TECHNOLOGY).getTreeField("operationComponents").isEmpty()) {
+            entity.addError(dataDefinition.getField(MODEL_ORDER), "orders.validate.global.error.orderTechnologyMustHaveOperation");
             return false;
         } else {
             return true;
@@ -304,7 +316,7 @@ public final class OrderService {
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 
         SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isEq("master", true)
-                .belongsTo("product", selectedProductId);
+                .belongsTo(BASIC_MODEL_PRODUCT, selectedProductId);
 
         SearchResult searchResult = searchCriteria.list();
 
@@ -319,7 +331,8 @@ public final class OrderService {
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 
-        SearchCriteriaBuilder searchCriteria = technologyDD.find().setMaxResults(1).belongsTo("product", selectedProductId);
+        SearchCriteriaBuilder searchCriteria = technologyDD.find().setMaxResults(1)
+                .belongsTo(BASIC_MODEL_PRODUCT, selectedProductId);
 
         SearchResult searchResult = searchCriteria.list();
 
@@ -358,10 +371,10 @@ public final class OrderService {
     }
 
     public boolean checkRequiredBatch(final Entity order) {
-        Entity technology = (Entity) order.getField("technology");
+        Entity technology = (Entity) order.getField(TECHNOLOGIES_MODEL_TECHNOLOGY);
         if (technology != null) {
             if (order.getHasManyField("genealogies").size() == 0) {
-                if ((Boolean) technology.getField("batchRequired")) {
+                if ((Boolean) technology.getField(FIELD_BATCH_REQUIRED)) {
                     return false;
                 }
                 if ((Boolean) technology.getField("shiftFeatureRequired")) {
@@ -375,14 +388,14 @@ public final class OrderService {
                 }
                 for (Entity operationComponent : technology.getTreeField("operationComponents")) {
                     for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                        if ((Boolean) operationProductComponent.getField("batchRequired")) {
+                        if ((Boolean) operationProductComponent.getField(FIELD_BATCH_REQUIRED)) {
                             return false;
                         }
                     }
                 }
             }
             for (Entity genealogy : order.getHasManyField("genealogies")) {
-                if ((Boolean) technology.getField("batchRequired") && genealogy.getField("batch") == null) {
+                if ((Boolean) technology.getField(FIELD_BATCH_REQUIRED) && genealogy.getField("batch") == null) {
                     return false;
                 }
                 if ((Boolean) technology.getField("shiftFeatureRequired")) {
@@ -404,7 +417,7 @@ public final class OrderService {
                     }
                 }
                 for (Entity genealogyProductIn : genealogy.getHasManyField("productInComponents")) {
-                    if ((Boolean) (genealogyProductIn.getBelongsToField("productInComponent").getField("batchRequired"))) {
+                    if ((Boolean) (genealogyProductIn.getBelongsToField("productInComponent").getField(FIELD_BATCH_REQUIRED))) {
                         List<Entity> entityList = genealogyProductIn.getHasManyField("batch");
                         if (entityList.size() == 0) {
                             return false;
@@ -417,7 +430,7 @@ public final class OrderService {
     }
 
     public boolean checkIfTechnologyIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
-        Entity technology = entity.getBelongsToField("technology");
+        Entity technology = entity.getBelongsToField(TECHNOLOGIES_MODEL_TECHNOLOGY);
 
         if (technology == null || technology.getId() == null) {
             return true;
@@ -428,7 +441,7 @@ public final class OrderService {
 
         if (technologyEntity == null) {
             entity.addGlobalError("qcadooView.message.belongsToNotFound");
-            entity.setField("technology", null);
+            entity.setField(TECHNOLOGIES_MODEL_TECHNOLOGY, null);
             return false;
         } else {
             return true;
@@ -436,14 +449,13 @@ public final class OrderService {
     }
 
     public void disableOrderFormForExternalItems(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference("form");
+        FormComponent form = (FormComponent) state.getComponentByReference(FIELD_FORM);
 
         if (form.getEntityId() == null) {
             return;
         }
 
-        Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                form.getEntityId());
+        Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(form.getEntityId());
 
         if (entity == null) {
             return;
@@ -453,13 +465,13 @@ public final class OrderService {
         boolean externalSynchronized = (Boolean) entity.getField("externalSynchronized");
 
         if (StringUtils.hasText(externalNumber) || !externalSynchronized) {
-            state.getComponentByReference("number").setEnabled(false);
+            state.getComponentByReference(FIELD_NUMBER).setEnabled(false);
             state.getComponentByReference("name").setEnabled(false);
             state.getComponentByReference("contractor").setEnabled(false);
             state.getComponentByReference("dateFrom").setEnabled(false);
             state.getComponentByReference("dateTo").setEnabled(false);
-            state.getComponentByReference("product").setEnabled(false);
-            state.getComponentByReference("plannedQuantity").setEnabled(false);
+            state.getComponentByReference(BASIC_MODEL_PRODUCT).setEnabled(false);
+            state.getComponentByReference(FIELD_PLANNED_QUANTITY).setEnabled(false);
         }
     }
 

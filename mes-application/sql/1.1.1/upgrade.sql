@@ -73,31 +73,6 @@ UPDATE basic_company SET number = '1';
 -- end
 
 
--- Table: basic_parameter
--- changed 15.12.2011
-ALTER TABLE basic_parameter
-        ADD COLUMN trackingrecordforordertreatment character varying(255) DEFAULT '01duringProduction'::character varying,
-        ADD COLUMN batchnumberrequiredproducts boolean,
-        ADD COLUMN batchnumberuniqueness character varying(255) DEFAULT '01globally'::character varying;
-
--- end
-
--- Table: technologies_technology
--- changed 15.12.2011
-ALTER TABLE technologies_technology
-        ADD COLUMN technologybatchrequired boolean;
-
--- end
-
-        
--- Table: technologies_operationproductincomponent
--- changed 15.12.2011
-ALTER TABLE technologies_operationproductincomponent 
-		ADD COLUMN productbatchrequired boolean;
-
--- end
-
-
 -- Table: orders_order
 -- changed 15.12.2011
         

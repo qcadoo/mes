@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.0
+ * Version: 1.1.1
  *
  * This file is part of Qcadoo.
  *
@@ -24,6 +24,7 @@
 package com.qcadoo.mes.orders.states;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_STATE;
 import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
 
 import java.util.List;
@@ -65,8 +66,8 @@ public class ChangeStateHook {
         if (oldEntity == null) {
             return;
         }
-        if (oldEntity.getStringField("state").equals(newEntity.getStringField("state"))) {
-            String state = oldEntity.getStringField("state");
+        if (oldEntity.getStringField(FIELD_STATE).equals(newEntity.getStringField(FIELD_STATE))) {
+            String state = oldEntity.getStringField(FIELD_STATE);
             List<ChangeOrderStateMessage> errors = null;
             if (state.equals(OrderStates.ACCEPTED.getStringValue())) {
                 errors = orderStateValidationService.validationAccepted(newEntity);
@@ -79,11 +80,11 @@ public class ChangeStateHook {
             if (errors != null && errors.size() > 0) {
                 for (ChangeOrderStateMessage error : errors) {
                     if (error.getReferenceToField() != null) {
+                        newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale(), error.getVars()));
+                    } else {
                         newEntity
                                 .addError(dataDefinition.getField(error.getReferenceToField()), translationService.translate(
                                         error.getMessage() + "." + error.getReferenceToField(), getLocale()));
-                    } else {
-                        newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale(), error.getVars()));
                     }
                 }
             }
@@ -94,18 +95,19 @@ public class ChangeStateHook {
             if (errors.size() == 1 && errors.get(0).getType().equals(MessageType.INFO)) {
                 return;
             }
-            newEntity.setField("state", oldEntity.getStringField("state"));
+            newEntity.setField(FIELD_STATE, oldEntity.getStringField(FIELD_STATE));
             for (ChangeOrderStateMessage error : errors) {
-                if (error.getReferenceToField() != null) {
-                    newEntity.addError(dataDefinition.getField(error.getReferenceToField()),
-                            translationService.translate(error.getMessage() + "." + error.getReferenceToField(), getLocale(), error.getVars()));
-                } else {
+                if (error.getReferenceToField() == null) {
                     newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale(), error.getVars()));
+                } else {
+                    newEntity.addError(dataDefinition.getField(error.getReferenceToField()), translationService.translate(
+                            error.getMessage() + "." + error.getReferenceToField(), getLocale(), error.getVars()));
                 }
             }
             return;
         }
 
-        orderStateValidationService.saveLogging(newEntity, oldEntity.getStringField("state"), newEntity.getStringField("state"));
+        orderStateValidationService.saveLogging(newEntity, oldEntity.getStringField(FIELD_STATE),
+                newEntity.getStringField(FIELD_STATE));
     }
 }

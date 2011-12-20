@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.0
+ * Version: 1.1.1
  *
  * This file is part of Qcadoo.
  *
@@ -75,7 +75,7 @@ public class QualityControlServiceTest {
 
     private QualityControlForNumberService qualityControlForNumber;
 
-    private Integer DIGITS_NUMBER = 6;
+    private static final Integer DIGITS_NUMBER = 6;
 
     @Before
     public void init() {

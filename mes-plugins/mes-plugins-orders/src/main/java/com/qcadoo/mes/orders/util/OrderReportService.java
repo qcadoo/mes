@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.0
+ * Version: 1.1.1
  *
  * This file is part of Qcadoo.
  *
@@ -89,7 +89,9 @@ public class OrderReportService {
                 errors.add(validateMessage);
             }
         }
-        if (errors.size() != 0) {
+        if (errors.size() == 0) {
+            return createNewOrderPrint(ordersEntities, plugin, entityName, detailEntityName, entityFieldsMap, state.getLocale());
+        } else {
             StringBuilder errorMessage = new StringBuilder();
             for (String error : errors) {
                 errorMessage.append(" - ");
@@ -97,8 +99,6 @@ public class OrderReportService {
                 errorMessage.append("\n");
             }
             state.addMessage(errorMessage.toString(), MessageType.FAILURE, false);
-        } else {
-            return createNewOrderPrint(ordersEntities, plugin, entityName, detailEntityName, entityFieldsMap, state.getLocale());
         }
         return null;
     }
@@ -114,11 +114,8 @@ public class OrderReportService {
         entity.setField("generated", true);
         entity.setField("worker", securityService.getCurrentUserName());
         entity.setField("date", new Date());
-        // TODO KRNA refactor on manyToMany for workPlan change
-        if (!"workPlanComponent".equals(joinEntityName)) {
-            if (data.getField("orders") != null) {
-                entity.setField("orders", Lists.newArrayList(orders));
-            }
+        if (data.getField("orders") != null) {
+            entity.setField("orders", Lists.newArrayList(orders));
         }
 
         if (entityFieldsMap != null) {
@@ -133,20 +130,7 @@ public class OrderReportService {
             throw new IllegalStateException("Entity " + saved + " is not valid! - " + saved.getErrors() + " / "
                     + saved.getGlobalErrors());
         }
-        // TODO KRNA refactor on manyToMany for workPlan change
-        if ("workPlanComponent".equals(joinEntityName)) {
-            if (joinEntityName == null) {
-                return saved;
-            }
 
-            for (Entity order : orders) {
-                Entity joinEntity = dataDefinitionService.get(plugin, joinEntityName).create();
-                joinEntity.setField("order", order);
-                joinEntity.setField(entityName, saved);
-                dataDefinitionService.get(plugin, joinEntityName).save(joinEntity);
-            }
-            saved = data.get(saved.getId());
-        }
         return saved;
     }
 
