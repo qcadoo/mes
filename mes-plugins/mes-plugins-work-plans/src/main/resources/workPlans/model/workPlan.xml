@@ -35,11 +35,13 @@
 		<string name="worker" />
 		<boolean name="generated" />
 		<string name="fileName" />
-		<hasMany name="orders" model="workPlanComponent" joinField="workPlan"
-			cascade="delete" copyable="true" />
+		
+		<enum name="type" values="01allOperations,02byEndProduct,03byWorkstationType,04byDivision" default="01allOperations" />
+			
+		<manyToMany name="orders" joinField="workPlans" model="order" plugin="orders" copyable="true" />
 	</fields>
 	<hooks>
-		<onCopy class="com.qcadoo.mes.workPlans.WorkPlanService" method="clearGeneratedOnCopy" />
+		<onCopy class="com.qcadoo.mes.workPlans.WorkPlanModelHooks" method="clearGeneratedOnCopy" />
 	</hooks>
 	<identifier expression="#name" />
 </model>

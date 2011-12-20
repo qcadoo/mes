@@ -30,11 +30,7 @@ public interface WorkPlansConstants {
     // MODEL
     String MODEL_WORK_PLAN = "workPlan";
 
-    String MODEL_WORK_PLAN_COMPONENT = "workPlanComponent";
-
     // VIEW
-    String VIEW_WORK_PLAN_COMPONENT_DETAILS = "workPlanComponentDetails";
-
     String VIEW_WORK_PLAN_DETAILS = "workPlanDetails";
 
     String VIEW_WORK_PLANS_LIST = "workPlansList";

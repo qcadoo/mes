@@ -114,11 +114,8 @@ public class OrderReportService {
         entity.setField("generated", true);
         entity.setField("worker", securityService.getCurrentUserName());
         entity.setField("date", new Date());
-        // TODO KRNA refactor on manyToMany for workPlan change
-        if (!"workPlanComponent".equals(joinEntityName)) {
-            if (data.getField("orders") != null) {
-                entity.setField("orders", Lists.newArrayList(orders));
-            }
+        if (data.getField("orders") != null) {
+            entity.setField("orders", Lists.newArrayList(orders));
         }
 
         if (entityFieldsMap != null) {
@@ -133,20 +130,7 @@ public class OrderReportService {
             throw new IllegalStateException("Entity " + saved + " is not valid! - " + saved.getErrors() + " / "
                     + saved.getGlobalErrors());
         }
-        // TODO KRNA refactor on manyToMany for workPlan change
-        if ("workPlanComponent".equals(joinEntityName)) {
-            if (joinEntityName == null) {
-                return saved;
-            }
 
-            for (Entity order : orders) {
-                Entity joinEntity = dataDefinitionService.get(plugin, joinEntityName).create();
-                joinEntity.setField("order", order);
-                joinEntity.setField(entityName, saved);
-                dataDefinitionService.get(plugin, joinEntityName).save(joinEntity);
-            }
-            saved = data.get(saved.getId());
-        }
         return saved;
     }
 

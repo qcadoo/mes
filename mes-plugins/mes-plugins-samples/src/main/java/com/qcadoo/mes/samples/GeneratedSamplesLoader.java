@@ -161,16 +161,12 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     }
 
     private void addWorkPlanComponent(final Entity workPlan, final List<Entity> orders) {
-        Entity workPlanComponent = dataDefinitionService.get("workPlans", "workPlanComponent").create();
-
-        Entity order = orders.get(0);
-        orders.remove(order);
-        workPlanComponent.setField("workPlan", workPlan);
-        workPlanComponent.setField(ORDERS_MODEL_ORDER, order);
-
-        workPlanComponent = workPlanComponent.getDataDefinition().save(workPlanComponent);
-
-        validateEntity(workPlanComponent);
+        if (orders == null || orders.isEmpty()) {
+            return;
+        }
+        List<Entity> existingOrders = workPlan.getManyToManyField("orders");
+        existingOrders.addAll(orders);
+        workPlan.setField("orders", existingOrders);
     }
 
     private void generateAndAddOrderGroup() {
