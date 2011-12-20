@@ -100,7 +100,6 @@ public class AutoGenealogyServiceTest {
 
         setField(autoGenealogyService, "dataDefinitionService", dataDefinitionService);
         setField(autoGenealogyService, "translationService", translationService);
-        setField(autoGenealogyService, "genealogyService", genealogyService);
         setField(autoGenealogyService, "securityService", securityService);
         setField(autoGenealogyService, "pluginAccessor", pluginAccessor);
         given(pluginAccessor.getEnabledPlugin("genealogiesForComponents")).willReturn(mock(Plugin.class));

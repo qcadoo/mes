@@ -252,7 +252,7 @@
 								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-stoppage/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-used-products/src/main/resources;
-								${basedir}/../../mes-comercial-plugins/mes-commercial-plugins-integration-commons/src/main/resources;
+								
 							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>

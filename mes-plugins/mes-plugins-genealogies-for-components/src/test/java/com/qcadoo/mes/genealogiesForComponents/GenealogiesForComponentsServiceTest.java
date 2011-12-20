@@ -36,8 +36,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.qcadoo.mes.genealogies.GenealogyService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -51,14 +51,17 @@ public class GenealogiesForComponentsServiceTest {
 
     private GenealogiesForComponentsService genealogyService;
 
+    private TechnologyService technologyService;
+
     private DataDefinitionService dataDefinitionService;
 
     @Before
     public void init() {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         genealogyService = new GenealogiesForComponentsService();
+        technologyService = mock(TechnologyService.class);
         setField(genealogyService, "dataDefinitionService", dataDefinitionService);
-        setField(genealogyService, "genealogyService", new GenealogyService());
+        setField(genealogyService, "technologyService", technologyService);
     }
 
     @Test
