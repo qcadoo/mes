@@ -30,12 +30,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lowagie.text.DocumentException;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 
 @Service
@@ -46,8 +44,8 @@ public final class WorkPlanService {
 
     @Transactional
     void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException, DocumentException {
-        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
+        // Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
+        // .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         // workPlanForMachinePdfService.generateDocument(workPlanWithFileName, company, state.getLocale());
         // workPlanForWorkerPdfService.generateDocument(workPlanWithFileName, company, state.getLocale());
         // workPlanForProductPdfService.generateDocument(workPlanWithFileName, company, state.getLocale());
