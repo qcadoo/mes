@@ -22,7 +22,7 @@ ALTER TABLE basic_machine RENAME TO basic_workstationType;
 
 ALTER TABLE basic_workstationType ADD COLUMN division_id bigint;
 
-ALTER TABLE basic_workstationType ADD CONSTRAINT basic_workstationType_fkey_divisions  FOREIGN KEY (divisions_id)
+ALTER TABLE basic_workstationType ADD CONSTRAINT basic_workstationType_fkey_divisions  FOREIGN KEY (division_id)
 	REFERENCES basic_division (id) MATCH SIMPLE 
 	ON UPDATE NO ACTION ON DELETE NO ACTION;
 
