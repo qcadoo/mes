@@ -47,8 +47,8 @@ CREATE TABLE jointable_order_workplan
 WITH (OIDS=FALSE);
 
 BEGIN;
-	DELETE FROM workplans_workplan;
 	DELETE FROM workplans_workplancomponent;
+	DELETE FROM workplans_workplan;
 COMMIT;
 
 DROP TABLE workplans_workplancomponent;
