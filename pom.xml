@@ -316,8 +316,9 @@
 			</releases>
 		</repository>
 		<repository>
-			<id>SpringSource Enterprise Bundle Repository - External Bundle Milestones</id>
-			<url>http://maven.springframework.org/milestone</url>
+		    <id>springsource-repo</id>
+		    <name>SpringSource Repository</name>
+		    <url>http://repo.springsource.org/release</url>
 		</repository>
 	</repositories>
 
