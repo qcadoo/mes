@@ -54,3 +54,9 @@ COMMIT;
 DROP TABLE workplans_workplancomponent;
 
 ALTER TABLE workplans_workplan ADD COLUMN type character varying(255) DEFAULT '01allOperations'::character varying;
+
+alter table basic_parameter add column showDescriptionInWorkPlans boolean;
+alter table basic_parameter add column showDetailsInWorkPlans boolean;
+alter table basic_parameter add column imageUrlInWorkPlan character varying(255);
+alter table basic_parameter add column dontPrintInputProductsInWorkPlans boolean;
+alter table basic_parameter add column dontPrintOutputProductsInWorkPlans boolean;
