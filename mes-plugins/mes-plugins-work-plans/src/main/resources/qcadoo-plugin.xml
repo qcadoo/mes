@@ -76,6 +76,23 @@
 			view="ordersList" component="grid" event="addSelectedOrdersToWorkPlan"
 			class="com.qcadoo.mes.workPlans.WorkPlanViewHooks" method="addSelectedOrdersToWorkPlan" />
 
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="showDescriptionInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="showDetailsInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+			<model:string name="imageUrlInWorkPlan" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="dontPrintInputProductsInWorkPlans" />
+		</model:model-field>
+		<view:view-tab resource="view/tabExtensions/parameters.xml" />
+		
 	</modules>
 
 </plugin>
