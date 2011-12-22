@@ -102,100 +102,100 @@
 				
 				<component type="select" name="state" field="state" reference="state" hasLabel="false" defaultVisible="false">
 					<script>
-								<![CDATA[
-									this.addOnChangeListener({
-										onSetValue: function(newValue) {
-											if (!newValue || !newValue.content) {
-												return;
-											}
-											updateRibbon(newValue.content.value);
-											toggleEditable(newValue.content.value);
-										}
-									});
+						<![CDATA[
+							this.addOnChangeListener({
+								onSetValue: function(newValue) {
+									if (!newValue || !newValue.content) {
+										return;
+									}
+									updateRibbon(newValue.content.value);
+									toggleEditable(newValue.content.value);
+								}
+							});
+							
+							var onSetValueListener = {
+								onSetValue: function(value) {
+									if (#{form}.getValue().content && #{form}.getValue().content.entityId) {
+										toggleEditable(#{state}.getValue().content.value);
+									} else {
+										this.setEnabled(false, true);
+									}
+								}
+							};
+							
+							#{technologyTree}.addOnChangeListener(onSetValueListener);
+							#{outProducts}.addOnChangeListener(onSetValueListener);
+							#{inProducts}.addOnChangeListener(onSetValueListener);
+							
+							this.changeTechnologyState = function(eventPerformer, ribbonItemName) {
+								var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
+								var newState = ribbonItem.forState;
+								if (window.confirm(ribbonItem.confirmMessage)) {
+									#{form}.fireEvent(eventPerformer, 'changeTechnologyState', [newState]);
+								}
+							}
+							
+							function toggleEditable(state) {
+								var isDraft = state == "01draft";
+								var isAccepted = state == "02accepted";
+								var isDeclined = state == "03declined";
+								var isOutdated = state == "04outdated";
+								
+								#{window}.setEnabled(isDraft, true);
+								
+								var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", 
+									"actions.cancel", "statuses.activate", "statuses.deactivate"];
+								for (var elementKey in toggleRibbonItems) {
+									var ribbonItemName = toggleRibbonItems[elementKey];
+									var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
 									
-									var onSetValueListener = {
-										onSetValue: function(value) {
-											if (#{form}.getValue().content && #{form}.getValue().content.entityId) {
-												toggleEditable(#{state}.getValue().content.value);
-											} else {
-												this.setEnabled(false, true);
-											}
-										}
-									};
-									
-									#{technologyTree}.addOnChangeListener(onSetValueListener);
-									#{outProducts}.addOnChangeListener(onSetValueListener);
-									#{inProducts}.addOnChangeListener(onSetValueListener);
-									
-									this.changeTechnologyState = function(eventPerformer, ribbonItemName) {
-										var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
-										var newState = ribbonItem.forState;
-										if (window.confirm(ribbonItem.confirmMessage)) {
-											#{form}.fireEvent(eventPerformer, 'changeTechnologyState', [newState]);
-										}
+									if (!ribbonItem) {
+										continue;
 									}
 									
-									function toggleEditable(state) {
-										var isDraft = state == "01draft";
-										var isAccepted = state == "02accepted";
-										var isDeclined = state == "03declined";
-										var isOutdated = state == "04outdated";
-										
-										#{window}.setEnabled(isDraft, true);
-										
-										var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", 
-											"actions.cancel", "statuses.activate", "statuses.deactivate"];
-										for (var elementKey in toggleRibbonItems) {
-											var ribbonItemName = toggleRibbonItems[elementKey];
-											var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
-											
-											if (!ribbonItem) {
-												continue;
-											}
-											
-											if (isDraft) {
-												ribbonItem.enable();
-											} else {
-												ribbonItem.disable("#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}");
-											}
-										}
-										if (!isAccepted) {
-											#{window}.getRibbonItem("actions.delete").enable();
-										} else {
-											#{window}.getRibbonItem("actions.delete").disable();
-										}
+									if (isDraft) {
+										ribbonItem.enable();
+									} else {
+										ribbonItem.disable("#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}");
 									}
+								}
+								if (!isAccepted) {
+									#{window}.getRibbonItem("actions.delete").enable();
+								} else {
+									#{window}.getRibbonItem("actions.delete").disable();
+								}
+							}
+							
+							function updateRibbon(state) {
+								var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
+								var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
 									
-									function updateRibbon(state) {
-										var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
-										var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
-											
-										acceptState.disable();
-										acceptState.forState="02accepted";
-										acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
+								acceptState.disable();
+								acceptState.forState="02accepted";
+								acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
 
-										cancelState.disable();
-										cancelState.forState="03declined";
-										cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.declined)}";
-										cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.declineTechnology)}");
-										
-										if (state == "01draft") {
-											acceptState.enable();
-											cancelState.enable();
-										} else if (state == "02accepted") {
-											cancelState.enable();
-											cancelState.forState="04outdated";
-											cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
-											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
-										} else if (state == "03declined") {
-										} else if (state == "04outdated") {
-											cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
-										} else {
-											cancelState.enable();
-										}
-									}
-									this.updateRibbon = updateRibbon;
-								]]>
+								cancelState.disable();
+								cancelState.forState="03declined";
+								cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.declined)}";
+								cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.declineTechnology)}");
+								
+								if (state == "01draft") {
+									acceptState.enable();
+									cancelState.enable();
+								} else if (state == "02accepted") {
+									cancelState.enable();
+									cancelState.forState="04outdated";
+									cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
+									cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
+								} else if (state == "03declined") {
+								} else if (state == "04outdated") {
+									cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
+								} else {
+									cancelState.enable();
+								}
+							}
+							this.updateRibbon = updateRibbon;
+						]]>
 					</script>
 				</component>
 

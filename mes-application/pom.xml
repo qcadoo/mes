@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -334,71 +335,71 @@
 		<profile>
 			<id>commercial</id>
 			<dependencies>
-				<dependency>
-					<groupId>com.qcadoo.mes</groupId>
-					<artifactId>mes-commercial-plugins-integration-commons</artifactId>
-					<version>1.1.1-SNAPSHOT</version>
-				</dependency>
-				<dependency>
-					<groupId>com.qcadoo.mes</groupId>
-					<artifactId>mes-commercial-plugins-integration-enova</artifactId>
-					<version>1.1.1-SNAPSHOT</version>
-				</dependency>
-				<dependency>
-					<groupId>com.qcadoo.mes</groupId>
-					<artifactId>mes-commercial-plugins-integration-subiekt</artifactId>
-					<version>1.1.1-SNAPSHOT</version>
-				</dependency>
+				<!-- <dependency> -->
+				<!-- <groupId>com.qcadoo.mes</groupId> -->
+				<!-- <artifactId>mes-commercial-plugins-integration-commons</artifactId> -->
+				<!-- <version>1.1.1-SNAPSHOT</version> -->
+				<!-- </dependency> -->
+				<!-- <dependency> -->
+				<!-- <groupId>com.qcadoo.mes</groupId> -->
+				<!-- <artifactId>mes-commercial-plugins-integration-enova</artifactId> -->
+				<!-- <version>1.1.1-SNAPSHOT</version> -->
+				<!-- </dependency> -->
+				<!-- <dependency> -->
+				<!-- <groupId>com.qcadoo.mes</groupId> -->
+				<!-- <artifactId>mes-commercial-plugins-integration-subiekt</artifactId> -->
+				<!-- <version>1.1.1-SNAPSHOT</version> -->
+				<!-- </dependency> -->
 				<!-- <dependency> -->
 				<!-- <groupId>com.qcadoo.mes</groupId> -->
 				<!-- <artifactId>mes-commercial-plugins-integration-erp</artifactId> -->
 				<!-- <version>1.1.1-SNAPSHOT</version> -->
 				<!-- </dependency> -->
-				<!-- <dependency> -->
-				<!-- <groupId>com.qcadoo.mes</groupId> -->
-				<!-- <artifactId>mes-commercial-plugins-integration-universal-rest-connector-base</artifactId> -->
-				<!-- <version>1.1.1-SNAPSHOT</version> -->
-				<!-- </dependency> -->
-				<!-- <dependency> -->
-				<!-- <groupId>com.qcadoo.mes</groupId> -->
-				<!-- <artifactId>mes-commercial-plugins-integration-universal-rest-connector-basic</artifactId> -->
-				<!-- <version>1.1.1-SNAPSHOT</version> -->
-				<!-- </dependency> -->
-				<!-- <dependency> -->
-				<!-- <groupId>com.qcadoo.mes</groupId> -->
-				<!-- <artifactId>mes-commercial-plugins-integration-universal-rest-connector-orders</artifactId> -->
-				<!-- <version>1.1.1-SNAPSHOT</version> -->
-				<!-- </dependency> -->
-				<!-- <dependency> -->
-				<!-- <groupId>com.qcadoo.mes</groupId> -->
-				<!-- <artifactId>mes-commercial-plugins-integration-universal-rest-connector-material-requirements</artifactId> -->
-				<!-- <version>1.1.1-SNAPSHOT</version> -->
-				<!-- </dependency> -->
-				<!-- <dependency> -->
-				<!-- <groupId>com.qcadoo.mes</groupId> -->
-				<!-- <artifactId>mes-commercial-plugins-integration-universal-rest-connector-material-availability</artifactId> -->
-				<!-- <version>1.1.1-SNAPSHOT</version> -->
-				<!-- </dependency> -->
-				<!-- <dependency> -->
-				<!-- <groupId>com.qcadoo.mes</groupId> -->
-				<!-- <artifactId>mes-commercial-plugins-integration-universal-rest-connector-cost-norms-for-product</artifactId> -->
-				<!-- <version>1.1.1-SNAPSHOT</version> -->
-				<!-- </dependency> -->
-				<!-- <dependency> -->
-				<!-- <groupId>com.qcadoo.mes</groupId> -->
-				<!-- <artifactId>mes-commercial-plugins-integration-universal-rest-connector-basic-production-counting</artifactId> -->
-				<!-- <version>1.1.1-SNAPSHOT</version> -->
-				<!-- </dependency> -->
 				<dependency>
-				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-advanced-genealogy</artifactId>
-				<version>1.1.1-SNAPSHOT</version>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-base</artifactId>
+					<version>1.1.1-SNAPSHOT</version>
 				</dependency>
 				<dependency>
-				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-advanced-genealogy-for-orders</artifactId>
-				<version>1.1.1-SNAPSHOT</version>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-basic</artifactId>
+					<version>1.1.1-SNAPSHOT</version>
 				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-orders</artifactId>
+					<version>1.1.1-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-material-requirements</artifactId>
+					<version>1.1.1-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-material-availability</artifactId>
+					<version>1.1.1-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-cost-norms-for-product</artifactId>
+					<version>1.1.1-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-basic-production-counting</artifactId>
+					<version>1.1.1-SNAPSHOT</version>
+				</dependency>
+				<!-- <dependency> -->
+				<!-- <groupId>com.qcadoo.mes</groupId> -->
+				<!-- <artifactId>mes-commercial-plugins-advanced-genealogy</artifactId> -->
+				<!-- <version>1.1.1-SNAPSHOT</version> -->
+				<!-- </dependency> -->
+				<!-- <dependency> -->
+				<!-- <groupId>com.qcadoo.mes</groupId> -->
+				<!-- <artifactId>mes-commercial-plugins-advanced-genealogy-for-orders</artifactId> -->
+				<!-- <version>1.1.1-SNAPSHOT</version> -->
+				<!-- </dependency> -->
 			</dependencies>
 		</profile>
 		<profile>
@@ -441,7 +442,8 @@
 								<phase>deploy</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/Users/tomcat/deploy/${profile.name}.zip" />
+										<copy file="${basedir}/target/${project.artifactId}.zip"
+											tofile="/Users/tomcat/deploy/${profile.name}.zip" />
 									</target>
 								</configuration>
 								<goals>

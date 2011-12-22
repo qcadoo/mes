@@ -35,8 +35,15 @@
             </ribbon>
 
             <component type="form" name="form" reference="form">
-                <component type="input" name="duration" field="duration" />
-                <component type="textarea" name="reason" field="reason" />
+            	<component type="gridLayout" name="gridLayout" columns="3" rows="2" hasBorders="false">
+            		<layoutElement column="1" row="1">
+                		<component type="input" name="duration" field="duration" />
+                	</layoutElement>
+                	<layoutElement column="1" row="2">	
+                		<component type="textarea" name="reason" field="reason" />
+                	</layoutElement>
+                </component>
+                
                 <option type="expression" value="#reason + ' (' + #duration +' min)'" />
                 <option type="header" value="true" />
             </component>
