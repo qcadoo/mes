@@ -71,13 +71,3 @@ ALTER TABLE basic_company
 UPDATE basic_company SET number = '1';
 
 -- end
-
-
--- Table: orders_order
--- changed 15.12.2011
-        
-ALTER TABLE orders_order
-        ADD COLUMN trackingrecordtreatment character varying(255) DEFAULT '01duringProduction'::character varying;
-
--- end
-
