@@ -241,7 +241,7 @@ public class SimpleMaterialBalanceService {
                 viewDefinitionState.redirectTo(
                         "/generateSavedReport/" + SimpleMaterialBalanceConstants.PLUGIN_IDENTIFIER + "/"
                                 + SimpleMaterialBalanceConstants.MODEL_SIMPLE_MATERIAL_BALANCE + "." + args[0] + "?id="
-                                + state.getFieldValue() + "&fieldDate=date&suffix=", true, false);
+                                + state.getFieldValue() + "&fieldDate=date", true, false);
             }
         } else {
             if (state instanceof FormComponent) {

@@ -198,7 +198,7 @@ public class ProductionCountingService {
             } else {
                 viewDefinitionState.redirectTo("/generateSavedReport/" + ProductionCountingConstants.PLUGIN_IDENTIFIER + "/"
                         + ProductionCountingConstants.MODEL_PRODUCTION_COUNTING + "." + args[0] + "?id=" + state.getFieldValue()
-                        + "&fieldDate=date&suffix=", true, false);
+                        + "&fieldDate=date", true, false);
             }
         } else {
             if (state instanceof FormComponent) {

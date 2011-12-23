@@ -68,7 +68,7 @@ public class CostCalculationReportService {
             } else if (StringUtils.hasText(costCalculation.getStringField("fileName"))) {
                 viewDefinitionState.redirectTo("/generateSavedReport/" + CostCalculateConstants.PLUGIN_IDENTIFIER + "/"
                         + CostCalculateConstants.MODEL_COST_CALCULATION + "." + args[0] + "?id=" + state.getFieldValue()
-                        + "&fieldDate=dateOfCalculation&suffix=", true, false);
+                        + "&fieldDate=dateOfCalculation", true, false);
             } else {
                 state.addMessage(translationService.translate(
                         "costCalculation.costCalculationDetails.window.costCalculation.documentsWasNotGenerated",

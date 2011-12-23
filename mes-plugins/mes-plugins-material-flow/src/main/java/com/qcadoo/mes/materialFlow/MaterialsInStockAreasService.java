@@ -291,8 +291,8 @@ public class MaterialsInStockAreasService {
                         state.getLocale()), MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo("/generateSavedReport/" + MaterialFlowConstants.PLUGIN_IDENTIFIER + "/"
-                        + MODEL_MATERIALS_IN_STOCK_AREAS + "." + args[0] + "?id=" + state.getFieldValue()
-                        + "&fieldDate=time&suffix=", true, false);
+                        + MODEL_MATERIALS_IN_STOCK_AREAS + "." + args[0] + "?id=" + state.getFieldValue() + "&fieldDate=time",
+                        true, false);
             }
         } else {
             if (state instanceof FormComponent) {

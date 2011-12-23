@@ -187,7 +187,7 @@ public class MaterialRequirementService {
                 viewDefinitionState.redirectTo(
                         "/generateSavedReport/" + MaterialRequirementsConstants.PLUGIN_IDENTIFIER + "/"
                                 + MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT + "." + args[0] + "?id="
-                                + state.getFieldValue() + "&fieldDate=date&suffix=", true, false);
+                                + state.getFieldValue() + "&fieldDate=date", true, false);
             }
         } else {
             if (state instanceof FormComponent) {
@@ -211,7 +211,7 @@ public class MaterialRequirementService {
             viewDefinitionState.redirectTo(
                     "/generateSavedReport/" + MaterialRequirementsConstants.PLUGIN_IDENTIFIER + "/"
                             + MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT + "." + args[0] + "?id="
-                            + materialRequirement.getId() + "&fieldDate=date&suffix=", true, false);
+                            + materialRequirement.getId() + "&fieldDate=date", true, false);
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage(), e);
         } catch (DocumentException e) {
