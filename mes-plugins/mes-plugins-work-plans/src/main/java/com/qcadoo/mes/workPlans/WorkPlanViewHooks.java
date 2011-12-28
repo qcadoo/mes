@@ -13,6 +13,7 @@ import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.Entity;
@@ -29,6 +30,9 @@ public class WorkPlanViewHooks {
 
     @Autowired
     private WorkPlanService workPlanService;
+
+    @Autowired
+    private OrderService orderService;
 
     @Autowired
     private RibbonReportService ribbonReportService;
@@ -71,6 +75,41 @@ public class WorkPlanViewHooks {
                 WorkPlansConstants.MODEL_WORK_PLAN);
     }
 
+    public final void generateTestWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (state instanceof FormComponent) {
+            ComponentState generated = viewDefinitionState.getComponentByReference("generated");
+            ComponentState date = viewDefinitionState.getComponentByReference("date");
+            ComponentState worker = viewDefinitionState.getComponentByReference("worker");
+
+            if ("0".equals(generated.getFieldValue())) {
+                worker.setFieldValue(securityService.getCurrentUserName());
+                generated.setFieldValue("1");
+                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
+            }
+
+            state.performEvent(viewDefinitionState, "save", new String[0]);
+
+            if (state.getFieldValue() == null || !((FormComponent) state).isValid()) {
+                worker.setFieldValue(null);
+                generated.setFieldValue("0");
+                date.setFieldValue(null);
+                return;
+            }
+
+            Entity workPlan = workPlanService.getWorkPlan((Long) state.getFieldValue());
+
+            try {
+                workPlanService.generateWorkPlanDocuments(state, workPlan);
+                state.performEvent(viewDefinitionState, "reset", new String[0]);
+            } catch (IOException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            } catch (DocumentException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            }
+        }
+    }
+
     public final void generateWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
@@ -86,7 +125,7 @@ public class WorkPlanViewHooks {
             } else if (StringUtils.hasText(workPlan.getStringField("fileName"))) {
                 addFailureMessage(state, "workPlans.workPlanDetails.window.workPlan.documentsWasGenerated");
                 return;
-            } else if (workPlan.getHasManyField("orders").isEmpty()) {
+            } else if (workPlan.getHasManyField("orders") == null) {
                 addFailureMessage(state, "workPlans.workPlan.window.workPlan.missingAssosiatedOrders");
                 return;
             }

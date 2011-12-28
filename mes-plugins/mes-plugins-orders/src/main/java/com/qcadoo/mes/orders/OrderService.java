@@ -80,6 +80,14 @@ public final class OrderService {
 
     private static final String EMPTY_NUMBER = "";
 
+    public Entity getOrder(final Long orderId) {
+        return getOrderDataDefinition().get(orderId);
+    }
+
+    private DataDefinition getOrderDataDefinition() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+    }
+
     public boolean clearOrderDatesOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField(FIELD_STATE, OrderStates.PENDING.getStringValue());
         entity.setField("effectiveDateTo", null);

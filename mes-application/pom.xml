@@ -393,13 +393,13 @@
 				<dependency>
 				<groupId>com.qcadoo.mes</groupId>
 				<artifactId>mes-commercial-plugins-advanced-genealogy</artifactId>
-				<version>1.1.1-SNAPSHOT</version>
+				<version>1.1.2-SNAPSHOT</version>
 				</dependency>
-				<dependency>
+				<!-- <dependency>
 				<groupId>com.qcadoo.mes</groupId>
 				<artifactId>mes-commercial-plugins-advanced-genealogy-for-orders</artifactId>
-				<version>1.1.1-SNAPSHOT</version>
-				</dependency>
+				<version>1.1.2-SNAPSHOT</version>
+				</dependency> -->
 			</dependencies>
 		</profile>
 		<profile>

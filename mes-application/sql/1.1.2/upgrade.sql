@@ -25,7 +25,7 @@ ALTER TABLE basic_workstationType ADD COLUMN division_id bigint;
 ALTER TABLE basic_workstationType ADD CONSTRAINT basic_workstationType_fkey_divisions  FOREIGN KEY (division_id)
 	REFERENCES basic_division (id) MATCH SIMPLE 
 	ON UPDATE NO ACTION ON DELETE NO ACTION;
-
+      
 ALTER TABLE technologies_operation DROP COLUMN staff_id;
 
 
@@ -60,3 +60,9 @@ alter table basic_parameter add column showDetailsInWorkPlans boolean;
 alter table basic_parameter add column imageUrlInWorkPlan character varying(255);
 alter table basic_parameter add column dontPrintInputProductsInWorkPlans boolean;
 alter table basic_parameter add column dontPrintOutputProductsInWorkPlans boolean;
+
+alter table technologies_operation add column workstationtype_id bigint;
+
+alter table technologies_operation ADD CONSTRAINT technologies_operation_fkey_workstation FOREIGN KEY (workstationtype_id)
+      REFERENCES basic_workstationtype (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;

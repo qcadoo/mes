@@ -34,11 +34,11 @@
 			<template name="standardFormTemplate" />
 			<group name="generate">
 				<bigButton name="generate" icon="generateIcon24.png"
-					action="#{form}.fireEvent(generateWorkPlan);" state="disabled" />
+					action="#{form}.fireEvent(generateWorkPlan);" state="enabled" />
 			</group>
 			<group name="exportWorkPlan">
 				<bigButton name="printWorkPlan" icon="pdfIcon24.png"
-					action="#{form}.fireEvent(printWorkPlan);" state="disabled" />
+					action="#{form}.fireEvent(printWorkPlan);" state="enabled" />
 			</group>
 		</ribbon>
 		<component type="form" name="workPlan" reference="form">
@@ -95,18 +95,18 @@
 							var isGeneratedCheckboxValue = #{generated}.getValue();
 							copyRibbonItem.enable();
 							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-								enableGeneration(false);
-								printWorkPlan.enable();
+								//enableGeneration(false);
+								//printWorkPlan.enable();
 								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 							} else {
-								enableGeneration(true);
-								printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								//enableGeneration(true);
+								//printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								saveRibbonItem.enable();
 							}
 						} else {
-							enableGeneration(true);
+							//enableGeneration(true);
 							copyRibbonItem.disable("#{translate(recordNotCreated)}");
-							printWorkPlan.disable("#{translate(recordNotCreated)}");
+							//printWorkPlan.disable("#{translate(recordNotCreated)}");
 							saveRibbonItem.enable();
 						}
 					}
@@ -168,7 +168,7 @@
 			<listener event="printWorkPlan" class="com.qcadoo.mes.workPlans.WorkPlanViewHooks"
 				method="printWorkPlan" />
 			<listener event="generateWorkPlan" class="com.qcadoo.mes.workPlans.WorkPlanViewHooks"
-				method="generateWorkPlan" />
+				method="generateTestWorkPlan" />
 		</component>
 	</component>
 	<hooks>
