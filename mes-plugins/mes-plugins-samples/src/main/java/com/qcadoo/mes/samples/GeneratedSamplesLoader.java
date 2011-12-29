@@ -61,6 +61,8 @@ import com.qcadoo.security.api.SecurityRolesService;
 @Component
 public class GeneratedSamplesLoader extends SamplesLoader {
 
+    private static final String TECHNOLOGIES_PLUGIN = "technologies";
+
     private static final String ORDER_GROUP_LITERAL = "orderGroup";
 
     private static final String CHARS_ONLY = "QWERTYUIOPLKJHGFDSAZXCVBNMmnbvcxzasdfghjklpoiuytrewq";
@@ -228,7 +230,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     }
 
     private void generateAndAddOperation() {
-        Entity operation = dataDefinitionService.get("technologies", TECHNOLOGY_MODEL_OPERATION).create();
+        Entity operation = dataDefinitionService.get(TECHNOLOGIES_PLUGIN, TECHNOLOGY_MODEL_OPERATION).create();
 
         String number = generateString(CHARS_ONLY, RANDOM.nextInt(40) + 5);
 
@@ -254,7 +256,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
             operation.setField("laborHourlyCost", RANDOM.nextInt(100));
             operation.setField("numberOfOperations", RANDOM.nextInt(10) + 1);
         }
-        operation = dataDefinitionService.get("technologies", TECHNOLOGY_MODEL_OPERATION).save(operation);
+        operation = dataDefinitionService.get(TECHNOLOGIES_PLUGIN, TECHNOLOGY_MODEL_OPERATION).save(operation);
 
         validateEntity(operation);
 
@@ -269,7 +271,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     }
 
     private void generateAndAddTechnology(final Entity product) {
-        Entity technology = dataDefinitionService.get("technologies", TECHNOLOGY_MODEL_TECHNOLOGY).create();
+        Entity technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN, TECHNOLOGY_MODEL_TECHNOLOGY).create();
 
         Entity defaultTechnology = getDefaultTechnologyForProduct(product);
 
@@ -294,7 +296,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         technology.setField("componentQuantityAlgorithm",
                 TECHNOLOGY_QUANTITY_ALGRITHM[RANDOM.nextInt(TECHNOLOGY_QUANTITY_ALGRITHM.length)]);
 
-        technology = dataDefinitionService.get("technologies", TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
+        technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN, TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
         validateEntity(technology);
 
         generateAndAddTechnologyOperationComponent(technology);
@@ -304,11 +306,11 @@ public class GeneratedSamplesLoader extends SamplesLoader {
                 TECHNOLOGY_MODEL_TECHNOLOGY, technology.getId());
 
         technology.setField("state", "02accepted");
-        technology = dataDefinitionService.get("technologies", TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
+        technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN, TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
         validateEntity(technology);
     }
 
-    private Entity addOperationComponent(final Entity technology, final Entity parent, Entity operation,
+    private Entity addOperationComponent(final Entity technology, final Entity parent, final Entity operation,
             final int productsComponentsQuantity) {
         Preconditions.checkNotNull(technology, "Technology entity is null");
         Entity operationComponent = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent")

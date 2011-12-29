@@ -54,17 +54,29 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class ShiftsServiceImpl implements ShiftsService {
 
+    private static final String TYPE_FIELD = "type";
+
+    private static final String TIMETABLE_EXCEPTIONS_FIELD = "timetableExceptions";
+
+    private static final String HOURS_LITERAL = "Hours";
+
+    private static final String WORKING_LITERAL = "Working";
+
+    private static final String TO_DATE_FIELD = "toDate";
+
+    private static final String FROM_DATE_FIELD = "fromDate";
+
     @Autowired
     DataDefinitionService dataDefinitionService;
 
     private static final String[] WEEK_DAYS = { "monday", "tuesday", "wensday", "thursday", "friday", "saturday", "sunday" };
 
     public boolean validateShiftTimetableException(final DataDefinition dataDefinition, final Entity entity) {
-        Date dateFrom = (Date) entity.getField("fromDate");
-        Date dateTo = (Date) entity.getField("toDate");
+        Date dateFrom = (Date) entity.getField(FROM_DATE_FIELD);
+        Date dateTo = (Date) entity.getField(TO_DATE_FIELD);
         if (dateFrom.compareTo(dateTo) > 0) {
-            entity.addError(dataDefinition.getField("fromDate"), "basic.validate.global.error.shiftTimetable.datesError");
-            entity.addError(dataDefinition.getField("toDate"), "basic.validate.global.error.shiftTimetable.datesError");
+            entity.addError(dataDefinition.getField(FROM_DATE_FIELD), "basic.validate.global.error.shiftTimetable.datesError");
+            entity.addError(dataDefinition.getField(TO_DATE_FIELD), "basic.validate.global.error.shiftTimetable.datesError");
             return false;
         }
         return true;
@@ -85,8 +97,8 @@ public class ShiftsServiceImpl implements ShiftsService {
     }
 
     public void updateDayFieldState(final String day, final ViewDefinitionState viewDefinitionState) {
-        FieldComponent mondayWorking = (FieldComponent) viewDefinitionState.getComponentByReference(day + "Working");
-        FieldComponent mondayHours = (FieldComponent) viewDefinitionState.getComponentByReference(day + "Hours");
+        FieldComponent mondayWorking = (FieldComponent) viewDefinitionState.getComponentByReference(day + WORKING_LITERAL);
+        FieldComponent mondayHours = (FieldComponent) viewDefinitionState.getComponentByReference(day + HOURS_LITERAL);
         if (mondayWorking.getFieldValue().equals("0")) {
             mondayHours.setEnabled(false);
             mondayHours.setRequired(false);
@@ -107,19 +119,20 @@ public class ShiftsServiceImpl implements ShiftsService {
     }
 
     public boolean validateHourField(final String day, final DataDefinition dataDefinition, final Entity entity) {
-        boolean isDayActive = (Boolean) entity.getField(day + "Working");
-        String fieldValue = entity.getStringField(day + "Hours");
+        boolean isDayActive = (Boolean) entity.getField(day + WORKING_LITERAL);
+        String fieldValue = entity.getStringField(day + HOURS_LITERAL);
         if (!isDayActive) {
             return true;
         }
         if (fieldValue == null || "".equals(fieldValue.trim())) {
-            entity.addError(dataDefinition.getField(day + "Hours"), "qcadooView.validate.field.error.missing");
+            entity.addError(dataDefinition.getField(day + HOURS_LITERAL), "qcadooView.validate.field.error.missing");
             return false;
         }
         try {
             convertDayHoursToInt(fieldValue);
         } catch (IllegalStateException e) {
-            entity.addError(dataDefinition.getField(day + "Hours"), "basic.validate.global.error.shift.hoursFieldWrongFormat");
+            entity.addError(dataDefinition.getField(day + HOURS_LITERAL),
+                    "basic.validate.global.error.shift.hoursFieldWrongFormat");
             return false;
         }
         return true;
@@ -133,7 +146,8 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     @Override
     public Date findDateToForOrder(final Date dateFrom, final long seconds) {
-        if (dataDefinitionService.get("basic", "shift").find().list().getTotalNumberOfEntities() == 0) {
+        if (dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find().list()
+                .getTotalNumberOfEntities() == 0) {
             return null;
         }
         long start = dateFrom.getTime();
@@ -158,7 +172,8 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     @Override
     public Date findDateFromForOrder(final Date dateTo, final long seconds) {
-        if (dataDefinitionService.get("basic", "shift").find().list().getTotalNumberOfEntities() == 0) {
+        if (dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find().list()
+                .getTotalNumberOfEntities() == 0) {
             return null;
         }
         long stop = dateTo.getTime();
@@ -184,7 +199,8 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     @Override
     public List<ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo) {
-        List<Entity> shifts = dataDefinitionService.get("basic", "shift").find().list().getEntities();
+        List<Entity> shifts = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find()
+                .list().getEntities();
 
         List<ShiftHour> hours = new ArrayList<ShiftHour>();
 
@@ -208,7 +224,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         hours.addAll(getHourForDay(shift, dateFrom, dateTo, "saturday", 6));
         hours.addAll(getHourForDay(shift, dateFrom, dateTo, "sunday", 7));
 
-        List<Entity> exceptions = shift.getHasManyField("timetableExceptions");
+        List<Entity> exceptions = shift.getHasManyField(TIMETABLE_EXCEPTIONS_FIELD);
 
         addWorkTimeExceptions(hours, exceptions);
         removeFreeTimeExceptions(hours, exceptions);
@@ -240,12 +256,12 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     public void removeFreeTimeExceptions(final List<ShiftHour> hours, final List<Entity> exceptions) {
         for (Entity exception : exceptions) {
-            if (!"01freeTime".equals(exception.getStringField("type"))) {
+            if (!"01freeTime".equals(exception.getStringField(TYPE_FIELD))) {
                 continue;
             }
 
-            Date from = (Date) exception.getField("fromDate");
-            Date to = (Date) exception.getField("toDate");
+            Date from = (Date) exception.getField(FROM_DATE_FIELD);
+            Date to = (Date) exception.getField(TO_DATE_FIELD);
 
             List<ShiftHour> hoursToRemove = new ArrayList<ShiftHour>();
             List<ShiftHour> hoursToAdd = new ArrayList<ShiftHour>();
@@ -286,12 +302,12 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     public void addWorkTimeExceptions(final List<ShiftHour> hours, final List<Entity> exceptions) {
         for (Entity exception : exceptions) {
-            if (!"02workTime".equals(exception.getStringField("type"))) {
+            if (!"02workTime".equals(exception.getStringField(TYPE_FIELD))) {
                 continue;
             }
 
-            Date from = (Date) exception.getField("fromDate");
-            Date to = (Date) exception.getField("toDate");
+            Date from = (Date) exception.getField(FROM_DATE_FIELD);
+            Date to = (Date) exception.getField(TO_DATE_FIELD);
 
             hours.add(new ShiftHour(from, to));
         }
@@ -322,10 +338,10 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     public Collection<ShiftHour> getHourForDay(final Entity shift, final Date dateFrom, final Date dateTo, final String day,
             final int offset) {
-        if ((Boolean) shift.getField(day + "Working") && StringUtils.hasText(shift.getStringField(day + "Hours"))) {
+        if ((Boolean) shift.getField(day + WORKING_LITERAL) && StringUtils.hasText(shift.getStringField(day + HOURS_LITERAL))) {
             List<ShiftHour> hours = new ArrayList<ShiftHour>();
 
-            LocalTime[][] dayHours = convertDayHoursToInt(shift.getStringField(day + "Hours"));
+            LocalTime[][] dayHours = convertDayHoursToInt(shift.getStringField(day + HOURS_LITERAL));
 
             DateTime from = new DateTime(dateFrom).withSecondOfMinute(0);
             DateTime to = new DateTime(dateTo);
@@ -406,10 +422,10 @@ public class ShiftsServiceImpl implements ShiftsService {
         public int compare(final ShiftHour o1, final ShiftHour o2) {
             int i = o1.getDateFrom().compareTo(o2.getDateFrom());
 
-            if (i != 0) {
-                return i;
-            } else {
+            if (i == 0) {
                 return o1.getDateTo().compareTo(o2.getDateTo());
+            } else {
+                return i;
             }
         }
 
@@ -497,14 +513,14 @@ public class ShiftsServiceImpl implements ShiftsService {
         int day = cal.get(Calendar.DAY_OF_WEEK);
         SearchCriteriaBuilder searchCriteriaBuilder = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                 BasicConstants.MODEL_SHIFT).find();
-        searchCriteriaBuilder.add(SearchRestrictions.eq(dayOfWeek.get(day) + "Working", true));
+        searchCriteriaBuilder.add(SearchRestrictions.eq(dayOfWeek.get(day) + WORKING_LITERAL, true));
         List<Entity> shifts = searchCriteriaBuilder.list().getEntities();
 
         int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
         int minuteOfHour = cal.get(Calendar.MINUTE);
 
         for (Entity shift : shifts) {
-            String stringHours = shift.getStringField(dayOfWeek.get(day) + "Hours");
+            String stringHours = shift.getStringField(dayOfWeek.get(day) + HOURS_LITERAL);
             LocalTime[][] dayHours = convertDayHoursToInt(stringHours);
             for (LocalTime[] dayHour : dayHours) {
                 if ((dayHour[0].getHourOfDay() < hourOfDay || (dayHour[0].getHourOfDay() == hourOfDay && dayHour[0]

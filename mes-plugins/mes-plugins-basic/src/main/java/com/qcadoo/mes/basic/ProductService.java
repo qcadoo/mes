@@ -30,6 +30,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -37,6 +38,10 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public final class ProductService {
+
+    private static final String SUBSTITUTE_FIELD = "substitute";
+
+    private static final String PRODUCT_FIELD = "product";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -50,7 +55,7 @@ public final class ProductService {
     }
 
     public boolean checkIfSubstituteIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
-        Entity substitute = entity.getBelongsToField("substitute");
+        Entity substitute = entity.getBelongsToField(SUBSTITUTE_FIELD);
 
         if (substitute == null || substitute.getId() == null) {
             return true;
@@ -61,7 +66,7 @@ public final class ProductService {
 
         if (substituteEntity == null) {
             entity.addGlobalError("qcadooView.message.belongsToNotFound");
-            entity.setField("substitute", null);
+            entity.setField(SUBSTITUTE_FIELD, null);
             return false;
         } else {
             return true;
@@ -69,18 +74,18 @@ public final class ProductService {
     }
 
     public boolean checkSubstituteComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField("product");
-        Entity substitute = entity.getBelongsToField("substitute");
+        Entity product = entity.getBelongsToField(PRODUCT_FIELD);
+        Entity substitute = entity.getBelongsToField(SUBSTITUTE_FIELD);
 
         if (substitute == null || product == null) {
             return false;
         }
 
-        SearchResult searchResult = dataDefinition.find().belongsTo("product", product.getId())
-                .belongsTo("substitute", substitute.getId()).list();
+        SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo(PRODUCT_FIELD, product))
+                .add(SearchRestrictions.belongsTo(SUBSTITUTE_FIELD, substitute)).list();
 
         if (searchResult.getTotalNumberOfEntities() > 0 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
-            entity.addError(dataDefinition.getField("product"), "basic.validate.global.error.substituteComponentDuplicated");
+            entity.addError(dataDefinition.getField(PRODUCT_FIELD), "basic.validate.global.error.substituteComponentDuplicated");
             return false;
         } else {
             return true;
@@ -88,7 +93,7 @@ public final class ProductService {
     }
 
     public boolean checkIfProductIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField("product");
+        Entity product = entity.getBelongsToField(PRODUCT_FIELD);
 
         if (product == null || product.getId() == null) {
             return true;
@@ -99,7 +104,7 @@ public final class ProductService {
 
         if (productEntity == null) {
             entity.addGlobalError("qcadooView.message.belongsToNotFound");
-            entity.setField("product", null);
+            entity.setField(PRODUCT_FIELD, null);
             return false;
         } else {
             return true;

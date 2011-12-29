@@ -44,6 +44,36 @@ import com.qcadoo.model.api.search.SearchResult;
 @Service
 public class GenealogyOrderStatesListener extends OrderStateListener {
 
+    private static final String PRODUCT_IN_COMPONENT_FIELD = "productInComponent";
+
+    private static final String PRODUCT_IN_COMPONENTS_FIELD = "productInComponents";
+
+    private static final String OTHER_FEATURES_FIELD = "otherFeatures";
+
+    private static final String POST_FEATURES_FIELD = "postFeatures";
+
+    private static final String SHIFT_FEATURES_FIELD = "shiftFeatures";
+
+    private static final String OPERATION_PRODUCT_IN_COMPONENTS_FIELD = "operationProductInComponents";
+
+    private static final String BATCH_FIELD = "batch";
+
+    private static final String OPERATION_COMPONENTS_FIELD = "operationComponents";
+
+    private static final String TECHNOLOGY_FIELD = "technology";
+
+    private static final String GENEALOGIES_FIELD = "genealogies";
+
+    private static final String OTHER_FEATURE_REQUIRED_FIELD = "otherFeatureRequired";
+
+    private static final String POST_FEATURE_REQUIRED_FIELD = "postFeatureRequired";
+
+    private static final String SHIFT_FEATURE_REQUIRED_FIELD = "shiftFeatureRequired";
+
+    private static final String BATCH_REQUIRED_FIELD = "batchRequired";
+
+    private static final String BATCH_FOR_DONE_ORDER_FIELD = "batchForDoneOrder";
+
     @Autowired
     DataDefinitionService dataDefinitionService;
 
@@ -65,9 +95,9 @@ public class GenealogyOrderStatesListener extends OrderStateListener {
             parameter = searchResult.getEntities().get(0);
         }
         if (parameter != null) {
-            if (parameter.getField("batchForDoneOrder").toString().equals("02active")) {
+            if (parameter.getField(BATCH_FOR_DONE_ORDER_FIELD).toString().equals("02active")) {
                 listOfMessage = autoGenealogyService.createGenealogy(newEntity, false);
-            } else if (parameter.getField("batchForDoneOrder").toString().equals("03lastUsed")) {
+            } else if (parameter.getField(BATCH_FOR_DONE_ORDER_FIELD).toString().equals("03lastUsed")) {
                 listOfMessage = autoGenealogyService.createGenealogy(newEntity, true);
             }
             if (checkAutogenealogyRequired() && !checkRequiredBatch(newEntity)) {
@@ -85,8 +115,8 @@ public class GenealogyOrderStatesListener extends OrderStateListener {
         if (searchResult.getEntities().size() > 0) {
             parameter = searchResult.getEntities().get(0);
         }
-        if (parameter != null && parameter.getField("batchForDoneOrder") != null) {
-            return !(parameter.getField("batchForDoneOrder").toString().equals("01none"));
+        if (parameter != null && parameter.getField(BATCH_FOR_DONE_ORDER_FIELD) != null) {
+            return !(parameter.getField(BATCH_FOR_DONE_ORDER_FIELD).toString().equals("01none"));
         } else {
             return false;
         }
@@ -97,54 +127,54 @@ public class GenealogyOrderStatesListener extends OrderStateListener {
 
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 entity.getId());
-        Entity technology = order.getBelongsToField("technology");
+        Entity technology = order.getBelongsToField(TECHNOLOGY_FIELD);
         if (technology != null) {
-            if (order.getHasManyField("genealogies").size() == 0) {
-                if ((Boolean) technology.getField("batchRequired")) {
+            if (order.getHasManyField(GENEALOGIES_FIELD).size() == 0) {
+                if ((Boolean) technology.getField(BATCH_REQUIRED_FIELD)) {
                     return false;
                 }
-                if ((Boolean) technology.getField("shiftFeatureRequired")) {
+                if ((Boolean) technology.getField(SHIFT_FEATURE_REQUIRED_FIELD)) {
                     return false;
                 }
-                if ((Boolean) technology.getField("postFeatureRequired")) {
+                if ((Boolean) technology.getField(POST_FEATURE_REQUIRED_FIELD)) {
                     return false;
                 }
-                if ((Boolean) technology.getField("otherFeatureRequired")) {
+                if ((Boolean) technology.getField(OTHER_FEATURE_REQUIRED_FIELD)) {
                     return false;
                 }
-                for (Entity operationComponent : technology.getTreeField("operationComponents")) {
-                    for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                        if ((Boolean) operationProductComponent.getField("batchRequired")) {
+                for (Entity operationComponent : technology.getTreeField(OPERATION_COMPONENTS_FIELD)) {
+                    for (Entity operationProductComponent : operationComponent.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS_FIELD)) {
+                        if ((Boolean) operationProductComponent.getField(BATCH_REQUIRED_FIELD)) {
                             return false;
                         }
                     }
                 }
             }
-            for (Entity genealogy : order.getHasManyField("genealogies")) {
-                if ((Boolean) technology.getField("batchRequired") && genealogy.getField("batch") == null) {
+            for (Entity genealogy : order.getHasManyField(GENEALOGIES_FIELD)) {
+                if ((Boolean) technology.getField(BATCH_REQUIRED_FIELD) && genealogy.getField(BATCH_FIELD) == null) {
                     return false;
                 }
-                if ((Boolean) technology.getField("shiftFeatureRequired")) {
-                    List<Entity> entityList = genealogy.getHasManyField("shiftFeatures");
+                if ((Boolean) technology.getField(SHIFT_FEATURE_REQUIRED_FIELD)) {
+                    List<Entity> entityList = genealogy.getHasManyField(SHIFT_FEATURES_FIELD);
                     if (entityList.size() == 0) {
                         return false;
                     }
                 }
-                if ((Boolean) technology.getField("postFeatureRequired")) {
-                    List<Entity> entityList = genealogy.getHasManyField("postFeatures");
+                if ((Boolean) technology.getField(POST_FEATURE_REQUIRED_FIELD)) {
+                    List<Entity> entityList = genealogy.getHasManyField(POST_FEATURES_FIELD);
                     if (entityList.size() == 0) {
                         return false;
                     }
                 }
-                if ((Boolean) technology.getField("otherFeatureRequired")) {
-                    List<Entity> entityList = genealogy.getHasManyField("otherFeatures");
+                if ((Boolean) technology.getField(OTHER_FEATURE_REQUIRED_FIELD)) {
+                    List<Entity> entityList = genealogy.getHasManyField(OTHER_FEATURES_FIELD);
                     if (entityList.size() == 0) {
                         return false;
                     }
                 }
-                for (Entity genealogyProductIn : genealogy.getHasManyField("productInComponents")) {
-                    if ((Boolean) (genealogyProductIn.getBelongsToField("productInComponent").getField("batchRequired"))) {
-                        List<Entity> entityList = genealogyProductIn.getHasManyField("batch");
+                for (Entity genealogyProductIn : genealogy.getHasManyField(PRODUCT_IN_COMPONENTS_FIELD)) {
+                    if ((Boolean) (genealogyProductIn.getBelongsToField(PRODUCT_IN_COMPONENT_FIELD).getField(BATCH_REQUIRED_FIELD))) {
+                        List<Entity> entityList = genealogyProductIn.getHasManyField(BATCH_FIELD);
                         if (entityList.size() == 0) {
                             return false;
                         }

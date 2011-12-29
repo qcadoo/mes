@@ -51,6 +51,14 @@ import com.qcadoo.plugin.api.Module;
 @Component
 public class CurrencyLoaderModule extends Module {
 
+    private static final String MINOR_UNIT_FIELD = "minorUnit";
+
+    private static final String ISO_CODE_FIELD = "isoCode";
+
+    private static final String ALPHABETIC_CODE_FIELD = "alphabeticCode";
+
+    private static final String CURRENCY_FIELD = "currency";
+
     private static final String[] CURRENCY_ATTRIBUTES = new String[] { "CURRENCY", "ALPHABETICCODE", "ISOCODE", "MINORUNIT" };
 
     private static final Logger LOG = LoggerFactory.getLogger(CurrencyLoaderModule.class);
@@ -68,7 +76,7 @@ public class CurrencyLoaderModule extends Module {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Currency table will be populated...");
         }
-        readDataFromXML("currency", CURRENCY_ATTRIBUTES);
+        readDataFromXML(CURRENCY_FIELD, CURRENCY_ATTRIBUTES);
 
     }
 
@@ -108,7 +116,7 @@ public class CurrencyLoaderModule extends Module {
             }
         }
 
-        if ("currency".equals(type)) {
+        if (CURRENCY_FIELD.equals(type)) {
             addCurrency(values);
         }
     }
@@ -116,23 +124,23 @@ public class CurrencyLoaderModule extends Module {
     private void addCurrency(final Map<String, String> values) {
         Entity currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).create();
 
-        currency.setField("currency", values.get("CURRENCY"));
-        currency.setField("alphabeticCode", values.get("ALPHABETICCODE"));
-        currency.setField("isoCode", Integer.valueOf(values.get("ISOCODE")));
-        currency.setField("minorUnit", Integer.valueOf(values.get("MINORUNIT")));
+        currency.setField(CURRENCY_FIELD, values.get("CURRENCY"));
+        currency.setField(ALPHABETIC_CODE_FIELD, values.get("ALPHABETICCODE"));
+        currency.setField(ISO_CODE_FIELD, Integer.valueOf(values.get("ISOCODE")));
+        currency.setField(MINOR_UNIT_FIELD, Integer.valueOf(values.get("MINORUNIT")));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test currency item {currency=" + currency.getStringField("currency") + "}");
+            LOG.debug("Add test currency item {currency=" + currency.getStringField(CURRENCY_FIELD) + "}");
         }
 
-        if (!currency.isValid()) {
-            throw new IllegalStateException("Saved entity have validation errors - " + values.get("CURRENCY"));
-        } else {
+        if (currency.isValid()) {
             currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).save(currency);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Currency saved {currency=" + currency.toString() + "}");
             }
+        } else {
+            throw new IllegalStateException("Saved entity have validation errors - " + values.get("CURRENCY"));
         }
     }
 
