@@ -45,6 +45,7 @@ import com.qcadoo.mes.genealogies.print.util.BatchOrderNrComparator;
 import com.qcadoo.mes.genealogies.print.util.EntityNumberComparator;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.report.api.Pair;
 import com.qcadoo.report.api.pdf.PdfUtil;
@@ -52,6 +53,28 @@ import com.qcadoo.report.api.pdf.ReportPdfView;
 import com.qcadoo.security.api.SecurityService;
 
 public class GenealogyForProductView extends ReportPdfView {
+
+    private static final String GENEALOGIES_FOR_COMPONENTS_PLUGIN = "genealogiesForComponents";
+
+    private static final String VALUE = "value";
+
+    private static final String GENEALOGIES_FIELD = "genealogies";
+
+    private static final String PRODUCT_IN_COMPONENT_FIELD = "productInComponent";
+
+    private static final String PRODUCT_IN_COMPONENTS_FIELD = "productInComponents";
+
+    private static final String DATE_FROM_FIELD = "dateFrom";
+
+    private static final String BATCH_FIELD = "batch";
+
+    private static final String NAME_FIELD = "name";
+
+    private static final String NUMBER_FIELD = "number";
+
+    private static final String PRODUCT_FIELD = "product";
+
+    private static final String ORDER_FIELD = "order";
 
     @Autowired
     private SecurityService securityService;
@@ -66,7 +89,7 @@ public class GenealogyForProductView extends ReportPdfView {
     protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
         Entity entity = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY)
-                .get(Long.valueOf(model.get("value").toString()));
+                .get(Long.valueOf(model.get(VALUE).toString()));
         String documentTitle = getTranslationService().translate("genealogies.genealogyForProduct.report.title", locale);
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
@@ -92,13 +115,13 @@ public class GenealogyForProductView extends ReportPdfView {
         document.add(productTitle);
         PdfPTable headerData = PdfUtil.createPanelTable(3);
         headerData.setSpacingBefore(7);
-        Entity product = entity.getBelongsToField("order").getBelongsToField("product");
+        Entity product = entity.getBelongsToField(ORDER_FIELD).getBelongsToField(PRODUCT_FIELD);
         PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("basic.product.number.label", locale),
-                product.getField("number"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                product.getField(NUMBER_FIELD), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("basic.product.name.label", locale),
-                product.getField("name"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                product.getField(NAME_FIELD), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("genealogies.genealogy.batch.label", locale),
-                entity.getField("batch"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                entity.getField(BATCH_FIELD), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         document.add(headerData);
         Paragraph orderTitle = new Paragraph(new Phrase(getTranslationService().translate(
                 "genealogies.genealogyForProduct.report.paragrah.order", locale), PdfUtil.getArialBold11Light()));
@@ -107,7 +130,7 @@ public class GenealogyForProductView extends ReportPdfView {
         List<Entity> orders = getOrders(entity);
         Collections.sort(orders, new EntityNumberComparator());
         addOrderSeries(document, orders, orderHeader);
-        if (pluginAccessor.getEnabledPlugin("genealogiesForComponents") != null) {
+        if (pluginAccessor.getEnabledPlugin(GENEALOGIES_FOR_COMPONENTS_PLUGIN) != null) {
             addComponentSeries(document, orders, locale);
         }
     }
@@ -118,7 +141,7 @@ public class GenealogyForProductView extends ReportPdfView {
             document.add(Chunk.NEWLINE);
             Paragraph title = new Paragraph(new Phrase(getTranslationService().translate(
                     "genealogies.genealogyForProduct.report.paragrah", locale), PdfUtil.getArialBold11Light()));
-            title.add(new Phrase(" " + order.getField("number").toString(), PdfUtil.getArialBold19Dark()));
+            title.add(new Phrase(" " + order.getField(NUMBER_FIELD).toString(), PdfUtil.getArialBold19Dark()));
             document.add(title);
             List<String> componentHeader = new ArrayList<String>();
             componentHeader.add(getTranslationService().translate("basic.product.number.label", locale));
@@ -133,8 +156,8 @@ public class GenealogyForProductView extends ReportPdfView {
             for (Pair<String, Entity> pair : batchList) {
                 String batch = pair.getKey();
                 Entity product = pair.getValue();
-                table.addCell(new Phrase(product.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-                table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(product.getField(NUMBER_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(product.getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(batch, PdfUtil.getArialRegular9Dark()));
             }
             document.add(table);
@@ -146,20 +169,21 @@ public class GenealogyForProductView extends ReportPdfView {
             throws DocumentException {
         PdfPTable table = PdfUtil.createTableWithHeader(3, orderHeader, false);
         for (Entity order : orders) {
-            table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(order.getField("dateFrom").toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(order.getField(NUMBER_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(order.getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(order.getField(DATE_FROM_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
         }
         document.add(table);
     }
 
     private List<Pair<String, Entity>> getBatchList(final Entity entity) {
         List<Pair<String, Entity>> batchList = new ArrayList<Pair<String, Entity>>();
-        for (Entity genealogy : entity.getHasManyField("genealogies")) {
-            for (Entity productInComponent : genealogy.getHasManyField("productInComponents")) {
-                Entity product = (Entity) ((Entity) productInComponent.getField("productInComponent")).getField("product");
-                for (Entity batch : productInComponent.getHasManyField("batch")) {
-                    Pair<String, Entity> pair = Pair.of(batch.getField("batch").toString(), product);
+        for (Entity genealogy : entity.getHasManyField(GENEALOGIES_FIELD)) {
+            for (Entity productInComponent : genealogy.getHasManyField(PRODUCT_IN_COMPONENTS_FIELD)) {
+                Entity product = (Entity) ((Entity) productInComponent.getField(PRODUCT_IN_COMPONENT_FIELD))
+                        .getField(PRODUCT_FIELD);
+                for (Entity batch : productInComponent.getHasManyField(BATCH_FIELD)) {
+                    Pair<String, Entity> pair = Pair.of(batch.getField(BATCH_FIELD).toString(), product);
                     if (!batchList.contains(pair)) {
                         batchList.add(pair);
                     }
@@ -174,10 +198,10 @@ public class GenealogyForProductView extends ReportPdfView {
 
         List<Entity> genealogyList = dataDefinitionService
                 .get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find()
-                .isEq("batch", entity.getField("batch")).list().getEntities();
+                .add(SearchRestrictions.eq(BATCH_FIELD, entity.getField(BATCH_FIELD))).list().getEntities();
 
         for (Entity genealogy : genealogyList) {
-            Entity order = (Entity) genealogy.getField("order");
+            Entity order = (Entity) genealogy.getField(ORDER_FIELD);
             if (!orders.contains(order)) {
                 orders.add(order);
             }

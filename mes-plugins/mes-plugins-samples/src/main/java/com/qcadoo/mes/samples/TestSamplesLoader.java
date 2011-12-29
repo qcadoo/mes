@@ -30,6 +30,7 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORK
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BOM_ID;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_DATE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_DESCRIPTION;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_EAN;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_GENERATED;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_NAME;
@@ -186,10 +187,10 @@ public class TestSamplesLoader extends SamplesLoader {
                 .create();
 
         LOG.debug("id: " + values.get("id") + " name " + values.get(FIELD_NAME) + " prod_line " + values.get("prod_line")
-                + " description " + values.get("description"));
+                + " description " + values.get(FIELD_DESCRIPTION));
         machine.setField(FIELD_NUMBER, values.get("id"));
         machine.setField(FIELD_NAME, values.get(FIELD_NAME));
-        machine.setField("description", values.get("description"));
+        machine.setField(FIELD_DESCRIPTION, values.get(FIELD_DESCRIPTION));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test machine item {machine=" + machine.getField(FIELD_NAME) + ", " + FIELD_NUMBER + "="
@@ -419,8 +420,8 @@ public class TestSamplesLoader extends SamplesLoader {
             Entity defaultTechnology = getDefaultTechnologyForProduct(product);
 
             Entity technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).create();
-            if (!values.get("description").isEmpty()) {
-                technology.setField("description", values.get("description"));
+            if (!values.get(FIELD_DESCRIPTION).isEmpty()) {
+                technology.setField(FIELD_DESCRIPTION, values.get(FIELD_DESCRIPTION));
             }
             technology.setField("master", defaultTechnology == null);
             technology.setField(FIELD_NAME, values.get(FIELD_NAME));
@@ -444,7 +445,7 @@ public class TestSamplesLoader extends SamplesLoader {
                 LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getField(FIELD_NAME) + ", "
                         + FIELD_NUMBER + "=" + technology.getField(FIELD_NUMBER) + ", product="
                         + ((Entity) technology.getField(BASIC_MODEL_PRODUCT)).getField(FIELD_NUMBER) + ", description="
-                        + technology.getField("description") + ", master=" + technology.getField("master") + "}");
+                        + technology.getField(FIELD_DESCRIPTION) + ", master=" + technology.getField("master") + "}");
             }
 
             technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
