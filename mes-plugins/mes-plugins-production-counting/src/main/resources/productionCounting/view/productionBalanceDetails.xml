@@ -101,6 +101,7 @@
 					<layoutElement column="1" row="2">
 						<component type="lookup" name="order" field="order" reference="order">
 							<option type="column" name="name" fields="name" link="true" />
+							<option type="column" name="typeOfProductionRecording" fields="typeOfProductionRecording"/>
 							<option type="required" value="true" />
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
