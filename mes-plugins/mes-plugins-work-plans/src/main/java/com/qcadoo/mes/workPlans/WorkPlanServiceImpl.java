@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Lists;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
@@ -69,7 +70,7 @@ public class WorkPlanServiceImpl implements WorkPlanService {
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         // FIXME mici thats just temporary
-        workPlan.setField("type", WorkPlanType.ALL_OPERATIONS.getStringValue());
+        workPlan.setField("type", WorkPlanType.NO_DISTINCTION.getStringValue());
         Entity workPlanWithFilename = workPlanPdfService.updateFileName(workPlan, "Work_plan");
         workPlanPdfService.generateDocument(workPlanWithFilename, company, state.getLocale());
     }
@@ -78,7 +79,7 @@ public class WorkPlanServiceImpl implements WorkPlanService {
         Entity workPlan = getWorkPlanDataDefinition().create();
         workPlan.setField("orders", orders);
         workPlan.setField("name", generateNameForWorkPlan());
-        workPlan.setField("type", WorkPlanType.ALL_OPERATIONS.getStringValue());
+        workPlan.setField("type", WorkPlanType.NO_DISTINCTION.getStringValue());
 
         return workPlan.getDataDefinition().save(workPlan);
     }
@@ -100,7 +101,7 @@ public class WorkPlanServiceImpl implements WorkPlanService {
 
     private String generateNameForWorkPlan() {
         Date currentDate = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT);
 
         return translationService.translate("workPlans.workPlan.defaults.name", LocaleContextHolder.getLocale(),
                 dateFormat.format(currentDate));

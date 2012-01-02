@@ -116,7 +116,7 @@ public class WorkPlanServiceTest {
         Assert.assertEquals(TRANSLATED_STRING, stringArgCaptor.getValue());
 
         verify(emptyWorkPlan, times(1)).setField(Mockito.eq("type"), stringArgCaptor.capture());
-        Assert.assertEquals(WorkPlanType.ALL_OPERATIONS.getStringValue(), stringArgCaptor.getValue());
+        Assert.assertEquals(WorkPlanType.NO_DISTINCTION.getStringValue(), stringArgCaptor.getValue());
 
     }
 
