@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="stoppage" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<model name="stoppage" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" activable="true"
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
