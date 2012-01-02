@@ -147,7 +147,7 @@ public class WorkPlanPdfService2 extends PdfDocumentService {
     String getOperationsTitle(Entity workPlan) {
         String type = workPlan.getStringField("type");
 
-        if (WorkPlanType.ALL_OPERATIONS.getStringValue().equals(type)) {
+        if (WorkPlanType.NO_DISTINCTION.getStringValue().equals(type)) {
             return "workPlans.workPlan.report.title.allOperations";
         } else if (WorkPlanType.BY_END_PRODUCT.getStringValue().equals(type)) {
             return "workPlans.workPlan.report.title.byEndProduct";

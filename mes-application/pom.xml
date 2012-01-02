@@ -395,11 +395,11 @@
 				<artifactId>mes-commercial-plugins-advanced-genealogy</artifactId>
 				<version>1.1.2-SNAPSHOT</version>
 				</dependency>
-				<!-- <dependency>
+				<dependency>
 				<groupId>com.qcadoo.mes</groupId>
 				<artifactId>mes-commercial-plugins-advanced-genealogy-for-orders</artifactId>
 				<version>1.1.2-SNAPSHOT</version>
-				</dependency> -->
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
