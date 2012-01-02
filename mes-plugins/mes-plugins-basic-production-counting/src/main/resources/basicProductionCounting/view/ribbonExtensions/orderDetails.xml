@@ -40,6 +40,18 @@
 								}
 						}
 					});		
+					
+					#{typeOfProductionRecording}.addOnChangeListener({
+						onSetValue: function(value) {
+							var typeOfProductionRecording = #{typeOfProductionRecording}.getValue().content.value;
+							if (typeOfProductionRecording == ""){
+								this.disable();
+							} else {
+								this.enable();
+							}
+						}			
+					});
+					
 					#{form}.addOnChangeListener({
 						onSetValue: function(value) {
 							if (! value || ! value.content) {
@@ -47,9 +59,17 @@
 							}
 							if (! value.content.entityId) {
 								this.disable();
+								return;
 							} else {
 								this.enable();
 							}
+						var typeOfProductionRecording = #{typeOfProductionRecording}.getValue().content.value;
+							if (typeOfProductionRecording == ""){
+								this.disable();
+							} else {
+								this.enable();
+							}
+						
 						}
 					});					
 				]]>
