@@ -13,8 +13,10 @@ import com.qcadoo.model.api.EntityTree;
 @Service
 public class WorkPlanProductsService {
 
-    public Map<Entity, Map<Entity, BigDecimal>> getInProductsForOrder(Entity order, String type) {
+    public Map<Entity, Map<Entity, BigDecimal>> getInProductsPerOperation(Entity order) {
         Map<Entity, Map<Entity, BigDecimal>> operations = new HashMap<Entity, Map<Entity, BigDecimal>>();
+
+        BigDecimal plannedQty = (BigDecimal) order.getField("plannedQuantity");
 
         Entity technology = order.getBelongsToField("technology");
 
@@ -30,9 +32,15 @@ public class WorkPlanProductsService {
             List<Entity> operationProdInComps = operationComponent.getHasManyField("operationProductInComponents");
             for (Entity operationProdInComp : operationProdInComps) {
                 Entity product = operationProdInComp.getBelongsToField("product");
-                products.put(product, new BigDecimal(1));
+                BigDecimal neededQty = (BigDecimal) operationProdInComp.getField("quantity");
+
+                if ("01perProductOut".equals(technology.getStringField("componentQuantityAlgorithm"))) {
+                    neededQty = neededQty.multiply(plannedQty);
+                }
+
+                products.put(product, neededQty);
             }
-            operations.put(operationComponent, products);
+            operations.put(operationComponent.getBelongsToField("operation"), products);
         }
 
         return operations;

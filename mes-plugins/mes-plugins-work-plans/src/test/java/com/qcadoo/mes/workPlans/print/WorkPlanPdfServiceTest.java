@@ -211,7 +211,7 @@ public class WorkPlanPdfServiceTest {
     @Test
     public void shouldPrepareOperationsTitleForAllOperations() {
         // given
-        when(workPlan.getStringField("type")).thenReturn(WorkPlanType.ALL_OPERATIONS.getStringValue());
+        when(workPlan.getStringField("type")).thenReturn(WorkPlanType.NO_DISTINCTION.getStringValue());
 
         // when
         String titleKey = workPlanPdfService.getOperationsTitle(workPlan);

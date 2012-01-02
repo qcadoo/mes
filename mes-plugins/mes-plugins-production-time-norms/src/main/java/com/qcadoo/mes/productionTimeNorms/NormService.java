@@ -44,6 +44,18 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class NormService {
 
+    private static final String TIME_NEXT_OPERATION = "timeNextOperation";
+
+    private static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
+    private static final String PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
+
+    private static final String COUNT_MACHINE_UNIT = "countMachineUNIT";
+
+    private static final String COUNT_MACHINE = "countMachine";
+
+    private static final String COUNT_REALIZED = "countRealized";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -54,9 +66,9 @@ public class NormService {
         FieldComponent tpzNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
         FieldComponent tjNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
         FieldComponent productionInOneCycle = (FieldComponent) viewDefinitionState
-                .getComponentByReference("productionInOneCycle");
-        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
-        FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference("timeNextOperation");
+                .getComponentByReference(PRODUCTION_IN_ONE_CYCLE);
+        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
+        FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference(TIME_NEXT_OPERATION);
         Object value = countRealized.getFieldValue();
 
         tpzNorm.setEnabled(true);
@@ -77,9 +89,9 @@ public class NormService {
 
     public void changeCountRealizedNorm(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
-        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
-        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineUNIT");
+        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
+        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
+        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE_UNIT);
 
         Boolean visibilityValue = "02specified".equals(countRealized.getFieldValue());
         countMachine.setVisible(visibilityValue);
@@ -93,7 +105,7 @@ public class NormService {
         Entity formEntity = ((FormComponent) view.getComponentByReference("form")).getEntity();
 
         // we can pass units only to technology level operations
-        if (formEntity.getId() == null || !"technologyOperationComponent".equals(formEntity.getDataDefinition().getName())) {
+        if (formEntity.getId() == null || !TECHNOLOGY_OPERATION_COMPONENT.equals(formEntity.getDataDefinition().getName())) {
             return;
         }
 
@@ -102,7 +114,7 @@ public class NormService {
         // you can use someEntity.getSTH().getSTH() only when you are 100% sure that all the passers-relations
         // will not return null (i.e. all relations using below are mandatory on the model definition level)
         String unit = formEntity.getBelongsToField("technology").getBelongsToField("product").getField("unit").toString();
-        for (String referenceName : Sets.newHashSet("countMachineUNIT", "productionInOneCycleUNIT")) {
+        for (String referenceName : Sets.newHashSet(COUNT_MACHINE_UNIT, "productionInOneCycleUNIT")) {
             component = (FieldComponent) view.getComponentByReference(referenceName);
             if (component == null) {
                 continue;
@@ -138,7 +150,7 @@ public class NormService {
         // be sure that entity isn't in detached state
         orderOperationComponent = orderOperationComponent.getDataDefinition().get(orderOperationComponent.getId());
 
-        applyCostNormsFromGivenSource(view, orderOperationComponent.getBelongsToField("technologyOperationComponent"),
+        applyCostNormsFromGivenSource(view, orderOperationComponent.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT),
                 FIELDS_TECHNOLOGY);
     }
 
@@ -151,16 +163,16 @@ public class NormService {
             component.setFieldValue(source.getField(fieldName));
         }
 
-        if (source.getField("countRealized") == null) {
-            view.getComponentByReference("countRealized").setFieldValue("01all");
+        if (source.getField(COUNT_REALIZED) == null) {
+            view.getComponentByReference(COUNT_REALIZED).setFieldValue("01all");
         }
 
-        if (source.getField("productionInOneCycle") == null) {
-            view.getComponentByReference("productionInOneCycle").setFieldValue("1");
+        if (source.getField(PRODUCTION_IN_ONE_CYCLE) == null) {
+            view.getComponentByReference(PRODUCTION_IN_ONE_CYCLE).setFieldValue("1");
         }
 
-        if (source.getField("countMachine") == null) {
-            view.getComponentByReference("countMachine").setFieldValue("0");
+        if (source.getField(COUNT_MACHINE) == null) {
+            view.getComponentByReference(COUNT_MACHINE).setFieldValue("0");
         }
 
         // FIXME MAKU fix problem with double notifications after operation changed
@@ -169,8 +181,8 @@ public class NormService {
     }
 
     public void updateCountMachineOperationFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState.getComponentByReference("countRealized");
-        FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
+        FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
+        FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
 
         if ("02specified".equals(countRealizedOperation.getFieldValue())) {
             countMachineOperation.setVisible(true);
