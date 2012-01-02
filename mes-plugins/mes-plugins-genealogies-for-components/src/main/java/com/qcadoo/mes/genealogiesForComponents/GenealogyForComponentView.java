@@ -43,11 +43,14 @@ import com.qcadoo.mes.genealogiesForComponents.constants.GenealogiesForComponent
 import com.qcadoo.mes.genealogiesForComponents.util.EntityOrderNumberComparator;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 import com.qcadoo.security.api.SecurityService;
 
 public class GenealogyForComponentView extends ReportPdfView {
+
+    private static final String BATCH_FIELD = "batch";
 
     @Autowired
     private SecurityService securityService;
@@ -97,7 +100,7 @@ public class GenealogyForComponentView extends ReportPdfView {
                 product.getField("name"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(headerData,
                 getTranslationService().translate("genealogiesForComponents.productInBatch.batch.label", locale),
-                entity.getField("batch"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                entity.getField(BATCH_FIELD), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         document.add(headerData);
         Paragraph orderTitle = new Paragraph(new Phrase(getTranslationService().translate(
                 "genealogiesForComponents.genealogyForComponent.report.paragrah.order", locale), PdfUtil.getArialBold11Light()));
@@ -121,7 +124,7 @@ public class GenealogyForComponentView extends ReportPdfView {
             } else {
                 table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
             }
-            table.addCell(new Phrase(genealogy.getField("batch").toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(genealogy.getField(BATCH_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
         }
         document.add(table);
     }
@@ -131,8 +134,8 @@ public class GenealogyForComponentView extends ReportPdfView {
 
         List<Entity> batchList = dataDefinitionService
                 .get(GenealogiesForComponentsConstants.PLUGIN_IDENTIFIER,
-                        GenealogiesForComponentsConstants.MODEL_PRODUCT_IN_BATCH).find().isEq("batch", entity.getField("batch"))
-                .list().getEntities();
+                        GenealogiesForComponentsConstants.MODEL_PRODUCT_IN_BATCH).find()
+                .add(SearchRestrictions.eq(BATCH_FIELD, entity.getField(BATCH_FIELD))).list().getEntities();
 
         for (Entity batch : batchList) {
             Entity genealogy = ((Entity) ((Entity) batch.getField("productInComponent")).getField("genealogy"));

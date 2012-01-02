@@ -42,6 +42,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -52,6 +53,8 @@ import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class GenealogiesForComponentsService {
+
+    private static final String BATCH_REQUIRED = "batchRequired";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -94,7 +97,7 @@ public class GenealogiesForComponentsService {
 
                 for (Entity operationComponent : operationComponents) {
                     for (Entity operationProductInComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                        if ((Boolean) operationProductInComponent.getField("batchRequired")) {
+                        if ((Boolean) operationProductInComponent.getField(BATCH_REQUIRED)) {
                             targetProductInComponents.add(createGenealogyProductInComponent(genealogy,
                                     operationProductInComponent, existingProductInComponents));
                         }
@@ -130,7 +133,7 @@ public class GenealogiesForComponentsService {
     public void disableBatchRequiredForTechnology(final ViewDefinitionState state) {
         ComponentState form = state.getComponentByReference("form");
         if (form.getFieldValue() != null) {
-            FieldComponent batchRequired = (FieldComponent) state.getComponentByReference("batchRequired");
+            FieldComponent batchRequired = (FieldComponent) state.getComponentByReference(BATCH_REQUIRED);
             if (checkProductInComponentsBatchRequired((Long) form.getFieldValue())) {
                 batchRequired.setEnabled(false);
                 batchRequired.setFieldValue("1");
@@ -142,13 +145,13 @@ public class GenealogiesForComponentsService {
     }
 
     public void fillBatchRequiredForTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getField("batchRequired") != null && (Boolean) entity.getField("batchRequired")) {
+        if (entity.getField(BATCH_REQUIRED) != null && (Boolean) entity.getField(BATCH_REQUIRED)) {
             Entity technology = entity.getBelongsToField("operationComponent").getBelongsToField("technology");
             DataDefinition technologyInDef = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY);
             Entity technologyEntity = technologyInDef.get(technology.getId());
-            if (!(Boolean) technologyEntity.getField("batchRequired")) {
-                technologyEntity.setField("batchRequired", true);
+            if (!(Boolean) technologyEntity.getField(BATCH_REQUIRED)) {
+                technologyEntity.setField(BATCH_REQUIRED, true);
                 technologyInDef.save(technologyEntity);
             }
         }
@@ -157,7 +160,8 @@ public class GenealogiesForComponentsService {
     private boolean checkProductInComponentsBatchRequired(final Long entityId) {
         SearchResult searchResult = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).find()
-                .belongsTo("operationComponent.technology", entityId).isEq("batchRequired", true).setMaxResults(1).list();
+                .belongsTo("operationComponent.technology", entityId).add(SearchRestrictions.eq(BATCH_REQUIRED, true))
+                .setMaxResults(1).list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
     }
