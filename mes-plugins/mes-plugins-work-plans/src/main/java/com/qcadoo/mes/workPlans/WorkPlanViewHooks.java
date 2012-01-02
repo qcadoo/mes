@@ -28,6 +28,7 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class WorkPlanViewHooks {
 
+    @Autowired
     private WorkPlanService workPlanService;
 
     @Autowired
