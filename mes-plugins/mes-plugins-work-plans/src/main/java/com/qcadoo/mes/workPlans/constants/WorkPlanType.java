@@ -1,7 +1,7 @@
 package com.qcadoo.mes.workPlans.constants;
 
 public enum WorkPlanType {
-    ALL_OPERATIONS("01allOperations"), BY_END_PRODUCT("02byEndProduct"), BY_WORKSTATION_TYPE("03byWorkstationType"), BY_DIVISION(
+    NO_DISTINCTION("01noDistinction"), BY_END_PRODUCT("02byEndProduct"), BY_WORKSTATION_TYPE("03byWorkstationType"), BY_DIVISION(
             "04byDivision");
 
     private String stringValue;
@@ -15,8 +15,8 @@ public enum WorkPlanType {
     }
 
     public static WorkPlanType parseString(final String string) {
-        if ("01allOperations".equals(string)) {
-            return ALL_OPERATIONS;
+        if ("01noDistinction".equals(string)) {
+            return NO_DISTINCTION;
         } else if ("02byEndProduct".equals(string)) {
             return BY_END_PRODUCT;
         } else if ("03byWorkstationType".equals(string)) {

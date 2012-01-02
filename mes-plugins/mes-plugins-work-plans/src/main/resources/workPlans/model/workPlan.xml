@@ -36,7 +36,7 @@
 		<boolean name="generated" />
 		<string name="fileName" />
 		
-		<enum name="type" values="01allOperations,02byEndProduct,03byWorkstationType,04byDivision" default="01allOperations" />
+		<enum name="type" values="01noDistinction,02byEndProduct,03byWorkstationType,04byDivision" default="01allOperations" />
 			
 		<manyToMany name="orders" joinField="workPlans" model="order" plugin="orders" copyable="true" />
 	</fields>

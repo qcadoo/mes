@@ -390,20 +390,15 @@
 					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-basic-production-counting</artifactId>
 					<version>1.1.2-SNAPSHOT</version>
 				</dependency>
-				<dependency>
+ 				<!-- <dependency>
 					<groupId>com.qcadoo.mes</groupId>
-					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-technologies</artifactId>
+					<artifactId>mes-commercial-plugins-advanced-genealogy</artifactId>
 					<version>1.1.2-SNAPSHOT</version>
 				</dependency>
-<!-- 				<dependency> -->
-<!-- 				<groupId>com.qcadoo.mes</groupId> -->
-<!-- 				<artifactId>mes-commercial-plugins-advanced-genealogy</artifactId> -->
-<!-- 				<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-				<!-- <dependency>
-				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-advanced-genealogy-for-orders</artifactId>
-				<version>1.1.2-SNAPSHOT</version>
+ 				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-advanced-genealogy-for-orders</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
 				</dependency> -->
 			</dependencies>
 		</profile>
