@@ -63,6 +63,8 @@ public interface SamplesConstants {
 
     String TECHNOLOGY_MODEL_OPERATION = "operation";
 
+    String FIELD_DESCRIPTION = "description";
+
     String FIELD_NUMBER = "number";
 
     String FIELD_EAN = "ean";

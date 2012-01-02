@@ -53,6 +53,8 @@ import com.qcadoo.security.api.SecurityRolesService;
 
 public abstract class SamplesLoader {
 
+    private static final String NAME = "name";
+
     private static final String EMAIL = "email";
 
     private static final Logger LOG = LoggerFactory.getLogger(SamplesLoader.class);
@@ -112,15 +114,15 @@ public abstract class SamplesLoader {
     }
 
     void addDictionaryItems(final Map<String, String> values) {
-        Entity dictionary = getDictionaryByName(values.get("name"));
+        Entity dictionary = getDictionaryByName(values.get(NAME));
 
         Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
         item.setField("dictionary", dictionary);
-        item.setField("name", values.get("item"));
+        item.setField(NAME, values.get("item"));
         item.setField("description", values.get("description"));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField("name") + ", item=" + item.getField("name")
+            LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(NAME) + ", item=" + item.getField(NAME)
                     + ", description=" + item.getField("description") + "}");
         }
 
@@ -182,7 +184,7 @@ public abstract class SamplesLoader {
                 + values.get("owner"));
 
         company.setField("number", values.get("number"));
-        company.setField("name", values.get("name"));
+        company.setField(NAME, values.get(NAME));
         company.setField("tax", values.get("tax"));
         company.setField("street", values.get("street"));
         company.setField("house", values.get("house"));
@@ -197,7 +199,7 @@ public abstract class SamplesLoader {
         company.setField("owner", values.get("owner"));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test company item {company=" + company.getField("name") + "}");
+            LOG.debug("Add test company item {company=" + company.getField(NAME) + "}");
         }
 
         company = company.getDataDefinition().save(company);
@@ -231,7 +233,7 @@ public abstract class SamplesLoader {
         Entity shift = dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_SHIFT)
                 .create();
 
-        shift.setField("name", values.get("name"));
+        shift.setField(NAME, values.get(NAME));
         shift.setField("mondayWorking", values.get("mondayworking"));
         shift.setField("mondayHours", values.get("mondayhours"));
         shift.setField("tuesdayWorking", values.get("tuesdayworking"));
@@ -248,7 +250,7 @@ public abstract class SamplesLoader {
         shift.setField("sundayHours", values.get("sundayhours"));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test shift item {shift=" + shift.getField("name") + "}");
+            LOG.debug("Add test shift item {shift=" + shift.getField(NAME) + "}");
         }
 
         shift = shift.getDataDefinition().save(shift);
@@ -260,11 +262,11 @@ public abstract class SamplesLoader {
         SearchCriteriaBuilder searchBuilder = dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
                 .add(SearchRestrictions.belongsTo("dictionary", dictionary));
         int total = searchBuilder.list().getTotalNumberOfEntities();
-        return searchBuilder.setMaxResults(1).setFirstResult(RANDOM.nextInt(total)).uniqueResult().getField("name").toString();
+        return searchBuilder.setMaxResults(1).setFirstResult(RANDOM.nextInt(total)).uniqueResult().getField(NAME).toString();
     }
 
     Entity getDictionaryByName(final String name) {
-        return dataDefinitionService.get("qcadooModel", "dictionary").find().add(SearchRestrictions.eq("name", name))
+        return dataDefinitionService.get("qcadooModel", "dictionary").find().add(SearchRestrictions.eq(NAME, name))
                 .setMaxResults(1).uniqueResult();
     }
 

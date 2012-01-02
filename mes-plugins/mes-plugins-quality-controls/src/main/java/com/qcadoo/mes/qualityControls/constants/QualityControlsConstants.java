@@ -40,4 +40,12 @@ public interface QualityControlsConstants {
     String VIEW_QUALITY_CONTROLS_FOR_ORDER_LIST = "qualityControlsForOrderList";
 
     String VIEW_QUALITY_CONTROLS_FOR_UNIT_LIST = "qualityControlsForUnitList";
+
+    String CONTROL_RESULT_TYPE_OBJECTION = "03objection";
+
+    String CONTROL_RESULT_TYPE_INCORRECT = "02incorrect";
+
+    String CONTROL_RESULT_TYPE_CORRECT = "01correct";
+
+    String FIELD_CONTROL_RESULT = "controlResult";
 }
