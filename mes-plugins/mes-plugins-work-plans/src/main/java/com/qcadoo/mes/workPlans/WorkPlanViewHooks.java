@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class WorkPlanViewHooks {
 
-    @Autowired
     private WorkPlanService workPlanService;
 
     @Autowired
@@ -83,7 +81,8 @@ public class WorkPlanViewHooks {
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, Locale.getDefault()).format(new Date()));
+                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, viewDefinitionState.getLocale())
+                        .format(new Date()));
             }
 
             state.performEvent(viewDefinitionState, "save", new String[0]);
@@ -131,7 +130,8 @@ public class WorkPlanViewHooks {
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, Locale.getDefault()).format(new Date()));
+                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, viewDefinitionState.getLocale())
+                        .format(new Date()));
             }
 
             state.performEvent(viewDefinitionState, "save", new String[0]);
