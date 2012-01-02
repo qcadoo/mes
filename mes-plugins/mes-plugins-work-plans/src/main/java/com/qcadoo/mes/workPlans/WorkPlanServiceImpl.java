@@ -69,7 +69,7 @@ public class WorkPlanServiceImpl implements WorkPlanService {
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         // FIXME mici thats just temporary
-        workPlan.setField("type", WorkPlanType.ALL_OPERATIONS.getStringValue());
+        workPlan.setField("type", WorkPlanType.NO_DISTINCTION.getStringValue());
         Entity workPlanWithFilename = workPlanPdfService.updateFileName(workPlan, "Work_plan");
         workPlanPdfService.generateDocument(workPlanWithFilename, company, state.getLocale());
     }
@@ -78,7 +78,7 @@ public class WorkPlanServiceImpl implements WorkPlanService {
         Entity workPlan = getWorkPlanDataDefinition().create();
         workPlan.setField("orders", orders);
         workPlan.setField("name", generateNameForWorkPlan());
-        workPlan.setField("type", WorkPlanType.ALL_OPERATIONS.getStringValue());
+        workPlan.setField("type", WorkPlanType.NO_DISTINCTION.getStringValue());
 
         return workPlan.getDataDefinition().save(workPlan);
     }
