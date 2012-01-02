@@ -59,7 +59,7 @@ import com.qcadoo.security.api.SecurityService;
 @Service
 public class WorkPlanPdfService extends PdfDocumentService {
 
-    private static final SimpleDateFormat D_F = new SimpleDateFormat(DateUtils.DATE_FORMAT);
+    private static final SimpleDateFormat D_F = new SimpleDateFormat(DateUtils.DATE_FORMAT, Locale.getDefault());
 
     private final int[] defaultWorkPlanColumnWidth = new int[] { 20, 20, 20, 13, 13, 13 };
 

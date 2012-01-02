@@ -24,7 +24,7 @@ public class WorkPlanProductsServiceTest {
 
     private Entity technology;
 
-    private Entity operation1, operation2;
+    private Entity operationComponent1, operationComponent2;
 
     private Entity product1, product2, product3, product4;
 
@@ -35,11 +35,11 @@ public class WorkPlanProductsServiceTest {
         order = mock(Entity.class);
         technology = mock(Entity.class);
 
-        operation1 = mock(Entity.class);
-        operation2 = mock(Entity.class);
+        Entity operation1 = mock(Entity.class);
+        Entity operation2 = mock(Entity.class);
 
-        Entity operationComponent1 = mock(Entity.class);
-        Entity operationComponent2 = mock(Entity.class);
+        operationComponent1 = mock(Entity.class);
+        operationComponent2 = mock(Entity.class);
 
         Entity prodInComp1 = mock(Entity.class);
         Entity prodInComp2 = mock(Entity.class);
@@ -95,27 +95,39 @@ public class WorkPlanProductsServiceTest {
     }
 
     @Test
-    public void shouldGetInProductsForAllOperations() {
+    public void shouldReturnEmptyMapIfTheresNoTechnology() {
+        // given
+        when(order.getBelongsToField("technology")).thenReturn(null);
+
         // when
         Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getInProductsPerOperation(order);
 
         // then
-        assertTrue(inProductsPerOperation.keySet().contains(operation1));
-        assertTrue(inProductsPerOperation.keySet().contains(operation2));
+        assertTrue(inProductsPerOperation.isEmpty());
+    }
+
+    @Test
+    public void shouldGetInProductsForAllOperationComponents() {
+        // when
+        Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getInProductsPerOperation(order);
+
+        // then
+        assertTrue(inProductsPerOperation.keySet().contains(operationComponent1));
+        assertTrue(inProductsPerOperation.keySet().contains(operationComponent2));
         assertEquals(2, inProductsPerOperation.keySet().size());
     }
 
     @Test
-    public void shouldReturnCorrectInProductsForOperations() {
+    public void shouldReturnCorrectInProductsForOperationComponents() {
         // when
         Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getInProductsPerOperation(order);
 
         // then
-        Map<Entity, BigDecimal> inProductsForOperation1 = inProductsPerOperation.get(operation1);
+        Map<Entity, BigDecimal> inProductsForOperation1 = inProductsPerOperation.get(operationComponent1);
         assertTrue(inProductsForOperation1.keySet().contains(product1));
         assertEquals(1, inProductsForOperation1.keySet().size());
 
-        Map<Entity, BigDecimal> inProductsForOperation2 = inProductsPerOperation.get(operation2);
+        Map<Entity, BigDecimal> inProductsForOperation2 = inProductsPerOperation.get(operationComponent2);
         assertTrue(inProductsForOperation2.keySet().contains(product2));
         assertTrue(inProductsForOperation2.keySet().contains(product3));
         assertEquals(2, inProductsForOperation2.keySet().size());
@@ -127,8 +139,8 @@ public class WorkPlanProductsServiceTest {
         Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getInProductsPerOperation(order);
 
         // then
-        Map<Entity, BigDecimal> inProductsForOperation1 = inProductsPerOperation.get(operation1);
-        Map<Entity, BigDecimal> inProductsForOperation2 = inProductsPerOperation.get(operation2);
+        Map<Entity, BigDecimal> inProductsForOperation1 = inProductsPerOperation.get(operationComponent1);
+        Map<Entity, BigDecimal> inProductsForOperation2 = inProductsPerOperation.get(operationComponent2);
 
         assertEquals(new BigDecimal(25), inProductsForOperation1.get(product1));
         assertEquals(new BigDecimal(10), inProductsForOperation2.get(product2));

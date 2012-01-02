@@ -3,6 +3,7 @@ package com.qcadoo.mes.workPlans;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.Entity;
@@ -30,9 +30,6 @@ public class WorkPlanViewHooks {
 
     @Autowired
     private WorkPlanService workPlanService;
-
-    @Autowired
-    private OrderService orderService;
 
     @Autowired
     private RibbonReportService ribbonReportService;
@@ -85,7 +82,7 @@ public class WorkPlanViewHooks {
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
+                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, Locale.getDefault()).format(new Date()));
             }
 
             state.performEvent(viewDefinitionState, "save", new String[0]);
@@ -133,7 +130,7 @@ public class WorkPlanViewHooks {
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
+                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, Locale.getDefault()).format(new Date()));
             }
 
             state.performEvent(viewDefinitionState, "save", new String[0]);
@@ -162,11 +159,11 @@ public class WorkPlanViewHooks {
             Entity workPlan = workPlanService.getWorkPlan(workPlanId);
             if (workPlan == null) {
                 addFailureMessage(state, "qcadooView.message.entityNotFound");
-            } else if (!StringUtils.hasText(workPlan.getStringField("fileName"))) {
-                addFailureMessage(state, "workPlans.workPlan.window.workPlan.documentsWasNotGenerated");
-            } else {
+            } else if (StringUtils.hasText(workPlan.getStringField("fileName"))) {
                 String url = getUrlForReport((Long) state.getFieldValue());
-                viewDefinitionState.redirectTo(url.toString(), true, false);
+                viewDefinitionState.redirectTo(url, true, false);
+            } else {
+                addFailureMessage(state, "workPlans.workPlan.window.workPlan.documentsWasNotGenerated");
             }
         } else {
             if (state instanceof FormComponent) {
