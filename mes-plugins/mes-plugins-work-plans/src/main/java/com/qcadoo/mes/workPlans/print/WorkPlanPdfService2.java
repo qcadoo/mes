@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.lowagie.text.Chunk;
@@ -55,7 +56,9 @@ import com.qcadoo.security.api.SecurityService;
 @Service
 public class WorkPlanPdfService2 extends PdfDocumentService {
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DateUtils.DATE_FORMAT);
+    private static Locale currentLocale = LocaleContextHolder.getLocale();
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DateUtils.DATE_FORMAT, currentLocale);
 
     private final int[] defaultWorkPlanColumnWidth = new int[] { 15, 25, 20, 20, 20 };
 
