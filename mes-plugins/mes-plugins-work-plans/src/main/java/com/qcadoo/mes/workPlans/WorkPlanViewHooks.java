@@ -3,6 +3,7 @@ package com.qcadoo.mes.workPlans;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -44,11 +45,11 @@ public class WorkPlanViewHooks {
             final String[] args) {
         GridComponent grid = (GridComponent) component;
 
-        Map<String, Object> gridOptions = Maps.newHashMap();
-        gridOptions.put("entities", grid.getSelectedEntitiesIds());
+        List<Entity> orders = workPlanService.getSelectedOrders(grid.getSelectedEntitiesIds());
+        Entity workPlan = workPlanService.generateWorkPlanEntity(orders);
 
         Map<String, Object> navigationParameters = Maps.newHashMap();
-        navigationParameters.put("workPlanComponents.options", gridOptions);
+        navigationParameters.put("form.id", workPlan.getId());
         navigationParameters.put("window.activeMenu", "reports.workPlans");
 
         view.redirectTo("/page/workPlans/workPlanDetails.html", false, true, navigationParameters);

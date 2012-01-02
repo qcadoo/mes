@@ -64,7 +64,7 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
-public final class OrderService {
+public class OrderService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;

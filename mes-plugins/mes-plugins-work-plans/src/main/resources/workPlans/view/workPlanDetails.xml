@@ -113,7 +113,7 @@
 				]]>
 			</script>
 			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="5">
+				rows="6">
 				<layoutElement column="1" row="1">
 					<component type="checkbox" name="generated" reference="generated"
 						field="generated" defaultEnabled="false">
@@ -136,7 +136,11 @@
 					<component type="textarea" name="name" reference="name"
 						field="name" />
 				</layoutElement>
-				<layoutElement column="2" row="1" height="5" width="2">
+				<layoutElement column="1" row="6">
+					<component type="select" name="type" reference="type"
+						field="type" />
+				</layoutElement>
+				<layoutElement column="2" row="1" height="6" width="2">
 					<component type="lookup" name="order" reference="orderLookup" field="orders" defaultVisible="false" persistent="false" hasLabel="false">
 						<option type="column" name="name" fields="name" link="true"
 							width="200" />
