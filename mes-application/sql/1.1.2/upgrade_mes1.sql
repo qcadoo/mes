@@ -124,3 +124,74 @@ ALTER TABLE basic_parameter RENAME COLUMN showDescriptionInWorkPlans TO hideDesc
 ALTER TABLE basic_parameter ADD COLUMN hideTechnologyAndOrderInWorkPlans boolean;
 
 -- end
+
+-- Table: basic_workstationtype
+-- changed: 03.01.2012
+
+ALTER TABLE basic_workstationtype ADD COLUMN active boolean DEFAULT true;
+
+-- end
+
+
+-- Table: basic_staff
+-- changed: 03.01.2012
+
+ALTER TABLE basic_staff ADD COLUMN active boolean DEFAULT true;
+
+-- end
+
+
+-- Table: ordergroups_ordergroup
+-- changed: 03.01.2012
+
+ALTER TABLE ordergroups_ordergroup ADD COLUMN active boolean DEFAULT true;
+
+-- end
+
+
+-- Table: technologies_operation
+-- changed: 03.01.2012
+
+ALTER TABLE technologies_operation ADD COLUMN active boolean DEFAULT true;
+
+-- end
+
+
+-- Table: stoppage_stoppage
+-- changed: 03.01.2012
+
+ALTER TABLE stoppage_stoppage ADD COLUMN active boolean DEFAULT true;
+
+-- end
+
+
+-- Table: productioncounting_productionrecord
+-- changed: 03.01.2012
+
+ALTER TABLE productioncounting_productionrecord ADD COLUMN active boolean DEFAULT true;
+
+-- end
+
+
+-- Table: productioncounting_productioncounting
+-- changed: 03.01.2012
+
+ALTER TABLE productioncounting_productioncounting ADD COLUMN active boolean DEFAULT true;
+
+-- end
+
+
+-- Table: workplans_workplan
+-- changed: 03.01.2012
+
+ALTER TABLE workplans_workplan ADD COLUMN active boolean DEFAULT true;
+
+-- end
+
+
+-- Table: materialflow_materialsinstockareas
+-- changed: 03.01.2012
+
+ALTER TABLE materialflow_materialsinstockareas ADD COLUMN active boolean DEFAULT true;
+
+-- end
