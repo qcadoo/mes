@@ -40,7 +40,7 @@ public class WorkPlanProductsService {
 
                 products.put(product, neededQty);
             }
-            operations.put(operationComponent.getBelongsToField("operation"), products);
+            operations.put(operationComponent, products);
         }
 
         return operations;

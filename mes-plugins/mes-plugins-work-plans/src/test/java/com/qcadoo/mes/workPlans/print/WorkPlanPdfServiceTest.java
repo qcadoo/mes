@@ -208,8 +208,17 @@ public class WorkPlanPdfServiceTest {
         assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(4).getFont());
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionForIncorectWorkPlanType() {
+        // given
+        when(workPlan.getStringField("type")).thenReturn("asdfghjk");
+
+        // when
+        workPlanPdfService.getOperationsTitle(workPlan);
+    }
+
     @Test
-    public void shouldPrepareOperationsTitleForAllOperations() {
+    public void shouldPrepareOperationsTitleForNoDistinction() {
         // given
         when(workPlan.getStringField("type")).thenReturn(WorkPlanType.NO_DISTINCTION.getStringValue());
 

@@ -31,8 +31,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.lowagie.text.Chunk;
@@ -54,17 +56,20 @@ import com.qcadoo.security.api.SecurityService;
 @Service
 public class WorkPlanPdfService2 extends PdfDocumentService {
 
-    private static final SimpleDateFormat D_F = new SimpleDateFormat(DateUtils.DATE_FORMAT);
+    private static Locale currentLocale = LocaleContextHolder.getLocale();
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DateUtils.DATE_FORMAT, currentLocale);
 
     private final int[] defaultWorkPlanColumnWidth = new int[] { 15, 25, 20, 20, 20 };
-
-    private final int[] defaultWorkPlanOperationColumnWidth = new int[] { 10, 21, 23, 23, 23 };
 
     @Autowired
     private TranslationService translationService;
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private WorkPlanProductsService workPlanProductsService;
 
     @Override
     public void buildPdfContent(Document document, Entity entity, Locale locale) throws DocumentException {
@@ -76,15 +81,35 @@ public class WorkPlanPdfService2 extends PdfDocumentService {
 
         PdfPTable orderTable = PdfUtil.createTableWithHeader(5, prepareOrdersTableHeader(document, entity, locale), false,
                 defaultWorkPlanColumnWidth);
+
         List<Entity> orders = entity.getManyToManyField("orders");
         addOrderSeries(orderTable, orders, decimalFormat);
         document.add(orderTable);
         document.add(Chunk.NEWLINE);
+
+        for (Entity order : orders) {
+            Map<Entity, Map<Entity, BigDecimal>> operations = workPlanProductsService.getInProductsPerOperation(order);
+            // addOperations(document, operations.keySet().)
+        }
     }
 
     @Override
     public String getReportTitle(Locale locale) {
         return translationService.translate("workPlans.workPlan.report.title", locale);
+    }
+
+    void addOperations(Document document, List<Entity> operations) throws DocumentException {
+        PdfPTable operationTable = PdfUtil.createPanelTable(3);
+
+        // PdfUtil.addTableCellAsTable(
+        // operationTable,
+        // getTranslationService().translate(
+        // "advancedGenealogy.trackingRecordSimpleDetails.report.panel." + panelEntry.getKey(), locale),
+        // panelEntry.getValue(), null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+
+        operationTable.setSpacingAfter(20);
+        operationTable.setSpacingBefore(20);
+        document.add(operationTable);
     }
 
     void addOrderSeries(final PdfPTable table, final List<Entity> orders, final DecimalFormat df) throws DocumentException {
@@ -98,7 +123,9 @@ public class WorkPlanPdfService2 extends PdfDocumentService {
             String unitString = "";
 
             Entity product = (Entity) order.getField("product");
-            if (product != null) {
+            if (product == null) {
+                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+            } else {
                 String productString = product.getField("name").toString() + " (" + product.getField("number").toString() + ")";
                 table.addCell(new Phrase(productString, PdfUtil.getArialRegular9Dark()));
 
@@ -106,8 +133,6 @@ public class WorkPlanPdfService2 extends PdfDocumentService {
                 if (unit != null) {
                     unitString = " " + unit.toString();
                 }
-            } else {
-                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             }
 
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -118,7 +143,9 @@ public class WorkPlanPdfService2 extends PdfDocumentService {
             table.addCell(new Phrase(quantityString, PdfUtil.getArialRegular9Dark()));
             String formattedDateTo = "---";
             if (order.getField("dateTo") != null) {
-                formattedDateTo = D_F.format((Date) order.getField("dateTo"));
+                synchronized (this) {
+                    formattedDateTo = DATE_FORMAT.format((Date) order.getField("dateTo"));
+                }
             }
             table.addCell(new Phrase(formattedDateTo, PdfUtil.getArialRegular9Dark()));
         }
@@ -149,8 +176,6 @@ public class WorkPlanPdfService2 extends PdfDocumentService {
 
         if (WorkPlanType.NO_DISTINCTION.getStringValue().equals(type)) {
             return "workPlans.workPlan.report.title.allOperations";
-        } else if (WorkPlanType.BY_END_PRODUCT.getStringValue().equals(type)) {
-            return "workPlans.workPlan.report.title.byEndProduct";
         }
 
         throw new IllegalStateException("unnexpected workPlan type");
