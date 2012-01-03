@@ -39,6 +39,7 @@ import com.qcadoo.mes.orders.states.OrderStateListener;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 
 @Service
@@ -95,8 +96,8 @@ public class QualityControlOrderStatesListener extends OrderStateListener {
             qualityControlDD = dataDefinitionService.get("qualityControls", "qualityControl");
 
             if (qualityControlDD != null) {
-                SearchResult searchResult = qualityControlDD.find().belongsTo("order", order.getId()).isEq("closed", false)
-                        .list();
+                SearchResult searchResult = qualityControlDD.find().add(SearchRestrictions.belongsTo("order", order))
+                        .add(SearchRestrictions.eq("closed", false)).list();
                 return (searchResult.getTotalNumberOfEntities() <= 0);
             } else {
                 return false;

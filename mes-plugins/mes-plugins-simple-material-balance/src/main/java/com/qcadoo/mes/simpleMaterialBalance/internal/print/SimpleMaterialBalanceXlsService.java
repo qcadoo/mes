@@ -46,6 +46,20 @@ import com.qcadoo.report.api.xls.XlsUtil;
 @Service
 public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
 
+    private static final String ORDERS_FIELD = "orders";
+
+    private static final String ONLY_COMPONENTS_FIELD = "onlyComponents";
+
+    private static final String DATE_FIELD = "date";
+
+    private static final String STOCK_AREAS_FIELD = "stockAreas";
+
+    private static final String UNIT_FIELD = "unit";
+
+    private static final String NAME_FIELD = "name";
+
+    private static final String NUMBER_FIELD = "number";
+
     @Autowired
     private MaterialRequirementReportDataServiceImpl materialRequirementReportDataService;
 
@@ -83,23 +97,23 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity simpleMaterialBalance) {
         int rowNum = 1;
-        List<Entity> orders = simpleMaterialBalance.getHasManyField("orders");
-        Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField("onlyComponents");
+        List<Entity> orders = simpleMaterialBalance.getHasManyField(ORDERS_FIELD);
+        Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField(ONLY_COMPONENTS_FIELD);
         Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForMaterialRequirementProducts(
                 orders, onlyComponents);
-        List<Entity> stockAreass = simpleMaterialBalance.getHasManyField("stockAreas");
+        List<Entity> stockAreass = simpleMaterialBalance.getHasManyField(STOCK_AREAS_FIELD);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(product.getKey().getField("number").toString());
-            row.createCell(1).setCellValue(product.getKey().getField("name").toString());
-            row.createCell(2).setCellValue(product.getKey().getField("unit").toString());
+            row.createCell(0).setCellValue(product.getKey().getField(NUMBER_FIELD).toString());
+            row.createCell(1).setCellValue(product.getKey().getField(NAME_FIELD).toString());
+            row.createCell(2).setCellValue(product.getKey().getField(UNIT_FIELD).toString());
             row.createCell(3).setCellValue(getDecimalFormat().format(product.getValue()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity stockAreas : stockAreass) {
                 available = available.add(materialFlowService.calculateShouldBeInStockArea(
-                        stockAreas.getBelongsToField("stockAreas").getId(), product.getKey().getId().toString(),
-                        simpleMaterialBalance.getField("date").toString()));
+                        stockAreas.getBelongsToField(STOCK_AREAS_FIELD).getId(), product.getKey().getId().toString(),
+                        simpleMaterialBalance.getField(DATE_FIELD).toString()));
             }
             row.createCell(4).setCellValue(getDecimalFormat().format(available));
             row.createCell(5).setCellValue(getDecimalFormat().format(available.subtract(product.getValue())));

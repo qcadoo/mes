@@ -56,6 +56,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -323,7 +324,7 @@ public class OrderService {
         DataDefinition instructionDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isEq("master", true)
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).add(SearchRestrictions.eq("master", true))
                 .belongsTo(BASIC_MODEL_PRODUCT, selectedProductId);
 
         SearchResult searchResult = searchCriteria.list();
