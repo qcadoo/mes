@@ -94,8 +94,67 @@
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
 		</model:model-field>
-		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		
+		<model:model-field plugin="technologies" model="operation">
+			<model:boolean name="hideDescriptionInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:boolean name="hideDetailsInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:boolean name="hideTechnologyAndOrderInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:string name="imageUrlInWorkPlan" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:boolean name="dontPrintInputProductsInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
+		</model:model-field>
+		
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:boolean name="hideDescriptionInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:boolean name="hideDetailsInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:boolean name="hideTechnologyAndOrderInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:string name="imageUrlInWorkPlan" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:boolean name="dontPrintInputProductsInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
+		</model:model-field>
+		
+		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
+			<model:boolean name="hideDescriptionInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
+			<model:boolean name="hideDetailsInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
+			<model:boolean name="hideTechnologyAndOrderInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
+			<model:string name="imageUrlInWorkPlan" />
+		</model:model-field>
+		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
+			<model:boolean name="dontPrintInputProductsInWorkPlans" />
+		</model:model-field>
+		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
+			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
+		</model:model-field>
+		<view:view-tab resource="view/tabExtensions/parameters.xml" />
+		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/orderOperationComponentDetails.xml" />
 	</modules>
 
 </plugin>

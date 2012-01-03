@@ -125,6 +125,7 @@ ALTER TABLE basic_parameter ADD COLUMN hideTechnologyAndOrderInWorkPlans boolean
 
 -- end
 
+
 -- Table: basic_workstationtype
 -- changed: 03.01.2012
 
@@ -193,5 +194,45 @@ ALTER TABLE workplans_workplan ADD COLUMN active boolean DEFAULT true;
 -- changed: 03.01.2012
 
 ALTER TABLE materialflow_materialsinstockareas ADD COLUMN active boolean DEFAULT true;
+
+-- end
+
+
+-- Table: technologies_operation
+-- changed: 03.01.2012
+
+ALTER TABLE technologies_operation ADD COLUMN hideDescriptionInWorkPlans boolean;
+ALTER TABLE technologies_operation ADD COLUMN hideDetailsInWorkPlans boolean;
+ALTER TABLE technologies_operation ADD COLUMN hideTechnologyAndOrderInWorkPlans boolean;
+ALTER TABLE technologies_operation ADD COLUMN imageUrlInWorkPlan character varying(255);
+ALTER TABLE technologies_operation ADD COLUMN dontPrintInputProductsInWorkPlans boolean;
+ALTER TABLE technologies_operation ADD COLUMN dontPrintOutputProductsInWorkPlans boolean;
+
+-- end
+
+
+-- Table: technologies_technologyoperationcomponent
+-- changed: 03.01.2012
+
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN hideDescriptionInWorkPlans boolean;
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN hideDetailsInWorkPlans boolean;
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN hideTechnologyAndOrderInWorkPlans boolean;
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN imageUrlInWorkPlan character varying(255);
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN dontPrintInputProductsInWorkPlans boolean;
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN dontPrintOutputProductsInWorkPlans boolean;
+
+-- end
+
+
+-- Table: productionscheduling_orderoperationcomponent
+-- changed: 03.01.2012
+
+
+ALTER TABLE productionscheduling_orderoperationcomponent ADD COLUMN hideDescriptionInWorkPlans boolean;
+ALTER TABLE productionscheduling_orderoperationcomponent ADD COLUMN hideDetailsInWorkPlans boolean;
+ALTER TABLE productionscheduling_orderoperationcomponent ADD COLUMN hideTechnologyAndOrderInWorkPlans boolean;
+ALTER TABLE productionscheduling_orderoperationcomponent ADD COLUMN imageUrlInWorkPlan character varying(255);
+ALTER TABLE productionscheduling_orderoperationcomponent ADD COLUMN dontPrintInputProductsInWorkPlans boolean;
+ALTER TABLE productionscheduling_orderoperationcomponent ADD COLUMN dontPrintOutputProductsInWorkPlans boolean;
 
 -- end
