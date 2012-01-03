@@ -270,7 +270,7 @@ public class TestSamplesLoader extends SamplesLoader {
             product.setField(FIELD_NUMBER, values.get(PRODUCT_NUMBER));
         }
         if (!values.get("typeofproduct").isEmpty()) {
-            product.setField("typeOfMaterial", values.get("typeofproduct"));
+            product.setField("globalTypeOfMaterial", values.get("typeofproduct"));
         }
         product.setField("unit", values.get("unit"));
 
@@ -286,7 +286,7 @@ public class TestSamplesLoader extends SamplesLoader {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test product {id=" + product.getId() + ", category=" + product.getField("category") + ", ean="
                     + product.getField(FIELD_EAN) + ", name=" + product.getField(FIELD_NAME) + ", " + FIELD_NUMBER + "="
-                    + product.getField(FIELD_NUMBER) + ", typeOfMaterial=" + product.getField("typeOfMaterial") + ", unit="
+                    + product.getField(FIELD_NUMBER) + ", globalTypeOfMaterial=" + product.getField("typeOfMaterial") + ", unit="
                     + product.getField("unit") + "}");
         }
 

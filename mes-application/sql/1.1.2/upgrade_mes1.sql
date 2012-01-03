@@ -195,3 +195,5 @@ ALTER TABLE workplans_workplan ADD COLUMN active boolean DEFAULT true;
 ALTER TABLE materialflow_materialsinstockareas ADD COLUMN active boolean DEFAULT true;
 
 -- end
+
+ALTER TABLE basic_product RENAME COLUMN typeofmaterial TO globalTypeOfMaterial;

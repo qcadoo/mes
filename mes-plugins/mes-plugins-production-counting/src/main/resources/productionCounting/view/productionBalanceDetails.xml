@@ -154,10 +154,10 @@
 				<option type="column" name="inputProductNumber" fields="product" expression="#product['number']" />
 				<option type="column" name="inputProductName" fields="product" expression="#product['name']" />
 				<option type="column" name="inputProductType" fields="product" 
-						expression="#product['typeOfMaterial'] == '01component' ? '@basic.product.typeOfMaterial.value.01component' :
-									#product['typeOfMaterial'] == '02intermediate' ? '@basic.product.typeOfMaterial.value.02intermediate' :
-									#product['typeOfMaterial'] == '03product' ? '@basic.product.typeOfMaterial.value.03product' :
-									#product['typeOfMaterial'] == '04waste' ? '@basic.product.typeOfMaterial.value.04waste' : ''" />
+						expression="#product['globalTypeOfMaterial'] == '01component' ? '@basic.product.globalTypeOfMaterial.value.01component' :
+									#product['globalTypeOfMaterial'] == '02intermediate' ? '@basic.product.globalTypeOfMaterial.value.02intermediate' :
+									#product['globalTypeOfMaterial'] == '03product' ? '@basic.product.globalTypeOfMaterial.value.03product' :
+									#product['globalTypeOfMaterial'] == '04waste' ? '@basic.product.globalTypeOfMaterial.value.04waste' : ''" />
 				<option type="column" name="inputProductPlannedQuantity" fields="plannedQuantity" />
 				<option type="column" name="inputProductUsedQuantity" fields="usedQuantity" expression="#usedQuantity==null?'N/A':#usedQuantity" />
 				<option type="column" name="inputProductBalance" fields="balance" expression="#balance==null?'N/A':#balance" />
@@ -170,10 +170,10 @@
 				<option type="column" name="outputProductNumber" fields="product" expression="#product['number']" />
 				<option type="column" name="outputProductName" fields="product" expression="#product['name']" />
 				<option type="column" name="outputProductType" fields="product" 
-						expression="#product['typeOfMaterial'] == '01component' ? '@basic.product.typeOfMaterial.value.01component' :
-									#product['typeOfMaterial'] == '02intermediate' ? '@basic.product.typeOfMaterial.value.02intermediate' :
-									#product['typeOfMaterial'] == '03product' ? '@basic.product.typeOfMaterial.value.03product' :
-									#product['typeOfMaterial'] == '04waste' ? '@basic.product.typeOfMaterial.value.04waste' : ''" />
+						expression="#product['globalTypeOfMaterial'] == '01component' ? '@basic.product.globalTypeOfMaterial.value.01component' :
+									#product['globalTypeOfMaterial'] == '02intermediate' ? '@basic.product.globalTypeOfMaterial.value.02intermediate' :
+									#product['globalTypeOfMaterial'] == '03product' ? '@basic.product.globalTypeOfMaterial.value.03product' :
+									#product['globalTypeOfMaterial'] == '04waste' ? '@basic.product.globalTypeOfMaterial.value.04waste' : ''" />
 				<option type="column" name="outputProductPlannedQuantity" fields="plannedQuantity" />
 				<option type="column" name="outputProductProducedQuantity" fields="usedQuantity" expression="#usedQuantity==null?'N/A':#usedQuantity" />
 				<option type="column" name="outputProductBalance" fields="balance" expression="#balance==null?'N/A':#balance" />

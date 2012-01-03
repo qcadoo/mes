@@ -211,21 +211,21 @@ public class ReportDataServiceTest {
         technologyForQuantityPerTechnologyAlghorithm.setField("operationComponents", entityTree);
         technologyForQuantityPerTechnologyAlghorithm.setField("componentQuantityAlgorithm", "02perTechnology");
 
-        product1.setField("typeOfMaterial", "02intermediate");
+        product1.setField("globalTypeOfMaterial", "02intermediate");
         product1.setField("number", "1");
         product1.setId(new Long(1));
         Entity productInComponent1 = new DefaultEntity(dataDefinition);
         productInComponent1.setField("product", product1);
         productInComponent1.setField("quantity", BigDecimal.ONE);
 
-        product2.setField("typeOfMaterial", "01component");
+        product2.setField("globalTypeOfMaterial", "01component");
         product2.setField("number", "2");
         product2.setId(new Long(2));
         Entity productInComponent2 = new DefaultEntity(dataDefinition);
         productInComponent2.setField("product", product2);
         productInComponent2.setField("quantity", new BigDecimal("2"));
 
-        product3.setField("typeOfMaterial", "02intermediate");
+        product3.setField("globalTypeOfMaterial", "02intermediate");
         product3.setField("number", "3");
         product3.setId(new Long(3));
         Entity productInComponent3 = new DefaultEntity(dataDefinition);
@@ -239,7 +239,7 @@ public class ReportDataServiceTest {
         technologyForQuantityPerOutProductsAlghorithm.setField("operationComponents", entityTree);
         technologyForQuantityPerOutProductsAlghorithm.setField("componentQuantityAlgorithm", "01perProductOut");
 
-        product4.setField("typeOfMaterial", "02intermediate");
+        product4.setField("globalTypeOfMaterial", "02intermediate");
         product4.setField("number", "4");
         product4.setId(new Long(4));
         Entity productInComponent4 = new DefaultEntity(dataDefinition);
@@ -247,7 +247,7 @@ public class ReportDataServiceTest {
         productInComponent4.setField("quantity", new BigDecimal("5"));
         products4.add(productInComponent4);
 
-        product5.setField("typeOfMaterial", "02intermediate");
+        product5.setField("globalTypeOfMaterial", "02intermediate");
         product5.setField("number", "5");
         product5.setId(new Long(5));
         Entity productInComponent5 = new DefaultEntity(dataDefinition);
@@ -255,14 +255,14 @@ public class ReportDataServiceTest {
         productInComponent5.setField("quantity", new BigDecimal("3"));
         products5.add(productInComponent5);
 
-        product6.setField("typeOfMaterial", "02intermediate");
+        product6.setField("globalTypeOfMaterial", "02intermediate");
         product6.setField("number", "6");
         product6.setId(new Long(6));
         Entity productInComponent6 = new DefaultEntity(dataDefinition);
         productInComponent6.setField("product", product6);
         productInComponent6.setField("quantity", new BigDecimal("2"));
 
-        product7.setField("typeOfMaterial", "04waste");
+        product7.setField("globalTypeOfMaterial", "04waste");
         product7.setField("number", "7");
         product7.setId(new Long(7));
         Entity productInComponent7 = new DefaultEntity(dataDefinition);

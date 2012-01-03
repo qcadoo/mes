@@ -286,7 +286,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
                 String type = technologyService.getProductType(inputProduct.getBelongsToField(PRODUCT_LITERAL), technology);
                 inputProductsTable.addCell(new Phrase(this.getTranslationService().translate(
-                        "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
+                        "basic.product.globalTypeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
 
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
                 inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("plannedQuantity")),
@@ -357,7 +357,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
                 String type = technologyService.getProductType(outputProduct.getBelongsToField(PRODUCT_LITERAL), technology);
                 outputProductsTable.addCell(new Phrase(this.getTranslationService().translate(
-                        "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
+                        "basic.product.globalTypeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
 
                 outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
                 outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("plannedQuantity")),

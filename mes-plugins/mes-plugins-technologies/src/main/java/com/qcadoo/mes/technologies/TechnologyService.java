@@ -71,7 +71,7 @@ public class TechnologyService {
 
     public static final String WASTE = "04waste";
 
-    public static final String PRODUCT = "03product";
+    public static final String PRODUCT = "03finalProduct";
 
     public static final String COMPONENT = "01component";
 

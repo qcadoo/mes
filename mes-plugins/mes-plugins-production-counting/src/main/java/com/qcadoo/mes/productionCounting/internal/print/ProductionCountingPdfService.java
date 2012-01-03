@@ -325,7 +325,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
 
                 String type = technologyService.getProductType(productIn.getBelongsToField(FIELD_PRODUCT), technology);
                 inputProductsTable.addCell(new Phrase(getTranslationService().translate(
-                        "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
+                        "basic.product.globalTypeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
 
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
                 if (productIn.getField(FIELD_USED_QUANTITY) == null) {
@@ -373,7 +373,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
 
                 String type = technologyService.getProductType(productOut.getBelongsToField(FIELD_PRODUCT), technology);
                 outputProductsTable.addCell(new Phrase(getTranslationService().translate(
-                        "basic.product.typeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
+                        "basic.product.globalTypeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
 
                 outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
                 if (productOut.getField(FIELD_USED_QUANTITY) == null) {

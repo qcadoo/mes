@@ -23,7 +23,7 @@
 		 	use.order.name as orders_order_name,
 			use.usedQuantity as used,
 			production.product.name as product_name,
-			production.product.typeOfMaterial as type_of_material,
+			production.product.globalTypeOfMaterial as type_of_material,
 			production.product.unit as unit,
 			production.plannedQuantity as planned,
 			production.producedQuantity as produced
@@ -97,7 +97,7 @@
 			<textField>
 				<reportElement style="qcadooLabelSmall" x="237" y="2" width="82" height="23"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{basic.product.typeOfMaterial.label}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{basic.product.globalTypeOfMaterial.label}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooLabelSmall" x="337" y="2" width="82" height="23"/>
@@ -134,7 +134,7 @@
 			<textField>
 				<reportElement style="qcadooValueSmall" x="237" y="2" width="82" height="26"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{type_of_material}.startsWith("01"))?$R{basic.product.typeOfMaterial.value.01component}:($F{type_of_material}.startsWith("02"))?$R{basic.product.typeOfMaterial.value.02intermediate}:($F{type_of_material}.startsWith("03"))?$R{basic.product.typeOfMaterial.value.03product}:$R{basic.product.typeOfMaterial.value.04waste}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{type_of_material}.startsWith("01"))?$R{basic.product.globalTypeOfMaterial.value.01component}:($F{type_of_material}.startsWith("02"))?$R{basic.product.typeOfMaterial.value.02intermediate}:($F{type_of_material}.startsWith("03"))?$R{basic.product.typeOfMaterial.value.03product}:$R{basic.product.typeOfMaterial.value.04waste}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooValueSmall" x="337" y="2" width="82" height="26"/>

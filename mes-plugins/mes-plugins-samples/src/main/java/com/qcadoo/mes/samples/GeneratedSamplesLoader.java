@@ -71,7 +71,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
     private static final String CHARS_AND_DIGITS = CHARS_ONLY + DIGITS_ONLY;
 
-    private static final String[] ACCEPTABLE_PRODUCT_TYPE = { "01component", "02intermediate", "03product", "04waste" };
+    private static final String[] ACCEPTABLE_PRODUCT_TYPE = { "01component", "02intermediate", "03finalProduct", "04waste" };
 
     private static final String[] WORK_SHIFT = { "mondayWorking", "tuesdayWorking", "wensdayWorking", "thursdayWorking",
             "fridayWorking", "saturdayWorking", "sundayWorking" };
@@ -553,7 +553,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         product.setField("ean", generateString(DIGITS_ONLY, 13));
         product.setField(FIELD_NAME, getNameFromNumberAndPrefix("Product-", number));
         product.setField("unit", getRandomDictionaryItem("units"));
-        product.setField("typeOfMaterial", generateTypeOfProduct());
+        product.setField("globalTypeOfMaterial", generateTypeOfProduct());
         product.setField(FIELD_NUMBER, number);
 
         product = product.getDataDefinition().save(product);
