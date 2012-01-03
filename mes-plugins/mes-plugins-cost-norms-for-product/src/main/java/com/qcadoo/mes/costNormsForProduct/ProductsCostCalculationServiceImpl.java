@@ -70,7 +70,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
                 }
                 BigDecimal cost = getBigDecimal(product.getField(mode.getStrValue()));
                 BigDecimal costForNumber = getBigDecimal(product.getField("costForNumber"));
-                BigDecimal costPerUnit = cost.divide(costForNumber, 3);
+                BigDecimal costPerUnit = cost.divide(costForNumber, 4);
 
                 result = result.add(costPerUnit.multiply(quantityOfInputProducts));
             }
