@@ -694,6 +694,7 @@ public class TestSamplesLoader extends SamplesLoader {
         workPlan.setField(FIELD_GENERATED, false);
         workPlan.setField(FIELD_DATE, null);
         workPlan.setField(FIELD_WORKER, null);
+        workPlan.setField("type", "01noDistinction");
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test material requirement {name=" + workPlan.getField(FIELD_NAME) + ", date="
