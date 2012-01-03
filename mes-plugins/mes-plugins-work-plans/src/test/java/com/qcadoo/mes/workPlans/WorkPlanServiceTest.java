@@ -18,13 +18,17 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchResult;
 
 public class WorkPlanServiceTest {
 
@@ -142,12 +146,19 @@ public class WorkPlanServiceTest {
         when(selectedOrderIds.iterator()).thenReturn(iterator);
         when(selectedOrderIds.size()).thenReturn(4);
 
-        OrderService orderService = mock(OrderService.class);
-        when(orderService.getOrder(1L)).thenReturn(order1);
-        when(orderService.getOrder(2L)).thenReturn(order2);
-        when(orderService.getOrder(3L)).thenReturn(order3);
+        SearchCriteriaBuilder criteria = mock(SearchCriteriaBuilder.class);
+        when(criteria.add(Mockito.any(SearchCriterion.class))).thenReturn(criteria);
 
-        ReflectionTestUtils.setField(workPlanService, "orderService", orderService);
+        SearchResult result = mock(SearchResult.class);
+        when(criteria.list()).thenReturn(result);
+
+        when(result.getTotalNumberOfEntities()).thenReturn(3);
+        when(result.getEntities()).thenReturn(Lists.newArrayList(order1, order2, order3));
+
+        DataDefinition orderDD = mock(DataDefinition.class);
+        when(orderDD.find()).thenReturn(criteria);
+
+        when(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).thenReturn(orderDD);
 
         // when
         List<Entity> resultList = workPlanService.getSelectedOrders(selectedOrderIds);
@@ -163,6 +174,68 @@ public class WorkPlanServiceTest {
 
         Assert.assertNotNull(resultList.get(2));
         Assert.assertSame(3L, resultList.get(2).getId());
+    }
+
+    @Test
+    public final void shouldReturnEmptyListIfOrdersWithGivenIdDoesNotExist() throws Exception {
+        // given
+        Entity order1 = mock(Entity.class);
+        when(order1.getId()).thenReturn(1L);
+
+        Entity order2 = mock(Entity.class);
+        when(order2.getId()).thenReturn(2L);
+
+        Entity order3 = mock(Entity.class);
+        when(order3.getId()).thenReturn(3L);
+
+        @SuppressWarnings("unchecked")
+        Iterator<Long> iterator = mock(Iterator.class);
+        when(iterator.hasNext()).thenReturn(true, true, true, true, false);
+        when(iterator.next()).thenReturn(1L, 2L, 3L, 4L);
+
+        @SuppressWarnings("unchecked")
+        Set<Long> selectedOrderIds = mock(Set.class);
+        when(selectedOrderIds.iterator()).thenReturn(iterator);
+        when(selectedOrderIds.size()).thenReturn(4);
+
+        SearchCriteriaBuilder criteria = mock(SearchCriteriaBuilder.class);
+        when(criteria.add(Mockito.any(SearchCriterion.class))).thenReturn(criteria);
+
+        SearchResult result = mock(SearchResult.class);
+        when(criteria.list()).thenReturn(result);
+
+        when(result.getTotalNumberOfEntities()).thenReturn(0);
+
+        DataDefinition orderDD = mock(DataDefinition.class);
+        when(orderDD.find()).thenReturn(criteria);
+
+        when(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).thenReturn(orderDD);
+
+        // when
+        List<Entity> resultList = workPlanService.getSelectedOrders(selectedOrderIds);
+
+        // then
+        Assert.assertEquals(0, resultList.size());
+    }
+
+    @Test
+    public final void shouldReturnEmptyListIfGivenIdsSetIsEmpty() throws Exception {
+        // given
+        @SuppressWarnings("unchecked")
+        Iterator<Long> iterator = mock(Iterator.class);
+        when(iterator.hasNext()).thenReturn(false);
+
+        @SuppressWarnings("unchecked")
+        Set<Long> selectedOrderIds = mock(Set.class);
+        when(selectedOrderIds.iterator()).thenReturn(iterator);
+        when(selectedOrderIds.size()).thenReturn(0);
+        when(selectedOrderIds.isEmpty()).thenReturn(true);
+
+        // when
+        List<Entity> resultList = workPlanService.getSelectedOrders(selectedOrderIds);
+
+        // then
+        Assert.assertEquals(0, resultList.size());
     }
 
 }

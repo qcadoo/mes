@@ -39,14 +39,16 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.mes.workPlans.print.WorkPlanPdfService2;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 
 @Service
@@ -60,9 +62,6 @@ public class WorkPlanServiceImpl implements WorkPlanService {
 
     @Autowired
     private TranslationService translationService;
-
-    @Autowired
-    private OrderService orderService;
 
     @Transactional
     public final void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException,
@@ -86,12 +85,17 @@ public class WorkPlanServiceImpl implements WorkPlanService {
 
     public final List<Entity> getSelectedOrders(final Set<Long> selectedOrderIds) {
         List<Entity> orders = Lists.newArrayList();
-        for (Long selectedOrderId : selectedOrderIds) {
-            Entity order = orderService.getOrder(selectedOrderId);
-            if (order != null) {
-                orders.add(order);
-            }
+        if (selectedOrderIds.isEmpty()) {
+            return orders;
         }
+        SearchCriteriaBuilder criteria = dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find();
+        criteria.add(SearchRestrictions.in("id", selectedOrderIds));
+        SearchResult result = criteria.list();
+        if (result.getTotalNumberOfEntities() == 0) {
+            return orders;
+        }
+        orders.addAll(result.getEntities());
         return orders;
     }
 
