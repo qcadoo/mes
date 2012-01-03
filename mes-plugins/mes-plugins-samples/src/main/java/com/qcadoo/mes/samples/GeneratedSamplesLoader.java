@@ -149,6 +149,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         workPlan.setField("worker",
                 getNameFromNumberAndPrefix("Worker-", 5 + generateString(CHARS_AND_DIGITS, RANDOM.nextInt(45))));
         workPlan.setField("generated", false);
+        workPlan.setField("type", "01noDistinction");
 
         workPlan = workPlan.getDataDefinition().save(workPlan);
 
