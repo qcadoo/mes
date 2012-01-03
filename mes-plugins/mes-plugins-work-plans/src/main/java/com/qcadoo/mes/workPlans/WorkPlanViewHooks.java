@@ -3,6 +3,7 @@ package com.qcadoo.mes.workPlans;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.Entity;
@@ -32,9 +32,6 @@ public class WorkPlanViewHooks {
     private WorkPlanService workPlanService;
 
     @Autowired
-    private OrderService orderService;
-
-    @Autowired
     private RibbonReportService ribbonReportService;
 
     @Autowired
@@ -47,11 +44,11 @@ public class WorkPlanViewHooks {
             final String[] args) {
         GridComponent grid = (GridComponent) component;
 
-        Map<String, Object> gridOptions = Maps.newHashMap();
-        gridOptions.put("entities", grid.getSelectedEntitiesIds());
+        List<Entity> orders = workPlanService.getSelectedOrders(grid.getSelectedEntitiesIds());
+        Entity workPlan = workPlanService.generateWorkPlanEntity(orders);
 
         Map<String, Object> navigationParameters = Maps.newHashMap();
-        navigationParameters.put("workPlanComponents.options", gridOptions);
+        navigationParameters.put("form.id", workPlan.getId());
         navigationParameters.put("window.activeMenu", "reports.workPlans");
 
         view.redirectTo("/page/workPlans/workPlanDetails.html", false, true, navigationParameters);
@@ -85,7 +82,8 @@ public class WorkPlanViewHooks {
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
+                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, viewDefinitionState.getLocale())
+                        .format(new Date()));
             }
 
             state.performEvent(viewDefinitionState, "save", new String[0]);
@@ -133,7 +131,8 @@ public class WorkPlanViewHooks {
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
+                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, viewDefinitionState.getLocale())
+                        .format(new Date()));
             }
 
             state.performEvent(viewDefinitionState, "save", new String[0]);
@@ -162,11 +161,11 @@ public class WorkPlanViewHooks {
             Entity workPlan = workPlanService.getWorkPlan(workPlanId);
             if (workPlan == null) {
                 addFailureMessage(state, "qcadooView.message.entityNotFound");
-            } else if (!StringUtils.hasText(workPlan.getStringField("fileName"))) {
-                addFailureMessage(state, "workPlans.workPlan.window.workPlan.documentsWasNotGenerated");
-            } else {
+            } else if (StringUtils.hasText(workPlan.getStringField("fileName"))) {
                 String url = getUrlForReport((Long) state.getFieldValue());
-                viewDefinitionState.redirectTo(url.toString(), true, false);
+                viewDefinitionState.redirectTo(url, true, false);
+            } else {
+                addFailureMessage(state, "workPlans.workPlan.window.workPlan.documentsWasNotGenerated");
             }
         } else {
             if (state instanceof FormComponent) {
