@@ -217,8 +217,7 @@ public class MaterialFlowService {
     private Entity getAreaById(final Long productId) {
         DataDefinition instructionDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
 
-        @SuppressWarnings("deprecation")
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).isIdEq(productId);
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().add(SearchRestrictions.eq("id", productId)).setMaxResults(1);
 
         SearchResult searchResult = searchCriteria.list();
         if (searchResult.getTotalNumberOfEntities() == 1) {

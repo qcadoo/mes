@@ -84,6 +84,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
@@ -202,8 +203,9 @@ public class OrderServiceTest {
         given(product.getFieldValue()).willReturn(13L);
         given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
                 .willReturn(dataDefinition);
-        given(dataDefinition.find().setMaxResults(1).isEq(anyString(), any()).belongsTo(anyString(), any()).list()).willReturn(
-                searchResult);
+        given(
+                dataDefinition.find().setMaxResults(1).add(SearchRestrictions.eq("master", any())).belongsTo(anyString(), any())
+                        .list()).willReturn(searchResult);
         given(dataDefinition.getField("master")).willReturn(masterField);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(masterField.getType()).willReturn(new BooleanType());
@@ -333,8 +335,9 @@ public class OrderServiceTest {
         SearchResult searchResult = mock(SearchResult.class);
         given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
                 .willReturn(dataDefinition);
-        given(dataDefinition.find().setMaxResults(1).isEq(anyString(), any()).belongsTo(anyString(), any()).list()).willReturn(
-                searchResult);
+        given(
+                dataDefinition.find().setMaxResults(1).add(SearchRestrictions.eq("master", any())).belongsTo(anyString(), any())
+                        .list()).willReturn(searchResult);
         given(dataDefinition.getField("master")).willReturn(masterField);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(masterField.getType()).willReturn(new BooleanType());

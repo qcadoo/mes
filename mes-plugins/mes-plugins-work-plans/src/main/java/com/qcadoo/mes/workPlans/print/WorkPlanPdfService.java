@@ -59,6 +59,26 @@ import com.qcadoo.security.api.SecurityService;
 @Service
 public class WorkPlanPdfService extends PdfDocumentService {
 
+    private static final String DATE_FIELD = "date";
+
+    private static final String DATE_TO_FIELD = "dateTo";
+
+    private static final String PLANNED_QUANTITY_FIELD = "plannedQuantity";
+
+    private static final String SURNAME_FIELD = "surname";
+
+    private static final String TYPE_FIELD = "type";
+
+    private static final String UNIT_FIELD = "unit";
+
+    private static final String PRODUCT_FIELD = "product";
+
+    private static final String OPERATION_FIELD = "operation";
+
+    private static final String NAME_FIELD = "name";
+
+    private static final String NUMBER_FIELD = "number";
+
     private static final SimpleDateFormat D_F = new SimpleDateFormat(DateUtils.DATE_FORMAT, Locale.getDefault());
 
     private final int[] defaultWorkPlanColumnWidth = new int[] { 20, 20, 20, 13, 13, 13 };
@@ -84,12 +104,12 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return getTranslationService().translate("workPlans.workPlan.report.title", locale);
     }
 
-    private final void addSeries(final Document document, final Entity entity, final Locale locale) throws DocumentException {
+    private void addSeries(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
         decimalFormat.setMaximumFractionDigits(3);
         decimalFormat.setMinimumFractionDigits(3);
         boolean firstPage = true;
-        String type = entity.getStringField("type");
+        String type = entity.getStringField(TYPE_FIELD);
         for (Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry : reportDataService
                 .prepareOperationSeries(entity, type).entrySet()) {
             if (!firstPage) {
@@ -128,10 +148,10 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 .entrySet()) {
 
             Pair<Entity, Entity> entryPair = entryComponent.getKey();
-            Entity operation = (Entity) entryPair.getKey().getField("operation");
-            table.addCell(new Phrase(operation.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(operation.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(entryPair.getValue().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
+            Entity operation = (Entity) entryPair.getKey().getField(OPERATION_FIELD);
+            table.addCell(new Phrase(operation.getField(NUMBER_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(operation.getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(entryPair.getValue().getField(NUMBER_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
             addProductSeries(table, entryComponent.getValue().getValue(), decimalFormat);
             addProductSeries(table, entryComponent.getValue().getKey(), decimalFormat);
         }
@@ -141,9 +161,10 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private void addProductSeries(final PdfPTable table, final Map<Entity, BigDecimal> productsQuantity, final DecimalFormat df) {
         StringBuilder products = new StringBuilder();
         for (Entry<Entity, BigDecimal> entry : productsQuantity.entrySet()) {
-            products.append(entry.getKey().getField("number").toString() + " " + entry.getKey().getField("name").toString()
-                    + " x " + df.format(entry.getValue()) + " ["
-                    + (entry.getKey().getField("unit") != null ? entry.getKey().getField("unit").toString() : "") + "] \n\n");
+            products.append(entry.getKey().getField(NUMBER_FIELD).toString() + " "
+                    + entry.getKey().getField(NAME_FIELD).toString() + " x " + df.format(entry.getValue()) + " ["
+                    + (entry.getKey().getField(UNIT_FIELD) != null ? entry.getKey().getField(UNIT_FIELD).toString() : "")
+                    + "] \n\n");
 
         }
         table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
@@ -159,7 +180,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
                     .getArialBold11Light()));
             String name = "";
             if (machine != null) {
-                name = machine.getField("name").toString();
+                name = machine.getField(NAME_FIELD).toString();
             }
             title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
         } else if ("worker".equals(type)) {
@@ -169,14 +190,14 @@ public class WorkPlanPdfService extends PdfDocumentService {
                     .getArialBold11Light()));
             String name = "";
             if (staff != null) {
-                name = staff.getField("name") + " " + staff.getField("surname");
+                name = staff.getField(NAME_FIELD) + " " + staff.getField(SURNAME_FIELD);
             }
             title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
-        } else if ("product".equals(type)) {
+        } else if (PRODUCT_FIELD.equals(type)) {
             Entity product = entry.getKey();
             title.add(new Phrase(translationService.translate("workPlans.workPlan.report.paragrah4", locale), PdfUtil
                     .getArialBold11Light()));
-            title.add(new Phrase(" " + totalQuantity + " x " + product.getField("name"), PdfUtil.getArialBold19Dark()));
+            title.add(new Phrase(" " + totalQuantity + " x " + product.getField(NAME_FIELD), PdfUtil.getArialBold19Dark()));
         }
         return title;
     }
@@ -187,7 +208,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         for (Pair<Entity, Entity> pair : entry.getValue().keySet()) {
             if (!orders.contains(pair.getValue())) {
-                totalQuantity = totalQuantity.add((BigDecimal) pair.getValue().getField("plannedQuantity"));
+                totalQuantity = totalQuantity.add((BigDecimal) pair.getValue().getField(PLANNED_QUANTITY_FIELD));
                 orders.add(pair.getValue());
             }
         }
@@ -198,21 +219,21 @@ public class WorkPlanPdfService extends PdfDocumentService {
             throws DocumentException {
         Collections.sort(orders, new EntityNumberComparator());
         for (Entity order : orders) {
-            table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-            Entity product = (Entity) order.getField("product");
+            table.addCell(new Phrase(order.getField(NUMBER_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(order.getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
+            Entity product = (Entity) order.getField(PRODUCT_FIELD);
             if (product != null) {
-                table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(product.getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
             } else {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
+            BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_FIELD);
             plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
             table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             if (product != null) {
-                Object unit = product.getField("unit");
+                Object unit = product.getField(UNIT_FIELD);
                 if (unit != null) {
                     table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
                 } else {
@@ -222,8 +243,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             }
             String formattedDateTo = "---";
-            if (order.getField("dateTo") != null) {
-                formattedDateTo = D_F.format((Date) order.getField("dateTo"));
+            if (order.getField(DATE_TO_FIELD) != null) {
+                formattedDateTo = D_F.format((Date) order.getField(DATE_TO_FIELD));
             }
             table.addCell(new Phrase(formattedDateTo, PdfUtil.getArialRegular9Dark()));
         }
@@ -233,8 +254,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
             throws DocumentException {
         String documenTitle = translationService.translate("workPlans.workPlan.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
-                (Date) entity.getField("date"), securityService.getCurrentUserName());
+        PdfUtil.addDocumentHeader(document, entity.getField(NAME_FIELD).toString(), documenTitle, documentAuthor,
+                (Date) entity.getField(DATE_FIELD), securityService.getCurrentUserName());
         // document.add(generateBarcode(entity.getField("name").toString()));
         document.add(new Paragraph(translationService.translate("workPlans.workPlan.report.paragrah", locale), PdfUtil
                 .getArialBold11Dark()));

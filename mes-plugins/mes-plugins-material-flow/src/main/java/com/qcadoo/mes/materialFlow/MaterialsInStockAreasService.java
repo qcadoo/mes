@@ -196,9 +196,8 @@ public class MaterialsInStockAreasService {
             return false;
         }
 
-        @SuppressWarnings("deprecation")
-        SearchResult searchResult = dataDefinition.find().belongsTo("stockAreas", stockAreas.getId())
-                .belongsTo("materialsInStockAreas", materialsInStockAreas.getId()).list();
+        SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo("stockAreas", stockAreas))
+                .add(SearchRestrictions.belongsTo("materialsInStockAreas", materialsInStockAreas)).list();
 
         if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
             entity.addError(dataDefinition.getField("stockAreas"),
