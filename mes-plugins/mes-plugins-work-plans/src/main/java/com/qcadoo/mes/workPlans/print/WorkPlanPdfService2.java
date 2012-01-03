@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -87,10 +86,11 @@ public class WorkPlanPdfService2 extends PdfDocumentService {
         document.add(orderTable);
         document.add(Chunk.NEWLINE);
 
-        for (Entity order : orders) {
-            Map<Entity, Map<Entity, BigDecimal>> operations = workPlanProductsService.getInProductsPerOperation(order);
-            // addOperations(document, operations.keySet().)
-        }
+        // TODO MICI
+        // for (Entity order : orders) {
+        // Map<Entity, Map<Entity, BigDecimal>> operations = workPlanProductsService.getInProductsPerOperation(order);
+        // addOperations(document, operations.keySet().)
+        // }
     }
 
     @Override
