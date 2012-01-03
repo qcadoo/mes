@@ -30,17 +30,41 @@
 	view="parameters">
 	
 	<windowTab name="workPlansBasicTab" reference="workPlansBasicTab">
-		<component type="gridLayout" name="workPlansBasicGridLayout" columns="1" rows="3">
+		<component type="gridLayout" name="workPlansBasicGridLayout" columns="1" rows="4">
 			<layoutElement column="1" row="1">
 				<component type="label" name="workPlansBasicTabWelcome">
 					<option type="labelStyle" value="text" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="2">
-				<component type="checkbox" name="showDescriptionInWorkPlans" field="showDescriptionInWorkPlans" />
+				<component type="checkbox" name="hideDescriptionInWorkPlans" field="hideDescriptionInWorkPlans" />
 			</layoutElement>
 			<layoutElement column="1" row="3">
-				<component type="checkbox" name="showDetailsInWorkPlans" field="showDetailsInWorkPlans" />
+				<component type="checkbox" name="hideDetailsInWorkPlans" field="hideDetailsInWorkPlans" />
+			</layoutElement>
+			<layoutElement column="1" row="4">
+				<component type="checkbox" name="hideTechnologyAndOrderInWorkPlans" field="hideTechnologyAndOrderInWorkPlans" />
+			</layoutElement>
+		</component>
+	</windowTab>
+	<windowTab name="workPlansProductsTab" reference="workPlansProductsTab">
+		<component type="gridLayout" name="workPlansProductsGridLayout" columns="2" rows="2">
+			<layoutElement column="1" row="1" width="2">
+				<component type="label" name="workPlansProductsTabWelcome">
+					<option type="labelStyle" value="text" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="2">
+				<component type="checkbox" name="dontPrintInputProductsInWorkPlans" field="dontPrintInputProductsInWorkPlans">
+					<option type="labelWidth" value="80" />
+					<option type="align" value="right" />
+				</component>
+			</layoutElement>
+			<layoutElement column="2" row="2">
+				<component type="checkbox" name="dontPrintOutputProductsInWorkPlans" field="dontPrintOutputProductsInWorkPlans">
+					<option type="labelWidth" value="80" />
+					<option type="align" value="right" />
+				</component>
 			</layoutElement>
 		</component>
 	</windowTab>
