@@ -32,20 +32,20 @@ import com.qcadoo.plugin.api.Module;
 
 @Component
 public class TechnologyStartupModule extends Module {
-    
+
     @Autowired
     private TechnologyStateChangeNotifierService technologyStateChangeNotifierService;
-    
+
     @Autowired
     private TechnologyStateChangeListener technologyStateChangeListener;
-    
+
     @Override
-    public void enableOnStartup() {
+    public void enable() {
         technologyStateChangeNotifierService.registerListener(technologyStateChangeListener);
     }
 
     @Override
-    public void disableOnStartup() {
+    public void disable() {
         technologyStateChangeNotifierService.unregisterListener(technologyStateChangeListener);
     }
 }
