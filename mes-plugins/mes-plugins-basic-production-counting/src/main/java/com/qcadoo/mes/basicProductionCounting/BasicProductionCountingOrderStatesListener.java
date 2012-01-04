@@ -50,7 +50,7 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public List<ChangeOrderStateMessage> onAccepted(Entity newEntity) {
+    public List<ChangeOrderStateMessage> onAccepted(final Entity newEntity) {
         Preconditions.checkArgument(newEntity != null, "Order is null");
         final Entity order = newEntity.getDataDefinition().get(newEntity.getId());
 

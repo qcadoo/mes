@@ -402,6 +402,104 @@ public class TechnologyService {
         return isValid;
     }
 
+    public boolean checkIfTechnologyHasAtLeastOneComponent(final DataDefinition dataDefinition, final Entity technology) {
+        if ("01draft".equals(technology.getStringField(CONST_STATE))) {
+            return true;
+        }
+        Entity savedTechnology = dataDefinition.get(technology.getId());
+        EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+        if (operations != null && !operations.isEmpty()) {
+            return true;
+        }
+        technology.addGlobalError("technologies.technology.validate.global.error.emptyTechnologyTree");
+        return false;
+    }
+
+    public boolean checkTopComponentsProducesProductForTechnology(final DataDefinition dataDefinition, final Entity technology) {
+        if ("01draft".equals(technology.getStringField(CONST_STATE))) {
+            return true;
+        }
+        Entity savedTechnology = dataDefinition.get(technology.getId());
+        Entity product = savedTechnology.getBelongsToField(CONST_PRODUCT);
+        EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+        EntityTreeNode root = operations.getRoot();
+        EntityList productOutComps = root.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT);
+        for (Entity productOutComp : productOutComps) {
+            if (product.getId().equals(productOutComp.getBelongsToField(CONST_PRODUCT).getId())) {
+                return true;
+            }
+        }
+        Entity referenceTechnology = root.getBelongsToField("referenceTechnology");
+        if (referenceTechnology != null && referenceTechnology.getBelongsToField(CONST_PRODUCT).getId().equals(product.getId())) {
+            return true;
+        }
+        technology.addGlobalError("technologies.technology.validate.global.error.noFinalProductInTechnologyTree");
+        return false;
+    }
+
+    public boolean checkIfAllReferenceTechnologiesAreAceepted(final DataDefinition dataDefinition, final Entity technology) {
+        if ("01draft".equals(technology.getStringField(CONST_STATE))) {
+            return true;
+        }
+        Entity savedTechnology = dataDefinition.get(technology.getId());
+        EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+        for (Entity operation : operations) {
+            Entity referenceTechnology = operation.getBelongsToField("referenceTechnology");
+            if (referenceTechnology != null && !"02accepted".equals(referenceTechnology.getStringField(CONST_STATE))) {
+                technology.addError(dataDefinition.getField(CONST_OPERATION_COMPONENTS),
+                        "technologies.technology.validate.global.error.unacceptedReferenceTechnology");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean checkIfOperationsUsesSubOperationsProds(final DataDefinition dataDefinition, final Entity technology) {
+        if ("01draft".equals(technology.getStringField("state"))) {
+            return true;
+        }
+        if ("01perProductOut".equals(technology.getStringField("componentQuantityAlgorithm"))) {
+            Entity savedTechnology = dataDefinition.get(technology.getId());
+            EntityTree technologyOperations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+            if (!checkIfConsumesSubOpsProds(technologyOperations)) {
+                technology.addError(dataDefinition.getField(CONST_OPERATION_COMPONENTS),
+                        "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProducts");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean checkIfAtLeastOneCommonElement(final EntityList prodsIn, final EntityList prodsOut) {
+        for (Entity prodOut : prodsOut) {
+            for (Entity prodIn : prodsIn) {
+                if (prodIn.getBelongsToField(CONST_PRODUCT).getId().equals(prodOut.getBelongsToField(CONST_PRODUCT).getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean checkIfConsumesSubOpsProds(EntityTree technologyOperations) {
+        for (Entity technologyOperation : technologyOperations) {
+            Entity parent = technologyOperation.getBelongsToField("parent");
+            if (parent != null) {
+                EntityList prodsIn = parent.getHasManyField(CONST_OPERATION_COMP_PRODUCT_IN);
+                EntityList prodsOut = technologyOperation.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT);
+                if (prodsIn == null || prodsOut == null) {
+                    return false;
+                }
+                if (!checkIfAtLeastOneCommonElement(prodsIn, prodsOut)) {
+                    return false;
+                }
+
+            }
+        }
+        return true;
+    }
+
     public boolean checkIfUnitSampligNrIsReq(final DataDefinition dataDefinition, final Entity entity) {
         String qualityControlType = (String) entity.getField("qualityControlType");
         if (qualityControlType != null && qualityControlType.equals("02forUnit")) {
@@ -481,7 +579,7 @@ public class TechnologyService {
         return TechnologyState.ACCEPTED.equals(technologyState) && technologyState.equals(existingTechnologyState);
     }
 
-    private boolean productComponentsContainProduct(List<Entity> components, Entity product) {
+    private boolean productComponentsContainProduct(final List<Entity> components, final Entity product) {
         boolean contains = false;
 
         for (Entity entity : components) {
@@ -494,7 +592,8 @@ public class TechnologyService {
         return contains;
     }
 
-    private SearchCriteriaBuilder createSearchCriteria(Entity product, Entity technology, ProductDirection direction) {
+    private SearchCriteriaBuilder createSearchCriteria(final Entity product, final Entity technology,
+            final ProductDirection direction) {
         String model = direction.equals(ProductDirection.IN) ? TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT
                 : TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT;
 
@@ -508,7 +607,7 @@ public class TechnologyService {
         return search;
     }
 
-    public String getProductType(Entity product, Entity technology) {
+    public String getProductType(final Entity product, final Entity technology) {
         SearchCriteriaBuilder searchIns = createSearchCriteria(product, technology, ProductDirection.IN);
         SearchCriteriaBuilder searchOuts = createSearchCriteria(product, technology, ProductDirection.OUT);
         SearchCriteriaBuilder searchOutsForRoots = createSearchCriteria(product, technology, ProductDirection.OUT);

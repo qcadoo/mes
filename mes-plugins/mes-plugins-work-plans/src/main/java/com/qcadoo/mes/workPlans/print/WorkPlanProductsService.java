@@ -15,7 +15,6 @@ public class WorkPlanProductsService {
 
     public Map<Entity, Map<Entity, BigDecimal>> getInProductsPerOperation(List<Entity> orders) {
         Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperationComponent = new HashMap<Entity, Map<Entity, BigDecimal>>();
-
         for (Entity order : orders) {
             BigDecimal plannedQty = (BigDecimal) order.getField("plannedQuantity");
 

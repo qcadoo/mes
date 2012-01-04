@@ -55,19 +55,19 @@ public class ProductionBalanceReportDataService {
                     plannedQuantity = plannedQuantity.add((BigDecimal) product.getField("plannedQuantity"));
                 }
                 if (product.getField("usedQuantity") != null) {
-                    if (usedQuantity != null) {
-                        usedQuantity = usedQuantity.add((BigDecimal) product.getField("usedQuantity"));
-                    } else {
+                    if (usedQuantity == null) {
                         usedQuantity = (BigDecimal) product.getField("usedQuantity");
+                    } else {
+                        usedQuantity = usedQuantity.add((BigDecimal) product.getField("usedQuantity"));
                     }
                 }
             } else {
                 prevProduct.setField("plannedQuantity", plannedQuantity);
                 prevProduct.setField("usedQuantity", usedQuantity);
-                if (usedQuantity != null) {
-                    prevProduct.setField("balance", usedQuantity.subtract(plannedQuantity));
-                } else {
+                if (usedQuantity == null) {
                     prevProduct.setField("balance", null);
+                } else {
+                    prevProduct.setField("balance", usedQuantity.subtract(plannedQuantity));
                 }
                 groupedProducts.add(prevProduct);
                 prevProduct = product;
@@ -77,10 +77,10 @@ public class ProductionBalanceReportDataService {
         }
         prevProduct.setField("plannedQuantity", plannedQuantity);
         prevProduct.setField("usedQuantity", usedQuantity);
-        if (usedQuantity != null) {
-            prevProduct.setField("balance", usedQuantity.subtract(plannedQuantity));
-        } else {
+        if (usedQuantity == null) {
             prevProduct.setField("balance", null);
+        } else {
+            prevProduct.setField("balance", usedQuantity.subtract(plannedQuantity));
         }
         groupedProducts.add(prevProduct);
 

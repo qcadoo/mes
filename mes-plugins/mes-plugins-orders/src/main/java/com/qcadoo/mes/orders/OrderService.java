@@ -372,10 +372,10 @@ public class OrderService {
         if (searchResult.getEntities().size() > 0) {
             parameter = searchResult.getEntities().get(0);
         }
-        if (parameter != null && parameter.getField("batchForDoneOrder") != null) {
-            return !(parameter.getField("batchForDoneOrder").toString().equals("01none"));
-        } else {
+        if ((parameter == null) || (parameter.getField("batchForDoneOrder") == null)) {
             return false;
+        } else {
+            return !(parameter.getField("batchForDoneOrder").toString().equals("01none"));
         }
     }
 

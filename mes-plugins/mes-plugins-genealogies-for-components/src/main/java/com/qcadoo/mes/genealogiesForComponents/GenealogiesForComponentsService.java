@@ -88,7 +88,9 @@ public class GenealogiesForComponentsService {
 
             Entity technology = order.getBelongsToField("technology");
 
-            if (technology != null) {
+            if (technology == null) {
+                productGridLayout.setVisible(false);
+            } else {
                 List<Entity> targetProductInComponents = new ArrayList<Entity>();
 
                 List<Entity> operationComponents = new ArrayList<Entity>();
@@ -109,8 +111,6 @@ public class GenealogiesForComponentsService {
                 } else {
                     productInComponentsList.setFieldValue(targetProductInComponents);
                 }
-            } else {
-                productGridLayout.setVisible(false);
             }
         }
     }
@@ -170,12 +170,12 @@ public class GenealogiesForComponentsService {
             final String[] args) {
         if (state instanceof FormComponent) {
             GridComponent batchState = (GridComponent) viewDefinitionState.getComponentByReference("batches");
-            if (batchState != null && batchState.getFieldValue() != null) {
-                viewDefinitionState.redirectTo(
-                        "/genealogiesForComponents/genealogyForComponent.pdf?value=" + batchState.getFieldValue(), true, false);
-            } else {
+            if ((batchState == null) || (batchState.getFieldValue() == null)) {
                 state.addMessage(translationService.translate("genealogiesForComponents.genealogyForComponent.report.noBatch",
                         viewDefinitionState.getLocale()), MessageType.FAILURE);
+            } else {
+                viewDefinitionState.redirectTo(
+                        "/genealogiesForComponents/genealogyForComponent.pdf?value=" + batchState.getFieldValue(), true, false);
             }
         } else {
             state.addMessage(translationService.translate("genealogiesForComponents.genealogyForComponent.report.noBatch",

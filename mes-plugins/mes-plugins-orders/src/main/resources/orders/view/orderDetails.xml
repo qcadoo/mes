@@ -185,7 +185,10 @@
 							acceptOrder.disable();
 							declineOrder.disable();
 							interruptOrder.disable();
+							#{doneQuantity}.setEnabled(false);
 						}
+						
+						console.log(#{doneQuantity});
 						
 						if(externalSynchronized == '0') {
 							save.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");

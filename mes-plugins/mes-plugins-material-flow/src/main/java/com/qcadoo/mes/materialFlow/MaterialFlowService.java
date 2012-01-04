@@ -386,11 +386,11 @@ public class MaterialFlowService {
 
     public boolean validateTransfer(final DataDefinition dataDefinition, final Entity entity) {
         if (entity.getField("transformationsConsumption") == null && entity.getField("transformationsProduction") == null) {
-            Entity stockAreasFrom = (Entity) (entity.getField("stockAreasFrom") != null ? entity.getField("stockAreasFrom")
-                    : null);
-            Entity stockAreasTo = (Entity) (entity.getField("stockAreasTo") != null ? entity.getField("stockAreasTo") : null);
-            Date date = (Date) (entity.getField("time") != null ? entity.getField("time") : null);
-            String type = (entity.getStringField("type") != null ? entity.getStringField("type") : null);
+            Entity stockAreasFrom = (Entity) (entity.getField("stockAreasFrom") == null ? null : entity
+                    .getField("stockAreasFrom"));
+            Entity stockAreasTo = (Entity) (entity.getField("stockAreasTo") == null ? null : entity.getField("stockAreasTo"));
+            Date date = (Date) (entity.getField("time") == null ? null : entity.getField("time"));
+            String type = (entity.getStringField("type") == null ? null : entity.getStringField("type"));
 
             boolean validate = true;
             if (stockAreasFrom == null && stockAreasTo == null) {

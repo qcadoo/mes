@@ -1,54 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.1.1
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
-<model name="technology" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" activable="true"
-	xmlns="http://schema.qcadoo.org/model"
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.1.1 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<model name="technology" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	activable="true" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
 			<validatesLength max="255" />
 		</string>
-		<string name="name" required="true" >
+		<string name="name" required="true">
 			<validatesLength max="2048" />
 		</string>
-		
-		<belongsTo name="product" plugin="basic" model="product" lazy="false"
-			required="true" />
+
+		<belongsTo name="product" plugin="basic" model="product"
+			lazy="false" required="true" />
 		<boolean name="master" default="true" />
-		<string name="description" >
+		<string name="description">
 			<validatesLength max="2048" />
 		</string>
 		<tree name="operationComponents" model="technologyOperationComponent"
 			joinField="technology" cascade="delete" copyable="true" />
 		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology"
 			default="01perProductOut" required="true" />
-			
+
 		<enum name="state" values="01draft,02accepted,03declined,04outdated"
 			default="01draft" required="true" />
-		<hasMany name="loggings" joinField="technology" model="logging" cascade="delete" />
+		<hasMany name="loggings" joinField="technology" model="logging"
+			cascade="delete" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
@@ -57,15 +45,26 @@
 			method="checkIfProductIsNotRemoved" />
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="checkIfUnitSampligNrIsReq" />
-		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService" 
+		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="invalidateIfBelongsToAcceptedTechnology" />
+
+		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
+			method="checkIfTechnologyHasAtLeastOneComponent" />
+		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
+			method="checkTopComponentsProducesProductForTechnology" />
+		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
+			method="checkIfAllReferenceTechnologiesAreAceepted" />
+			<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
+			method="checkIfOperationsUsesSubOperationsProds" />
+
 		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
 			method="clearMasterOnCopy" />
 		<onSave class="com.qcadoo.mes.technologies.TechnologyService"
 			method="setFirstTechnologyAsDefault" />
 		<onUpdate class="com.qcadoo.mes.technologies.TechnologyService"
 			method="performTreeNumbering" />
-		<onSave class="com.qcadoo.mes.technologies.states.TechnologyStatesHook" method="onSave" />
+		<onSave class="com.qcadoo.mes.technologies.states.TechnologyStatesHook"
+			method="onSave" />
 		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
 			method="switchStateToDraftOnCopy" />
 	</hooks>

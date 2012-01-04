@@ -91,13 +91,13 @@ public class ReportService {
             final String[] args) {
         GridComponent batchState = (GridComponent) viewDefinitionState.getComponentByReference("batches");
         if (state instanceof FormComponent) {
-            if (batchState != null && batchState.getFieldValue() != null) {
-                viewDefinitionState.redirectTo("/genealogies/genealogyForProduct.pdf?value=" + batchState.getFieldValue(), true,
-                        false);
-            } else {
+            if ((batchState == null) || (batchState.getFieldValue() == null)) {
                 state.addMessage(
                         translationService.translate("genealogies.genealogyForProduct.report.noBatch",
                                 viewDefinitionState.getLocale()), MessageType.FAILURE);
+            } else {
+                viewDefinitionState.redirectTo("/genealogies/genealogyForProduct.pdf?value=" + batchState.getFieldValue(), true,
+                        false);
             }
         } else {
             state.addMessage(

@@ -151,10 +151,10 @@ public class CostCalculationViewService {
             componentsMap.put(referenceName, fieldComponent);
         }
 
-        if (order != null) {
-            cameFromOrder = true;
-        } else {
+        if (order == null) {
             cameFromTechnology = true;
+        } else {
+            cameFromOrder = true;
         }
 
         if (cameFromOrder) {

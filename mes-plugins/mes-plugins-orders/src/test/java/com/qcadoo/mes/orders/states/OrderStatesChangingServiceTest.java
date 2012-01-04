@@ -29,8 +29,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +48,7 @@ public class OrderStatesChangingServiceTest {
 
     private TranslationService translationService;
 
-    private List<OrderStateListener> listeners = new LinkedList<OrderStateListener>();
+    private Set<OrderStateListener> listeners;
 
     private Entity newOrder, oldOrder;
 
@@ -60,7 +59,7 @@ public class OrderStatesChangingServiceTest {
 
         orderStatesChangingService = new OrderStatesChangingService();
         orderStateListener = mock(OrderStateListener.class);
-        listeners = mock(LinkedList.class);
+        listeners = mock(Set.class);
         newOrder = mock(Entity.class);
         oldOrder = mock(Entity.class);
         listenersIterator = mock(Iterator.class);
