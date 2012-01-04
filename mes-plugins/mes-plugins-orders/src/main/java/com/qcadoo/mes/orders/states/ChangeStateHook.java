@@ -79,12 +79,12 @@ public class ChangeStateHook {
             }
             if (errors != null && errors.size() > 0) {
                 for (ChangeOrderStateMessage error : errors) {
-                    if (error.getReferenceToField() != null) {
-                        newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale(), error.getVars()));
-                    } else {
+                    if (error.getReferenceToField() == null) {
                         newEntity
                                 .addError(dataDefinition.getField(error.getReferenceToField()), translationService.translate(
                                         error.getMessage() + "." + error.getReferenceToField(), getLocale()));
+                    } else {
+                        newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale(), error.getVars()));
                     }
                 }
             }

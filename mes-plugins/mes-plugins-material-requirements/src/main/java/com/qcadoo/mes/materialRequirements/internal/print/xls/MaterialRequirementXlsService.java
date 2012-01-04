@@ -80,10 +80,10 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
             row.createCell(1).setCellValue(entry.getKey().getField("name").toString());
             row.createCell(2).setCellValue(entry.getValue().setScale(3, RoundingMode.HALF_EVEN).doubleValue());
             Object unit = entry.getKey().getField("unit");
-            if (unit != null) {
-                row.createCell(3).setCellValue(unit.toString());
-            } else {
+            if (unit == null) {
                 row.createCell(3).setCellValue("");
+            } else {
+                row.createCell(3).setCellValue(unit.toString());
             }
         }
         sheet.autoSizeColumn((short) 0);

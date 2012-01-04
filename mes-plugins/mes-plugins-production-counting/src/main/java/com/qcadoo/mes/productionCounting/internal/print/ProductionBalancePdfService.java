@@ -291,15 +291,15 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
                 inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("plannedQuantity")),
                         PdfUtil.getArialRegular9Dark()));
-                if (inputProduct.getField(USED_QUANTITY_LITERAL) != null) {
+                if (inputProduct.getField(USED_QUANTITY_LITERAL) == null) {
+                    inputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
+                    inputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
+                } else {
                     inputProductsTable.addCell(new Phrase(
                             getDecimalFormat().format(inputProduct.getField(USED_QUANTITY_LITERAL)), PdfUtil
                                     .getArialRegular9Dark()));
                     inputProductsTable.addCell(new Phrase(getDecimalFormat().format(inputProduct.getField("balance")), PdfUtil
                             .getArialRegular9Dark()));
-                } else {
-                    inputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
-                    inputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
                 }
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
                 inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(PRODUCT_LITERAL).getStringField("unit"),
@@ -362,14 +362,14 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
                 outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("plannedQuantity")),
                         PdfUtil.getArialRegular9Dark()));
-                if (outputProduct.getField(USED_QUANTITY_LITERAL) != null) {
+                if (outputProduct.getField(USED_QUANTITY_LITERAL) == null) {
+                    outputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
+                    outputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
+                } else {
                     outputProductsTable.addCell(new Phrase(getDecimalFormat().format(
                             outputProduct.getField(USED_QUANTITY_LITERAL)), PdfUtil.getArialRegular9Dark()));
                     outputProductsTable.addCell(new Phrase(getDecimalFormat().format(outputProduct.getField("balance")), PdfUtil
                             .getArialRegular9Dark()));
-                } else {
-                    outputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
-                    outputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
                 }
                 outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
                 outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(PRODUCT_LITERAL).getStringField("unit"),

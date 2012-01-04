@@ -163,7 +163,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         for (Entry<Entity, BigDecimal> entry : productsQuantity.entrySet()) {
             products.append(entry.getKey().getField(NUMBER_FIELD).toString() + " "
                     + entry.getKey().getField(NAME_FIELD).toString() + " x " + df.format(entry.getValue()) + " ["
-                    + (entry.getKey().getField(UNIT_FIELD) != null ? entry.getKey().getField(UNIT_FIELD).toString() : "")
+                    + (entry.getKey().getField(UNIT_FIELD) == null ? "" : entry.getKey().getField(UNIT_FIELD).toString())
                     + "] \n\n");
 
         }
@@ -222,25 +222,25 @@ public class WorkPlanPdfService extends PdfDocumentService {
             table.addCell(new Phrase(order.getField(NUMBER_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(order.getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
             Entity product = (Entity) order.getField(PRODUCT_FIELD);
-            if (product != null) {
-                table.addCell(new Phrase(product.getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
-            } else {
+            if (product == null) {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+            } else {
+                table.addCell(new Phrase(product.getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_FIELD);
             plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
             table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            if (product != null) {
-                Object unit = product.getField(UNIT_FIELD);
-                if (unit != null) {
-                    table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
-                } else {
-                    table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-                }
-            } else {
+            if (product == null) {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+            } else {
+                Object unit = product.getField(UNIT_FIELD);
+                if (unit == null) {
+                    table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+                } else {
+                    table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
+                }
             }
             String formattedDateTo = "---";
             if (order.getField(DATE_TO_FIELD) != null) {

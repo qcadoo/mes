@@ -95,12 +95,12 @@ public class QualityControlOrderStatesListener extends OrderStateListener {
 
             qualityControlDD = dataDefinitionService.get("qualityControls", "qualityControl");
 
-            if (qualityControlDD != null) {
+            if (qualityControlDD == null) {
+                return false;
+            } else {
                 SearchResult searchResult = qualityControlDD.find().add(SearchRestrictions.belongsTo("order", order))
                         .add(SearchRestrictions.eq("closed", false)).list();
                 return (searchResult.getTotalNumberOfEntities() <= 0);
-            } else {
-                return false;
             }
         }
     }

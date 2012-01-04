@@ -103,10 +103,10 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             table.addCell(new Phrase(entry.getKey().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(entry.getKey().getField("name").toString(), PdfUtil.getArialRegular9Dark()));
             Object unit = entry.getKey().getField("unit");
-            if (unit != null) {
-                table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
-            } else {
+            if (unit == null) {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+            } else {
+                table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             table.addCell(new Phrase(getDecimalFormat().format(entry.getValue()), PdfUtil.getArialBold9Dark()));
@@ -125,20 +125,20 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
             Entity product = (Entity) order.getField("product");
-            if (product != null) {
+            if (product == null) {
+                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+            } else {
                 table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-            } else {
-                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             }
-            if (product != null) {
-                Object unit = product.getField("unit");
-                if (unit != null) {
-                    table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
-                } else {
-                    table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-                }
-            } else {
+            if (product == null) {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+            } else {
+                Object unit = product.getField("unit");
+                if (unit == null) {
+                    table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+                } else {
+                    table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
+                }
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
