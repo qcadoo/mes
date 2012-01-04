@@ -24,7 +24,11 @@
 package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,9 +42,15 @@ import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingC
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -61,6 +71,9 @@ public class BasicProductionCountingService {
 
     @Autowired
     private MaterialRequirementReportDataService materialRequirementReportDataService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     public void generateProducedProducts(final ViewDefinitionState state) {
         final String orderNumber = (String) state.getComponentByReference("number").getFieldValue();
@@ -213,5 +226,60 @@ public class BasicProductionCountingService {
             field.requestComponentUpdateState();
         }
     }
+
+    public void setGridContent(final ViewDefinitionState view) {
+        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        FormComponent orderForm = (FormComponent) view.getComponentByReference("order");
+
+        Long orderId = orderForm.getEntityId();
+        if (orderId != null) {
+            Entity savedOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                    orderId);
+
+            SearchCriteriaBuilder criteriaBuilder = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                    BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find();
+            List<Entity> countings = criteriaBuilder.add(SearchRestrictions.belongsTo("order", savedOrder)).list().getEntities();
+
+            Collections.sort(countings, countingsComparator);
+            Collections.reverse(countings);
+            grid.setEntities(countings);
+        }
+    }
+
+    private Comparator<Entity> countingsComparator = new Comparator<Entity>() {
+
+        @Override
+        public int compare(Entity counting1, Entity counting2) {
+            Entity product1 = counting1.getBelongsToField(MODEL_FIELD_PRODUCT);
+            Entity product2 = counting2.getBelongsToField(MODEL_FIELD_PRODUCT);
+            Entity technology = counting1.getBelongsToField(MODEL_FIELD_ORDER).getBelongsToField("technology");
+            String product1Type = technologyService.getProductType(product1, technology);
+            String product2Type = technologyService.getProductType(product2, technology);
+
+            if (product1Type.equals(product2Type)) {
+                return 0;
+            }
+            if (product1Type.equals("03finalProduct") && !product2Type.equals("03finalProduct")) {
+                return 1;
+            }
+            if (!product1Type.equals("03finalProduct") && product2Type.equals("03finalProduct")) {
+                return -1;
+            }
+            if (product1Type.equals("02intermediate") && !product2Type.equals("02intermediate")) {
+                return 1;
+            }
+            if (!product1Type.equals("02intermediate") && product2Type.equals("02intermediate")) {
+                return -1;
+            }
+            if (product1Type.equals("01component") && !product2Type.equals("01component")) {
+                return 1;
+            }
+            if (!product1Type.equals("01component") && product2Type.equals("01component")) {
+                return -11;
+            }
+
+            throw new IllegalStateException("Cant compare two product types");
+        }
+    };
 
 }
