@@ -28,17 +28,17 @@ import static com.qcadoo.mes.productionCounting.internal.states.ProductionCounti
 import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.DECLINED;
 import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.DRAFT;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Sets;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class ProductionCountingStatesChangingService {
 
-    private final List<RecordStateListener> stateListeners = new LinkedList<RecordStateListener>();
+    private final Set<RecordStateListener> stateListeners = Sets.newHashSet();
 
     private static final String FIELD_STATE = "state";
 
