@@ -44,7 +44,7 @@
 						hasDescription="true" />
 				</layoutElement>
 				<layoutElement column="1" row="3">
-					<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
+					<component type="select" name="globalTypeOfMaterial" field="globalTypeOfMaterial" />
 				</layoutElement>
 				<layoutElement column="1" row="4">
 					<component type="select" name="unit" field="unit" />

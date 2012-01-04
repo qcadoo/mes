@@ -211,10 +211,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         deleteOperationsTreeIfExists(costCalculation);
 
-        if (costCalculation.getBelongsToField("order") != null) {
-            sourceOperationComponents = costCalculation.getBelongsToField("order").getTreeField("orderOperationComponents");
-        } else {
+        if (costCalculation.getBelongsToField("order") == null) {
             sourceOperationComponents = costCalculation.getBelongsToField("technology").getTreeField("operationComponents");
+        } else {
+            sourceOperationComponents = costCalculation.getBelongsToField("order").getTreeField("orderOperationComponents");
         }
         createTechnologyInstanceForCalculation(sourceOperationComponents, costCalculation);
     }
@@ -267,8 +267,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         calculationOperationComponent.setField("operation", operationComponent.getBelongsToField("operation"));
 
-        calculationOperationComponent.setField("countRealized",
-                operationComponent.getField("countRealized") != null ? operationComponent.getField("countRealized") : "01all");
+        calculationOperationComponent.setField("countRealized", operationComponent.getField("countRealized") == null ? "01all"
+                : operationComponent.getField("countRealized"));
 
         if (TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(sourceDD.getName())) {
             calculationOperationComponent.setField("technologyOperationComponent", operationComponent);

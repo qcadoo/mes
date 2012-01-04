@@ -323,21 +323,7 @@ public class ProductionRecordViewService {
                 .getComponentByReference(COMPONENT_TYPE_OF_PRODUCTION_RECORDING);
 
         FormComponent form = (FormComponent) view.getComponentByReference(COMPONENT_FORM);
-        if (form.getEntityId() != null) {
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                    form.getEntityId());
-            if (order == null || "".equals(order.getField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING))) {
-                typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
-            }
-            for (String componentReference : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT,
-                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, COMPONENT_REGISTER_PRODUCTION_TIME)) {
-                FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
-                if (order == null || order.getField(componentReference) == null) {
-                    component.setFieldValue(true);
-                    component.requestComponentUpdateState();
-                }
-            }
-        } else {
+        if (form.getEntityId() == null) {
             for (String componentReference : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT,
                     FIELD_REGISTER_QUANTITY_OUT_PRODUCT, COMPONENT_REGISTER_PRODUCTION_TIME)) {
                 FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
@@ -357,6 +343,20 @@ public class ProductionRecordViewService {
             // typeOfProductionRecording.addMessage(translationService.translate(
             // "orders.orderDetails.window.productionCounting.typeOfProductionRecording.error.saveOrderFirst",
             // view.getLocale()), MessageType.SUCCESS);
+        } else {
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                    form.getEntityId());
+            if (order == null || "".equals(order.getField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING))) {
+                typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
+            }
+            for (String componentReference : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT,
+                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, COMPONENT_REGISTER_PRODUCTION_TIME)) {
+                FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
+                if (order == null || order.getField(componentReference) == null) {
+                    component.setFieldValue(true);
+                    component.requestComponentUpdateState();
+                }
+            }
         }
     }
 

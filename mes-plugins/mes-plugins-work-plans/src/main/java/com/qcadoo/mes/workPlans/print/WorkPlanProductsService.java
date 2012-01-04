@@ -13,7 +13,7 @@ import com.qcadoo.model.api.EntityTree;
 @Service
 public class WorkPlanProductsService {
 
-    public Map<Entity, Map<Entity, BigDecimal>> getInProductsPerOperation(Entity order) {
+    public Map<Entity, Map<Entity, BigDecimal>> getInProductsPerOperation(final Entity order) {
         Map<Entity, Map<Entity, BigDecimal>> operations = new HashMap<Entity, Map<Entity, BigDecimal>>();
 
         BigDecimal plannedQty = (BigDecimal) order.getField("plannedQuantity");

@@ -115,10 +115,10 @@ public class GenealogyOrderStatesListener extends OrderStateListener {
         if (searchResult.getEntities().size() > 0) {
             parameter = searchResult.getEntities().get(0);
         }
-        if (parameter != null && parameter.getField(BATCH_FOR_DONE_ORDER_FIELD) != null) {
-            return !(parameter.getField(BATCH_FOR_DONE_ORDER_FIELD).toString().equals("01none"));
-        } else {
+        if ((parameter == null) || (parameter.getField(BATCH_FOR_DONE_ORDER_FIELD) == null)) {
             return false;
+        } else {
+            return !(parameter.getField(BATCH_FOR_DONE_ORDER_FIELD).toString().equals("01none"));
         }
     }
 
@@ -143,7 +143,8 @@ public class GenealogyOrderStatesListener extends OrderStateListener {
                     return false;
                 }
                 for (Entity operationComponent : technology.getTreeField(OPERATION_COMPONENTS_FIELD)) {
-                    for (Entity operationProductComponent : operationComponent.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS_FIELD)) {
+                    for (Entity operationProductComponent : operationComponent
+                            .getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS_FIELD)) {
                         if ((Boolean) operationProductComponent.getField(BATCH_REQUIRED_FIELD)) {
                             return false;
                         }
@@ -173,7 +174,8 @@ public class GenealogyOrderStatesListener extends OrderStateListener {
                     }
                 }
                 for (Entity genealogyProductIn : genealogy.getHasManyField(PRODUCT_IN_COMPONENTS_FIELD)) {
-                    if ((Boolean) (genealogyProductIn.getBelongsToField(PRODUCT_IN_COMPONENT_FIELD).getField(BATCH_REQUIRED_FIELD))) {
+                    if ((Boolean) (genealogyProductIn.getBelongsToField(PRODUCT_IN_COMPONENT_FIELD)
+                            .getField(BATCH_REQUIRED_FIELD))) {
                         List<Entity> entityList = genealogyProductIn.getHasManyField(BATCH_FIELD);
                         if (entityList.size() == 0) {
                             return false;

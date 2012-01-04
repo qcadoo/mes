@@ -395,6 +395,57 @@
 <!-- 					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-technologies</artifactId> -->
 <!-- 					<version>1.1.2-SNAPSHOT</version> -->
 <!-- 				</dependency> -->
+<!-- 				<dependency> -->
+<!-- 					<groupId>com.qcadoo.mes</groupId> -->
+<!-- 					<artifactId>mes-commercial-plugins-integration-subiekt-rest-connector-basic</artifactId> -->
+<!-- 					<version>1.1.2-SNAPSHOT</version> -->
+<!-- 				</dependency> -->
+<!-- 				<dependency> -->
+<!-- 					<groupId>com.qcadoo.mes</groupId> -->
+<!-- 					<artifactId>mes-commercial-plugins-integration-subiekt-rest-connector-technologies</artifactId> -->
+<!-- 					<version>1.1.2-SNAPSHOT</version> -->
+<!-- 				</dependency> -->
+<!-- 				<dependency> -->
+<!-- 					<groupId>com.qcadoo.mes</groupId> -->
+<!-- 					<artifactId>mes-commercial-plugins-integration-subiekt-rest-connector-orders</artifactId> -->
+<!-- 					<version>1.1.2-SNAPSHOT</version> -->
+<!-- 				</dependency> -->
+<!-- 				<dependency> -->
+<!-- 					<groupId>com.qcadoo.mes</groupId> -->
+<!-- 					<artifactId>mes-commercial-plugins-integration-subiekt-rest-connector-full</artifactId> -->
+<!-- 					<version>1.1.2-SNAPSHOT</version> -->
+<!-- 				</dependency> -->
+<!-- 				<dependency> -->
+<!-- 					<groupId>com.qcadoo.mes</groupId> -->
+<!-- 					<artifactId>mes-commercial-plugins-integration-subiekt-rest-connector-warehouse</artifactId> -->
+<!-- 					<version>1.1.2-SNAPSHOT</version> -->
+<!-- 				</dependency> -->
+<!-- 				<dependency> -->
+<!-- 					<groupId>com.qcadoo.mes</groupId> -->
+<!-- 					<artifactId>mes-commercial-plugins-integration-enova-rest-connector-basic</artifactId> -->
+<!-- 					<version>1.1.2-SNAPSHOT</version> -->
+<!-- 				</dependency> -->
+<!-- 				<dependency> -->
+<!-- 					<groupId>com.qcadoo.mes</groupId> -->
+<!-- 					<artifactId>mes-commercial-plugins-integration-enova-rest-connector-technologies</artifactId> -->
+<!-- 					<version>1.1.2-SNAPSHOT</version> -->
+<!-- 				</dependency> -->
+<!-- 				<dependency> -->
+<!-- 					<groupId>com.qcadoo.mes</groupId> -->
+<!-- 					<artifactId>mes-commercial-plugins-integration-enova-rest-connector-orders</artifactId> -->
+<!-- 					<version>1.1.2-SNAPSHOT</version> -->
+<!-- 				</dependency> -->
+<!-- 				<dependency> -->
+<!-- 					<groupId>com.qcadoo.mes</groupId> -->
+<!-- 					<artifactId>mes-commercial-plugins-integration-enova-rest-connector-full</artifactId> -->
+<!-- 					<version>1.1.2-SNAPSHOT</version> -->
+<!-- 				</dependency> -->
+<!-- 				<dependency> -->
+<!-- 					<groupId>com.qcadoo.mes</groupId> -->
+<!-- 					<artifactId>mes-commercial-plugins-integration-enova-rest-connector-warehouse</artifactId> -->
+<!-- 					<version>1.1.2-SNAPSHOT</version> -->
+<!-- 				</dependency> -->
+				
  				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-commercial-plugins-advanced-genealogy</artifactId>

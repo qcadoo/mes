@@ -65,7 +65,7 @@
 				width="150" />
 			<option type="column" name="name" fields="name" link="true"
 				width="300" />
-			<option type="column" name="typeOfMaterial" fields="typeOfMaterial" />
+			<option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial" />
 			<option type="column" name="ean" fields="ean" />
 			<option type="column" name="externalNumber" fields="externalNumber" hidden="true" />
 			<option type="order" column="name" direction="asc" />

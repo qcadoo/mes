@@ -71,7 +71,7 @@ public class TechnologyService {
 
     public static final String WASTE = "04waste";
 
-    public static final String PRODUCT = "03product";
+    public static final String PRODUCT = "03finalProduct";
 
     public static final String COMPONENT = "01component";
 
@@ -579,7 +579,7 @@ public class TechnologyService {
         return TechnologyState.ACCEPTED.equals(technologyState) && technologyState.equals(existingTechnologyState);
     }
 
-    private boolean productComponentsContainProduct(List<Entity> components, Entity product) {
+    private boolean productComponentsContainProduct(final List<Entity> components, final Entity product) {
         boolean contains = false;
 
         for (Entity entity : components) {
@@ -592,7 +592,8 @@ public class TechnologyService {
         return contains;
     }
 
-    private SearchCriteriaBuilder createSearchCriteria(Entity product, Entity technology, ProductDirection direction) {
+    private SearchCriteriaBuilder createSearchCriteria(final Entity product, final Entity technology,
+            final ProductDirection direction) {
         String model = direction.equals(ProductDirection.IN) ? TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT
                 : TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT;
 
@@ -606,7 +607,7 @@ public class TechnologyService {
         return search;
     }
 
-    public String getProductType(Entity product, Entity technology) {
+    public String getProductType(final Entity product, final Entity technology) {
         SearchCriteriaBuilder searchIns = createSearchCriteria(product, technology, ProductDirection.IN);
         SearchCriteriaBuilder searchOuts = createSearchCriteria(product, technology, ProductDirection.OUT);
         SearchCriteriaBuilder searchOutsForRoots = createSearchCriteria(product, technology, ProductDirection.OUT);

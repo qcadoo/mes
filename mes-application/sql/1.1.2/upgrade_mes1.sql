@@ -198,6 +198,7 @@ ALTER TABLE materialflow_materialsinstockareas ADD COLUMN active boolean DEFAULT
 -- end
 
 
+
 -- Table: technologies_operation
 -- changed: 03.01.2012
 
@@ -236,3 +237,5 @@ ALTER TABLE productionscheduling_orderoperationcomponent ADD COLUMN dontPrintInp
 ALTER TABLE productionscheduling_orderoperationcomponent ADD COLUMN dontPrintOutputProductsInWorkPlans boolean;
 
 -- end
+
+ALTER TABLE basic_product RENAME COLUMN typeofmaterial TO globalTypeOfMaterial;

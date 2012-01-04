@@ -246,7 +246,16 @@ public final class QualityControlService {
     }
 
     public void closeQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (state.getFieldValue() != null) {
+        if (state.getFieldValue() == null) {
+            if (state instanceof FormComponent) {
+                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
+                        MessageType.FAILURE);
+            }
+
+        } else {
             if (state instanceof FormComponent) {
                 FieldComponent controlResult = (FieldComponent) viewDefinitionState.getComponentByReference(FIELD_CONTROL_RESULT);
 
@@ -307,14 +316,6 @@ public final class QualityControlService {
             }
             state.addMessage(translationService.translate("qualityControls.quality.control.closed.success", state.getLocale()),
                     MessageType.SUCCESS);
-        } else {
-            if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
-                        MessageType.FAILURE);
-            }
         }
     }
 

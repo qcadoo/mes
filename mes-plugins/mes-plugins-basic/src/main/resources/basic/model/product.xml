@@ -32,7 +32,7 @@
 			<validatesLength max="40" />
 		</string>
 		<string name="name" required="true" />
-		<enum name="typeOfMaterial" values="01component,02intermediate,03product,04waste"
+		<enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
 			required="true" />
 		<string name="ean" />
 		<dictionary name="category" dictionary="categories" />

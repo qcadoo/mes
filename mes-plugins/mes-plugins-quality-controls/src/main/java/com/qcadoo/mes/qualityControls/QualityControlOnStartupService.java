@@ -39,12 +39,12 @@ public class QualityControlOnStartupService extends Module {
     private QualityControlOrderStatesListener qualityControlOrderStatesListener;
 
     @Override
-    public void enableOnStartup() {
+    public void enable() {
         orderStatesChangingService.addOrderStateListener(qualityControlOrderStatesListener);
     }
 
     @Override
-    public void disableOnStartup() {
+    public void disable() {
         orderStatesChangingService.removeOrderStateListener(qualityControlOrderStatesListener);
     }
 

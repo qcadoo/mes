@@ -39,15 +39,15 @@
 						expression="#product['number']" width="100" />
 					<option type="column" name="name" fields="product"
 						expression="#product['name']" width="200" />
-					<option type="column" name="typeOfMaterial" fields="product"
-						expression="#product['typeOfMaterial'] == '01component' ?
-										'@basic.product.typeOfMaterial.value.01component' :
-										#product['typeOfMaterial'] == '02intermediate' ?
-											'@basic.product.typeOfMaterial.value.02intermediate' :
-											#product['typeOfMaterial'] == '03product' ?
-												'@basic.product.typeOfMaterial.value.03product' :
-												#product['typeOfMaterial'] == '04waste' ?
-												'@basic.product.typeOfMaterial.value.04waste' :
+					<option type="column" name="globalTypeOfMaterial" fields="product"
+						expression="#product['globalTypeOfMaterial'] == '01component' ?
+										'@basic.product.globalTypeOfMaterial.value.01component' :
+										#product['globalTypeOfMaterial'] == '02intermediate' ?
+											'@basic.product.globalTypeOfMaterial.value.02intermediate' :
+											#product['globalTypeOfMaterial'] == '03product' ?
+												'@basic.product.globalTypeOfMaterial.value.03product' :
+												#product['globalTypeOfMaterial'] == '04waste' ?
+												'@basic.product.globalTypeOfMaterial.value.04waste' :
 												''" width="200" />
 
 					<option type="column" name="nominalCost" fields="product"

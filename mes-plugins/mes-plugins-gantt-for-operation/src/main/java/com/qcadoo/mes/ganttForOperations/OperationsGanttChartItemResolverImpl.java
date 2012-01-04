@@ -108,7 +108,7 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
                     counter = counters.get(operationName.toString()) + 1;
                     operationName.append(" (");
                     operationName.append(counter);
-                    operationName.append(")");
+                    operationName.append(") ");
                 }
 
                 GanttChartItem item = scale.createGanttChartItem(operationName.toString(), operationName.toString(),

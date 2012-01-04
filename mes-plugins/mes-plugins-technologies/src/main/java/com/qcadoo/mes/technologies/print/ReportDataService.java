@@ -136,7 +136,7 @@ public class ReportDataService {
 
     private void aggregateTreeDataPerTechnology(final List<Entity> operationComponents,
             final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations,
-            final String type, final Entity order, final BigDecimal plannedQuantity, Entity technology) {
+            final String type, final Entity order, final BigDecimal plannedQuantity, final Entity technology) {
         Entity entityKey = null;
         if (MODEL_BASIC_PRODUCT.equals(type)) {
             Entity product = (Entity) order.getField(MODEL_BASIC_PRODUCT);
@@ -183,7 +183,7 @@ public class ReportDataService {
     }
 
     private Map<Entity, BigDecimal> prepareOutProductsPerTechnology(final Entity operationComponent,
-            final BigDecimal plannedQuantity, Entity technology) {
+            final BigDecimal plannedQuantity, final Entity technology) {
         List<Entity> operationProductOutComponents = operationComponent.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS);
         Map<Entity, BigDecimal> productsOutMap = new HashMap<Entity, BigDecimal>();
 
@@ -200,7 +200,7 @@ public class ReportDataService {
 
     private boolean aggregateTreeDataPerOutProducts(final EntityTreeNode node,
             final Map<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> operations,
-            final String type, final Entity order, final BigDecimal plannedQuantity, Entity technology) {
+            final String type, final Entity order, final BigDecimal plannedQuantity, final Entity technology) {
         if (OPERATION_NODE_ENTITY_TYPE.equals(node.getField(FIELD_ENTITY_TYPE))) {
             Entity entityKey = null;
             Entity operation = (Entity) node.getField("operation");
@@ -284,7 +284,7 @@ public class ReportDataService {
     }
 
     private Map<Entity, BigDecimal> prepareOutProducts(final EntityTreeNode node, final BigDecimal plannedQuantity,
-            Entity technology) {
+            final Entity technology) {
         Map<Entity, BigDecimal> productsOutMap = new HashMap<Entity, BigDecimal>();
         List<Entity> operationProductOutComponents = node.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS);
 
@@ -299,7 +299,7 @@ public class ReportDataService {
 
     private void countQuntityComponentPerTechnology(final Map<Entity, BigDecimal> products,
             final List<Entity> operationComponents, final boolean onlyComponents, final BigDecimal plannedQuantity,
-            Entity technology) {
+            final Entity technology) {
         for (Entity operationComponent : operationComponents) {
             if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField(FIELD_ENTITY_TYPE))) {
                 List<Entity> operationProductComponents = operationComponent.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS);
@@ -326,7 +326,7 @@ public class ReportDataService {
     }
 
     private boolean countQuntityComponentPerOutProducts(final Map<Entity, BigDecimal> products, final EntityTreeNode node,
-            final boolean onlyComponents, final BigDecimal plannedQuantity, Entity technology) {
+            final boolean onlyComponents, final BigDecimal plannedQuantity, final Entity technology) {
         if (OPERATION_NODE_ENTITY_TYPE.equals(node.getField(FIELD_ENTITY_TYPE))) {
             List<Entity> operationProductInComponents = node.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS);
             if (operationProductInComponents.size() == 0) {
@@ -368,7 +368,7 @@ public class ReportDataService {
         return true;
     }
 
-    private Entity checkOutProducts(final Entity operationComponent, Entity technology) {
+    private Entity checkOutProducts(final Entity operationComponent, final Entity technology) {
         List<Entity> operationProductOutComponents = operationComponent.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS);
         Entity productOutComponent = null;
         if (operationProductOutComponents.size() == 0) {
@@ -390,7 +390,7 @@ public class ReportDataService {
         return productOutComponent;
     }
 
-    private EntityTreeNode findPreviousOperation(final EntityTreeNode node, final Entity product, Entity technology) {
+    private EntityTreeNode findPreviousOperation(final EntityTreeNode node, final Entity product, final Entity technology) {
         for (EntityTreeNode operationComponent : node.getChildren()) {
             List<Entity> operationProductOutComponents = new ArrayList<Entity>();
             if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField(FIELD_ENTITY_TYPE))) {
