@@ -95,12 +95,12 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private ReportDataService reportDataService;
 
     @Override
-    protected void buildPdfContent(Document document, Entity entity, Locale locale) throws DocumentException {
+    protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         addSeries(document, entity, locale);
     }
 
     @Override
-    protected String getReportTitle(Locale locale) {
+    protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("workPlans.workPlan.report.title", locale);
     }
 

@@ -49,16 +49,12 @@ public class TechnologyStateChangeListener implements StateChangeListener {
     private PluginAccessor pluginAccessor;
 
     @Override
-    public List<MessageHolder> onStateChange(Entity technology, TechnologyState newState) {
+    public List<MessageHolder> onStateChange(final Entity technology, final TechnologyState newState) {
         List<MessageHolder> resultMessages = Lists.newArrayList();
-        switch (newState) {
-            case OUTDATED:
-                if (isTechnologyUsedInActiveOrder(technology)) {
-                    resultMessages.add(MessageHolder.error("technologies.technology.state.error.orderInProgress"));
-                }
-                break;
-            default:
-                break;
+        if (TechnologyState.OUTDATED.getStringValue().equals(newState)) {
+            if (isTechnologyUsedInActiveOrder(technology)) {
+                resultMessages.add(MessageHolder.error("technologies.technology.state.error.orderInProgress"));
+            }
         }
         return resultMessages;
     }
