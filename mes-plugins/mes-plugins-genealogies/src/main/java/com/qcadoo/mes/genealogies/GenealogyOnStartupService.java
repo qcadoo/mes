@@ -40,6 +40,15 @@ public class GenealogyOnStartupService extends Module {
 
     @Override
     public void enable() {
+        registerListeners();
+    }
+
+    @Override
+    public void enableOnStartup() {
+        registerListeners();
+    }
+
+    private void registerListeners() {
         orderStatesChangingService.addOrderStateListener(genealogyOrderStatesListener);
     }
 

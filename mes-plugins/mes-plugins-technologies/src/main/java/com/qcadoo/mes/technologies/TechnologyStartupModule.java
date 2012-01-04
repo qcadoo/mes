@@ -41,6 +41,15 @@ public class TechnologyStartupModule extends Module {
 
     @Override
     public void enable() {
+        registerListeners();
+    }
+
+    @Override
+    public void enableOnStartup() {
+        registerListeners();
+    }
+
+    private void registerListeners() {
         technologyStateChangeNotifierService.registerListener(technologyStateChangeListener);
     }
 

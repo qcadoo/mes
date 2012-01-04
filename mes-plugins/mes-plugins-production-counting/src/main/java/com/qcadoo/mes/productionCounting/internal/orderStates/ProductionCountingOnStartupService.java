@@ -48,6 +48,15 @@ public class ProductionCountingOnStartupService extends Module {
 
     @Override
     public void enable() {
+        registerListeners();
+    }
+
+    @Override
+    public void enableOnStartup() {
+        registerListeners();
+    }
+
+    private void registerListeners() {
         orderStatesChangingService.addOrderStateListener(productionCountingOrderStatesListener);
         changingService.addRecordStateListener(changeListener);
     }
