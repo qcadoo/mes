@@ -277,11 +277,26 @@ public abstract class SamplesLoader {
     void validateEntity(final Entity entity) {
         if (!entity.isValid()) {
             Map<String, ErrorMessage> errors = entity.getErrors();
+            List<ErrorMessage> globalErrors = entity.getGlobalErrors();
             Set<String> keys = errors.keySet();
             StringBuilder stringError = new StringBuilder("Saved entity is invalid\n");
-            for (String key : keys) {
-                stringError.append("\t").append(key).append("  -  ").append(errors.get(key).getMessage()).append("\n");
+            stringError.append("Global errors:\n");
+            for (ErrorMessage error : globalErrors) {
+                stringError.append(error.getMessage()).append("\nError vars:\n");
+                String[] vars = error.getVars();
+                for (String errorVar : vars) {
+                    stringError.append("\t").append(errorVar).append("\n");
+                }
             }
+            stringError.append("Errors:\n");
+            for (String key : keys) {
+                stringError.append("\t").append(key).append("  -  ").append(errors.get(key).getMessage()).append("\nError vars:");
+                String[] vars = errors.get(key).getVars();
+                for (String errorVar : vars) {
+                    stringError.append("\t").append(errorVar).append("\n");
+                }
+            }
+            stringError.append("Fields:\n");
             Map<String, Object> fields = entity.getFields();
             for (Entry<String, Object> entry : fields.entrySet()) {
                 if (entry.getValue() == null) {
