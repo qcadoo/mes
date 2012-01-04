@@ -51,7 +51,7 @@ public class TechnologyStateChangeListener implements StateChangeListener {
     @Override
     public List<MessageHolder> onStateChange(final Entity technology, final TechnologyState newState) {
         List<MessageHolder> resultMessages = Lists.newArrayList();
-        if (TechnologyState.OUTDATED.getStringValue().equals(newState)) {
+        if (TechnologyState.OUTDATED.equals(newState)) {
             if (isTechnologyUsedInActiveOrder(technology)) {
                 resultMessages.add(MessageHolder.error("technologies.technology.state.error.orderInProgress"));
             }
