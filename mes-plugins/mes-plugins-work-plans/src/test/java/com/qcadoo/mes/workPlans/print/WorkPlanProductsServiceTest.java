@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -20,7 +21,7 @@ public class WorkPlanProductsServiceTest {
 
     private WorkPlanProductsService workPlanProductsService;
 
-    private Entity order;
+    private Entity order1;
 
     private Entity technology;
 
@@ -28,12 +29,17 @@ public class WorkPlanProductsServiceTest {
 
     private Entity product1, product2, product3, product4;
 
+    private List<Entity> orders;
+
     @Before
+    @SuppressWarnings("unchecked")
     public void init() {
         workPlanProductsService = new WorkPlanProductsService();
 
-        order = mock(Entity.class);
+        order1 = mock(Entity.class);
         technology = mock(Entity.class);
+
+        orders = mock(List.class);
 
         Entity operation1 = mock(Entity.class);
         Entity operation2 = mock(Entity.class);
@@ -61,13 +67,11 @@ public class WorkPlanProductsServiceTest {
         EntityList prodInComps1 = mock(EntityList.class);
         EntityList prodInComps2 = mock(EntityList.class);
 
-        @SuppressWarnings("unchecked")
         Iterator<Entity> prodInCompsIter1 = mock(Iterator.class);
         when(prodInComps1.iterator()).thenReturn(prodInCompsIter1);
         when(prodInCompsIter1.hasNext()).thenReturn(true, false);
         when(prodInCompsIter1.next()).thenReturn(prodInComp1);
 
-        @SuppressWarnings("unchecked")
         Iterator<Entity> prodInCompsIter2 = mock(Iterator.class);
         when(prodInComps2.iterator()).thenReturn(prodInCompsIter2);
         when(prodInCompsIter2.hasNext()).thenReturn(true, true, false);
@@ -75,13 +79,12 @@ public class WorkPlanProductsServiceTest {
 
         EntityTree operationComponents = mock(EntityTree.class);
 
-        when(order.getBelongsToField("technology")).thenReturn(technology);
+        when(order1.getBelongsToField("technology")).thenReturn(technology);
         when(technology.getTreeField("operationComponents")).thenReturn(operationComponents);
 
         when(operationComponent1.getBelongsToField("operation")).thenReturn(operation1);
         when(operationComponent2.getBelongsToField("operation")).thenReturn(operation2);
 
-        @SuppressWarnings("unchecked")
         Iterator<Entity> operationComponentIterator = mock(Iterator.class);
         when(operationComponents.iterator()).thenReturn(operationComponentIterator);
         when(operationComponentIterator.hasNext()).thenReturn(true, true, false);
@@ -91,16 +94,21 @@ public class WorkPlanProductsServiceTest {
         when(operationComponent2.getHasManyField("operationProductInComponents")).thenReturn(prodInComps2);
 
         when(technology.getStringField("componentQuantityAlgorithm")).thenReturn("01perProductOut");
-        when(order.getField("plannedQuantity")).thenReturn(new BigDecimal(5));
+        when(order1.getField("plannedQuantity")).thenReturn(new BigDecimal(5));
+
+        Iterator<Entity> orderIterator = mock(Iterator.class);
+        when(orders.iterator()).thenReturn(orderIterator);
+        when(orderIterator.hasNext()).thenReturn(true, false);
+        when(orderIterator.next()).thenReturn(order1);
     }
 
     @Test
     public void shouldReturnEmptyMapIfTheresNoTechnology() {
         // given
-        when(order.getBelongsToField("technology")).thenReturn(null);
+        when(order1.getBelongsToField("technology")).thenReturn(null);
 
         // when
-        Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getInProductsPerOperation(order);
+        Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getInProductsPerOperation(orders);
 
         // then
         assertTrue(inProductsPerOperation.isEmpty());
@@ -109,7 +117,7 @@ public class WorkPlanProductsServiceTest {
     @Test
     public void shouldGetInProductsForAllOperationComponents() {
         // when
-        Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getInProductsPerOperation(order);
+        Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getInProductsPerOperation(orders);
 
         // then
         assertTrue(inProductsPerOperation.keySet().contains(operationComponent1));
@@ -120,7 +128,7 @@ public class WorkPlanProductsServiceTest {
     @Test
     public void shouldReturnCorrectInProductsForOperationComponents() {
         // when
-        Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getInProductsPerOperation(order);
+        Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getInProductsPerOperation(orders);
 
         // then
         Map<Entity, BigDecimal> inProductsForOperation1 = inProductsPerOperation.get(operationComponent1);
@@ -136,7 +144,7 @@ public class WorkPlanProductsServiceTest {
     @Test
     public void shouldReturnInProductsWithCorrectQuantitiesUsingSimpleAlgorithm() {
         // when
-        Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getInProductsPerOperation(order);
+        Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getInProductsPerOperation(orders);
 
         // then
         Map<Entity, BigDecimal> inProductsForOperation1 = inProductsPerOperation.get(operationComponent1);
