@@ -77,10 +77,10 @@ public class ProductionBalanceReportDataService {
         }
         prevProduct.setField("plannedQuantity", plannedQuantity);
         prevProduct.setField("usedQuantity", usedQuantity);
-        if (usedQuantity != null) {
-            prevProduct.setField("balance", usedQuantity.subtract(plannedQuantity));
-        } else {
+        if (usedQuantity == null) {
             prevProduct.setField("balance", null);
+        } else {
+            prevProduct.setField("balance", usedQuantity.subtract(plannedQuantity));
         }
         groupedProducts.add(prevProduct);
 
