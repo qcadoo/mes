@@ -91,10 +91,10 @@
 <!-- 			plugin="orders" -->
 <!-- 			class="com.qcadoo.mes.basicProductionCounting.ProductionRecordsService" -->
 <!-- 			method="generateUsedProducts" /> -->
-<!-- 		<view:view-hook view="orderDetails" type="beforeRender" -->
-<!-- 			plugin="orders" -->
-<!-- 			class="com.qcadoo.mes.basicProductionCounting.ProductionRecordsService" -->
-<!-- 			method="setProducedQuantity" /> -->
+		<view:view-hook view="orderDetails" type="beforeRender"
+			plugin="orders"
+			class="com.qcadoo.mes.basicProductionCounting.ProductionRecordsService"
+			method="setProducedQuantity" />
 		<view:view resource="view/basicProductionCountingList.xml" />
 		<view:view resource="view/basicProductionCountingDetails.xml" />
 
