@@ -25,12 +25,13 @@ package com.qcadoo.mes.orders.states;
 
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_STATE;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.Entity;
 
@@ -40,7 +41,7 @@ public class OrderStatesChangingService {
     @Autowired
     OrderStateValidationService orderStateValidationService;
 
-    private final List<OrderStateListener> listeners = new LinkedList<OrderStateListener>();
+    private final Set<OrderStateListener> listeners = Sets.newHashSet();
 
     public void addOrderStateListener(OrderStateListener listener) {
         listeners.add(listener);
