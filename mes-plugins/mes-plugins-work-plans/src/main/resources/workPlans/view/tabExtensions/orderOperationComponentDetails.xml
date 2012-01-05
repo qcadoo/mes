@@ -27,23 +27,36 @@
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-	plugin="productionScheduling" view="orderOperationComponentDetails">
+	plugin="productionScheduling" 
+	view="orderOperationComponentDetails">
 
 	<windowTab name="workPlansBasicTab" reference="workPlansBasicTab">
-		<component type="gridLayout" name="workPlansBasicGridLayout" columns="1" rows="4">
+		<component type="gridLayout" name="workPlansBasicGridLayout" columns="3" rows="5">
 			<layoutElement column="1" row="1">
 				<component type="label" name="workPlansBasicTabWelcome">
 					<option type="labelStyle" value="text" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="2">
-				<component type="checkbox" name="hideDescriptionInWorkPlans" field="hideDescriptionInWorkPlans" />
+				<component type="checkbox" name="hideDescriptionInWorkPlans" field="#{form}.hideDescriptionInWorkPlans" reference="hideDescriptionInWorkPlans">
+					<option type="labelWidth" value="80" />
+					<option type="align" value="right" />
+				</component>
 			</layoutElement>
 			<layoutElement column="1" row="3">
-				<component type="checkbox" name="hideDetailsInWorkPlans" field="hideDetailsInWorkPlans" />
+				<component type="checkbox" name="hideDetailsInWorkPlans" field="#{form}.hideDetailsInWorkPlans" reference="hideDetailsInWorkPlans">
+					<option type="labelWidth" value="80" />
+					<option type="align" value="right" />
+				</component>
 			</layoutElement>
 			<layoutElement column="1" row="4">
-				<component type="checkbox" name="hideTechnologyAndOrderInWorkPlans" field="hideTechnologyAndOrderInWorkPlans" />
+				<component type="checkbox" name="hideTechnologyAndOrderInWorkPlans" field="#{form}.hideTechnologyAndOrderInWorkPlans" reference="hideTechnologyAndOrderInWorkPlans">
+					<option type="labelWidth" value="80" />
+					<option type="align" value="right" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="5">
+				<component type="file" name="imageUrlInWorkPlan" field="#{form}.imageUrlInWorkPlan" reference="imageUrlInWorkPlan" />
 			</layoutElement>
 		</component>
 	</windowTab>
@@ -55,18 +68,18 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="2">
-				<component type="checkbox" name="dontPrintInputProductsInWorkPlans" field="dontPrintInputProductsInWorkPlans">
+				<component type="checkbox" name="dontPrintInputProductsInWorkPlans" field="#{form}.dontPrintInputProductsInWorkPlans" reference="dontPrintInputProductsInWorkPlans">
 					<option type="labelWidth" value="80" />
 					<option type="align" value="right" />
 				</component>
 			</layoutElement>
 			<layoutElement column="2" row="2">
-				<component type="checkbox" name="dontPrintOutputProductsInWorkPlans" field="dontPrintOutputProductsInWorkPlans">
+				<component type="checkbox" name="dontPrintOutputProductsInWorkPlans" field="#{form}.dontPrintOutputProductsInWorkPlans" reference="dontPrintOutputProductsInWorkPlans">
 					<option type="labelWidth" value="80" />
 					<option type="align" value="right" />
 				</component>
 			</layoutElement>
 		</component>
 	</windowTab>
-
+	
 </windowTabExtension>

@@ -86,7 +86,7 @@
 			<model:boolean name="hideTechnologyAndOrderInWorkPlans" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
-			<model:string name="imageUrlInWorkPlan" />
+			<model:file name="imageUrlInWorkPlan" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="dontPrintInputProductsInWorkPlans" />
@@ -105,7 +105,7 @@
 			<model:boolean name="hideTechnologyAndOrderInWorkPlans" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:string name="imageUrlInWorkPlan" />
+			<model:file name="imageUrlInWorkPlan" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:boolean name="dontPrintInputProductsInWorkPlans" />
@@ -124,7 +124,7 @@
 			<model:boolean name="hideTechnologyAndOrderInWorkPlans" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
-			<model:string name="imageUrlInWorkPlan" />
+			<model:file name="imageUrlInWorkPlan" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:boolean name="dontPrintInputProductsInWorkPlans" />
@@ -143,7 +143,7 @@
 			<model:boolean name="hideTechnologyAndOrderInWorkPlans" />
 		</model:model-field>
 		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
-			<model:string name="imageUrlInWorkPlan" />
+			<model:file name="imageUrlInWorkPlan" />
 		</model:model-field>
 		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
 			<model:boolean name="dontPrintInputProductsInWorkPlans" />
@@ -151,10 +151,35 @@
 		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
 			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
 		</model:model-field>
+		
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/orderOperationComponentDetails.xml" />
+		
+		<view:view-hook plugin="technologies" view="operationDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.workPlans.hooks.OperationViewHooks"
+			method="setOperationDefaultValues" />
+			
+		<view:view-listener plugin="technologies" view="technologyOperationComponentDetails"
+			component="operation" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentViewHooks"
+			method="setTechnologyOperationComponentDefaultValues" />
+			
+		<view:view-hook plugin="productionScheduling" view="orderOperationComponentDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentViewHooks"
+			method="setOrderOperationComponentDefaultValues" />
+			
+			
+		<model:model-hook plugin="technologies" model="technologyOperationComponent">
+			<model:onCreate
+				class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentViewHooks"
+				method="copyParametersToTechnologyOperationComponent" />
+		</model:model-hook>
+		
+		
 	</modules>
 
 </plugin>
