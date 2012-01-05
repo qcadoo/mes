@@ -80,8 +80,6 @@ public class AutoGenealogyServiceTest {
 
     private TranslationService translationService;
 
-    private GenealogyService genealogyService;
-
     private SecurityService securityService;
 
     private PluginAccessor pluginAccessor;
@@ -92,7 +90,6 @@ public class AutoGenealogyServiceTest {
     public void init() {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         translationService = mock(TranslationService.class);
-        genealogyService = mock(GenealogyService.class);
         securityService = mock(SecurityService.class);
         pluginAccessor = mock(PluginAccessor.class);
         entity = mock(Entity.class);
@@ -424,7 +421,6 @@ public class AutoGenealogyServiceTest {
         ComponentState state = mock(ComponentState.class);
         given(state.getFieldValue()).willReturn(13L);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
         Entity order = mock(Entity.class);
 
@@ -451,7 +447,6 @@ public class AutoGenealogyServiceTest {
         ComponentState state = mock(ComponentState.class);
         given(state.getFieldValue()).willReturn(13L);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
         Entity order = mock(Entity.class);
 

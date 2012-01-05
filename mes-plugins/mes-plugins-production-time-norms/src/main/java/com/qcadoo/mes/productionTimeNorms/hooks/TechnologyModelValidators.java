@@ -50,7 +50,7 @@ public class TechnologyModelValidators {
         }
 
         public boolean getMessages(final String error, final Entity entity) {
-            if (hasError == true) {
+            if (hasError) {
                 entity.addGlobalError(error, errorString.toString());
                 return false;
             }

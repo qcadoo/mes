@@ -60,7 +60,7 @@ public class OrderGroupsServiceTest {
 
     private EntityList ordersList = null;
 
-    private long now = new Date().getTime();
+    private final long now = new Date().getTime();
 
     private DataDefinition dataDefinition = null;
 
@@ -408,6 +408,7 @@ public class OrderGroupsServiceTest {
         Mockito.verify(dataDefinition, Mockito.times(ordersList.size())).save(order);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public final void shouldRedirectToOrdersList() throws Exception {
         // given
@@ -426,6 +427,7 @@ public class OrderGroupsServiceTest {
                 (Map) Mockito.anyObject());
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public final void shouldNotRedirectToOrdersListIfFormEntityIsNull() throws Exception {
         // given
@@ -442,6 +444,7 @@ public class OrderGroupsServiceTest {
                 (Map) Mockito.anyObject());
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public final void shouldNotRedirectToOrdersListIfGroupNameIsNull() throws Exception {
         // given

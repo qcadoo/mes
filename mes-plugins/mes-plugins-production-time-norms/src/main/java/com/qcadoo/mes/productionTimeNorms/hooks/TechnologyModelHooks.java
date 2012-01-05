@@ -1,13 +1,11 @@
 package com.qcadoo.mes.productionTimeNorms.hooks;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 
 @Service

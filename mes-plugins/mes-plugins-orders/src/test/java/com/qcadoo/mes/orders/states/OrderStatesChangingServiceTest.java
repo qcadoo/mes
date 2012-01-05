@@ -34,7 +34,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.Entity;
 
@@ -45,8 +44,6 @@ public class OrderStatesChangingServiceTest {
     private OrderStateValidationService orderStateValidationService;
 
     private OrderStateListener orderStateListener;
-
-    private TranslationService translationService;
 
     private Set<OrderStateListener> listeners;
 
@@ -64,7 +61,6 @@ public class OrderStatesChangingServiceTest {
         oldOrder = mock(Entity.class);
         listenersIterator = mock(Iterator.class);
         orderStateValidationService = mock(OrderStateValidationService.class);
-        translationService = mock(TranslationService.class);
 
         when(listenersIterator.hasNext()).thenReturn(true, false);
         when(listenersIterator.next()).thenReturn(orderStateListener);

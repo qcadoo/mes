@@ -30,7 +30,6 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 
@@ -109,7 +108,6 @@ public class OrderStatesServiceTest {
         searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
         grid = mock(GridComponent.class);
         // Set<Long> ordersId = mock(Set.class);
-        Iterator<Long> iterator = mock(Iterator.class);
 
         when(order.getDataDefinition()).thenReturn(dataDefinition);
         when(view.getComponentByReference("form")).thenReturn(form);
