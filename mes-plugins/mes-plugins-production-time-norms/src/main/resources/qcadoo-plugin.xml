@@ -136,11 +136,11 @@
 			<model:integer name="timeNextOperation" required="true" default="0"/>
 		</model:model-field>
 		
-		<model:model-hook model="technologyOperationComponent" plugin="technologies">
-			<model:onSave class="com.qcadoo.mes.productionTimeNorms.hooks.TechnologyOperationComponentModelHooks" method="setDefaultValuesIfEmpty"/>
+		<model:model-hook model="technology" plugin="technologies">
+			<model:onSave class="com.qcadoo.mes.productionTimeNorms.hooks.TechnologyModelHooks" method="setDefaultValuesIfEmpty"/>
 		</model:model-hook>
-		<model:model-hook model="operation" plugin="technologies">
-			<model:onSave class="com.qcadoo.mes.productionTimeNorms.hooks.OperationModelHooks" method="setDefaultValuesIfEmpty"/>
+		<model:model-hook model="technology" plugin="technologies">
+			<model:validatesWith class="com.qcadoo.mes.productionTimeNorms.hooks.TechnologyModelValidators" method="checkIfAllOperationComponenthHaveTJSet"/>
 		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetails.xml" />

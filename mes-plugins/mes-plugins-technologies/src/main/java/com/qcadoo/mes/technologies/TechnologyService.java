@@ -67,7 +67,7 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class TechnologyService {
 
-    private static final String DRAFT = "01draft";
+    private static final String ACCEPTED = "02accepted";
 
     private static final String NUMBER = "number";
 
@@ -405,20 +405,24 @@ public class TechnologyService {
     }
 
     public boolean checkIfTechnologyHasAtLeastOneComponent(final DataDefinition dataDefinition, final Entity technology) {
-        if (DRAFT.equals(technology.getStringField(CONST_STATE))) {
+        if (!ACCEPTED.equals(technology.getStringField(CONST_STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
         final EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
         if (operations != null && !operations.isEmpty()) {
-            return true;
+            for (Entity operation : operations) {
+                if (CONST_OPERATION.equals(operation.getStringField(CONST_ENTITY_TYPE))) {
+                    return true;
+                }
+            }
         }
         technology.addGlobalError("technologies.technology.validate.global.error.emptyTechnologyTree");
         return false;
     }
 
     public boolean checkTopComponentsProducesProductForTechnology(final DataDefinition dataDefinition, final Entity technology) {
-        if (DRAFT.equals(technology.getStringField(CONST_STATE))) {
+        if (!ACCEPTED.equals(technology.getStringField(CONST_STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
@@ -431,21 +435,20 @@ public class TechnologyService {
                 return true;
             }
         }
-        final Entity referenceTechnology = root.getBelongsToField("referenceTechnology");
-        if (referenceTechnology != null && referenceTechnology.getBelongsToField(CONST_PRODUCT).getId().equals(product.getId())) {
-            return true;
-        }
         technology.addGlobalError("technologies.technology.validate.global.error.noFinalProductInTechnologyTree");
         return false;
     }
 
     public boolean checkIfAllReferenceTechnologiesAreAceepted(final DataDefinition dataDefinition, final Entity technology) {
-        if (DRAFT.equals(technology.getStringField(CONST_STATE))) {
+        if (!ACCEPTED.equals(technology.getStringField(CONST_STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
         final EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
         for (Entity operation : operations) {
+            if (CONST_OPERATION.equals(operation.getStringField(CONST_ENTITY_TYPE))) {
+                continue;
+            }
             final Entity referenceTechnology = operation.getBelongsToField("referenceTechnology");
             if (referenceTechnology != null && !"02accepted".equals(referenceTechnology.getStringField(CONST_STATE))) {
                 technology.addError(dataDefinition.getField(CONST_OPERATION_COMPONENTS),
@@ -457,7 +460,7 @@ public class TechnologyService {
     }
 
     public boolean checkIfOperationsUsesSubOperationsProds(final DataDefinition dataDefinition, final Entity technology) {
-        if (DRAFT.equals(technology.getStringField("state"))) {
+        if (!ACCEPTED.equals(technology.getStringField("state"))) {
             return true;
         }
         if ("01perProductOut".equals(technology.getStringField("componentQuantityAlgorithm"))) {
@@ -487,7 +490,7 @@ public class TechnologyService {
     private boolean checkIfConsumesSubOpsProds(final EntityTree technologyOperations) {
         for (Entity technologyOperation : technologyOperations) {
             final Entity parent = technologyOperation.getBelongsToField("parent");
-            if (parent != null) {
+            if (parent != null && CONST_OPERATION.equals(parent.getStringField(CONST_ENTITY_TYPE))) {
                 final EntityList prodsIn = parent.getHasManyField(CONST_OPERATION_COMP_PRODUCT_IN);
                 final EntityList prodsOut = technologyOperation.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT);
                 if (prodsIn == null || prodsOut == null) {
