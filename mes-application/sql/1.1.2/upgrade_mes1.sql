@@ -1,7 +1,7 @@
 ----- WORKPLANS ----
 
 -- Table: basic_division
--- changed 20.12.2011
+-- changed: 20.12.2011
 
 CREATE TABLE basic_division
 (
@@ -19,7 +19,7 @@ CREATE TABLE basic_division
 
 
 -- Table: basic_machine
--- changed 20.12.2011
+-- changed: 20.12.2011
 
 ALTER TABLE basic_machine RENAME TO basic_workstationType;
 
@@ -27,7 +27,7 @@ ALTER TABLE basic_machine RENAME TO basic_workstationType;
 
 
 -- Table: basic_workstationType
--- changed 20.12.2011
+-- changed: 20.12.2011
 
 ALTER TABLE basic_workstationType ADD COLUMN division_id bigint;
 
@@ -39,7 +39,7 @@ ALTER TABLE basic_workstationType ADD CONSTRAINT basic_workstationType_fkey_divi
 
 	
 -- Table: technologies_operation
--- changed 20.12.2011
+-- changed: 20.12.2011
 	
 ALTER TABLE technologies_operation DROP COLUMN staff_id;
 
@@ -47,7 +47,7 @@ ALTER TABLE technologies_operation DROP COLUMN staff_id;
 
 
 -- Table: jointable_order_workplan
--- changed 20.12.2011
+-- changed: 20.12.2011
 
 CREATE TABLE jointable_order_workplan
 (
@@ -76,7 +76,7 @@ COMMIT;
 
 
 -- Table: workplans_workplancomponent
--- changed 20.12.2011
+-- changed: 20.12.2011
 
 DROP TABLE workplans_workplancomponent;
 
@@ -84,7 +84,7 @@ DROP TABLE workplans_workplancomponent;
 
 
 -- Table: workplans_workplan
--- changed 20.12.2011
+-- changed: 20.12.2011
 
 ALTER TABLE workplans_workplan ADD COLUMN type character varying(255) DEFAULT '01allOperations'::character varying;
 
@@ -99,10 +99,10 @@ ALTER TABLE technologies_operation ADD COLUMN workstationtype_id bigint;
 ALTER TABLE technologies_operation ADD CONSTRAINT technologies_operation_fkey_workstation FOREIGN KEY (workstationtype_id)
       REFERENCES basic_workstationtype (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION;
-
+	  
 -- end      
-      
-      
+
+
 -- Table: basic_parameter
 -- changed: 02.01.2012
 
@@ -228,7 +228,6 @@ ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN dontPrintOutput
 -- Table: productionscheduling_orderoperationcomponent
 -- changed: 03.01.2012
 
-
 ALTER TABLE productionscheduling_orderoperationcomponent ADD COLUMN hideDescriptionInWorkPlans boolean;
 ALTER TABLE productionscheduling_orderoperationcomponent ADD COLUMN hideDetailsInWorkPlans boolean;
 ALTER TABLE productionscheduling_orderoperationcomponent ADD COLUMN hideTechnologyAndOrderInWorkPlans boolean;
@@ -238,4 +237,26 @@ ALTER TABLE productionscheduling_orderoperationcomponent ADD COLUMN dontPrintOut
 
 -- end
 
+
+-- Table: basic_product
+-- changed: 03.01.2012
+
 ALTER TABLE basic_product RENAME COLUMN typeofmaterial TO globalTypeOfMaterial;
+
+-- end
+
+
+-- Table: qcadooview_view
+-- changed: 05.01.2012
+
+UPDATE qcadooview_view SET name='workstationTypesList', view='workstationTypesList' WHERE name='machinesList';
+
+-- end
+
+
+-- Table: qcadooview_item
+-- changed: 05.01.2012
+
+UPDATE qcadooview_item SET name='workstationTypes' WHERE name='machines';
+
+-- end
