@@ -92,8 +92,7 @@
 								ribbonItem.enable();
 							}
 						}
-						getRibbonItem("actions.delete").disable();
-						
+
 						if (!differentStates) {
 							var state = selectedEntitiesArray[0].fields.state;
 						}
