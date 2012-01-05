@@ -1,4 +1,4 @@
------ WORKPLANS ----
+﻿----- WORKPLANS ----
 
 -- Table: basic_division
 -- changed: 20.12.2011
@@ -242,6 +242,14 @@ ALTER TABLE productionscheduling_orderoperationcomponent ADD COLUMN dontPrintOut
 -- changed: 03.01.2012
 
 ALTER TABLE basic_product RENAME COLUMN typeofmaterial TO globalTypeOfMaterial;
+
+-- end
+
+
+-- Table: materialrequirements_materialrequirement
+-- changed: 05.01.2012
+
+ALTER TABLE materialrequirements_materialrequirement ADD COLUMN active boolean DEFAULT true;
 
 -- end
 
