@@ -30,55 +30,60 @@
 	plugin="technologies" view="technologyOperationComponentDetails">
 
 	<windowTab name="costTab" reference="costTab">
-		<component type="borderLayout" name="borderLayoutPiecework"
-			reference="borderLayoutPiecework">
-			<option type="label" value="piecework" />
-			<component type="gridLayout" name="gridLayout" hasBorders="false"
-				columns="6" rows="1">
-				<layoutElement column="1" row="1" width="2">
-					<component type="input" name="pieceworkCost" reference="pieceworkCost"
-						field="#{form}.pieceworkCost">
-						<option type="alignment" value="right" />
+		<component type="gridLayout" name="outerGridLayout"
+			hasBorders="false" columns="3" rows="1">
+			<layoutElement column="1" row="1" width="2">
+				<component type="borderLayout" name="borderLayoutPiecework"
+					reference="borderLayoutPiecework">
+					<option type="label" value="piecework" />
+					<component type="gridLayout" name="gridLayout" hasBorders="false"
+						columns="6" rows="1">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="pieceworkCost" reference="pieceworkCost"
+								field="#{form}.pieceworkCost">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="pieceworkCostCURRENCY"
+								defaultEnabled="false" hasLabel="false" reference="pieceworkCostCURRENCY" />
+						</layoutElement>
+						<layoutElement column="5" row="1" width="2">
+							<component type="input" name="numberOfOperations"
+								reference="numberOfOperations" field="#{form}.numberOfOperations">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
 					</component>
-				</layoutElement>
-				<layoutElement column="3" row="1">
-					<component type="input" name="pieceworkCostCURRENCY"
-						defaultEnabled="false" hasLabel="false" reference="pieceworkCostCURRENCY" />
-				</layoutElement>
-				<layoutElement column="4" row="1" width="3">
-					<component type="input" name="numberOfOperations"
-						reference="numberOfOperations" field="#{form}.numberOfOperations">
-						<option type="alignment" value="right" />
+				</component>
+				<component type="borderLayout" name="borderLayoutHourly"
+					reference="borderLayoutHourly">
+					<option type="label" value="hourly" />
+					<component type="gridLayout" name="gridLayout" hasBorders="false"
+						columns="6" rows="2">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="laborHourlyCost" reference="laborHourlyCost"
+								field="#{form}.laborHourlyCost">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="laborHourlyCostCURRENCY"
+								defaultEnabled="false" hasLabel="false" reference="laborHourlyCostCURRENCY" />
+						</layoutElement>
+						<layoutElement column="1" row="2" width="3">
+							<component type="input" name="machineHourlyCost"
+								reference="machineHourlyCost" field="#{form}.machineHourlyCost">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="2">
+							<component type="input" name="machineHourlyCostCURRENCY"
+								defaultEnabled="false" hasLabel="false" reference="machineHourlyCostCURRENCY" />
+						</layoutElement>
 					</component>
-				</layoutElement>
-			</component>
-		</component>
-		<component type="borderLayout" name="borderLayoutHourly"
-			reference="borderLayoutHourly">
-			<option type="label" value="hourly" />
-			<component type="gridLayout" name="gridLayout" hasBorders="false"
-				columns="6" rows="2">
-				<layoutElement column="1" row="1" width="4">
-					<component type="input" name="laborHourlyCost" reference="laborHourlyCost"
-						field="#{form}.laborHourlyCost">
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-				<layoutElement column="5" row="1">
-					<component type="input" name="laborHourlyCostCURRENCY"
-						defaultEnabled="false" hasLabel="false" reference="laborHourlyCostCURRENCY" />
-				</layoutElement>
-				<layoutElement column="1" row="2" width="4">
-					<component type="input" name="machineHourlyCost"
-						reference="machineHourlyCost" field="#{form}.machineHourlyCost">
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-				<layoutElement column="5" row="2">
-					<component type="input" name="machineHourlyCostCURRENCY"
-						defaultEnabled="false" hasLabel="false" reference="machineHourlyCostCURRENCY" />
-				</layoutElement>
-			</component>
+				</component>
+			</layoutElement>
 		</component>
 	</windowTab>
 
