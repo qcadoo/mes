@@ -24,9 +24,7 @@
 package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -43,14 +41,10 @@ import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataServ
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -61,6 +55,12 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class BasicProductionCountingService {
+
+    private static final String COMPONENT = "01component";
+
+    private static final String INTERMEDIATE = "02intermediate";
+
+    private static final String FINAL_PRODUCT = "03finalProduct";
 
     private static final String MODEL_FIELD_PRODUCT = "product";
 
@@ -249,33 +249,33 @@ public class BasicProductionCountingService {
     private Comparator<Entity> countingsComparator = new Comparator<Entity>() {
 
         @Override
-        public int compare(Entity counting1, Entity counting2) {
-            Entity product1 = counting1.getBelongsToField(MODEL_FIELD_PRODUCT);
-            Entity product2 = counting2.getBelongsToField(MODEL_FIELD_PRODUCT);
-            Entity technology = counting1.getBelongsToField(MODEL_FIELD_ORDER).getBelongsToField("technology");
-            String product1Type = technologyService.getProductType(product1, technology);
-            String product2Type = technologyService.getProductType(product2, technology);
+        public int compare(final Entity counting1, final Entity counting2) {
+            final Entity product1 = counting1.getBelongsToField(MODEL_FIELD_PRODUCT);
+            final Entity product2 = counting2.getBelongsToField(MODEL_FIELD_PRODUCT);
+            final Entity technology = counting1.getBelongsToField(MODEL_FIELD_ORDER).getBelongsToField("technology");
+            final String product1Type = technologyService.getProductType(product1, technology);
+            final String product2Type = technologyService.getProductType(product2, technology);
 
             if (product1Type.equals(product2Type)) {
                 return 0;
             }
-            if (product1Type.equals("03finalProduct") && !product2Type.equals("03finalProduct")) {
+            if (FINAL_PRODUCT.equals(product1Type)) {
                 return 1;
             }
-            if (!product1Type.equals("03finalProduct") && product2Type.equals("03finalProduct")) {
+            if (FINAL_PRODUCT.equals(product2Type)) {
                 return -1;
             }
-            if (product1Type.equals("02intermediate") && !product2Type.equals("02intermediate")) {
+            if (INTERMEDIATE.equals(product1Type)) {
                 return 1;
             }
-            if (!product1Type.equals("02intermediate") && product2Type.equals("02intermediate")) {
+            if (INTERMEDIATE.equals(product2Type)) {
                 return -1;
             }
-            if (product1Type.equals("01component") && !product2Type.equals("01component")) {
+            if (COMPONENT.equals(product1Type)) {
                 return 1;
             }
-            if (!product1Type.equals("01component") && product2Type.equals("01component")) {
-                return -11;
+            if (COMPONENT.equals(product2Type)) {
+                return -1;
             }
 
             throw new IllegalStateException("Cant compare two product types");

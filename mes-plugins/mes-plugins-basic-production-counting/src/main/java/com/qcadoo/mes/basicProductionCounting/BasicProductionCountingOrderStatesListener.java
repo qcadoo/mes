@@ -24,6 +24,7 @@
 package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
 import com.qcadoo.mes.orders.states.OrderStateListener;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class BasicProductionCountingOrderStatesListener extends OrderStateListener {
@@ -54,31 +56,40 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
         Preconditions.checkArgument(newEntity != null, "Order is null");
         final Entity order = newEntity.getDataDefinition().get(newEntity.getId());
 
-        final Map<Entity, BigDecimal> productsReq = materialRequirementReportDataService
-                .getQuantitiesForOrdersTechnologyProducts(Arrays.asList(order), false);
+        final List<Entity> prodCountings = dataDefinitionService
+                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
+                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
 
-        for (Entry<Entity, BigDecimal> productReq : productsReq.entrySet()) {
+        List<ChangeOrderStateMessage> messages = new ArrayList<ChangeOrderStateMessage>();
+
+        if (prodCountings == null || prodCountings.isEmpty()) {
+            final Map<Entity, BigDecimal> productsReq = materialRequirementReportDataService
+                    .getQuantitiesForOrdersTechnologyProducts(Arrays.asList(order), false);
+
+            for (Entry<Entity, BigDecimal> productReq : productsReq.entrySet()) {
+                Entity productionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).create();
+                productionCounting.setField("order", order);
+                productionCounting.setField("product", productReq.getKey());
+                productionCounting.setField("plannedQuantity", productReq.getValue());
+                productionCounting = productionCounting.getDataDefinition().save(productionCounting);
+                if (!productionCounting.isValid()) {
+                    throw new IllegalStateException("Saved order entity is invalid.");
+                }
+            }
+
             Entity productionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                     BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).create();
             productionCounting.setField("order", order);
-            productionCounting.setField("product", productReq.getKey());
-            productionCounting.setField("plannedQuantity", productReq.getValue());
+            productionCounting.setField("product", order.getBelongsToField("product"));
+            productionCounting.setField("plannedQuantity", order.getField("plannedQuantity"));
             productionCounting = productionCounting.getDataDefinition().save(productionCounting);
             if (!productionCounting.isValid()) {
                 throw new IllegalStateException("Saved order entity is invalid.");
             }
         }
 
-        Entity productionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).create();
-        productionCounting.setField("order", order);
-        productionCounting.setField("product", order.getBelongsToField("product"));
-        productionCounting.setField("plannedQuantity", order.getField("plannedQuantity"));
-        productionCounting = productionCounting.getDataDefinition().save(productionCounting);
-        if (!productionCounting.isValid()) {
-            throw new IllegalStateException("Saved order entity is invalid.");
-        }
-
-        return super.onAccepted(order);
+        return messages;
     }
 }

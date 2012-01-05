@@ -67,6 +67,8 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class TechnologyService {
 
+    private static final String DRAFT = "01draft";
+
     private static final String NUMBER = "number";
 
     public static final String WASTE = "04waste";
@@ -403,11 +405,11 @@ public class TechnologyService {
     }
 
     public boolean checkIfTechnologyHasAtLeastOneComponent(final DataDefinition dataDefinition, final Entity technology) {
-        if ("01draft".equals(technology.getStringField(CONST_STATE))) {
+        if (DRAFT.equals(technology.getStringField(CONST_STATE))) {
             return true;
         }
-        Entity savedTechnology = dataDefinition.get(technology.getId());
-        EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+        final Entity savedTechnology = dataDefinition.get(technology.getId());
+        final EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
         if (operations != null && !operations.isEmpty()) {
             return true;
         }
@@ -416,20 +418,20 @@ public class TechnologyService {
     }
 
     public boolean checkTopComponentsProducesProductForTechnology(final DataDefinition dataDefinition, final Entity technology) {
-        if ("01draft".equals(technology.getStringField(CONST_STATE))) {
+        if (DRAFT.equals(technology.getStringField(CONST_STATE))) {
             return true;
         }
-        Entity savedTechnology = dataDefinition.get(technology.getId());
-        Entity product = savedTechnology.getBelongsToField(CONST_PRODUCT);
-        EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
-        EntityTreeNode root = operations.getRoot();
-        EntityList productOutComps = root.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT);
+        final Entity savedTechnology = dataDefinition.get(technology.getId());
+        final Entity product = savedTechnology.getBelongsToField(CONST_PRODUCT);
+        final EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+        final EntityTreeNode root = operations.getRoot();
+        final EntityList productOutComps = root.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT);
         for (Entity productOutComp : productOutComps) {
             if (product.getId().equals(productOutComp.getBelongsToField(CONST_PRODUCT).getId())) {
                 return true;
             }
         }
-        Entity referenceTechnology = root.getBelongsToField("referenceTechnology");
+        final Entity referenceTechnology = root.getBelongsToField("referenceTechnology");
         if (referenceTechnology != null && referenceTechnology.getBelongsToField(CONST_PRODUCT).getId().equals(product.getId())) {
             return true;
         }
@@ -438,13 +440,13 @@ public class TechnologyService {
     }
 
     public boolean checkIfAllReferenceTechnologiesAreAceepted(final DataDefinition dataDefinition, final Entity technology) {
-        if ("01draft".equals(technology.getStringField(CONST_STATE))) {
+        if (DRAFT.equals(technology.getStringField(CONST_STATE))) {
             return true;
         }
-        Entity savedTechnology = dataDefinition.get(technology.getId());
-        EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+        final Entity savedTechnology = dataDefinition.get(technology.getId());
+        final EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
         for (Entity operation : operations) {
-            Entity referenceTechnology = operation.getBelongsToField("referenceTechnology");
+            final Entity referenceTechnology = operation.getBelongsToField("referenceTechnology");
             if (referenceTechnology != null && !"02accepted".equals(referenceTechnology.getStringField(CONST_STATE))) {
                 technology.addError(dataDefinition.getField(CONST_OPERATION_COMPONENTS),
                         "technologies.technology.validate.global.error.unacceptedReferenceTechnology");
@@ -455,12 +457,12 @@ public class TechnologyService {
     }
 
     public boolean checkIfOperationsUsesSubOperationsProds(final DataDefinition dataDefinition, final Entity technology) {
-        if ("01draft".equals(technology.getStringField("state"))) {
+        if (DRAFT.equals(technology.getStringField("state"))) {
             return true;
         }
         if ("01perProductOut".equals(technology.getStringField("componentQuantityAlgorithm"))) {
-            Entity savedTechnology = dataDefinition.get(technology.getId());
-            EntityTree technologyOperations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+            final Entity savedTechnology = dataDefinition.get(technology.getId());
+            final EntityTree technologyOperations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
             if (!checkIfConsumesSubOpsProds(technologyOperations)) {
                 technology.addError(dataDefinition.getField(CONST_OPERATION_COMPONENTS),
                         "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProducts");
@@ -482,12 +484,12 @@ public class TechnologyService {
         return false;
     }
 
-    private boolean checkIfConsumesSubOpsProds(EntityTree technologyOperations) {
+    private boolean checkIfConsumesSubOpsProds(final EntityTree technologyOperations) {
         for (Entity technologyOperation : technologyOperations) {
-            Entity parent = technologyOperation.getBelongsToField("parent");
+            final Entity parent = technologyOperation.getBelongsToField("parent");
             if (parent != null) {
-                EntityList prodsIn = parent.getHasManyField(CONST_OPERATION_COMP_PRODUCT_IN);
-                EntityList prodsOut = technologyOperation.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT);
+                final EntityList prodsIn = parent.getHasManyField(CONST_OPERATION_COMP_PRODUCT_IN);
+                final EntityList prodsOut = technologyOperation.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT);
                 if (prodsIn == null || prodsOut == null) {
                     return false;
                 }
