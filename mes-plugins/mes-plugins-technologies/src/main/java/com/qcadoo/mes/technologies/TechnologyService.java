@@ -67,7 +67,7 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class TechnologyService {
 
-    private static final String DRAFT = "01draft";
+    private static final String ACCEPTED = "02accepted";
 
     private static final String NUMBER = "number";
 
@@ -405,7 +405,7 @@ public class TechnologyService {
     }
 
     public boolean checkIfTechnologyHasAtLeastOneComponent(final DataDefinition dataDefinition, final Entity technology) {
-        if (DRAFT.equals(technology.getStringField(CONST_STATE))) {
+        if (!ACCEPTED.equals(technology.getStringField(CONST_STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
@@ -418,7 +418,7 @@ public class TechnologyService {
     }
 
     public boolean checkTopComponentsProducesProductForTechnology(final DataDefinition dataDefinition, final Entity technology) {
-        if (DRAFT.equals(technology.getStringField(CONST_STATE))) {
+        if (!ACCEPTED.equals(technology.getStringField(CONST_STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
@@ -440,7 +440,7 @@ public class TechnologyService {
     }
 
     public boolean checkIfAllReferenceTechnologiesAreAceepted(final DataDefinition dataDefinition, final Entity technology) {
-        if (DRAFT.equals(technology.getStringField(CONST_STATE))) {
+        if (!ACCEPTED.equals(technology.getStringField(CONST_STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
@@ -457,7 +457,7 @@ public class TechnologyService {
     }
 
     public boolean checkIfOperationsUsesSubOperationsProds(final DataDefinition dataDefinition, final Entity technology) {
-        if (DRAFT.equals(technology.getStringField("state"))) {
+        if (!ACCEPTED.equals(technology.getStringField("state"))) {
             return true;
         }
         if ("01perProductOut".equals(technology.getStringField("componentQuantityAlgorithm"))) {
