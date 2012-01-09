@@ -1,4 +1,4 @@
-﻿----- WORKPLANS ----
+﻿-- WORKPLANS
 
 -- Table: basic_division
 -- changed: 20.12.2011
