@@ -1,5 +1,3 @@
-﻿-- WORKPLANS
-
 -- Table: basic_division
 -- changed: 20.12.2011
 
@@ -10,7 +8,7 @@ CREATE TABLE basic_division
   "name" character varying(255),
   supervisor_id bigint,
   CONSTRAINT basic_division_pkey PRIMARY KEY (id),
-  CONSTRAINT fkf0b0619e64280dc0 FOREIGN KEY (supervisor_id)
+  CONSTRAINT basic_division_fkey_staff FOREIGN KEY (supervisor_id)
       REFERENCES basic_staff (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
