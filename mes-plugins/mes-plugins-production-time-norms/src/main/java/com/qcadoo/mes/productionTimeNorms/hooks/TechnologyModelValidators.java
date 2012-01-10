@@ -18,7 +18,7 @@ public class TechnologyModelValidators {
         EntityTree operationComponents = savedTechnology.getTreeField("operationComponents");
 
         for (Entity operationComponent : operationComponents) {
-            if (!checkIfTJSet(operationComponent)) {
+            if ("operation".equals(operationComponent.getField("entityType")) && !checkIfTJSet(operationComponent)) {
                 StringBuilder fieldName = new StringBuilder();
                 fieldName.append(operationComponent.getStringField("nodeNumber")).append(" ");
                 fieldName.append(operationComponent.getBelongsToField("operation").getStringField("number")).append(" ");
