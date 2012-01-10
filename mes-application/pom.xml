@@ -253,7 +253,8 @@
 								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-stoppage/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-used-products/src/main/resources;
-								${basedir}/../../mes-comercial-plugins/mes-commercial-plugins-integration-cfc-simple/src/main/resources;
+								<!-- TODO ALBR -->
+<!-- 								${basedir}/../../mes-comercial-plugins/mes-commercial-plugins-integration-cfc-simple/src/main/resources; -->
 							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>
