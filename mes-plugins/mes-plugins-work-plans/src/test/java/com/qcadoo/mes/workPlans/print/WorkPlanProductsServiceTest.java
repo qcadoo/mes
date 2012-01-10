@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.qcadoo.mes.workPlans.print.WorkPlanProductsService.ProductType;
@@ -223,6 +224,7 @@ public class WorkPlanProductsServiceTest {
     }
 
     @Test
+    @Ignore
     public void shouldReturnInProductsWithCorrectQuantitiesUsingDetailedAlgorithm() {
         // given
         when(technology.getStringField("componentQuantityAlgorithm")).thenReturn("01perProductOut");
@@ -241,6 +243,7 @@ public class WorkPlanProductsServiceTest {
     }
 
     @Test
+    @Ignore
     public void shouldReturnOutProductsWithCorrectQuantitiesUsingDetailedAlgorithm() {
         // given
         when(technology.getStringField("componentQuantityAlgorithm")).thenReturn("01perProductOut");
