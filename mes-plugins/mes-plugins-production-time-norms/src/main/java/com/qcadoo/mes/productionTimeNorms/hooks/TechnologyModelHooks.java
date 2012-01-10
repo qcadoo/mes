@@ -45,6 +45,10 @@ public class TechnologyModelHooks {
         if (operationComponent.getField("countRealized") == null) {
             operationComponent.setField("countRealized", "01all");
         }
+        if (operationComponent.getField("countMachine") == null) {
+            operationComponent.setField("countMachine", BigDecimal.ZERO);
+        }
+
         operationComponent = operationComponent.getDataDefinition().save(operationComponent);
 
         if (!operationComponent.isValid()) {

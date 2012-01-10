@@ -254,7 +254,7 @@
 								${basedir}/../mes-plugins/mes-plugins-stoppage/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-used-products/src/main/resources;
 								<!-- TODO ALBR -->
-<!-- 								${basedir}/../../mes-comercial-plugins/mes-commercial-plugins-integration-cfc-simple/src/main/resources; -->
+								<!-- ${basedir}/../../mes-comercial-plugins/mes-commercial-plugins-integration-cfc-simple/src/main/resources; -->
 							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>
@@ -337,24 +337,24 @@
 			<id>commercial</id>
 			<dependencies>
 				<dependency>
-				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-integration-cfc-simple</artifactId>
-				<version>1.1.2-SNAPSHOT</version>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-cfc-simple</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
 				</dependency>
 				<dependency>
-				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-integration-efc-simple</artifactId>
-				<version>1.1.2-SNAPSHOT</version>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-efc-simple</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
 				</dependency>
 				<dependency>
-				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-integration-sfc-simple</artifactId>
-				<version>1.1.2-SNAPSHOT</version>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-sfc-simple</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
 				</dependency>
 				<dependency>
-				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-integration-erc-simple</artifactId>
-				<version>1.1.2-SNAPSHOT</version>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-erc-simple</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
@@ -446,12 +446,12 @@
 					<artifactId>mes-commercial-plugins-integration-erc-warehouse</artifactId>
 					<version>1.1.2-SNAPSHOT</version>
 				</dependency>
- 				<dependency>
+				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-commercial-plugins-advanced-genealogy</artifactId>
 					<version>1.1.2-SNAPSHOT</version>
 				</dependency>
- 				<dependency>
+				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-commercial-plugins-advanced-genealogy-for-orders</artifactId>
 					<version>1.1.2-SNAPSHOT</version>

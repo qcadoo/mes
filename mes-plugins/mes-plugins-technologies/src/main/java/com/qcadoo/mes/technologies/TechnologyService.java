@@ -177,7 +177,9 @@ public class TechnologyService {
         GridComponent inProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("inProducts");
 
         if (!REFERENCE_TECHNOLOGY.equals(operationComponent.getStringField(CONST_ENTITY_TYPE))) {
+            // inProductsGrid.setEnabled(true);
             inProductsGrid.setEditable(true);
+            // outProductsGrid.setEnabled(true);
             outProductsGrid.setEditable(true);
             return;
         }
