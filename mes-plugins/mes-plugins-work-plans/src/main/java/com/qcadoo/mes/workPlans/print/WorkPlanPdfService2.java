@@ -127,8 +127,8 @@ public class WorkPlanPdfService2 extends PdfDocumentService {
 
                 addOperationComment(document, operationComponent, locale);
 
-                addProductSeries(document, operationComponent, productInComponents, ProductType.IN, df, locale);
                 addProductSeries(document, operationComponent, productOutComponents, ProductType.OUT, df, locale);
+                addProductSeries(document, operationComponent, productInComponents, ProductType.IN, df, locale);
 
                 addAdditionalFields(document, operationComponent, locale);
             }
