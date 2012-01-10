@@ -253,7 +253,7 @@
 								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-stoppage/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-used-products/src/main/resources;
-								
+								${basedir}/../../mes-comercial-plugins/mes-commercial-plugins-integration-cfc-simple/src/main/resources;
 							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>
@@ -337,114 +337,114 @@
 			<dependencies>
 				<dependency>
 				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-integration-commons</artifactId>
+				<artifactId>mes-commercial-plugins-integration-cfc-simple</artifactId>
 				<version>1.1.2-SNAPSHOT</version>
 				</dependency>
 				<dependency>
 				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-integration-enova</artifactId>
+				<artifactId>mes-commercial-plugins-integration-efc-simple</artifactId>
 				<version>1.1.2-SNAPSHOT</version>
 				</dependency>
 				<dependency>
 				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-integration-subiekt</artifactId>
+				<artifactId>mes-commercial-plugins-integration-sfc-simple</artifactId>
 				<version>1.1.2-SNAPSHOT</version>
 				</dependency>
 				<dependency>
 				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-integration-erp</artifactId>
+				<artifactId>mes-commercial-plugins-integration-erc-simple</artifactId>
 				<version>1.1.2-SNAPSHOT</version>
 				</dependency>
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-base</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-basic</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-orders</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-material-requirements</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-material-availability</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-cost-norms-for-product</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-basic-production-counting</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-universal-rest-connector-technologies</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-subiekt-rest-connector-basic</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-subiekt-rest-connector-technologies</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-subiekt-rest-connector-orders</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-subiekt-rest-connector-full</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-subiekt-rest-connector-warehouse</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-enova-rest-connector-basic</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-enova-rest-connector-technologies</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-enova-rest-connector-orders</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-enova-rest-connector-full</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>com.qcadoo.mes</groupId> -->
-<!-- 					<artifactId>mes-commercial-plugins-integration-enova-rest-connector-warehouse</artifactId> -->
-<!-- 					<version>1.1.2-SNAPSHOT</version> -->
-<!-- 				</dependency> -->
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-urc-core</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-urc-basic</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-urc-orders</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-urc-material-requirements</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-urc-material-availability</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-urc-cost-norms-for-product</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-urc-basic-production-counting</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-urc-technologies</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-src-basic</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-src-technologies</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-src-orders</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-src-full</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-src-warehouse</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-erc-basic</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-erc-technologies</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-erc-orders</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-erc-full</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-erc-warehouse</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
+				</dependency>
  				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-commercial-plugins-advanced-genealogy</artifactId>
