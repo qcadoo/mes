@@ -336,24 +336,24 @@
 			<id>commercial</id>
 			<dependencies>
 				<dependency>
-				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-integration-commons</artifactId>
-				<version>1.1.2-SNAPSHOT</version>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-commons</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
 				</dependency>
 				<dependency>
-				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-integration-enova</artifactId>
-				<version>1.1.2-SNAPSHOT</version>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-enova</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
 				</dependency>
 				<dependency>
-				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-integration-subiekt</artifactId>
-				<version>1.1.2-SNAPSHOT</version>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-subiekt</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
 				</dependency>
 				<dependency>
-				<groupId>com.qcadoo.mes</groupId>
-				<artifactId>mes-commercial-plugins-integration-erp</artifactId>
-				<version>1.1.2-SNAPSHOT</version>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-erp</artifactId>
+					<version>1.1.2-SNAPSHOT</version>
 				</dependency>
 <!-- 				<dependency> -->
 <!-- 					<groupId>com.qcadoo.mes</groupId> -->
