@@ -42,7 +42,7 @@
 		<component type="grid" name="technologies" reference="grid">
 			<script>
 				<![CDATA[
-					var toggleRibbonItems = ["actions.delete", "statuses.activate", "statuses.deactivate"];
+					var toggleRibbonItems = ["actions.delete"]; <!--, "statuses.activate", "statuses.deactivate"];-->
 		
 					this.addOnChangeListener({
 						onChange: function(selectedEntitiesArray) {

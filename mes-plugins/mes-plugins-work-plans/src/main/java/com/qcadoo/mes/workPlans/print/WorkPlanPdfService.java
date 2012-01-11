@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,8 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.report.api.PrioritizedString;
@@ -67,6 +70,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DateUtils.DATE_FORMAT, currentLocale);
 
     private final int[] defaultWorkPlanColumnWidth = new int[] { 15, 25, 30, 15, 15 };
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private SecurityService securityService;
@@ -115,19 +121,29 @@ public class WorkPlanPdfService extends PdfDocumentService {
             for (Entity operationComponent : entry.getValue()) {
                 PdfPTable operationTable = PdfUtil.createPanelTable(3);
                 addOperationInfoToTheOperationHeader(operationTable, operationComponent, locale);
-                if (orders.size() > 1) {
+                if (orders.size() > 1 && isOrderInfoEnabled(operationComponent)) {
                     addOrderInfoToTheOperationHeader(operationTable, operationComponent2order.get(operationComponent), locale);
                 }
-                addWorkstationInfoToTheOperationHeader(operationTable, operationComponent, locale);
+
+                if (isWorkstationInfoEnabled(operationComponent)) {
+                    addWorkstationInfoToTheOperationHeader(operationTable, operationComponent, locale);
+                }
 
                 operationTable.setSpacingAfter(18);
                 operationTable.setSpacingBefore(9);
                 document.add(operationTable);
 
-                addOperationComment(document, operationComponent, locale);
+                if (isCommentEnabled(operationComponent)) {
+                    addOperationComment(document, operationComponent, locale);
+                }
 
-                addOutProductsSeries(document, operationComponent, productQuantitiesPerOperation, df, locale);
-                addInProductsSeries(document, operationComponent, productQuantitiesPerOperation, df, locale);
+                if (isOutputProductTableEnabled(operationComponent)) {
+                    addOutProductsSeries(document, operationComponent, productQuantitiesPerOperation, df, locale);
+                }
+
+                if (isInputProductTableEnabled(operationComponent)) {
+                    addInProductsSeries(document, operationComponent, productQuantitiesPerOperation, df, locale);
+                }
 
                 addAdditionalFields(document, operationComponent, locale);
             }
@@ -434,6 +450,13 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     void addAdditionalFields(final Document document, final Entity operationComponent, final Locale locale)
             throws DocumentException {
+        String imagePath;
+        try {
+            imagePath = getImagePathFromDD(operationComponent);
+        } catch (NoSuchElementException e) {
+            return;
+        }
+
         String titleString = getTranslationService().translate("workPlans.workPlan.report.additionalFields", locale);
         document.add(new Paragraph(titleString, PdfUtil.getArialBold10Dark()));
 
@@ -441,7 +464,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         table.getDefaultCell().setBackgroundColor(null);
         table.setTableEvent(null);
 
-        PdfUtil.addImage(table, "placeholder.jpg");
+        PdfUtil.addImage(table, imagePath);
 
         table.setSpacingAfter(18);
         table.setSpacingBefore(9);
@@ -477,5 +500,63 @@ public class WorkPlanPdfService extends PdfDocumentService {
         orderHeader.add(getTranslationService().translate("orders.order.plannedQuantity.label", locale));
         orderHeader.add(getTranslationService().translate("orders.order.dateTo.label", locale));
         return orderHeader;
+    }
+
+    String getImagePathFromDD(Entity operationComponent) {
+        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
+        Entity parameters = dd.find().uniqueResult();
+
+        String imagePath = parameters.getStringField("imageUrlInWorkPlan");
+
+        if (imagePath == null) {
+            throw new NoSuchElementException("no image");
+        } else {
+            return imagePath;
+        }
+    }
+
+    public boolean isCommentEnabled(Entity operationComponent) {
+        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
+        Entity parameters = dd.find().uniqueResult();
+
+        boolean hideComment = (Boolean) parameters.getField("hideDescriptionInWorkPlans");
+
+        return !hideComment;
+    }
+
+    public boolean isOrderInfoEnabled(Entity operationComponent) {
+        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
+        Entity parameters = dd.find().uniqueResult();
+
+        boolean hideOrderInfo = (Boolean) parameters.getField("hideTechnologyAndOrderInWorkPlans");
+
+        return !hideOrderInfo;
+    }
+
+    public boolean isWorkstationInfoEnabled(Entity operationComponent) {
+        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
+        Entity parameters = dd.find().uniqueResult();
+
+        boolean hideWorkstationInfo = (Boolean) parameters.getField("hideDetailsInWorkPlans");
+
+        return !hideWorkstationInfo;
+    }
+
+    public boolean isInputProductTableEnabled(Entity operationComponent) {
+        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
+        Entity parameters = dd.find().uniqueResult();
+
+        boolean hideInputProducts = (Boolean) parameters.getField("dontPrintInputProductsInWorkPlans");
+
+        return !hideInputProducts;
+    }
+
+    public boolean isOutputProductTableEnabled(Entity operationComponent) {
+        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
+        Entity parameters = dd.find().uniqueResult();
+
+        boolean hideOutputProducts = (Boolean) parameters.getField("dontPrintOutputProductsInWorkPlans");
+
+        return !hideOutputProducts;
     }
 }

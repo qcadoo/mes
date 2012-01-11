@@ -48,8 +48,7 @@
 					<![CDATA[
 						#{form}.addOnChangeListener({
 							onSetValue: function() {
-								var itemNames = ["reports.pdf", "reports.xls", "statuses.activate", "statuses.deactivate",
-												"status.acceptTechnology", "status.cancelTechnology"];
+								var itemNames = ["reports.pdf", "reports.xls", "status.acceptTechnology", "status.cancelTechnology"]; <!-- ,"statuses.activate", "statuses.deactivate"]; -->
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 								
 								for (var elementKey in itemNames) {
@@ -155,7 +154,7 @@
  								  }
 								
 								var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", 
-									"actions.cancel", "statuses.activate", "statuses.deactivate"];
+									"actions.cancel"]; <!--, "statuses.activate", "statuses.deactivate"]; -->
 								for (var elementKey in toggleRibbonItems) {
 									var ribbonItemName = toggleRibbonItems[elementKey];
 									var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
