@@ -1,9 +1,9 @@
--- Table: basic_company
+﻿-- Table: basic_company
 -- changed 06.12.2011
 
-ALTER TABLE basic_company
-		ADD COLUMN number character varying(255),
-        ADD COLUMN owner boolean DEFAULT false;
+--ALTER TABLE basic_company
+--		ADD COLUMN number character varying(255),
+ --       ADD COLUMN owner boolean DEFAULT false;
 
 -- end
         
@@ -25,7 +25,7 @@ COMMIT;
 
 -- Table: basic_currency
 
-ALTER TABLE basic_currency DROP COLUMN isactive;
+--ALTER TABLE basic_currency DROP COLUMN isactive;
 
 
 -- Table: company

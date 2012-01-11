@@ -110,6 +110,8 @@
 									}
 									updateRibbon(newValue.content.value);
 									toggleEditable(newValue.content.value);
+									#{inProducts}.setEnabled(false, true); 
+  									#{outProducts}.setEnabled(false, true);
 								}
 							});
 							
@@ -123,9 +125,16 @@
 								}
 							};
 							
-							#{technologyTree}.addOnChangeListener(onSetValueListener);
-							#{outProducts}.addOnChangeListener(onSetValueListener);
-							#{inProducts}.addOnChangeListener(onSetValueListener);
+ 							#{technologyTree}.addOnChangeListener({  
+ 								select: function(newValue){ 
+ 									#{outProducts}.setEnabled(true, true); 
+ 									#{outProducts}.setEnabled(true, true); 
+ 								} 
+ 							}); 
+							
+							#{technologyTree}.addOnChangeListener(onSetValueListener); 
+   							#{outProducts}.addOnChangeListener(onSetValueListener);    
+							#{inProducts}.addOnChangeListener(onSetValueListener);    
 							
 							this.changeTechnologyState = function(eventPerformer, ribbonItemName) {
 								var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
@@ -141,7 +150,9 @@
 								var isDeclined = state == "03declined";
 								var isOutdated = state == "04outdated";
 								
-								#{window}.setEnabled(isDraft, true);
+								if(state != "01draft"){
+								#{window}.setEnabled(isDraft, true); 
+ 								  }
 								
 								var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", 
 									"actions.cancel", "statuses.activate", "statuses.deactivate"];
@@ -241,7 +252,7 @@
 					</layoutElement>
 					<layoutElement column="2" row="1" height="4">
 						<component type="grid" name="outProducts" reference="outProducts"
-							source="#{technologyTree}.operationProductOutComponents">
+							source="#{technologyTree}.operationProductOutComponents" defaultEnabled="false">
 							<option type="column" name="number" fields="product"
 								expression="#product['number']" link="true" width="100" />
 							<option type="column" name="name" fields="product"
@@ -261,7 +272,7 @@
 					</layoutElement>
 					<layoutElement column="2" row="5" height="4">
 						<component type="grid" name="inProducts" reference="inProducts"
-							source="#{technologyTree}.operationProductInComponents">
+							source="#{technologyTree}.operationProductInComponents" defaultEnabled="false" >
 							<option type="column" name="number" fields="product"
 								expression="#product['number']" link="true" width="100" />
 							<option type="column" name="name" fields="product"

@@ -28,6 +28,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
@@ -38,7 +39,9 @@
        http://schema.qcadoo.org/modules/localization
        http://schema.qcadoo.org/modules/localization.xsd
        http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>MES - Work Plans</name>
@@ -60,6 +63,11 @@
 
 		<model:model model="workPlan" resource="model/workPlan.xml" />
 
+		<model:model model="columnForInputProducts" resource="model/columnForInputProducts.xml" />
+		<model:model model="columnForOutputProducts" resource="model/columnForOutputProducts.xml" />
+		<model:model model="parameterInputComponent" resource="model/parameterInputComponent.xml" />
+		<model:model model="parameterOutputComponent" resource="model/parameterOutputComponent.xml" />
+		
 		<model:model-field plugin="orders" model="order">
 			<model:manyToMany name="workPlans" joinField="orders" model="workPlan" plugin="workPlans"/>
 		</model:model-field>
@@ -75,7 +83,7 @@
 		<view:view-listener plugin="orders"
 			view="ordersList" component="grid" event="addSelectedOrdersToWorkPlan"
 			class="com.qcadoo.mes.workPlans.WorkPlanViewHooks" method="addSelectedOrdersToWorkPlan" />
-
+		
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="hideDescriptionInWorkPlans" />
 		</model:model-field>
@@ -94,6 +102,16 @@
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
 		</model:model-field>
+	
+	
+		<model:model-field plugin="basic" model="parameter">
+			<model:hasMany name="parameterInputComponents" plugin="workPlans" model="parameterInputComponent" joinField="parameter" />
+		</model:model-field>
+		
+		<model:model-field plugin="basic" model="parameter">
+			<model:hasMany name="parameterOutputComponents" plugin="workPlans" model="parameterOutputComponent" joinField="parameter" />
+		</model:model-field>
+		
 		
 		<model:model-field plugin="technologies" model="operation">
 			<model:boolean name="hideDescriptionInWorkPlans" />
@@ -151,6 +169,9 @@
 		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
 			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
 		</model:model-field>
+		
+		<view:view resource="view/parameterInputComponentDetails.xml" />
+		<view:view resource="view/parameterOutputComponentDetails.xml" />
 		
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
@@ -172,14 +193,13 @@
 			class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentViewHooks"
 			method="setOrderOperationComponentDefaultValues" />
 			
-			
 		<model:model-hook plugin="technologies" model="technologyOperationComponent">
 			<model:onCreate
 				class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentViewHooks"
 				method="copyParametersToTechnologyOperationComponent" />
 		</model:model-hook>
 		
-		
+		<custom:custom class="com.qcadoo.mes.workPlans.WorkPlanColumnsLoaderModule" />
 	</modules>
 
 </plugin>

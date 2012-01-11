@@ -61,7 +61,7 @@
 		</component>
 	</windowTab>
 	<windowTab name="workPlansProductsTab" reference="workPlansProductsTab">
-		<component type="gridLayout" name="workPlansProductsGridLayout" columns="2" rows="2">
+		<component type="gridLayout" name="workPlansProductsGridLayout" columns="2" rows="3">
 			<layoutElement column="1" row="1" width="2">
 				<component type="label" name="workPlansProductsTabWelcome">
 					<option type="labelStyle" value="text" />
@@ -73,10 +73,42 @@
 					<option type="align" value="right" />
 				</component>
 			</layoutElement>
+			<layoutElement column="1" row="3">
+				<component type="grid" name="columnsForInputProducts" source="#{form}.parameterInputComponents" reference="columnsForInputProducts" >
+					<option type="column" name="name" fields="columnForInputProducts" expression="'@workPlans.columnForInputProducts.name.value.' + #columnForInputProducts.get('name')" />
+
+					<option type="order" column="succession" direction="desc" />
+					
+					<option type="correspondingView" value="workPlans/parameterInputComponentDetails" />
+					<option type="correspondingComponent" value="form" />
+					<option type="correspondingViewInModal" value="true" />
+						
+					<option type="creatable" value="true" />
+					<option type="deletable" value="true" />
+					<option type="fullscreen" value="true" />
+					<option type="multiselect" value="true" />
+				</component>
+			</layoutElement>
 			<layoutElement column="2" row="2">
 				<component type="checkbox" name="dontPrintOutputProductsInWorkPlans" field="#{form}.dontPrintOutputProductsInWorkPlans" reference="dontPrintOutputProductsInWorkPlans">
 					<option type="labelWidth" value="80" />
 					<option type="align" value="right" />
+				</component>
+			</layoutElement>
+			<layoutElement column="2" row="3">
+				<component type="grid" name="columnsForOutputProducts" source="#{form}.parameterOutputComponents" reference="columnsForOutputProducts" >
+					<option type="column" name="name" fields="columnForOutputProducts" expression="'@workPlans.columnForOutputProducts.name.value.' + #columnForOutputProducts.get('name')" />
+
+					<option type="order" column="succession" direction="desc" />
+					
+					<option type="correspondingView" value="workPlans/parameterOutputComponentDetails" />
+					<option type="correspondingComponent" value="form" />
+					<option type="correspondingViewInModal" value="true" />
+					
+					<option type="creatable" value="true" />
+					<option type="deletable" value="true" />
+					<option type="fullscreen" value="true" />
+					<option type="multiselect" value="true" />
 				</component>
 			</layoutElement>
 		</component>
