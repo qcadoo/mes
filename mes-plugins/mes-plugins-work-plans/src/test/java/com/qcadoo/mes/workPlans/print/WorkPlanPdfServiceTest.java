@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,6 +38,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
+import com.qcadoo.mes.workPlans.print.WorkPlanPdfService.ProductDirection;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -475,9 +477,13 @@ public class WorkPlanPdfServiceTest {
         String headerKey = "workPlans.workPlan.report.colums.product";
         when(translationService.translate("workPlans.workPlan.report.colums.product", locale)).thenReturn("product");
         when(translationService.translate("orders.order.plannedQuantity.label", locale)).thenReturn("quantity");
+        List<String> columns = new LinkedList<String>();
+        columns.add("workPlans.workPlan.report.colums.product");
+        columns.add("orders.order.plannedQuantity.label");
+        ProductDirection direction = ProductDirection.IN;
 
         // when
-        List<String> header = workPlanPdfService.prepareProductsTableHeader(document, headerKey, locale);
+        List<String> header = workPlanPdfService.prepareProductsTableHeader(document, columns, direction, locale);
 
         // then
         verify(document).add(Mockito.any(Paragraph.class));
