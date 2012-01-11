@@ -365,6 +365,10 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         List<String> columns = fetchColumnsDefinition(direction, operationComponent);
 
+        if (columns.isEmpty()) {
+            return;
+        }
+
         // TODO mici, column widths got overlooked in analysis
         int[] columnWidths = new int[columns.size()];
 
@@ -378,7 +382,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         for (Entity productComponent : productComponents) {
             // TODO mici, totally wrong way of doing this
             for (String columnNameKey : columns) {
-                if ("workPlans.workPlan.report.colums.product".equals(columnNameKey)) {
+                if (columnNameKey.endsWith(".productName")) {
                     Entity product = productComponent.getBelongsToField("product");
 
                     StringBuilder productString = new StringBuilder(product.getStringField("name"));
@@ -388,7 +392,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
                     table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                     table.addCell(new Phrase(productString.toString(), PdfUtil.getArialRegular9Dark()));
-                } else if ("orders.order.plannedQuantity.label".equals(columnNameKey)) {
+                } else if (columnNameKey.endsWith(".plannedQuantity")) {
                     Entity product = productComponent.getBelongsToField("product");
 
                     BigDecimal quantity = productQuantitiesPerOperation.get(operationComponent).get(productComponent);
