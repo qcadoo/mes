@@ -567,12 +567,24 @@ public class TechnologyService {
         }
 
         Entity existingTechnology = technology.getDataDefinition().get(technology.getId());
+        if (checkIfDeactivated(dataDefinition, technology, existingTechnology)) {
+            return true;
+        }
         if (isTechnologyIsAlreadyAccepted(technology, existingTechnology)) {
             entity.addGlobalError(errorMessageKey, technology.getStringField("name"));
             return false;
         }
 
         return true;
+    }
+
+    private boolean checkIfDeactivated(DataDefinition dataDefinition, Entity technology, Entity existingTechnology) {
+        if (isTechnologyIsAlreadyAccepted(technology, existingTechnology) && CONST_TECHNOLOGY.equals(dataDefinition.getName())) {
+            if (technology.isActive() != existingTechnology.isActive()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isTechnologyIsAlreadyAccepted(final Entity technology, final Entity existingTechnology) {

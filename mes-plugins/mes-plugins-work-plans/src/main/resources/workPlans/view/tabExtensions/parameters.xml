@@ -75,7 +75,7 @@
 			</layoutElement>
 			<layoutElement column="1" row="3">
 				<component type="grid" name="columnsForInputProducts" source="#{form}.parameterInputComponents" reference="columnsForInputProducts" >
-					<option type="column" name="name" fields="columnForInputProducts" expression="'@workPlans.columnForInputProducts.name.value.' + #columnForInputProducts.get('name')" />
+					<option type="column" name="name" fields="columnForInputProducts" expression="'@' + #columnForInputProducts.get('name')" />
 
 					<option type="order" column="succession" direction="desc" />
 					
@@ -97,7 +97,7 @@
 			</layoutElement>
 			<layoutElement column="2" row="3">
 				<component type="grid" name="columnsForOutputProducts" source="#{form}.parameterOutputComponents" reference="columnsForOutputProducts" >
-					<option type="column" name="name" fields="columnForOutputProducts" expression="'@workPlans.columnForOutputProducts.name.value.' + #columnForOutputProducts.get('name')" />
+					<option type="column" name="name" fields="columnForOutputProducts" expression="'@' + #columnForOutputProducts.get('name')" />
 
 					<option type="order" column="succession" direction="desc" />
 					

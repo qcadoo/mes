@@ -56,12 +56,12 @@
 
 					<layoutElement column="1" row="1" width="3">
 						<component type="lookup" name="columnForInputProducts" field="columnForInputProducts" reference="columnForInputProductsLookup">
-							<option type="column" name="name" fields="name" expression="'@workPlans.columnForInputProducts.name.value.' + #name" link="true" />
-							<option type="column" name="description" fields="description" expression="'@workPlans.columnForInputProducts.description.value.' + #description" />
+							<option type="column" name="name" fields="name" expression="'@' + #name" link="true" />
+							<option type="column" name="description" fields="description" expression="'@' + #description" />
 
 							<option type="orderable" value="name,description" />
 							
-							<option type="expression" value="'@workPlans.columnForInputProducts.name.value.' + #name" />
+							<option type="expression" value="'@' + #name" />
 							<option type="fieldCode" value="name" />	
 						</component>
 					</layoutElement>

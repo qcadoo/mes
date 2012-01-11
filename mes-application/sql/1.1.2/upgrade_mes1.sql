@@ -339,8 +339,92 @@ CREATE TABLE workplans_parameteroutputcomponent
 
 -- end
 
-INSERT INTO workplans_columnforinputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'productName', 'productName', 'workPlans');
-INSERT INTO workplans_columnforinputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'plannedQuantity', 'plannedQuantity', 'workPlans');
 
-INSERT INTO workplans_columnforoutputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'productName', 'productName', 'workPlans');
-INSERT INTO workplans_columnforoutputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'plannedQuantity', 'plannedQuantity', 'workPlans');
+-- Table: workplans_columnforinputproducts
+-- changed: 11.01.2012
+
+INSERT INTO workplans_columnforinputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'workPlans.columnForInputProducts.name.value.productName', 'workPlans.columnForInputProducts.description.value.productName', 'workPlans');
+INSERT INTO workplans_columnforinputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'workPlans.columnForInputProducts.name.value.plannedQuantity', 'workPlans.columnForInputProducts.description.value.plannedQuantity', 'workPlans');
+
+-- end
+
+
+-- Table: workplans_columnforoutputproducts
+-- changed: 11.01.2012
+
+INSERT INTO workplans_columnforoutputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'workPlans.columnForOutputProducts.name.value.productName', 'workPlans.columnForOutputProducts.description.value.productName', 'workPlans');
+INSERT INTO workplans_columnforoutputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'workPlans.columnForOutputProducts.name.value.plannedQuantity', 'workPlans.columnForOutputProducts.description.value.plannedQuantity', 'workPlans');
+
+-- end
+
+
+-- Table: workplans_parameterinputcomponent
+-- changed: 11.01.2012
+
+CREATE OR REPLACE FUNCTION update_parameterinputcomponent() RETURNS INTEGER AS 
+'
+	DECLARE
+		succession INTEGER;
+		parameter RECORD;
+		columnforinputproducts RECORD;  
+	
+	BEGIN  
+		FOR parameter IN SELECT id FROM basic_parameter LOOP
+			succession := 1;
+
+			FOR columnforinputproducts IN SELECT id FROM workplans_columnforinputproducts LOOP  
+				INSERT INTO workplans_parameterinputcomponent (id, parameter_id, columnforinputproducts_id, succession) 
+				VALUES (
+					nextval(''hibernate_sequence''),  
+					parameter."id",
+					columnforinputproducts."id",
+					succession
+				);
+
+				succession := succession + 1;
+			END LOOP;
+
+		END LOOP;
+
+		RETURN 1; 
+	END;  
+' 
+LANGUAGE 'plpgsql';
+SELECT * FROM update_parameterinputcomponent();
+
+-- end
+
+
+-- Table: workplans_parameteroutputcomponent
+-- changed: 11.01.2012
+
+CREATE OR REPLACE FUNCTION update_parameteroutputcomponent() RETURNS INTEGER AS 
+'
+	DECLARE
+		succession INTEGER;
+		parameter RECORD;
+		columnforoutputproducts RECORD;  
+	
+	BEGIN  
+		FOR parameter IN SELECT id FROM basic_parameter LOOP
+			succession := 1;
+			FOR columnforoutputproducts IN SELECT id FROM workplans_columnforoutputproducts LOOP  
+				INSERT INTO workplans_parameteroutputcomponent (id, parameter_id, columnforoutputproducts_id, succession) 
+				VALUES (
+					nextval(''hibernate_sequence''),  
+					parameter."id",
+					columnforoutputproducts."id",
+					succession
+				);
+
+				succession := succession + 1;
+			END LOOP;
+		END LOOP;
+
+		RETURN 1; 
+	END;  
+' 
+LANGUAGE 'plpgsql';
+SELECT * FROM update_parameteroutputcomponent();
+
+-- end
