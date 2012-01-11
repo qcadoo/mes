@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -80,7 +81,14 @@ public class WorkPlanPdfService extends PdfDocumentService {
     @Autowired
     private WorkPlanProductsService workPlanProductsService;
 
-    private int[] defaultWorkPlanProductColumnsWidth = new int[] { 70, 30 };
+    enum ProductDirection {
+        IN, OUT;
+    }
+
+    // TODO mici purely temporary solution until we make proper function calls from other plugins.
+    enum Column {
+        PRODUCT, QUANTITY;
+    }
 
     @Override
     public String getReportTitle(Locale locale) {
@@ -335,8 +343,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
     }
 
     void addProductsSeries(List<Entity> productComponents, Document document, Entity operationComponent,
-            Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation, final DecimalFormat df, final String headerKey,
-            Locale locale) throws DocumentException {
+            Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation, final DecimalFormat df,
+            ProductDirection direction, Locale locale) throws DocumentException {
         if (productComponents.isEmpty()) {
             return;
         }
@@ -355,32 +363,48 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         });
 
-        PdfPTable table = PdfUtil.createTableWithHeader(2, prepareProductsTableHeader(document, headerKey, locale), false,
-                defaultWorkPlanProductColumnsWidth);
+        List<String> columns = fetchColumnsDefinition(direction, operationComponent);
+
+        // TODO mici, column widths got overlooked in analysis
+        int[] columnWidths = new int[columns.size()];
+
+        for (int i = 0; i < columnWidths.length; ++i) {
+            columnWidths[i] = (int) (100.0f / columnWidths.length);
+        }
+
+        PdfPTable table = PdfUtil.createTableWithHeader(columns.size(),
+                prepareProductsTableHeader(document, columns, direction, locale), false, columnWidths);
 
         for (Entity productComponent : productComponents) {
-            Entity product = productComponent.getBelongsToField("product");
+            // TODO mici, totally wrong way of doing this
+            for (String columnNameKey : columns) {
+                if ("workPlans.workPlan.report.colums.product".equals(columnNameKey)) {
+                    Entity product = productComponent.getBelongsToField("product");
 
-            BigDecimal quantity = productQuantitiesPerOperation.get(operationComponent).get(productComponent);
+                    StringBuilder productString = new StringBuilder(product.getStringField("name"));
+                    productString.append(" (");
+                    productString.append(product.getStringField("number"));
+                    productString.append(")");
 
-            StringBuilder quantityString = new StringBuilder(df.format(quantity));
+                    table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+                    table.addCell(new Phrase(productString.toString(), PdfUtil.getArialRegular9Dark()));
+                } else if ("orders.order.plannedQuantity.label".equals(columnNameKey)) {
+                    Entity product = productComponent.getBelongsToField("product");
 
-            Object unit = product.getField("unit");
-            if (unit != null) {
-                quantityString.append(" ");
-                quantityString.append(unit.toString());
+                    BigDecimal quantity = productQuantitiesPerOperation.get(operationComponent).get(productComponent);
+
+                    StringBuilder quantityString = new StringBuilder(df.format(quantity));
+
+                    Object unit = product.getField("unit");
+                    if (unit != null) {
+                        quantityString.append(" ");
+                        quantityString.append(unit.toString());
+                    }
+
+                    table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                    table.addCell(new Phrase(quantityString.toString(), PdfUtil.getArialRegular9Dark()));
+                }
             }
-
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-
-            StringBuilder productString = new StringBuilder(product.getStringField("name"));
-            productString.append(" (");
-            productString.append(product.getStringField("number"));
-            productString.append(")");
-
-            table.addCell(new Phrase(productString.toString(), PdfUtil.getArialRegular9Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(quantityString.toString(), PdfUtil.getArialRegular9Dark()));
         }
 
         table.setSpacingAfter(18);
@@ -396,7 +420,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         List<Entity> productComponents = operationComponent.getHasManyField("operationProductInComponents");
 
         addProductsSeries(productComponents, document, operationComponent, productQuantitiesPerOperation, df,
-                "workPlans.workPlan.report.productsInTable", locale);
+                ProductDirection.IN, locale);
     }
 
     void addOutProductsSeries(Document document, Entity operationComponent,
@@ -406,7 +430,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         List<Entity> productComponents = operationComponent.getHasManyField("operationProductOutComponents");
 
         addProductsSeries(productComponents, document, operationComponent, productQuantitiesPerOperation, df,
-                "workPlans.workPlan.report.productsOutTable", locale);
+                ProductDirection.OUT, locale);
     }
 
     void addOrderSeries(final PdfPTable table, final List<Entity> orders, final DecimalFormat df) throws DocumentException {
@@ -478,14 +502,64 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 (Date) entity.getField("date"), securityService.getCurrentUserName());
     }
 
-    List<String> prepareProductsTableHeader(final Document document, final String headerKey, final Locale locale)
-            throws DocumentException {
-        String title = getTranslationService().translate(headerKey, locale);
+    List<String> fetchColumnsDefinition(ProductDirection direction, Entity operationComponent) {
+        List<String> columns = new LinkedList<String>();
+
+        DataDefinition dd;
+
+        // TODO mici, I still don't think that those two should be separated models
+        final String columnDefinitionModel;
+
+        if (ProductDirection.IN.equals(direction)) {
+            dd = dataDefinitionService.get("workPlans", "parameterInputComponent");
+            columnDefinitionModel = "columnForInputProducts";
+        } else if (ProductDirection.OUT.equals(direction)) {
+            dd = dataDefinitionService.get("workPlans", "parameterOutputComponent");
+            columnDefinitionModel = "columnForOutputProducts";
+        } else {
+            throw new IllegalStateException("Wrong product direction");
+        }
+
+        List<Entity> columnComponents = dd.find().list().getEntities();
+
+        Collections.sort(columnComponents, new Comparator<Entity>() {
+
+            @Override
+            public int compare(Entity o1, Entity o2) {
+                Integer o1succession = (Integer) o1.getField("succession");
+                Integer o2succession = (Integer) o2.getField("succession");
+                return o1succession.compareTo(o2succession);
+            }
+        });
+
+        for (Entity columnComponent : columnComponents) {
+            Entity columnDefinition = columnComponent.getBelongsToField(columnDefinitionModel);
+
+            String columnNameKey = columnDefinition.getStringField("name");
+            columns.add(columnNameKey);
+        }
+
+        return columns;
+    }
+
+    List<String> prepareProductsTableHeader(final Document document, List<String> columns, ProductDirection direction,
+            final Locale locale) throws DocumentException {
+        String title;
+        if (ProductDirection.IN.equals(direction)) {
+            title = getTranslationService().translate("workPlans.workPlan.report.productsInTable", locale);
+        } else if (ProductDirection.OUT.equals(direction)) {
+            title = getTranslationService().translate("workPlans.workPlan.report.productsOutTable", locale);
+        } else {
+            throw new IllegalStateException("unknown product direction");
+        }
 
         document.add(new Paragraph(title, PdfUtil.getArialBold10Dark()));
         List<String> header = new ArrayList<String>();
-        header.add(getTranslationService().translate("workPlans.workPlan.report.colums.product", locale));
-        header.add(getTranslationService().translate("orders.order.plannedQuantity.label", locale));
+
+        for (String columnNameKey : columns) {
+            header.add(getTranslationService().translate(columnNameKey, locale));
+        }
+
         return header;
     }
 
