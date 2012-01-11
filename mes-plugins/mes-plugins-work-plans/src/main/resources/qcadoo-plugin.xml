@@ -192,12 +192,6 @@
 			type="beforeRender"
 			class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentViewHooks"
 			method="setOrderOperationComponentDefaultValues" />
-			
-		<model:model-hook plugin="technologies" model="technologyOperationComponent">
-			<model:onCreate
-				class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentViewHooks"
-				method="copyParametersToTechnologyOperationComponent" />
-		</model:model-hook>
 		
 		<custom:custom class="com.qcadoo.mes.workPlans.WorkPlanColumnsLoaderModule" />
 	</modules>
