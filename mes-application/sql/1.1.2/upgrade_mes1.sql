@@ -278,7 +278,7 @@ CREATE TABLE workplans_columnforinputproducts
   description character varying(255),
   pluginidentifier character varying(255),
   CONSTRAINT workplans_columnforinputproducts_pkey PRIMARY KEY (id )
-)
+);
 
 -- end
 
