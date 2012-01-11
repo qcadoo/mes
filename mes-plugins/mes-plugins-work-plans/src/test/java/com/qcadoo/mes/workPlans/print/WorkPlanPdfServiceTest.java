@@ -3,7 +3,6 @@ package com.qcadoo.mes.workPlans.print;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,14 +20,16 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
@@ -55,20 +56,26 @@ public class WorkPlanPdfServiceTest {
 
     private static final String NO_DISTINCTION = "No distinction";
 
-    private WorkPlanPdfService2 workPlanPdfService;
+    private WorkPlanPdfService workPlanPdfService;
 
+    @Mock
     private TranslationService translationService;
 
+    @Mock
     private SecurityService securityService;
 
     private Locale locale;
 
+    @Mock
     private Document document;
 
+    @Mock
     private Entity op1Comp, op2Comp, op3Comp, op4Comp, op5Comp;
 
+    @Mock
     private Entity workstation1, workstation2;
 
+    @Mock
     private Entity workPlan;
 
     private DecimalFormat df;
@@ -77,7 +84,9 @@ public class WorkPlanPdfServiceTest {
 
     @Before
     public void init() {
-        workPlanPdfService = new WorkPlanPdfService2();
+        MockitoAnnotations.initMocks(this);
+
+        workPlanPdfService = new WorkPlanPdfService();
 
         translationService = mock(TranslationService.class);
         securityService = mock(SecurityService.class);
@@ -86,17 +95,6 @@ public class WorkPlanPdfServiceTest {
         ReflectionTestUtils.setField(workPlanPdfService, "securityService", securityService);
 
         locale = Locale.getDefault();
-        document = mock(Document.class);
-        workPlan = mock(Entity.class);
-
-        op1Comp = mock(Entity.class);
-        op2Comp = mock(Entity.class);
-        op3Comp = mock(Entity.class);
-        op4Comp = mock(Entity.class);
-        op5Comp = mock(Entity.class);
-
-        workstation1 = mock(Entity.class);
-        workstation2 = mock(Entity.class);
 
         Entity division1 = mock(Entity.class);
         Entity division2 = mock(Entity.class);
@@ -340,15 +338,6 @@ public class WorkPlanPdfServiceTest {
         assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(4).getFont());
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionForIncorectWorkPlanType() {
-        // given
-        when(workPlan.getStringField("type")).thenReturn("asdfghjk");
-
-        // when
-        workPlanPdfService.getOperationsTitle(workPlan);
-    }
-
     @Test
     public void shouldGetOperationComponentsForNoDistinction() {
         // given
@@ -377,8 +366,8 @@ public class WorkPlanPdfServiceTest {
                 workPlan, operationComponent2order, locale);
 
         // then
-        PrioritizedString workstation1String = new PrioritizedString(BY_WORKSTATION_TYPE + " {workstation1}");
-        PrioritizedString workstation2String = new PrioritizedString(BY_WORKSTATION_TYPE + " {workstation2}");
+        PrioritizedString workstation1String = new PrioritizedString(BY_WORKSTATION_TYPE + " workstation1");
+        PrioritizedString workstation2String = new PrioritizedString(BY_WORKSTATION_TYPE + " workstation2");
         PrioritizedString noWorkstationString = new PrioritizedString(NO_WORKSTATION_TYPE, 1);
 
         assertTrue(operationComponents.get(workstation1String).get(0).equals(op2Comp));
@@ -398,8 +387,8 @@ public class WorkPlanPdfServiceTest {
                 workPlan, operationComponent2order, locale);
 
         // then
-        PrioritizedString division1String = new PrioritizedString(BY_DIVISION + " {division1}");
-        PrioritizedString division2String = new PrioritizedString(BY_DIVISION + " {division2}");
+        PrioritizedString division1String = new PrioritizedString(BY_DIVISION + " division1");
+        PrioritizedString division2String = new PrioritizedString(BY_DIVISION + " division2");
         PrioritizedString noDivisionString = new PrioritizedString(NO_DIVISION, 1);
 
         assertTrue(operationComponents.get(division1String).get(0).equals(op2Comp));
@@ -419,8 +408,8 @@ public class WorkPlanPdfServiceTest {
                 workPlan, operationComponent2order, locale);
 
         // then
-        PrioritizedString product1String = new PrioritizedString(BY_END_PRODUCT + " {product1}");
-        PrioritizedString product2String = new PrioritizedString(BY_END_PRODUCT + " {product2}");
+        PrioritizedString product1String = new PrioritizedString(BY_END_PRODUCT + " product1");
+        PrioritizedString product2String = new PrioritizedString(BY_END_PRODUCT + " product2");
 
         assertTrue(operationComponents.get(product1String).get(0).equals(op2Comp));
         assertTrue(operationComponents.get(product1String).get(1).equals(op3Comp));
@@ -430,30 +419,45 @@ public class WorkPlanPdfServiceTest {
     }
 
     @Test
-    @Ignore
-    public void shouldAddCorrectAmountOfOperationsInCaseOfNoDistinction() throws DocumentException {
+    public void shouldAddAdditionalFieldsCorrectly() throws DocumentException {
         // given
-        when(workPlan.getStringField("type")).thenReturn(WorkPlanType.NO_DISTINCTION.getStringValue());
+        Entity operationComponent = mock(Entity.class);
 
         // when
-        workPlanPdfService.addOperations(document, workPlan, df, locale);
+        workPlanPdfService.addAdditionalFields(document, operationComponent, locale);
 
         // then
-        verify(document, times(1)).add(Chunk.NEXTPAGE);
-        verify(document, times(12)).add(any(PdfPTable.class));
+        verify(document, times(2)).add(Mockito.any(Paragraph.class));
     }
 
     @Test
-    @Ignore
-    public void shouldAddCorrectAmountOfOperationsInCaseOfDistinctionByWorkstationType() throws DocumentException {
+    public void shouldAddOperationComment() throws DocumentException {
         // given
-        when(workPlan.getStringField("type")).thenReturn(WorkPlanType.BY_WORKSTATION_TYPE.getStringValue());
+        Entity operationComponent = mock(Entity.class);
+        Entity operation = mock(Entity.class);
+        when(operation.getStringField("comment")).thenReturn("comment");
+        when(operationComponent.getBelongsToField("operation")).thenReturn(operation);
 
         // when
-        workPlanPdfService.addOperations(document, workPlan, df, locale);
+        workPlanPdfService.addOperationComment(document, operationComponent, locale);
 
         // then
-        verify(document, times(3)).add(Chunk.NEXTPAGE);
-        verify(document, times(16)).add(any(PdfPTable.class));
+        verify(document).add(Mockito.any(PdfPTable.class));
+    }
+
+    @Test
+    public void shouldPrepareProductTableHeaderCorrectly() throws DocumentException {
+        // given
+        String headerKey = "workPlans.workPlan.report.colums.product";
+        when(translationService.translate("workPlans.workPlan.report.colums.product", locale)).thenReturn("product");
+        when(translationService.translate("orders.order.plannedQuantity.label", locale)).thenReturn("quantity");
+
+        // when
+        List<String> header = workPlanPdfService.prepareProductsTableHeader(document, headerKey, locale);
+
+        // then
+        verify(document).add(Mockito.any(Paragraph.class));
+        assertEquals("product", header.get(0));
+        assertEquals("quantity", header.get(1));
     }
 }

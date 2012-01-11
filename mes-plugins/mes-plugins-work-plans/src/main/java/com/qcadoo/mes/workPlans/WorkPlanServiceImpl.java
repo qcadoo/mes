@@ -42,7 +42,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
-import com.qcadoo.mes.workPlans.print.WorkPlanPdfService2;
+import com.qcadoo.mes.workPlans.print.WorkPlanPdfService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -58,7 +58,7 @@ public class WorkPlanServiceImpl implements WorkPlanService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private WorkPlanPdfService2 workPlanPdfService;
+    private WorkPlanPdfService workPlanPdfService;
 
     @Autowired
     private TranslationService translationService;

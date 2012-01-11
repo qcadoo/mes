@@ -28,15 +28,20 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -44,14 +49,12 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
-import com.qcadoo.mes.technologies.print.ReportDataService;
-import com.qcadoo.mes.workPlans.util.EntityOperationInPairNumberComparator;
+import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.report.api.Pair;
-import com.qcadoo.report.api.SortUtil;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.report.api.PrioritizedString;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.security.api.SecurityService;
@@ -59,223 +62,420 @@ import com.qcadoo.security.api.SecurityService;
 @Service
 public class WorkPlanPdfService extends PdfDocumentService {
 
-    private static final String DATE_FIELD = "date";
+    private static Locale currentLocale = LocaleContextHolder.getLocale();
 
-    private static final String DATE_TO_FIELD = "dateTo";
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DateUtils.DATE_FORMAT, currentLocale);
 
-    private static final String PLANNED_QUANTITY_FIELD = "plannedQuantity";
-
-    private static final String SURNAME_FIELD = "surname";
-
-    private static final String TYPE_FIELD = "type";
-
-    private static final String UNIT_FIELD = "unit";
-
-    private static final String PRODUCT_FIELD = "product";
-
-    private static final String OPERATION_FIELD = "operation";
-
-    private static final String NAME_FIELD = "name";
-
-    private static final String NUMBER_FIELD = "number";
-
-    private static final SimpleDateFormat D_F = new SimpleDateFormat(DateUtils.DATE_FORMAT, Locale.getDefault());
-
-    private final int[] defaultWorkPlanColumnWidth = new int[] { 20, 20, 20, 13, 13, 13 };
-
-    private final int[] defaultWorkPlanOperationColumnWidth = new int[] { 10, 21, 23, 23, 23 };
-
-    @Autowired
-    private TranslationService translationService;
+    private final int[] defaultWorkPlanColumnWidth = new int[] { 15, 25, 30, 15, 15 };
 
     @Autowired
     private SecurityService securityService;
 
     @Autowired
-    private ReportDataService reportDataService;
+    private WorkPlanProductsService workPlanProductsService;
+
+    private int[] defaultWorkPlanProductColumnsWidth = new int[] { 70, 30 };
 
     @Override
-    protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        addSeries(document, entity, locale);
-    }
-
-    @Override
-    protected String getReportTitle(final Locale locale) {
+    public String getReportTitle(Locale locale) {
         return getTranslationService().translate("workPlans.workPlan.report.title", locale);
     }
 
-    private void addSeries(final Document document, final Entity entity, final Locale locale) throws DocumentException {
+    @Override
+    public void buildPdfContent(Document document, Entity workPlan, Locale locale) throws DocumentException {
         DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
         decimalFormat.setMaximumFractionDigits(3);
         decimalFormat.setMinimumFractionDigits(3);
-        boolean firstPage = true;
-        String type = entity.getStringField(TYPE_FIELD);
-        for (Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry : reportDataService
-                .prepareOperationSeries(entity, type).entrySet()) {
-            if (!firstPage) {
-                document.newPage();
+
+        addMainHeader(document, workPlan, locale);
+
+        PdfPTable orderTable = PdfUtil.createTableWithHeader(5, prepareOrdersTableHeader(document, workPlan, locale), false,
+                defaultWorkPlanColumnWidth);
+
+        List<Entity> orders = workPlan.getManyToManyField("orders");
+        addOrderSeries(orderTable, orders, decimalFormat);
+        document.add(orderTable);
+        document.add(Chunk.NEWLINE);
+
+        addOperations(document, workPlan, decimalFormat, locale);
+    }
+
+    void addOperations(Document document, Entity workPlan, final DecimalFormat df, Locale locale) throws DocumentException {
+        Map<Entity, Entity> operationComponent2order = new HashMap<Entity, Entity>();
+
+        List<Entity> orders = workPlan.getManyToManyField("orders");
+
+        Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation = workPlanProductsService.getProductQuantities(orders);
+
+        for (Entry<PrioritizedString, List<Entity>> entry : getOperationComponentsWithDistinction(workPlan,
+                operationComponent2order, locale).entrySet()) {
+            document.newPage();
+
+            document.add(new Paragraph(entry.getKey().getString(), PdfUtil.getArialBold11Dark()));
+            for (Entity operationComponent : entry.getValue()) {
+                PdfPTable operationTable = PdfUtil.createPanelTable(3);
+                addOperationInfoToTheOperationHeader(operationTable, operationComponent, locale);
+                if (orders.size() > 1) {
+                    addOrderInfoToTheOperationHeader(operationTable, operationComponent2order.get(operationComponent), locale);
+                }
+                addWorkstationInfoToTheOperationHeader(operationTable, operationComponent, locale);
+
+                operationTable.setSpacingAfter(18);
+                operationTable.setSpacingBefore(9);
+                document.add(operationTable);
+
+                addOperationComment(document, operationComponent, locale);
+
+                addOutProductsSeries(document, operationComponent, productQuantitiesPerOperation, df, locale);
+                addInProductsSeries(document, operationComponent, productQuantitiesPerOperation, df, locale);
+
+                addAdditionalFields(document, operationComponent, locale);
             }
-
-            List<Entity> orders = new ArrayList<Entity>();
-
-            BigDecimal totalQuantity = createUniqueOrdersList(orders, entry);
-
-            PdfPTable orderTable = PdfUtil.createTableWithHeader(6, prepareOrderHeader(document, entity, locale), false,
-                    defaultWorkPlanColumnWidth);
-            addOrderSeries(orderTable, orders, decimalFormat);
-            document.add(orderTable);
-            document.add(Chunk.NEWLINE);
-
-            document.add(prepareTitle(totalQuantity, entry, locale, type));
-
-            addOperationSeries(entry, document, decimalFormat, locale);
-            firstPage = false;
         }
     }
 
-    private void addOperationSeries(
-            final Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry,
-            final Document document, final DecimalFormat decimalFormat, final Locale locale) throws DocumentException {
-        PdfPTable table = PdfUtil.createTableWithHeader(5, prepareOperationHeader(locale), false,
-                defaultWorkPlanOperationColumnWidth);
+    void addOperationComment(final Document document, Entity operationComponent, Locale locale) throws DocumentException {
+        PdfPTable table = PdfUtil.createPanelTable(1);
+        table.getDefaultCell().setBackgroundColor(null);
 
-        table.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
+        String commentLabel = getTranslationService().translate("workPlans.workPlan.report.operation.comment", locale);
+        String commentContent = operationComponent.getBelongsToField("operation").getStringField("comment");
 
-        Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> operationMap = SortUtil
-                .sortMapUsingComparator(entry.getValue(), new EntityOperationInPairNumberComparator());
-
-        for (Entry<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>> entryComponent : operationMap
-                .entrySet()) {
-
-            Pair<Entity, Entity> entryPair = entryComponent.getKey();
-            Entity operation = (Entity) entryPair.getKey().getField(OPERATION_FIELD);
-            table.addCell(new Phrase(operation.getField(NUMBER_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(operation.getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(entryPair.getValue().getField(NUMBER_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
-            addProductSeries(table, entryComponent.getValue().getValue(), decimalFormat);
-            addProductSeries(table, entryComponent.getValue().getKey(), decimalFormat);
+        if (commentContent == null) {
+            return;
         }
+
+        PdfUtil.addTableCellAsTable(table, commentLabel, commentContent, null, PdfUtil.getArialBold10Dark(),
+                PdfUtil.getArialRegular10Dark());
+
+        table.setSpacingAfter(18);
+        table.setSpacingBefore(9);
         document.add(table);
     }
 
-    private void addProductSeries(final PdfPTable table, final Map<Entity, BigDecimal> productsQuantity, final DecimalFormat df) {
-        StringBuilder products = new StringBuilder();
-        for (Entry<Entity, BigDecimal> entry : productsQuantity.entrySet()) {
-            products.append(entry.getKey().getField(NUMBER_FIELD).toString() + " "
-                    + entry.getKey().getField(NAME_FIELD).toString() + " x " + df.format(entry.getValue()) + " ["
-                    + (entry.getKey().getField(UNIT_FIELD) == null ? "" : entry.getKey().getField(UNIT_FIELD).toString())
-                    + "] \n\n");
+    void addOperationInfoToTheOperationHeader(PdfPTable operationTable, Entity operationComponent, Locale locale) {
+        String operationLevel = operationComponent.getStringField("nodeNumber");
+        PdfUtil.addTableCellAsTable(operationTable,
+                getTranslationService().translate("workPlans.workPlan.report.operation.level", locale), operationLevel, null,
+                PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
 
-        }
-        table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
+        String operationName = operationComponent.getBelongsToField("operation").getStringField("name");
+        PdfUtil.addTableCellAsTable(operationTable,
+                getTranslationService().translate("workPlans.workPlan.report.operation.name", locale), operationName, null,
+                PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+
+        String operationNumber = operationComponent.getBelongsToField("operation").getStringField("number");
+        PdfUtil.addTableCellAsTable(operationTable,
+                getTranslationService().translate("workPlans.workPlan.report.operation.number", locale), operationNumber, null,
+                PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
     }
 
-    private Paragraph prepareTitle(final BigDecimal totalQuantity,
-            final Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry,
-            final Locale locale, final String type) {
-        Paragraph title = new Paragraph();
-        if ("machine".equals(type)) {
-            Entity machine = entry.getKey();
-            title.add(new Phrase(translationService.translate("workPlans.workPlan.report.paragrah3", locale), PdfUtil
-                    .getArialBold11Light()));
-            String name = "";
-            if (machine != null) {
-                name = machine.getField(NAME_FIELD).toString();
+    void addWorkstationInfoToTheOperationHeader(PdfPTable operationTable, Entity operationComponent, Locale locale) {
+        Entity workstationType = operationComponent.getBelongsToField("operation").getBelongsToField("workstationType");
+        String workstationTypeName = "-";
+        String divisionName = "-";
+        String supervisorName = "-";
+
+        if (workstationType != null) {
+            workstationTypeName = workstationType.getStringField("name");
+
+            PdfUtil.addTableCellAsTable(operationTable,
+                    getTranslationService().translate("workPlans.workPlan.report.operation.workstationType", locale),
+                    workstationTypeName, null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+
+            Entity division = workstationType.getBelongsToField("division");
+            if (division != null) {
+                divisionName = division.getStringField("name");
+
+                PdfUtil.addTableCellAsTable(operationTable,
+                        getTranslationService().translate("workPlans.workPlan.report.operation.division", locale), divisionName,
+                        null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+
+                Entity supervisor = division.getBelongsToField("supervisor");
+                if (supervisor != null) {
+                    supervisorName = supervisor.getStringField("string");
+
+                    PdfUtil.addTableCellAsTable(operationTable,
+                            getTranslationService().translate("workPlans.workPlan.report.operation.supervisor", locale),
+                            supervisorName, null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                }
             }
-            title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
-        } else if ("worker".equals(type)) {
-            // TODO mici there's no staff field anymore.
-            Entity staff = entry.getKey();
-            title.add(new Phrase(translationService.translate("workPlans.workPlan.report.paragrah2", locale), PdfUtil
-                    .getArialBold11Light()));
-            String name = "";
-            if (staff != null) {
-                name = staff.getField(NAME_FIELD) + " " + staff.getField(SURNAME_FIELD);
-            }
-            title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
-        } else if (PRODUCT_FIELD.equals(type)) {
-            Entity product = entry.getKey();
-            title.add(new Phrase(translationService.translate("workPlans.workPlan.report.paragrah4", locale), PdfUtil
-                    .getArialBold11Light()));
-            title.add(new Phrase(" " + totalQuantity + " x " + product.getField(NAME_FIELD), PdfUtil.getArialBold19Dark()));
         }
+    }
+
+    void addOrderInfoToTheOperationHeader(PdfPTable operationTable, Entity order, Locale locale) {
+        Entity technology = order.getBelongsToField("technology");
+        String technologyString = null;
+        if (technology != null) {
+            technologyString = technology.getStringField("name");
+        }
+        PdfUtil.addTableCellAsTable(operationTable,
+                getTranslationService().translate("workPlans.workPlan.report.operation.technology", locale), technologyString,
+                null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+
+        String orderName = order.getStringField("name");
+        PdfUtil.addTableCellAsTable(operationTable,
+                getTranslationService().translate("workPlans.workPlan.report.operation.orderName", locale), orderName, null,
+                PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+
+        String orderNumber = order.getStringField("number");
+        PdfUtil.addTableCellAsTable(operationTable,
+                getTranslationService().translate("workPlans.workPlan.report.operation.orderNumber", locale), orderNumber, null,
+                PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+    }
+
+    PrioritizedString generateOperationSectionTitle(Entity workPlan, Entity technology, Entity operationComponent, Locale locale) {
+        String type = workPlan.getStringField("type");
+
+        PrioritizedString title = null;
+
+        if (WorkPlanType.NO_DISTINCTION.getStringValue().equals(type)) {
+            title = new PrioritizedString(getTranslationService().translate("workPlans.workPlan.report.title.noDistinction",
+                    locale));
+        } else if (WorkPlanType.BY_END_PRODUCT.getStringValue().equals(type)) {
+            Entity endProduct = technology.getBelongsToField("product");
+
+            String prefix = getTranslationService().translate("workPlans.workPlan.report.title.byEndProduct", locale);
+            String endProductName = endProduct.getStringField("name");
+            title = new PrioritizedString(prefix + " " + endProductName);
+        } else if (WorkPlanType.BY_WORKSTATION_TYPE.getStringValue().equals(type)) {
+            Entity workstation = operationComponent.getBelongsToField("operation").getBelongsToField("workstationType");
+
+            if (workstation == null) {
+                title = new PrioritizedString(getTranslationService().translate(
+                        "workPlans.workPlan.report.title.noWorkstationType", locale), 1);
+            } else {
+                String suffix = getTranslationService().translate("workPlans.workPlan.report.title.byWorkstationType", locale);
+                String workstationName = workstation.getStringField("name");
+                title = new PrioritizedString(suffix + " " + workstationName);
+            }
+        } else if (WorkPlanType.BY_DIVISION.getStringValue().equals(type)) {
+            Entity workstation = operationComponent.getBelongsToField("operation").getBelongsToField("workstationType");
+
+            if (workstation == null) {
+                title = new PrioritizedString(getTranslationService().translate("workPlans.workPlan.report.title.noDivision",
+                        locale), 1);
+            } else {
+                Entity division = workstation.getBelongsToField("division");
+
+                if (division == null) {
+                    title = new PrioritizedString(getTranslationService().translate("workPlans.workPlan.report.title.noDivision",
+                            locale), 1);
+                } else {
+                    String suffix = getTranslationService().translate("workPlans.workPlan.report.title.byDivision", locale);
+                    String divisionName = division.getStringField("name");
+                    title = new PrioritizedString(suffix + " " + divisionName);
+                }
+            }
+        }
+
         return title;
     }
 
-    private BigDecimal createUniqueOrdersList(final List<Entity> orders,
-            final Entry<Entity, Map<Pair<Entity, Entity>, Pair<Map<Entity, BigDecimal>, Map<Entity, BigDecimal>>>> entry) {
-        BigDecimal totalQuantity = BigDecimal.ZERO;
+    Map<PrioritizedString, List<Entity>> getOperationComponentsWithDistinction(Entity workPlan,
+            final Map<Entity, Entity> operationComponent2order, Locale locale) {
+        Map<PrioritizedString, List<Entity>> operationComponentsWithDistinction = new TreeMap<PrioritizedString, List<Entity>>();
 
-        for (Pair<Entity, Entity> pair : entry.getValue().keySet()) {
-            if (!orders.contains(pair.getValue())) {
-                totalQuantity = totalQuantity.add((BigDecimal) pair.getValue().getField(PLANNED_QUANTITY_FIELD));
-                orders.add(pair.getValue());
+        List<Entity> orders = workPlan.getManyToManyField("orders");
+
+        for (Entity order : orders) {
+            Entity technology = order.getBelongsToField("technology");
+            if (technology == null) {
+                continue;
+            }
+            EntityTree operationComponents = technology.getTreeField("operationComponents");
+
+            for (Entity operationComponent : operationComponents) {
+                PrioritizedString title = generateOperationSectionTitle(workPlan, technology, operationComponent, locale);
+
+                if (title == null) {
+                    throw new IllegalStateException("undefined workplan type");
+                }
+
+                if (!operationComponentsWithDistinction.containsKey(title)) {
+                    operationComponentsWithDistinction.put(title, new ArrayList<Entity>());
+                }
+
+                operationComponent2order.put(operationComponent, order);
+                operationComponentsWithDistinction.get(title).add(operationComponent);
             }
         }
-        return totalQuantity;
+
+        for (List<Entity> operationComponents : operationComponentsWithDistinction.values()) {
+            Collections.sort(operationComponents, new Comparator<Entity>() {
+
+                @Override
+                public int compare(Entity o1, Entity o2) {
+                    String o1comp = operationComponent2order.get(o1).getStringField("number") + o1.getStringField("nodeNumber");
+                    String o2comp = operationComponent2order.get(o2).getStringField("number") + o2.getStringField("nodeNumber");
+
+                    return o1comp.compareTo(o2comp);
+                }
+
+            });
+        }
+
+        return operationComponentsWithDistinction;
     }
 
-    private void addOrderSeries(final PdfPTable table, final List<Entity> orders, final DecimalFormat df)
+    void addProductsSeries(List<Entity> productComponents, Document document, Entity operationComponent,
+            Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation, final DecimalFormat df, final String headerKey,
+            Locale locale) throws DocumentException {
+        if (productComponents.isEmpty()) {
+            return;
+        }
+
+        // TODO mici, I couldnt sort productComponents without making a new linkedList out of it
+        productComponents = Lists.newLinkedList(productComponents);
+
+        Collections.sort(productComponents, new Comparator<Entity>() {
+
+            @Override
+            public int compare(Entity arg0, Entity arg1) {
+                Entity prod0 = arg0.getBelongsToField("product");
+                Entity prod1 = arg1.getBelongsToField("product");
+                return prod0.getStringField("number").compareTo(prod1.getStringField("number"));
+            }
+
+        });
+
+        PdfPTable table = PdfUtil.createTableWithHeader(2, prepareProductsTableHeader(document, headerKey, locale), false,
+                defaultWorkPlanProductColumnsWidth);
+
+        for (Entity productComponent : productComponents) {
+            Entity product = productComponent.getBelongsToField("product");
+
+            BigDecimal quantity = productQuantitiesPerOperation.get(operationComponent).get(productComponent);
+
+            StringBuilder quantityString = new StringBuilder(df.format(quantity));
+
+            Object unit = product.getField("unit");
+            if (unit != null) {
+                quantityString.append(" ");
+                quantityString.append(unit.toString());
+            }
+
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+
+            StringBuilder productString = new StringBuilder(product.getStringField("name"));
+            productString.append(" (");
+            productString.append(product.getStringField("number"));
+            productString.append(")");
+
+            table.addCell(new Phrase(productString.toString(), PdfUtil.getArialRegular9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            table.addCell(new Phrase(quantityString.toString(), PdfUtil.getArialRegular9Dark()));
+        }
+
+        table.setSpacingAfter(18);
+        table.setSpacingBefore(9);
+
+        document.add(table);
+    }
+
+    void addInProductsSeries(Document document, Entity operationComponent,
+            Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation, final DecimalFormat df, Locale locale)
             throws DocumentException {
+
+        List<Entity> productComponents = operationComponent.getHasManyField("operationProductInComponents");
+
+        addProductsSeries(productComponents, document, operationComponent, productQuantitiesPerOperation, df,
+                "workPlans.workPlan.report.productsInTable", locale);
+    }
+
+    void addOutProductsSeries(Document document, Entity operationComponent,
+            Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation, final DecimalFormat df, Locale locale)
+            throws DocumentException {
+
+        List<Entity> productComponents = operationComponent.getHasManyField("operationProductOutComponents");
+
+        addProductsSeries(productComponents, document, operationComponent, productQuantitiesPerOperation, df,
+                "workPlans.workPlan.report.productsOutTable", locale);
+    }
+
+    void addOrderSeries(final PdfPTable table, final List<Entity> orders, final DecimalFormat df) throws DocumentException {
         Collections.sort(orders, new EntityNumberComparator());
         for (Entity order : orders) {
-            table.addCell(new Phrase(order.getField(NUMBER_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(order.getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
-            Entity product = (Entity) order.getField(PRODUCT_FIELD);
-            if (product == null) {
-                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-            } else {
-                table.addCell(new Phrase(product.getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
-            }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_FIELD);
-            plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
-            table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+
+            String unitString = "";
+
+            Entity product = (Entity) order.getField("product");
             if (product == null) {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             } else {
-                Object unit = product.getField(UNIT_FIELD);
-                if (unit == null) {
-                    table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-                } else {
-                    table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
+                String productString = product.getField("name").toString() + " (" + product.getField("number").toString() + ")";
+                table.addCell(new Phrase(productString, PdfUtil.getArialRegular9Dark()));
+
+                Object unit = product.getField("unit");
+                if (unit != null) {
+                    unitString = " " + unit.toString();
                 }
             }
-            String formattedDateTo = "---";
-            if (order.getField(DATE_TO_FIELD) != null) {
-                formattedDateTo = D_F.format((Date) order.getField(DATE_TO_FIELD));
+
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
+            plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
+            String quantityString = df.format(plannedQuantity) + unitString;
+            table.addCell(new Phrase(quantityString, PdfUtil.getArialRegular9Dark()));
+            String formattedDateTo = "-";
+            if (order.getField("dateTo") != null) {
+                synchronized (this) {
+                    formattedDateTo = DATE_FORMAT.format((Date) order.getField("dateTo"));
+                }
             }
             table.addCell(new Phrase(formattedDateTo, PdfUtil.getArialRegular9Dark()));
         }
     }
 
-    private List<String> prepareOrderHeader(final Document document, final Entity entity, final Locale locale)
+    void addAdditionalFields(final Document document, final Entity operationComponent, final Locale locale)
             throws DocumentException {
-        String documenTitle = translationService.translate("workPlans.workPlan.report.title", locale);
-        String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        PdfUtil.addDocumentHeader(document, entity.getField(NAME_FIELD).toString(), documenTitle, documentAuthor,
-                (Date) entity.getField(DATE_FIELD), securityService.getCurrentUserName());
-        // document.add(generateBarcode(entity.getField("name").toString()));
-        document.add(new Paragraph(translationService.translate("workPlans.workPlan.report.paragrah", locale), PdfUtil
-                .getArialBold11Dark()));
-        List<String> orderHeader = new ArrayList<String>();
-        orderHeader.add(translationService.translate("orders.order.number.label", locale));
-        orderHeader.add(translationService.translate("orders.order.name.label", locale));
-        orderHeader.add(translationService.translate("orders.order.product.label", locale));
-        orderHeader.add(translationService.translate("orders.order.plannedQuantity.label", locale));
-        orderHeader.add(translationService.translate("basic.product.unit.label", locale));
-        orderHeader.add(translationService.translate("orders.order.dateTo.label", locale));
-        return orderHeader;
+        String titleString = getTranslationService().translate("workPlans.workPlan.report.additionalFields", locale);
+        document.add(new Paragraph(titleString, PdfUtil.getArialBold10Dark()));
+
+        PdfPTable table = PdfUtil.createPanelTable(1);
+        table.getDefaultCell().setBackgroundColor(null);
+        table.setTableEvent(null);
+
+        PdfUtil.addImage(table, "placeholder.jpg");
+
+        table.setSpacingAfter(18);
+        table.setSpacingBefore(9);
+        document.add(table);
     }
 
-    private List<String> prepareOperationHeader(final Locale locale) {
-        List<String> operationHeader = new ArrayList<String>();
-        operationHeader.add(translationService.translate("technologies.operation.number.label", locale));
-        operationHeader.add(translationService.translate("technologies.operation.name.label", locale));
-        operationHeader.add(translationService.translate("workPlans.workPlan.report.operationTable.order.column", locale));
-        operationHeader.add(translationService.translate("workPlans.workPlan.report.operationTable.productsOut.column", locale));
-        operationHeader.add(translationService.translate("workPlans.workPlan.report.operationTable.productsIn.column", locale));
-        return operationHeader;
+    void addMainHeader(final Document document, final Entity entity, final Locale locale) throws DocumentException {
+        String documenTitle = getTranslationService().translate("workPlans.workPlan.report.title", locale);
+        String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
+        PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
+                (Date) entity.getField("date"), securityService.getCurrentUserName());
+    }
+
+    List<String> prepareProductsTableHeader(final Document document, final String headerKey, final Locale locale)
+            throws DocumentException {
+        String title = getTranslationService().translate(headerKey, locale);
+
+        document.add(new Paragraph(title, PdfUtil.getArialBold10Dark()));
+        List<String> header = new ArrayList<String>();
+        header.add(getTranslationService().translate("workPlans.workPlan.report.colums.product", locale));
+        header.add(getTranslationService().translate("orders.order.plannedQuantity.label", locale));
+        return header;
+    }
+
+    List<String> prepareOrdersTableHeader(final Document document, final Entity entity, final Locale locale)
+            throws DocumentException {
+        document.add(new Paragraph(getTranslationService().translate("workPlans.workPlan.report.ordersTable", locale), PdfUtil
+                .getArialBold11Dark()));
+        List<String> orderHeader = new ArrayList<String>();
+        orderHeader.add(getTranslationService().translate("orders.order.number.label", locale));
+        orderHeader.add(getTranslationService().translate("orders.order.name.label", locale));
+        orderHeader.add(getTranslationService().translate("workPlans.workPlan.report.colums.product", locale));
+        orderHeader.add(getTranslationService().translate("orders.order.plannedQuantity.label", locale));
+        orderHeader.add(getTranslationService().translate("orders.order.dateTo.label", locale));
+        return orderHeader;
     }
 }

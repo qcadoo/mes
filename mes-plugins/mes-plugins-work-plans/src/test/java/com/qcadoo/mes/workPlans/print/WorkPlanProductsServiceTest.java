@@ -3,260 +3,260 @@ package com.qcadoo.mes.workPlans.print;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.mes.workPlans.print.WorkPlanProductsService.ProductType;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.EntityTreeNode;
 
 public class WorkPlanProductsServiceTest {
 
     private WorkPlanProductsService workPlanProductsService;
 
-    private Entity order1;
+    @Mock
+    private EntityList orders;
 
+    @Mock
+    private Entity order;
+
+    @Mock
     private Entity technology;
 
-    private Entity operationComponent1, operationComponent2;
+    @Mock
+    private EntityTree tree;
 
-    private Entity prodInComp1, prodInComp2, prodInComp3;
+    @Mock
+    private Entity product1, product2, product3, product4;
 
-    private Entity prodOutComp2, prodOutComp4;
+    @Mock
+    private Entity productInComponent1, productInComponent2, productInComponent3;
 
-    private List<Entity> orders;
+    @Mock
+    private Entity productOutComponent2, productOutComponent4;
+
+    @Mock
+    private EntityTreeNode operationComponent1, operationComponent2;
+
+    @Mock
+    private EntityList productInComponentsForOperation1;
+
+    @Mock
+    private EntityList productOutComponentsForOperation1;
+
+    @Mock
+    private EntityList productInComponentsForOperation2;
+
+    @Mock
+    private EntityList productOutComponentsForOperation2;
+
+    private Map<Entity, List<Entity>> productInComponents;
+
+    private Map<Entity, List<Entity>> productOutComponents;
+
+    private BigDecimal plannedQty;
 
     @Before
     @SuppressWarnings("unchecked")
     public void init() {
+        MockitoAnnotations.initMocks(this);
+
         workPlanProductsService = new WorkPlanProductsService();
 
-        order1 = mock(Entity.class);
-        technology = mock(Entity.class);
+        Iterator<Entity> ordersIterator = mock(Iterator.class);
+        when(orders.iterator()).thenReturn(ordersIterator);
+        when(ordersIterator.hasNext()).thenReturn(true, false);
+        when(ordersIterator.next()).thenReturn(order);
 
-        orders = mock(List.class);
+        when(order.getBelongsToField("technology")).thenReturn(technology);
 
-        Entity operation1 = mock(Entity.class);
-        Entity operation2 = mock(Entity.class);
+        Iterator<Entity> treeIterator = mock(Iterator.class);
+        when(tree.iterator()).thenReturn(treeIterator);
+        when(treeIterator.hasNext()).thenReturn(true, true, false, true, true, false, true, true, false, true, true, false);
+        when(treeIterator.next()).thenReturn(operationComponent1, operationComponent2, operationComponent1, operationComponent2,
+                operationComponent1, operationComponent2, operationComponent1, operationComponent2);
 
-        operationComponent1 = mock(Entity.class);
-        operationComponent2 = mock(Entity.class);
+        productInComponentsForOperation1 = mock(EntityList.class);
+        productOutComponentsForOperation1 = mock(EntityList.class);
 
-        prodInComp1 = mock(Entity.class);
-        prodInComp2 = mock(Entity.class);
-        prodInComp3 = mock(Entity.class);
+        Iterator<Entity> productInComponentsForOperation1iterator = mock(Iterator.class);
+        Iterator<Entity> productOutComponentsForOperation1iterator = mock(Iterator.class);
+        when(productInComponentsForOperation1.iterator()).thenReturn(productInComponentsForOperation1iterator);
+        when(productOutComponentsForOperation1.iterator()).thenReturn(productOutComponentsForOperation1iterator);
+        when(productInComponentsForOperation1iterator.hasNext()).thenReturn(true, false);
+        when(productOutComponentsForOperation1iterator.hasNext()).thenReturn(true, false);
+        when(productInComponentsForOperation1iterator.next()).thenReturn(productInComponent1);
+        when(productOutComponentsForOperation1iterator.next()).thenReturn(productOutComponent2);
 
-        prodOutComp2 = mock(Entity.class);
-        prodOutComp4 = mock(Entity.class);
+        productInComponentsForOperation2 = mock(EntityList.class);
+        productOutComponentsForOperation2 = mock(EntityList.class);
 
-        Entity product1 = mock(Entity.class);
-        Entity product2 = mock(Entity.class);
-        Entity product3 = mock(Entity.class);
-        Entity product4 = mock(Entity.class);
+        Iterator<Entity> productInComponentsForOperation2iterator = mock(Iterator.class);
+        Iterator<Entity> productOutComponentsForOperation2iterator = mock(Iterator.class);
+        when(productInComponentsForOperation2.iterator()).thenReturn(productInComponentsForOperation2iterator);
+        when(productOutComponentsForOperation2.iterator()).thenReturn(productOutComponentsForOperation2iterator);
+        when(productInComponentsForOperation2iterator.hasNext()).thenReturn(true, true, false);
+        when(productOutComponentsForOperation2iterator.hasNext()).thenReturn(true, false);
+        when(productInComponentsForOperation2iterator.next()).thenReturn(productInComponent2, productInComponent3);
+        when(productOutComponentsForOperation2iterator.next()).thenReturn(productOutComponent4);
 
-        when(product1.getStringField("name")).thenReturn("product1");
-        when(product2.getStringField("name")).thenReturn("product2");
-        when(product3.getStringField("name")).thenReturn("product3");
-        when(product4.getStringField("name")).thenReturn("product4");
+        when(operationComponent1.getHasManyField("operationProductInComponents")).thenReturn(productInComponentsForOperation1);
+        when(operationComponent1.getHasManyField("operationProductOutComponents")).thenReturn(productOutComponentsForOperation1);
 
-        when(prodInComp1.getBelongsToField("product")).thenReturn(product1);
-        when(prodInComp2.getBelongsToField("product")).thenReturn(product2);
-        when(prodInComp3.getBelongsToField("product")).thenReturn(product3);
+        when(operationComponent2.getHasManyField("operationProductInComponents")).thenReturn(productInComponentsForOperation2);
+        when(operationComponent2.getHasManyField("operationProductOutComponents")).thenReturn(productOutComponentsForOperation2);
 
-        when(prodOutComp2.getBelongsToField("product")).thenReturn(product2);
-        when(prodOutComp4.getBelongsToField("product")).thenReturn(product4);
+        plannedQty = new BigDecimal(5);
 
-        when(prodInComp1.getField("quantity")).thenReturn(new BigDecimal(5));
-        when(prodInComp2.getField("quantity")).thenReturn(new BigDecimal(2));
-        when(prodInComp3.getField("quantity")).thenReturn(new BigDecimal(1));
+        when(order.getField("plannedQuantity")).thenReturn(plannedQty);
 
-        when(prodOutComp2.getField("quantity")).thenReturn(new BigDecimal(1));
-        when(prodOutComp4.getField("quantity")).thenReturn(new BigDecimal(1));
+        when(productInComponent1.getField("quantity")).thenReturn(new BigDecimal(5));
+        when(productInComponent2.getField("quantity")).thenReturn(new BigDecimal(2), new BigDecimal(10));
+        when(productInComponent3.getField("quantity")).thenReturn(new BigDecimal(1), new BigDecimal(5));
+        when(productOutComponent2.getField("quantity")).thenReturn(new BigDecimal(1));
+        when(productOutComponent4.getField("quantity")).thenReturn(new BigDecimal(1));
 
-        EntityList prodInComps1 = mock(EntityList.class);
-        EntityList prodInComps2 = mock(EntityList.class);
+        productInComponents = new HashMap<Entity, List<Entity>>();
+        productOutComponents = new HashMap<Entity, List<Entity>>();
 
-        EntityList prodOutComps1 = mock(EntityList.class);
-        EntityList prodOutComps2 = mock(EntityList.class);
+        List<Entity> productInComponentsForOperation1 = new LinkedList<Entity>();
+        List<Entity> productInComponentsForOperation2 = new LinkedList<Entity>();
+        List<Entity> productOutComponentsForOperation1 = new LinkedList<Entity>();
+        List<Entity> productOutComponentsForOperation2 = new LinkedList<Entity>();
 
-        Iterator<Entity> prodInCompsIter1 = mock(Iterator.class);
-        when(prodInComps1.iterator()).thenReturn(prodInCompsIter1);
-        when(prodInCompsIter1.hasNext()).thenReturn(true, false);
-        when(prodInCompsIter1.next()).thenReturn(prodInComp1);
+        productInComponentsForOperation1.add(productInComponent1);
+        productInComponentsForOperation2.add(productInComponent2);
+        productInComponentsForOperation2.add(productInComponent3);
 
-        Iterator<Entity> prodInCompsIter2 = mock(Iterator.class);
-        when(prodInComps2.iterator()).thenReturn(prodInCompsIter2);
-        when(prodInCompsIter2.hasNext()).thenReturn(true, true, false);
-        when(prodInCompsIter2.next()).thenReturn(prodInComp2, prodInComp3);
+        productOutComponentsForOperation1.add(productOutComponent2);
+        productOutComponentsForOperation2.add(productOutComponent4);
 
-        Iterator<Entity> prodOutCompsIter1 = mock(Iterator.class);
-        when(prodOutComps1.iterator()).thenReturn(prodOutCompsIter1);
-        when(prodOutCompsIter1.hasNext()).thenReturn(true, false);
-        when(prodOutCompsIter1.next()).thenReturn(prodOutComp2);
+        productInComponents.put(operationComponent1, productInComponentsForOperation1);
+        productInComponents.put(operationComponent2, productInComponentsForOperation2);
+        productOutComponents.put(operationComponent1, productOutComponentsForOperation1);
+        productOutComponents.put(operationComponent2, productOutComponentsForOperation2);
 
-        Iterator<Entity> prodOutCompsIter2 = mock(Iterator.class);
-        when(prodOutComps2.iterator()).thenReturn(prodOutCompsIter2);
-        when(prodOutCompsIter2.hasNext()).thenReturn(true, false);
-        when(prodOutCompsIter2.next()).thenReturn(prodOutComp4);
+        when(product1.getId()).thenReturn(1l);
+        when(product2.getId()).thenReturn(2l);
+        when(product3.getId()).thenReturn(3l);
+        when(product4.getId()).thenReturn(4l);
 
-        EntityTree operationComponents = mock(EntityTree.class);
+        when(technology.getBelongsToField("product")).thenReturn(product4);
+        when(productInComponent1.getBelongsToField("product")).thenReturn(product1);
+        when(productInComponent2.getBelongsToField("product")).thenReturn(product2);
+        when(productInComponent3.getBelongsToField("product")).thenReturn(product3);
+        when(productOutComponent2.getBelongsToField("product")).thenReturn(product2);
+        when(productOutComponent4.getBelongsToField("product")).thenReturn(product4);
 
-        when(order1.getBelongsToField("technology")).thenReturn(technology);
-        when(technology.getTreeField("operationComponents")).thenReturn(operationComponents);
+        when(tree.getRoot()).thenReturn(operationComponent2);
 
-        when(operationComponent1.getBelongsToField("operation")).thenReturn(operation1);
-        when(operationComponent2.getBelongsToField("operation")).thenReturn(operation2);
+        EntityList operationComponent1children = mock(EntityList.class);
+        EntityList operationComponent2children = mock(EntityList.class);
+        Iterator<Entity> children1iterator = mock(Iterator.class);
+        Iterator<Entity> children2iterator = mock(Iterator.class);
+        when(children1iterator.hasNext()).thenReturn(false);
+        when(children2iterator.hasNext()).thenReturn(true, false);
+        when(children2iterator.next()).thenReturn(operationComponent1);
 
-        Iterator<Entity> operationComponentIterator = mock(Iterator.class);
-        when(operationComponents.iterator()).thenReturn(operationComponentIterator);
-        when(operationComponentIterator.hasNext()).thenReturn(true, true, false);
-        when(operationComponentIterator.next()).thenReturn(operationComponent1, operationComponent2);
+        when(operationComponent1children.iterator()).thenReturn(children1iterator);
+        when(operationComponent2children.iterator()).thenReturn(children2iterator);
 
-        when(operationComponent1.getHasManyField("operationProductInComponents")).thenReturn(prodInComps1);
-        when(operationComponent2.getHasManyField("operationProductInComponents")).thenReturn(prodInComps2);
+        when(operationComponent1.getHasManyField("children")).thenReturn(operationComponent1children);
+        when(operationComponent2.getHasManyField("children")).thenReturn(operationComponent2children);
 
-        when(operationComponent1.getHasManyField("operationProductOutComponents")).thenReturn(prodOutComps1);
-        when(operationComponent2.getHasManyField("operationProductOutComponents")).thenReturn(prodOutComps2);
-
-        when(technology.getStringField("componentQuantityAlgorithm")).thenReturn("02perTechnology");
-        when(order1.getField("plannedQuantity")).thenReturn(new BigDecimal(5));
-
-        Iterator<Entity> orderIterator = mock(Iterator.class);
-        when(orders.iterator()).thenReturn(orderIterator);
-        when(orderIterator.hasNext()).thenReturn(true, false);
-        when(orderIterator.next()).thenReturn(order1);
+        when(technology.getTreeField("operationComponents")).thenReturn(tree);
     }
 
     @Test
     public void shouldReturnEmptyMapIfTheresNoTechnology() {
         // given
-        when(order1.getBelongsToField("technology")).thenReturn(null);
+        when(order.getBelongsToField("technology")).thenReturn(null);
 
         // when
-        Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getProductQuantities(orders,
-                ProductType.IN);
+        Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation = workPlanProductsService.getProductQuantities(orders);
 
         // then
-        assertTrue(inProductsPerOperation.isEmpty());
+        assertTrue(productQuantitiesPerOperation.isEmpty());
     }
 
     @Test
-    public void shouldGetInProductsForAllOperationComponents() {
-        // when
-        Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getProductQuantities(orders,
-                ProductType.IN);
-
-        // then
-        assertTrue(inProductsPerOperation.keySet().contains(operationComponent1));
-        assertTrue(inProductsPerOperation.keySet().contains(operationComponent2));
-        assertEquals(2, inProductsPerOperation.keySet().size());
-    }
-
-    @Test
-    public void shouldReturnCorrectInProductsForOperationComponents() {
-        // when
-        Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getProductQuantities(orders,
-                ProductType.IN);
-
-        // then
-        Map<Entity, BigDecimal> inProductsForOperation1 = inProductsPerOperation.get(operationComponent1);
-        assertTrue(inProductsForOperation1.keySet().contains(prodInComp1));
-        assertEquals(1, inProductsForOperation1.keySet().size());
-
-        Map<Entity, BigDecimal> inProductsForOperation2 = inProductsPerOperation.get(operationComponent2);
-        assertTrue(inProductsForOperation2.keySet().contains(prodInComp2));
-        assertTrue(inProductsForOperation2.keySet().contains(prodInComp3));
-        assertEquals(2, inProductsForOperation2.keySet().size());
-    }
-
-    @Test
-    public void shouldReturnCorrectOutProductsForOperationComponents() {
-        // when
-        Map<Entity, Map<Entity, BigDecimal>> inProductsPerOperation = workPlanProductsService.getProductQuantities(orders,
-                ProductType.OUT);
-
-        // then
-        Map<Entity, BigDecimal> outProductsForOperation1 = inProductsPerOperation.get(operationComponent1);
-        assertTrue(outProductsForOperation1.keySet().contains(prodOutComp2));
-        assertEquals(1, outProductsForOperation1.keySet().size());
-
-        Map<Entity, BigDecimal> outProductsForOperation2 = inProductsPerOperation.get(operationComponent2);
-        assertTrue(outProductsForOperation2.keySet().contains(prodOutComp4));
-        assertEquals(1, outProductsForOperation2.keySet().size());
-    }
-
-    @Test
-    public void shouldReturnInProductsWithCorrectQuantitiesUsingSimpleAlgorithm() {
-        // when
-        Map<Entity, Map<Entity, BigDecimal>> inProductsQuantitiesMap = workPlanProductsService.getProductQuantities(orders,
-                ProductType.IN);
-
-        // then
-        Map<Entity, BigDecimal> inProductsForOperation1quantities = inProductsQuantitiesMap.get(operationComponent1);
-        Map<Entity, BigDecimal> inProductsForOperation2quantities = inProductsQuantitiesMap.get(operationComponent2);
-
-        assertEquals(new BigDecimal(25), inProductsForOperation1quantities.get(prodInComp1));
-        assertEquals(new BigDecimal(10), inProductsForOperation2quantities.get(prodInComp2));
-        assertEquals(new BigDecimal(5), inProductsForOperation2quantities.get(prodInComp3));
-    }
-
-    @Test
-    public void shouldReturnOutProductsWithCorrectQuantitiesUsingSimpleAlgorithm() {
-        // when
-        Map<Entity, Map<Entity, BigDecimal>> outProductsQuantitiesMap = workPlanProductsService.getProductQuantities(orders,
-                ProductType.OUT);
-
-        // then
-        Map<Entity, BigDecimal> outProductsForOperation1quantities = outProductsQuantitiesMap.get(operationComponent1);
-        Map<Entity, BigDecimal> outProductsForOperation2quantities = outProductsQuantitiesMap.get(operationComponent2);
-
-        assertEquals(new BigDecimal(5), outProductsForOperation1quantities.get(prodOutComp2));
-        assertEquals(new BigDecimal(5), outProductsForOperation2quantities.get(prodOutComp4));
-    }
-
-    @Test
-    @Ignore
-    public void shouldReturnInProductsWithCorrectQuantitiesUsingDetailedAlgorithm() {
+    public void shouldPreloadProductComponents() {
         // given
-        when(technology.getStringField("componentQuantityAlgorithm")).thenReturn("01perProductOut");
 
         // when
-        Map<Entity, Map<Entity, BigDecimal>> inProductsQuantitiesMap = workPlanProductsService.getProductQuantities(orders,
-                ProductType.IN);
+        Map<Entity, List<Entity>> productInComponents = workPlanProductsService.preloadProductInComponents(tree);
+        Map<Entity, List<Entity>> productOutComponents = workPlanProductsService.preloadProductOutComponents(tree);
 
         // then
-        Map<Entity, BigDecimal> inProductsForOperation1quantities = inProductsQuantitiesMap.get(operationComponent1);
-        Map<Entity, BigDecimal> inProductsForOperation2quantities = inProductsQuantitiesMap.get(operationComponent2);
+        assertEquals(productInComponentsForOperation1, productInComponents.get(operationComponent1));
+        assertEquals(productInComponentsForOperation2, productInComponents.get(operationComponent2));
 
-        assertEquals(new BigDecimal(50), inProductsForOperation1quantities.get(prodInComp1));
-        assertEquals(new BigDecimal(10), inProductsForOperation2quantities.get(prodInComp2));
-        assertEquals(new BigDecimal(5), inProductsForOperation2quantities.get(prodInComp3));
+        assertEquals(productOutComponentsForOperation1, productOutComponents.get(operationComponent1));
+        assertEquals(productOutComponentsForOperation2, productOutComponents.get(operationComponent2));
     }
 
     @Test
-    @Ignore
-    public void shouldReturnOutProductsWithCorrectQuantitiesUsingDetailedAlgorithm() {
-        // given
-        when(technology.getStringField("componentQuantityAlgorithm")).thenReturn("01perProductOut");
-
+    public void shouldAlterTreeForSimpleAlgorithmCorrectly() {
         // when
-        Map<Entity, Map<Entity, BigDecimal>> outProductsQuantitiesMap = workPlanProductsService.getProductQuantities(orders,
-                ProductType.OUT);
+        workPlanProductsService.alterTreeForSimpleAlgorithm(tree, productInComponents, productOutComponents, plannedQty);
 
         // then
-        Map<Entity, BigDecimal> outProductsForOperation1quantities = outProductsQuantitiesMap.get(operationComponent1);
-        Map<Entity, BigDecimal> outProductsForOperation2quantities = outProductsQuantitiesMap.get(operationComponent2);
+        verify(productInComponent1).setField("quantity", new BigDecimal(25));
+        verify(productInComponent2).setField("quantity", new BigDecimal(10));
+        verify(productInComponent3).setField("quantity", new BigDecimal(5));
+        verify(productOutComponent2).setField("quantity", new BigDecimal(5));
+        verify(productOutComponent4).setField("quantity", new BigDecimal(5));
+    }
 
-        assertEquals(new BigDecimal(5), outProductsForOperation1quantities.get(prodOutComp2));
-        assertEquals(new BigDecimal(10), outProductsForOperation2quantities.get(prodOutComp4));
+    @Test
+    public void shouldAlterTreeForDetailedAlgorithmCorrectly() {
+        // when
+        workPlanProductsService.alterTreeForDetailedAlgorithm(tree, productInComponents, productOutComponents, technology,
+                plannedQty);
+
+        // then
+        verify(productOutComponent4).setField("quantity", new BigDecimal(5));
+        verify(productInComponent2).setField("quantity", new BigDecimal(10));
+        verify(productInComponent3).setField("quantity", new BigDecimal(5));
+        verify(productOutComponent2).setField("quantity", new BigDecimal(10));
+        verify(productInComponent1).setField("quantity", new BigDecimal(50));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowIllegalStateExceptionIfThereIsNoAlgorithmSelectedInT() {
+        // when
+        Map<Entity, Map<Entity, BigDecimal>> productQuantities = workPlanProductsService.getProductQuantities(orders);
+    }
+
+    @Test
+    public void shouldPutCorrectQuantitiesInTheMap() {
+        // given
+        when(technology.getStringField("componentQuantityAlgorithm")).thenReturn("02perTechnology");
+
+        Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation = new HashMap<Entity, Map<Entity, BigDecimal>>();
+
+        // when
+        workPlanProductsService.getQuantities(productQuantitiesPerOperation, tree, productInComponents, productOutComponents,
+                plannedQty);
+
+        // then
+        assertEquals(new BigDecimal(1), productQuantitiesPerOperation.get(operationComponent2).get(productOutComponent4));
+        assertEquals(new BigDecimal(2), productQuantitiesPerOperation.get(operationComponent2).get(productInComponent2));
+        assertEquals(new BigDecimal(1), productQuantitiesPerOperation.get(operationComponent2).get(productInComponent3));
+        assertEquals(new BigDecimal(1), productQuantitiesPerOperation.get(operationComponent1).get(productOutComponent2));
+        assertEquals(new BigDecimal(5), productQuantitiesPerOperation.get(operationComponent1).get(productInComponent1));
     }
 }
