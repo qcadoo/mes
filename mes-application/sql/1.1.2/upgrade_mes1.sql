@@ -343,8 +343,8 @@ CREATE TABLE workplans_parameteroutputcomponent
 -- Table: workplans_columnforinputproducts
 -- changed: 11.01.2012
 
-INSERT INTO workplans_columnforinputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'productName', 'productName', 'workPlans');
-INSERT INTO workplans_columnforinputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'plannedQuantity', 'plannedQuantity', 'workPlans');
+INSERT INTO workplans_columnforinputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'workPlans.columnForInputProducts.name.value.productName', 'workPlans.columnForInputProducts.description.value.productName', 'workPlans');
+INSERT INTO workplans_columnforinputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'workPlans.columnForInputProducts.name.value.plannedQuantity', 'workPlans.columnForInputProducts.description.value.plannedQuantity', 'workPlans');
 
 -- end
 
@@ -352,8 +352,8 @@ INSERT INTO workplans_columnforinputproducts (id, name, description, pluginident
 -- Table: workplans_columnforoutputproducts
 -- changed: 11.01.2012
 
-INSERT INTO workplans_columnforoutputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'productName', 'productName', 'workPlans');
-INSERT INTO workplans_columnforoutputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'plannedQuantity', 'plannedQuantity', 'workPlans');
+INSERT INTO workplans_columnforoutputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'workPlans.columnForOutputProducts.name.value.productName', 'workPlans.columnForOutputProducts.description.value.productName', 'workPlans');
+INSERT INTO workplans_columnforoutputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'workPlans.columnForOutputProducts.name.value.plannedQuantity', 'workPlans.columnForOutputProducts.description.value.plannedQuantity', 'workPlans');
 
 -- end
 
