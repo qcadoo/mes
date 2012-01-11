@@ -339,3 +339,8 @@ CREATE TABLE workplans_parameteroutputcomponent
 
 -- end
 
+INSERT INTO workplans_columnforinputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'productName', 'productName', 'workPlans');
+INSERT INTO workplans_columnforinputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'plannedQuantity', 'plannedQuantity', 'workPlans');
+
+INSERT INTO workplans_columnforoutputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'productName', 'productName', 'workPlans');
+INSERT INTO workplans_columnforoutputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'plannedQuantity', 'plannedQuantity', 'workPlans');
