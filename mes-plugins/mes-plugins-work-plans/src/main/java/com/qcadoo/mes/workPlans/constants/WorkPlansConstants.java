@@ -30,6 +30,16 @@ public interface WorkPlansConstants {
     // MODEL
     String MODEL_WORK_PLAN = "workPlan";
 
+    String MODEL_COLUMN_DEFINITION = "columnDefinition";
+
+    String MODEL_COLUMN_FOR_INPUT_PRODUCTS = "columnForInputProducts";
+
+    String MODEL_COLUMN_FOR_OUTPUT_PRODUCTS = "columnForOutputProducts";
+
+    String MODEL_PARAMETER_INPUT_COMPONENT = "parameterInputComponent";
+
+    String MODEL_PARAMETER_OUTPUT_COMPONENT = "parameterOutputComponent";
+
     // VIEW
     String VIEW_WORK_PLAN_DETAILS = "workPlanDetails";
 

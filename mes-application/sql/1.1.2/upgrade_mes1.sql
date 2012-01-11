@@ -266,3 +266,76 @@ UPDATE qcadooview_view SET name='workstationTypesList', view='workstationTypesLi
 UPDATE qcadooview_item SET name='workstationTypes' WHERE name='machines';
 
 -- end
+
+
+-- Table: workplans_columnforoutputproducts
+-- changed: 11.01.2012
+
+CREATE TABLE workplans_columnforinputproducts
+(
+  id bigint NOT NULL,
+  name character varying(255),
+  description character varying(255),
+  pluginidentifier character varying(255),
+  CONSTRAINT workplans_columnforinputproducts_pkey PRIMARY KEY (id )
+)
+
+-- end
+
+
+-- Table: workplans_columnforoutputproducts
+-- changed: 11.01.2012
+
+CREATE TABLE workplans_columnforoutputproducts
+(
+  id bigint NOT NULL,
+  name character varying(255),
+  description character varying(255),
+  pluginidentifier character varying(255),
+  CONSTRAINT workplans_columnforoutputproducts_pkey PRIMARY KEY (id )
+);
+
+-- end
+
+
+-- Table: workplans_parameterinputcomponent
+-- changed: 11.01.2012
+
+CREATE TABLE workplans_parameterinputcomponent
+(
+  id bigint NOT NULL,
+  parameter_id bigint,
+  columnforinputproducts_id bigint,
+  succession integer,
+  CONSTRAINT workplans_parameterinputcomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_parameteroutputcomponent_parameter_fkey  FOREIGN KEY (parameter_id)
+      REFERENCES basic_parameter (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT workplans_parameteroutputcomponent_columnforinputproducts_fkey FOREIGN KEY (columnforinputproducts_id)
+      REFERENCES workplans_columnforinputproducts (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+-- end
+
+
+-- Table: workplans_parameteroutputcomponent
+-- changed: 11.01.2012
+
+CREATE TABLE workplans_parameteroutputcomponent
+(
+  id bigint NOT NULL,
+  parameter_id bigint,
+  columnforoutputproducts_id bigint,
+  succession integer,
+  CONSTRAINT workplans_parameteroutputcomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_parameteroutputcomponent_parameter_fkey FOREIGN KEY (parameter_id)
+      REFERENCES basic_parameter (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT workplans_parameteroutputcomponent_columnforoutputproducts_fkey FOREIGN KEY (columnforoutputproducts_id)
+      REFERENCES workplans_columnforoutputproducts (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+-- end
+
