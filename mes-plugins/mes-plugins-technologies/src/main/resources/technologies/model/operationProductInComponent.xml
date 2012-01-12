@@ -40,5 +40,7 @@
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService" 
 			method="invalidateIfBelongsToAcceptedTechnology" />
+		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService" 
+			method="invalidateIfAllreadyInTheSameOperation" />
 	</hooks>
 </model>
