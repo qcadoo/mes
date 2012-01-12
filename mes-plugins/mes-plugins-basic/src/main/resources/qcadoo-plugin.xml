@@ -57,7 +57,6 @@
 		<localization:translation path="locales" basename="basic"/>
 
 		<model:model model="company" resource ="model/company.xml"/>
-		<model:model model="contractor" resource="model/contractor.xml" />
 		<model:model model="staff" resource="model/staff.xml" />
 		<model:model model="shift" resource ="model/shift.xml"/>
 		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml" />
@@ -80,7 +79,6 @@
 		<menu:menu-item-url name="home" category="home" url="/dashboard.html" />
 		
 		<menu:menu-item name="companies" category="basic" view="companiesList" />
-		<menu:menu-item name="contractors" category="basic" view="contractorsList" />
 		<menu:menu-item name="staff" category="basic" view="staffsList" />
 		<menu:menu-item name="shifts" category="basic" view="shiftsList"/>
 		<menu:menu-item name="products" category="basic" view="productsList" />
@@ -98,8 +96,6 @@
 			
 		<view:view resource="view/companiesList.xml" />
 		<view:view resource="view/companyDetails.xml" />
-		<view:view resource="view/contractorsList.xml" />
-		<view:view resource="view/contractorDetails.xml" />
 		<view:view resource="view/staffsList.xml" />
 		<view:view resource="view/staffDetails.xml" />
 		<view:view resource="view/shiftsList.xml"/>
