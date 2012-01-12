@@ -81,6 +81,17 @@ public class WorkPlanColumnsLoaderModule extends Module {
         }
         readDataFromXML(COLUMNS_FOR_INPUT_PRODUCTS, COLUMN_ATTRIBUTES);
         readDataFromXML(COLUMNS_FOR_OUTPUT_PRODUCTS, COLUMN_ATTRIBUTES);
+        setParameters();
+    }
+
+    private void setParameters() {
+        Entity parameters = getParameter();
+        parameters.setField("hideDescriptionInWorkPlans", false);
+        parameters.setField("hideDetailsInWorkPlans", false);
+        parameters.setField("hideTechnologyAndOrderInWorkPlans", false);
+        parameters.setField("dontPrintInputProductsInWorkPlans", false);
+        parameters.setField("dontPrintOutputProductsInWorkPlans", false);
+        parameters.getDataDefinition().save(parameters);
     }
 
     private void readDataFromXML(final String type, final String[] attributes) {
