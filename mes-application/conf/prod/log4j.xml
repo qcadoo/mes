@@ -105,10 +105,10 @@
 	</appender>
 	
 	<logger name="com.qcadoo.mes">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	<logger name="org.springframework">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	<logger name="org.hibernate">
 		<level value="info" />
@@ -117,7 +117,7 @@
 		<level value="info" />
 	</logger>
 	<logger name="org.apache">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	<logger name="net.sf.ehcache">
 		<level value="info" />
@@ -127,42 +127,42 @@
 	</logger>
 	
 	<logger name="com.qcadoo.model">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="model-log" />
 	</logger>
 	
 	<logger name="com.qcadoo.plugin">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="plugin-log" />
 	</logger>
 	
 	<logger name="com.qcadoo.view">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="view-log" />
 	</logger>
 	
 	<logger name="com.qcadoo.security">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="security-log" />
 	</logger>
 	
 	<logger name="com.qcadoo.localization">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="localization-log" />
 	</logger>
 	
 	<logger name="com.qcadoo.saas">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="saas-log" />
 	</logger>
 	
 	<logger name="com.qcadoo.report">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="report-log" />
 	</logger>
 	
 	<logger name="org.hibernate.SQL" additivity="false">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="sql-log" />	
 	</logger>
 	
@@ -177,7 +177,7 @@
 	</logger>
 
 	<root>	
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="console-log" />
 		<appender-ref ref="root-log" />
 		<appender-ref ref="warn-log" />
