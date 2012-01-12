@@ -196,7 +196,6 @@ ALTER TABLE materialflow_materialsinstockareas ADD COLUMN active boolean DEFAULT
 -- end
 
 
-
 -- Table: technologies_operation
 -- changed: 03.01.2012
 
@@ -339,12 +338,19 @@ CREATE TABLE workplans_parameteroutputcomponent
 
 -- end
 
--- Table: basic_company
+
+-- Table: basic_parameter
 -- changed: 12.01.2012
 
-ALTER TABLE basic_company ADD COLUMN externalnumber varchar(255);
-
+UPDATE basic_parameter SET 
+	hideDescriptionInWorkPlans = false,
+	hideDetailsInWorkPlans = false,
+	hideTechnologyAndOrderInWorkPlans = false,
+	dontPrintInputProductsInWorkPlans = false,
+	dontPrintOutputProductsInWorkPlans = false;
+	
 -- end
+
 
 -- Table: orders_order
 -- changed: 12.01.2012
@@ -355,95 +361,6 @@ ALTER TABLE orders_order ADD CONSTRAINT company_company_fkey FOREIGN KEY (compan
 
 -- end
 
-
--- Table: workplans_columnforinputproducts
--- changed: 11.01.2012
-
-INSERT INTO workplans_columnforinputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'workPlans.columnForInputProducts.name.value.productName', 'workPlans.columnForInputProducts.description.value.productName', 'workPlans');
-INSERT INTO workplans_columnforinputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'workPlans.columnForInputProducts.name.value.plannedQuantity', 'workPlans.columnForInputProducts.description.value.plannedQuantity', 'workPlans');
-
--- end
-
-
--- Table: workplans_columnforoutputproducts
--- changed: 11.01.2012
-
-INSERT INTO workplans_columnforoutputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'workPlans.columnForOutputProducts.name.value.productName', 'workPlans.columnForOutputProducts.description.value.productName', 'workPlans');
-INSERT INTO workplans_columnforoutputproducts (id, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'workPlans.columnForOutputProducts.name.value.plannedQuantity', 'workPlans.columnForOutputProducts.description.value.plannedQuantity', 'workPlans');
-
--- end
-
-
--- Table: workplans_parameterinputcomponent
--- changed: 11.01.2012
-
-CREATE OR REPLACE FUNCTION update_parameterinputcomponent() RETURNS INTEGER AS 
-'
-	DECLARE
-		priority INTEGER;
-		parameter RECORD;
-		columnforinputproducts RECORD;  
-	
-	BEGIN  
-		FOR parameter IN SELECT id FROM basic_parameter LOOP
-			priority := 1;
-
-			FOR columnforinputproducts IN SELECT id FROM workplans_columnforinputproducts LOOP  
-				INSERT INTO workplans_parameterinputcomponent (id, parameter_id, columnforinputproducts_id, succession) 
-				VALUES (
-					nextval(''hibernate_sequence''),  
-					parameter."id",
-					columnforinputproducts."id",
-					priority
-				);
-
-				priority := priority + 1;
-			END LOOP;
-
-		END LOOP;
-
-		RETURN 1; 
-	END;  
-' 
-LANGUAGE 'plpgsql';
-SELECT * FROM update_parameterinputcomponent();
-
--- end
-
-
--- Table: workplans_parameteroutputcomponent
--- changed: 11.01.2012
-
-CREATE OR REPLACE FUNCTION update_parameteroutputcomponent() RETURNS INTEGER AS 
-'
-	DECLARE
-		priority INTEGER;
-		parameter RECORD;
-		columnforoutputproducts RECORD;  
-	
-	BEGIN  
-		FOR parameter IN SELECT id FROM basic_parameter LOOP
-			priority := 1;
-			FOR columnforoutputproducts IN SELECT id FROM workplans_columnforoutputproducts LOOP  
-				INSERT INTO workplans_parameteroutputcomponent (id, parameter_id, columnforoutputproducts_id, succession) 
-				VALUES (
-					nextval(''hibernate_sequence''),  
-					parameter."id",
-					columnforoutputproducts."id",
-					priority
-				);
-
-				priority := priority + 1;
-			END LOOP;
-		END LOOP;
-
-		RETURN 1; 
-	END;  
-' 
-LANGUAGE 'plpgsql';
-SELECT * FROM update_parameteroutputcomponent();
-
--- end
 
 -- Table: basic_company
 -- changed: 11.01.2012
