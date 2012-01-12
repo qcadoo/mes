@@ -36,7 +36,7 @@
 		<datetime name="dateTo"  />
 		<enum name="state" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"		
 			required="true" />
-		<belongsTo name="contractor" plugin="basic" model="contractor" />
+		<belongsTo name="company" plugin="basic" model="company" />
 		<belongsTo name="product" plugin="basic" model="product"  required="true"/>
 		<string name="defaultTechnology" persistent="false" />
 		<belongsTo name="technology" plugin="technologies" model="technology" />
@@ -46,7 +46,7 @@
 			<validatesScale max="3" />
 		</decimal>
 		<decimal name="doneQuantity">
-			<validatesRange from="0" exclusively="true" />
+			<validatesRange from="0" exclusively="false" />
 			<validatesUnscaledValue max="5" />
 			<validatesScale max="3" />
 		</decimal>

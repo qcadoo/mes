@@ -339,6 +339,22 @@ CREATE TABLE workplans_parameteroutputcomponent
 
 -- end
 
+-- Table: basic_company
+-- changed: 12.01.2012
+
+ALTER TABLE basic_company ADD COLUMN externalnumber varchar(255);
+
+-- end
+
+-- Table: orders_order
+-- changed: 12.01.2012
+
+ALTER TABLE orders_order DROP CONSTRAINT fk3daecd74aea6e4cc;
+ALTER TABLE orders_order RENAME COLUMN contractor_id TO company_id;
+ALTER TABLE orders_order ADD CONSTRAINT company_company_fkey FOREIGN KEY (company_id) REFERENCES basic_company (id);
+
+-- end
+
 
 -- Table: workplans_columnforinputproducts
 -- changed: 11.01.2012
@@ -426,5 +442,12 @@ CREATE OR REPLACE FUNCTION update_parameteroutputcomponent() RETURNS INTEGER AS
 ' 
 LANGUAGE 'plpgsql';
 SELECT * FROM update_parameteroutputcomponent();
+
+-- end
+
+-- Table: basic_company
+-- changed: 11.01.2012
+
+INSERT INTO basic_company SELECT * FROM basic_contractor;
 
 -- end

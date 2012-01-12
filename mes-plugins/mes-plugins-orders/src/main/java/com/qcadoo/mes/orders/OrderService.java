@@ -476,7 +476,7 @@ public class OrderService {
         if (StringUtils.hasText(externalNumber) || !externalSynchronized) {
             state.getComponentByReference(FIELD_NUMBER).setEnabled(false);
             state.getComponentByReference("name").setEnabled(false);
-            state.getComponentByReference("contractor").setEnabled(false);
+            state.getComponentByReference("company").setEnabled(false);
             state.getComponentByReference("dateFrom").setEnabled(false);
             state.getComponentByReference("dateTo").setEnabled(false);
             state.getComponentByReference(BASIC_MODEL_PRODUCT).setEnabled(false);
