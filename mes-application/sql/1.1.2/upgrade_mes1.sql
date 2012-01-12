@@ -364,13 +364,13 @@ INSERT INTO workplans_columnforoutputproducts (id, name, description, pluginiden
 CREATE OR REPLACE FUNCTION update_parameterinputcomponent() RETURNS INTEGER AS 
 '
 	DECLARE
-		succession INTEGER;
+		priority INTEGER;
 		parameter RECORD;
 		columnforinputproducts RECORD;  
 	
 	BEGIN  
 		FOR parameter IN SELECT id FROM basic_parameter LOOP
-			succession := 1;
+			priority := 1;
 
 			FOR columnforinputproducts IN SELECT id FROM workplans_columnforinputproducts LOOP  
 				INSERT INTO workplans_parameterinputcomponent (id, parameter_id, columnforinputproducts_id, succession) 
@@ -378,10 +378,10 @@ CREATE OR REPLACE FUNCTION update_parameterinputcomponent() RETURNS INTEGER AS
 					nextval(''hibernate_sequence''),  
 					parameter."id",
 					columnforinputproducts."id",
-					succession
+					priority
 				);
 
-				succession := succession + 1;
+				priority := priority + 1;
 			END LOOP;
 
 		END LOOP;
@@ -401,23 +401,23 @@ SELECT * FROM update_parameterinputcomponent();
 CREATE OR REPLACE FUNCTION update_parameteroutputcomponent() RETURNS INTEGER AS 
 '
 	DECLARE
-		succession INTEGER;
+		priority INTEGER;
 		parameter RECORD;
 		columnforoutputproducts RECORD;  
 	
 	BEGIN  
 		FOR parameter IN SELECT id FROM basic_parameter LOOP
-			succession := 1;
+			priority := 1;
 			FOR columnforoutputproducts IN SELECT id FROM workplans_columnforoutputproducts LOOP  
 				INSERT INTO workplans_parameteroutputcomponent (id, parameter_id, columnforoutputproducts_id, succession) 
 				VALUES (
 					nextval(''hibernate_sequence''),  
 					parameter."id",
 					columnforoutputproducts."id",
-					succession
+					priority
 				);
 
-				succession := succession + 1;
+				priority := priority + 1;
 			END LOOP;
 		END LOOP;
 
