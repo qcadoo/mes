@@ -56,13 +56,13 @@
 
 					<layoutElement column="1" row="1" width="3">
 						<component type="lookup" name="columnForOutputProducts" field="columnForOutputProducts" reference="columnForOutputProductsLookup">
-							<option type="column" name="name" fields="name" expression="'@' + #name" link="true" />
-							<option type="column" name="description" fields="description" expression="'@' + #description" />
-							
+							<option type="column" name="name" fields="columnDefinition" expression="'@' + #columnDefinition.get('name')" link="true" />
+							<option type="column" name="description" fields="columnDefinition" expression="'@' + #columnDefinition.get('description')" />
+
 							<option type="orderable" value="name,description" />
 							
-							<option type="expression" value="'@' + #name" />
-							<option type="fieldCode" value="name" />	
+							<option type="expression" value="'@' + #columnDefinition.get('name')" />
+							<option type="fieldCode" value="columnDefinition" />	
 						</component>
 					</layoutElement>
 				</component>

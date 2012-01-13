@@ -62,7 +62,8 @@
 		<localization:translation path="locales" />
 
 		<model:model model="workPlan" resource="model/workPlan.xml" />
-
+	
+		<model:model model="columnDefinition" resource="model/columnDefinition.xml" />
 		<model:model model="columnForInputProducts" resource="model/columnForInputProducts.xml" />
 		<model:model model="columnForOutputProducts" resource="model/columnForOutputProducts.xml" />
 		<model:model model="parameterInputComponent" resource="model/parameterInputComponent.xml" />

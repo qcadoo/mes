@@ -24,7 +24,25 @@
     ***************************************************************************
 
 -->
-<column>
-	<row NAME="workPlans.columnForInputProducts.name.value.productName" DESCRIPTION="workPlans.columnForInputProducts.description.value.productName" PLUGINIDENTIFIER="workPlans" />
-	<row NAME="workPlans.columnForInputProducts.name.value.plannedQuantity" DESCRIPTION="workPlans.columnForInputProducts.description.value.plannedQuantity" PLUGINIDENTIFIER="workPlans" />
-</column>
+<model name="columnDefinition" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<string name="identifier" required="true">
+			<validatesLength max="255" />
+		</string>
+		<string name="name" required="true">
+			<validatesLength max="255" />
+		</string>
+		<string name="description" />
+		<string name="pluginIdentifier" required="true">
+			<validatesLength max="255" />
+		</string>
+		
+		<hasMany name="columnsForInputProducts" plugin="workPlans" model="columnForInputProducts" joinField="columnDefinition" />
+		<hasMany name="columnsForOutputProducts" plugin="workPlans" model="columnForOutputProducts" joinField="columnDefinition" />
+	</fields>
+	<hooks>
+		
+	</hooks>
+</model>
