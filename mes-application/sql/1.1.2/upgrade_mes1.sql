@@ -339,6 +339,27 @@ CREATE TABLE workplans_parameteroutputcomponent
 -- end
 
 
+-- Table: basic_company
+
+-- changed: 11.01.2012
+	
+ALTER TABLE basic_company ADD COLUMN externalnumber varchar(255);
+
+
+INSERT INTO basic_company SELECT * FROM basic_contractor;
+
+-- end
+
+
+-- Table: basic_contractor
+-- changed: 11.01.2012
+
+DROP TABLE basic_contractor;
+
+
+-- end
+
+
 -- Table: basic_parameter
 -- changed: 12.01.2012
 
@@ -358,27 +379,6 @@ UPDATE basic_parameter SET
 ALTER TABLE orders_order DROP CONSTRAINT fk3daecd74aea6e4cc;
 ALTER TABLE orders_order RENAME COLUMN contractor_id TO company_id;
 ALTER TABLE orders_order ADD CONSTRAINT company_company_fkey FOREIGN KEY (company_id) REFERENCES basic_company (id);
-
--- end
-
-
--- Table: basic_company
-
--- changed: 11.01.2012
-	
-ALTER TABLE basic_company ADD COLUMN externalnumber varchar(255);
-
-
-INSERT INTO basic_company SELECT * FROM basic_contractor;
-
--- end
-
-
--- Table: basic_contractor
--- changed: 11.01.2012
-
-DROP TABLE basic_contractor;
-
 
 -- end
 
@@ -431,7 +431,7 @@ ALTER TABLE workplans_columnforoutputproducts ADD CONSTRAINT workplans_columnfor
 -- end
 
       
--- ONLY FOR LOCAL INSTANCE --      
+---- ONLY FOR LOCAL INSTANCE ----      
       
 -- Table: workplans_...
 -- changed: 13.01.2012
@@ -577,4 +577,4 @@ SELECT * FROM update_parameteroutputcomponent();
 
 -- end
 
--- END --
+---- END ----
