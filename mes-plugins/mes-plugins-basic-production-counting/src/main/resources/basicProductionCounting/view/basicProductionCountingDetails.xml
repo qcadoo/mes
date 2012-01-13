@@ -38,7 +38,7 @@
 				rows="4" hasBorders="false">
 				<layoutElement column="1" row="1" width="3">
 					<component type="input" name="productName" reference="product"
-						defaultEnabled="false" >
+						defaultEnabled="false">
 						<option type="labelWidth" value="50" />
 					</component>
  				</layoutElement>
@@ -84,9 +84,9 @@
  	</component>
 
 	<hooks>
-<!-- 		<beforeRender -->
-<!-- 			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService" -->
-<!-- 			method="getProductNameFromCounting" /> -->
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
+			method="getProductNameFromCounting" />
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
 			method="fillFieldsCurrency" />
