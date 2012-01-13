@@ -30,7 +30,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 
 @Service
-public class ComponentModelValidators {
+public class ParameterComponentModelValidators {
 
     public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputComponentDD,
             final Entity inputComponent) {

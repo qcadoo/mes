@@ -310,7 +310,7 @@ CREATE TABLE workplans_parameterinputcomponent
   CONSTRAINT workplans_parameteroutputcomponent_parameter_fkey  FOREIGN KEY (parameter_id)
       REFERENCES basic_parameter (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT workplans_parameteroutputcomponent_columnforinputproducts_fkey FOREIGN KEY (columnforinputproducts_id)
+  CONSTRAINT workplans_parameterinputcomponent_cfip_fkey FOREIGN KEY (columnforinputproducts_id)
       REFERENCES workplans_columnforinputproducts (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
@@ -331,7 +331,7 @@ CREATE TABLE workplans_parameteroutputcomponent
   CONSTRAINT workplans_parameteroutputcomponent_parameter_fkey FOREIGN KEY (parameter_id)
       REFERENCES basic_parameter (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT workplans_parameteroutputcomponent_columnforoutputproducts_fkey FOREIGN KEY (columnforoutputproducts_id)
+  CONSTRAINT workplans_parameteroutputcomponent_cfop_fkey FOREIGN KEY (columnforoutputproducts_id)
       REFERENCES workplans_columnforoutputproducts (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
@@ -408,7 +408,7 @@ ALTER TABLE workplans_columnforinputproducts DROP COLUMN pluginidentifier;
 
 ALTER TABLE workplans_columnforinputproducts ADD COLUMN columndefinition_id bigint;
 
-ALTER TABLE workplans_columnforinputproducts ADD CONSTRAINT workplans_columnforinputproducts_columndefinition_fkey FOREIGN KEY (columndefinition_id)
+ALTER TABLE workplans_columnforinputproducts ADD CONSTRAINT workplans_columnforinputproducts_cd_fkey FOREIGN KEY (columndefinition_id)
       REFERENCES workplans_columndefinition (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION;
       
@@ -424,9 +424,135 @@ ALTER TABLE workplans_columnforoutputproducts DROP COLUMN pluginidentifier;
 
 ALTER TABLE workplans_columnforoutputproducts ADD COLUMN columndefinition_id bigint;
 
-ALTER TABLE workplans_columnforoutputproducts ADD CONSTRAINT workplans_columnforoutputproducts_columndefinition_fkey FOREIGN KEY (columndefinition_id)
+ALTER TABLE workplans_columnforoutputproducts ADD CONSTRAINT workplans_columnforoutputproducts_cd_fkey FOREIGN KEY (columndefinition_id)
       REFERENCES workplans_columndefinition (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+-- end
+
+
+-- Table: workplans_operationinputcomponent
+-- changed: 13.01.2012
+
+CREATE TABLE workplans_operationinputcomponent
+(
+  id bigint NOT NULL,
+  operation_id bigint,
+  columnforinputproducts_id bigint,
+  succession integer,
+  CONSTRAINT workplans_operationinputcomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_operationinputcomponent_operation_fkey  FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT workplans_operationinputcomponent_cfip_fkey FOREIGN KEY (columnforinputproducts_id)
+      REFERENCES workplans_columnforinputproducts (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+-- end
+
+
+-- Table: workplans_operationoutputcomponent
+-- changed: 13.01.2012
+
+CREATE TABLE workplans_operationoutputcomponent
+(
+  id bigint NOT NULL,
+  operation_id bigint,
+  columnforoutputproducts_id bigint,
+  succession integer,
+  CONSTRAINT workplans_operationoutputcomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_operationoutputcomponent_operation_fkey FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT workplans_operationoutputcomponent_cfop_fkey FOREIGN KEY (columnforoutputproducts_id)
+      REFERENCES workplans_columnforoutputproducts (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+-- end
+
+
+-- Table: workplans_technologyoperationinputcomponent
+-- changed: 13.01.2012
+
+CREATE TABLE workplans_technologyoperationinputcomponent
+(
+  id bigint NOT NULL,
+  technologyoperationcomponent_id bigint,
+  columnforinputproducts_id bigint,
+  succession integer,
+  CONSTRAINT workplans_technologyoperationinputcomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_technologyoperationinputcomponent_toc_fkey  FOREIGN KEY (technologyoperationcomponent_id)
+      REFERENCES technologies_technologyoperationcomponent (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT workplans_technologyoperationinputcomponent_cfip_fkey FOREIGN KEY (columnforinputproducts_id)
+      REFERENCES workplans_columnforinputproducts (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+-- end
+
+
+-- Table: workplans_technologyoperationoutputcomponent
+-- changed: 13.01.2012
+
+CREATE TABLE workplans_technologyoperationoutputcomponent
+(
+  id bigint NOT NULL,
+  technologyoperationcomponent_id bigint,
+  columnforoutputproducts_id bigint,
+  succession integer,
+  CONSTRAINT workplans_technologyoperationoutputcomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_technologyoperationoutputcomponent_toc_fkey FOREIGN KEY (technologyoperationcomponent_id)
+      REFERENCES technologies_technologyoperationcomponent (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT workplans_technologyoperationoutputcomponent_cfop_fkey FOREIGN KEY (columnforoutputproducts_id)
+      REFERENCES workplans_columnforoutputproducts (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+-- end
+
+
+-- Table: workplans_orderoperationinputcomponent
+-- changed: 13.01.2012
+
+CREATE TABLE workplans_orderoperationinputcomponent
+(
+  id bigint NOT NULL,
+  orderoperationcomponent_id bigint,
+  columnforinputproducts_id bigint,
+  succession integer,
+  CONSTRAINT workplans_orderoperationinputcomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_orderoperationinputcomponent_ooc_fkey  FOREIGN KEY (orderoperationcomponent_id)
+      REFERENCES productionscheduling_orderoperationcomponent (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT workplans_orderoperationinputcomponent_cfip_fkey FOREIGN KEY (columnforinputproducts_id)
+      REFERENCES workplans_columnforinputproducts (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+-- end
+
+
+-- Table: workplans_orderoperationoutputcomponent
+-- changed: 13.01.2012
+
+CREATE TABLE workplans_orderoperationoutputcomponent
+(
+  id bigint NOT NULL,
+  orderoperationcomponent_id bigint,
+  columnforoutputproducts_id bigint,
+  succession integer,
+  CONSTRAINT workplans_orderoperationoutputcomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_orderoperationoutputcomponent_ooc_fkey FOREIGN KEY (orderoperationcomponent_id)
+      REFERENCES productionscheduling_orderoperationcomponent (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT workplans_orderoperationoutputcomponent_cfop_fkey FOREIGN KEY (columnforoutputproducts_id)
+      REFERENCES workplans_columnforoutputproducts (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
 
 -- end
 
@@ -574,6 +700,222 @@ CREATE OR REPLACE FUNCTION update_parameteroutputcomponent() RETURNS INTEGER AS
 ' 
 LANGUAGE 'plpgsql';
 SELECT * FROM update_parameteroutputcomponent();
+
+-- end
+
+
+-- Table: workplans_operationinputcomponent
+-- changed: 13.01.2012
+
+CREATE OR REPLACE FUNCTION update_operationinputcomponent() RETURNS INTEGER AS 
+'
+	DECLARE
+		priority INTEGER;
+		operation RECORD;
+		columnforinputproducts RECORD;  
+	
+	BEGIN  
+		FOR operation IN SELECT id FROM technologies_operation LOOP
+			priority := 1;
+
+			FOR columnforinputproducts IN SELECT id FROM workplans_columnforinputproducts LOOP  
+				INSERT INTO workplans_operationinputcomponent (id, operation_id, columnforinputproducts_id, succession) 
+				VALUES (
+					nextval(''hibernate_sequence''),  
+					operation."id",
+					columnforinputproducts."id",
+					priority
+				);
+
+				priority := priority + 1;
+			END LOOP;
+
+		END LOOP;
+
+		RETURN 1; 
+	END;  
+' 
+LANGUAGE 'plpgsql';
+SELECT * FROM update_operationinputcomponent();
+
+-- end
+
+
+-- Table: workplans_operationoutputcomponent
+-- changed: 13.01.2012
+
+CREATE OR REPLACE FUNCTION update_operationoutputcomponent() RETURNS INTEGER AS 
+'
+	DECLARE
+		priority INTEGER;
+		operation RECORD;
+		columnforoutputproducts RECORD;  
+	
+	BEGIN  
+		FOR operation IN SELECT id FROM technologies_operation LOOP
+			priority := 1;
+			FOR columnforoutputproducts IN SELECT id FROM workplans_columnforoutputproducts LOOP  
+				INSERT INTO workplans_operationoutputcomponent (id, operation_id, columnforoutputproducts_id, succession) 
+				VALUES (
+					nextval(''hibernate_sequence''),  
+					operation."id",
+					columnforoutputproducts."id",
+					priority
+				);
+
+				priority := priority + 1;
+			END LOOP;
+		END LOOP;
+
+		RETURN 1; 
+	END;  
+' 
+LANGUAGE 'plpgsql';
+SELECT * FROM update_operationoutputcomponent();
+
+-- end
+
+
+-- Table: workplans_technologyoperationinputcomponent
+-- changed: 13.01.2012
+
+CREATE OR REPLACE FUNCTION update_technologyoperationinputcomponent() RETURNS INTEGER AS 
+'
+	DECLARE
+		priority INTEGER;
+		technologyoperationcomponent RECORD;
+		columnforinputproducts RECORD;  
+	
+	BEGIN  
+		FOR technologyoperationcomponent IN SELECT id FROM technologies_technologyoperationcomponent LOOP
+			priority := 1;
+
+			FOR columnforinputproducts IN SELECT id FROM workplans_columnforinputproducts LOOP  
+				INSERT INTO workplans_technologyoperationinputcomponent (id, technologyoperationcomponent_id, columnforinputproducts_id, succession) 
+				VALUES (
+					nextval(''hibernate_sequence''),  
+					technologyoperationcomponent."id",
+					columnforinputproducts."id",
+					priority
+				);
+
+				priority := priority + 1;
+			END LOOP;
+
+		END LOOP;
+
+		RETURN 1; 
+	END;  
+' 
+LANGUAGE 'plpgsql';
+SELECT * FROM update_technologyoperationinputcomponent();
+
+-- end
+
+
+-- Table: workplans_technologyoperationoutputcomponent
+-- changed: 13.01.2012
+
+CREATE OR REPLACE FUNCTION update_technologyoperationoutputcomponent() RETURNS INTEGER AS 
+'
+	DECLARE
+		priority INTEGER;
+		technologyoperationcomponent RECORD;
+		columnforoutputproducts RECORD;  
+	
+	BEGIN  
+		FOR technologyoperationcomponent IN SELECT id FROM technologies_technologyoperationcomponent LOOP
+			priority := 1;
+			FOR columnforoutputproducts IN SELECT id FROM workplans_columnforoutputproducts LOOP  
+				INSERT INTO workplans_technologyoperationoutputcomponent (id, technologyoperationcomponent_id, columnforoutputproducts_id, succession) 
+				VALUES (
+					nextval(''hibernate_sequence''),  
+					technologyoperationcomponent."id",
+					columnforoutputproducts."id",
+					priority
+				);
+
+				priority := priority + 1;
+			END LOOP;
+		END LOOP;
+
+		RETURN 1; 
+	END;  
+' 
+LANGUAGE 'plpgsql';
+SELECT * FROM update_technologyoperationoutputcomponent();
+
+-- end
+
+
+-- Table: workplans_orderoperationinputcomponent
+-- changed: 13.01.2012
+
+CREATE OR REPLACE FUNCTION update_orderoperationinputcomponent() RETURNS INTEGER AS 
+'
+	DECLARE
+		priority INTEGER;
+		orderoperationcomponent RECORD;
+		columnforinputproducts RECORD;  
+	
+	BEGIN  
+		FOR orderoperationcomponent IN SELECT id FROM productionscheduling_orderoperationcomponent LOOP
+			priority := 1;
+
+			FOR columnforinputproducts IN SELECT id FROM workplans_columnforinputproducts LOOP  
+				INSERT INTO workplans_orderoperationinputcomponent (id, orderoperationcomponent_id, columnforinputproducts_id, succession) 
+				VALUES (
+					nextval(''hibernate_sequence''),  
+					orderoperationcomponent."id",
+					columnforinputproducts."id",
+					priority
+				);
+
+				priority := priority + 1;
+			END LOOP;
+
+		END LOOP;
+
+		RETURN 1; 
+	END;  
+' 
+LANGUAGE 'plpgsql';
+SELECT * FROM update_orderoperationinputcomponent();
+
+-- end
+
+
+-- Table: workplans_operationoutputcomponent
+-- changed: 13.01.2012
+
+CREATE OR REPLACE FUNCTION update_orderoperationoutputcomponent() RETURNS INTEGER AS 
+'
+	DECLARE
+		priority INTEGER;
+		orderoperationcomponent RECORD;
+		columnforoutputproducts RECORD;  
+	
+	BEGIN  
+		FOR orderoperationcomponent IN SELECT id FROM productionscheduling_orderoperationcomponent LOOP
+			priority := 1;
+			FOR columnforoutputproducts IN SELECT id FROM workplans_columnforoutputproducts LOOP  
+				INSERT INTO workplans_orderoperationoutputcomponent (id, orderoperationcomponent_id, columnforoutputproducts_id, succession) 
+				VALUES (
+					nextval(''hibernate_sequence''),  
+					orderoperationcomponent."id",
+					columnforoutputproducts."id",
+					priority
+				);
+
+				priority := priority + 1;
+			END LOOP;
+		END LOOP;
+
+		RETURN 1; 
+	END;  
+' 
+LANGUAGE 'plpgsql';
+SELECT * FROM update_orderoperationoutputcomponent();
 
 -- end
 

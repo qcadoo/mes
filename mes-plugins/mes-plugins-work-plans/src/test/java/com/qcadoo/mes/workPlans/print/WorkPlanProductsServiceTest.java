@@ -149,10 +149,10 @@ public class WorkPlanProductsServiceTest {
         productOutComponents.put(operationComponent1, productOutComponentsForOperation1);
         productOutComponents.put(operationComponent2, productOutComponentsForOperation2);
 
-        when(product1.getId()).thenReturn(1l);
-        when(product2.getId()).thenReturn(2l);
-        when(product3.getId()).thenReturn(3l);
-        when(product4.getId()).thenReturn(4l);
+        when(product1.getId()).thenReturn(1L);
+        when(product2.getId()).thenReturn(2L);
+        when(product3.getId()).thenReturn(3L);
+        when(product4.getId()).thenReturn(4L);
 
         when(technology.getBelongsToField("product")).thenReturn(product4);
         when(productInComponent1.getBelongsToField("product")).thenReturn(product1);

@@ -40,6 +40,18 @@ public interface WorkPlansConstants {
 
     String MODEL_PARAMETER_OUTPUT_COMPONENT = "parameterOutputComponent";
 
+    String MODEL_OPERATION_INPUT_COMPONENT = "operationInputComponent";
+
+    String MODEL_OPERATION_OUTPUT_COMPONENT = "operationOutputComponent";
+
+    String MODEL_TECHNOLOGY_OPERATION_INPUT_COMPONENT = "technologyOperationInputComponent";
+
+    String MODEL_TECHNOLOGY_OPERATION_OUTPUT_COMPONENT = "technologyOperationOutputComponent";
+
+    String MODEL_ORDER_OPERATION_INPUT_COMPONENT = "orderOperationInputComponent";
+
+    String MODEL_ORDER_OPERATION_OUTPUT_COMPONENT = "orderOperationOutputComponent";
+
     // VIEW
     String VIEW_WORK_PLAN_DETAILS = "workPlanDetails";
 

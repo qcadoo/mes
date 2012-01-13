@@ -42,9 +42,9 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class OrderOperationComponentViewHooks {
 
-    private Set<String> WORKPLAN_PARAMETERS = Sets.newHashSet("hideDescriptionInWorkPlans", "hideDetailsInWorkPlans",
-            "hideTechnologyAndOrderInWorkPlans", "imageUrlInWorkPlan", "dontPrintInputProductsInWorkPlans",
-            "dontPrintOutputProductsInWorkPlans");
+    private static final Set<String> WORKPLAN_PARAMETERS = Sets.newHashSet("hideDescriptionInWorkPlans",
+            "hideDetailsInWorkPlans", "hideTechnologyAndOrderInWorkPlans", "imageUrlInWorkPlan",
+            "dontPrintInputProductsInWorkPlans", "dontPrintOutputProductsInWorkPlans");
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
