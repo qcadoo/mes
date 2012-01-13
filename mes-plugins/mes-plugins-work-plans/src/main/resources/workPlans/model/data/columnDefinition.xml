@@ -25,6 +25,6 @@
 
 -->
 <column>
-	<row NAME="workPlans.columnForOutputProducts.name.value.productName" DESCRIPTION="workPlans.columnForOutputProducts.description.value.productName" PLUGINIDENTIFIER="workPlans" />
-	<row NAME="workPlans.columnForOutputProducts.name.value.plannedQuantity" DESCRIPTION="workPlans.columnForOutputProducts.description.value.plannedQuantity" PLUGINIDENTIFIER="workPlans" />
+	<row IDENTIFIER="productName" NAME="workPlans.columnDefinition.name.value.productName" DESCRIPTION="workPlans.columnDefinition.description.value.productName" PLUGINIDENTIFIER="workPlans" TYPE="both" />
+	<row IDENTIFIER="plannerQuantity" NAME="workPlans.columnDefinition.name.value.plannedQuantity" DESCRIPTION="workPlans.columnDefinition.description.value.plannedQuantity" PLUGINIDENTIFIER="workPlans" TYPE="both" />
 </column>

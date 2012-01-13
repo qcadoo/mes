@@ -28,13 +28,7 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="name" required="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="description" />
-		<string name="pluginIdentifier" required="true">
-			<validatesLength max="255" />
-		</string>
+		<belongsTo name="columnDefinition" plugin="workPlans" model="columnDefinition" required="true" lazy="false" />
 		
 		<hasMany name="columnsForInputProducts" plugin="workPlans" model="parameterInputComponent" joinField="columnForInputProducts" />
 	</fields>

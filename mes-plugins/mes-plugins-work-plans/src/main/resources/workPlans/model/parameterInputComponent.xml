@@ -29,6 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="parameter" plugin="basic" model="parameter" required="true" lazy="false" />
+		
 		<belongsTo name="columnForInputProducts" plugin="workPlans" model="columnForInputProducts" required="true" lazy="false" />
 		
 		<priority name="succession" />

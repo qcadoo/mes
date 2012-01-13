@@ -52,9 +52,9 @@ import com.qcadoo.plugin.api.Module;
 @Component
 public class WorkPlanColumnsLoaderModule extends Module {
 
-    private static final String COLUMNS_FOR_INPUT_PRODUCTS = "columnsForInputProducts";
+    private static final String COLUMN_DEFINITION = "columnDefinition";
 
-    private static final String COLUMNS_FOR_OUTPUT_PRODUCTS = "columnsForOutputProducts";
+    private static final String IDENTIFIER_FIELD = "identifier";
 
     private static final String NAME_FIELD = "name";
 
@@ -62,7 +62,8 @@ public class WorkPlanColumnsLoaderModule extends Module {
 
     private static final String PLUGINIDENTIFIER_FIELD = "pluginIdentifier";
 
-    private static final String[] COLUMN_ATTRIBUTES = new String[] { "NAME", "DESCRIPTION", "PLUGINIDENTIFIER" };
+    private static final String[] COLUMN_ATTRIBUTES = new String[] { "IDENTIFIER", "NAME", "DESCRIPTION", "PLUGINIDENTIFIER",
+            "TYPE" };
 
     private static final Logger LOG = LoggerFactory.getLogger(WorkPlanColumnsLoaderModule.class);
 
@@ -79,12 +80,13 @@ public class WorkPlanColumnsLoaderModule extends Module {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Columns for input and output products table will be populated...");
         }
-        readDataFromXML(COLUMNS_FOR_INPUT_PRODUCTS, COLUMN_ATTRIBUTES);
-        readDataFromXML(COLUMNS_FOR_OUTPUT_PRODUCTS, COLUMN_ATTRIBUTES);
-        setParameters();
+
+        setParameterDefaultValues();
+
+        readDataFromXML(COLUMN_DEFINITION, COLUMN_ATTRIBUTES);
     }
 
-    private void setParameters() {
+    private void setParameterDefaultValues() {
         Entity parameters = getParameter();
         parameters.setField("hideDescriptionInWorkPlans", false);
         parameters.setField("hideDetailsInWorkPlans", false);
@@ -130,30 +132,58 @@ public class WorkPlanColumnsLoaderModule extends Module {
             }
         }
 
-        if (COLUMNS_FOR_INPUT_PRODUCTS.equals(type)) {
-            addColumnForInputProducts(values);
-        }
-
-        if (COLUMNS_FOR_OUTPUT_PRODUCTS.equals(type)) {
-            addColumnForOutputProducts(values);
+        if (COLUMN_DEFINITION.equals(type)) {
+            addColumnDefinition(values);
         }
     }
 
-    private void addColumnForInputProducts(final Map<String, String> values) {
+    private void addColumnDefinition(final Map<String, String> values) {
+        Entity columnDefinition = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_COLUMN_DEFINITION).create();
+
+        columnDefinition.setField(IDENTIFIER_FIELD, values.get("IDENTIFIER"));
+        columnDefinition.setField(NAME_FIELD, values.get("NAME"));
+        columnDefinition.setField(DESCRIPTION_FIELD, values.get("DESCRIPTION"));
+        columnDefinition.setField(PLUGINIDENTIFIER_FIELD, values.get("PLUGINIDENTIFIER"));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test column item {column=" + columnDefinition.getStringField(NAME_FIELD) + "}");
+        }
+
+        if (columnDefinition.isValid()) {
+            columnDefinition = columnDefinition.getDataDefinition().save(columnDefinition);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Column saved {column=" + columnDefinition.toString() + "}");
+            }
+
+            if ("input".equals(values.get("TYPE"))) {
+                addColumnForInputProducts(columnDefinition);
+            } else if ("output".equals(values.get("TYPE"))) {
+                addColumnForOutputProducts(columnDefinition);
+            } else {
+                addColumnForInputProducts(columnDefinition);
+                addColumnForOutputProducts(columnDefinition);
+            }
+        } else {
+            throw new IllegalStateException("Saved entity have validation errors - " + values.get("NAME"));
+        }
+    }
+
+    private void addColumnForInputProducts(final Entity columnDefinition) {
         Entity columnForInputProduct = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                 WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS).create();
 
-        columnForInputProduct.setField(NAME_FIELD, values.get("NAME"));
-        columnForInputProduct.setField(DESCRIPTION_FIELD, values.get("DESCRIPTION"));
-        columnForInputProduct.setField(PLUGINIDENTIFIER_FIELD, values.get("PLUGINIDENTIFIER"));
+        columnForInputProduct.setField(WorkPlansConstants.MODEL_COLUMN_DEFINITION, columnDefinition);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test column item {column=" + columnForInputProduct.getStringField(NAME_FIELD) + "}");
+            LOG.debug("Add test column item {column="
+                    + columnForInputProduct.getBelongsToField(WorkPlansConstants.MODEL_COLUMN_DEFINITION).getStringField(
+                            NAME_FIELD) + "}");
         }
 
         if (columnForInputProduct.isValid()) {
-            columnForInputProduct = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                    WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS).save(columnForInputProduct);
+            columnForInputProduct = columnForInputProduct.getDataDefinition().save(columnForInputProduct);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Column saved {column=" + columnForInputProduct.toString() + "}");
@@ -161,46 +191,24 @@ public class WorkPlanColumnsLoaderModule extends Module {
 
             addParameterInputComponent(columnForInputProduct);
         } else {
-            throw new IllegalStateException("Saved entity have validation errors - " + values.get("NAME"));
+            throw new IllegalStateException("Saved entity have validation errors - " + columnDefinition.toString());
         }
     }
 
-    private void addParameterInputComponent(Entity columnForInputProduct) {
-        Entity parameter = getParameter();
-
-        Entity parameterInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_PARAMETER_INPUT_COMPONENT).create();
-
-        parameterInputComponent.setField(BasicConstants.MODEL_PARAMETER, parameter);
-        parameterInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProduct);
-
-        if (parameterInputComponent.isValid()) {
-            parameterInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                    WorkPlansConstants.MODEL_PARAMETER_INPUT_COMPONENT).save(parameterInputComponent);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Column added to input products columns {column=" + parameterInputComponent.toString() + "}");
-            }
-        } else {
-            throw new IllegalStateException("Saved entity have validation errors");
-        }
-    }
-
-    private void addColumnForOutputProducts(final Map<String, String> values) {
+    private void addColumnForOutputProducts(final Entity columnDefinition) {
         Entity columnForOutputProducts = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                 WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS).create();
 
-        columnForOutputProducts.setField(NAME_FIELD, values.get("NAME"));
-        columnForOutputProducts.setField(DESCRIPTION_FIELD, values.get("DESCRIPTION"));
-        columnForOutputProducts.setField(PLUGINIDENTIFIER_FIELD, values.get("PLUGINIDENTIFIER"));
+        columnForOutputProducts.setField(WorkPlansConstants.MODEL_COLUMN_DEFINITION, columnDefinition);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test column item {column=" + columnForOutputProducts.getStringField(NAME_FIELD) + "}");
+            LOG.debug("Add test column item {column="
+                    + columnForOutputProducts.getBelongsToField(WorkPlansConstants.MODEL_COLUMN_DEFINITION).getStringField(
+                            NAME_FIELD) + "}");
         }
 
         if (columnForOutputProducts.isValid()) {
-            columnForOutputProducts = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                    WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS).save(columnForOutputProducts);
+            columnForOutputProducts = columnForOutputProducts.getDataDefinition().save(columnForOutputProducts);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Column saved {column=" + columnForOutputProducts.toString() + "}");
@@ -208,11 +216,31 @@ public class WorkPlanColumnsLoaderModule extends Module {
 
             addParameterOutputComponent(columnForOutputProducts);
         } else {
-            throw new IllegalStateException("Saved entity have validation errors - " + values.get("NAME"));
+            throw new IllegalStateException("Saved entity have validation errors - " + columnDefinition.toString());
         }
     }
 
-    private void addParameterOutputComponent(Entity columnForOutputProducts) {
+    private void addParameterInputComponent(final Entity columnForInputProducts) {
+        Entity parameter = getParameter();
+
+        Entity parameterInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_PARAMETER_INPUT_COMPONENT).create();
+
+        parameterInputComponent.setField(BasicConstants.MODEL_PARAMETER, parameter);
+        parameterInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
+
+        if (parameterInputComponent.isValid()) {
+            parameterInputComponent = parameterInputComponent.getDataDefinition().save(parameterInputComponent);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Column added to input products columns {column=" + parameterInputComponent.toString() + "}");
+            }
+        } else {
+            throw new IllegalStateException("Saved entity have validation errors - " + columnForInputProducts.toString());
+        }
+    }
+
+    private void addParameterOutputComponent(final Entity columnForOutputProducts) {
         Entity parameter = getParameter();
 
         Entity parameterOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
@@ -222,14 +250,13 @@ public class WorkPlanColumnsLoaderModule extends Module {
         parameterOutputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
 
         if (parameterOutputComponent.isValid()) {
-            parameterOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                    WorkPlansConstants.MODEL_PARAMETER_OUTPUT_COMPONENT).save(parameterOutputComponent);
+            parameterOutputComponent = parameterOutputComponent.getDataDefinition().save(parameterOutputComponent);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Column added to output products columns {column=" + parameterOutputComponent.toString() + "}");
             }
         } else {
-            throw new IllegalStateException("Saved entity have validation errors");
+            throw new IllegalStateException("Saved entity have validation errors - " + columnForOutputProducts.toString());
         }
     }
 
@@ -245,18 +272,25 @@ public class WorkPlanColumnsLoaderModule extends Module {
     }
 
     private boolean databaseHasToBePrepared() {
-        return checkIfColumnForInputProductsAreEmpty() && checkIfColumnForOutputProductsAreEmpty();
+        return checkIfColumnDefintnitionIsEmpty() && checkIfColumnForInputProductsIsEmpty()
+                && checkIfColumnForOutputProductsIsEmpty();
     }
 
-    private boolean checkIfColumnForInputProductsAreEmpty() {
+    private boolean checkIfColumnDefintnitionIsEmpty() {
+        return dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_COLUMN_DEFINITION).find()
+                .list().getTotalNumberOfEntities() == 0;
+    }
+
+    private boolean checkIfColumnForInputProductsIsEmpty() {
         return dataDefinitionService
                 .get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS).find().list()
                 .getTotalNumberOfEntities() == 0;
     }
 
-    private boolean checkIfColumnForOutputProductsAreEmpty() {
+    private boolean checkIfColumnForOutputProductsIsEmpty() {
         return dataDefinitionService
                 .get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS).find().list()
                 .getTotalNumberOfEntities() == 0;
     }
+
 }

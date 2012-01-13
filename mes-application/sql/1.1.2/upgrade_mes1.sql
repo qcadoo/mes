@@ -339,6 +339,27 @@ CREATE TABLE workplans_parameteroutputcomponent
 -- end
 
 
+-- Table: basic_company
+
+-- changed: 11.01.2012
+	
+ALTER TABLE basic_company ADD COLUMN externalnumber varchar(255);
+
+
+INSERT INTO basic_company SELECT * FROM basic_contractor;
+
+-- end
+
+
+-- Table: basic_contractor
+-- changed: 11.01.2012
+
+DROP TABLE basic_contractor;
+
+
+-- end
+
+
 -- Table: basic_parameter
 -- changed: 12.01.2012
 
@@ -362,9 +383,198 @@ ALTER TABLE orders_order ADD CONSTRAINT company_company_fkey FOREIGN KEY (compan
 -- end
 
 
--- Table: basic_company
--- changed: 11.01.2012
+-- Table: workplans_columndefinition
+-- changed: 13.01.2012
 
-INSERT INTO basic_company SELECT * FROM basic_contractor;
+CREATE TABLE workplans_columndefinition
+(
+  id bigint NOT NULL,
+  identifier character varying(255),
+  name character varying(255),
+  description character varying(255),
+  pluginidentifier character varying(255),
+  CONSTRAINT workplans_columndefinition_pkey PRIMARY KEY (id )
+);
 
 -- end
+
+
+-- Table: workplans_columnforinputproducts
+-- changed: 13.01.2012
+
+ALTER TABLE workplans_columnforinputproducts DROP COLUMN name; 
+ALTER TABLE workplans_columnforinputproducts DROP COLUMN description; 
+ALTER TABLE workplans_columnforinputproducts DROP COLUMN pluginidentifier; 
+
+ALTER TABLE workplans_columnforinputproducts ADD COLUMN columndefinition_id bigint;
+
+ALTER TABLE workplans_columnforinputproducts ADD CONSTRAINT workplans_columnforinputproducts_columndefinition_fkey FOREIGN KEY (columndefinition_id)
+      REFERENCES workplans_columndefinition (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+      
+-- end
+
+
+-- Table: workplans_columnforoutputproducts
+-- changed: 13.01.2012
+
+ALTER TABLE workplans_columnforoutputproducts DROP COLUMN name; 
+ALTER TABLE workplans_columnforoutputproducts DROP COLUMN description; 
+ALTER TABLE workplans_columnforoutputproducts DROP COLUMN pluginidentifier; 
+
+ALTER TABLE workplans_columnforoutputproducts ADD COLUMN columndefinition_id bigint;
+
+ALTER TABLE workplans_columnforoutputproducts ADD CONSTRAINT workplans_columnforoutputproducts_columndefinition_fkey FOREIGN KEY (columndefinition_id)
+      REFERENCES workplans_columndefinition (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+-- end
+
+      
+---- ONLY FOR LOCAL INSTANCE ----      
+      
+-- Table: workplans_...
+-- changed: 13.01.2012
+
+TRUNCATE workplans_parameterinputcomponent;
+TRUNCATE workplans_parameteroutputcomponent;
+TRUNCATE workplans_columnforinputproducts CASCADE;
+TRUNCATE workplans_columnforoutputproducts CASCADE;
+
+-- end
+
+
+-- Table: workplans_columndefinition
+-- changed: 13.01.2012
+
+INSERT INTO workplans_columndefinition (id, identifier, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'productName','workPlans.columnDefinition.name.value.productName', 'workPlans.columnDefinition.description.value.productName', 'workPlans');
+			
+INSERT INTO workplans_columndefinition (id, identifier, name, description, pluginidentifier) VALUES (nextval('hibernate_sequence'), 'plannedQuantity','workPlans.columnDefinition.name.value.plannedQuantity', 'workPlans.columnDefinition.description.value.plannedQuantity', 'workPlans');
+
+-- end
+
+
+-- Table: workplans_columnforinputproducts
+-- changed: 13.01.2012
+
+CREATE OR REPLACE FUNCTION update_columforinputproducts() RETURNS INTEGER AS 
+'
+	DECLARE
+		columndefinition RECORD;
+		
+	BEGIN  
+		FOR columndefinition IN SELECT * FROM workplans_columndefinition LOOP  
+			INSERT INTO workplans_columnforinputproducts (id, columndefinition_id) 
+			VALUES (
+				nextval(''hibernate_sequence''), 
+				columndefinition."id"
+			);
+		END LOOP;
+		
+		RETURN 1; 
+	END;
+' 
+LANGUAGE 'plpgsql';
+SELECT * FROM update_columforinputproducts();
+
+-- end
+
+
+-- Table: workplans_columnforinputproducts
+-- changed: 13.01.2012
+
+CREATE OR REPLACE FUNCTION update_columforoutputproducts() RETURNS INTEGER AS 
+'
+	DECLARE
+		columndefinition RECORD;
+		
+	BEGIN  
+		FOR columndefinition IN SELECT * FROM workplans_columndefinition LOOP  
+			INSERT INTO workplans_columnforoutputproducts (id, columndefinition_id) 
+			VALUES (
+				nextval(''hibernate_sequence''), 
+				columndefinition."id"
+			);
+		END LOOP;
+		
+		RETURN 1; 
+	END;
+' 
+LANGUAGE 'plpgsql';
+SELECT * FROM update_columforoutputproducts();
+
+-- end
+
+      
+-- Table: workplans_parameterinputcomponent
+-- changed: 13.01.2012
+
+CREATE OR REPLACE FUNCTION update_parameterinputcomponent() RETURNS INTEGER AS 
+'
+	DECLARE
+		priority INTEGER;
+		parameter RECORD;
+		columnforinputproducts RECORD;  
+	
+	BEGIN  
+		FOR parameter IN SELECT id FROM basic_parameter LOOP
+			priority := 1;
+
+			FOR columnforinputproducts IN SELECT id FROM workplans_columnforinputproducts LOOP  
+				INSERT INTO workplans_parameterinputcomponent (id, parameter_id, columnforinputproducts_id, succession) 
+				VALUES (
+					nextval(''hibernate_sequence''),  
+					parameter."id",
+					columnforinputproducts."id",
+					priority
+				);
+
+				priority := priority + 1;
+			END LOOP;
+
+		END LOOP;
+
+		RETURN 1; 
+	END;  
+' 
+LANGUAGE 'plpgsql';
+SELECT * FROM update_parameterinputcomponent();
+
+-- end
+
+
+-- Table: workplans_parameteroutputcomponent
+-- changed: 13.01.2012
+
+CREATE OR REPLACE FUNCTION update_parameteroutputcomponent() RETURNS INTEGER AS 
+'
+	DECLARE
+		priority INTEGER;
+		parameter RECORD;
+		columnforoutputproducts RECORD;  
+	
+	BEGIN  
+		FOR parameter IN SELECT id FROM basic_parameter LOOP
+			priority := 1;
+			FOR columnforoutputproducts IN SELECT id FROM workplans_columnforoutputproducts LOOP  
+				INSERT INTO workplans_parameteroutputcomponent (id, parameter_id, columnforoutputproducts_id, succession) 
+				VALUES (
+					nextval(''hibernate_sequence''),  
+					parameter."id",
+					columnforoutputproducts."id",
+					priority
+				);
+
+				priority := priority + 1;
+			END LOOP;
+		END LOOP;
+
+		RETURN 1; 
+	END;  
+' 
+LANGUAGE 'plpgsql';
+SELECT * FROM update_parameteroutputcomponent();
+
+-- end
+
+---- END ----
