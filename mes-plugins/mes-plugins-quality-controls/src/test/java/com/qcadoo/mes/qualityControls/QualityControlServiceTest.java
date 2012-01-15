@@ -559,15 +559,15 @@ public class QualityControlServiceTest {
         FieldComponent state = mock(FieldComponent.class);
         FieldComponent controlInstruction = mock(FieldComponent.class);
         DataDefinition orderDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        DataDefinition technologyDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         SearchCriteriaBuilder searchCriteria = mock(SearchCriteriaBuilder.class, RETURNS_DEEP_STUBS);
 
-        Entity technology = new DefaultEntity(technologyDD);
-        technology.setField("qualityControlInstruction", "test");
+        Entity technology = mock(Entity.class);
+        given(technology.getField("qualityControlInstruction")).willReturn("test");
+        given(technology.getStringField("qualityControlInstruction")).willReturn("test");
 
         List<Entity> orders = new ArrayList<Entity>();
-        Entity genealogy = new DefaultEntity(orderDD);
-        genealogy.setField("technology", technology);
+        Entity genealogy = mock(Entity.class);
+        given(genealogy.getBelongsToField("technology")).willReturn(technology);
         orders.add(genealogy);
 
         given(viewDefinitionState.getComponentByReference("controlInstruction")).willReturn(controlInstruction);
