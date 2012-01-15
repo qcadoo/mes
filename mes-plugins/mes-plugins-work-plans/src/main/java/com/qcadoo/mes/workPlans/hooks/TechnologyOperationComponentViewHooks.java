@@ -25,13 +25,11 @@ package com.qcadoo.mes.workPlans.hooks;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -40,10 +38,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class TechnologyOperationComponentViewHooks {
-
-    private static final Set<String> WORKPLAN_PARAMETERS = Sets.newHashSet("hideDescriptionInWorkPlans",
-            "hideDetailsInWorkPlans", "hideTechnologyAndOrderInWorkPlans", "imageUrlInWorkPlan",
-            "dontPrintInputProductsInWorkPlans", "dontPrintOutputProductsInWorkPlans");
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -59,7 +53,7 @@ public class TechnologyOperationComponentViewHooks {
         if (operation.getFieldValue() != null) {
             Long operationId = (Long) operation.getFieldValue();
 
-            for (String workPlanParameter : WORKPLAN_PARAMETERS) {
+            for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
                 FieldComponent field = getFieldComponent(view, workPlanParameter);
                 field.setFieldValue(getOperationParameter(operationId, workPlanParameter));
             }

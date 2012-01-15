@@ -26,6 +26,7 @@ package com.qcadoo.mes.workPlans;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -44,6 +45,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -229,175 +232,203 @@ public class WorkPlanColumnsLoaderModule extends Module {
     private void addParameterInputComponent(final Entity columnForInputProducts) {
         Entity parameter = getParameter();
 
-        Entity parameterInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_PARAMETER_INPUT_COMPONENT).create();
+        if (parameter != null) {
+            Entity parameterInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                    WorkPlansConstants.MODEL_PARAMETER_INPUT_COMPONENT).create();
 
-        parameterInputComponent.setField(BasicConstants.MODEL_PARAMETER, parameter);
-        parameterInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
+            parameterInputComponent.setField(BasicConstants.MODEL_PARAMETER, parameter);
+            parameterInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
 
-        if (parameterInputComponent.isValid()) {
-            parameterInputComponent = parameterInputComponent.getDataDefinition().save(parameterInputComponent);
+            if (parameterInputComponent.isValid()) {
+                parameterInputComponent = parameterInputComponent.getDataDefinition().save(parameterInputComponent);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Column added to input products columns {column=" + parameterInputComponent.toString() + "}");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Column added to input products columns {column=" + parameterInputComponent.toString() + "}");
+                }
+            } else {
+                throw new IllegalStateException("Saved entity have validation errors - " + columnForInputProducts.toString());
             }
-        } else {
-            throw new IllegalStateException("Saved entity have validation errors - " + columnForInputProducts.toString());
         }
     }
 
     private void addParameterOutputComponent(final Entity columnForOutputProducts) {
         Entity parameter = getParameter();
 
-        Entity parameterOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_PARAMETER_OUTPUT_COMPONENT).create();
+        if (parameter != null) {
+            Entity parameterOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                    WorkPlansConstants.MODEL_PARAMETER_OUTPUT_COMPONENT).create();
 
-        parameterOutputComponent.setField(BasicConstants.MODEL_PARAMETER, parameter);
-        parameterOutputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
+            parameterOutputComponent.setField(BasicConstants.MODEL_PARAMETER, parameter);
+            parameterOutputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
 
-        if (parameterOutputComponent.isValid()) {
-            parameterOutputComponent = parameterOutputComponent.getDataDefinition().save(parameterOutputComponent);
+            if (parameterOutputComponent.isValid()) {
+                parameterOutputComponent = parameterOutputComponent.getDataDefinition().save(parameterOutputComponent);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Column added to output products columns {column=" + parameterOutputComponent.toString() + "}");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Column added to output products columns {column=" + parameterOutputComponent.toString() + "}");
+                }
+            } else {
+                throw new IllegalStateException("Saved entity have validation errors - " + columnForOutputProducts.toString());
             }
-        } else {
-            throw new IllegalStateException("Saved entity have validation errors - " + columnForOutputProducts.toString());
         }
     }
 
     private void addOperationInputComponent(final Entity columnForInputProducts) {
-        // TODO LUPO fix operations
-        // EntityList operations = getOperations();
+        List<Entity> operations = getOperations();
 
-        Entity operationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_OPERATION_INPUT_COMPONENT).create();
+        if (operations != null) {
+            for (Entity operation : operations) {
+                Entity operationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                        WorkPlansConstants.MODEL_OPERATION_INPUT_COMPONENT).create();
 
-        // operationInputComponent.setField(TechnologiesConstants.MODEL_OPERATION, operation);
-        // operationInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
+                operationInputComponent.setField(TechnologiesConstants.MODEL_OPERATION, operation);
+                operationInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
 
-        if (operationInputComponent.isValid()) {
-            // operationInputComponent = operationInputComponent.getDataDefinition().save(operationInputComponent);
+                if (operationInputComponent.isValid()) {
+                    operationInputComponent = operationInputComponent.getDataDefinition().save(operationInputComponent);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Column added to input products columns {column=" + operationInputComponent.toString() + "}");
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Column added to input products columns {column=" + operationInputComponent.toString() + "}");
+                    }
+                } else {
+                    throw new IllegalStateException("Saved entity have validation errors - " + columnForInputProducts.toString());
+                }
             }
-        } else {
-            throw new IllegalStateException("Saved entity have validation errors - " + columnForInputProducts.toString());
         }
     }
 
     private void addOperationOutputComponent(final Entity columnForOutputProducts) {
-        // TODO LUPO fix operations
-        // EntityList operations = getOperations();
+        List<Entity> operations = getOperations();
 
-        Entity operationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_OPERATION_OUTPUT_COMPONENT).create();
+        if (operations != null) {
+            for (Entity operation : operations) {
+                Entity operationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                        WorkPlansConstants.MODEL_OPERATION_OUTPUT_COMPONENT).create();
 
-        // operationOutputComponent.setField(TechnologiesConstants.MODEL_OPERATION, operation);
-        // operationOutputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
+                operationOutputComponent.setField(TechnologiesConstants.MODEL_OPERATION, operation);
+                operationOutputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
 
-        if (operationOutputComponent.isValid()) {
-            // operationOutputComponent = operationOutputComponent.getDataDefinition().save(operationOutputComponent);
+                if (operationOutputComponent.isValid()) {
+                    operationOutputComponent = operationOutputComponent.getDataDefinition().save(operationOutputComponent);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Column added to output products columns {column=" + operationOutputComponent.toString() + "}");
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Column added to output products columns {column=" + operationOutputComponent.toString() + "}");
+                    }
+                } else {
+                    throw new IllegalStateException("Saved entity have validation errors - " + columnForOutputProducts.toString());
+                }
             }
-        } else {
-            throw new IllegalStateException("Saved entity have validation errors - " + columnForOutputProducts.toString());
         }
     }
 
     private void addTechnologyOperationInputComponent(final Entity columnForInputProducts) {
-        // TODO LUPO fix technology operations
-        // EntityList technologyOperationComponents = getTechnologyOperationComponents();
+        List<Entity> technologyOperationComponents = getTechnologyOperationComponents();
 
-        Entity technologyOperationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_TECHNOLOGY_OPERATION_INPUT_COMPONENT).create();
+        if (technologyOperationComponents != null) {
+            for (Entity technologyOperationComponent : technologyOperationComponents) {
+                Entity technologyOperationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                        WorkPlansConstants.MODEL_TECHNOLOGY_OPERATION_INPUT_COMPONENT).create();
 
-        // technologyOperationInputComponent.setField(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT,
-        // technologyOperationComponent);
-        // technologyOperationInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
+                technologyOperationInputComponent.setField(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT,
+                        technologyOperationComponent);
+                technologyOperationInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS,
+                        columnForInputProducts);
 
-        if (technologyOperationInputComponent.isValid()) {
-            // technologyOperationInputComponent =
-            // technologyOperationInputComponent.getDataDefinition().save(technologyOperationInputComponent);
+                if (technologyOperationInputComponent.isValid()) {
+                    technologyOperationInputComponent = technologyOperationInputComponent.getDataDefinition().save(
+                            technologyOperationInputComponent);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Column added to input products columns {column=" + technologyOperationInputComponent.toString() + "}");
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Column added to input products columns {column="
+                                + technologyOperationInputComponent.toString() + "}");
+                    }
+                } else {
+                    throw new IllegalStateException("Saved entity have validation errors - " + columnForInputProducts.toString());
+                }
             }
-        } else {
-            throw new IllegalStateException("Saved entity have validation errors - " + columnForInputProducts.toString());
         }
     }
 
     private void addTechnologyOperationOutputComponent(final Entity columnForOutputProducts) {
-        // TODO LUPO fix technology operations
-        // EntityList technologyOperationComponents = getTechnologyOperationComponents();
+        List<Entity> technologyOperationComponents = getTechnologyOperationComponents();
 
-        Entity technologyOperationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_TECHNOLOGY_OPERATION_OUTPUT_COMPONENT).create();
+        if (technologyOperationComponents != null) {
+            for (Entity technologyOperationComponent : technologyOperationComponents) {
+                Entity technologyOperationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                        WorkPlansConstants.MODEL_TECHNOLOGY_OPERATION_OUTPUT_COMPONENT).create();
 
-        // technologyOperationOutputComponent.setField(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT,
-        // technologyOperationComponent);
-        // technologyOperationOutputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS,
-        // columnForOutputProducts);
+                technologyOperationOutputComponent.setField(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT,
+                        technologyOperationComponent);
+                technologyOperationOutputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS,
+                        columnForOutputProducts);
 
-        if (technologyOperationOutputComponent.isValid()) {
-            // technologyOperationOutputComponent = technologyOperationOutputComponent.getDataDefinition().save(
-            // technologyOperationOutputComponent);
+                if (technologyOperationOutputComponent.isValid()) {
+                    technologyOperationOutputComponent = technologyOperationOutputComponent.getDataDefinition().save(
+                            technologyOperationOutputComponent);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Column added to output products columns {column=" + technologyOperationOutputComponent.toString()
-                        + "}");
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Column added to output products columns {column="
+                                + technologyOperationOutputComponent.toString() + "}");
+                    }
+                } else {
+                    throw new IllegalStateException("Saved entity have validation errors - " + columnForOutputProducts.toString());
+                }
             }
-        } else {
-            throw new IllegalStateException("Saved entity have validation errors - " + columnForOutputProducts.toString());
         }
     }
 
     private void addOrderOperationInputComponent(final Entity columnForInputProducts) {
-        // TODO LUPO fix order operations
-        // EntityList orderOperationComponents = getOrderOperationComponents();
+        List<Entity> orderOperationComponents = getOrderOperationComponents();
 
-        Entity orderOperationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_ORDER_OPERATION_INPUT_COMPONENT).create();
+        if (orderOperationComponents != null) {
+            for (Entity orderOperationComponent : orderOperationComponents) {
+                Entity orderOperationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                        WorkPlansConstants.MODEL_ORDER_OPERATION_INPUT_COMPONENT).create();
 
-        // orderOperationInputComponent.setField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT,
-        // orderOperationComponent);
-        // orderOperationInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
+                orderOperationInputComponent.setField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT,
+                        orderOperationComponent);
+                orderOperationInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
 
-        if (orderOperationInputComponent.isValid()) {
-            // orderOperationInputComponent = orderOperationInputComponent.getDataDefinition().save(orderOperationInputComponent);
+                if (orderOperationInputComponent.isValid()) {
+                    orderOperationInputComponent = orderOperationInputComponent.getDataDefinition().save(
+                            orderOperationInputComponent);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Column added to input products columns {column=" + orderOperationInputComponent.toString() + "}");
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Column added to input products columns {column=" + orderOperationInputComponent.toString()
+                                + "}");
+                    }
+                } else {
+                    throw new IllegalStateException("Saved entity have validation errors - " + columnForInputProducts.toString());
+                }
             }
-        } else {
-            throw new IllegalStateException("Saved entity have validation errors - " + columnForInputProducts.toString());
         }
     }
 
     private void addOrderOperationOutputComponent(final Entity columnForOutputProducts) {
-        // TODO LUPO fix order operations
-        // EntityList orderOperationComponents = getOrderOperationComponents();
+        List<Entity> orderOperationComponents = getOrderOperationComponents();
 
-        Entity orderOperationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_ORDER_OPERATION_OUTPUT_COMPONENT).create();
+        if (orderOperationComponents != null) {
+            for (Entity orderOperationComponent : orderOperationComponents) {
+                Entity orderOperationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                        WorkPlansConstants.MODEL_ORDER_OPERATION_OUTPUT_COMPONENT).create();
 
-        // orderOperationOutputComponent.setField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT,
-        // orderOperationComponent);
-        // orderOperationOutputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
+                orderOperationOutputComponent.setField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT,
+                        orderOperationComponent);
+                orderOperationOutputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS,
+                        columnForOutputProducts);
 
-        if (orderOperationOutputComponent.isValid()) {
-            // orderOperationOutputComponent =
-            // orderOperationOutputComponent.getDataDefinition().save(orderOperationOutputComponent);
+                if (orderOperationOutputComponent.isValid()) {
+                    orderOperationOutputComponent = orderOperationOutputComponent.getDataDefinition().save(
+                            orderOperationOutputComponent);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Column added to output products columns {column=" + orderOperationOutputComponent.toString() + "}");
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Column added to output products columns {column=" + orderOperationOutputComponent.toString()
+                                + "}");
+                    }
+                } else {
+                    throw new IllegalStateException("Saved entity have validation errors - " + columnForOutputProducts.toString());
+                }
             }
-        } else {
-            throw new IllegalStateException("Saved entity have validation errors - " + columnForOutputProducts.toString());
         }
     }
 
@@ -409,6 +440,41 @@ public class WorkPlanColumnsLoaderModule extends Module {
             return null;
         } else {
             return parameter;
+        }
+    }
+
+    private List<Entity> getOperations() {
+        List<Entity> operations = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION).find().list().getEntities();
+
+        if (operations == null) {
+            return null;
+        } else {
+            return operations;
+        }
+    }
+
+    private List<Entity> getTechnologyOperationComponents() {
+        List<Entity> technologyOperationComponents = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
+                .list().getEntities();
+
+        if (technologyOperationComponents == null) {
+            return null;
+        } else {
+            return technologyOperationComponents;
+        }
+    }
+
+    private List<Entity> getOrderOperationComponents() {
+        List<Entity> orderOperationComponents = dataDefinitionService
+                .get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
+                        ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT).find().list().getEntities();
+
+        if (orderOperationComponents == null) {
+            return null;
+        } else {
+            return orderOperationComponents;
         }
     }
 

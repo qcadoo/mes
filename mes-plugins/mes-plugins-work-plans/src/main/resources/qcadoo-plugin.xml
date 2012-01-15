@@ -56,11 +56,15 @@
 			<plugin>orders</plugin>
 			<version>[0.4.0</version>
 		</dependency>
+		<dependency>
+			<plugin>productionScheduling</plugin>
+			<version>[0.4.0</version>
+		</dependency>
 	</dependencies>
 
 	<modules>
 		<localization:translation path="locales" />
-
+		
 		<model:model model="workPlan" resource="model/workPlan.xml" />
 	
 		<model:model model="columnDefinition" resource="model/columnDefinition.xml" />
@@ -74,13 +78,6 @@
 		<model:model model="technologyOperationOutputComponent" resource="model/technologyOperationOutputComponent.xml" />
 		<model:model model="orderOperationInputComponent" resource="model/orderOperationInputComponent.xml" />
 		<model:model model="orderOperationOutputComponent" resource="model/orderOperationOutputComponent.xml" />
-
-		<menu:menu-category name="reports" />
-		<menu:menu-item name="workPlans" category="reports" view="workPlansList" />
-
-
-		<view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
-
 		
 		<model:model-field plugin="orders" model="order">
 			<model:manyToMany name="workPlans" joinField="orders" model="workPlan" plugin="workPlans"/>
@@ -108,11 +105,9 @@
 		<model:model-field plugin="basic" model="parameter">
 			<model:hasMany name="parameterInputComponents" plugin="workPlans" model="parameterInputComponent" joinField="parameter" />
 		</model:model-field>
-		
 		<model:model-field plugin="basic" model="parameter">
 			<model:hasMany name="parameterOutputComponents" plugin="workPlans" model="parameterOutputComponent" joinField="parameter" />
 		</model:model-field>
-		
 		
 		<model:model-field plugin="technologies" model="operation">
 			<model:boolean name="hideDescriptionInWorkPlans" />
@@ -136,11 +131,9 @@
 		<model:model-field plugin="technologies" model="operation">
 			<model:hasMany name="operationInputComponents" plugin="workPlans" model="operationInputComponent" joinField="operation" />
 		</model:model-field>
-		
 		<model:model-field plugin="technologies" model="operation">
 			<model:hasMany name="operationOutputComponents" plugin="workPlans" model="operationOutputComponent" joinField="operation" />
 		</model:model-field>
-		
 		
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:boolean name="hideDescriptionInWorkPlans" />
@@ -164,11 +157,9 @@
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:hasMany name="technologyOperationInputComponents" plugin="workPlans" model="technologyOperationInputComponent" joinField="technologyOperationComponent" />
 		</model:model-field>
-		
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:hasMany name="technologyOperationOutputComponents" plugin="workPlans" model="technologyOperationOutputComponent" joinField="technologyOperationComponent" />
 		</model:model-field>
-		
 		
 		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
 			<model:boolean name="hideDescriptionInWorkPlans" />
@@ -192,12 +183,32 @@
 		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
 			<model:hasMany name="orderOperationInputComponents" plugin="workPlans" model="orderOperationInputComponent" joinField="orderOperationComponent" />
 		</model:model-field>
-		
 		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
 			<model:hasMany name="orderOperationOutputComponents" plugin="workPlans" model="orderOperationOutputComponent" joinField="orderOperationComponent" />
 		</model:model-field>
 		
+		<model:model-hook plugin="basic" model="parameter">
+            <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.ParameterModelValidators" method="checkIfAttachmentExtensionIsValid" />
+        </model:model-hook>
+        
+        <model:model-hook plugin="technologies" model="operation">
+            <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.OperationModelValidators" method="checkIfAttachmentExtensionIsValid" />
+        </model:model-hook>
+        
+        <model:model-hook plugin="technologies" model="technologyOperationComponent">
+            <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationModelValidators" method="checkIfAttachmentExtensionIsValid" />
+        </model:model-hook>
+        
+        <model:model-hook plugin="productionScheduling" model="orderOperationComponent">
+            <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.OrderOperationModelValidators" method="checkIfAttachmentExtensionIsValid" />
+        </model:model-hook>
+        
+		<menu:menu-category name="reports" />
 		
+		<menu:menu-item name="workPlans" category="reports" view="workPlansList" />
+		
+		<view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
+				
 		<view:view resource="view/workPlansList.xml" />
 		<view:view resource="view/workPlanDetails.xml" />
 		
@@ -214,7 +225,6 @@
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/orderOperationComponentDetails.xml" />
-		
 		
 		<view:view-listener plugin="orders"
 			view="ordersList" component="grid" event="addSelectedOrdersToWorkPlan"
@@ -234,7 +244,6 @@
 			type="beforeRender"
 			class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentViewHooks"
 			method="setOrderOperationComponentDefaultValues" />
-		
 		
 		<custom:custom class="com.qcadoo.mes.workPlans.WorkPlanColumnsLoaderModule" />
 	</modules>

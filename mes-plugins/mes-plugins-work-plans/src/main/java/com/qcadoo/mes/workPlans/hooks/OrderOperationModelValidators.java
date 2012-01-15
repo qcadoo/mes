@@ -29,20 +29,11 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class ParameterComponentModelValidators {
+public class OrderOperationModelValidators {
 
-    public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputComponentDD,
-            final Entity inputComponent) {
+    public final boolean checkIfAttachmentExtensionIsValid(final DataDefinition orderOperationDD, final Entity orderOperation) {
 
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(inputComponentDD, inputComponent, "parameter",
-                "columnForInputProducts", "parameterInputComponents");
+        return new ValidatorServiceImpl().checkIfAttachmentExtensionIsValid(orderOperationDD, orderOperation,
+                "imageUrlInWorkPlan");
     }
-
-    public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputComponentDD,
-            final Entity outputComponent) {
-
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(outputComponentDD, outputComponent, "parameter",
-                "columnForOutputProducts", "parameterOutputComponents");
-    }
-
 }

@@ -27,69 +27,22 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 
 @Service
 public class OperationComponentModelValidators {
 
     public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputComponentDD,
             final Entity inputComponent) {
-        Entity columnForInputProducts = inputComponent.getBelongsToField("columnForInputProducts");
-        Entity parameter = inputComponent.getBelongsToField("operation");
 
-        EntityList parameterInputComponents = parameter.getHasManyField("operationInputComponents");
-
-        if (inputComponent.getId() == null) {
-            if (columnForInputProducts == null) {
-                return true;
-            } else {
-                if (parameterInputComponents == null) {
-                    return true;
-                } else {
-                    for (Entity parameterInputComponent : parameterInputComponents) {
-                        Entity column = parameterInputComponent.getBelongsToField("columnForInputProducts");
-                        if (column.getId().equals(columnForInputProducts.getId())) {
-                            inputComponent.addError(inputComponentDD.getField("columnForInputProducts"),
-                                    "workPlans.columnForInputProducts.message.columnForInputProductsIsAlreadyUsed");
-
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-
-        return true;
+        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(inputComponentDD, inputComponent, "operation",
+                "columnForInputProducts", "operationInputComponents");
     }
 
     public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputComponentDD,
             final Entity outputComponent) {
-        Entity columnForOutputProducts = outputComponent.getBelongsToField("columnForOutputProducts");
-        Entity parameter = outputComponent.getBelongsToField("operation");
 
-        EntityList parameterOutputComponents = parameter.getHasManyField("operationOutputComponents");
-
-        if (outputComponent.getId() == null) {
-            if (columnForOutputProducts == null) {
-                return true;
-            } else {
-                if (parameterOutputComponents == null) {
-                    return true;
-                } else {
-                    for (Entity parameterOutputComponent : parameterOutputComponents) {
-                        Entity column = parameterOutputComponent.getBelongsToField("columnForOutputProducts");
-                        if (column.getId().equals(columnForOutputProducts.getId())) {
-                            outputComponent.addError(outputComponentDD.getField("columnForOutputProducts"),
-                                    "workPlans.columnForOutputProducts.message.columnForOutputProductsIsAlreadyUsed");
-
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-
-        return true;
+        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(outputComponentDD, outputComponent, "operation",
+                "columnForOutputProducts", "operationOutputComponents");
     }
 
 }
