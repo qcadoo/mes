@@ -350,6 +350,10 @@ INSERT INTO basic_company SELECT * FROM basic_contractor;
 
 -- end
 
+-- Table: orders_order
+-- changed: 16.01.2012
+
+ALTER TABLE orders_order DROP CONSTRAINT fk3daecd74aea6e4cc;
 
 -- Table: basic_contractor
 -- changed: 11.01.2012
@@ -376,7 +380,6 @@ UPDATE basic_parameter SET
 -- Table: orders_order
 -- changed: 12.01.2012
 
-ALTER TABLE orders_order DROP CONSTRAINT fk3daecd74aea6e4cc;
 ALTER TABLE orders_order RENAME COLUMN contractor_id TO company_id;
 ALTER TABLE orders_order ADD CONSTRAINT company_company_fkey FOREIGN KEY (company_id) REFERENCES basic_company (id);
 
