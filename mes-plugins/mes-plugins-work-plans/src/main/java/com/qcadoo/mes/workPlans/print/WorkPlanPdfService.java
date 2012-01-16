@@ -390,7 +390,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
                     productString.append(product.getStringField("number"));
                     productString.append(")");
 
-                    table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                     table.addCell(new Phrase(productString.toString(), PdfUtil.getArialRegular9Dark()));
                 } else if (columnNameKey.endsWith(".plannedQuantity")) {
                     Entity product = productComponent.getBelongsToField("product");
@@ -405,7 +404,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
                         quantityString.append(unit.toString());
                     }
 
-                    table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                     table.addCell(new Phrase(quantityString.toString(), PdfUtil.getArialRegular9Dark()));
                 }
             }
