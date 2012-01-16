@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,6 +54,7 @@ import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
+import com.qcadoo.mes.technologies.print.ReportDataService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -77,6 +79,9 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     @Autowired
     TreeNumberingService treeNumberingService;
+
+    @Autowired
+    ReportDataService reportDataService;
 
     @Autowired
     MaterialRequirementReportDataService materialRequirementReportDataService;
@@ -333,9 +338,14 @@ public class CostCalculationPdfService extends PdfDocumentService {
             materialsTableHeader.add(getTranslationService().translate(translate, locale));
         }
         PdfPTable materialsTable = PdfUtil.createTableWithHeader(materialsTableHeader.size(), materialsTableHeader, false);
-
-        List<Entity> orders = costCalculation.getBelongsToField("technology").getHasManyField("orders");
-        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(orders,
+        Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
+        Entity technology;
+        if (costCalculation.getBelongsToField("order") == null) {
+            technology = costCalculation.getBelongsToField("technology");
+        } else {
+            technology = costCalculation.getBelongsToField("order").getBelongsToField("technology");
+        }
+        reportDataService.countQuantityForProductsIn(products, technology, (BigDecimal) costCalculation.getField("quantity"),
                 true);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
