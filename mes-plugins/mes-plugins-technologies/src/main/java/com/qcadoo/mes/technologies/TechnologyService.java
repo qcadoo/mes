@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -278,7 +279,7 @@ public class TechnologyService {
 
         name.setFieldValue(translationService.translate("technologies.operation.name.default", state.getLocale(),
                 product.getStringField("name"), product.getStringField(NUMBER),
-                cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH)));
+                cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH) + 1));
     }
 
     public void hideReferenceMode(final ViewDefinitionState viewDefinitionState) {
@@ -674,4 +675,42 @@ public class TechnologyService {
             }
         }
     }
+
+    public boolean invalidateIfAllreadyInTheSameOperation(final DataDefinition dataDefinition, final Entity operationProduct) {
+        if (operationProduct.getId() == null) {
+            Entity product = operationProduct.getBelongsToField(CONST_PRODUCT);
+            Entity operationComponent = operationProduct.getBelongsToField(CONST_OPERATION_COMPONENT);
+
+            String fieldName;
+
+            if ("operationProductInComponent".equals(dataDefinition.getName())) {
+                fieldName = CONST_OPERATION_COMP_PRODUCT_IN;
+            } else {
+                fieldName = CONST_OPERATION_COMP_PRODUCT_OUT;
+            }
+
+            EntityList products = operationComponent.getHasManyField(fieldName);
+
+            if (product == null || product.getId() == null) {
+                throw new IllegalStateException("Cant get product id");
+            }
+
+            if (products != null && listContainsProduct(products, product)) {
+                operationProduct.addError(dataDefinition.getField(CONST_PRODUCT),
+                        "technologyOperationComponent.validate.error.productAlreadyExistInTechnologyOperation");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean listContainsProduct(final EntityList list, final Entity product) {
+        for (Entity prod : list) {
+            if (prod.getBelongsToField(CONST_PRODUCT).getId().equals(product.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

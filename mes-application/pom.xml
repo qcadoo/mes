@@ -283,11 +283,9 @@
 									buildApplicationName = Qcadoo MES
 									buildApplicationVersion = ${project.version}
 									buildFrameworkVersion = ${qcadoo.version}
-									buildTime =
-									${build.time}
+									buildTime = ${build.time}
 									buildNumber = ${build.number}
-									buildRevision =
-									${build.revision}
+									buildRevision = ${build.revision}
 								</echo>
 							</target>
 						</configuration>

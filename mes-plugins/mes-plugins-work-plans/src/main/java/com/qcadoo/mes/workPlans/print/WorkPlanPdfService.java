@@ -537,7 +537,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
         });
 
         for (Entity columnComponent : columnComponents) {
-            Entity columnDefinition = columnComponent.getBelongsToField(columnDefinitionModel);
+            Entity columnDefinition = columnComponent.getBelongsToField(columnDefinitionModel).getBelongsToField(
+                    "columnDefinition");
 
             String columnNameKey = columnDefinition.getStringField("name");
             columns.add(columnNameKey);

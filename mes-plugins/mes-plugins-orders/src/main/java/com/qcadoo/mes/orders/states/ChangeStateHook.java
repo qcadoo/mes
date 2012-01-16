@@ -100,8 +100,11 @@ public class ChangeStateHook {
                 if (error.getReferenceToField() == null) {
                     newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale(), error.getVars()));
                 } else {
-                    newEntity.addError(dataDefinition.getField(error.getReferenceToField()), translationService.translate(
-                            error.getMessage() + "." + error.getReferenceToField(), getLocale(), error.getVars()));
+                    // newEntity.addError(dataDefinition.getField(error.getReferenceToField()), translationService.translate(
+                    // error.getMessage() + "." + error.getReferenceToField(), getLocale(), error.getVars()));
+                    //
+                    newEntity.addError(dataDefinition.getField(error.getReferenceToField()),
+                            error.getMessage() + "." + error.getReferenceToField(), error.getVars());
                 }
             }
             return;

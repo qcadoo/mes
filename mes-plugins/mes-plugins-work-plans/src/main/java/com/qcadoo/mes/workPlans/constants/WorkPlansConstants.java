@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.workPlans.constants;
 
+import java.util.Set;
+
+import com.google.common.collect.Sets;
+
 public interface WorkPlansConstants {
 
     String PLUGIN_IDENTIFIER = "workPlans";
@@ -40,9 +44,27 @@ public interface WorkPlansConstants {
 
     String MODEL_PARAMETER_OUTPUT_COMPONENT = "parameterOutputComponent";
 
+    String MODEL_OPERATION_INPUT_COMPONENT = "operationInputComponent";
+
+    String MODEL_OPERATION_OUTPUT_COMPONENT = "operationOutputComponent";
+
+    String MODEL_TECHNOLOGY_OPERATION_INPUT_COMPONENT = "technologyOperationInputComponent";
+
+    String MODEL_TECHNOLOGY_OPERATION_OUTPUT_COMPONENT = "technologyOperationOutputComponent";
+
+    String MODEL_ORDER_OPERATION_INPUT_COMPONENT = "orderOperationInputComponent";
+
+    String MODEL_ORDER_OPERATION_OUTPUT_COMPONENT = "orderOperationOutputComponent";
+
     // VIEW
     String VIEW_WORK_PLAN_DETAILS = "workPlanDetails";
 
     String VIEW_WORK_PLANS_LIST = "workPlansList";
+
+    Set<String> WORKPLAN_PARAMETERS = Sets.newHashSet("hideDescriptionInWorkPlans", "hideDetailsInWorkPlans",
+            "hideTechnologyAndOrderInWorkPlans", "imageUrlInWorkPlan", "dontPrintInputProductsInWorkPlans",
+            "dontPrintOutputProductsInWorkPlans");
+
+    Set<String> FILE_EXTENSIONS = Sets.newHashSet("bmp", "gif", "jpg", "jpeg", "png", "tiff", "wmf", "eps");
 
 }

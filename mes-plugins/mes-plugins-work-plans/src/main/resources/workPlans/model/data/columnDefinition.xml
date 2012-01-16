@@ -24,17 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="parameterInputComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="parameter" plugin="basic" model="parameter" required="true" lazy="false" />
-		
-		<belongsTo name="columnForInputProducts" plugin="workPlans" model="columnForInputProducts" required="true" lazy="false" />
-		
-		<priority name="succession" />
-	</fields>
-	<hooks>
-		<validatesWith class="com.qcadoo.mes.workPlans.hooks.ParameterComponentModelValidators" method="checkIfColumnForInputProductsIsNotAlreadyUsed" />
-	</hooks>
-</model>
+<column>
+	<row IDENTIFIER="productName" NAME="workPlans.columnDefinition.name.value.productName" DESCRIPTION="workPlans.columnDefinition.description.value.productName" PLUGINIDENTIFIER="workPlans" TYPE="both" />
+	<row IDENTIFIER="plannerQuantity" NAME="workPlans.columnDefinition.name.value.plannedQuantity" DESCRIPTION="workPlans.columnDefinition.description.value.plannedQuantity" PLUGINIDENTIFIER="workPlans" TYPE="both" />
+</column>

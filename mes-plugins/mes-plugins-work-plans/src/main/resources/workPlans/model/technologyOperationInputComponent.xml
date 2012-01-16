@@ -24,14 +24,17 @@
     ***************************************************************************
 
 -->
-<model name="contractor" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<model name="technologyOperationInputComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="number" required="true" unique="true" />
-		<string name="name" unique="true" />
-		<string name="externalNumber" />
+		<belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent" required="true" lazy="false" />
+		
+		<belongsTo name="columnForInputProducts" plugin="workPlans" model="columnForInputProducts" required="true" lazy="false" />
+		
+		<priority name="succession" />
 	</fields>
-	<hooks />
-	<identifier expression="#number + ' - ' + #name" />
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentModelValidators" method="checkIfColumnForInputProductsIsNotAlreadyUsed" />
+	</hooks>
 </model>

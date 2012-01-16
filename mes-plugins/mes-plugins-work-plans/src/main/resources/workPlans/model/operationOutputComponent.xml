@@ -24,7 +24,17 @@
     ***************************************************************************
 
 -->
-<column>
-	<row NAME="workPlans.columnForInputProducts.name.value.productName" DESCRIPTION="workPlans.columnForInputProducts.description.value.productName" PLUGINIDENTIFIER="workPlans" />
-	<row NAME="workPlans.columnForInputProducts.name.value.plannedQuantity" DESCRIPTION="workPlans.columnForInputProducts.description.value.plannedQuantity" PLUGINIDENTIFIER="workPlans" />
-</column>
+<model name="operationOutputComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<belongsTo name="operation" plugin="technologies" model="operation" required="true" lazy="false" />
+		
+		<belongsTo name="columnForOutputProducts" plugin="workPlans" model="columnForOutputProducts" required="true" lazy="false" />
+		
+		<priority name="succession" />
+	</fields>
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.workPlans.hooks.OperationComponentModelValidators" method="checkIfColumnForOutputProductsIsNotAlreadyUsed" />
+	</hooks>
+</model>

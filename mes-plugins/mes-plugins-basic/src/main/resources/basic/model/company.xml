@@ -50,6 +50,8 @@
 		<string name="website" required="false" />
 		<string name="phone" required="false" />
 		<boolean name="owner" required="false" default="false" />
+		
+		<string name="externalNumber"/>
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />

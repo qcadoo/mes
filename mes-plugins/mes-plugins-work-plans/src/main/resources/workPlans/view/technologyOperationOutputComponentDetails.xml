@@ -25,8 +25,8 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="parameterOutputComponentDetails" 
-	modelName="parameterOutputComponent">
+	name="technologyOperationOutputComponentDetails" 
+	modelName="technologyOperationOutputComponent">
 	
 	<component name="window" type="window" reference="window">
 		<ribbon>
@@ -52,7 +52,7 @@
 						#{form}.addOnChangeListener(listener);
 					]]>	 
 				</script>
-				<component type="gridLayout" name="parameterOutputComponentGridLayout" columns="4" rows="1" hasBorders="false">
+				<component type="gridLayout" name="technologyOperationOutputComponentGridLayout" columns="4" rows="1" hasBorders="false">
 
 					<layoutElement column="1" row="1" width="3">
 						<component type="lookup" name="columnForOutputProducts" field="columnForOutputProducts" reference="columnForOutputProductsLookup">

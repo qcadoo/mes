@@ -24,17 +24,25 @@
     ***************************************************************************
 
 -->
-<model name="parameterInputComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<model name="columnDefinition" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="parameter" plugin="basic" model="parameter" required="true" lazy="false" />
+		<string name="identifier" required="true">
+			<validatesLength max="255" />
+		</string>
+		<string name="name" required="true">
+			<validatesLength max="255" />
+		</string>
+		<string name="description" />
+		<string name="pluginIdentifier" required="true">
+			<validatesLength max="255" />
+		</string>
 		
-		<belongsTo name="columnForInputProducts" plugin="workPlans" model="columnForInputProducts" required="true" lazy="false" />
-		
-		<priority name="succession" />
+		<hasMany name="columnsForInputProducts" plugin="workPlans" model="columnForInputProducts" joinField="columnDefinition" />
+		<hasMany name="columnsForOutputProducts" plugin="workPlans" model="columnForOutputProducts" joinField="columnDefinition" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.workPlans.hooks.ParameterComponentModelValidators" method="checkIfColumnForInputProductsIsNotAlreadyUsed" />
+		
 	</hooks>
 </model>
