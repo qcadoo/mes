@@ -49,7 +49,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.validators.ErrorMessage;
-import com.qcadoo.plugin.api.PluginAccessor;
+import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -134,7 +134,7 @@ public class AutoGenealogyService extends OrderStateListener {
     private TechnologyService technologyService;
 
     @Autowired
-    private PluginAccessor pluginAccessor;
+    private PluginManager pluginManager;
 
     public void fillLastUsedBatchForProduct(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
@@ -265,7 +265,7 @@ public class AutoGenealogyService extends OrderStateListener {
         genealogy.setField(ORDER_MODEL, order);
         genealogy.setField(BATCH_MODEL, mainBatch);
         completeAttributesForGenealogy(technology, genealogy, lastUsedMode);
-        if (pluginAccessor.getEnabledPlugin(GENEALOGIES_FOR_COMPONENTS_PLUGIN) != null) {
+        if (pluginManager.isPluginEnabled(GENEALOGIES_FOR_COMPONENTS_PLUGIN)) {
             completeBatchForComponents(technology, genealogy, lastUsedMode);
         }
 
