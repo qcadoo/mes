@@ -29,13 +29,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.search.SearchResult;
 
 @Service
 public class OrderOperationModelHooks {
@@ -43,69 +42,75 @@ public class OrderOperationModelHooks {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void copyColumnForProducts(final DataDefinition operationDD, final Entity operation) {
-        if (operation.getField("operationInputComponents") == null || operation.getField("operationOutputComponents") == null) {
-            EntityList parameterInputComponents = getParameterHasManyField("parameterInputComponents");
-            EntityList parameterOutputComponents = getParameterHasManyField("parameterOutputComponents");
+    public void copyColumnForProducts(final DataDefinition orderOperationDD, final Entity orderOperation) {
+        if ((orderOperation.getField("orderOperationInputComponents") == null)
+                && (orderOperation.getField("orderOperationOutputComponents") == null)) {
+            Entity technologyOperation = orderOperation.getBelongsToField("technologyOperationComponent");
 
-            ArrayList<Entity> operationInputComponents = Lists.newArrayList();
-            ArrayList<Entity> operationOutputComponents = Lists.newArrayList();
+            for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
+                orderOperation.setField(workPlanParameter,
+                        getTechnologyOperationField(technologyOperation.getId(), workPlanParameter));
+            }
 
-            if (parameterInputComponents != null) {
-                for (Entity parameterInputComponent : parameterInputComponents) {
-                    Entity columnForInputProducts = parameterInputComponent.getBelongsToField("columnForInputProducts");
+            EntityList technologyOperationInputComponents = getTechnologyOperationHasManyField(technologyOperation.getId(),
+                    "technologyOperationInputComponents");
+            EntityList technologyOperationOutputComponents = getTechnologyOperationHasManyField(technologyOperation.getId(),
+                    "technologyOperationOutputComponents");
 
-                    Entity operationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                            WorkPlansConstants.MODEL_OPERATION_INPUT_COMPONENT).create();
+            ArrayList<Entity> orderOperationInputComponents = Lists.newArrayList();
+            ArrayList<Entity> orderOperationOutputComponents = Lists.newArrayList();
 
-                    operationInputComponent.setField("columnForInputProducts", columnForInputProducts);
+            if (technologyOperationInputComponents != null) {
+                for (Entity technologyOperationInputComponent : technologyOperationInputComponents) {
+                    Entity columnForInputProducts = technologyOperationInputComponent.getBelongsToField("columnForInputProducts");
 
-                    operationInputComponents.add(operationInputComponent);
+                    Entity orderOperationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                            WorkPlansConstants.MODEL_ORDER_OPERATION_INPUT_COMPONENT).create();
+
+                    orderOperationInputComponent.setField("columnForInputProducts", columnForInputProducts);
+
+                    orderOperationInputComponents.add(orderOperationInputComponent);
                 }
             }
 
-            if (parameterOutputComponents != null) {
-                for (Entity parameterOutputComponent : parameterOutputComponents) {
-                    Entity columnForOutputProducts = parameterOutputComponent.getBelongsToField("columnForOutputProducts");
+            if (technologyOperationOutputComponents != null) {
+                for (Entity technologyOperationOutputComponent : technologyOperationOutputComponents) {
+                    Entity columnForOutputProducts = technologyOperationOutputComponent
+                            .getBelongsToField("columnForOutputProducts");
 
-                    Entity operationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                            WorkPlansConstants.MODEL_OPERATION_OUTPUT_COMPONENT).create();
+                    Entity orderOperationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                            WorkPlansConstants.MODEL_ORDER_OPERATION_OUTPUT_COMPONENT).create();
 
-                    operationOutputComponent.setField("columnForOutputProducts", columnForOutputProducts);
+                    orderOperationOutputComponent.setField("columnForOutputProducts", columnForOutputProducts);
 
-                    operationOutputComponents.add(operationOutputComponent);
+                    orderOperationOutputComponents.add(orderOperationOutputComponent);
                 }
             }
 
-            operation.setField("operationInputComponents", operationInputComponents);
-            operation.setField("operationOutputComponents", operationOutputComponents);
+            orderOperation.setField("orderOperationInputComponents", orderOperationInputComponents);
+            orderOperation.setField("orderOperationOutputComponents", orderOperationOutputComponents);
         }
     }
 
-    public EntityList getParameterHasManyField(String fieldName) {
-        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
-                .find().setMaxResults(1).list();
+    public EntityList getTechnologyOperationHasManyField(Long operationId, String fieldName) {
+        Entity technologyOperation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(operationId);
 
-        Entity parameter = null;
-
-        if (searchResult.getEntities().size() > 0) {
-            parameter = searchResult.getEntities().get(0);
-        }
-        if ((parameter == null) || (parameter.getHasManyField(fieldName) == null)) {
+        if ((technologyOperation == null) || (technologyOperation.getHasManyField(fieldName) == null)) {
             return null;
         } else {
-            return parameter.getHasManyField(fieldName);
+            return technologyOperation.getHasManyField(fieldName);
         }
     }
 
-    public EntityList getOperationHasManyField(Long operationId, String fieldName) {
-        Entity operation = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).get(
-                operationId);
+    public Object getTechnologyOperationField(Long technologyOperationId, String fieldName) {
+        Entity technologyOperation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(technologyOperationId);
 
-        if ((operation == null) || (operation.getHasManyField(fieldName) == null)) {
+        if ((technologyOperation == null) || (technologyOperation.getField(fieldName) == null)) {
             return null;
         } else {
-            return operation.getHasManyField(fieldName);
+            return technologyOperation.getField(fieldName);
         }
     }
 }

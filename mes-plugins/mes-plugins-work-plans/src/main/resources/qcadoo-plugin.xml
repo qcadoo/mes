@@ -213,6 +213,10 @@
             <model:onCreate class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationModelHooks" method="copyColumnForProducts" />
         </model:model-hook>
         
+        <model:model-hook plugin="productionScheduling" model="orderOperationComponent">
+            <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OrderOperationModelHooks" method="copyColumnForProducts" />
+        </model:model-hook>
+        
         
 		<menu:menu-category name="reports" />
 		
@@ -250,11 +254,6 @@
 			component="operation" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationViewHooks"
 			method="setTechnologyOperationComponentDefaultValues" />
-			
-		<view:view-hook plugin="productionScheduling" view="orderOperationComponentDetails"
-			type="beforeRender"
-			class="com.qcadoo.mes.workPlans.hooks.OrderOperationViewHooks"
-			method="setOrderOperationComponentDefaultValues" />
 		
 		<custom:custom class="com.qcadoo.mes.workPlans.WorkPlanColumnsLoaderModule" />
 	</modules>
