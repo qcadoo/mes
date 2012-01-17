@@ -485,15 +485,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         String titleString = getTranslationService().translate("workPlans.workPlan.report.additionalFields", locale);
         document.add(new Paragraph(titleString, PdfUtil.getArialBold10Dark()));
 
-        PdfPTable table = PdfUtil.createPanelTable(1);
-        table.getDefaultCell().setBackgroundColor(null);
-        table.setTableEvent(null);
-
-        PdfUtil.addImage(table, imagePath);
-
-        table.setSpacingAfter(18);
-        table.setSpacingBefore(9);
-        document.add(table);
+        PdfUtil.addImage(document, imagePath);
     }
 
     void addMainHeader(final Document document, final Entity entity, final Locale locale) throws DocumentException {
