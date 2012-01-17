@@ -95,18 +95,19 @@
 							var isGeneratedCheckboxValue = #{generated}.getValue();
 							copyRibbonItem.enable();
 							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-								//enableGeneration(false);
-								//printWorkPlan.enable();
+								enableGeneration(false);
+								printWorkPlan.enable();
+								generate.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 							} else {
-								//enableGeneration(true);
-								//printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								enableGeneration(true);
+								printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								saveRibbonItem.enable();
 							}
 						} else {
-							//enableGeneration(true);
+							enableGeneration(true);
 							copyRibbonItem.disable("#{translate(recordNotCreated)}");
-							//printWorkPlan.disable("#{translate(recordNotCreated)}");
+							printWorkPlan.disable("#{translate(recordNotCreated)}");
 							saveRibbonItem.enable();
 						}
 					}
