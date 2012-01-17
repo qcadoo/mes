@@ -28,7 +28,7 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent" required="true" lazy="false" />
+		<belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent" required="true" />
 		
 		<belongsTo name="columnForOutputProducts" plugin="workPlans" model="columnForOutputProducts" required="true" lazy="false" />
 		

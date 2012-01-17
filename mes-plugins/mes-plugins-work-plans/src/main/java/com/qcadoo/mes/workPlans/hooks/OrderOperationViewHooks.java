@@ -38,7 +38,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public class OrderOperationComponentViewHooks {
+public class OrderOperationViewHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -56,7 +56,7 @@ public class OrderOperationComponentViewHooks {
 
             for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
                 FieldComponent field = getFieldComponent(view, workPlanParameter);
-                field.setFieldValue(getParameter(orderOperationComponentId, workPlanParameter));
+                field.setFieldValue(getOperationField(orderOperationComponentId, workPlanParameter));
             }
         }
     }
@@ -69,7 +69,7 @@ public class OrderOperationComponentViewHooks {
         return (FieldComponent) view.getComponentByReference(name);
     }
 
-    public Object getParameter(Long orderOperationComponentId, String parameterName) {
+    public Object getOperationField(Long orderOperationComponentId, String parameterName) {
         checkArgument(orderOperationComponentId != null, "Order Operation Component Id is null");
 
         Entity parameter = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,

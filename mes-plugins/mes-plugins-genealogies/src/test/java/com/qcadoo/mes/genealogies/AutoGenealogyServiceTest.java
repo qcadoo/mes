@@ -62,8 +62,7 @@ import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.internal.DefaultEntity;
-import com.qcadoo.plugin.api.Plugin;
-import com.qcadoo.plugin.api.PluginAccessor;
+import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -82,7 +81,7 @@ public class AutoGenealogyServiceTest {
 
     private SecurityService securityService;
 
-    private PluginAccessor pluginAccessor;
+    private PluginManager pluginManager;
 
     private Entity entity;
 
@@ -91,15 +90,15 @@ public class AutoGenealogyServiceTest {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         translationService = mock(TranslationService.class);
         securityService = mock(SecurityService.class);
-        pluginAccessor = mock(PluginAccessor.class);
+        pluginManager = mock(PluginManager.class);
         entity = mock(Entity.class);
         autoGenealogyService = new AutoGenealogyService();
 
         setField(autoGenealogyService, "dataDefinitionService", dataDefinitionService);
         setField(autoGenealogyService, "translationService", translationService);
         setField(autoGenealogyService, "securityService", securityService);
-        setField(autoGenealogyService, "pluginAccessor", pluginAccessor);
-        given(pluginAccessor.getEnabledPlugin("genealogiesForComponents")).willReturn(mock(Plugin.class));
+        setField(autoGenealogyService, "pluginManager", pluginManager);
+        given(pluginManager.isPluginEnabled("genealogiesForComponents")).willReturn(true);
     }
 
     @Test

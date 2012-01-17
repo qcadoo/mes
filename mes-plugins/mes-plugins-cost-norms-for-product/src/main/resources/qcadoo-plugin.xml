@@ -1,35 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.1.1
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.1.1 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <plugin plugin="costNormsForProduct" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report"
-	xmlns:xi="http://www.w3.org/2001/XInclude"
+	xmlns:report="http://schema.qcadoo.org/modules/report" xmlns:xi="http://www.w3.org/2001/XInclude"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
@@ -52,59 +38,62 @@
 		</vendor>
 	</information>
 
-    <dependencies>
-        <dependency>
-            <plugin>productionScheduling</plugin>
-            <version>[0.4.2</version>
-        </dependency>
-    </dependencies>
+	<dependencies>
+		<dependency>
+			<plugin>productionScheduling</plugin>
+			<version>[0.4.2</version>
+		</dependency>
+	</dependencies>
 
 	<modules>
-		<localization:translation path="locales" />		
+		<localization:translation path="locales" />
 		<view:resource uri="public/**/*" />
 
-        <view:view-tab resource="view/tabExtensions/productDetails.xml" />
-        <view:view-tab resource="view/tabExtensions/technologyDetails.xml" />
-        
-        <view:view resource="view/product.xml"/>
-        <view:view-hook plugin="basic" view="productDetails" type="beforeRender" 
-            class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" method="fillCostTabUnit" />
-        
-        <view:view-hook plugin="basic" view="productDetails" type="beforeRender" 
-            class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" method="fillCostTabCurrency" />
-        
-        <view:view-hook plugin="technologies" view="technologyDetails" type="beforeRender"
-        	class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" method="fillInProductsGrid" />
-        
-        <!-- product -->
-        <model:model-field plugin="basic" model="product" >
-            <model:decimal name="costForNumber" default="1" >
-                <model:validatesUnscaledValue max="7" />
-                <model:validatesScale max="3" />
-            </model:decimal>
-        </model:model-field>
-        <model:model-field plugin="basic" model="product" >
-            <model:decimal name="nominalCost" default="0">
-                <model:validatesUnscaledValue max="7" />
-                <model:validatesScale max="3" />
-            </model:decimal>
-        </model:model-field>
-        <model:model-field plugin="basic" model="product" >
-            <model:decimal name="lastPurchaseCost" default="0">
-                <model:validatesUnscaledValue max="7" />
-                <model:validatesScale max="3" />
-            </model:decimal>
-        </model:model-field>
-        <model:model-field plugin="basic" model="product" >
-            <model:decimal name="averageCost" default="0">
-                <model:validatesUnscaledValue max="7" />
-                <model:validatesScale max="3" />
-            </model:decimal>
-        </model:model-field>
-        
-        <view:view-listener plugin="technologies" view="technologyDetails" component="form" event="save" 
-        					class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService" 
-        					method="checkTechnologyProductsInNorms"/>
+		<view:view-tab resource="view/tabExtensions/productDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/technologyDetails.xml" />
+
+		<view:view-hook plugin="basic" view="productDetails"
+			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+			method="fillCostTabUnit" />
+
+		<view:view-hook plugin="basic" view="productDetails"
+			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+			method="fillCostTabCurrency" />
+
+		<view:view-hook plugin="technologies" view="technologyDetails"
+			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+			method="fillInProductsGrid" />
+
+		<!-- product -->
+		<model:model-field plugin="basic" model="product">
+			<model:decimal name="costForNumber" default="1">
+				<model:validatesUnscaledValue max="7" />
+				<model:validatesScale max="3" />
+			</model:decimal>
+		</model:model-field>
+		<model:model-field plugin="basic" model="product">
+			<model:decimal name="nominalCost" default="0">
+				<model:validatesUnscaledValue max="7" />
+				<model:validatesScale max="3" />
+			</model:decimal>
+		</model:model-field>
+		<model:model-field plugin="basic" model="product">
+			<model:decimal name="lastPurchaseCost" default="0">
+				<model:validatesUnscaledValue max="7" />
+				<model:validatesScale max="3" />
+			</model:decimal>
+		</model:model-field>
+		<model:model-field plugin="basic" model="product">
+			<model:decimal name="averageCost" default="0">
+				<model:validatesUnscaledValue max="7" />
+				<model:validatesScale max="3" />
+			</model:decimal>
+		</model:model-field>
+
+		<view:view-listener plugin="technologies" view="technologyDetails"
+			component="form" event="save"
+			class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+			method="checkTechnologyProductsInNorms" />
 
 	</modules>
 </plugin>
