@@ -187,7 +187,6 @@
 			<model:hasMany name="orderOperationOutputComponents" plugin="workPlans" model="orderOperationOutputComponent" joinField="orderOperationComponent" cascade="delete" copyable="true" />
 		</model:model-field>
 		
-		
 		<model:model-hook plugin="basic" model="parameter">
             <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.ParameterModelValidators" method="checkIfAttachmentExtensionIsValid" />
         </model:model-hook>
@@ -204,7 +203,6 @@
             <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.OrderOperationModelValidators" method="checkIfAttachmentExtensionIsValid" />
         </model:model-hook>
         
-        
         <model:model-hook plugin="technologies" model="operation">
             <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OperationModelHooks" method="copyColumnForProducts" />
         </model:model-hook>
@@ -216,7 +214,6 @@
         <model:model-hook plugin="productionScheduling" model="orderOperationComponent">
             <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OrderOperationModelHooks" method="copyColumnForProducts" />
         </model:model-hook>
-        
         
 		<menu:menu-category name="reports" />
 		
