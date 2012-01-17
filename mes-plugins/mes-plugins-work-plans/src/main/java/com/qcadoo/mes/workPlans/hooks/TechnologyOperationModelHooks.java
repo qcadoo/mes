@@ -54,28 +54,28 @@ public class TechnologyOperationModelHooks {
             ArrayList<Entity> technologyOperationOutputComponents = Lists.newArrayList();
 
             if (operationInputComponents != null) {
-                for (Entity parameterInputComponent : operationInputComponents) {
-                    Entity columnForInputProducts = parameterInputComponent.getBelongsToField("columnForInputProducts");
+                for (Entity operationInputComponent : operationInputComponents) {
+                    Entity columnForInputProducts = operationInputComponent.getBelongsToField("columnForInputProducts");
 
-                    Entity operationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                    Entity technologyOperationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                             WorkPlansConstants.MODEL_TECHNOLOGY_OPERATION_INPUT_COMPONENT).create();
 
-                    operationInputComponent.setField("columnForInputProducts", columnForInputProducts);
+                    technologyOperationInputComponent.setField("columnForInputProducts", columnForInputProducts);
 
-                    technologyOperationInputComponents.add(operationInputComponent);
+                    technologyOperationInputComponents.add(technologyOperationInputComponent);
                 }
             }
 
             if (operationOutputComponents != null) {
-                for (Entity parameterOutputComponent : operationOutputComponents) {
-                    Entity columnForOutputProducts = parameterOutputComponent.getBelongsToField("columnForOutputProducts");
+                for (Entity operationOutputComponent : operationOutputComponents) {
+                    Entity columnForOutputProducts = operationOutputComponent.getBelongsToField("columnForOutputProducts");
 
-                    Entity operationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                    Entity technologyOperationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                             WorkPlansConstants.MODEL_TECHNOLOGY_OPERATION_OUTPUT_COMPONENT).create();
 
-                    operationOutputComponent.setField("columnForOutputProducts", columnForOutputProducts);
+                    technologyOperationOutputComponent.setField("columnForOutputProducts", columnForOutputProducts);
 
-                    technologyOperationOutputComponents.add(operationOutputComponent);
+                    technologyOperationOutputComponents.add(technologyOperationOutputComponent);
                 }
             }
 
