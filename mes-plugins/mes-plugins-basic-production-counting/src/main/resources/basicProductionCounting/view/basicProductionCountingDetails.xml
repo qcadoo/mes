@@ -1,39 +1,26 @@
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.1.1
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.1.1 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view name="basicProductionCountingDetails" modelName="basicProductionCounting"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window">
 		<ribbon>
 			<group template="navigation" />
-			<group template="formSaveAction"/>
+			<group template="formSaveAction" />
 		</ribbon>
 		<component type="form" name="order" reference="order" />
-		 		<component type="form" name="basicProductionCountingDetails"
- 			reference="form">
+		<component type="form" name="basicProductionCountingDetails"
+			reference="form">
 			<component type="gridLayout" name="gridLayout" columns="8"
 				rows="4" hasBorders="false">
 				<layoutElement column="1" row="1" width="3">
@@ -41,7 +28,7 @@
 						defaultEnabled="false">
 						<option type="labelWidth" value="50" />
 					</component>
- 				</layoutElement>
+				</layoutElement>
 				<layoutElement column="1" row="2" width="3">
 					<component type="input" name="plannedQuantity" field="plannedQuantity"
 						defaultEnabled="false">
@@ -50,17 +37,19 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3" width="3">
-					<component type="input" name="producedQuantity" field="producedQuantity">
+					<component type="input" name="producedQuantity" field="producedQuantity"
+						reference="producedQuantity">
 						<option type="alignment" value="right" />
 						<option type="labelWidth" value="50" />
 					</component>
- 				</layoutElement>
+				</layoutElement>
 				<layoutElement column="1" row="4" width="3">
-					<component type="input" name="usedQuantity" field="usedQuantity">
+					<component type="input" name="usedQuantity" field="usedQuantity"
+						reference="usedQuantity">
 						<option type="alignment" value="right" />
 						<option type="labelWidth" value="50" />
 					</component>
- 				</layoutElement>
+				</layoutElement>
 				<layoutElement column="4" row="2">
 					<component type="input" name="plannedQuantityCurrency"
 						defaultEnabled="false" hasLabel="false" reference="plannedQuantityCurrency">
@@ -77,13 +66,16 @@
 					</component>
 				</layoutElement>
 
- 			</component>
- 			<option type="header" value="true" />
- 			<option type="expression" value="#product['name']" />
- 		</component>
- 	</component>
+			</component>
+			<option type="header" value="true" />
+			<option type="expression" value="#product['name']" />
+		</component>
+	</component>
 
 	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
+			method="shouldDisableUsedProducedField" />
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
 			method="getProductNameFromCounting" />
