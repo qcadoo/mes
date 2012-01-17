@@ -196,34 +196,33 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     void addWorkstationInfoToTheOperationHeader(PdfPTable operationTable, Entity operationComponent, Locale locale) {
         Entity workstationType = operationComponent.getBelongsToField("operation").getBelongsToField("workstationType");
-        String workstationTypeName = "-";
-        String divisionName = "-";
-        String supervisorName = "-";
+        String workstationTypeName = "";
+        String divisionName = "";
+        String supervisorName = "";
+        String divisionLabel = "";
+        String supervisorLabel = "";
 
         if (workstationType != null) {
             workstationTypeName = workstationType.getStringField("name");
 
-            PdfUtil.addTableCellAsTable(operationTable,
-                    getTranslationService().translate("workPlans.workPlan.report.operation.workstationType", locale),
-                    workstationTypeName, null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
-
             Entity division = workstationType.getBelongsToField("division");
             if (division != null) {
                 divisionName = division.getStringField("name");
-
-                PdfUtil.addTableCellAsTable(operationTable,
-                        getTranslationService().translate("workPlans.workPlan.report.operation.division", locale), divisionName,
-                        null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
-
+                divisionLabel = getTranslationService().translate("workPlans.workPlan.report.operation.division", locale);
                 Entity supervisor = division.getBelongsToField("supervisor");
                 if (supervisor != null) {
-                    supervisorName = supervisor.getStringField("string");
-
-                    PdfUtil.addTableCellAsTable(operationTable,
-                            getTranslationService().translate("workPlans.workPlan.report.operation.supervisor", locale),
-                            supervisorName, null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                    supervisorName = supervisor.getStringField("name") + " " + supervisor.getStringField("surname");
+                    supervisorLabel = getTranslationService().translate("workPlans.workPlan.report.operation.supervisor", locale);
                 }
             }
+
+            PdfUtil.addTableCellAsTable(operationTable,
+                    getTranslationService().translate("workPlans.workPlan.report.operation.workstationType", locale),
+                    workstationTypeName, null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+            PdfUtil.addTableCellAsTable(operationTable, divisionLabel, divisionName, null, PdfUtil.getArialBold10Dark(),
+                    PdfUtil.getArialRegular10Dark());
+            PdfUtil.addTableCellAsTable(operationTable, supervisorLabel, supervisorName, null, PdfUtil.getArialBold10Dark(),
+                    PdfUtil.getArialRegular10Dark());
         }
     }
 
@@ -486,15 +485,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         String titleString = getTranslationService().translate("workPlans.workPlan.report.additionalFields", locale);
         document.add(new Paragraph(titleString, PdfUtil.getArialBold10Dark()));
 
-        PdfPTable table = PdfUtil.createPanelTable(1);
-        table.getDefaultCell().setBackgroundColor(null);
-        table.setTableEvent(null);
-
-        PdfUtil.addImage(table, imagePath);
-
-        table.setSpacingAfter(18);
-        table.setSpacingBefore(9);
-        document.add(table);
+        PdfUtil.addImage(document, imagePath);
     }
 
     void addMainHeader(final Document document, final Entity entity, final Locale locale) throws DocumentException {

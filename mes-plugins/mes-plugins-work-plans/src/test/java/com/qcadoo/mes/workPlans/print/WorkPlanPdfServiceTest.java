@@ -31,6 +31,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
@@ -92,7 +93,7 @@ public class WorkPlanPdfServiceTest {
 
     private DecimalFormat df;
 
-    private Map<Entity, Entity> operationComponent2order = new HashMap<Entity, Entity>();
+    private final Map<Entity, Entity> operationComponent2order = new HashMap<Entity, Entity>();
 
     @Before
     public void init() {
@@ -452,7 +453,8 @@ public class WorkPlanPdfServiceTest {
         workPlanPdfService.addAdditionalFields(document, operationComponent, locale);
 
         // then
-        verify(document, times(2)).add(Mockito.any(Paragraph.class));
+        verify(document, times(1)).add(Mockito.any(Paragraph.class));
+        verify(document, times(1)).add(Mockito.any(Image.class));
     }
 
     @Test

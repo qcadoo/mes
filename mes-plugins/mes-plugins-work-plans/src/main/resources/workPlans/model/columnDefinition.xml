@@ -45,4 +45,5 @@
 	<hooks>
 		
 	</hooks>
+	<identifier expression="#name" />
 </model>

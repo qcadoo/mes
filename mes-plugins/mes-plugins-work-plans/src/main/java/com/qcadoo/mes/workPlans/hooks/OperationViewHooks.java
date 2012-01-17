@@ -53,7 +53,7 @@ public class OperationViewHooks {
         if (form.getEntityId() == null) {
             for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
                 FieldComponent field = getFieldComponent(view, workPlanParameter);
-                field.setFieldValue(getBasicParameter(workPlanParameter));
+                field.setFieldValue(getParameterField(workPlanParameter));
             }
         }
     }
@@ -66,7 +66,7 @@ public class OperationViewHooks {
         return (FieldComponent) view.getComponentByReference(name);
     }
 
-    public Object getBasicParameter(String parameterName) {
+    public Object getParameterField(String fieldName) {
         SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
                 .find().setMaxResults(1).list();
 
@@ -75,10 +75,10 @@ public class OperationViewHooks {
         if (searchResult.getEntities().size() > 0) {
             parameter = searchResult.getEntities().get(0);
         }
-        if ((parameter == null) || (parameter.getField(parameterName) == null)) {
+        if ((parameter == null) || (parameter.getField(fieldName) == null)) {
             return null;
         } else {
-            return parameter.getField(parameterName);
+            return parameter.getField(fieldName);
         }
     }
 }

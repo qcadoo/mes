@@ -30,9 +30,13 @@
 	<fields>
 		<belongsTo name="columnDefinition" plugin="workPlans" model="columnDefinition" required="true" lazy="false" />
 		
-		<hasMany name="columnsForInputProducts" plugin="workPlans" model="parameterInputComponent" joinField="columnForInputProducts" />
+		<hasMany name="parameterInputComponents" plugin="workPlans" model="parameterInputComponent" joinField="columnForInputProducts" />
+		<hasMany name="operationInputComponents" plugin="workPlans" model="operationInputComponent" joinField="columnForInputProducts" />
+		<hasMany name="technologyOperationInputComponents" plugin="workPlans" model="technologyOperationInputComponent" joinField="columnForInputProducts" />
+		<hasMany name="orderOperationInputComponents" plugin="workPlans" model="orderOperationInputComponent" joinField="columnForInputProducts" />
 	</fields>
 	<hooks>
 		
 	</hooks>
+	<identifier expression="#columnDefinition[name]" />
 </model>
