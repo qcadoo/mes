@@ -41,8 +41,10 @@
 			cascade="delete" copyable="true" />
 		<hasMany name="substituteComponents" model="substituteComponent"
 			joinField="product" cascade="nullify" />
-		<string name="externalNumber" />
+		<string name="externalNumber"/>
 	</fields>
-	<hooks />
+	<hooks >
+		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy"/>
+	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

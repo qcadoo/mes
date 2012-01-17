@@ -132,4 +132,12 @@ public final class ProductService {
         }
     }
 
+    public boolean clearExternalIdOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+        if (entity == null) {
+            return true;
+        }
+        entity.setField("externalNumber", null);
+        return true;
+    }
+
 }
