@@ -39,20 +39,17 @@
 			</layoutElement>
 			<layoutElement column="1" row="2">
 				<component type="checkbox" name="hideDescriptionInWorkPlans" field="#{form}.hideDescriptionInWorkPlans" reference="hideDescriptionInWorkPlans">
-					<option type="labelWidth" value="80" />
-					<option type="align" value="right" />
+					<option type="labelWidth" value="50" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="3">
 				<component type="checkbox" name="hideDetailsInWorkPlans" field="#{form}.hideDetailsInWorkPlans" reference="hideDetailsInWorkPlans">
-					<option type="labelWidth" value="80" />
-					<option type="align" value="right" />
+					<option type="labelWidth" value="50" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="4">
 				<component type="checkbox" name="hideTechnologyAndOrderInWorkPlans" field="#{form}.hideTechnologyAndOrderInWorkPlans" reference="hideTechnologyAndOrderInWorkPlans">
-					<option type="labelWidth" value="80" />
-					<option type="align" value="right" />
+					<option type="labelWidth" value="50" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="5">

@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.1.1
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.1.1 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="orderOperationComponentDetails" modelName="orderOperationComponent">
@@ -46,17 +33,28 @@
 							reference="tj" />
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="input" name="productionInOneCycle"
-							field="#{form}.productionInOneCycle" reference="productionInOneCycle"
-							defaultEnabled="true" />
+						<component type="gridLayout" name="gridsLayoutUnit1"
+							columns="4" rows="1" hasBorders="false">
+							<layoutElement column="1" row="1" width="3">
+								<component type="input" name="productionInOneCycle"
+									field="#{form}.productionInOneCycle" reference="productionInOneCycle"
+									defaultEnabled="true">
+									<option type="labelWidth" value="40" />
+								</component>
+							</layoutElement>
+							<layoutElement column="4" row="1" width="1">
+								<component type="input" name="productionInOneCycleUNIT"
+									defaultEnabled="false" hasLabel="false" reference="productionInOneCycleUNIT" />
+							</layoutElement>
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="time" name="timeNextOperation" field="#{form}.timeNextOperation"
 							reference="timeNextOperation" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
-						<component type="input" name="machineUtilization"
-							field="machineUtilization" reference="machineUtilization"/>
+						<component type="input" name="machineUtilization" field="machineUtilization"
+							reference="machineUtilization" />
 					</layoutElement>
 					<layoutElement column="2" row="2">
 						<component type="input" name="laborUtilization" field="laborUtilization"
@@ -71,10 +69,21 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="4">
-						<component type="input" name="countMachine" field="#{form}.countMachine"
-							reference="countMachine" hasDescription="true" />
+						<component type="gridLayout" name="gridsLayoutUnit2"
+							columns="4" rows="1" hasBorders="false">
+							<layoutElement column="1" row="1" width="3">
+								<component type="input" name="countMachine" field="#{form}.countMachine"
+									reference="countMachine" hasDescription="true" defaultEnabled="false">
+									<option type="labelWidth" value="40" />
+								</component>
+							</layoutElement>
+							<layoutElement column="4" row="1" width="1">
+								<component type="input" name="countMachineUNIT"
+									defaultEnabled="false" defaultVisible="false" hasLabel="false"
+									reference="countMachineUNIT" />
+							</layoutElement>
+						</component>
 					</layoutElement>
-
 				</component>
 				<option type="header" value="true" />
 				<option type="expression"
@@ -84,10 +93,10 @@
 			</component>
 		</windowTab>
 	</component>
-
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.productionScheduling.NormOrderService"
 			method="disableComponents" />
+		<beforeRender class="com.qcadoo.mes.productionScheduling.NormOrderService"
+			method="fillUnitFields" />
 	</hooks>
-
 </view>
