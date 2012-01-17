@@ -108,10 +108,6 @@ public class CostNormsForOperationService {
             component = (FieldComponent) view.getComponentByReference(fieldName);
             component.setFieldValue(source.getField(fieldName));
         }
-
-        // FIXME MAKU - double notification after change operation lookup value
-        // view.getComponentByReference("form").addMessage(translationService.translate("costNormsForOperation.messages.success.copyCostNormsSuccess",
-        // view.getLocale()), SUCCESS);
     }
 
     /* ******* MODEL HOOKS ******* */
@@ -134,6 +130,10 @@ public class CostNormsForOperationService {
     private void copyCostValuesFromGivenOperation(final Entity target, final Entity source) {
         checkArgument(target != null, "given target is null");
         checkArgument(source != null, "given source is null");
+        
+        if (!shouldPropagateValuesFromLowerInstance(target)) {
+            return;
+        }
 
         for (String fieldName : FIELDS) {
             if (source.getField(fieldName) == null) {
@@ -142,4 +142,14 @@ public class CostNormsForOperationService {
             target.setField(fieldName, source.getField(fieldName));
         }
     }
+    
+    private boolean shouldPropagateValuesFromLowerInstance(final Entity technologyOperationComponent) {
+        for (String fieldName : FIELDS) {
+            if (technologyOperationComponent.getField(fieldName) != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
