@@ -477,9 +477,13 @@ public class WorkPlanPdfServiceTest {
         String headerKey = "workPlans.workPlan.report.colums.product";
         when(translationService.translate("workPlans.workPlan.report.colums.product", locale)).thenReturn("product");
         when(translationService.translate("orders.order.plannedQuantity.label", locale)).thenReturn("quantity");
-        List<String> columns = new LinkedList<String>();
-        columns.add("workPlans.workPlan.report.colums.product");
-        columns.add("orders.order.plannedQuantity.label");
+        List<Entity> columns = new LinkedList<Entity>();
+        Entity column1 = mock(Entity.class);
+        Entity column2 = mock(Entity.class);
+        columns.add(column1);
+        columns.add(column2);
+        when(column1.getStringField("name")).thenReturn("workPlans.workPlan.report.colums.product");
+        when(column2.getStringField("name")).thenReturn("orders.order.plannedQuantity.label");
         ProductDirection direction = ProductDirection.IN;
 
         // when
