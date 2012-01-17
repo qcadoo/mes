@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -41,6 +42,7 @@ import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class NormOrderService {
@@ -172,6 +174,7 @@ public class NormOrderService {
                 .getComponentByReference("productionInOneCycle");
         FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED_FIELD);
         FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference("countMachine");
+        FieldComponent countMachineUnit = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineUNIT");
         FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference("timeNextOperation");
 
         tpz.setEnabled(true);
@@ -187,16 +190,42 @@ public class NormOrderService {
             countMachine.setVisible(true);
             countMachine.setEnabled(true);
             countMachine.setRequired(true);
+            countMachineUnit.setVisible(true);
             if (countMachine.getFieldValue() == null || !StringUtils.hasText(String.valueOf(countMachine.getFieldValue()))) {
                 countMachine.setFieldValue("1");
             }
         } else {
             countMachine.setVisible(false);
             countMachine.setRequired(false);
+            countMachineUnit.setVisible(false);
         }
 
         timeNextOperation.setEnabled(true);
         timeNextOperation.setRequired(true);
+    }
+
+    public void fillUnitFields(final ViewDefinitionState view) {
+        FieldComponent component = null;
+        Entity formEntity = ((FormComponent) view.getComponentByReference("form")).getEntity();
+
+        // we can pass units only to technology level operations
+        if (formEntity.getId() == null || !"orderOperationComponent".equals(formEntity.getDataDefinition().getName())) {
+            return;
+        }
+
+        // be sure that entity isn't in detached state before you wander through the relationship
+        formEntity = formEntity.getDataDefinition().get(formEntity.getId());
+        // you can use someEntity.getSTH().getSTH() only when you are 100% sure that all the passers-relations
+        // will not return null (i.e. all relations using below are mandatory on the model definition level)
+        String unit = formEntity.getBelongsToField("technology").getBelongsToField("product").getField("unit").toString();
+        for (String referenceName : Sets.newHashSet("countMachineUNIT", "productionInOneCycleUNIT")) {
+            component = (FieldComponent) view.getComponentByReference(referenceName);
+            if (component == null) {
+                continue;
+            }
+            component.setFieldValue(unit);
+            component.requestComponentUpdateState();
+        }
     }
 
 }
