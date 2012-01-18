@@ -380,16 +380,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return operationComponentsWithDistinction;
     }
 
-    private int[] getColumnWidths(int columns) {
-        int[] columnWidths = new int[columns];
-
-        for (int i = 0; i < columnWidths.length; ++i) {
-            columnWidths[i] = (int) (100.0f / columnWidths.length);
-        }
-
-        return columnWidths;
-    }
-
     void addProductsSeries(List<Entity> productComponents, Document document, Map<Entity, Map<String, String>> columnValues,
             Entity operationComponent, final DecimalFormat df, ProductDirection direction, Locale locale)
             throws DocumentException {
@@ -586,10 +576,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
     }
 
     String getImagePathFromDD(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        String imagePath = parameters.getStringField("imageUrlInWorkPlan");
+        String imagePath = operationComponent.getStringField("imageUrlInWorkPlan");
 
         if (imagePath == null) {
             throw new NoSuchElementException("no image");
@@ -599,47 +586,27 @@ public class WorkPlanPdfService extends PdfDocumentService {
     }
 
     public boolean isCommentEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideComment = (Boolean) parameters.getField("hideDescriptionInWorkPlans");
-
+        boolean hideComment = operationComponent.getBooleanField("hideDescriptionInWorkPlans");
         return !hideComment;
     }
 
     public boolean isOrderInfoEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideOrderInfo = (Boolean) parameters.getField("hideTechnologyAndOrderInWorkPlans");
-
+        boolean hideOrderInfo = operationComponent.getBooleanField("hideTechnologyAndOrderInWorkPlans");
         return !hideOrderInfo;
     }
 
     public boolean isWorkstationInfoEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideWorkstationInfo = (Boolean) parameters.getField("hideDetailsInWorkPlans");
-
+        boolean hideWorkstationInfo = operationComponent.getBooleanField("hideDetailsInWorkPlans");
         return !hideWorkstationInfo;
     }
 
     public boolean isInputProductTableEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideInputProducts = (Boolean) parameters.getField("dontPrintInputProductsInWorkPlans");
-
+        boolean hideInputProducts = operationComponent.getBooleanField("dontPrintInputProductsInWorkPlans");
         return !hideInputProducts;
     }
 
     public boolean isOutputProductTableEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideOutputProducts = (Boolean) parameters.getField("dontPrintOutputProductsInWorkPlans");
-
+        boolean hideOutputProducts = operationComponent.getBooleanField("dontPrintOutputProductsInWorkPlans");
         return !hideOutputProducts;
     }
 }
