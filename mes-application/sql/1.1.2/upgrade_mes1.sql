@@ -7,7 +7,7 @@ CREATE TABLE basic_division
   "number" character varying(40),
   "name" character varying(255),
   supervisor_id bigint,
-  CONSTRAINT basic_division_pkey PRIMARY KEY (id) DEFERRABLE,
+  CONSTRAINT basic_division_pkey PRIMARY KEY (id),
   CONSTRAINT basic_division_fkey_staff FOREIGN KEY (supervisor_id)
       REFERENCES basic_staff (id) DEFERRABLE MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
@@ -51,7 +51,7 @@ CREATE TABLE jointable_order_workplan
 (
   order_id bigint NOT NULL,
   workplan_id bigint NOT NULL,
-  CONSTRAINT jointable_order_workplan_pkey PRIMARY KEY (workplan_id, order_id) DEFERRABLE,
+  CONSTRAINT jointable_order_workplan_pkey PRIMARY KEY (workplan_id, order_id),
   CONSTRAINT jointable_order_workplan_fkey_workplan FOREIGN KEY (workplan_id)
       REFERENCES workplans_workplan (id) DEFERRABLE MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -313,7 +313,7 @@ CREATE TABLE workplans_columnforinputproducts
   name character varying(255),
   description character varying(255),
   columnfiller character varying(255),
-  CONSTRAINT workplans_columnforinputproducts_pkey PRIMARY KEY (id ) DEFERRABLE
+  CONSTRAINT workplans_columnforinputproducts_pkey PRIMARY KEY (id )
 );
 
 -- end
@@ -328,7 +328,7 @@ CREATE TABLE workplans_columnforoutputproducts
   name character varying(255),
   description character varying(255),
   columnfiller character varying(255),
-  CONSTRAINT workplans_columnforoutputproducts_pkey PRIMARY KEY (id ) DEFERRABLE
+  CONSTRAINT workplans_columnforoutputproducts_pkey PRIMARY KEY (id )
 );
 
 -- end
@@ -343,7 +343,7 @@ CREATE TABLE workplans_parameterinputcolumn
   parameter_id bigint,
   columnforinputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_parameterinputcolumn_pkey PRIMARY KEY (id ) DEFERRABLE,
+  CONSTRAINT workplans_parameterinputcolumn_pkey PRIMARY KEY (id ),
   CONSTRAINT workplans_parameteroutputcolumn_parameter_fkey  FOREIGN KEY (parameter_id)
       REFERENCES basic_parameter (id) DEFERRABLE MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -364,7 +364,7 @@ CREATE TABLE workplans_parameteroutputcolumn
   parameter_id bigint,
   columnforoutputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_parameteroutputcolumn_pkey PRIMARY KEY (id ) DEFERRABLE,
+  CONSTRAINT workplans_parameteroutputcolumn_pkey PRIMARY KEY (id ),
   CONSTRAINT workplans_parameteroutputcolumn_parameter_fkey FOREIGN KEY (parameter_id)
       REFERENCES basic_parameter (id) DEFERRABLE MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -385,7 +385,7 @@ CREATE TABLE workplans_operationinputcolumn
   operation_id bigint,
   columnforinputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_operationinputcolumn_pkey PRIMARY KEY (id ) DEFERRABLE,
+  CONSTRAINT workplans_operationinputcolumn_pkey PRIMARY KEY (id ),
   CONSTRAINT workplans_operationinputcolumn_operation_fkey  FOREIGN KEY (operation_id)
       REFERENCES technologies_operation (id) DEFERRABLE MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -406,7 +406,7 @@ CREATE TABLE workplans_operationoutputcolumn
   operation_id bigint,
   columnforoutputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_operationoutputcolumn_pkey PRIMARY KEY (id ) DEFERRABLE,
+  CONSTRAINT workplans_operationoutputcolumn_pkey PRIMARY KEY (id ),
   CONSTRAINT workplans_operationoutputcolumn_operation_fkey FOREIGN KEY (operation_id)
       REFERENCES technologies_operation (id) DEFERRABLE MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -427,7 +427,7 @@ CREATE TABLE workplans_technologyoperationinputcolumn
   technologyoperationcomponent_id bigint,
   columnforinputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_technologyoperationinputcolumn_pkey PRIMARY KEY (id ) DEFERRABLE,
+  CONSTRAINT workplans_technologyoperationinputcolumn_pkey PRIMARY KEY (id ),
   CONSTRAINT workplans_technologyoperationinputcolumn_toc_fkey  FOREIGN KEY (technologyoperationcomponent_id)
       REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -448,7 +448,7 @@ CREATE TABLE workplans_technologyoperationoutputcolumn
   technologyoperationcomponent_id bigint,
   columnforoutputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_technologyoperationoutputcolumn_pkey PRIMARY KEY (id ) DEFERRABLE,
+  CONSTRAINT workplans_technologyoperationoutputcolumn_pkey PRIMARY KEY (id ),
   CONSTRAINT workplans_technologyoperationoutputcolumn_toc_fkey FOREIGN KEY (technologyoperationcomponent_id)
       REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -469,7 +469,7 @@ CREATE TABLE workplans_orderoperationinputcolumn
   orderoperationcomponent_id bigint,
   columnforinputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_orderoperationinputcolumn_pkey PRIMARY KEY (id ) DEFERRABLE,
+  CONSTRAINT workplans_orderoperationinputcolumn_pkey PRIMARY KEY (id ),
   CONSTRAINT workplans_orderoperationinputcolumn_ooc_fkey  FOREIGN KEY (orderoperationcomponent_id)
       REFERENCES productionscheduling_orderoperationcomponent (id) DEFERRABLE MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -490,7 +490,7 @@ CREATE TABLE workplans_orderoperationoutputcolumn
   orderoperationcomponent_id bigint,
   columnforoutputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_orderoperationoutputcolumn_pkey PRIMARY KEY (id ) DEFERRABLE,
+  CONSTRAINT workplans_orderoperationoutputcolumn_pkey PRIMARY KEY (id ),
   CONSTRAINT workplans_orderoperationoutputcolumn_ooc_fkey FOREIGN KEY (orderoperationcomponent_id)
       REFERENCES productionscheduling_orderoperationcomponent (id) DEFERRABLE MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
