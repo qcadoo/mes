@@ -43,42 +43,55 @@ public class OperationModelHooks {
     private DataDefinitionService dataDefinitionService;
 
     public void copyColumnForProducts(final DataDefinition operationDD, final Entity operation) {
-        if ((operation.getField("operationInputColumns") == null) && (operation.getField("operationOutputColumns") == null)) {
-            EntityList parameterInputColumns = getParameterHasManyField("parameterInputColumns");
-            EntityList parameterOutputColumns = getParameterHasManyField("parameterOutputColumns");
-
-            ArrayList<Entity> operationInputColumns = Lists.newArrayList();
-            ArrayList<Entity> operationOutputColumns = Lists.newArrayList();
-
-            if (parameterInputColumns != null) {
-                for (Entity parameterInputColumn : parameterInputColumns) {
-                    Entity columnForInputProducts = parameterInputColumn.getBelongsToField("columnForInputProducts");
-
-                    Entity operationInputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                            WorkPlansConstants.MODEL_OPERATION_INPUT_COLUMN).create();
-
-                    operationInputColumn.setField("columnForInputProducts", columnForInputProducts);
-
-                    operationInputColumns.add(operationInputColumn);
-                }
-            }
-
-            if (parameterOutputColumns != null) {
-                for (Entity parameterOutputColumn : parameterOutputColumns) {
-                    Entity columnForOutputProducts = parameterOutputColumn.getBelongsToField("columnForOutputProducts");
-
-                    Entity operationOutputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                            WorkPlansConstants.MODEL_OPERATION_OUTPUT_COLUMN).create();
-
-                    operationOutputColumn.setField("columnForOutputProducts", columnForOutputProducts);
-
-                    operationOutputColumns.add(operationOutputColumn);
-                }
-            }
-
-            operation.setField("operationInputColumns", operationInputColumns);
-            operation.setField("operationOutputColumns", operationOutputColumns);
+        if (!shouldPropagateValuesFromLowerInstance(operation)) {
+            return;
         }
+
+        EntityList parameterInputColumns = getParameterHasManyField("parameterInputColumns");
+        EntityList parameterOutputColumns = getParameterHasManyField("parameterOutputColumns");
+
+        ArrayList<Entity> operationInputColumns = Lists.newArrayList();
+        ArrayList<Entity> operationOutputColumns = Lists.newArrayList();
+
+        if (parameterInputColumns != null) {
+            for (Entity parameterInputColumn : parameterInputColumns) {
+                Entity columnForInputProducts = parameterInputColumn.getBelongsToField("columnForInputProducts");
+
+                Entity operationInputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                        WorkPlansConstants.MODEL_OPERATION_INPUT_COLUMN).create();
+
+                operationInputColumn.setField("columnForInputProducts", columnForInputProducts);
+
+                operationInputColumns.add(operationInputColumn);
+            }
+        }
+
+        if (parameterOutputColumns != null) {
+            for (Entity parameterOutputColumn : parameterOutputColumns) {
+                Entity columnForOutputProducts = parameterOutputColumn.getBelongsToField("columnForOutputProducts");
+
+                Entity operationOutputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                        WorkPlansConstants.MODEL_OPERATION_OUTPUT_COLUMN).create();
+
+                operationOutputColumn.setField("columnForOutputProducts", columnForOutputProducts);
+
+                operationOutputColumns.add(operationOutputColumn);
+            }
+        }
+
+        operation.setField("operationInputColumns", operationInputColumns);
+        operation.setField("operationOutputColumns", operationOutputColumns);
+
+    }
+
+    private boolean shouldPropagateValuesFromLowerInstance(final Entity operation) {
+        for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
+            if (operation.getField(workPlanParameter) != null) {
+                return false;
+            }
+        }
+
+        return (operation.getField("operationInputColumns") == null) && (operation.getField("operationOutputColumns") == null);
     }
 
     private EntityList getParameterHasManyField(String fieldName) {
