@@ -267,78 +267,6 @@ UPDATE qcadooview_item SET name='workstationTypes' WHERE name='machines';
 -- end
 
 
--- Table: workplans_columnforoutputproducts
--- changed: 11.01.2012
-
-CREATE TABLE workplans_columnforinputproducts
-(
-  id bigint NOT NULL,
-  name character varying(255),
-  description character varying(255),
-  pluginidentifier character varying(255),
-  CONSTRAINT workplans_columnforinputproducts_pkey PRIMARY KEY (id )
-);
-
--- end
-
-
--- Table: workplans_columnforoutputproducts
--- changed: 11.01.2012
-
-CREATE TABLE workplans_columnforoutputproducts
-(
-  id bigint NOT NULL,
-  name character varying(255),
-  description character varying(255),
-  pluginidentifier character varying(255),
-  CONSTRAINT workplans_columnforoutputproducts_pkey PRIMARY KEY (id )
-);
-
--- end
-
-
--- Table: workplans_parameterinputcomponent
--- changed: 11.01.2012
-
-CREATE TABLE workplans_parameterinputcomponent
-(
-  id bigint NOT NULL,
-  parameter_id bigint,
-  columnforinputproducts_id bigint,
-  succession integer,
-  CONSTRAINT workplans_parameterinputcomponent_pkey PRIMARY KEY (id ),
-  CONSTRAINT workplans_parameteroutputcomponent_parameter_fkey  FOREIGN KEY (parameter_id)
-      REFERENCES basic_parameter (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT workplans_parameterinputcomponent_cfip_fkey FOREIGN KEY (columnforinputproducts_id)
-      REFERENCES workplans_columnforinputproducts (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
-);
-
--- end
-
-
--- Table: workplans_parameteroutputcomponent
--- changed: 11.01.2012
-
-CREATE TABLE workplans_parameteroutputcomponent
-(
-  id bigint NOT NULL,
-  parameter_id bigint,
-  columnforoutputproducts_id bigint,
-  succession integer,
-  CONSTRAINT workplans_parameteroutputcomponent_pkey PRIMARY KEY (id ),
-  CONSTRAINT workplans_parameteroutputcomponent_parameter_fkey FOREIGN KEY (parameter_id)
-      REFERENCES basic_parameter (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT workplans_parameteroutputcomponent_cfop_fkey FOREIGN KEY (columnforoutputproducts_id)
-      REFERENCES workplans_columnforoutputproducts (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
-);
-
--- end
-
-
 -- Table: basic_company
 
 -- changed: 11.01.2012
@@ -350,30 +278,20 @@ INSERT INTO basic_company SELECT * FROM basic_contractor;
 
 -- end
 
+
 -- Table: orders_order
 -- changed: 16.01.2012
 
 ALTER TABLE orders_order DROP CONSTRAINT fk3daecd74aea6e4cc;
+
+-- end
+
 
 -- Table: basic_contractor
 -- changed: 11.01.2012
 
 DROP TABLE basic_contractor;
 
-
--- end
-
-
--- Table: basic_parameter
--- changed: 12.01.2012
-
-UPDATE basic_parameter SET 
-	hideDescriptionInWorkPlans = false,
-	hideDetailsInWorkPlans = false,
-	hideTechnologyAndOrderInWorkPlans = false,
-	dontPrintInputProductsInWorkPlans = false,
-	dontPrintOutputProductsInWorkPlans = false;
-	
 -- end
 
 
@@ -386,68 +304,92 @@ ALTER TABLE orders_order ADD CONSTRAINT company_company_fkey FOREIGN KEY (compan
 -- end
 
 
--- Table: workplans_columndefinition
--- changed: 13.01.2012
+-- Table: workplans_columnforoutputproducts
+-- changed: 18.01.2012
 
-CREATE TABLE workplans_columndefinition
+CREATE TABLE workplans_columnforinputproducts
 (
   id bigint NOT NULL,
-  identifier character varying(255),
   name character varying(255),
   description character varying(255),
-  pluginidentifier character varying(255),
-  CONSTRAINT workplans_columndefinition_pkey PRIMARY KEY (id )
+  columnfiller character varying(255),
+  CONSTRAINT workplans_columnforinputproducts_pkey PRIMARY KEY (id )
 );
 
--- end
-
-
--- Table: workplans_columnforinputproducts
--- changed: 13.01.2012
-
-ALTER TABLE workplans_columnforinputproducts DROP COLUMN name; 
-ALTER TABLE workplans_columnforinputproducts DROP COLUMN description; 
-ALTER TABLE workplans_columnforinputproducts DROP COLUMN pluginidentifier; 
-
-ALTER TABLE workplans_columnforinputproducts ADD COLUMN columndefinition_id bigint;
-
-ALTER TABLE workplans_columnforinputproducts ADD CONSTRAINT workplans_columnforinputproducts_cd_fkey FOREIGN KEY (columndefinition_id)
-      REFERENCES workplans_columndefinition (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION;
-      
 -- end
 
 
 -- Table: workplans_columnforoutputproducts
--- changed: 13.01.2012
+-- changed: 18.01.2012
 
-ALTER TABLE workplans_columnforoutputproducts DROP COLUMN name; 
-ALTER TABLE workplans_columnforoutputproducts DROP COLUMN description; 
-ALTER TABLE workplans_columnforoutputproducts DROP COLUMN pluginidentifier; 
-
-ALTER TABLE workplans_columnforoutputproducts ADD COLUMN columndefinition_id bigint;
-
-ALTER TABLE workplans_columnforoutputproducts ADD CONSTRAINT workplans_columnforoutputproducts_cd_fkey FOREIGN KEY (columndefinition_id)
-      REFERENCES workplans_columndefinition (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION;
+CREATE TABLE workplans_columnforoutputproducts
+(
+  id bigint NOT NULL,
+  name character varying(255),
+  description character varying(255),
+  columnfiller character varying(255),
+  CONSTRAINT workplans_columnforoutputproducts_pkey PRIMARY KEY (id )
+);
 
 -- end
 
 
--- Table: workplans_operationinputcomponent
--- changed: 13.01.2012
+-- Table: workplans_parameterinputcolumn
+-- changed: 18.01.2012
 
-CREATE TABLE workplans_operationinputcomponent
+CREATE TABLE workplans_parameterinputcolumn
+(
+  id bigint NOT NULL,
+  parameter_id bigint,
+  columnforinputproducts_id bigint,
+  succession integer,
+  CONSTRAINT workplans_parameterinputcolumn_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_parameteroutputcolumn_parameter_fkey  FOREIGN KEY (parameter_id)
+      REFERENCES basic_parameter (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT workplans_parameterinputcolumn_cfip_fkey FOREIGN KEY (columnforinputproducts_id)
+      REFERENCES workplans_columnforinputproducts (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+-- end
+
+
+-- Table: workplans_parameteroutputcolumn
+-- changed: 18.01.2012
+
+CREATE TABLE workplans_parameteroutputcolumn
+(
+  id bigint NOT NULL,
+  parameter_id bigint,
+  columnforoutputproducts_id bigint,
+  succession integer,
+  CONSTRAINT workplans_parameteroutputcolumn_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_parameteroutputcolumn_parameter_fkey FOREIGN KEY (parameter_id)
+      REFERENCES basic_parameter (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT workplans_parameteroutputcolumn_cfop_fkey FOREIGN KEY (columnforoutputproducts_id)
+      REFERENCES workplans_columnforoutputproducts (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+-- end
+
+
+-- Table: workplans_operationinputcolumn
+-- changed: 18.01.2012
+
+CREATE TABLE workplans_operationinputcolumn
 (
   id bigint NOT NULL,
   operation_id bigint,
   columnforinputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_operationinputcomponent_pkey PRIMARY KEY (id ),
-  CONSTRAINT workplans_operationinputcomponent_operation_fkey  FOREIGN KEY (operation_id)
+  CONSTRAINT workplans_operationinputcolumn_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_operationinputcolumn_operation_fkey  FOREIGN KEY (operation_id)
       REFERENCES technologies_operation (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT workplans_operationinputcomponent_cfip_fkey FOREIGN KEY (columnforinputproducts_id)
+  CONSTRAINT workplans_operationinputcolumn_cfip_fkey FOREIGN KEY (columnforinputproducts_id)
       REFERENCES workplans_columnforinputproducts (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
@@ -455,20 +397,20 @@ CREATE TABLE workplans_operationinputcomponent
 -- end
 
 
--- Table: workplans_operationoutputcomponent
--- changed: 13.01.2012
+-- Table: workplans_operationoutputcolumn
+-- changed: 18.01.2012
 
-CREATE TABLE workplans_operationoutputcomponent
+CREATE TABLE workplans_operationoutputcolumn
 (
   id bigint NOT NULL,
   operation_id bigint,
   columnforoutputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_operationoutputcomponent_pkey PRIMARY KEY (id ),
-  CONSTRAINT workplans_operationoutputcomponent_operation_fkey FOREIGN KEY (operation_id)
+  CONSTRAINT workplans_operationoutputcolumn_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_operationoutputcolumn_operation_fkey FOREIGN KEY (operation_id)
       REFERENCES technologies_operation (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT workplans_operationoutputcomponent_cfop_fkey FOREIGN KEY (columnforoutputproducts_id)
+  CONSTRAINT workplans_operationoutputcolumn_cfop_fkey FOREIGN KEY (columnforoutputproducts_id)
       REFERENCES workplans_columnforoutputproducts (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
@@ -476,20 +418,20 @@ CREATE TABLE workplans_operationoutputcomponent
 -- end
 
 
--- Table: workplans_technologyoperationinputcomponent
--- changed: 13.01.2012
+-- Table: workplans_technologyoperationinputcolumn
+-- changed: 18.01.2012
 
-CREATE TABLE workplans_technologyoperationinputcomponent
+CREATE TABLE workplans_technologyoperationinputcolumn
 (
   id bigint NOT NULL,
   technologyoperationcomponent_id bigint,
   columnforinputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_technologyoperationinputcomponent_pkey PRIMARY KEY (id ),
-  CONSTRAINT workplans_technologyoperationinputcomponent_toc_fkey  FOREIGN KEY (technologyoperationcomponent_id)
+  CONSTRAINT workplans_technologyoperationinputcolumn_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_technologyoperationinputcolumn_toc_fkey  FOREIGN KEY (technologyoperationcomponent_id)
       REFERENCES technologies_technologyoperationcomponent (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT workplans_technologyoperationinputcomponent_cfip_fkey FOREIGN KEY (columnforinputproducts_id)
+  CONSTRAINT workplans_technologyoperationinputcolumn_cfip_fkey FOREIGN KEY (columnforinputproducts_id)
       REFERENCES workplans_columnforinputproducts (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
@@ -497,20 +439,20 @@ CREATE TABLE workplans_technologyoperationinputcomponent
 -- end
 
 
--- Table: workplans_technologyoperationoutputcomponent
--- changed: 13.01.2012
+-- Table: workplans_technologyoperationoutputcolumn
+-- changed: 18.01.2012
 
-CREATE TABLE workplans_technologyoperationoutputcomponent
+CREATE TABLE workplans_technologyoperationoutputcolumn
 (
   id bigint NOT NULL,
   technologyoperationcomponent_id bigint,
   columnforoutputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_technologyoperationoutputcomponent_pkey PRIMARY KEY (id ),
-  CONSTRAINT workplans_technologyoperationoutputcomponent_toc_fkey FOREIGN KEY (technologyoperationcomponent_id)
+  CONSTRAINT workplans_technologyoperationoutputcolumn_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_technologyoperationoutputcolumn_toc_fkey FOREIGN KEY (technologyoperationcomponent_id)
       REFERENCES technologies_technologyoperationcomponent (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT workplans_technologyoperationoutputcomponent_cfop_fkey FOREIGN KEY (columnforoutputproducts_id)
+  CONSTRAINT workplans_technologyoperationoutputcolumn_cfop_fkey FOREIGN KEY (columnforoutputproducts_id)
       REFERENCES workplans_columnforoutputproducts (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
@@ -518,20 +460,20 @@ CREATE TABLE workplans_technologyoperationoutputcomponent
 -- end
 
 
--- Table: workplans_orderoperationinputcomponent
--- changed: 13.01.2012
+-- Table: workplans_orderoperationinputcolumn
+-- changed: 18.01.2012
 
-CREATE TABLE workplans_orderoperationinputcomponent
+CREATE TABLE workplans_orderoperationinputcolumn
 (
   id bigint NOT NULL,
   orderoperationcomponent_id bigint,
   columnforinputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_orderoperationinputcomponent_pkey PRIMARY KEY (id ),
-  CONSTRAINT workplans_orderoperationinputcomponent_ooc_fkey  FOREIGN KEY (orderoperationcomponent_id)
+  CONSTRAINT workplans_orderoperationinputcolumn_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_orderoperationinputcolumn_ooc_fkey  FOREIGN KEY (orderoperationcomponent_id)
       REFERENCES productionscheduling_orderoperationcomponent (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT workplans_orderoperationinputcomponent_cfip_fkey FOREIGN KEY (columnforinputproducts_id)
+  CONSTRAINT workplans_orderoperationinputcolumn_cfip_fkey FOREIGN KEY (columnforinputproducts_id)
       REFERENCES workplans_columnforinputproducts (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
@@ -539,30 +481,42 @@ CREATE TABLE workplans_orderoperationinputcomponent
 -- end
 
 
--- Table: workplans_orderoperationoutputcomponent
--- changed: 13.01.2012
+-- Table: workplans_orderoperationoutputcolumn
+-- changed: 18.01.2012
 
-CREATE TABLE workplans_orderoperationoutputcomponent
+CREATE TABLE workplans_orderoperationoutputcolumn
 (
   id bigint NOT NULL,
   orderoperationcomponent_id bigint,
   columnforoutputproducts_id bigint,
   succession integer,
-  CONSTRAINT workplans_orderoperationoutputcomponent_pkey PRIMARY KEY (id ),
-  CONSTRAINT workplans_orderoperationoutputcomponent_ooc_fkey FOREIGN KEY (orderoperationcomponent_id)
+  CONSTRAINT workplans_orderoperationoutputcolumn_pkey PRIMARY KEY (id ),
+  CONSTRAINT workplans_orderoperationoutputcolumn_ooc_fkey FOREIGN KEY (orderoperationcomponent_id)
       REFERENCES productionscheduling_orderoperationcomponent (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT workplans_orderoperationoutputcomponent_cfop_fkey FOREIGN KEY (columnforoutputproducts_id)
+  CONSTRAINT workplans_orderoperationoutputcolumn_cfop_fkey FOREIGN KEY (columnforoutputproducts_id)
       REFERENCES workplans_columnforoutputproducts (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 -- end
 
+
+-- Table: basic_parameter
+-- changed: 18.01.2012
+
+UPDATE basic_parameter SET 
+	hideDescriptionInWorkPlans = false,
+	hideDetailsInWorkPlans = false,
+	hideTechnologyAndOrderInWorkPlans = false,
+	dontPrintInputProductsInWorkPlans = false,
+	dontPrintOutputProductsInWorkPlans = false;
+	
+-- end
 
 
 -- Table: technologies_operation
--- changed: 17.01.2012
+-- changed: 18.01.2012
 
 UPDATE technologies_operation SET 
 	hideDescriptionInWorkPlans = false,
@@ -574,7 +528,7 @@ UPDATE technologies_operation SET
 -- end
 
 -- Table: technologies_technologyoperationcomponent
--- changed: 17.01.2012
+-- changed: 18.01.2012
 
 UPDATE technologies_technologyoperationcomponent SET 
 	hideDescriptionInWorkPlans = false,
@@ -587,7 +541,7 @@ UPDATE technologies_technologyoperationcomponent SET
 
 
 -- Table: productionscheduling_orderoperationcomponent
--- changed: 17.01.2012
+-- changed: 18.01.2012
 
 UPDATE productionscheduling_orderoperationcomponent SET 
 	hideDescriptionInWorkPlans = false,

@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
@@ -31,9 +32,12 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class OperationModelValidators {
 
+    @Autowired
+    private ValidatorService validatorService;
+
     public final boolean checkIfAttachmentExtensionIsValid(final DataDefinition operationDD, final Entity operation) {
 
-        return new ValidatorServiceImpl().checkIfAttachmentExtensionIsValid(operationDD, operation, "imageUrlInWorkPlan");
+        return validatorService.checkIfAttachmentExtensionIsValid(operationDD, operation, "imageUrlInWorkPlan");
     }
 
 }

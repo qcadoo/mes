@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
+ * Project: Qcadoo MES
  * Version: 1.1.1
  *
  * This file is part of Qcadoo.
@@ -21,25 +21,21 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.hooks;
+package com.qcadoo.mes.workPlans;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+public interface WorkPlansColumnLoaderService {
 
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+    void fillColumnsForProducts(final String plugin);
 
-@Service
-public class TechnologyOperationComponentModelValidators {
+    void clearColumnsForProducts(final String plugin);
 
-    @Autowired
-    private ValidatorService validatorService;
+    void setParameterDefaultValues();
 
-    public final boolean checkIfAttachmentExtensionIsValid(final DataDefinition technologyOperationComponentDD,
-            final Entity technologyOperationComponent) {
+    void setOperationDefaultValues();
 
-        return validatorService.checkIfAttachmentExtensionIsValid(technologyOperationComponentDD, technologyOperationComponent,
-                "imageUrlInWorkPlan");
-    }
+    void setTechnologyOperationComponentDefaultValues();
 
+    void setOrderOperationComponentDefaultValues();
+
+    boolean databaseHasToBePrepared();
 }

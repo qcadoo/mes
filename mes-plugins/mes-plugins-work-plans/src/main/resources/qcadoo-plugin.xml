@@ -251,7 +251,7 @@
 			class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentViewHooks"
 			method="setTechnologyOperationComponentDefaultValues" />
 		
-		<custom:custom class="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnLoader" />
+		<custom:custom class="com.qcadoo.mes.workPlans.WorkPlanOnStartupService" />
 	</modules>
 
 </plugin>

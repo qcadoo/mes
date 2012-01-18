@@ -1,10 +1,13 @@
 package com.qcadoo.mes.workPlans.hooks;
 
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 
+@Service
 public class ValidatorServiceImpl implements ValidatorService {
 
     public boolean checkIfAttachmentExtensionIsValid(final DataDefinition modelDD, final Entity model, final String attachmentName) {

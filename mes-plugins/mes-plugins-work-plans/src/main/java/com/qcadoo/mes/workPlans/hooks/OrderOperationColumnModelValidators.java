@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
@@ -31,17 +32,20 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class OrderOperationColumnModelValidators {
 
+    @Autowired
+    private ValidatorService validatorService;
+
     public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputColumnDD,
             final Entity inputColumn) {
 
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(inputColumnDD, inputColumn, "orderOperationColumn",
+        return validatorService.checkIfColumnForProductsIsNotUsed(inputColumnDD, inputColumn, "orderOperationColumn",
                 "columnForInputProducts", "orderOperatonInputColumns");
     }
 
     public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputColumnDD,
             final Entity outputColumn) {
 
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(outputColumnDD, outputColumn, "orderOperationColumn",
+        return validatorService.checkIfColumnForProductsIsNotUsed(outputColumnDD, outputColumn, "orderOperationColumn",
                 "columnForOutputProducts", "orderOperationOutputColumns");
     }
 
