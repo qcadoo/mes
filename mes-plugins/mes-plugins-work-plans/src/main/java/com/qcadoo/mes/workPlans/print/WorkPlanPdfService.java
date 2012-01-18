@@ -592,7 +592,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         orderHeader.add(getTranslationService().translate("orders.order.number.label", locale));
         orderHeader.add(getTranslationService().translate("orders.order.name.label", locale));
         orderHeader.add(getTranslationService().translate("workPlans.workPlan.report.colums.product", locale));
-        orderHeader.add(getTranslationService().translate("workPlans.columnDefinition.name.value.plannedQuantity", locale));
+        orderHeader.add(getTranslationService().translate("workPlans.workPlan.report.colums.plannedQuantity", locale));
         orderHeader.add(getTranslationService().translate("workPlans.orderTable.dateTo", locale));
         return orderHeader;
     }
