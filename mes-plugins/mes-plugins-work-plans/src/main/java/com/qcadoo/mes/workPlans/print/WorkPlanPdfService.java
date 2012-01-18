@@ -23,11 +23,13 @@
  */
 package com.qcadoo.mes.workPlans.print;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -112,40 +114,50 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private Map<Entity, Map<String, String>> getColumnValues(List<Entity> orders) {
         Map<Entity, Map<String, String>> valuesMap = new HashMap<Entity, Map<String, String>>();
 
-        DataDefinition dd = dataDefinitionService.get("workPlans", "columnDefinition");
+        for (String columnDefinitionModel : Arrays.asList("columnForInputProducts", "columnForOutputProducts")) {
+            DataDefinition dd = dataDefinitionService.get("workPlans", columnDefinitionModel);
 
-        List<Entity> columnDefinitions = dd.find().list().getEntities();
+            List<Entity> columnDefinitions = dd.find().list().getEntities();
 
-        Set<String> classesStrings = new HashSet<String>();
+            Set<String> classesStrings = new HashSet<String>();
 
-        for (Entity columnDefinition : columnDefinitions) {
-            String classString = columnDefinition.getStringField("pluginIdentifier");
-            classesStrings.add(classString);
-        }
-
-        for (String classString : classesStrings) {
-            Class<?> columnFiller;
-            try {
-                columnFiller = Class.forName(classString);
-            } catch (Throwable e) {
-                throw new IllegalStateException("Failed to find class: " + classString, e);
+            for (Entity columnDefinition : columnDefinitions) {
+                String classString = columnDefinition.getStringField("columnFiller");
+                classesStrings.add(classString);
             }
 
-            Method method;
+            for (String classString : classesStrings) {
+                Class<?> columnFiller;
+                try {
+                    columnFiller = Class.forName(classString);
+                } catch (ClassNotFoundException e) {
+                    throw new IllegalStateException("Failed to find class: " + classString, e);
+                }
 
-            try {
-                method = columnFiller.getMethod("getValues", List.class);
-            } catch (Throwable e) {
-                throw new IllegalStateException("Failed to find column evaulator method in class: " + classString, e);
-            }
+                Method method;
 
-            try {
-                @SuppressWarnings("unchecked")
-                Map<Entity, Map<String, String>> values = (Map<Entity, Map<String, String>>) method.invoke(
-                        columnFiller.newInstance(), orders);
+                try {
+                    method = columnFiller.getMethod("getValues", List.class);
+                } catch (SecurityException e) {
+                    throw new IllegalStateException("Failed to find column evaulator method in class: " + classString, e);
+                } catch (NoSuchMethodException e) {
+                    throw new IllegalStateException("Failed to find column evaulator method in class: " + classString, e);
+                }
+
+                Map<Entity, Map<String, String>> values;
+
+                try {
+                    values = (Map<Entity, Map<String, String>>) method.invoke(columnFiller.newInstance(), orders);
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalStateException("Failed to invoke column evaulator method", e);
+                } catch (IllegalAccessException e) {
+                    throw new IllegalStateException("Failed to invoke column evaulator method", e);
+                } catch (InvocationTargetException e) {
+                    throw new IllegalStateException("Failed to invoke column evaulator method", e);
+                } catch (InstantiationException e) {
+                    throw new IllegalStateException("Failed to invoke column evaulator method", e);
+                }
                 valuesMap.putAll(values);
-            } catch (Throwable e) {
-                throw new IllegalStateException("Failed to invoke column evaulator method", e);
             }
         }
 
@@ -508,10 +520,10 @@ public class WorkPlanPdfService extends PdfDocumentService {
         final String columnDefinitionModel;
 
         if (ProductDirection.IN.equals(direction)) {
-            dd = dataDefinitionService.get("workPlans", "parameterInputComponent");
+            dd = dataDefinitionService.get("workPlans", "parameterInputColumn");
             columnDefinitionModel = "columnForInputProducts";
         } else if (ProductDirection.OUT.equals(direction)) {
-            dd = dataDefinitionService.get("workPlans", "parameterOutputComponent");
+            dd = dataDefinitionService.get("workPlans", "parameterOutputColumn");
             columnDefinitionModel = "columnForOutputProducts";
         } else {
             throw new IllegalStateException("Wrong product direction");
@@ -530,8 +542,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         });
 
         for (Entity columnComponent : columnComponents) {
-            Entity columnDefinition = columnComponent.getBelongsToField(columnDefinitionModel).getBelongsToField(
-                    "columnDefinition");
+            Entity columnDefinition = columnComponent.getBelongsToField(columnDefinitionModel);
 
             columns.add(columnDefinition);
         }
