@@ -58,6 +58,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
+import com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansProductsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -83,15 +84,10 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private SecurityService securityService;
 
     @Autowired
-    private WorkPlanProductsService workPlanProductsService;
+    private WorkPlansProductsService workPlanProductsService;
 
     enum ProductDirection {
         IN, OUT;
-    }
-
-    // TODO mici purely temporary solution until we make proper function calls from other plugins.
-    enum Column {
-        PRODUCT, QUANTITY;
     }
 
     @Override
@@ -125,30 +121,29 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         List<Entity> columnDefinitions = dd.find().list().getEntities();
 
-        Set<String> plugins = new HashSet<String>();
+        Set<String> classesStrings = new HashSet<String>();
 
         for (Entity columnDefinition : columnDefinitions) {
-            String plugin = columnDefinition.getStringField("pluginIdentifier");
-            plugins.add(plugin);
+            String classString = columnDefinition.getStringField("pluginIdentifier");
+            classesStrings.add(classString);
         }
 
-        for (String plugin : plugins) {
+        for (String classString : classesStrings) {
             Class columnFiller;
             try {
-                String classString = plugin.substring(0, 1).toUpperCase() + plugin.substring(1) + "ColumnFiller";
-                String fullPath = "com.qcadoo.mes." + plugin + ".workPlansColumnExtension." + classString;
-                columnFiller = Class.forName(fullPath);
+                columnFiller = Class.forName(classString);
             } catch (ClassNotFoundException e) {
-                continue;
+                throw new IllegalStateException("Failed to find class: " + classString, e);
             }
 
             Method method;
+
             try {
                 method = columnFiller.getMethod("getValues", List.class);
             } catch (SecurityException e) {
-                continue;
+                throw new IllegalStateException("Failed to find class: " + classString, e);
             } catch (NoSuchMethodException e) {
-                continue;
+                throw new IllegalStateException("Failed to find column evaulator method in class: " + classString, e);
             }
 
             Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
@@ -156,13 +151,13 @@ public class WorkPlanPdfService extends PdfDocumentService {
             try {
                 values = (Map) method.invoke(columnFiller.newInstance(), orders);
             } catch (IllegalArgumentException e) {
-                e.printStackTrace();
+                throw new IllegalStateException("Failed to invoke column evaulator method", e);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                throw new IllegalStateException("Failed to invoke column evaulator method", e);
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
+                throw new IllegalStateException("Failed to invoke column evaulator method", e);
             } catch (InstantiationException e) {
-                e.printStackTrace();
+                throw new IllegalStateException("Failed to invoke column evaulator method", e);
             }
 
             valuesMap.putAll(values);
