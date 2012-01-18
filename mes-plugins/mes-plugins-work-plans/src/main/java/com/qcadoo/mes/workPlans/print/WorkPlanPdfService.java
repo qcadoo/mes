@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.print;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -58,7 +57,6 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
-import com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansProductsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -82,9 +80,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     @Autowired
     private SecurityService securityService;
-
-    @Autowired
-    private WorkPlansProductsService workPlanProductsService;
 
     enum ProductDirection {
         IN, OUT;
@@ -129,10 +124,10 @@ public class WorkPlanPdfService extends PdfDocumentService {
         }
 
         for (String classString : classesStrings) {
-            Class columnFiller;
+            Class<?> columnFiller;
             try {
                 columnFiller = Class.forName(classString);
-            } catch (ClassNotFoundException e) {
+            } catch (Throwable e) {
                 throw new IllegalStateException("Failed to find class: " + classString, e);
             }
 
@@ -140,27 +135,18 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
             try {
                 method = columnFiller.getMethod("getValues", List.class);
-            } catch (SecurityException e) {
-                throw new IllegalStateException("Failed to find class: " + classString, e);
-            } catch (NoSuchMethodException e) {
+            } catch (Throwable e) {
                 throw new IllegalStateException("Failed to find column evaulator method in class: " + classString, e);
             }
 
-            Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
-
             try {
-                values = (Map) method.invoke(columnFiller.newInstance(), orders);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalStateException("Failed to invoke column evaulator method", e);
-            } catch (IllegalAccessException e) {
-                throw new IllegalStateException("Failed to invoke column evaulator method", e);
-            } catch (InvocationTargetException e) {
-                throw new IllegalStateException("Failed to invoke column evaulator method", e);
-            } catch (InstantiationException e) {
+                @SuppressWarnings("unchecked")
+                Map<Entity, Map<String, String>> values = (Map<Entity, Map<String, String>>) method.invoke(
+                        columnFiller.newInstance(), orders);
+                valuesMap.putAll(values);
+            } catch (Throwable e) {
                 throw new IllegalStateException("Failed to invoke column evaulator method", e);
             }
-
-            valuesMap.putAll(values);
         }
 
         return valuesMap;
@@ -394,16 +380,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return operationComponentsWithDistinction;
     }
 
-    private int[] getColumnWidths(int columns) {
-        int[] columnWidths = new int[columns];
-
-        for (int i = 0; i < columnWidths.length; ++i) {
-            columnWidths[i] = (int) (100.0f / columnWidths.length);
-        }
-
-        return columnWidths;
-    }
-
     void addProductsSeries(List<Entity> productComponents, Document document, Map<Entity, Map<String, String>> columnValues,
             Entity operationComponent, final DecimalFormat df, ProductDirection direction, Locale locale)
             throws DocumentException {
@@ -413,7 +389,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         // TODO mici, I couldnt sort productComponents without making a new linkedList out of it
         productComponents = Lists.newLinkedList(productComponents);
-
         Collections.sort(productComponents, new Comparator<Entity>() {
 
             @Override
@@ -431,11 +406,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
             return;
         }
 
-        // TODO mici, column widths got overlooked in analysis
-        int[] columnWidths = getColumnWidths(columns.size());
-
         PdfPTable table = PdfUtil.createTableWithHeader(columns.size(),
-                prepareProductsTableHeader(document, columns, direction, locale), false, columnWidths);
+                prepareProductsTableHeader(document, columns, direction, locale), false);
 
         for (Entity productComponent : productComponents) {
             for (Entity column : columns) {
@@ -604,10 +576,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
     }
 
     String getImagePathFromDD(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        String imagePath = parameters.getStringField("imageUrlInWorkPlan");
+        String imagePath = operationComponent.getStringField("imageUrlInWorkPlan");
 
         if (imagePath == null) {
             throw new NoSuchElementException("no image");
@@ -617,47 +586,27 @@ public class WorkPlanPdfService extends PdfDocumentService {
     }
 
     public boolean isCommentEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideComment = (Boolean) parameters.getField("hideDescriptionInWorkPlans");
-
+        boolean hideComment = operationComponent.getBooleanField("hideDescriptionInWorkPlans");
         return !hideComment;
     }
 
     public boolean isOrderInfoEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideOrderInfo = (Boolean) parameters.getField("hideTechnologyAndOrderInWorkPlans");
-
+        boolean hideOrderInfo = operationComponent.getBooleanField("hideTechnologyAndOrderInWorkPlans");
         return !hideOrderInfo;
     }
 
     public boolean isWorkstationInfoEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideWorkstationInfo = (Boolean) parameters.getField("hideDetailsInWorkPlans");
-
+        boolean hideWorkstationInfo = operationComponent.getBooleanField("hideDetailsInWorkPlans");
         return !hideWorkstationInfo;
     }
 
     public boolean isInputProductTableEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideInputProducts = (Boolean) parameters.getField("dontPrintInputProductsInWorkPlans");
-
+        boolean hideInputProducts = operationComponent.getBooleanField("dontPrintInputProductsInWorkPlans");
         return !hideInputProducts;
     }
 
     public boolean isOutputProductTableEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideOutputProducts = (Boolean) parameters.getField("dontPrintOutputProductsInWorkPlans");
-
+        boolean hideOutputProducts = operationComponent.getBooleanField("dontPrintOutputProductsInWorkPlans");
         return !hideOutputProducts;
     }
 }
