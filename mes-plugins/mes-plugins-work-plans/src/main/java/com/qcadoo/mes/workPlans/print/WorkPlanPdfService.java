@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.workPlans.print;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -31,12 +33,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +58,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
+import com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansProductsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -79,15 +84,10 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private SecurityService securityService;
 
     @Autowired
-    private WorkPlanProductsService workPlanProductsService;
+    private WorkPlansProductsService workPlanProductsService;
 
     enum ProductDirection {
         IN, OUT;
-    }
-
-    // TODO mici purely temporary solution until we make proper function calls from other plugins.
-    enum Column {
-        PRODUCT, QUANTITY;
     }
 
     @Override
@@ -114,18 +114,71 @@ public class WorkPlanPdfService extends PdfDocumentService {
         addOperations(document, workPlan, decimalFormat, locale);
     }
 
+    private Map<Entity, Map<String, String>> getColumnValues(List<Entity> orders) {
+        Map<Entity, Map<String, String>> valuesMap = new HashMap<Entity, Map<String, String>>();
+
+        DataDefinition dd = dataDefinitionService.get("workPlans", "columnDefinition");
+
+        List<Entity> columnDefinitions = dd.find().list().getEntities();
+
+        Set<String> classesStrings = new HashSet<String>();
+
+        for (Entity columnDefinition : columnDefinitions) {
+            String classString = columnDefinition.getStringField("pluginIdentifier");
+            classesStrings.add(classString);
+        }
+
+        for (String classString : classesStrings) {
+            Class columnFiller;
+            try {
+                columnFiller = Class.forName(classString);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalStateException("Failed to find class: " + classString, e);
+            }
+
+            Method method;
+
+            try {
+                method = columnFiller.getMethod("getValues", List.class);
+            } catch (SecurityException e) {
+                throw new IllegalStateException("Failed to find class: " + classString, e);
+            } catch (NoSuchMethodException e) {
+                throw new IllegalStateException("Failed to find column evaulator method in class: " + classString, e);
+            }
+
+            Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
+
+            try {
+                values = (Map) method.invoke(columnFiller.newInstance(), orders);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalStateException("Failed to invoke column evaulator method", e);
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException("Failed to invoke column evaulator method", e);
+            } catch (InvocationTargetException e) {
+                throw new IllegalStateException("Failed to invoke column evaulator method", e);
+            } catch (InstantiationException e) {
+                throw new IllegalStateException("Failed to invoke column evaulator method", e);
+            }
+
+            valuesMap.putAll(values);
+        }
+
+        return valuesMap;
+    }
+
     void addOperations(Document document, Entity workPlan, final DecimalFormat df, Locale locale) throws DocumentException {
         Map<Entity, Entity> operationComponent2order = new HashMap<Entity, Entity>();
 
         List<Entity> orders = workPlan.getManyToManyField("orders");
 
-        Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation = workPlanProductsService.getProductQuantities(orders);
+        Map<Entity, Map<String, String>> columnValues = getColumnValues(orders);
 
         for (Entry<PrioritizedString, List<Entity>> entry : getOperationComponentsWithDistinction(workPlan,
                 operationComponent2order, locale).entrySet()) {
             document.newPage();
 
             document.add(new Paragraph(entry.getKey().getString(), PdfUtil.getArialBold11Dark()));
+
             for (Entity operationComponent : entry.getValue()) {
                 PdfPTable operationTable = PdfUtil.createPanelTable(3);
                 addOperationInfoToTheOperationHeader(operationTable, operationComponent, locale);
@@ -146,11 +199,11 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 }
 
                 if (isOutputProductTableEnabled(operationComponent)) {
-                    addOutProductsSeries(document, operationComponent, productQuantitiesPerOperation, df, locale);
+                    addOutProductsSeries(document, columnValues, operationComponent, df, locale);
                 }
 
                 if (isInputProductTableEnabled(operationComponent)) {
-                    addInProductsSeries(document, operationComponent, productQuantitiesPerOperation, df, locale);
+                    addInProductsSeries(document, columnValues, operationComponent, df, locale);
                 }
 
                 addAdditionalFields(document, operationComponent, locale);
@@ -341,9 +394,19 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return operationComponentsWithDistinction;
     }
 
-    void addProductsSeries(List<Entity> productComponents, Document document, Entity operationComponent,
-            Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation, final DecimalFormat df,
-            ProductDirection direction, Locale locale) throws DocumentException {
+    private int[] getColumnWidths(int columns) {
+        int[] columnWidths = new int[columns];
+
+        for (int i = 0; i < columnWidths.length; ++i) {
+            columnWidths[i] = (int) (100.0f / columnWidths.length);
+        }
+
+        return columnWidths;
+    }
+
+    void addProductsSeries(List<Entity> productComponents, Document document, Map<Entity, Map<String, String>> columnValues,
+            Entity operationComponent, final DecimalFormat df, ProductDirection direction, Locale locale)
+            throws DocumentException {
         if (productComponents.isEmpty()) {
             return;
         }
@@ -362,49 +425,23 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         });
 
-        List<String> columns = fetchColumnsDefinition(direction, operationComponent);
+        List<Entity> columns = fetchColumnDefinitions(direction, operationComponent);
 
         if (columns.isEmpty()) {
             return;
         }
 
         // TODO mici, column widths got overlooked in analysis
-        int[] columnWidths = new int[columns.size()];
-
-        for (int i = 0; i < columnWidths.length; ++i) {
-            columnWidths[i] = (int) (100.0f / columnWidths.length);
-        }
+        int[] columnWidths = getColumnWidths(columns.size());
 
         PdfPTable table = PdfUtil.createTableWithHeader(columns.size(),
                 prepareProductsTableHeader(document, columns, direction, locale), false, columnWidths);
 
         for (Entity productComponent : productComponents) {
-            // TODO mici, totally wrong way of doing this
-            for (String columnNameKey : columns) {
-                if (columnNameKey.endsWith(".productName")) {
-                    Entity product = productComponent.getBelongsToField("product");
-
-                    StringBuilder productString = new StringBuilder(product.getStringField("name"));
-                    productString.append(" (");
-                    productString.append(product.getStringField("number"));
-                    productString.append(")");
-
-                    table.addCell(new Phrase(productString.toString(), PdfUtil.getArialRegular9Dark()));
-                } else if (columnNameKey.endsWith(".plannedQuantity")) {
-                    Entity product = productComponent.getBelongsToField("product");
-
-                    BigDecimal quantity = productQuantitiesPerOperation.get(operationComponent).get(productComponent);
-
-                    StringBuilder quantityString = new StringBuilder(df.format(quantity));
-
-                    Object unit = product.getField("unit");
-                    if (unit != null) {
-                        quantityString.append(" ");
-                        quantityString.append(unit.toString());
-                    }
-
-                    table.addCell(new Phrase(quantityString.toString(), PdfUtil.getArialRegular9Dark()));
-                }
+            for (Entity column : columns) {
+                String columnIdentifier = column.getStringField("identifier");
+                String value = columnValues.get(productComponent).get(columnIdentifier);
+                table.addCell(new Phrase(value, PdfUtil.getArialRegular9Dark()));
             }
         }
 
@@ -414,24 +451,20 @@ public class WorkPlanPdfService extends PdfDocumentService {
         document.add(table);
     }
 
-    void addInProductsSeries(Document document, Entity operationComponent,
-            Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation, final DecimalFormat df, Locale locale)
-            throws DocumentException {
+    void addInProductsSeries(Document document, Map<Entity, Map<String, String>> columnValues, Entity operationComponent,
+            final DecimalFormat df, Locale locale) throws DocumentException {
 
         List<Entity> productComponents = operationComponent.getHasManyField("operationProductInComponents");
 
-        addProductsSeries(productComponents, document, operationComponent, productQuantitiesPerOperation, df,
-                ProductDirection.IN, locale);
+        addProductsSeries(productComponents, document, columnValues, operationComponent, df, ProductDirection.IN, locale);
     }
 
-    void addOutProductsSeries(Document document, Entity operationComponent,
-            Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation, final DecimalFormat df, Locale locale)
-            throws DocumentException {
+    void addOutProductsSeries(Document document, Map<Entity, Map<String, String>> columnValues, Entity operationComponent,
+            final DecimalFormat df, Locale locale) throws DocumentException {
 
         List<Entity> productComponents = operationComponent.getHasManyField("operationProductOutComponents");
 
-        addProductsSeries(productComponents, document, operationComponent, productQuantitiesPerOperation, df,
-                ProductDirection.OUT, locale);
+        addProductsSeries(productComponents, document, columnValues, operationComponent, df, ProductDirection.OUT, locale);
     }
 
     void addOrderSeries(final PdfPTable table, final List<Entity> orders, final DecimalFormat df) throws DocumentException {
@@ -495,12 +528,11 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 (Date) entity.getField("date"), securityService.getCurrentUserName());
     }
 
-    List<String> fetchColumnsDefinition(ProductDirection direction, Entity operationComponent) {
-        List<String> columns = new LinkedList<String>();
+    List<Entity> fetchColumnDefinitions(ProductDirection direction, Entity operationComponent) {
+        List<Entity> columns = new LinkedList<Entity>();
 
         DataDefinition dd;
 
-        // TODO mici, I still don't think that those two should be separated models
         final String columnDefinitionModel;
 
         if (ProductDirection.IN.equals(direction)) {
@@ -529,14 +561,13 @@ public class WorkPlanPdfService extends PdfDocumentService {
             Entity columnDefinition = columnComponent.getBelongsToField(columnDefinitionModel).getBelongsToField(
                     "columnDefinition");
 
-            String columnNameKey = columnDefinition.getStringField("name");
-            columns.add(columnNameKey);
+            columns.add(columnDefinition);
         }
 
         return columns;
     }
 
-    List<String> prepareProductsTableHeader(final Document document, List<String> columns, ProductDirection direction,
+    List<String> prepareProductsTableHeader(final Document document, List<Entity> columns, ProductDirection direction,
             final Locale locale) throws DocumentException {
         String title;
         if (ProductDirection.IN.equals(direction)) {
@@ -548,10 +579,12 @@ public class WorkPlanPdfService extends PdfDocumentService {
         }
 
         document.add(new Paragraph(title, PdfUtil.getArialBold10Dark()));
+
         List<String> header = new ArrayList<String>();
 
-        for (String columnNameKey : columns) {
-            header.add(getTranslationService().translate(columnNameKey, locale));
+        for (Entity column : columns) {
+            String nameKey = column.getStringField("name");
+            header.add(getTranslationService().translate(nameKey, locale));
         }
 
         return header;

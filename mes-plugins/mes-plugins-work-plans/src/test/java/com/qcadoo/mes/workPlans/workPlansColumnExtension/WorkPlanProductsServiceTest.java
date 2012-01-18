@@ -1,9 +1,7 @@
-package com.qcadoo.mes.workPlans.print;
+package com.qcadoo.mes.workPlans.workPlansColumnExtension;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -25,7 +23,7 @@ import com.qcadoo.model.api.EntityTreeNode;
 
 public class WorkPlanProductsServiceTest {
 
-    private WorkPlanProductsService workPlanProductsService;
+    private WorkPlansProductsService workPlanProductsService;
 
     @Mock
     private EntityList orders;
@@ -74,7 +72,7 @@ public class WorkPlanProductsServiceTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        workPlanProductsService = new WorkPlanProductsService();
+        workPlanProductsService = new WorkPlansProductsService();
 
         Iterator<Entity> ordersIterator = mock(Iterator.class);
         when(orders.iterator()).thenReturn(ordersIterator);
@@ -96,10 +94,12 @@ public class WorkPlanProductsServiceTest {
         Iterator<Entity> productOutComponentsForOperation1iterator = mock(Iterator.class);
         when(productInComponentsForOperation1.iterator()).thenReturn(productInComponentsForOperation1iterator);
         when(productOutComponentsForOperation1.iterator()).thenReturn(productOutComponentsForOperation1iterator);
-        when(productInComponentsForOperation1iterator.hasNext()).thenReturn(true, false);
-        when(productOutComponentsForOperation1iterator.hasNext()).thenReturn(true, false);
-        when(productInComponentsForOperation1iterator.next()).thenReturn(productInComponent1);
-        when(productOutComponentsForOperation1iterator.next()).thenReturn(productOutComponent2);
+        when(productInComponentsForOperation1iterator.hasNext()).thenReturn(true, false, true, false, true, false);
+        when(productOutComponentsForOperation1iterator.hasNext()).thenReturn(true, false, true, false, true, false);
+        when(productInComponentsForOperation1iterator.next()).thenReturn(productInComponent1, productInComponent1,
+                productInComponent1);
+        when(productOutComponentsForOperation1iterator.next()).thenReturn(productOutComponent2, productOutComponent2,
+                productOutComponent2);
 
         productInComponentsForOperation2 = mock(EntityList.class);
         productOutComponentsForOperation2 = mock(EntityList.class);
@@ -108,10 +108,13 @@ public class WorkPlanProductsServiceTest {
         Iterator<Entity> productOutComponentsForOperation2iterator = mock(Iterator.class);
         when(productInComponentsForOperation2.iterator()).thenReturn(productInComponentsForOperation2iterator);
         when(productOutComponentsForOperation2.iterator()).thenReturn(productOutComponentsForOperation2iterator);
-        when(productInComponentsForOperation2iterator.hasNext()).thenReturn(true, true, false);
-        when(productOutComponentsForOperation2iterator.hasNext()).thenReturn(true, false);
-        when(productInComponentsForOperation2iterator.next()).thenReturn(productInComponent2, productInComponent3);
-        when(productOutComponentsForOperation2iterator.next()).thenReturn(productOutComponent4);
+        when(productInComponentsForOperation2iterator.hasNext()).thenReturn(true, true, false, true, true, false, true, true,
+                false);
+        when(productOutComponentsForOperation2iterator.hasNext()).thenReturn(true, false, true, false, true, false);
+        when(productInComponentsForOperation2iterator.next()).thenReturn(productInComponent2, productInComponent3,
+                productInComponent2, productInComponent3, productInComponent2, productInComponent3);
+        when(productOutComponentsForOperation2iterator.next()).thenReturn(productOutComponent4, productOutComponent4,
+                productOutComponent4);
 
         when(operationComponent1.getHasManyField("operationProductInComponents")).thenReturn(productInComponentsForOperation1);
         when(operationComponent1.getHasManyField("operationProductOutComponents")).thenReturn(productOutComponentsForOperation1);
@@ -124,8 +127,8 @@ public class WorkPlanProductsServiceTest {
         when(order.getField("plannedQuantity")).thenReturn(plannedQty);
 
         when(productInComponent1.getField("quantity")).thenReturn(new BigDecimal(5));
-        when(productInComponent2.getField("quantity")).thenReturn(new BigDecimal(2), new BigDecimal(10));
-        when(productInComponent3.getField("quantity")).thenReturn(new BigDecimal(1), new BigDecimal(5));
+        when(productInComponent2.getField("quantity")).thenReturn(new BigDecimal(2));
+        when(productInComponent3.getField("quantity")).thenReturn(new BigDecimal(1));
         when(productOutComponent2.getField("quantity")).thenReturn(new BigDecimal(1));
         when(productOutComponent4.getField("quantity")).thenReturn(new BigDecimal(1));
 
@@ -180,83 +183,50 @@ public class WorkPlanProductsServiceTest {
         when(technology.getTreeField("operationComponents")).thenReturn(tree);
     }
 
-    @Test
-    public void shouldReturnEmptyMapIfTheresNoTechnology() {
+    @Test(expected = IllegalStateException.class)
+    public void shouldReturnIllegalStateExceptionIfTheresNoTechnology() {
         // given
         when(order.getBelongsToField("technology")).thenReturn(null);
 
         // when
-        Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation = workPlanProductsService.getProductQuantities(orders);
-
-        // then
-        assertTrue(productQuantitiesPerOperation.isEmpty());
+        Map<Entity, BigDecimal> productQuantities = workPlanProductsService.getProductQuantities(orders);
     }
 
     @Test
-    public void shouldPreloadProductComponents() {
-        // given
-
-        // when
-        Map<Entity, List<Entity>> productInComponents = workPlanProductsService.preloadProductInComponents(tree);
-        Map<Entity, List<Entity>> productOutComponents = workPlanProductsService.preloadProductOutComponents(tree);
-
-        // then
-        assertEquals(productInComponentsForOperation1, productInComponents.get(operationComponent1));
-        assertEquals(productInComponentsForOperation2, productInComponents.get(operationComponent2));
-
-        assertEquals(productOutComponentsForOperation1, productOutComponents.get(operationComponent1));
-        assertEquals(productOutComponentsForOperation2, productOutComponents.get(operationComponent2));
-    }
-
-    @Test
-    public void shouldAlterTreeForSimpleAlgorithmCorrectly() {
-        // when
-        workPlanProductsService.alterTreeForSimpleAlgorithm(tree, productInComponents, productOutComponents, plannedQty);
-
-        // then
-        verify(productInComponent1).setField("quantity", new BigDecimal(25));
-        verify(productInComponent2).setField("quantity", new BigDecimal(10));
-        verify(productInComponent3).setField("quantity", new BigDecimal(5));
-        verify(productOutComponent2).setField("quantity", new BigDecimal(5));
-        verify(productOutComponent4).setField("quantity", new BigDecimal(5));
-    }
-
-    @Test
-    public void shouldAlterTreeForDetailedAlgorithmCorrectly() {
-        // when
-        workPlanProductsService.alterTreeForDetailedAlgorithm(tree, productInComponents, productOutComponents, technology,
-                plannedQty);
-
-        // then
-        verify(productOutComponent4).setField("quantity", new BigDecimal(5));
-        verify(productInComponent2).setField("quantity", new BigDecimal(10));
-        verify(productInComponent3).setField("quantity", new BigDecimal(5));
-        verify(productOutComponent2).setField("quantity", new BigDecimal(10));
-        verify(productInComponent1).setField("quantity", new BigDecimal(50));
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowIllegalStateExceptionIfThereIsNoAlgorithmSelectedInT() {
-        // when
-        Map<Entity, Map<Entity, BigDecimal>> productQuantities = workPlanProductsService.getProductQuantities(orders);
-    }
-
-    @Test
-    public void shouldPutCorrectQuantitiesInTheMap() {
+    public void shouldReturnCorrectQuantitiesForSimpleAlgorithm() {
         // given
         when(technology.getStringField("componentQuantityAlgorithm")).thenReturn("02perTechnology");
 
-        Map<Entity, Map<Entity, BigDecimal>> productQuantitiesPerOperation = new HashMap<Entity, Map<Entity, BigDecimal>>();
-
         // when
-        workPlanProductsService.getQuantities(productQuantitiesPerOperation, tree, productInComponents, productOutComponents,
-                plannedQty);
+        Map<Entity, BigDecimal> productQuantities = workPlanProductsService.getProductQuantities(orders);
 
         // then
-        assertEquals(new BigDecimal(1), productQuantitiesPerOperation.get(operationComponent2).get(productOutComponent4));
-        assertEquals(new BigDecimal(2), productQuantitiesPerOperation.get(operationComponent2).get(productInComponent2));
-        assertEquals(new BigDecimal(1), productQuantitiesPerOperation.get(operationComponent2).get(productInComponent3));
-        assertEquals(new BigDecimal(1), productQuantitiesPerOperation.get(operationComponent1).get(productOutComponent2));
-        assertEquals(new BigDecimal(5), productQuantitiesPerOperation.get(operationComponent1).get(productInComponent1));
+        assertEquals(new BigDecimal(25), productQuantities.get(productInComponent1));
+        assertEquals(new BigDecimal(10), productQuantities.get(productInComponent2));
+        assertEquals(new BigDecimal(5), productQuantities.get(productInComponent3));
+        assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent2));
+        assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent4));
+    }
+
+    @Test
+    public void shouldReturnCorrectQuantitiesForNormalAlgorithm() {
+        // given
+        when(technology.getStringField("componentQuantityAlgorithm")).thenReturn("01perProductOut");
+
+        // when
+        Map<Entity, BigDecimal> productQuantities = workPlanProductsService.getProductQuantities(orders);
+
+        // then
+        assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
+        assertEquals(new BigDecimal(10), productQuantities.get(productInComponent2));
+        assertEquals(new BigDecimal(5), productQuantities.get(productInComponent3));
+        assertEquals(new BigDecimal(10), productQuantities.get(productOutComponent2));
+        assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent4));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowIllegalStateExceptionIfThereIsNoAlgorithmSelectedInTechnology() {
+        // when
+        Map<Entity, BigDecimal> productQuantities = workPlanProductsService.getProductQuantities(orders);
     }
 }

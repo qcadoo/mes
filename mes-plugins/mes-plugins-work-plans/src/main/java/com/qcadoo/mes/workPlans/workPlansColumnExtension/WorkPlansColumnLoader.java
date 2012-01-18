@@ -1,8 +1,8 @@
-package com.qcadoo.mes.workPlans.workPlanColumnExtension;
+package com.qcadoo.mes.workPlans.workPlansColumnExtension;
 
 import org.springframework.stereotype.Service;
 
 @Service
-public class WorkPlanColumnLoader {
+public class WorkPlansColumnLoader {
     // TODO mici/lupo we gotta put here loader of column definitions
 }
