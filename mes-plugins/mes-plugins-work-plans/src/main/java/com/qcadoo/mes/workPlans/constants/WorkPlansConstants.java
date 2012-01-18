@@ -34,27 +34,25 @@ public interface WorkPlansConstants {
     // MODEL
     String MODEL_WORK_PLAN = "workPlan";
 
-    String MODEL_COLUMN_DEFINITION = "columnDefinition";
-
     String MODEL_COLUMN_FOR_INPUT_PRODUCTS = "columnForInputProducts";
 
     String MODEL_COLUMN_FOR_OUTPUT_PRODUCTS = "columnForOutputProducts";
 
-    String MODEL_PARAMETER_INPUT_COMPONENT = "parameterInputComponent";
+    String MODEL_PARAMETER_INPUT_COLUMN = "parameterInputColumn";
 
-    String MODEL_PARAMETER_OUTPUT_COMPONENT = "parameterOutputComponent";
+    String MODEL_PARAMETER_OUTPUT_COLUMN = "parameterOutputColumn";
 
-    String MODEL_OPERATION_INPUT_COMPONENT = "operationInputComponent";
+    String MODEL_OPERATION_INPUT_COLUMN = "operationInputColumn";
 
-    String MODEL_OPERATION_OUTPUT_COMPONENT = "operationOutputComponent";
+    String MODEL_OPERATION_OUTPUT_COLUMN = "operationOutputColumn";
 
-    String MODEL_TECHNOLOGY_OPERATION_INPUT_COMPONENT = "technologyOperationInputComponent";
+    String MODEL_TECHNOLOGY_OPERATION_INPUT_COLUMN = "technologyOperationInputColumn";
 
-    String MODEL_TECHNOLOGY_OPERATION_OUTPUT_COMPONENT = "technologyOperationOutputComponent";
+    String MODEL_TECHNOLOGY_OPERATION_OUTPUT_COLUMN = "technologyOperationOutputColumn";
 
-    String MODEL_ORDER_OPERATION_INPUT_COMPONENT = "orderOperationInputComponent";
+    String MODEL_ORDER_OPERATION_INPUT_COLUMN = "orderOperationInputColumn";
 
-    String MODEL_ORDER_OPERATION_OUTPUT_COMPONENT = "orderOperationOutputComponent";
+    String MODEL_ORDER_OPERATION_OUTPUT_COLUMN = "orderOperationOutputColumn";
 
     // VIEW
     String VIEW_WORK_PLAN_DETAILS = "workPlanDetails";

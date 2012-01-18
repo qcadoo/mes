@@ -67,17 +67,16 @@
 		
 		<model:model model="workPlan" resource="model/workPlan.xml" />
 	
-		<model:model model="columnDefinition" resource="model/columnDefinition.xml" />
 		<model:model model="columnForInputProducts" resource="model/columnForInputProducts.xml" />
 		<model:model model="columnForOutputProducts" resource="model/columnForOutputProducts.xml" />
-		<model:model model="parameterInputComponent" resource="model/parameterInputComponent.xml" />
-		<model:model model="parameterOutputComponent" resource="model/parameterOutputComponent.xml" />
-		<model:model model="operationInputComponent" resource="model/operationInputComponent.xml" />
-		<model:model model="operationOutputComponent" resource="model/operationOutputComponent.xml" />
-		<model:model model="technologyOperationInputComponent" resource="model/technologyOperationInputComponent.xml" />
-		<model:model model="technologyOperationOutputComponent" resource="model/technologyOperationOutputComponent.xml" />
-		<model:model model="orderOperationInputComponent" resource="model/orderOperationInputComponent.xml" />
-		<model:model model="orderOperationOutputComponent" resource="model/orderOperationOutputComponent.xml" />
+		<model:model model="parameterInputColumn" resource="model/parameterInputColumn.xml" />
+		<model:model model="parameterOutputColumn" resource="model/parameterOutputColumn.xml" />
+		<model:model model="operationInputColumn" resource="model/operationInputColumn.xml" />
+		<model:model model="operationOutputColumn" resource="model/operationOutputColumn.xml" />
+		<model:model model="technologyOperationInputColumn" resource="model/technologyOperationInputColumn.xml" />
+		<model:model model="technologyOperationOutputColumn" resource="model/technologyOperationOutputColumn.xml" />
+		<model:model model="orderOperationInputColumn" resource="model/orderOperationInputColumn.xml" />
+		<model:model model="orderOperationOutputColumn" resource="model/orderOperationOutputColumn.xml" />
 		
 		<model:model-field plugin="orders" model="order">
 			<model:manyToMany name="workPlans" joinField="orders" model="workPlan" plugin="workPlans"/>
@@ -103,10 +102,10 @@
 		</model:model-field>
 	
 		<model:model-field plugin="basic" model="parameter">
-			<model:hasMany name="parameterInputComponents" plugin="workPlans" model="parameterInputComponent" joinField="parameter" cascade="delete" copyable="true" />
+			<model:hasMany name="parameterInputColumns" plugin="workPlans" model="parameterInputColumn" joinField="parameter" cascade="delete" copyable="true" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
-			<model:hasMany name="parameterOutputComponents" plugin="workPlans" model="parameterOutputComponent" joinField="parameter" cascade="delete" copyable="true" />
+			<model:hasMany name="parameterOutputColumns" plugin="workPlans" model="parameterOutputColumn" joinField="parameter" cascade="delete" copyable="true" />
 		</model:model-field>
 		
 		<model:model-field plugin="technologies" model="operation">
@@ -129,10 +128,10 @@
 		</model:model-field>
 		
 		<model:model-field plugin="technologies" model="operation">
-			<model:hasMany name="operationInputComponents" plugin="workPlans" model="operationInputComponent" joinField="operation" cascade="delete" copyable="true" />
+			<model:hasMany name="operationInputColumns" plugin="workPlans" model="operationInputColumn" joinField="operation" cascade="delete" copyable="true" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:hasMany name="operationOutputComponents" plugin="workPlans" model="operationOutputComponent" joinField="operation" cascade="delete" copyable="true" />
+			<model:hasMany name="operationOutputColumns" plugin="workPlans" model="operationOutputColumn" joinField="operation" cascade="delete" copyable="true" />
 		</model:model-field>
 		
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
@@ -155,10 +154,10 @@
 		</model:model-field>
 		
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
-			<model:hasMany name="technologyOperationInputComponents" plugin="workPlans" model="technologyOperationInputComponent" joinField="technologyOperationComponent" cascade="delete" copyable="true" />
+			<model:hasMany name="technologyOperationInputColumns" plugin="workPlans" model="technologyOperationInputColumn" joinField="technologyOperationComponent" cascade="delete" copyable="true" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
-			<model:hasMany name="technologyOperationOutputComponents" plugin="workPlans" model="technologyOperationOutputComponent" joinField="technologyOperationComponent" cascade="delete" copyable="true" />
+			<model:hasMany name="technologyOperationOutputColumns" plugin="workPlans" model="technologyOperationOutputColumn" joinField="technologyOperationComponent" cascade="delete" copyable="true" />
 		</model:model-field>
 		
 		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
@@ -181,10 +180,10 @@
 		</model:model-field>
 		
 		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
-			<model:hasMany name="orderOperationInputComponents" plugin="workPlans" model="orderOperationInputComponent" joinField="orderOperationComponent" cascade="delete" copyable="true" />
+			<model:hasMany name="orderOperationInputColumns" plugin="workPlans" model="orderOperationInputColumn" joinField="orderOperationComponent" cascade="delete" copyable="true" />
 		</model:model-field>
 		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
-			<model:hasMany name="orderOperationOutputComponents" plugin="workPlans" model="orderOperationOutputComponent" joinField="orderOperationComponent" cascade="delete" copyable="true" />
+			<model:hasMany name="orderOperationOutputColumns" plugin="workPlans" model="orderOperationOutputColumn" joinField="orderOperationComponent" cascade="delete" copyable="true" />
 		</model:model-field>
 		
 		<model:model-hook plugin="basic" model="parameter">
@@ -196,11 +195,11 @@
         </model:model-hook>
         
         <model:model-hook plugin="technologies" model="technologyOperationComponent">
-            <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationModelValidators" method="checkIfAttachmentExtensionIsValid" />
+            <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentModelValidators" method="checkIfAttachmentExtensionIsValid" />
         </model:model-hook>
         
         <model:model-hook plugin="productionScheduling" model="orderOperationComponent">
-            <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.OrderOperationModelValidators" method="checkIfAttachmentExtensionIsValid" />
+            <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelValidators" method="checkIfAttachmentExtensionIsValid" />
         </model:model-hook>
         
         <model:model-hook plugin="technologies" model="operation">
@@ -208,11 +207,11 @@
         </model:model-hook>
         
         <model:model-hook plugin="technologies" model="technologyOperationComponent">
-            <model:onCreate class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationModelHooks" method="copyColumnForProducts" />
+            <model:onCreate class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentModelHooks" method="copyColumnForProducts" />
         </model:model-hook>
         
         <model:model-hook plugin="productionScheduling" model="orderOperationComponent">
-            <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OrderOperationModelHooks" method="copyColumnForProducts" />
+            <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelHooks" method="copyColumnForProducts" />
         </model:model-hook>
         
 		<menu:menu-category name="reports" />
@@ -224,14 +223,14 @@
 		<view:view resource="view/workPlansList.xml" />
 		<view:view resource="view/workPlanDetails.xml" />
 		
-		<view:view resource="view/parameterInputComponentDetails.xml" />
-		<view:view resource="view/parameterOutputComponentDetails.xml" />
-		<view:view resource="view/operationInputComponentDetails.xml" />
-		<view:view resource="view/operationOutputComponentDetails.xml" />
-		<view:view resource="view/technologyOperationInputComponentDetails.xml" />
-		<view:view resource="view/technologyOperationOutputComponentDetails.xml" />
-		<view:view resource="view/orderOperationInputComponentDetails.xml" />
-		<view:view resource="view/orderOperationOutputComponentDetails.xml" />
+		<view:view resource="view/parameterInputColumnDetails.xml" />
+		<view:view resource="view/parameterOutputColumnDetails.xml" />
+		<view:view resource="view/operationInputColumnDetails.xml" />
+		<view:view resource="view/operationOutputColumnDetails.xml" />
+		<view:view resource="view/technologyOperationInputColumnDetails.xml" />
+		<view:view resource="view/technologyOperationOutputColumnDetails.xml" />
+		<view:view resource="view/orderOperationInputColumnDetails.xml" />
+		<view:view resource="view/orderOperationOutputColumnDetails.xml" />
 		
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
@@ -249,10 +248,10 @@
 			
 		<view:view-listener plugin="technologies" view="technologyOperationComponentDetails"
 			component="operation" event="onSelectedEntityChange"
-			class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationViewHooks"
+			class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentViewHooks"
 			method="setTechnologyOperationComponentDefaultValues" />
 		
-		<custom:custom class="com.qcadoo.mes.workPlans.WorkPlanColumnsLoaderModule" />
+		<custom:custom class="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnLoader" />
 	</modules>
 
 </plugin>

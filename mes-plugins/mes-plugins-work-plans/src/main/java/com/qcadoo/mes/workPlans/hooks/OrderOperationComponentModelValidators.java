@@ -31,18 +31,9 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class OrderOperationComponentModelValidators {
 
-    public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputComponentDD,
-            final Entity inputComponent) {
+    public final boolean checkIfAttachmentExtensionIsValid(final DataDefinition orderOperationComponentDD, final Entity orderOperationComponent) {
 
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(inputComponentDD, inputComponent,
-                "orderOperationComponent", "columnForInputProducts", "orderOperatonInputComponents");
+        return new ValidatorServiceImpl().checkIfAttachmentExtensionIsValid(orderOperationComponentDD, orderOperationComponent,
+                "imageUrlInWorkPlan");
     }
-
-    public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputComponentDD,
-            final Entity outputComponent) {
-
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(outputComponentDD, outputComponent,
-                "orderOperationComponent", "columnForOutputProducts", "orderOperationOutputComponents");
-    }
-
 }

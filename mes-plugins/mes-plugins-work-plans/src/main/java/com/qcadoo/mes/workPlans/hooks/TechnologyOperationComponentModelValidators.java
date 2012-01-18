@@ -31,18 +31,11 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class TechnologyOperationComponentModelValidators {
 
-    public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputComponentDD,
-            final Entity inputComponent) {
+    public final boolean checkIfAttachmentExtensionIsValid(final DataDefinition technologyOperationComponentDD,
+            final Entity technologyOperationComponent) {
 
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(inputComponentDD, inputComponent,
-                "technologyOperationComponent", "columnForInputProducts", "technologyOperationInputComponents");
-    }
-
-    public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputComponentDD,
-            final Entity outputComponent) {
-
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(outputComponentDD, outputComponent,
-                "technologyOperationComponent", "columnForOutputProducts", "technologyOperationOutputComponents");
+        return new ValidatorServiceImpl().checkIfAttachmentExtensionIsValid(technologyOperationComponentDD, technologyOperationComponent,
+                "imageUrlInWorkPlan");
     }
 
 }

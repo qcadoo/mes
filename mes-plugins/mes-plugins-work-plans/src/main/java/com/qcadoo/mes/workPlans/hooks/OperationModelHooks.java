@@ -35,7 +35,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.search.SearchResult;
 
 @Service
 public class OperationModelHooks {
@@ -44,53 +43,48 @@ public class OperationModelHooks {
     private DataDefinitionService dataDefinitionService;
 
     public void copyColumnForProducts(final DataDefinition operationDD, final Entity operation) {
-        if ((operation.getField("operationInputComponents") == null) && (operation.getField("operationOutputComponents") == null)) {
-            EntityList parameterInputComponents = getParameterHasManyField("parameterInputComponents");
-            EntityList parameterOutputComponents = getParameterHasManyField("parameterOutputComponents");
+        if ((operation.getField("operationInputColumns") == null) && (operation.getField("operationOutputColumns") == null)) {
+            EntityList parameterInputColumns = getParameterHasManyField("parameterInputColumns");
+            EntityList parameterOutputColumns = getParameterHasManyField("parameterOutputColumns");
 
-            ArrayList<Entity> operationInputComponents = Lists.newArrayList();
-            ArrayList<Entity> operationOutputComponents = Lists.newArrayList();
+            ArrayList<Entity> operationInputColumns = Lists.newArrayList();
+            ArrayList<Entity> operationOutputColumns = Lists.newArrayList();
 
-            if (parameterInputComponents != null) {
-                for (Entity parameterInputComponent : parameterInputComponents) {
-                    Entity columnForInputProducts = parameterInputComponent.getBelongsToField("columnForInputProducts");
+            if (parameterInputColumns != null) {
+                for (Entity parameterInputColumn : parameterInputColumns) {
+                    Entity columnForInputProducts = parameterInputColumn.getBelongsToField("columnForInputProducts");
 
-                    Entity operationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                            WorkPlansConstants.MODEL_OPERATION_INPUT_COMPONENT).create();
+                    Entity operationInputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                            WorkPlansConstants.MODEL_OPERATION_INPUT_COLUMN).create();
 
-                    operationInputComponent.setField("columnForInputProducts", columnForInputProducts);
+                    operationInputColumn.setField("columnForInputProducts", columnForInputProducts);
 
-                    operationInputComponents.add(operationInputComponent);
+                    operationInputColumns.add(operationInputColumn);
                 }
             }
 
-            if (parameterOutputComponents != null) {
-                for (Entity parameterOutputComponent : parameterOutputComponents) {
-                    Entity columnForOutputProducts = parameterOutputComponent.getBelongsToField("columnForOutputProducts");
+            if (parameterOutputColumns != null) {
+                for (Entity parameterOutputColumn : parameterOutputColumns) {
+                    Entity columnForOutputProducts = parameterOutputColumn.getBelongsToField("columnForOutputProducts");
 
-                    Entity operationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                            WorkPlansConstants.MODEL_OPERATION_OUTPUT_COMPONENT).create();
+                    Entity operationOutputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                            WorkPlansConstants.MODEL_OPERATION_OUTPUT_COLUMN).create();
 
-                    operationOutputComponent.setField("columnForOutputProducts", columnForOutputProducts);
+                    operationOutputColumn.setField("columnForOutputProducts", columnForOutputProducts);
 
-                    operationOutputComponents.add(operationOutputComponent);
+                    operationOutputColumns.add(operationOutputColumn);
                 }
             }
 
-            operation.setField("operationInputComponents", operationInputComponents);
-            operation.setField("operationOutputComponents", operationOutputComponents);
+            operation.setField("operationInputColumns", operationInputColumns);
+            operation.setField("operationOutputColumns", operationOutputColumns);
         }
     }
 
-    public EntityList getParameterHasManyField(String fieldName) {
-        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
-                .find().setMaxResults(1).list();
+    private EntityList getParameterHasManyField(String fieldName) {
+        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                .uniqueResult();
 
-        Entity parameter = null;
-
-        if (searchResult.getEntities().size() > 0) {
-            parameter = searchResult.getEntities().get(0);
-        }
         if ((parameter == null) || (parameter.getHasManyField(fieldName) == null)) {
             return null;
         } else {
