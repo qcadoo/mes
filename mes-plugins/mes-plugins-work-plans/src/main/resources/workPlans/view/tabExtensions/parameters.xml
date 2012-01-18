@@ -53,7 +53,7 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="5">
-				<component type="file" name="imageUrlInWorkPlan" field="#{form}.imageUrlInWorkPlan" reference="imageUrlInWorkPlan" >
+				<component type="file" name="imageUrlInWorkPlan" field="#{form}.imageUrlInWorkPlan" reference="imageUrlInWorkPlan" hasDescription="true">
 					<option type="labelWidth" value="50" />
 				</component>
 			</layoutElement>
