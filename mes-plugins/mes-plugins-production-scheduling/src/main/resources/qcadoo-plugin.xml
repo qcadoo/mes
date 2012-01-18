@@ -105,7 +105,7 @@
 
 		<model:model-field plugin="orders" model="order">
 			<model:tree name="orderOperationComponents" plugin="productionScheduling"
-				model="orderOperationComponent" joinField="order" cascade="delete">
+				model="orderOperationComponent" joinField="order" cascade="delete" copyable="true">
 			</model:tree>
 		</model:model-field>
 

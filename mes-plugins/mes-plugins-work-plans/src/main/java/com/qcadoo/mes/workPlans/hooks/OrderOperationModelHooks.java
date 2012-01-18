@@ -43,56 +43,67 @@ public class OrderOperationModelHooks {
     private DataDefinitionService dataDefinitionService;
 
     public void copyColumnForProducts(final DataDefinition orderOperationDD, final Entity orderOperation) {
-        if ((orderOperation.getField("orderOperationInputComponents") == null)
-                && (orderOperation.getField("orderOperationOutputComponents") == null)) {
-            Entity technologyOperation = orderOperation.getBelongsToField("technologyOperationComponent");
 
-            for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
-                orderOperation.setField(workPlanParameter,
-                        getTechnologyOperationField(technologyOperation.getId(), workPlanParameter));
-            }
-
-            EntityList technologyOperationInputComponents = getTechnologyOperationHasManyField(technologyOperation.getId(),
-                    "technologyOperationInputComponents");
-            EntityList technologyOperationOutputComponents = getTechnologyOperationHasManyField(technologyOperation.getId(),
-                    "technologyOperationOutputComponents");
-
-            ArrayList<Entity> orderOperationInputComponents = Lists.newArrayList();
-            ArrayList<Entity> orderOperationOutputComponents = Lists.newArrayList();
-
-            if (technologyOperationInputComponents != null) {
-                for (Entity technologyOperationInputComponent : technologyOperationInputComponents) {
-                    Entity columnForInputProducts = technologyOperationInputComponent.getBelongsToField("columnForInputProducts");
-
-                    Entity orderOperationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                            WorkPlansConstants.MODEL_ORDER_OPERATION_INPUT_COMPONENT).create();
-
-                    orderOperationInputComponent.setField("columnForInputProducts", columnForInputProducts);
-
-                    orderOperationInputComponents.add(orderOperationInputComponent);
-                }
-            }
-
-            if (technologyOperationOutputComponents != null) {
-                for (Entity technologyOperationOutputComponent : technologyOperationOutputComponents) {
-                    Entity columnForOutputProducts = technologyOperationOutputComponent
-                            .getBelongsToField("columnForOutputProducts");
-
-                    Entity orderOperationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                            WorkPlansConstants.MODEL_ORDER_OPERATION_OUTPUT_COMPONENT).create();
-
-                    orderOperationOutputComponent.setField("columnForOutputProducts", columnForOutputProducts);
-
-                    orderOperationOutputComponents.add(orderOperationOutputComponent);
-                }
-            }
-
-            orderOperation.setField("orderOperationInputComponents", orderOperationInputComponents);
-            orderOperation.setField("orderOperationOutputComponents", orderOperationOutputComponents);
+        if (!shouldPropagateValuesFromLowerInstance(orderOperation)) {
+            return;
         }
+
+        Entity technologyOperation = orderOperation.getBelongsToField("technologyOperationComponent");
+
+        for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
+            orderOperation.setField(workPlanParameter,
+                    getTechnologyOperationField(technologyOperation.getId(), workPlanParameter));
+        }
+
+        EntityList technologyOperationInputComponents = getTechnologyOperationHasManyField(technologyOperation.getId(),
+                "technologyOperationInputComponents");
+        EntityList technologyOperationOutputComponents = getTechnologyOperationHasManyField(technologyOperation.getId(),
+                "technologyOperationOutputComponents");
+
+        ArrayList<Entity> orderOperationInputComponents = Lists.newArrayList();
+        ArrayList<Entity> orderOperationOutputComponents = Lists.newArrayList();
+
+        if (technologyOperationInputComponents != null) {
+            for (Entity technologyOperationInputComponent : technologyOperationInputComponents) {
+                Entity columnForInputProducts = technologyOperationInputComponent.getBelongsToField("columnForInputProducts");
+
+                Entity orderOperationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                        WorkPlansConstants.MODEL_ORDER_OPERATION_INPUT_COMPONENT).create();
+
+                orderOperationInputComponent.setField("columnForInputProducts", columnForInputProducts);
+
+                orderOperationInputComponents.add(orderOperationInputComponent);
+            }
+        }
+
+        if (technologyOperationOutputComponents != null) {
+            for (Entity technologyOperationOutputComponent : technologyOperationOutputComponents) {
+                Entity columnForOutputProducts = technologyOperationOutputComponent.getBelongsToField("columnForOutputProducts");
+
+                Entity orderOperationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                        WorkPlansConstants.MODEL_ORDER_OPERATION_OUTPUT_COMPONENT).create();
+
+                orderOperationOutputComponent.setField("columnForOutputProducts", columnForOutputProducts);
+
+                orderOperationOutputComponents.add(orderOperationOutputComponent);
+            }
+        }
+
+        orderOperation.setField("orderOperationInputComponents", orderOperationInputComponents);
+        orderOperation.setField("orderOperationOutputComponents", orderOperationOutputComponents);
     }
 
-    public EntityList getTechnologyOperationHasManyField(Long operationId, String fieldName) {
+    private boolean shouldPropagateValuesFromLowerInstance(final Entity orderOperation) {
+        for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
+            if (orderOperation.getField(workPlanParameter) != null) {
+                return false;
+            }
+        }
+        return orderOperation.getField("orderOperationInputComponents") == null
+                && orderOperation.getField("orderOperationOutputComponents") == null;
+    }
+
+    public EntityList getTechnologyOperationHasManyField(final Long operationId, final String fieldName) {
         Entity technologyOperation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(operationId);
 
@@ -103,7 +114,7 @@ public class OrderOperationModelHooks {
         }
     }
 
-    public Object getTechnologyOperationField(Long technologyOperationId, String fieldName) {
+    public Object getTechnologyOperationField(final Long technologyOperationId, final String fieldName) {
         Entity technologyOperation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(technologyOperationId);
 
