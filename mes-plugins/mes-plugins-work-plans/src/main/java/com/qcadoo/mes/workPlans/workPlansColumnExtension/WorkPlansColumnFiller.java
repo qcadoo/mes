@@ -8,14 +8,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.workPlans.print.ColumnFiller;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 
-@Service
 public class WorkPlansColumnFiller implements ColumnFiller {
 
     // TODO mici, those constants will end up as duplication somewhere,

@@ -23,26 +23,30 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class OperationComponentModelValidators {
+public class TechnologyOperationColumnModelValidators {
 
-    public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputComponentDD,
-            final Entity inputComponent) {
+    @Autowired
+    private ValidatorService validatorService;
 
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(inputComponentDD, inputComponent, "operation",
-                "columnForInputProducts", "operationInputComponents");
+    public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputColumnDD,
+            final Entity inputColumn) {
+
+        return validatorService.checkIfColumnForProductsIsNotUsed(inputColumnDD, inputColumn, "technologyOperationColumn",
+                "columnForInputProducts", "technologyOperationInputColumns");
     }
 
-    public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputComponentDD,
-            final Entity outputComponent) {
+    public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputColumnDD,
+            final Entity outputColumn) {
 
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(outputComponentDD, outputComponent, "operation",
-                "columnForOutputProducts", "operationOutputComponents");
+        return validatorService.checkIfColumnForProductsIsNotUsed(outputColumnDD, outputColumn, "technologyOperationColumn",
+                "columnForOutputProducts", "technologyOperationOutputColumns");
     }
 
 }

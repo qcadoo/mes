@@ -53,6 +53,8 @@ public class NormOrderService {
 
     private static final String OPERATION = "operation";
 
+    private static final String ORDER_OPERATION_COMPONENTS = "orderOperationComponents";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -72,13 +74,13 @@ public class NormOrderService {
 
     @Transactional
     public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity entity) {
-        if (!checkIfChosenTechnologyTreeIsNotEmpty(dataDefinition, entity)) {
+        if (!checkIfChosenTechnologyTreeIsNotEmpty(dataDefinition, entity) || !shouldPropagateFromLowerInstance(entity)) {
             return;
         }
         DataDefinition orderOperationComponentDD = dataDefinitionService.get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
                 ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT);
 
-        EntityTree orderOperationComponents = entity.getTreeField("orderOperationComponents");
+        EntityTree orderOperationComponents = entity.getTreeField(ORDER_OPERATION_COMPONENTS);
 
         Entity technology = entity.getBelongsToField(TECHNOLOGY_FIELD);
 
@@ -99,8 +101,38 @@ public class NormOrderService {
 
         EntityTree operationComponents = technology.getTreeField("operationComponents");
 
-        entity.setField("orderOperationComponents", Collections.singletonList(createOrderOperationComponent(
+        entity.setField(ORDER_OPERATION_COMPONENTS, Collections.singletonList(createOrderOperationComponent(
                 operationComponents.getRoot(), entity, technology, null, orderOperationComponentDD)));
+    }
+
+    private boolean shouldPropagateFromLowerInstance(final Entity order) {
+        return !hasOrderOperationComponents(order) || technologyWasChanged(order);
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean hasOrderOperationComponents(final Entity order) {
+        if (order.getField(ORDER_OPERATION_COMPONENTS) == null) {
+            return false;
+        }
+        return !((List<Entity>) order.getField(ORDER_OPERATION_COMPONENTS)).isEmpty();
+    }
+
+    private boolean technologyWasChanged(final Entity order) {
+        Entity existingOrder = getExistingOrder(order);
+        if (existingOrder == null) {
+            return false;
+        }
+
+        Entity technology = order.getBelongsToField(TECHNOLOGY_FIELD);
+        Entity existingOrderTechnology = existingOrder.getBelongsToField(TECHNOLOGY_FIELD);
+        return !existingOrderTechnology.equals(technology);
+    }
+
+    private Entity getExistingOrder(final Entity order) {
+        if (order.getId() == null) {
+            return null;
+        }
+        return order.getDataDefinition().get(order.getId());
     }
 
     private Entity createOrderOperationComponent(final EntityTreeNode operationComponent, final Entity order,
@@ -116,7 +148,7 @@ public class NormOrderService {
                     orderOperationComponent);
         } else {
             Entity referenceTechnology = operationComponent.getBelongsToField("referenceTechnology");
-            createOrCopyOrderOperationComponent(referenceTechnology.getTreeField("orderOperationComponents").getRoot(), order,
+            createOrCopyOrderOperationComponent(referenceTechnology.getTreeField(ORDER_OPERATION_COMPONENTS).getRoot(), order,
                     technology, orderOperationComponentDD, orderOperationComponent);
         }
 

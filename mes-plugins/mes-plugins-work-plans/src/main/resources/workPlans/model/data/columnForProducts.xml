@@ -24,17 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="technologyOperationInputComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent" required="true" />
-		
-		<belongsTo name="columnForInputProducts" plugin="workPlans" model="columnForInputProducts" required="true" lazy="false" />
-		
-		<priority name="succession" />
-	</fields>
-	<hooks>
-		<validatesWith class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentModelValidators" method="checkIfColumnForInputProductsIsNotAlreadyUsed" />
-	</hooks>
-</model>
+<column>
+	<row IDENTIFIER="productName" NAME="workPlans.columnForProducts.name.value.productName" DESCRIPTION="workPlans.columnForProducts.description.value.productName" COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" TYPE="both" ACTIVE="true" />
+	<row IDENTIFIER="plannedQuantity" NAME="workPlans.columnForProducts.name.value.plannedQuantity" DESCRIPTION="workPlans.columnForProducts.description.value.plannedQuantity" COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" TYPE="both" ACTIVE="true" />
+</column>

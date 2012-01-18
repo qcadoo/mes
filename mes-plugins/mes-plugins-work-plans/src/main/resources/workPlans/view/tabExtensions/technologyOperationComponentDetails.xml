@@ -73,12 +73,12 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="3">
-				<component type="grid" name="columnsForInputProducts" source="#{form}.technologyOperationInputComponents" reference="columnsForInputProducts" >
-					<option type="column" name="name" fields="columnForInputProducts" expression="'@' + #columnForInputProducts.get('columnDefinition').get('name')" />
+				<component type="grid" name="columnsForInputProducts" source="#{form}.technologyOperationInputColumns" reference="columnsForInputProducts" >
+					<option type="column" name="name" fields="columnForInputProducts" expression="'@' + #columnForInputProducts.get('name')" />
 
 					<option type="order" column="succession" direction="desc" />
 					
-					<option type="correspondingView" value="workPlans/technologyOperationInputComponentDetails" />
+					<option type="correspondingView" value="workPlans/technologyOperationInputColumnDetails" />
 					<option type="correspondingComponent" value="form" />
 					<option type="correspondingViewInModal" value="true" />
 						
@@ -95,12 +95,12 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="2" row="3">
-				<component type="grid" name="columnsForOutputProducts" source="#{form}.technologyOperationOutputComponents" reference="columnsForOutputProducts" >
-					<option type="column" name="name" fields="columnForOutputProducts" expression="'@' + #columnForOutputProducts.get('columnDefinition').get('name')" />
+				<component type="grid" name="columnsForOutputProducts" source="#{form}.technologyOperationOutputColumns" reference="columnsForOutputProducts" >
+					<option type="column" name="name" fields="columnForOutputProducts" expression="'@' + #columnForOutputProducts.get('name')" />
 
 					<option type="order" column="succession" direction="desc" />
 					
-					<option type="correspondingView" value="workPlans/technologyOperationOutputComponentDetails" />
+					<option type="correspondingView" value="workPlans/technologyOperationOutputColumnDetails" />
 					<option type="correspondingComponent" value="form" />
 					<option type="correspondingViewInModal" value="true" />
 					

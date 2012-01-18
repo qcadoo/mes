@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -58,7 +59,6 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
-import com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansProductsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -82,9 +82,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     @Autowired
     private SecurityService securityService;
-
-    @Autowired
-    private WorkPlansProductsService workPlanProductsService;
 
     enum ProductDirection {
         IN, OUT;
@@ -117,50 +114,51 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private Map<Entity, Map<String, String>> getColumnValues(List<Entity> orders) {
         Map<Entity, Map<String, String>> valuesMap = new HashMap<Entity, Map<String, String>>();
 
-        DataDefinition dd = dataDefinitionService.get("workPlans", "columnDefinition");
+        for (String columnDefinitionModel : Arrays.asList("columnForInputProducts", "columnForOutputProducts")) {
+            DataDefinition dd = dataDefinitionService.get("workPlans", columnDefinitionModel);
 
-        List<Entity> columnDefinitions = dd.find().list().getEntities();
+            List<Entity> columnDefinitions = dd.find().list().getEntities();
 
-        Set<String> classesStrings = new HashSet<String>();
+            Set<String> classesStrings = new HashSet<String>();
 
-        for (Entity columnDefinition : columnDefinitions) {
-            String classString = columnDefinition.getStringField("pluginIdentifier");
-            classesStrings.add(classString);
-        }
-
-        for (String classString : classesStrings) {
-            Class columnFiller;
-            try {
-                columnFiller = Class.forName(classString);
-            } catch (ClassNotFoundException e) {
-                throw new IllegalStateException("Failed to find class: " + classString, e);
+            for (Entity columnDefinition : columnDefinitions) {
+                String classString = columnDefinition.getStringField("columnFiller");
+                classesStrings.add(classString);
             }
 
-            Method method;
+            for (String classString : classesStrings) {
+                Class<?> columnFiller;
+                try {
+                    columnFiller = Class.forName(classString);
+                } catch (ClassNotFoundException e) {
+                    throw new IllegalStateException("Failed to find class: " + classString, e);
+                }
 
-            try {
-                method = columnFiller.getMethod("getValues", List.class);
-            } catch (SecurityException e) {
-                throw new IllegalStateException("Failed to find class: " + classString, e);
-            } catch (NoSuchMethodException e) {
-                throw new IllegalStateException("Failed to find column evaulator method in class: " + classString, e);
+                Method method;
+
+                try {
+                    method = columnFiller.getMethod("getValues", List.class);
+                } catch (SecurityException e) {
+                    throw new IllegalStateException("Failed to find column evaulator method in class: " + classString, e);
+                } catch (NoSuchMethodException e) {
+                    throw new IllegalStateException("Failed to find column evaulator method in class: " + classString, e);
+                }
+
+                Map<Entity, Map<String, String>> values;
+
+                try {
+                    values = (Map<Entity, Map<String, String>>) method.invoke(columnFiller.newInstance(), orders);
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalStateException("Failed to invoke column evaulator method", e);
+                } catch (IllegalAccessException e) {
+                    throw new IllegalStateException("Failed to invoke column evaulator method", e);
+                } catch (InvocationTargetException e) {
+                    throw new IllegalStateException("Failed to invoke column evaulator method", e);
+                } catch (InstantiationException e) {
+                    throw new IllegalStateException("Failed to invoke column evaulator method", e);
+                }
+                valuesMap.putAll(values);
             }
-
-            Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
-
-            try {
-                values = (Map) method.invoke(columnFiller.newInstance(), orders);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalStateException("Failed to invoke column evaulator method", e);
-            } catch (IllegalAccessException e) {
-                throw new IllegalStateException("Failed to invoke column evaulator method", e);
-            } catch (InvocationTargetException e) {
-                throw new IllegalStateException("Failed to invoke column evaulator method", e);
-            } catch (InstantiationException e) {
-                throw new IllegalStateException("Failed to invoke column evaulator method", e);
-            }
-
-            valuesMap.putAll(values);
         }
 
         return valuesMap;
@@ -394,16 +392,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return operationComponentsWithDistinction;
     }
 
-    private int[] getColumnWidths(int columns) {
-        int[] columnWidths = new int[columns];
-
-        for (int i = 0; i < columnWidths.length; ++i) {
-            columnWidths[i] = (int) (100.0f / columnWidths.length);
-        }
-
-        return columnWidths;
-    }
-
     void addProductsSeries(List<Entity> productComponents, Document document, Map<Entity, Map<String, String>> columnValues,
             Entity operationComponent, final DecimalFormat df, ProductDirection direction, Locale locale)
             throws DocumentException {
@@ -413,7 +401,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         // TODO mici, I couldnt sort productComponents without making a new linkedList out of it
         productComponents = Lists.newLinkedList(productComponents);
-
         Collections.sort(productComponents, new Comparator<Entity>() {
 
             @Override
@@ -431,11 +418,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
             return;
         }
 
-        // TODO mici, column widths got overlooked in analysis
-        int[] columnWidths = getColumnWidths(columns.size());
-
         PdfPTable table = PdfUtil.createTableWithHeader(columns.size(),
-                prepareProductsTableHeader(document, columns, direction, locale), false, columnWidths);
+                prepareProductsTableHeader(document, columns, direction, locale), false);
 
         for (Entity productComponent : productComponents) {
             for (Entity column : columns) {
@@ -536,10 +520,10 @@ public class WorkPlanPdfService extends PdfDocumentService {
         final String columnDefinitionModel;
 
         if (ProductDirection.IN.equals(direction)) {
-            dd = dataDefinitionService.get("workPlans", "parameterInputComponent");
+            dd = dataDefinitionService.get("workPlans", "parameterInputColumn");
             columnDefinitionModel = "columnForInputProducts";
         } else if (ProductDirection.OUT.equals(direction)) {
-            dd = dataDefinitionService.get("workPlans", "parameterOutputComponent");
+            dd = dataDefinitionService.get("workPlans", "parameterOutputColumn");
             columnDefinitionModel = "columnForOutputProducts";
         } else {
             throw new IllegalStateException("Wrong product direction");
@@ -558,8 +542,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         });
 
         for (Entity columnComponent : columnComponents) {
-            Entity columnDefinition = columnComponent.getBelongsToField(columnDefinitionModel).getBelongsToField(
-                    "columnDefinition");
+            Entity columnDefinition = columnComponent.getBelongsToField(columnDefinitionModel);
 
             columns.add(columnDefinition);
         }
@@ -598,16 +581,13 @@ public class WorkPlanPdfService extends PdfDocumentService {
         orderHeader.add(getTranslationService().translate("orders.order.number.label", locale));
         orderHeader.add(getTranslationService().translate("orders.order.name.label", locale));
         orderHeader.add(getTranslationService().translate("workPlans.workPlan.report.colums.product", locale));
-        orderHeader.add(getTranslationService().translate("workPlans.columnDefinition.name.value.plannedQuantity", locale));
+        orderHeader.add(getTranslationService().translate("workPlans.columnForProducts.name.value.plannedQuantity", locale));
         orderHeader.add(getTranslationService().translate("workPlans.orderTable.dateTo", locale));
         return orderHeader;
     }
 
     String getImagePathFromDD(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        String imagePath = parameters.getStringField("imageUrlInWorkPlan");
+        String imagePath = operationComponent.getStringField("imageUrlInWorkPlan");
 
         if (imagePath == null) {
             throw new NoSuchElementException("no image");
@@ -617,47 +597,27 @@ public class WorkPlanPdfService extends PdfDocumentService {
     }
 
     public boolean isCommentEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideComment = (Boolean) parameters.getField("hideDescriptionInWorkPlans");
-
+        boolean hideComment = operationComponent.getBooleanField("hideDescriptionInWorkPlans");
         return !hideComment;
     }
 
     public boolean isOrderInfoEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideOrderInfo = (Boolean) parameters.getField("hideTechnologyAndOrderInWorkPlans");
-
+        boolean hideOrderInfo = operationComponent.getBooleanField("hideTechnologyAndOrderInWorkPlans");
         return !hideOrderInfo;
     }
 
     public boolean isWorkstationInfoEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideWorkstationInfo = (Boolean) parameters.getField("hideDetailsInWorkPlans");
-
+        boolean hideWorkstationInfo = operationComponent.getBooleanField("hideDetailsInWorkPlans");
         return !hideWorkstationInfo;
     }
 
     public boolean isInputProductTableEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideInputProducts = (Boolean) parameters.getField("dontPrintInputProductsInWorkPlans");
-
+        boolean hideInputProducts = operationComponent.getBooleanField("dontPrintInputProductsInWorkPlans");
         return !hideInputProducts;
     }
 
     public boolean isOutputProductTableEnabled(Entity operationComponent) {
-        DataDefinition dd = dataDefinitionService.get("basic", "parameter");
-        Entity parameters = dd.find().uniqueResult();
-
-        boolean hideOutputProducts = (Boolean) parameters.getField("dontPrintOutputProductsInWorkPlans");
-
+        boolean hideOutputProducts = operationComponent.getBooleanField("dontPrintOutputProductsInWorkPlans");
         return !hideOutputProducts;
     }
 }

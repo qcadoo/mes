@@ -25,24 +25,7 @@ package com.qcadoo.mes.workPlans.hooks;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-
 @Service
-public class ParameterComponentModelValidators {
-
-    public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputComponentDD,
-            final Entity inputComponent) {
-
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(inputComponentDD, inputComponent, "parameter",
-                "columnForInputProducts", "parameterInputComponents");
-    }
-
-    public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputComponentDD,
-            final Entity outputComponent) {
-
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(outputComponentDD, outputComponent, "parameter",
-                "columnForOutputProducts", "parameterOutputComponents");
-    }
+public class OrderOperationComponentViewHooks {
 
 }
