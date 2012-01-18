@@ -923,3 +923,41 @@ SELECT * FROM update_orderoperationoutputcomponent();
 -- end
 
 ---- END ----
+
+
+-- Table: technologies_operation
+-- changed: 17.01.2012
+
+UPDATE technologies_operation SET 
+	hideDescriptionInWorkPlans = false,
+	hideDetailsInWorkPlans = false,
+	hideTechnologyAndOrderInWorkPlans = false,
+	dontPrintInputProductsInWorkPlans = false,
+	dontPrintOutputProductsInWorkPlans = false;
+	
+-- end
+
+-- Table: technologies_technologyoperationcomponent
+-- changed: 17.01.2012
+
+UPDATE technologies_technologyoperationcomponent SET 
+	hideDescriptionInWorkPlans = false,
+	hideDetailsInWorkPlans = false,
+	hideTechnologyAndOrderInWorkPlans = false,
+	dontPrintInputProductsInWorkPlans = false,
+	dontPrintOutputProductsInWorkPlans = false;
+	
+-- end
+
+
+-- Table: productionscheduling_orderoperationcomponent
+-- changed: 17.01.2012
+
+UPDATE productionscheduling_orderoperationcomponent SET 
+	hideDescriptionInWorkPlans = false,
+	hideDetailsInWorkPlans = false,
+	hideTechnologyAndOrderInWorkPlans = false,
+	dontPrintInputProductsInWorkPlans = false,
+	dontPrintOutputProductsInWorkPlans = false;
+	
+-- end

@@ -39,24 +39,23 @@
 			</layoutElement>
 			<layoutElement column="1" row="2">
 				<component type="checkbox" name="hideDescriptionInWorkPlans" field="#{form}.hideDescriptionInWorkPlans" reference="hideDescriptionInWorkPlans">
-					<option type="labelWidth" value="80" />
-					<option type="align" value="right" />
+					<option type="labelWidth" value="50" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="3">
 				<component type="checkbox" name="hideDetailsInWorkPlans" field="#{form}.hideDetailsInWorkPlans" reference="hideDetailsInWorkPlans">
-					<option type="labelWidth" value="80" />
-					<option type="align" value="right" />
+					<option type="labelWidth" value="50" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="4">
 				<component type="checkbox" name="hideTechnologyAndOrderInWorkPlans" field="#{form}.hideTechnologyAndOrderInWorkPlans" reference="hideTechnologyAndOrderInWorkPlans">
-					<option type="labelWidth" value="80" />
-					<option type="align" value="right" />
+					<option type="labelWidth" value="50" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="5">
-				<component type="file" name="imageUrlInWorkPlan" field="#{form}.imageUrlInWorkPlan" reference="imageUrlInWorkPlan" />
+				<component type="file" name="imageUrlInWorkPlan" field="#{form}.imageUrlInWorkPlan" reference="imageUrlInWorkPlan" hasDescription="true">
+					<option type="labelWidth" value="50" />
+				</component>
 			</layoutElement>
 		</component>
 	</windowTab>
@@ -69,8 +68,8 @@
 			</layoutElement>
 			<layoutElement column="1" row="2">
 				<component type="checkbox" name="dontPrintInputProductsInWorkPlans" field="#{form}.dontPrintInputProductsInWorkPlans" reference="dontPrintInputProductsInWorkPlans">
-					<option type="labelWidth" value="80" />
-					<option type="align" value="right" />
+					<option type="labelWidth" value="50" />
+					<option type="align" value="left" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="3">
@@ -91,8 +90,8 @@
 			</layoutElement>
 			<layoutElement column="2" row="2">
 				<component type="checkbox" name="dontPrintOutputProductsInWorkPlans" field="#{form}.dontPrintOutputProductsInWorkPlans" reference="dontPrintOutputProductsInWorkPlans">
-					<option type="labelWidth" value="80" />
-					<option type="align" value="right" />
+					<option type="labelWidth" value="50" />
+					<option type="align" value="left" />
 				</component>
 			</layoutElement>
 			<layoutElement column="2" row="3">

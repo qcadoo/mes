@@ -55,15 +55,13 @@ public class WorkPlanViewHooks {
     }
 
     public final void disableFormForGeneratedWorkPlan(final ViewDefinitionState state) {
-        ComponentState name = state.getComponentByReference("name");
-        ComponentState workPlanComponents = state.getComponentByReference("workPlanComponents");
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
         FieldComponent generated = (FieldComponent) state.getComponentByReference("generated");
 
         if ("1".equals(generated.getFieldValue())) {
-            name.setEnabled(false);
-            workPlanComponents.setEnabled(false);
+            form.setFormEnabled(false);
         } else {
-            name.setEnabled(true);
+            form.setFormEnabled(true);
         }
     }
 

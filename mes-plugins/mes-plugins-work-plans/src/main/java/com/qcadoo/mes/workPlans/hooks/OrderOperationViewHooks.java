@@ -23,62 +23,9 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class OrderOperationViewHooks {
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    public final void setOrderOperationComponentDefaultValues(final ViewDefinitionState view, final ComponentState component,
-            final String[] args) {
-        setOrderOperationComponentDefaultValues(view);
-    }
-
-    public final void setOrderOperationComponentDefaultValues(final ViewDefinitionState view) {
-        FormComponent form = getForm(view);
-
-        if (form.getEntityId() == null) {
-            Long orderOperationComponentId = (Long) form.getEntityId();
-
-            for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
-                FieldComponent field = getFieldComponent(view, workPlanParameter);
-                field.setFieldValue(getOperationField(orderOperationComponentId, workPlanParameter));
-            }
-        }
-    }
-
-    private FormComponent getForm(final ViewDefinitionState view) {
-        return (FormComponent) view.getComponentByReference("form");
-    }
-
-    private FieldComponent getFieldComponent(final ViewDefinitionState view, final String name) {
-        return (FieldComponent) view.getComponentByReference(name);
-    }
-
-    public Object getOperationField(Long orderOperationComponentId, String parameterName) {
-        checkArgument(orderOperationComponentId != null, "Order Operation Component Id is null");
-
-        Entity parameter = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.OPERATION_COMPONENTS).get(orderOperationComponentId);
-
-        if ((parameter == null) || (parameter.getField(parameterName) == null)) {
-            return null;
-        } else {
-            return parameter.getField(parameterName);
-        }
-    }
 }
