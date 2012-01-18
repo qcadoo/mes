@@ -85,12 +85,6 @@ public class OperationModelHooks {
     }
 
     private boolean shouldPropagateValuesFromLowerInstance(final Entity operation) {
-        for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
-            if (operation.getField(workPlanParameter) != null) {
-                return false;
-            }
-        }
-
         return (operation.getField("operationInputColumns") == null) && (operation.getField("operationOutputColumns") == null);
     }
 

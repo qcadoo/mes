@@ -88,12 +88,6 @@ public class TechnologyOperationComponentModelHooks {
     }
 
     private boolean shouldPropagateValuesFromLowerInstance(final Entity technologyOperationComponent) {
-        for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
-            if (technologyOperationComponent.getField(workPlanParameter) != null) {
-                return false;
-            }
-        }
-
         return (technologyOperationComponent.getField("technologyOperationInputColumns") == null)
                 && (technologyOperationComponent.getField("technologyOperationOutputColumns") == null);
     }
