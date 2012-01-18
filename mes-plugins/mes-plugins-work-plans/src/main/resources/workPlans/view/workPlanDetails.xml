@@ -67,6 +67,7 @@
 							updateRibbon();
 						}
 					});
+					
 					#{workPlanComponents}.addOnChangeListener({
 						onSetValue: function(value) {
 							if (value.content.totalEntities > 0) {
@@ -78,37 +79,42 @@
 						}
 					});
 					
-					function enableGeneration(generated) {
-						if (generated) {
+					function enableGeneration(enable) {
+						if (enable) {
 							generate.enable();
 							saveBack.enable();
 							saveNew.enable();
+							printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+							saveRibbonItem.enable();
 						} else {
-							generate.disable();
+							generate.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 							saveBack.disable();
 							saveNew.disable();
+							printWorkPlan.enable();
+							saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 						}
 					}
 					
 					function updateRibbon() {
 						if (entityExists) {
-							var isGeneratedCheckboxValue = #{generated}.getValue();
 							copyRibbonItem.enable();
+
+							var isGeneratedCheckboxValue = #{generated}.getValue();
+							var generated = false;
+							
 							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-								enableGeneration(false);
-								printWorkPlan.enable();
-								generate.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
-								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
-							} else {
+								generated = true;
+							}
+							
+							if (containsAtLeastOneOrder && !generated) {
 								enableGeneration(true);
-								printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-								saveRibbonItem.enable();
+							} else {
+								enableGeneration(false);
 							}
 						} else {
-							enableGeneration(true);
 							copyRibbonItem.disable("#{translate(recordNotCreated)}");
-							printWorkPlan.disable("#{translate(recordNotCreated)}");
-							saveRibbonItem.enable();
+							
+							enableGeneration(true);
 						}
 					}
 				]]>
