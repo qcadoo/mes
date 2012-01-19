@@ -19,9 +19,9 @@ public class WorkPlansColumnFiller implements ColumnFiller {
     // TODO mici, those constants will end up as duplication somewhere,
     // in the columnLoader probably, they should be either here or there.
 
-    private final static String PRODUCT_COLUMN = "productName";
+    private static final String PRODUCT_COLUMN = "productName";
 
-    private final static String QUANTITY_COLUMN = "plannedQuantity";
+    private static final String QUANTITY_COLUMN = "plannedQuantity";
 
     /**
      * 
