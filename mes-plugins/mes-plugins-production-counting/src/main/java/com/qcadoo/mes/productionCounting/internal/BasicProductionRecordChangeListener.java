@@ -29,6 +29,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Preconditions;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ChangeRecordStateMessage;
 import com.qcadoo.mes.productionCounting.internal.states.RecordStateListener;
@@ -47,13 +48,36 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
     @Override
     public List<ChangeRecordStateMessage> onAccepted(final Entity productionRecord, final Entity prevState) {
         updateBasicProductionCounting(productionRecord, new Addition());
+        setOrderDoneQuantity(productionRecord);
         return super.onAccepted(productionRecord, prevState);
+    }
+
+    private void setOrderDoneQuantity(Entity productionRecord) {
+        final Entity order = productionRecord.getBelongsToField("order");
+        final Entity product = order.getBelongsToField("product");
+
+        final List<Entity> productionCountings = dataDefinitionService
+                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
+                .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.belongsTo("product", product)).list()
+                .getEntities();
+
+        Preconditions.checkArgument(productionCountings.size() == 1,
+                "There is more than one production counting for same order and product");
+
+        final Entity productionCounting = productionCountings.get(0);
+
+        order.setField("doneQuantity", productionCounting.getField("producedQuantity"));
+
+        order.getDataDefinition().save(order);
+
     }
 
     @Override
     public List<ChangeRecordStateMessage> onDeclined(final Entity productionRecord, final Entity prevState) {
         if ("02accepted".equals(prevState.getField("state"))) {
             updateBasicProductionCounting(productionRecord, new Substraction());
+            setOrderDoneQuantity(productionRecord);
         }
         return super.onDeclined(productionRecord, prevState);
     }
