@@ -351,11 +351,6 @@
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
-					<artifactId>mes-commercial-plugins-integration-erc-simple</artifactId>
-					<version>1.1.2-SNAPSHOT</version>
-				</dependency>
-				<dependency>
-					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-commercial-plugins-integration-urc-core</artifactId>
 					<version>1.1.2-SNAPSHOT</version>
 				</dependency>
