@@ -157,7 +157,16 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 } catch (InstantiationException e) {
                     throw new IllegalStateException("Failed to invoke column evaulator method", e);
                 }
-                valuesMap.putAll(values);
+
+                for (Entry<Entity, Map<String, String>> entry : values.entrySet()) {
+                    if (valuesMap.containsKey(entry.getKey())) {
+                        for (Entry<String, String> deepEntry : entry.getValue().entrySet()) {
+                            valuesMap.get(entry.getKey()).put(deepEntry.getKey(), deepEntry.getValue());
+                        }
+                    } else {
+                        valuesMap.put(entry.getKey(), entry.getValue());
+                    }
+                }
             }
         }
 
@@ -519,17 +528,19 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         final String columnDefinitionModel;
 
+        List<Entity> columnComponents;
         if (ProductDirection.IN.equals(direction)) {
-            dd = dataDefinitionService.get("workPlans", "parameterInputColumn");
+            columnComponents = operationComponent.getHasManyField("technologyOperationInputColumns");
             columnDefinitionModel = "columnForInputProducts";
         } else if (ProductDirection.OUT.equals(direction)) {
-            dd = dataDefinitionService.get("workPlans", "parameterOutputColumn");
+            columnComponents = operationComponent.getHasManyField("technologyOperationOutputColumns");
             columnDefinitionModel = "columnForOutputProducts";
         } else {
             throw new IllegalStateException("Wrong product direction");
         }
 
-        List<Entity> columnComponents = dd.find().list().getEntities();
+        // TODO mici, I couldnt sort productComponents without making a new linkedList out of it
+        columnComponents = Lists.newLinkedList(columnComponents);
 
         Collections.sort(columnComponents, new Comparator<Entity>() {
 
@@ -581,7 +592,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         orderHeader.add(getTranslationService().translate("orders.order.number.label", locale));
         orderHeader.add(getTranslationService().translate("orders.order.name.label", locale));
         orderHeader.add(getTranslationService().translate("workPlans.workPlan.report.colums.product", locale));
-        orderHeader.add(getTranslationService().translate("workPlans.columnForProducts.name.value.plannedQuantity", locale));
+        orderHeader.add(getTranslationService().translate("workPlans.workPlan.report.colums.plannedQuantity", locale));
         orderHeader.add(getTranslationService().translate("workPlans.orderTable.dateTo", locale));
         return orderHeader;
     }
