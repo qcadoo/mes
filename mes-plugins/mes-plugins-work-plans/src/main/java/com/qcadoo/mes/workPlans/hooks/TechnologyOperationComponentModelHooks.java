@@ -50,6 +50,10 @@ public class TechnologyOperationComponentModelHooks {
 
         Entity operation = technologyOperationComponent.getBelongsToField("operation");
 
+        if (operation == null) {
+            return;
+        }
+
         EntityList operationInputColumns = getOperationHasManyField(operation.getId(), "operationInputColumns");
         EntityList operationOutputColumns = getOperationHasManyField(operation.getId(), "operationOutputColumns");
 
