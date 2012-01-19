@@ -121,6 +121,9 @@ public class CostNormsForOperationService {
         if ("referenceTechnology".equals(technologyOperationComponent.getField("entityType"))) {
             return;
         }
+        if (technologyOperationComponent.getBelongsToField("operation") == null) {
+            return;
+        }
         copyCostValuesFromGivenOperation(technologyOperationComponent,
                 technologyOperationComponent.getBelongsToField("operation"));
     }
@@ -130,7 +133,7 @@ public class CostNormsForOperationService {
     private void copyCostValuesFromGivenOperation(final Entity target, final Entity source) {
         checkArgument(target != null, "given target is null");
         checkArgument(source != null, "given source is null");
-        
+
         if (!shouldPropagateValuesFromLowerInstance(target)) {
             return;
         }
@@ -142,7 +145,7 @@ public class CostNormsForOperationService {
             target.setField(fieldName, source.getField(fieldName));
         }
     }
-    
+
     private boolean shouldPropagateValuesFromLowerInstance(final Entity technologyOperationComponent) {
         for (String fieldName : FIELDS) {
             if (technologyOperationComponent.getField(fieldName) != null) {
