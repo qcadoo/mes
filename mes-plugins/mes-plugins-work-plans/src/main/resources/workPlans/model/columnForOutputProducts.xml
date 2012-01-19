@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.1.1
+    Version: 1.1.2
 
     This file is part of Qcadoo.
 
@@ -28,15 +28,24 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="columnDefinition" plugin="workPlans" model="columnDefinition" required="true" lazy="false" />
+		<string name="identifier" required="true">
+			<validatesLength max="255" />
+		</string>
+		<string name="name" required="true">
+			<validatesLength max="255" />
+		</string>
+		<string name="description" />
+		<string name="columnFiller" required="true">
+			<validatesLength max="255" />
+		</string>
 		
-		<hasMany name="parameterOutputComponents" plugin="workPlans" model="parameterOutputComponent" joinField="columnForOutputProducts" />
-		<hasMany name="orderOutputComponents" plugin="workPlans" model="operationOutputComponent" joinField="columnForOutputProducts" />
-		<hasMany name="technologyOperationOutputComponents" plugin="workPlans" model="technologyOperationOutputComponent" joinField="columnForOutputProducts" />
-		<hasMany name="orderOperationOutputComponents" plugin="workPlans" model="orderOperationOutputComponent" joinField="columnForOutputProducts" />
+		<hasMany name="parameterOutputColumns" plugin="workPlans" model="parameterOutputColumn" joinField="columnForOutputProducts" cascade="delete" />
+		<hasMany name="orderOutputColumns" plugin="workPlans" model="operationOutputColumn" joinField="columnForOutputProducts" cascade="delete" />
+		<hasMany name="technologyOperationOutputColumns" plugin="workPlans" model="technologyOperationOutputColumn" joinField="columnForOutputProducts" cascade="delete" />
+		<hasMany name="orderOperationOutputColumns" plugin="workPlans" model="orderOperationOutputColumn" joinField="columnForOutputProducts" cascade="delete" />
 	</fields>
 	<hooks>
 
 	</hooks>
-	<identifier expression="#columnDefinition[name]" />
+	<identifier expression="#name" />
 </model>

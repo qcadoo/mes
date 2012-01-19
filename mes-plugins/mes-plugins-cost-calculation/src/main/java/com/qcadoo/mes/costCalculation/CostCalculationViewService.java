@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.1
+ * Version: 1.1.2
  *
  * This file is part of Qcadoo.
  *
@@ -368,7 +368,7 @@ public class CostCalculationViewService {
     private void fillFields(final ViewDefinitionState view, final Entity costCalculation) {
         final Set<String> outputDecimalFields = Sets.newHashSet("productionCostMarginValue", "materialCostMarginValue",
                 "totalOverhead", "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
-                "totalTechnicalProductionCosts", "totalCosts", "totalCostsPerUnit");
+                "totalTechnicalProductionCosts", "totalCosts", "totalCostsPerUnit", "additionalOverheadValue");
 
         for (String referenceName : outputDecimalFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);

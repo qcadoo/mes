@@ -1,8 +1,8 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
- * Version: 1.1.1
+ * Project: Qcadoo MES
+ * Version: 1.1.2
  *
  * This file is part of Qcadoo.
  *
@@ -23,17 +23,30 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class OrderOperationModelValidators {
+public class OrderOperationColumnModelValidators {
 
-    public final boolean checkIfAttachmentExtensionIsValid(final DataDefinition orderOperationDD, final Entity orderOperation) {
+    @Autowired
+    private ValidatorService validatorService;
 
-        return new ValidatorServiceImpl().checkIfAttachmentExtensionIsValid(orderOperationDD, orderOperation,
-                "imageUrlInWorkPlan");
+    public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputColumnDD,
+            final Entity inputColumn) {
+
+        return validatorService.checkIfColumnForProductsIsNotUsed(inputColumnDD, inputColumn, "orderOperationColumn",
+                "columnForInputProducts", "orderOperatonInputColumns");
     }
+
+    public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputColumnDD,
+            final Entity outputColumn) {
+
+        return validatorService.checkIfColumnForProductsIsNotUsed(outputColumnDD, outputColumn, "orderOperationColumn",
+                "columnForOutputProducts", "orderOperationOutputColumns");
+    }
+
 }

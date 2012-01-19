@@ -1,8 +1,8 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
- * Version: 1.1.1
+ * Project: Qcadoo MES
+ * Version: 1.1.2
  *
  * This file is part of Qcadoo.
  *
@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
@@ -31,9 +32,12 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ParameterModelValidators {
 
+    @Autowired
+    private ValidatorService validatorService;
+
     public final boolean checkIfAttachmentExtensionIsValid(final DataDefinition parameterDD, final Entity parameter) {
 
-        return new ValidatorServiceImpl().checkIfAttachmentExtensionIsValid(parameterDD, parameter, "imageUrlInWorkPlan");
+        return validatorService.checkIfAttachmentExtensionIsValid(parameterDD, parameter, "imageUrlInWorkPlan");
     }
 
 }

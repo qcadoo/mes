@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.1.1
+    Version: 1.1.2
 
     This file is part of Qcadoo.
 
@@ -24,17 +24,17 @@
     ***************************************************************************
 
 -->
-<model name="technologyOperationOutputComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<model name="technologyOperationInputColumn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent" required="true" />
 		
-		<belongsTo name="columnForOutputProducts" plugin="workPlans" model="columnForOutputProducts" required="true" lazy="false" />
+		<belongsTo name="columnForInputProducts" plugin="workPlans" model="columnForInputProducts" required="true" lazy="false" />
 		
 		<priority name="succession" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentModelValidators" method="checkIfColumnForOutputProductsIsNotAlreadyUsed" />
+		<validatesWith class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationColumnModelValidators" method="checkIfColumnForInputProductsIsNotAlreadyUsed" />
 	</hooks>
 </model>

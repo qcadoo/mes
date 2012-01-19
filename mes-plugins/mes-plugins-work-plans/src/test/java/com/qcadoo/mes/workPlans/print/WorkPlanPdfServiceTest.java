@@ -1,3 +1,26 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo MES
+ * Version: 1.1.2
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
 package com.qcadoo.mes.workPlans.print;
 
 import static org.junit.Assert.assertEquals;
@@ -41,11 +64,9 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.print.WorkPlanPdfService.ProductDirection;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.report.api.PrioritizedString;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.security.api.SecurityService;
@@ -204,20 +225,6 @@ public class WorkPlanPdfServiceTest {
         when(translationService.translate("workPlans.workPlan.report.title.noDivision", locale)).thenReturn(NO_DIVISION);
 
         df = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
-
-        DataDefinition dd = mock(DataDefinition.class);
-
-        when(dataDefinitionService.get("basic", "parameter")).thenReturn(dd);
-        SearchCriteriaBuilder find = mock(SearchCriteriaBuilder.class);
-        when(find.uniqueResult()).thenReturn(parameter);
-        when(dd.find()).thenReturn(find);
-
-        when(parameter.getField("hideTechnologyAndOrderInWorkPlans")).thenReturn(false);
-        when(parameter.getField("hideDetailsInWorkPlans")).thenReturn(false);
-        when(parameter.getField("hideDescriptionInWorkPlans")).thenReturn(false);
-
-        when(parameter.getField("dontPrintOutputProductsInWorkPlans")).thenReturn(false);
-        when(parameter.getField("dontPrintInputProductsInWorkPlans")).thenReturn(false);
     }
 
     @Test
@@ -449,7 +456,7 @@ public class WorkPlanPdfServiceTest {
     public void shouldAddAdditionalFieldsCorrectly() throws DocumentException {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(parameter.getStringField("imageUrlInWorkPlan")).thenReturn("actualPath");
+        when(operationComponent.getStringField("imageUrlInWorkPlan")).thenReturn("actualPath");
 
         // when
         workPlanPdfService.addAdditionalFields(document, operationComponent, locale);
@@ -466,7 +473,7 @@ public class WorkPlanPdfServiceTest {
         Entity operation = mock(Entity.class);
         when(operation.getStringField("comment")).thenReturn("comment");
         when(operationComponent.getBelongsToField("operation")).thenReturn(operation);
-        when(parameter.getField("hideDescriptionInWorkPlans")).thenReturn(false);
+        when(operationComponent.getField("hideDescriptionInWorkPlans")).thenReturn(false);
 
         // when
         workPlanPdfService.addOperationComment(document, operationComponent, locale);
@@ -503,7 +510,7 @@ public class WorkPlanPdfServiceTest {
     public void shouldGetCorrectImagePathFromDataDefinition() {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(parameter.getStringField("imageUrlInWorkPlan")).thenReturn("actualPath");
+        when(operationComponent.getStringField("imageUrlInWorkPlan")).thenReturn("actualPath");
 
         // when
         String imagePath = workPlanPdfService.getImagePathFromDD(operationComponent);
@@ -525,7 +532,7 @@ public class WorkPlanPdfServiceTest {
     public void shouldHideOperationCommentIfTold() {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(parameter.getField("hideDescriptionInWorkPlans")).thenReturn(true);
+        when(operationComponent.getBooleanField("hideDescriptionInWorkPlans")).thenReturn(true);
 
         // when
         boolean isCommentEnabled = workPlanPdfService.isCommentEnabled(operationComponent);
@@ -538,7 +545,7 @@ public class WorkPlanPdfServiceTest {
     public void shouldHideOrderInfoIfTold() {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(parameter.getField("hideTechnologyAndOrderInWorkPlans")).thenReturn(true);
+        when(operationComponent.getBooleanField("hideTechnologyAndOrderInWorkPlans")).thenReturn(true);
 
         // when
         boolean isOrderInfoEnabled = workPlanPdfService.isOrderInfoEnabled(operationComponent);
@@ -551,7 +558,7 @@ public class WorkPlanPdfServiceTest {
     public void shouldHideWorkstationInfoIfTold() {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(parameter.getField("hideDetailsInWorkPlans")).thenReturn(true);
+        when(operationComponent.getBooleanField("hideDetailsInWorkPlans")).thenReturn(true);
 
         // when
         boolean isWorkstationInfoEnabled = workPlanPdfService.isWorkstationInfoEnabled(operationComponent);
@@ -564,7 +571,7 @@ public class WorkPlanPdfServiceTest {
     public void shouldHideInputProductsInfoIfTold() {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(parameter.getField("dontPrintInputProductsInWorkPlans")).thenReturn(true);
+        when(operationComponent.getBooleanField("dontPrintInputProductsInWorkPlans")).thenReturn(true);
 
         // when
         boolean isInputProductTableEnabled = workPlanPdfService.isInputProductTableEnabled(operationComponent);
@@ -577,7 +584,7 @@ public class WorkPlanPdfServiceTest {
     public void shouldHideOutputProductsInfoIfTold() {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(parameter.getField("dontPrintOutputProductsInWorkPlans")).thenReturn(true);
+        when(operationComponent.getBooleanField("dontPrintOutputProductsInWorkPlans")).thenReturn(true);
 
         // when
         boolean isOutputProductTableEnabled = workPlanPdfService.isOutputProductTableEnabled(operationComponent);

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.1
+ * Version: 1.1.2
  *
  * This file is part of Qcadoo.
  *
@@ -93,12 +93,13 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         costCalculation.setField("productionCostMarginValue", productionCostMarginValue);
         costCalculation.setField("productionCostMarginValue", productionCostMarginValue);
         costCalculation.setField("materialCostMarginValue", materialCostMarginValue);
+        costCalculation.setField("additionalOverheadValue", additionalOverhead);
         costCalculation.setField("totalOverhead", totalOverhead);
         costCalculation.setField("totalTechnicalProductionCosts", totalTechnicalProductionCosts);
         costCalculation.setField("totalCosts", totalCosts);
         costCalculation.setField("totalCostsPerUnit", totalCosts.divide(quantity, 3));
 
-        return costCalculation;
+        return costCalculation.getDataDefinition().save(costCalculation);
     }
 
     private OperationsCostCalculationConstants getOperationModeFromField(final Object value) {

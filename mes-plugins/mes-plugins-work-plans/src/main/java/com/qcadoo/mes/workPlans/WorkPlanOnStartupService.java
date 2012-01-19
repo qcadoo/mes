@@ -1,8 +1,8 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
- * Version: 1.1.1
+ * Project: Qcadoo MES
+ * Version: 1.1.2
  *
  * This file is part of Qcadoo.
  *
@@ -21,28 +21,34 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.hooks;
+package com.qcadoo.mes.workPlans;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnLoader;
+import com.qcadoo.plugin.api.Module;
 
-@Service
-public class OperationComponentModelValidators {
+@Component
+public class WorkPlanOnStartupService extends Module {
 
-    public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputComponentDD,
-            final Entity inputComponent) {
+    @Autowired
+    private WorkPlansColumnLoader workPlansColumnLoader;
 
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(inputComponentDD, inputComponent, "operation",
-                "columnForInputProducts", "operationInputComponents");
+    @Override
+    @Transactional
+    public void multiTenantEnable() {
+        workPlansColumnLoader.setDefaulValues();
+
+        workPlansColumnLoader.addWorkPlansColumnsForProducts();
     }
 
-    public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputComponentDD,
-            final Entity outputComponent) {
+    @Override
+    @Transactional
+    public void multiTenantDisable() {
+        workPlansColumnLoader.setDefaulValues();
 
-        return new ValidatorServiceImpl().checkIfColumnForProductsIsNotUsed(outputComponentDD, outputComponent, "operation",
-                "columnForOutputProducts", "operationOutputComponents");
+        workPlansColumnLoader.deleteWorkPlansColumnsForProducts();
     }
-
 }

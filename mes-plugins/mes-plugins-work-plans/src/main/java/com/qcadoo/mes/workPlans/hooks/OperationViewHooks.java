@@ -1,8 +1,8 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
- * Version: 1.1.1
+ * Project: Qcadoo MES
+ * Version: 1.1.2
  *
  * This file is part of Qcadoo.
  *
@@ -30,7 +30,6 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -66,15 +65,10 @@ public class OperationViewHooks {
         return (FieldComponent) view.getComponentByReference(name);
     }
 
-    public Object getParameterField(String fieldName) {
-        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
-                .find().setMaxResults(1).list();
+    private Object getParameterField(String fieldName) {
+        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                .uniqueResult();
 
-        Entity parameter = null;
-
-        if (searchResult.getEntities().size() > 0) {
-            parameter = searchResult.getEntities().get(0);
-        }
         if ((parameter == null) || (parameter.getField(fieldName) == null)) {
             return null;
         } else {

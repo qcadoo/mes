@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.1.1
+    Version: 1.1.2
 
     This file is part of Qcadoo.
 
@@ -24,26 +24,17 @@
     ***************************************************************************
 
 -->
-<model name="columnDefinition" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<model name="technologyOperationOutputColumn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="identifier" required="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="description" />
-		<string name="pluginIdentifier" required="true">
-			<validatesLength max="255" />
-		</string>
+		<belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent" required="true" />
 		
-		<hasMany name="columnsForInputProducts" plugin="workPlans" model="columnForInputProducts" joinField="columnDefinition" />
-		<hasMany name="columnsForOutputProducts" plugin="workPlans" model="columnForOutputProducts" joinField="columnDefinition" />
+		<belongsTo name="columnForOutputProducts" plugin="workPlans" model="columnForOutputProducts" required="true" lazy="false" />
+		
+		<priority name="succession" />
 	</fields>
 	<hooks>
-		
+		<validatesWith class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationColumnModelValidators" method="checkIfColumnForOutputProductsIsNotAlreadyUsed" />
 	</hooks>
-	<identifier expression="#name" />
 </model>

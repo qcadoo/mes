@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.1.0
+    Version: 1.1.2
 
     This file is part of Qcadoo.
 
@@ -73,12 +73,12 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="3">
-				<component type="grid" name="columnsForInputProducts" source="#{form}.parameterInputComponents" reference="columnsForInputProducts" >
-					<option type="column" name="name" fields="columnForInputProducts" expression="'@' + #columnForInputProducts.get('columnDefinition').get('name')" />
+				<component type="grid" name="columnsForInputProducts" source="#{form}.parameterInputColumns" reference="columnsForInputProducts" >
+					<option type="column" name="name" fields="columnForInputProducts" expression="'@' + #columnForInputProducts.get('name')" />
 
 					<option type="order" column="succession" direction="desc" />
 					
-					<option type="correspondingView" value="workPlans/parameterInputComponentDetails" />
+					<option type="correspondingView" value="workPlans/parameterInputColumnDetails" />
 					<option type="correspondingComponent" value="form" />
 					<option type="correspondingViewInModal" value="true" />
 						
@@ -95,12 +95,12 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="2" row="3">
-				<component type="grid" name="columnsForOutputProducts" source="#{form}.parameterOutputComponents" reference="columnsForOutputProducts" >
-					<option type="column" name="name" fields="columnForOutputProducts" expression="'@' + #columnForOutputProducts.get('columnDefinition').get('name')" />
+				<component type="grid" name="columnsForOutputProducts" source="#{form}.parameterOutputColumns" reference="columnsForOutputProducts" >
+					<option type="column" name="name" fields="columnForOutputProducts" expression="'@' + #columnForOutputProducts.get('name')" />
 
 					<option type="order" column="succession" direction="desc" />
 					
-					<option type="correspondingView" value="workPlans/parameterOutputComponentDetails" />
+					<option type="correspondingView" value="workPlans/parameterOutputColumnDetails" />
 					<option type="correspondingComponent" value="form" />
 					<option type="correspondingViewInModal" value="true" />
 					

@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.1.1
+    Version: 1.1.2
 
     This file is part of Qcadoo.
 
@@ -28,15 +28,24 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="columnDefinition" plugin="workPlans" model="columnDefinition" required="true" lazy="false" />
+		<string name="identifier" required="true">
+			<validatesLength max="255" />
+		</string>
+		<string name="name" required="true">
+			<validatesLength max="255" />
+		</string>
+		<string name="description" />
+		<string name="columnFiller" required="true">
+			<validatesLength max="255" />
+		</string>
 		
-		<hasMany name="parameterInputComponents" plugin="workPlans" model="parameterInputComponent" joinField="columnForInputProducts" />
-		<hasMany name="operationInputComponents" plugin="workPlans" model="operationInputComponent" joinField="columnForInputProducts" />
-		<hasMany name="technologyOperationInputComponents" plugin="workPlans" model="technologyOperationInputComponent" joinField="columnForInputProducts" />
-		<hasMany name="orderOperationInputComponents" plugin="workPlans" model="orderOperationInputComponent" joinField="columnForInputProducts" />
+		<hasMany name="parameterInputColumns" plugin="workPlans" model="parameterInputColumn" joinField="columnForInputProducts" cascade="delete" />
+		<hasMany name="operationInputColumns" plugin="workPlans" model="operationInputColumn" joinField="columnForInputProducts" cascade="delete" />
+		<hasMany name="technologyOperationInputColumns" plugin="workPlans" model="technologyOperationInputColumn" joinField="columnForInputProducts" cascade="delete" />
+		<hasMany name="orderOperationInputColumns" plugin="workPlans" model="orderOperationInputColumn" joinField="columnForInputProducts" cascade="delete" />
 	</fields>
 	<hooks>
 		
 	</hooks>
-	<identifier expression="#columnDefinition[name]" />
+	<identifier expression="#name" />
 </model>

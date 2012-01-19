@@ -1,8 +1,8 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
- * Version: 1.1.1
+ * Project: Qcadoo MES
+ * Version: 1.1.2
  *
  * This file is part of Qcadoo.
  *
@@ -37,7 +37,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
-public class TechnologyOperationViewHooks {
+public class TechnologyOperationComponentViewHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -64,7 +64,7 @@ public class TechnologyOperationViewHooks {
         return (FieldComponent) view.getComponentByReference(name);
     }
 
-    public Object getOperationField(Long operationId, String fieldName) {
+    private Object getOperationField(Long operationId, String fieldName) {
         checkArgument(operationId != null, "Operation Id is null");
 
         Entity operation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,

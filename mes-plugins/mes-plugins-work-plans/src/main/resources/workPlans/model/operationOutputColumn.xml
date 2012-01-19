@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.1.1
+    Version: 1.1.2
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="operationOutputComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<model name="operationOutputColumn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
@@ -35,6 +35,6 @@
 		<priority name="succession" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.workPlans.hooks.OperationComponentModelValidators" method="checkIfColumnForOutputProductsIsNotAlreadyUsed" />
+		<validatesWith class="com.qcadoo.mes.workPlans.hooks.OperationColumnModelValidators" method="checkIfColumnForOutputProductsIsNotAlreadyUsed" />
 	</hooks>
 </model>

@@ -2,8 +2,8 @@
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo Framework
-    Version: 1.1.1
+    Project: Qcadoo MES
+    Version: 1.1.2
 
     This file is part of Qcadoo.
 
@@ -25,8 +25,8 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="orderOperationInputComponentDetails" 
-	modelName="orderOperationInputComponent">
+	name="operationInputColumnDetails" 
+	modelName="operationInputColumn">
 	
 	<component name="window" type="window" reference="window">
 		<ribbon>
@@ -52,23 +52,23 @@
 						#{form}.addOnChangeListener(listener);
 					]]>	 
 				</script>
-				<component type="gridLayout" name="orderOperationInputComponentGridLayout" columns="4" rows="1" hasBorders="false">
+				<component type="gridLayout" name="operationInputComponentGridLayout" columns="4" rows="1" hasBorders="false">
 
 					<layoutElement column="1" row="1" width="3">
 						<component type="lookup" name="columnForInputProducts" field="columnForInputProducts" reference="columnForInputProductsLookup">
-							<option type="column" name="name" fields="columnDefinition" expression="'@' + #columnDefinition.get('name')" link="true" />
-							<option type="column" name="description" fields="columnDefinition" expression="'@' + #columnDefinition.get('description')" />
+							<option type="column" name="name" fields="name" expression="'@' + #name" link="true" />
+							<option type="column" name="description" fields="description" expression="'@' + #description" />
 
 							<option type="orderable" value="name,description" />
 							
-							<option type="expression" value="'@' + #columnDefinition.get('name')" />
-							<option type="fieldCode" value="columnDefinition" />	
+							<option type="expression" value="'@' + #name" />
+							<option type="fieldCode" value="identifier" />
 						</component>
 					</layoutElement>
 				</component>
 				
 				<option type="header" value="true" />
-				<option type="expression" value="#name" />
+				<option type="expression" value="#identifier" />
 			
 			</component>
 		</windowTab>
