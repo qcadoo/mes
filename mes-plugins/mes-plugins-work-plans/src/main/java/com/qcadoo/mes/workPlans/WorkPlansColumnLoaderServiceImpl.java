@@ -75,6 +75,8 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
     private static final String INPUT_TYPE = "input";
 
+    private static final String BOTH_TYPE = "both";
+
     private static final String ADD_OPERATION = "add";
 
     private static final String DELETE_OPERATION = "delete";
@@ -193,22 +195,26 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (COLUMN_FOR_PRODUCTS.equals(type)) {
             if (ADD_OPERATION.equals(operation)) {
-                if (INPUT_TYPE.equals(values.get(TYPE_FIELD))) {
+                if (BOTH_TYPE.equals(values.get(TYPE_FIELD))) {
+                    addColumnForInputProducts(values);
+                    addColumnForOutputProducts(values);
+                } else if (INPUT_TYPE.equals(values.get(TYPE_FIELD))) {
                     addColumnForInputProducts(values);
                 } else if (OUTPUT_TYPE.equals(values.get(TYPE_FIELD))) {
                     addColumnForOutputProducts(values);
                 } else {
-                    addColumnForInputProducts(values);
-                    addColumnForOutputProducts(values);
+                    throw new IllegalStateException("Incorrect type - " + values.get(TYPE_FIELD));
                 }
-            } else {
-                if (INPUT_TYPE.equals(values.get(TYPE_FIELD))) {
+            } else if (DELETE_OPERATION.equals(operation)) {
+                if (BOTH_TYPE.equals(values.get(TYPE_FIELD))) {
+                    deleteColumnForInputProducts(values);
+                    deleteColumnForOutputProducts(values);
+                } else if (INPUT_TYPE.equals(values.get(TYPE_FIELD))) {
                     deleteColumnForInputProducts(values);
                 } else if (OUTPUT_TYPE.equals(values.get(TYPE_FIELD))) {
                     deleteColumnForOutputProducts(values);
                 } else {
-                    deleteColumnForInputProducts(values);
-                    deleteColumnForOutputProducts(values);
+                    throw new IllegalStateException("Incorrect type - " + values.get(TYPE_FIELD));
                 }
             }
         }

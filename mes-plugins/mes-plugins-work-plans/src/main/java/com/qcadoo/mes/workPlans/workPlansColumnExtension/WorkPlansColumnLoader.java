@@ -30,10 +30,9 @@ import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.workPlans.WorkPlansColumnLoaderService;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
-import com.qcadoo.plugin.api.Module;
 
 @Component
-public class WorkPlansColumnLoader extends Module {
+public class WorkPlansColumnLoader {
 
     @Autowired
     private WorkPlansColumnLoaderService workPlansColumnLoaderService;
