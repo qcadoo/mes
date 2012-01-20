@@ -149,12 +149,11 @@
 								var isDeclined = state == "03declined";
 								var isOutdated = state == "04outdated";
 								
-								if(state != "01draft"){
-								#{window}.setEnabled(isDraft, true); 
- 								  }
+								if (state != "01draft") {
+									#{window}.setEnabled(isDraft, true); 
+ 								}
 								
-								var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", 
-									"actions.cancel"]; 
+								var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel"]; 
 								for (var elementKey in toggleRibbonItems) {
 									var ribbonItemName = toggleRibbonItems[elementKey];
 									var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
@@ -204,6 +203,7 @@
 									cancelState.enable();
 								}
 							}
+							
 							this.updateRibbon = updateRibbon;
 						]]>
 					</script>
