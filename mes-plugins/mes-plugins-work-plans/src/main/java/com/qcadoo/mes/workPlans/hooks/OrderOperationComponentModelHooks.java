@@ -50,6 +50,10 @@ public class OrderOperationComponentModelHooks {
 
         Entity technologyOperationComponent = orderOperationComponent.getBelongsToField("technologyOperationComponent");
 
+        if (technologyOperationComponent == null) {
+            return;
+        }
+
         for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
             orderOperationComponent.setField(workPlanParameter,
                     getTechnologyOperationField(technologyOperationComponent.getId(), workPlanParameter));

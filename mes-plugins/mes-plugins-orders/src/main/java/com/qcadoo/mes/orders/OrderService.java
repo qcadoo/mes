@@ -105,7 +105,7 @@ public class OrderService {
         }
 
         FieldComponent productField = (FieldComponent) view.getComponentByReference(BASIC_MODEL_PRODUCT);
-        FieldComponent technologyField = (FieldComponent) view.getComponentByReference(BASIC_MODEL_PRODUCT);
+        FieldComponent technologyField = (FieldComponent) view.getComponentByReference("technology");
         FieldComponent name = (FieldComponent) view.getComponentByReference("name");
 
         if (technologyField.getFieldValue() == null || productField.getFieldValue() == null
@@ -493,6 +493,13 @@ public class OrderService {
     }
 
     public boolean checkChosenTechnologyState(final DataDefinition orderDD, final Entity order) {
+        if (order.getId() == null) {
+            return true;
+        }
+        Entity savedOrder = orderDD.get(order.getId());
+        if ("05declined".equals(savedOrder.getStringField("state"))) {
+            return false;
+        }
         if (order.isActive()) {
             Entity technology = order.getBelongsToField("technology");
             if (technology == null) {

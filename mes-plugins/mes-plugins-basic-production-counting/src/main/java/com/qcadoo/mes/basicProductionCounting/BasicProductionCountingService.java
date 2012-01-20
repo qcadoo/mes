@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.constants.OrderStates;
@@ -202,9 +203,13 @@ public class BasicProductionCountingService {
         if (orderFromDB == null) {
             return;
         }
-        String orderState = orderFromDB.getStringField("typeOfProductionRecording");
-        if (!("01basic".equals(orderState))) {
-            GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        String orderState = orderFromDB.getStringField("state");
+        String productionRecordType = orderFromDB.getStringField("typeOfProductionRecording");
+        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+
+        if (("01basic".equals(productionRecordType)) && ("03inProgress".equals(orderState))) {
+            grid.setEditable(true);
+        } else {
             grid.setEditable(false);
         }
     }
@@ -244,6 +249,34 @@ public class BasicProductionCountingService {
             Collections.reverse(countings);
             grid.setEntities(countings);
         }
+    }
+
+    public void shouldDisableUsedProducedField(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FieldComponent producedField = (FieldComponent) view.getComponentByReference("producedQuantity");
+        FieldComponent usedField = (FieldComponent) view.getComponentByReference("usedQuantity");
+
+        if (form.getEntityId() != null) {
+            Entity counting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                    BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).get(form.getEntityId());
+            Entity order = counting.getBelongsToField(MODEL_FIELD_ORDER);
+            Entity technology = order.getBelongsToField("technology");
+            Entity product = counting.getBelongsToField(MODEL_FIELD_PRODUCT);
+
+            if (FINAL_PRODUCT.equals(technologyService.getProductType(product, technology))) {
+                usedField.setEnabled(false);
+            } else {
+                usedField.setEnabled(true);
+
+            }
+            if (COMPONENT.equals(technologyService.getProductType(product, technology))) {
+                producedField.setEnabled(false);
+            } else {
+                producedField.setEnabled(true);
+
+            }
+        }
+
     }
 
     private Comparator<Entity> countingsComparator = new Comparator<Entity>() {

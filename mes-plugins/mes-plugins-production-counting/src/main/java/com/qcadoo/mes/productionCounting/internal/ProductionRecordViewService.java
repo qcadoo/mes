@@ -364,8 +364,8 @@ public class ProductionRecordViewService {
         FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference(COMPONENT_STATE);
         FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
                 .getComponentByReference(COMPONENT_TYPE_OF_PRODUCTION_RECORDING);
-        if ("03inProgress".equals(orderState.getFieldValue()) || "04completed".equals(orderState.getFieldValue())
-                || "06interrupted".equals(orderState.getFieldValue())) {
+        if ("02accepted".equals(orderState.getFieldValue()) || "03inProgress".equals(orderState.getFieldValue())
+                || "04completed".equals(orderState.getFieldValue()) || "06interrupted".equals(orderState.getFieldValue())) {
             for (String componentName : Arrays.asList(COMPONENT_TYPE_OF_PRODUCTION_RECORDING, FIELD_REGISTER_QUANTITY_IN_PRODUCT,
                     FIELD_REGISTER_QUANTITY_OUT_PRODUCT, COMPONENT_REGISTER_PRODUCTION_TIME, FIELD_JUST_ONE,
                     COMPONENT_ALLOW_TO_CLOSE, FIELD_AUTO_CLOSE_ORDER)) {

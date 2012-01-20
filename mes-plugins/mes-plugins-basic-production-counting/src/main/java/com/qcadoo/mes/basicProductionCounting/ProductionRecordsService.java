@@ -190,47 +190,6 @@ public class ProductionRecordsService {
         }
     }
 
-    public void setProducedQuantity(final ViewDefinitionState view) {
-        final FieldComponent typeOfProductionRecording = (FieldComponent) view
-                .getComponentByReference(MODEL_FIELD_TYPE_OF_PROD_REC);
-        final FieldComponent doneQuantity = (FieldComponent) view.getComponentByReference("doneQuantity");
-        final String orderNumber = (String) view.getComponentByReference(MODEL_FIELD_NUMBER).getFieldValue();
-        Entity order;
-        List<Entity> productionCountings;
-
-        if ("".equals(typeOfProductionRecording.getFieldValue())) {
-            return;
-        }
-
-        if (orderNumber == null) {
-            return;
-        }
-        order = dataDefinitionService.get("orders", "order").find().add(SearchRestrictions.eq(MODEL_FIELD_NUMBER, orderNumber))
-                .uniqueResult();
-        if (order == null) {
-            return;
-        }
-        productionCountings = dataDefinitionService
-                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
-                .add(SearchRestrictions.belongsTo(MODEL_FIELD_ORDER, order)).list().getEntities();
-
-        if (productionCountings.isEmpty()) {
-            return;
-        }
-
-        final Entity technology = order.getBelongsToField("technology");
-
-        for (Entity counting : productionCountings) {
-            final Entity aProduct = (Entity) counting.getField(MODEL_FIELD_PRODUCT);
-            final String type = technologyService.getProductType(aProduct, technology);
-            if (type.equals(TechnologyService.PRODUCT)) {
-                doneQuantity.setFieldValue(counting.getField("producedQuantity"));
-                break;
-            }
-        }
-    }
-
     public void getProductsFromOrder(final ViewDefinitionState view) {
         final String orderNumber = (String) view.getComponentByReference(MODEL_FIELD_NUMBER).getFieldValue();
 
