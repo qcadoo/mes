@@ -49,8 +49,6 @@ import com.qcadoo.model.api.EntityTreeNode;
 @Service
 public class ReportDataService {
 
-    private static final String COMPONENT_QUANTITY_ALGORITHM = "02perTechnology";
-
     private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 
     @Autowired
@@ -59,55 +57,22 @@ public class ReportDataService {
     public final void countQuantityForProductsIn(final Map<Entity, BigDecimal> products, final Entity technology,
             final BigDecimal plannedQuantity, final Boolean onlyComponents) {
         EntityTree operationComponents = technology.getTreeField(OPERATION_COMPONENTS);
-        if (COMPONENT_QUANTITY_ALGORITHM.equals(technology.getField("componentQuantityAlgorithm"))) {
-            countQuntityComponentPerTechnology(products, operationComponents, onlyComponents, plannedQuantity, technology);
-        } else {
-            Map<Entity, BigDecimal> orderProducts = new HashMap<Entity, BigDecimal>();
-            EntityTreeNode rootNode = operationComponents.getRoot();
-            if (rootNode != null) {
-                boolean success = countQuntityComponentPerOutProducts(orderProducts, rootNode, onlyComponents, plannedQuantity,
-                        technology);
-                if (success) {
-                    for (Entry<Entity, BigDecimal> entry : orderProducts.entrySet()) {
-                        if (!onlyComponents
-                                || technologyService.getProductType(entry.getKey(), technology).equals(
-                                        TechnologyService.COMPONENT)) {
-                            if (products.containsKey(entry.getKey())) {
-                                products.put(entry.getKey(), products.get(entry.getKey()).add(entry.getValue()));
-                            } else {
-                                products.put(entry.getKey(), entry.getValue());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void countQuntityComponentPerTechnology(final Map<Entity, BigDecimal> products,
-            final List<Entity> operationComponents, final boolean onlyComponents, final BigDecimal plannedQuantity,
-            final Entity technology) {
-        for (Entity operationComponent : operationComponents) {
-            if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField(FIELD_ENTITY_TYPE))) {
-                List<Entity> operationProductComponents = operationComponent.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS);
-                for (Entity operationProductComponent : operationProductComponents) {
-                    Entity product = (Entity) operationProductComponent.getField(MODEL_BASIC_PRODUCT);
+        Map<Entity, BigDecimal> orderProducts = new HashMap<Entity, BigDecimal>();
+        EntityTreeNode rootNode = operationComponents.getRoot();
+        if (rootNode != null) {
+            boolean success = countQuntityComponentPerOutProducts(orderProducts, rootNode, onlyComponents, plannedQuantity,
+                    technology);
+            if (success) {
+                for (Entry<Entity, BigDecimal> entry : orderProducts.entrySet()) {
                     if (!onlyComponents
-                            || technologyService.getProductType(product, technology).equals(TechnologyService.COMPONENT)) {
-                        if (products.containsKey(product)) {
-                            BigDecimal quantity = products.get(product);
-                            quantity = ((BigDecimal) operationProductComponent.getField("quantity")).multiply(plannedQuantity,
-                                    MathContext.DECIMAL128).add(quantity);
-                            products.put(product, quantity);
+                            || technologyService.getProductType(entry.getKey(), technology).equals(TechnologyService.COMPONENT)) {
+                        if (products.containsKey(entry.getKey())) {
+                            products.put(entry.getKey(), products.get(entry.getKey()).add(entry.getValue()));
                         } else {
-                            products.put(product, ((BigDecimal) operationProductComponent.getField("quantity")).multiply(
-                                    plannedQuantity, MathContext.DECIMAL128));
+                            products.put(entry.getKey(), entry.getValue());
                         }
                     }
                 }
-            } else {
-                countQuntityComponentPerTechnology(products, operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY)
-                        .getTreeField(OPERATION_COMPONENTS), onlyComponents, plannedQuantity, technology);
             }
         }
     }

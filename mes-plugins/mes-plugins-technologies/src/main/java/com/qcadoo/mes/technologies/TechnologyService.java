@@ -465,14 +465,12 @@ public class TechnologyService {
         if (!ACCEPTED.equals(technology.getStringField("state"))) {
             return true;
         }
-        if ("01perProductOut".equals(technology.getStringField("componentQuantityAlgorithm"))) {
-            final Entity savedTechnology = dataDefinition.get(technology.getId());
-            final EntityTree technologyOperations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
-            if (!checkIfConsumesSubOpsProds(technologyOperations)) {
-                technology.addError(dataDefinition.getField(CONST_OPERATION_COMPONENTS),
-                        "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProducts");
-                return false;
-            }
+        final Entity savedTechnology = dataDefinition.get(technology.getId());
+        final EntityTree technologyOperations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+        if (!checkIfConsumesSubOpsProds(technologyOperations)) {
+            technology.addError(dataDefinition.getField(CONST_OPERATION_COMPONENTS),
+                    "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProducts");
+            return false;
         }
 
         return true;

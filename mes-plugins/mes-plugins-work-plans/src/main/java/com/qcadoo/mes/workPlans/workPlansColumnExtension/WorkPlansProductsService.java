@@ -50,16 +50,7 @@ public class WorkPlansProductsService {
 
             EntityTree tree = technology.getTreeField("operationComponents");
 
-            String algorithm = technology.getStringField("componentQuantityAlgorithm");
-
-            if ("01perProductOut".equals(algorithm)) {
-                calculateQuantitiesForNormalAlgorithm(tree, productQuantities, plannedQty, technology);
-            } else if ("02perTechnology".equals(algorithm)) {
-                calculateQuantitiesForSimpleAlgorithm(tree, productQuantities, plannedQty);
-            } else {
-                throw new IllegalStateException(
-                        "technology's componentQuantityAlgorithm isn't 01perProductOut nor 02perTechnology");
-            }
+            calculateQuantitiesForNormalAlgorithm(tree, productQuantities, plannedQty, technology);
         }
 
         return productQuantities;
