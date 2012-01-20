@@ -70,20 +70,6 @@ public class WorkPlansProductsService {
         }
     }
 
-    void calculateQuantitiesForSimpleAlgorithm(EntityTree tree, Map<Entity, BigDecimal> productQuantities, BigDecimal plannedQty) {
-        for (Entity operationComponent : tree) {
-            for (Entity productComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                BigDecimal neededQty = (BigDecimal) productComponent.getField("quantity");
-                productQuantities.put(productComponent, neededQty.multiply(plannedQty));
-            }
-
-            for (Entity productComponent : operationComponent.getHasManyField("operationProductOutComponents")) {
-                BigDecimal neededQty = (BigDecimal) productComponent.getField("quantity");
-                productQuantities.put(productComponent, neededQty.multiply(plannedQty));
-            }
-        }
-    }
-
     void calculateQuantitiesForNormalAlgorithm(EntityTree tree, Map<Entity, BigDecimal> productQuantities, BigDecimal plannedQty,
             Entity technology) {
         preloadProductQuantities(tree, productQuantities, plannedQty);
